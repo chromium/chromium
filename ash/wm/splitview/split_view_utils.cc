@@ -22,7 +22,9 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
@@ -369,6 +371,40 @@ void DoSplitviewClipRectAnimation(
   layer->SetClipRect(target_clip_rect);
 }
 
+int GetWindowLength(aura::Window* window, bool horizontal) {
+  const auto& bounds = window->bounds();
+  return horizontal ? bounds.width() : bounds.height();
+}
+
+bool IsPhysicalLeftOrTop(aura::Window* window) {
+  chromeos::WindowStateType state_type =
+      WindowState::Get(window)->GetStateType();
+  if (IsLayoutPrimary(window)) {
+    return state_type == chromeos::WindowStateType::kPrimarySnapped;
+  }
+  return state_type == chromeos::WindowStateType::kSecondarySnapped;
+}
+
+void SetWindowTransformDuringResizing(aura::Window* window,
+                                      int divider_position) {
+  const bool is_primary_window = IsPhysicalLeftOrTop(window);
+  aura::Window* root_window = window->GetRootWindow();
+  const int window_size = is_primary_window
+                              ? divider_position
+                              : GetDividerPositionUpperLimit(root_window) -
+                                    divider_position -
+                                    kSplitviewDividerShortSideLength;
+  const bool horizontal = IsLayoutHorizontal(root_window);
+  int distance = window_size - GetWindowLength(window, horizontal);
+  gfx::Transform transform;
+  if (distance < 0) {
+    // If this is the secondary window, translate the other direction.
+    distance = is_primary_window ? distance : -distance;
+    transform.Translate(horizontal ? distance : 0, horizontal ? 0 : distance);
+  }
+  window_util::SetTransform(window, transform);
+}
+
 // TODO(michelefan): Revisit the logics when split view refactor is ready to
 // make everything works with `kSnapGroup` enabled.
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
@@ -399,7 +435,8 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
         Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
             kActiveDesk);
     for (aura::Window* window : windows) {
-      if (!split_view_controller->CanSnapWindow(window)) {
+      if (!split_view_controller->CanSnapWindow(window,
+                                                chromeos::kDefaultSnapRatio)) {
         // Since we are in tablet mode, and this window is not snappable, we
         // should maximize it.
         WindowState::Get(window)->Maximize();
@@ -553,7 +590,8 @@ SnapPosition GetSnapPosition(aura::Window* root_window,
                              int minimum_drag_distance,
                              int horizontal_edge_inset,
                              int vertical_edge_inset) {
-  if (!SplitViewController::Get(root_window)->CanSnapWindow(window)) {
+  if (!SplitViewController::Get(root_window)
+           ->CanSnapWindow(window, chromeos::kDefaultSnapRatio)) {
     return SnapPosition::kNone;
   }
 

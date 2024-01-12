@@ -55,7 +55,7 @@
       snav.triggerMove("Down"); // |iframe|
       snav.triggerMove("Down"); // |second|
 
-      assert_equals(window.internals.interestedElement,
+      assert_equals(iframe.contentDocument.activeElement,
                     second, "|second| element gets interest.");
       assert_true(second.matches(":hover"),
                   "|second| should be hovered when interested.");
@@ -70,7 +70,7 @@
 
       // Down again to interest |third|.
       snav.triggerMove("Down");
-      assert_equals(window.internals.interestedElement,
+      assert_equals(document.activeElement,
                     third, "|third| element gets interest.");
       assert_true(third.matches(":hover"),
                   "|third| should be hovered when interested.");

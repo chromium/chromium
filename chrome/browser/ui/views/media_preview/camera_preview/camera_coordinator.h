@@ -19,7 +19,9 @@
 // Maintains the lifetime of its views.
 class CameraCoordinator {
  public:
-  CameraCoordinator(views::View& parent_view, bool needs_borders);
+  CameraCoordinator(views::View& parent_view,
+                    bool needs_borders,
+                    const std::vector<std::string>& eligible_camera_ids);
   CameraCoordinator(const CameraCoordinator&) = delete;
   CameraCoordinator& operator=(const CameraCoordinator&) = delete;
   ~CameraCoordinator();
@@ -44,6 +46,7 @@ class CameraCoordinator {
   views::ViewTracker camera_view_tracker_;
   CameraSelectorComboboxModel combobox_model_;
   std::string active_device_id_;
+  base::flat_set<std::string> eligible_camera_ids_;
   std::optional<CameraViewController> camera_view_controller_;
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_impl.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
@@ -19,6 +20,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/push_notification/push_notification_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -48,6 +50,7 @@ NearbyPresenceServiceFactory::NearbyPresenceServiceFactory()
     : ProfileKeyedServiceFactory(kServiceName) {
   DependsOn(ash::nearby::NearbyProcessManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(push_notification::PushNotificationServiceFactory::GetInstance());
 }
 
 NearbyPresenceServiceFactory::~NearbyPresenceServiceFactory() = default;
@@ -82,11 +85,14 @@ NearbyPresenceServiceFactory::BuildServiceInstanceForBrowserContext(
   // TODO(b/276344576): add the NearbyPresence feature flag.
 
   VLOG(1) << __func__ << ": creating NearbyPresenceService.";
+
   return std::make_unique<NearbyPresenceServiceImpl>(
       Profile::FromBrowserContext(context)->GetPrefs(),
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory());
+      profile->GetURLLoaderFactory(),
+      push_notification::PushNotificationServiceFactory::GetForBrowserContext(
+          context));
 }
 
 void NearbyPresenceServiceFactory::RegisterProfilePrefs(

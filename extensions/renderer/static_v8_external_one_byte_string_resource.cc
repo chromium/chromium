@@ -4,12 +4,13 @@
 
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 
+#include <string_view>
+
 namespace extensions {
 
 StaticV8ExternalOneByteStringResource::StaticV8ExternalOneByteStringResource(
-    const base::StringPiece& buffer)
-    : buffer_(buffer) {
-}
+    std::string_view buffer)
+    : buffer_(buffer) {}
 
 StaticV8ExternalOneByteStringResource::
     ~StaticV8ExternalOneByteStringResource() {

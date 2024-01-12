@@ -38,7 +38,8 @@
           "builder": "win32-official",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win32-official/targets"
     }
   },
   "$build/reclient": {

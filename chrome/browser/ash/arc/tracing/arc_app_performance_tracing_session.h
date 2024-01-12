@@ -98,7 +98,7 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   bool DetectIdle();
 
   // Unowned pointers.
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
 
   // Used for automatic observer adding/removing.
   std::unique_ptr<exo::ScopedSurface> scoped_surface_;

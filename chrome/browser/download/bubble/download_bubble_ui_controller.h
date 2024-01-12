@@ -103,11 +103,6 @@ class DownloadBubbleUIController {
   // observers.
   void HideDownloadUi();
 
-  // Records that the download bubble was interacted with. This only records
-  // the fact that an interaction occurred, and should not be used
-  // quantitatively to count the number of such interactions.
-  void RecordDownloadBubbleInteraction();
-
   // Records that a dangerous download was shown to the user. This only
   // records the fact that an interaction occurred, and should not be
   // used quantitatively to count the number of such interactions.

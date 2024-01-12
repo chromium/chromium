@@ -1,0 +1,47 @@
+<!doctype html>
+<!-- Tests that main threaded scrollbars are correctly drawn in Full Mode. -->
+<meta charset="utf-8">
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<style>
+  body {
+    background-color: green;
+    color-scheme: light dark;
+  }
+
+  .scrollable {
+    height: 200px;
+    overflow: scroll;
+    resize: both;
+    scrollbar-gutter: stable;
+    width: 200px;
+  }
+
+  .content {
+    background-image: radial-gradient(yellow, yellow);
+    height: 400px;
+    overflow: scroll;
+    width: 400px;
+  }
+</style>
+<div class="scrollable" id="scroll-div">
+  <div class="content"></div>
+</div>
+<script>
+  const outer = document.getElementById('scroll-div');
+  window.onload = async () => {
+    if (!window.internals) return;
+
+    testRunner.waitUntilDone();
+
+    // Move the pointer to the thumb.
+    const x =
+      outer.getBoundingClientRect().right - calculateScrollbarThickness() / 2;
+    const y = outer.getBoundingClientRect().top + verticalThumb(outer).y;
+    await mouseMoveTo(x, y);
+
+    testRunner.notifyDone();
+  };
+</script>

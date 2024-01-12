@@ -6,12 +6,14 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REQUEST_PARAMS_H_
 
 #include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
+#include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -27,18 +29,21 @@ class CompositeMatcher;
 
 // Struct to hold parameters for a network request.
 struct RequestParams {
-  // |info| must outlive this instance.
-  explicit RequestParams(const WebRequestInfo& info);
-  // |host| must not undergo a navigation or get deleted for the duration of
+  // `info` must outlive this instance.
+  RequestParams(const WebRequestInfo& info,
+                scoped_refptr<const net::HttpResponseHeaders> response_headers);
+  // `host` must not undergo a navigation or get deleted for the duration of
   // this instance.
-  explicit RequestParams(content::RenderFrameHost* host,
-                         bool is_post_navigation);
-  explicit RequestParams(
+  RequestParams(content::RenderFrameHost* host,
+                bool is_post_navigation,
+                scoped_refptr<const net::HttpResponseHeaders> response_headers);
+  RequestParams(
       const GURL& url,
       const url::Origin& initiator,
       const api::declarative_net_request::ResourceType request_type,
       const api::declarative_net_request::RequestMethod request_method,
-      int tab_id);
+      int tab_id,
+      scoped_refptr<const net::HttpResponseHeaders> response_headers);
   RequestParams();
   RequestParams(const RequestParams&) = delete;
   RequestParams& operator=(const RequestParams&) = delete;

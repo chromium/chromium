@@ -161,10 +161,6 @@ class PLATFORM_EXPORT Font {
   // of the glyph rendered by each character. Values should always be positive.
   Vector<double> IndividualCharacterAdvances(const TextRun&) const;
 
-  void ExpandRangeToIncludePartialGlyphs(const TextRun&,
-                                         int* from,
-                                         int* to) const;
-
   // Metrics that we query the FontFallbackList for.
   float SpaceWidth() const {
     DCHECK(PrimaryFont());

@@ -37,7 +37,7 @@
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm ]
+#         qualcomm qualcomm-0x41333430 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -223,39 +223,22 @@ crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_VP9_Y
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
 crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ Failure ]
 
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Underlay_Fullsize [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Underlay_Fullsize [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_Fullsize [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_Fullsize [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_VP_SCALING [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_MP4_VP_SCALING [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_Fullsize [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_Fullsize [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ RetryOnFailure ]
-crbug.com/1453832 [ clang-coverage nvidia release-x64 target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
 
 # Win AMD failure since test added

@@ -65,17 +65,17 @@ base::subtle::Atomic32 g_init_logging_delegate_thread_id = 0;
 inline int WebRtcSevToChromeSev(LoggingSeverity sev) {
   switch (sev) {
     case LS_ERROR:
-      return ::logging::LOG_ERROR;
+      return ::logging::LOGGING_ERROR;
     case LS_WARNING:
-      return ::logging::LOG_WARNING;
+      return ::logging::LOGGING_WARNING;
     case LS_INFO:
-      return ::logging::LOG_INFO;
+      return ::logging::LOGGING_INFO;
     case LS_VERBOSE:
     case LS_SENSITIVE:
-      return ::logging::LOG_VERBOSE;
+      return ::logging::LOGGING_VERBOSE;
     default:
       NOTREACHED();
-      return ::logging::LOG_FATAL;
+      return ::logging::LOGGING_FATAL;
   }
 }
 

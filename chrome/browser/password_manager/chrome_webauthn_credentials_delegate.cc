@@ -74,6 +74,11 @@ ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {
   return passkeys_;
 }
 
+base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
+ChromeWebAuthnCredentialsDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool ChromeWebAuthnCredentialsDelegate::OfferPasskeysFromAnotherDeviceOption()
     const {
   return offer_passkey_from_another_device_;

@@ -277,6 +277,9 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void DidVerifyRegistration(const SequencedContextId& context_id,
                              content::ServiceWorkerCapability capability);
 
+  // Emit histograms when we know we're going to start the worker.
+  void EmitWorkerWillBeStartedHistograms(const ExtensionId& extension_id);
+
   std::multiset<content::ServiceWorkerContext*> observing_worker_contexts_;
 
   // The state of worker of each activated extension.

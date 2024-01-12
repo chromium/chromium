@@ -51,7 +51,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   void RequestEncodingParametersChange(
       const media::Bitrate& bitrate,
       uint32_t framerate,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
 
  private:

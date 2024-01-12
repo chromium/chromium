@@ -68,8 +68,7 @@ class AppDownloadingScreenTest : public OobeBaseTest {
 
   void WaitForScreenExit() { EXPECT_TRUE(screen_exit_waiter_.Wait()); }
 
-  raw_ptr<AppDownloadingScreen, DanglingUntriaged | ExperimentalAsh>
-      app_downloading_screen_;
+  raw_ptr<AppDownloadingScreen, DanglingUntriaged> app_downloading_screen_;
   bool screen_exited_ = false;
 
  private:

@@ -113,7 +113,7 @@ class AppDeduplicationService : public KeyedService,
 
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<Entry, uint32_t> entry_to_group_map_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

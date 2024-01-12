@@ -261,7 +261,7 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
   // Sends a policy based on |prefs_policy_| to the power manager.
   void SendCurrentPolicy();
 
-  raw_ptr<PowerManagerClient, ExperimentalAsh> client_;  // weak
+  raw_ptr<PowerManagerClient> client_;  // weak
 
   // Policy derived from values passed to ApplyPrefs().
   power_manager::PowerManagementPolicy prefs_policy_;

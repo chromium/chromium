@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
@@ -186,6 +187,10 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SmartDimIntegrationTest::SetUpCommandLine(command_line);
     SetUpCommandLineForLacros(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SetUpLacrosBrowserManager();
   }
 
   base::test::ScopedFeatureList feature_list_;

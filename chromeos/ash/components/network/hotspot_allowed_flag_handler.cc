@@ -15,14 +15,13 @@ namespace ash {
 
 HotspotAllowedFlagHandler::HotspotAllowedFlagHandler() = default;
 
-HotspotAllowedFlagHandler::~HotspotAllowedFlagHandler() {
-  if (ShillManagerClient::Get()) {
-    ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
-  }
-}
+HotspotAllowedFlagHandler::~HotspotAllowedFlagHandler() = default;
 
 void HotspotAllowedFlagHandler::Init() {
-  ShillManagerClient::Get()->AddPropertyChangedObserver(this);
+  UpdateFlags();
+}
+
+void HotspotAllowedFlagHandler::UpdateFlags() {
   ShillManagerClient::Get()->SetProperty(
       shill::kTetheringAllowedProperty,
       base::Value(ash::features::IsHotspotEnabled()), base::DoNothing(),
@@ -44,21 +43,6 @@ void HotspotAllowedFlagHandler::OnSetManagerPropertyFailure(
     const std::string& error_message) {
   NET_LOG(ERROR) << "Error setting Shill manager properties: " << property_name
                  << ", error: " << error_name << ", message: " << error_message;
-}
-
-void HotspotAllowedFlagHandler::OnPropertyChanged(const std::string& key,
-                                                  const base::Value& value) {
-  if (key != shill::kTetheringAllowedProperty ||
-      value.GetBool() == ash::features::IsHotspotEnabled()) {
-    return;
-  }
-
-  ShillManagerClient::Get()->SetProperty(
-      shill::kTetheringAllowedProperty,
-      base::Value(ash::features::IsHotspotEnabled()), base::DoNothing(),
-      base::BindOnce(&HotspotAllowedFlagHandler::OnSetManagerPropertyFailure,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     shill::kTetheringAllowedProperty));
 }
 
 }  //  namespace ash

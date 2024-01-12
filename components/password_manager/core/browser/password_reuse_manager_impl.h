@@ -46,8 +46,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
             signin::IdentityManager* identity_manager = nullptr,
             std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate =
                 nullptr) override;
-  void ReportMetrics(const std::string& username,
-                     bool is_under_advanced_protection) override;
+  void ReportMetrics(const std::string& username) override;
   void CheckReuse(const std::u16string& input,
                   const std::string& domain,
                   PasswordReuseDetectorConsumer* consumer) override;

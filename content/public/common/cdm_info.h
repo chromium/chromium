@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_COMMON_CDM_INFO_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/cdm/cdm_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -54,7 +54,7 @@ struct CONTENT_EXPORT CdmInfo {
   // If `capability` is nullopt, the `capability` will be lazy initialized.
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          absl::optional<media::CdmCapability> capability,
+          std::optional<media::CdmCapability> capability,
           bool supports_sub_key_systems,
           const std::string& name,
           const media::CdmType& type,
@@ -62,7 +62,7 @@ struct CONTENT_EXPORT CdmInfo {
           const base::FilePath& path);
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          absl::optional<media::CdmCapability> capability,
+          std::optional<media::CdmCapability> capability,
           const media::CdmType& type);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
@@ -78,7 +78,7 @@ struct CONTENT_EXPORT CdmInfo {
   Robustness robustness;
 
   // CDM capability, e.g. video codecs, encryption schemes and session types.
-  absl::optional<media::CdmCapability> capability;
+  std::optional<media::CdmCapability> capability;
 
   // Whether the CdmInfo is enabled etc. This only affects capability query.
   Status status = Status::kEnabled;

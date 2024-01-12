@@ -32,8 +32,9 @@ void ActivityDataService::GetActiveBits(
           [](UpdaterScope scope, const std::vector<std::string>& ids) {
             std::set<std::string> result;
             for (const auto& id : ids) {
-              if (GetActiveBit(scope, id))
+              if (GetActiveBit(scope, id)) {
                 result.insert(id);
+              }
             }
             return result;
           },
@@ -50,8 +51,9 @@ void ActivityDataService::GetAndClearActiveBits(
           [](UpdaterScope scope, const std::vector<std::string>& ids) {
             std::set<std::string> result;
             for (const auto& id : ids) {
-              if (GetActiveBit(scope, id))
+              if (GetActiveBit(scope, id)) {
                 result.insert(id);
+              }
               ClearActiveBit(scope, id);
             }
             return result;

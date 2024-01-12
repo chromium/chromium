@@ -251,7 +251,7 @@ class GFX_EXPORT RenderText {
       const std::u16string& text) const;
 
   const std::u16string& text() const { return text_; }
-  void SetText(const std::u16string& text);
+  void SetText(std::u16string text);
   void AppendText(const std::u16string& text);
 
   HorizontalAlignment horizontal_alignment() const {

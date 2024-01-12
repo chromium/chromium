@@ -52,4 +52,8 @@ void ForwardingModelTypeControllerDelegate::ClearMetadataIfStopped() {
   }
 }
 
+void ForwardingModelTypeControllerDelegate::ReportBridgeErrorForTest() {
+  other_->ReportBridgeErrorForTest();  // IN-TEST
+}
+
 }  // namespace syncer

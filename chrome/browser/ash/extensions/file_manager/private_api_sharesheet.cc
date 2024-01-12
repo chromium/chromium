@@ -255,7 +255,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
       apps_util::MakeShareIntent(urls_, *mime_types, dlp_source_urls_),
-      launch_source, base::NullCallback());
+      launch_source, base::DoNothing());
   Respond(NoArguments());
 }
 
@@ -305,7 +305,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
       GetSenderWebContents(),
       apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
                                  is_directory),
-      launch_source, base::NullCallback());
+      launch_source, base::DoNothing());
   Respond(NoArguments());
 }
 

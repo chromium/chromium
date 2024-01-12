@@ -352,7 +352,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   // Begin writing to the underlying texture of the backing via ScopedAccess.
   std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>
       writer_scoped_access = gl_representation->BeginScopedAccess(
-          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kNo);
 
   DCHECK(writer_scoped_access);
@@ -668,9 +668,9 @@ CreateAndValidateSharedImageRepresentations::
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
   // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and SHARED_IMAGE_USAGE_RASTER
-  // for skia write.
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ |
-                   SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER;
+  // for skia write. Tests that use this class also write to the created
+  // SharedImage via GL.
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER;
   if (!is_thread_safe)
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (upload_initial_data) {

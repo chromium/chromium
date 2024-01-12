@@ -100,8 +100,14 @@ void NotificationCenterTray::OnTrayButtonPressed() {
 }
 
 NotificationListView* NotificationCenterTray::GetNotificationListView() {
-  return bubble_ ? bubble_->notification_center_view()->notification_list_view()
-                 : nullptr;
+  if (!bubble_) {
+    return nullptr;
+  }
+
+  auto* notification_center_view = bubble_->GetNotificationCenterView();
+  return notification_center_view
+             ? notification_center_view->notification_list_view()
+             : nullptr;
 }
 
 bool NotificationCenterTray::IsBubbleShown() const {

@@ -10,6 +10,7 @@
 #include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 
 namespace message_center {
 class MessageView;
@@ -42,7 +43,14 @@ class ASH_EXPORT NotificationCenterView : public views::View,
 
   // Initializes the `NotificationListView` with existing notifications.
   // Should be called after ctor.
+  // Used when `NotificationCenterController` is disabled.
   void Init();
+  // Used when `NotificationCenterController` is enabled.
+  void Init(const std::vector<message_center::Notification*>& notifications);
+
+  // Inits `scroller_`, adds `notification_list_view_` as its child view and
+  // adds `notification_bar_` as a child view of the center view.
+  void AddChildViews();
 
   // Calls the notification bar `Update` function with the current unpinned,
   // pinned and stacked notification counts. Returns true if the state of the
@@ -80,6 +88,9 @@ class ASH_EXPORT NotificationCenterView : public views::View,
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  // Sets the `notification_list_view_` ptr to nullptr.
+  void ClearNotificationListViewPtr();
+
   NotificationListView* notification_list_view() {
     return notification_list_view_;
   }
@@ -98,7 +109,11 @@ class ASH_EXPORT NotificationCenterView : public views::View,
   const raw_ptr<StackedNotificationBar> notification_bar_;
   raw_ptr<views::ScrollBar> scroll_bar_;
   const raw_ptr<views::ScrollView> scroller_;
-  const raw_ptr<NotificationListView> notification_list_view_;
+  raw_ptr<NotificationListView> notification_list_view_;
+
+  // ViewTracker used to ensure `notification_list_view_` is cleared immediately
+  // on deletion.
+  views::ViewTracker notification_list_view_tracker_;
 
   raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
 

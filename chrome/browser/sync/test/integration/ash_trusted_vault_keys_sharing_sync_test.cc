@@ -5,6 +5,8 @@
 #include <ostream>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
+#include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/webui/trusted_vault/trusted_vault_dialog_delegate.h"
@@ -23,7 +26,11 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"
+#include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/features.h"
+#include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/standalone_trusted_vault_client.h"
+#include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
@@ -55,6 +62,56 @@ class WifiConfigurationsSyncActiveChecker
     *os << "Waiting for WIFI_CONFIGURATIONS sync to become active";
     return service()->GetActiveDataTypes().Has(syncer::WIFI_CONFIGURATIONS);
   }
+};
+
+class TrustedVaultDeviceRegisteredStateChecker
+    : public StatusChangeChecker,
+      public trusted_vault::StandaloneTrustedVaultClient::DebugObserver {
+ public:
+  TrustedVaultDeviceRegisteredStateChecker(const std::string& gaia_id,
+                                           Profile* profile)
+      : gaia_id_(gaia_id) {
+    trusted_vault_client_ =
+        static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
+            TrustedVaultServiceFactory::GetForProfile(profile)
+                ->GetTrustedVaultClient(
+                    trusted_vault::SecurityDomainId::kChromeSync));
+    trusted_vault_client_->AddDebugObserverForTesting(this);
+    OnBackendStateChanged();
+  }
+
+  ~TrustedVaultDeviceRegisteredStateChecker() override {
+    trusted_vault_client_->RemoveDebugObserverForTesting(this);
+  }
+
+  // trusted_vault::StandaloneTrustedVaultClient::DebugObserver implementation.
+  void OnBackendStateChanged() override {
+    trusted_vault_client_->FetchIsDeviceRegisteredForTesting(
+        gaia_id_, base::BindOnce(&TrustedVaultDeviceRegisteredStateChecker::
+                                     OnIsDeviceRegisteredFetched,
+                                 weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting until device is registered.";
+    return is_device_registered_;
+  }
+
+ private:
+  void OnIsDeviceRegisteredFetched(bool is_device_registered) {
+    // `is_device_registered` should not regress.
+    CHECK(is_device_registered || !is_device_registered_);
+    is_device_registered_ = is_device_registered;
+    CheckExitCondition();
+  }
+
+  const std::string gaia_id_;
+  raw_ptr<trusted_vault::StandaloneTrustedVaultClient> trusted_vault_client_;
+  bool is_device_registered_ = false;
+
+  base::WeakPtrFactory<TrustedVaultDeviceRegisteredStateChecker>
+      weak_ptr_factory_{this};
 };
 
 class TrustedVaultStateNotifiedToCrosapiObserverChecker
@@ -136,6 +193,14 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
     const GURL& base_url = embedded_https_test_server().base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
+    command_line->AppendSwitchASCII(
+        trusted_vault::kTrustedVaultServiceURLSwitch,
+        trusted_vault::FakeSecurityDomainsServer::GetServerURL(
+            embedded_https_test_server().base_url())
+            .spec());
+    security_domains_server_ =
+        std::make_unique<trusted_vault::FakeSecurityDomainsServer>(
+            embedded_https_test_server().base_url());
   }
 
   void SetUpOnMainThread() override {
@@ -171,10 +236,14 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
       return false;
     }
 
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &trusted_vault::FakeSecurityDomainsServer::HandleRequest,
+        base::Unretained(security_domains_server_.get())));
     encryption_helper::SetupFakeTrustedVaultPages(
         GetSyncService(0)->GetAccountInfo().gaia, kTestTrustedVaultKey,
         /*trusted_vault_key_version=*/1,
-        /*recovery_method_public_key=*/{}, &embedded_https_test_server());
+        /*recovery_method_public_key=*/kTestRecoveryMethodPublicKey,
+        &embedded_https_test_server());
     embedded_https_test_server().StartAcceptingConnections();
 
     return true;
@@ -201,6 +270,24 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
             .GetCallback<const std::vector<std::vector<uint8_t>>&>());
 
     return fetched_keys_future.Take();
+  }
+
+  bool FetchDegradedRecoveribilityStateThroughCrosapi() {
+    base::test::TestFuture<bool> fetched_state_future;
+    trusted_vault_backend_remote_->GetIsRecoverabilityDegraded(
+        GetSyncingUserAccountKey(), fetched_state_future.GetCallback());
+    return fetched_state_future.Take();
+  }
+
+  void MarkLocalKeysAsStaleThroughCrosapi() {
+    trusted_vault_backend_remote_->MarkLocalKeysAsStale(
+        GetSyncingUserAccountKey(), base::DoNothing());
+  }
+
+  void AddTrustedRecoveryMethodThroughCrosapi() {
+    trusted_vault_backend_remote_->AddTrustedRecoveryMethod(
+        GetSyncingUserAccountKey(), kTestRecoveryMethodPublicKey,
+        /*method_type_hint=*/0, base::DoNothing());
   }
 
   TrustedVaultStateNotifiedToCrosapiObserverChecker
@@ -238,6 +325,10 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     return true;
   }
 
+  trusted_vault::FakeSecurityDomainsServer& security_domains_server() {
+    return *security_domains_server_;
+  }
+
   NotificationDisplayServiceTester& notification_display_service_tester() {
     return *notification_display_service_tester_;
   }
@@ -249,12 +340,20 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
 
  protected:
   const std::vector<uint8_t> kTestTrustedVaultKey = {1, 2, 3};
+  // Arbitrary (but valid) public key of a recovery method.
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      trusted_vault::SecureBoxKeyPair::GenerateRandom()
+          ->public_key()
+          .ExportToBytes();
 
  private:
   base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<views::NamedWidgetShownWaiter>
       trusted_vault_widget_shown_waiter_;
+
+  std::unique_ptr<trusted_vault::FakeSecurityDomainsServer>
+      security_domains_server_;
 
   // Should be created before any observed notification is shown. Must outlive
   // profile, i.e. TearDownOnMainThread().
@@ -376,6 +475,165 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   // Now Lacros should be able to fetch keys.
   EXPECT_TRUE(keys_changed_notified_checker.Wait());
   EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(kTestTrustedVaultKey));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AshTrustedVaultKeysSharingSyncTest,
+    ShouldFollowInitialKeyRotationAndFetchKeysThroughCrosapi) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+  // Wait until device is registered, otherwise it won't be able to follow key
+  // rotation.
+  ASSERT_TRUE(TrustedVaultDeviceRegisteredStateChecker(
+                  GetSyncingUserAccountInfo().gaia, GetProfile(0))
+                  .Wait());
+
+  std::vector<uint8_t> new_trusted_vault_key =
+      security_domains_server().RotateTrustedVaultKey(
+          trusted_vault::GetConstantTrustedVaultKey());
+  // FetchKeys() Crosapi should trigger following key rotation and already
+  // receive real trusted vault key. Note, that since this is initial key
+  // rotation, marking keys as stale is not necessary.
+  EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(new_trusted_vault_key));
+}
+
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldFollowKeyRotationAndFetchKeysThroughCrosapi) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+
+  // Wait until device is registered, otherwise it won't be able to follow key
+  // rotations.
+  ASSERT_TRUE(TrustedVaultDeviceRegisteredStateChecker(
+                  GetSyncingUserAccountInfo().gaia, GetProfile(0))
+                  .Wait());
+
+  // Trigger initial key rotation and ensure Ash follows it (otherwise test
+  // won't cover MarkKeysAsStale() Crosapi - since Ash won't even need its call
+  // to fetch most recent keys).
+  std::vector<uint8_t> trusted_vault_key_1 =
+      security_domains_server().RotateTrustedVaultKey(
+          trusted_vault::GetConstantTrustedVaultKey());
+  ASSERT_THAT(FetchKeysThroughCrosapi(), ElementsAre(trusted_vault_key_1));
+
+  // Trigger another key rotation, note that the keys are not being fetched from
+  // the server immediately, e.g. FetchKeys() Crosapi returns stale keys.
+  std::vector<uint8_t> trusted_vault_key_2 =
+      security_domains_server().RotateTrustedVaultKey(trusted_vault_key_1);
+  EXPECT_THAT(FetchKeysThroughCrosapi(), ElementsAre(trusted_vault_key_1));
+
+  // Once keys are marked as stale, FetchKeys() Crosapi should trigger keys
+  // downloading and return fresh keys.
+  MarkLocalKeysAsStaleThroughCrosapi();
+  EXPECT_THAT(FetchKeysThroughCrosapi(),
+              ElementsAre(trusted_vault_key_1, trusted_vault_key_2));
+}
+
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldExposeDegradedRecoverabilityState) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+
+  // Wait until device is registered, otherwise it won't be able to follow key
+  // rotations.
+  ASSERT_TRUE(TrustedVaultDeviceRegisteredStateChecker(
+                  GetSyncingUserAccountInfo().gaia, GetProfile(0))
+                  .Wait());
+
+  // Mimic transition to kTrustedVaultPassphrase and entering degraded
+  // recoverability state. Ash should notify Lacros through Crosapi.
+  auto degraded_recoverability_notified_checker_1 =
+      CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
+          TrustedVaultStateNotifiedToCrosapiObserverChecker::
+              ExpectedNotification::kRecoverabilityStateChanged);
+  std::vector<uint8_t> trusted_vault_key =
+      security_domains_server().RotateTrustedVaultKey(
+          trusted_vault::GetConstantTrustedVaultKey());
+  security_domains_server().RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  SetNigoriInFakeServer(
+      syncer::BuildTrustedVaultNigoriSpecifics({trusted_vault_key}),
+      GetFakeServer());
+
+  EXPECT_TRUE(degraded_recoverability_notified_checker_1.Wait());
+  EXPECT_TRUE(FetchDegradedRecoveribilityStateThroughCrosapi());
+
+  // Mimic resolving the degraded recoverability state through system
+  // notification. Ash should notify Lacros through Crosapi.
+  auto notification = GetSyncNotification();
+  ASSERT_TRUE(notification);
+  ASSERT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE)));
+  ASSERT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  auto degraded_recoverability_notified_checker_2 =
+      CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
+          TrustedVaultStateNotifiedToCrosapiObserverChecker::
+              ExpectedNotification::kRecoverabilityStateChanged);
+  notification_display_service_tester().SimulateClick(
+      NotificationHandler::Type::TRANSIENT, notification->id(),
+      /*action_index=*/absl::nullopt,
+      /*reply=*/absl::nullopt);
+  ASSERT_TRUE(WaitForTrustedVaultReauthCompletion());
+
+  EXPECT_TRUE(degraded_recoverability_notified_checker_2.Wait());
+  EXPECT_FALSE(FetchDegradedRecoveribilityStateThroughCrosapi());
+}
+
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldAddRecoveryMethodThroughCrosapi) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+
+  // Wait until device is registered, otherwise it won't be able to follow key
+  // rotations.
+  ASSERT_TRUE(TrustedVaultDeviceRegisteredStateChecker(
+                  GetSyncingUserAccountInfo().gaia, GetProfile(0))
+                  .Wait());
+
+  // Mimic transition to kTrustedVaultPassphrase and entering degraded
+  // recoverability state.
+  std::vector<uint8_t> trusted_vault_key =
+      security_domains_server().RotateTrustedVaultKey(
+          trusted_vault::GetConstantTrustedVaultKey());
+  security_domains_server().RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  SetNigoriInFakeServer(
+      syncer::BuildTrustedVaultNigoriSpecifics({trusted_vault_key}),
+      GetFakeServer());
+  ASSERT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+
+  // Degraded recoverability notification should be be shown.
+  auto notification = GetSyncNotification();
+  ASSERT_TRUE(notification);
+  ASSERT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE)));
+  ASSERT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  // Resolve degraded recoverability state through Crosapi. Notification should
+  // be removed and Ash should notify through Crosapi about recoverability state
+  // change.
+  auto degraded_recoverability_notified_checker =
+      CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
+          TrustedVaultStateNotifiedToCrosapiObserverChecker::
+              ExpectedNotification::kRecoverabilityStateChanged);
+  AddTrustedRecoveryMethodThroughCrosapi();
+
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
+  EXPECT_THAT(GetSyncNotification(), Eq(absl::nullopt));
+  EXPECT_TRUE(degraded_recoverability_notified_checker.Wait());
 }
 
 }  // namespace

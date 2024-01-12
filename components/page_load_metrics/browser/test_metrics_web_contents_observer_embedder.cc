@@ -223,6 +223,10 @@ bool TestMetricsWebContentsObserverEmbedder::IsSidePanel(
   return false;
 }
 
+bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI() {
+  return false;
+}
+
 PageLoadMetricsMemoryTracker*
 TestMetricsWebContentsObserverEmbedder::GetMemoryTrackerForBrowserContext(
     content::BrowserContext* browser_context) {

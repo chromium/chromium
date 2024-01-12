@@ -64,7 +64,7 @@ class FakeEventRouter : public extensions::EventRouter {
   FakeEventRouter(const FakeEventRouter&) = delete;
   FakeEventRouter& operator=(const FakeEventRouter&) = delete;
 
-  ~FakeEventRouter() override {}
+  ~FakeEventRouter() override = default;
 
   // Handles an event which would normally be routed to an extension. Instead
   // replies with a hard coded response.
@@ -114,7 +114,7 @@ class FakeEventRouter : public extensions::EventRouter {
 
  private:
   const raw_ptr<ProvidedFileSystemInterface,
-                DanglingUntriaged | ExperimentalAsh>
+                DanglingUntriaged>
       file_system_;  // Not owned.
   base::File::Error reply_result_;
 };
@@ -131,7 +131,7 @@ class Observer : public ProvidedFileSystemObserver {
     ChangeEvent(const ChangeEvent&) = delete;
     ChangeEvent& operator=(const ChangeEvent&) = delete;
 
-    virtual ~ChangeEvent() {}
+    virtual ~ChangeEvent() = default;
 
     storage::WatcherManager::ChangeType change_type() const {
       return change_type_;
@@ -197,12 +197,12 @@ class Observer : public ProvidedFileSystemObserver {
 // Stub notification manager, which works in unit tests.
 class StubNotificationManager : public NotificationManagerInterface {
  public:
-  StubNotificationManager() {}
+  StubNotificationManager() = default;
 
   StubNotificationManager(const StubNotificationManager&) = delete;
   StubNotificationManager& operator=(const StubNotificationManager&) = delete;
 
-  ~StubNotificationManager() override {}
+  ~StubNotificationManager() override = default;
 
   // NotificationManagerInterface overrides.
   void ShowUnresponsiveNotification(int id,
@@ -236,8 +236,8 @@ void LogOpenFile(OpenFileLog* open_file_log,
 
 class FileSystemProviderProvidedFileSystemTest : public testing::Test {
  protected:
-  FileSystemProviderProvidedFileSystemTest() {}
-  ~FileSystemProviderProvidedFileSystemTest() override {}
+  FileSystemProviderProvidedFileSystemTest() = default;
+  ~FileSystemProviderProvidedFileSystemTest() override = default;
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();

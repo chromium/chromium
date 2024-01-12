@@ -47,10 +47,12 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   // VideoCaptureBufferPool implementation.
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion(
       int buffer_id) override;
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer(int buffer_id) override;
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
       int buffer_id) override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(int buffer_id) override;
+
+  VideoCaptureBufferType GetBufferType(int buffer_id) override;
+
   VideoCaptureDevice::Client::ReserveResult ReserveForProducer(
       const gfx::Size& dimensions,
       VideoPixelFormat format,

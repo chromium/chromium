@@ -524,34 +524,34 @@ DOMException* AuthenticatorStatusToDOMException(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain. Subsequently, an attempt to fetch the "
-          ".well-known/passkey-origins resource of the claimed RP ID failed.");
+          ".well-known/webauthn-origins resource of the claimed RP ID failed.");
     case AuthenticatorStatus::BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain. Subsequently, the "
-          ".well-known/passkey-origins resource of the claimed RP ID had the "
+          ".well-known/webauthn-origins resource of the claimed RP ID had the "
           "wrong content-type. (It should be application/json.)");
     case AuthenticatorStatus::BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain. Subsequently, fetching the "
-          ".well-known/passkey-origins resource of the claimed RP ID resulted "
+          ".well-known/webauthn-origins resource of the claimed RP ID resulted "
           "in a JSON parse error.");
     case AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain. Subsequently, fetching the "
-          ".well-known/passkey-origins resource of the claimed RP ID was "
+          ".well-known/webauthn-origins resource of the claimed RP ID was "
           "successful, but no listed origin matched the caller.");
     case AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain. Subsequently, fetching the "
-          ".well-known/passkey-origins resource of the claimed RP ID was "
+          ".well-known/webauthn-origins resource of the claimed RP ID was "
           "successful, but no listed origin matched the caller. Note that a "
           "match may have been found but the limit on the number of eTLD+1 "
           "labels was reached, causing some entries to be ignored.");
@@ -1625,7 +1625,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     if (!web_identity_requester_) {
       web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
-          WrapPersistent(context), mediation_requirement);
+          context, mediation_requirement);
     }
 
     std::unique_ptr<ScopedAbortState> scoped_abort_state;
@@ -1668,7 +1668,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       // Start recording the duration from when RequestToken is called directly
       // to when RequestToken would be called if invoked through
       // web_identity_requester_.
-      web_identity_requester_->StartDelayTimer(WrapPersistent(resolver));
+      web_identity_requester_->StartDelayTimer(resolver);
 
       return promise;
     }
@@ -1678,9 +1678,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           std::move(scoped_abort_state));
     }
 
-    web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
-                                           options->identity()->providers(),
-                                           rp_context, rp_mode);
+    web_identity_requester_->AppendGetCall(
+        resolver, options->identity()->providers(), rp_context, rp_mode);
 
     return promise;
   }

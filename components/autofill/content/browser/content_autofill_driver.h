@@ -228,7 +228,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Group (1b): browser -> renderer events, routed (see comment above).
   // autofill::AutofillDriver:
-  std::vector<FieldGlobalId> ApplyFormAction(
+  base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& data,
@@ -252,8 +252,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
       override;
-  void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) override;
 
   // Group (1c): browser -> renderer events, unrouted (see comment above).
   // autofill::AutofillDriver:

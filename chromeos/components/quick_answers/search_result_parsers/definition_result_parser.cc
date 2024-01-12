@@ -52,6 +52,10 @@ constexpr char kNymsKey[] = "nyms";
 constexpr char kSynonymTextKey[] = "nym";
 constexpr int kMaxSynonymsNumber = 3;
 
+// SubSenses
+constexpr char kSubSensesKey[] = "subsenses";
+constexpr int kMaxSubSensesNumber = 3;
+
 // PartsOfSpeech
 constexpr char kPartsOfSpeechTextKey[] = "value";
 
@@ -71,13 +75,14 @@ std::string GetHeadword(const base::Value::Dict& entry_result) {
   return *headword;
 }
 
-const std::string GetSampleSentence(const base::Value::Dict& result) {
-  std::string sample_sentence = std::string();
+std::string GetSampleSentence(const base::Value::Dict& sense_result) {
+  std::string sample_sentence;
 
   // Check both the `exampleGroups` and `additionalExamples` keys for a
   // sample sentence text.
   const base::Value::Dict* example_groups =
-      ResultParser::GetFirstDictElementFromList(result, kExampleGroupsKey);
+      ResultParser::GetFirstDictElementFromList(sense_result,
+                                                kExampleGroupsKey);
   if (example_groups) {
     const Value::List* examples = example_groups->FindList(kExamplesKey);
     if (examples && !examples->empty()) {
@@ -86,7 +91,7 @@ const std::string GetSampleSentence(const base::Value::Dict& result) {
   }
   if (sample_sentence.empty()) {
     const Value::List* additional_examples =
-        result.FindList(kAdditionalExamplesKey);
+        sense_result.FindList(kAdditionalExamplesKey);
     if (additional_examples && !additional_examples->empty()) {
       sample_sentence = additional_examples->front().GetString();
     }
@@ -95,12 +100,13 @@ const std::string GetSampleSentence(const base::Value::Dict& result) {
   return sample_sentence;
 }
 
-const std::vector<std::string> GetSynonymsList(
-    const base::Value::Dict& result) {
+std::vector<std::string> GetSynonymsList(
+    const base::Value::Dict& sense_result) {
   std::vector<std::string> synonyms_list;
 
   const base::Value::Dict* thesaurus_entries =
-      ResultParser::GetFirstDictElementFromList(result, kThesaurusEntriesKey);
+      ResultParser::GetFirstDictElementFromList(sense_result,
+                                                kThesaurusEntriesKey);
   if (!thesaurus_entries) {
     return synonyms_list;
   }
@@ -164,10 +170,40 @@ std::unique_ptr<Sense> ParseSense(const base::Value::Dict& sense_result) {
 
   const std::vector<std::string> synonyms_list = GetSynonymsList(sense_result);
   if (!synonyms_list.empty()) {
-    sense->synonyms_list = synonyms_list;
+    sense->synonyms_list = std::move(synonyms_list);
   }
 
   return sense;
+}
+
+std::vector<Sense> ParseSubSenses(const base::Value::Dict& sense_result) {
+  std::vector<Sense> subsenses_list;
+
+  const Value::List* subsense_entries = sense_result.FindList(kSubSensesKey);
+  if (!subsense_entries) {
+    return subsenses_list;
+  }
+
+  for (const base::Value& value : *subsense_entries) {
+    // Stop after fetching the max number of subsenses.
+    if (subsenses_list.size() == kMaxSubSensesNumber) {
+      break;
+    }
+
+    const base::Value::Dict* subsense_entry = &(value.GetDict());
+    if (subsense_entry->empty()) {
+      continue;
+    }
+
+    std::unique_ptr<Sense> subsense = ParseSense(*subsense_entry);
+    if (!subsense) {
+      continue;
+    }
+
+    subsenses_list.push_back(*subsense);
+  }
+
+  return subsenses_list;
 }
 
 }  // namespace
@@ -210,6 +246,11 @@ DefinitionResultParser::ParseInStructuredResult(
   std::unique_ptr<DefinitionResult> definition_result =
       std::make_unique<DefinitionResult>();
   definition_result->sense = *(sense.get());
+
+  const std::vector<Sense> subsenses_list = ParseSubSenses(*first_sense);
+  if (!subsenses_list.empty()) {
+    definition_result->subsenses_list = std::move(subsenses_list);
+  }
 
   const Value::Dict* part_of_speech = ResultParser::GetFirstDictElementFromList(
       *first_sense_family, kPartsOfSpeechKey);

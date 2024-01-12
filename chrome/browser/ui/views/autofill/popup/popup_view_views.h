@@ -111,6 +111,10 @@ class PopupViewViews : public PopupBaseView,
  private:
   friend class PopupViewViewsTestApi;
 
+  void SetSelectedCell(std::optional<CellIndex> cell_index,
+                       PopupCellSelectionSource source,
+                       AutoselectFirstSuggestion autoselect_first_suggestion);
+
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
   // check false.
@@ -165,6 +169,11 @@ class PopupViewViews : public PopupBaseView,
   // selected.
   bool RemoveSelectedCell();
 
+  // Reacts to key events under the assumption that the currently shown popup
+  // contains Compose content.
+  bool HandleKeyPressEventForCompose(
+      const content::NativeWebKeyboardEvent& event);
+
   // AutofillPopupView:
   bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event) override;
@@ -177,12 +186,19 @@ class PopupViewViews : public PopupBaseView,
   void OnMouseEnteredInChildren() override;
   void OnMouseExitedInChildren() override;
 
+  // Returns whether the footer container is scrollable with other suggestions
+  // or it is "sticky" (i.e. it has a fixed position, always visible and
+  // the non-footer suggestions are scrolled independently).
+  bool IsFooterScrollable() const;
+
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
   // Opens a sub-popup on a new row (and closes the open one if any), or just
   // closes the existing if `std::nullopt` is passed.
-  void SetRowWithOpenSubPopup(std::optional<size_t> row_index,
-                              PopupCellSelectionSource selection_source);
+  void SetRowWithOpenSubPopup(
+      std::optional<size_t> row_index,
+      AutoselectFirstSuggestion autoselect_first_suggestion =
+          AutoselectFirstSuggestion(false));
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;

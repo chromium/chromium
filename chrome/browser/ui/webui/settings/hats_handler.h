@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_HATS_HANDLER_H_
 
 #include "base/gtest_prod_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -49,6 +50,9 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
                            TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerParamTest, AdPrivacyHats);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, GetMostChromeHats);
+#endif
 
   // All Trust & Safety based interactions which may result in a HaTS survey.
   // Must be kept in sync with the enum of the same name in
@@ -56,7 +60,7 @@ class HatsHandler : public SettingsPageUIHandler {
   enum class TrustSafetyInteraction {
     RAN_SAFETY_CHECK = 0,
     USED_PRIVACY_CARD = 1,
-    OPENED_PRIVACY_SANDBOX = 2,
+    // OPENED_PRIVACY_SANDBOX = 2, // DEPRECATED
     OPENED_PASSWORD_MANAGER = 3,
     COMPLETED_PRIVACY_GUIDE = 4,
     RAN_PASSWORD_CHECK = 5,
@@ -64,6 +68,9 @@ class HatsHandler : public SettingsPageUIHandler {
     OPENED_TOPICS_SUBPAGE = 7,
     OPENED_FLEDGE_SUBPAGE = 8,
     OPENED_AD_MEASUREMENT_SUBPAGE = 9,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    OPENED_GET_MOST_CHROME = 10,
+#endif
   };
 
   /**

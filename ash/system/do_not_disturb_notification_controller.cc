@@ -33,20 +33,34 @@ using message_center::MessageCenter;
 const char kDoNotDisturbNotifierId[] =
     "ash.do_not_disturb_notification_controller";
 
+// Returns true if we need to show specific Focus Mode text in the notification.
+bool ShowFocusText() {
+  auto* focus_mode_controller =
+      features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
+
+  return focus_mode_controller &&
+         message_center::MessageCenter::Get()
+                 ->GetLastQuietModeChangeSourceType() ==
+             message_center::QuietModeSourceType::kFocusMode;
+}
+
 // Creates a notification for do not disturb. If a focus session is active, the
 // title and the message of the notification will indicate if DND will be turned
 // off when the focus session ends.
 std::unique_ptr<message_center::Notification> CreateNotification() {
-  auto* focus_mode_controller =
-      features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
-
   // `should_show_focus_text` is true only when the notification needs to be
   // turned off when the focus session ends.
-  const bool should_show_focus_text =
-      focus_mode_controller && focus_mode_controller->in_focus_session() &&
-      message_center::MessageCenter::Get()
-              ->GetLastQuietModeChangeSourceType() ==
-          message_center::QuietModeSourceType::kFocusMode;
+  const bool should_show_focus_text = ShowFocusText();
+  const std::u16string title =
+      should_show_focus_text
+          ? focus_mode_util::GetNotificationTitleForFocusSession(
+                FocusModeController::Get()->GetActualEndTime())
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE);
+  const std::u16string message = l10n_util::GetStringUTF16(
+      should_show_focus_text
+          ? IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION
+          : IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION);
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(
@@ -54,25 +68,17 @@ std::unique_ptr<message_center::Notification> CreateNotification() {
   optional_fields.pinned = true;
   return CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      DoNotDisturbNotificationController::kDoNotDisturbNotificationId,
-      should_show_focus_text
-          ? focus_mode_util::GetNotificationTitleForFocusSession(
-                focus_mode_controller->end_time())
-          : l10n_util::GetStringUTF16(
-                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE),
-      l10n_util::GetStringUTF16(
-          should_show_focus_text
-              ? IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION
-              : IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      DoNotDisturbNotificationController::kDoNotDisturbNotificationId, title,
+      message, /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDoNotDisturbNotifierId,
                                  NotificationCatalogName::kDoNotDisturb),
       optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](std::optional<int> button_index) {
-            if (!button_index.has_value())
+            if (!button_index.has_value()) {
               return;
+            }
             // The notification only has one button (the "Turn off" button), so
             // the presence of any value in `button_index` means this is the
             // button that was pressed.

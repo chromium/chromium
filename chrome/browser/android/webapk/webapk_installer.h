@@ -77,21 +77,6 @@ class WebApkInstaller {
                            FinishCallback finish_callback);
 
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
-  // WebAPK server to generate a WebAPK on the server and locally requests the
-  // APK to be installed. This function is used when the install is scheduled by
-  // the WebApkInstallCoordinatorService as this already receives the
-  // |serialized_webapk| from the client. Calls |callback| once the install
-  // completed or failed.
-  static void InstallWithProtoAsync(
-      content::BrowserContext* context,
-      std::unique_ptr<std::string> serialized_webapk,
-      const std::u16string& short_name,
-      webapps::ShortcutInfo::Source source,
-      const SkBitmap& primary_icon,
-      GURL& manifest_url,
-      FinishCallback finish_callback);
-
-  // Creates a self-owned WebApkInstaller instance and talks to the Chrome
   // WebAPK server to update a WebAPK on the server and locally requests the
   // APK to be installed. Calls |callback| once the install completed or failed.
   // |update_request_path| is the path of the file with the update request.
@@ -106,17 +91,6 @@ class WebApkInstaller {
                                      const webapps::ShortcutInfo& shortcut_info,
                                      const SkBitmap& primary_icon,
                                      FinishCallback callback);
-
-  // Calls the private function |InstallWithProtoAsync| for testing.
-  // Should be used only for testing.
-  static void InstallWithProtoAsyncForTesting(
-      WebApkInstaller* installer,
-      std::unique_ptr<std::string> serialized_webapk,
-      const std::u16string& short_name,
-      webapps::ShortcutInfo::Source source,
-      const SkBitmap& primary_icon,
-      GURL& manifest_url,
-      FinishCallback callback);
 
   // Calls the private function |UpdateAsync| for testing.
   // Should be used only for testing.
@@ -193,16 +167,6 @@ class WebApkInstaller {
   void UpdateAsync(const base::FilePath& update_request_path,
                    FinishCallback finish_callback);
 
-  // Talks to the Chrome WebAPK server to generate a WebAPK on the server and to
-  // Google Play to install the downloaded WebAPK.
-  // Calls |finish_callback| once the install completed or failed.
-  void InstallWithProtoAsync(std::unique_ptr<std::string> serialized_webapk,
-                             const std::u16string& short_name,
-                             webapps::ShortcutInfo::Source source,
-                             const SkBitmap& primary_icon,
-                             GURL& manifest_url,
-                             FinishCallback finish_callback);
-
   // Called once there is sufficient space on the user's device to install a
   // WebAPK. The user may already have had sufficient space on their device
   // prior to initiating the install process. This method might be called as a
@@ -249,13 +213,6 @@ class WebApkInstaller {
   FinishCallback finish_callback_;
 
   // Data for installs.
-
-  // True if install was scheduled via WebApkInstallCoordinatorService.
-  bool install_from_webapk_service_;
-
-  // Only available if the install was scheduled by the
-  // WebApkInstallCoordinatorService.
-  std::unique_ptr<std::string> serialized_webapk_;
 
   // Only available if the install was scheduled directly in chrome and not in
   // the WebApkInstallCoordinatorService.

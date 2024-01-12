@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -22,7 +23,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
@@ -114,10 +115,12 @@ bool DispatchMouseEvent(aura::Window* window,
 
 // Enables or disables tablet mode and waits for the transition to finish.
 void SetTabletModeEnabled(bool enabled) {
-  // This does not use ShellTestApi or TabletModeControllerTestApi because those
-  // are implemented in test-only files.
   ash::TabletMode::Waiter waiter(enabled);
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enabled);
+  if (enabled) {
+    ash::TabletModeControllerTestApi().EnterTabletMode();
+  } else {
+    ash::TabletModeControllerTestApi().LeaveTabletMode();
+  }
   waiter.Wait();
 }
 
@@ -949,6 +952,11 @@ void TestControllerAsh::SetAlmanacEndpointUrlForTesting(
   std::move(callback).Run();
 }
 
+void TestControllerAsh::IsToastShown(const std::string& toast_id,
+                                     IsToastShownCallback callback) {
+  std::move(callback).Run(ash::ToastManager::Get()->IsToastShown(toast_id));
+}
+
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {
   // Delete the utterance event delegate object when the utterance is finished.
   ash_utterance_event_delegates_.erase(utterance_id);
@@ -1003,7 +1011,7 @@ class TestControllerAsh::OverviewWaiter : public ash::OverviewObserver {
   base::OnceClosure closure_;
 
   // The test controller owns this object so is never invalid.
-  raw_ptr<TestControllerAsh, ExperimentalAsh> test_controller_;
+  raw_ptr<TestControllerAsh> test_controller_;
 };
 
 TestShillControllerAsh::TestShillControllerAsh() {

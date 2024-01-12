@@ -50,6 +50,22 @@ class WindowBoundsTracker : public aura::WindowObserver,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  // Called before swapping the root windows of the two given displays. This
+  // will iterate the windows observed by `window_observations` and also inside
+  // these two displays, to calculate and store the window's remapping bounds in
+  // another display before swapping their root windows. The remapping bounds
+  // will be used to set the window's bounds inside another display after
+  // swapping the root windows of the two displays.
+  void OnWillSwapDisplayRootWindows(int64_t first_display_id,
+                                    int64_t second_display_id);
+
+  // Called after swapping the root windows of the two given displays. This will
+  // iterate the observed windows inside these two displays, and set their
+  // bounds to the remapping bounds calculated inside
+  // `OnWillSwapDisplayRootWindows` before swapping the root windows.
+  void OnDisplayRootWindowsSwapped(int64_t first_display_id,
+                                   int64_t second_display_id);
+
   // Adds `window` and its host display id to `window_to_display_map_` before
   // removing its host display.
   void AddWindowDisplayIdOnDisplayRemoval(aura::Window* window);
@@ -156,6 +172,10 @@ class WindowBoundsTracker : public aura::WindowObserver,
       const WindowDisplayInfo& window_display_info,
       const gfx::Rect& bounds,
       bool is_current_bounds);
+
+  // Restores the given `window` back to the stored bounds inside
+  // `bounds_database_` on its current `DisplayWindowInfo`.
+  void RestoreWindowToCachedBounds(aura::Window* window);
 
   // Stores the window's host display id when removing its host display, which
   // will be used to restore the window when its host display being reconnected

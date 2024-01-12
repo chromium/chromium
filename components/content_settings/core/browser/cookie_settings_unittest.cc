@@ -44,7 +44,6 @@
 #include "components/content_settings/core/common/features.h"
 #else
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #endif
 
 namespace {
@@ -71,7 +70,7 @@ enum TestVariables {
   // Whether `net::features::kTpcdMetadataGrants` is enabled.
   kTpcdMetadataGrantsEligible,
   // Whether `content_settings_features::kHostIndexedMetadataGrants` is enabled
-  kHostIndexedMetadataGrantsEnabled,
+  kIndexedContentSettings,
 };
 }  // namespace
 
@@ -102,15 +101,9 @@ class CookieSettingsObserver : public CookieSettings::Observer {
       scoped_observation_{this};
 };
 
-class CookieSettingsTest
-    : public testing::TestWithParam<
-          std::tuple</*kStorageAccessGrantsEligible*/ bool,
-                     /*kTopLevelStorageAccessGrantEligible*/ bool,
-                     /*k3pcdSupportEligible*/ bool,
-                     /*kTpcdMetadataGrantsEligible*/ bool,
-                     /*kHostIndexedMetadataGrantsEnabled*/ bool>> {
+class CookieSettingsTestBase {
  public:
-  CookieSettingsTest()
+  CookieSettingsTestBase()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         kBlockedSite("http://ads.thirdparty.com"),
         kAllowedSite("http://good.allays.com"),
@@ -138,47 +131,16 @@ class CookieSettingsTest
         kHttpsSiteForCookies(net::SiteForCookies::FromUrl(kHttpsSite)),
         kDevToolsSiteForCookies(net::SiteForCookies::FromUrl(kDevToolsURL)),
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(
-        {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
-
-    if (Is3pcdSupportEligible()) {
-      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
-    } else {
-      disabled_features.push_back(net::features::kTpcdSupportSettings);
-    }
-
-    if (Is3pcdMetadataGrantEligible()) {
-      if (IsHostIndexedMetadataGrantsEnabled()) {
-        enabled_features.push_back({features::kHostIndexedMetadataGrants,
-                                    {{"MetadataGrantsThreshold", "1"}}});
-      } else {
-        disabled_features.push_back(features::kHostIndexedMetadataGrants);
-      }
-      enabled_features.push_back({net::features::kTpcdMetadataGrants,
-                                  {{"MetadataGrantsThreshold", "1"}}});
-    } else {
-      disabled_features.push_back(net::features::kTpcdMetadataGrants);
-      disabled_features.push_back(features::kHostIndexedMetadataGrants);
-    }
-
-    enabled_features.push_back({features::kTpcdHeuristicsGrants,
-                                {{"TpcdReadHeuristicsGrants", "true"}}});
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
   }
 
-  ~CookieSettingsTest() override {
+  ~CookieSettingsTestBase() {
     cookie_settings_->ShutdownOnUIThread();
     cookie_settings_incognito_->ShutdownOnUIThread();
     settings_map_->ShutdownOnUIThread();
     tracking_protection_settings_->Shutdown();
   }
 
-  void SetUp() override {
+  void SetUp() {
     ContentSettingsRegistry::GetInstance()->ResetForTest();
     CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
@@ -202,6 +164,93 @@ class CookieSettingsTest
     task_environment_.FastForwardBy(delta);
   }
 
+ protected:
+  // There must be a valid SingleThreadTaskRunner::CurrentDefaultHandle in
+  // HostContentSettingsMap's scope.
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+  scoped_refptr<HostContentSettingsMap> settings_map_;
+  scoped_refptr<CookieSettings> cookie_settings_;
+  scoped_refptr<CookieSettings> cookie_settings_incognito_;
+  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
+
+  const GURL kBlockedSite;
+  const GURL kAllowedSite;
+  const GURL kFirstPartySite;
+  const GURL kSameSiteSite;
+  const GURL kChromeURL;
+  const GURL kExtensionURL;
+  const GURL kDevToolsURL;
+  const std::string kDomain;
+  const std::string kDotDomain;
+  const std::string kSubDomain;
+  const std::string kOtherDomain;
+  const std::string kDomainWildcardPattern;
+  const GURL kHttpSite;
+  const GURL kHttpsSite;
+  const GURL kHttpsSubdomainSite;
+  const GURL kHttpsSite8080;
+  const net::SiteForCookies kBlockedSiteForCookies;
+  const net::SiteForCookies kAllowedSiteForCookies;
+  const net::SiteForCookies kFirstPartySiteForCookies;
+  const net::SiteForCookies kChromeSiteForCookies;
+  const net::SiteForCookies kExtensionSiteForCookies;
+  const net::SiteForCookies kHttpSiteForCookies;
+  const net::SiteForCookies kHttpsSiteForCookies;
+  const net::SiteForCookies kDevToolsSiteForCookies;
+  ContentSettingsPattern kAllHttpsSitesPattern;
+};
+
+class CookieSettingsTest
+    : public CookieSettingsTestBase,
+      public testing::TestWithParam<
+          std::tuple</*kStorageAccessGrantsEligible*/ bool,
+                     /*kTopLevelStorageAccessGrantEligible*/ bool,
+                     /*k3pcdSupportEligible*/ bool,
+                     /*kTpcdMetadataGrantsEligible*/ bool,
+                     /*kHostIndexedMetadataGrantsEnabled*/ bool>> {
+ public:
+  CookieSettingsTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(
+        {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
+
+    if (Is3pcdSupportEligible()) {
+      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
+    } else {
+      disabled_features.push_back(net::features::kTpcdSupportSettings);
+    }
+
+    if (IsIndexedContentSettingsEnabled()) {
+      enabled_features.push_back({features::kHostIndexedMetadataGrants,
+                                  {{"MetadataGrantsThreshold", "1"}}});
+      enabled_features.push_back(
+          {features::kIndexedHostContentSettingsMap, {}});
+    } else {
+      disabled_features.push_back(features::kHostIndexedMetadataGrants);
+      disabled_features.push_back(features::kIndexedHostContentSettingsMap);
+    }
+
+    if (Is3pcdMetadataGrantEligible()) {
+      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
+    } else {
+      disabled_features.push_back(net::features::kTpcdMetadataGrants);
+    }
+
+    enabled_features.push_back({features::kTpcdHeuristicsGrants,
+                                {{"TpcdReadHeuristicsGrants", "true"}}});
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUp() override { CookieSettingsTestBase::SetUp(); }
+
   bool IsStorageAccessGrantEligible() const {
     return std::get<TestVariables::kStorageAccessGrantsEligible>(GetParam());
   }
@@ -219,9 +268,8 @@ class CookieSettingsTest
     return std::get<TestVariables::kTpcdMetadataGrantsEligible>(GetParam());
   }
 
-  bool IsHostIndexedMetadataGrantsEnabled() const {
-    return std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(
-        GetParam());
+  bool IsIndexedContentSettingsEnabled() const {
+    return std::get<TestVariables::kIndexedContentSettings>(GetParam());
   }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
@@ -291,7 +339,7 @@ class CookieSettingsTest
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWith3pcdSupportSetting() const {
     if (Is3pcdSupportEligible()) {
-      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD;
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD_SUPPORT;
     }
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
@@ -314,45 +362,6 @@ class CookieSettingsTest
         is_https ? net::CookieSourceScheme::kSecure
                  : net::CookieSourceScheme::kNonSecure);
   }
-
-  // There must be a valid SingleThreadTaskRunner::CurrentDefaultHandle in
-  // HostContentSettingsMap's scope.
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  scoped_refptr<HostContentSettingsMap> settings_map_;
-  scoped_refptr<CookieSettings> cookie_settings_;
-  scoped_refptr<CookieSettings> cookie_settings_incognito_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
-  const GURL kBlockedSite;
-  const GURL kAllowedSite;
-  const GURL kFirstPartySite;
-  const GURL kSameSiteSite;
-  const GURL kChromeURL;
-  const GURL kExtensionURL;
-  const GURL kDevToolsURL;
-  const std::string kDomain;
-  const std::string kDotDomain;
-  const std::string kSubDomain;
-  const std::string kOtherDomain;
-  const std::string kDomainWildcardPattern;
-  const GURL kHttpSite;
-  const GURL kHttpsSite;
-  const GURL kHttpsSubdomainSite;
-  const GURL kHttpsSite8080;
-  const net::SiteForCookies kBlockedSiteForCookies;
-  const net::SiteForCookies kAllowedSiteForCookies;
-  const net::SiteForCookies kFirstPartySiteForCookies;
-  const net::SiteForCookies kChromeSiteForCookies;
-  const net::SiteForCookies kExtensionSiteForCookies;
-  const net::SiteForCookies kHttpSiteForCookies;
-  const net::SiteForCookies kHttpsSiteForCookies;
-  const net::SiteForCookies kDevToolsSiteForCookies;
-  ContentSettingsPattern kAllHttpsSitesPattern;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
@@ -1889,7 +1898,7 @@ std::string CustomTestName(
       << "_TpcdMetadataGrantsEligible_"
       << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param)
       << "_HostIndexedMetadataGrantsEnabled_"
-      << std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(info.param);
+      << std::get<TestVariables::kIndexedContentSettings>(info.param);
   // clang-format on
   return custom_test_name.str();
 }
@@ -1929,5 +1938,119 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
                          ),
     CustomTestName);
+
+#if !BUILDFLAG(IS_IOS)
+class CookieSettingsTopLevelTpcdSupportTest
+    : public CookieSettingsTestBase,
+      public testing::
+          TestWithParam</*net::features::kTopLevelTpcdSupportSettings:*/
+                        bool> {
+ public:
+  CookieSettingsTopLevelTpcdSupportTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsTopLevel3pcdSupportEligible()) {
+      enabled_features.push_back(net::features::kTopLevelTpcdSupportSettings);
+    } else {
+      disabled_features.push_back(net::features::kTopLevelTpcdSupportSettings);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUp() override { CookieSettingsTestBase::SetUp(); }
+
+  bool IsTopLevel3pcdSupportEligible() const { return GetParam(); }
+
+  net::CookieSettingOverrides GetCookieSettingOverrides() const {
+    net::CookieSettingOverrides overrides;
+    return overrides;
+  }
+
+  // Assumes the cookie access would be blocked if not for a
+  // `ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT` setting.
+  ContentSetting SettingWithTopLevel3pcdSupportSetting() const {
+    return IsTopLevel3pcdSupportEligible() ? CONTENT_SETTING_ALLOW
+                                           : CONTENT_SETTING_BLOCK;
+  }
+
+  // Assumes the storage access result would be blocked if not for a
+  // `ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT` setting.
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWithTopLevel3pcdSupportSetting() const {
+    if (IsTopLevel3pcdSupportEligible()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_TOP_LEVEL_3PCD_SUPPORT;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
+  }
+
+  void AddSettingForTopLevelTpcdSupport(GURL top_level_url,
+                                        ContentSetting setting) {
+    // Top level 3pcd support settings use
+    // |WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE| by default and as a result
+    // only use a primary pattern (with wildcard placeholder for the secondary
+    // pattern).
+    settings_map_->SetContentSettingDefaultScope(
+        top_level_url, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT,
+        CONTENT_SETTING_ALLOW);
+  }
+};
+
+TEST_P(CookieSettingsTopLevelTpcdSupportTest,
+       GetCookieSettingTopLevel3pcdSupport) {
+  const GURL top_level_url(kFirstPartySite);
+  const GURL url(kAllowedSite);
+  const GURL third_url(kBlockedSite);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+
+  AddSettingForTopLevelTpcdSupport(top_level_url, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithTopLevel3pcdSupportSetting());
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWithTopLevel3pcdSupportSetting(), 1);
+
+  // Check override support setting.
+  auto overrides = GetCookieSettingOverrides();
+  overrides.Put(net::CookieSettingOverride::kSkipTopLevelTPCDSupport);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, overrides,
+                                               nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Valid pairs where |top_level_url| grants access to other urls.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithTopLevel3pcdSupportSetting());
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                GURL(), top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithTopLevel3pcdSupportSetting());
+
+  // Invalid pair where the |top_level_url| granting access to embedded sites is
+  // now being loaded under |url| as the top level url.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                top_level_url, url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Invalid pairs where a |third_url| is used as the top-level url.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, third_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                top_level_url, third_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         CookieSettingsTopLevelTpcdSupportTest,
+                         testing::Bool());
+#endif
 
 }  // namespace content_settings

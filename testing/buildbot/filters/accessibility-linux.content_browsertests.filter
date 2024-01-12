@@ -7,6 +7,13 @@
 -SnapshotAXTree*
 -WebContentsImplBrowserTest.DumpAccessibilityTreeWithoutTreeID
 
+# These tests require that accessibility is disabled at startup, which is the
+# opposite of the situation when --force-renderer-accessibility is used.
+-ScopedAccessibilityModeTest.BrowserContext
+-ScopedAccessibilityModeTest.Filtering
+-ScopedAccessibilityModeTest.Process
+-ScopedAccessibilityModeTest.WebContents
+
 # These tests still need to be triaged and either okayed to skip or fixed.
 -PrerenderBrowserTest.ActivatePageWithInnerContents
 -RenderThreadImplBrowserTest.NonResourceDispatchIPCTasksDontGoThroughScheduler

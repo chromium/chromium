@@ -41,6 +41,8 @@ class ManagedConfigurationAPI : public KeyedService {
 
   explicit ManagedConfigurationAPI(Profile* profile);
   ~ManagedConfigurationAPI() override;
+  ManagedConfigurationAPI(const ManagedConfigurationAPI&) = delete;
+  ManagedConfigurationAPI& operator=(const ManagedConfigurationAPI&) = delete;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -79,7 +81,7 @@ class ManagedConfigurationAPI : public KeyedService {
   void ProcessDecodedConfiguration(
       const url::Origin& origin,
       const std::string& url_hash,
-      const data_decoder::DataDecoder::ValueOrError result);
+      data_decoder::DataDecoder::ValueOrError result);
 
   // Sends an operation to set the configured value on FILE thread.
   void PostStoreConfiguration(const url::Origin& origin,

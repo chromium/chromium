@@ -78,8 +78,7 @@ class SpeechRecognitionTestHelper {
   std::unique_ptr<content::FakeSpeechRecognitionManager>
       fake_speech_recognition_manager_;
   // For on-device recognition. KeyedService owned by the test profile.
-  raw_ptr<speech::FakeSpeechRecognitionService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<speech::FakeSpeechRecognitionService, DanglingUntriaged>
       fake_service_;
 };
 

@@ -58,6 +58,15 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "android_emulator_specific_network_enabled_content_browsertests",
+    tests = {
+        "content_browsertests_with_emulator_network": targets.legacy_test_config(
+            ci_only = True,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "android_isolated_scripts",
     tests = {
         "content_shell_crash_test": targets.legacy_test_config(
@@ -656,6 +665,10 @@ targets.legacy_basic_suite(
         "cc_unittests": targets.legacy_test_config(),
         "crypto_unittests": targets.legacy_test_config(),
         "display_unittests": targets.legacy_test_config(),
+        "video_decode_accelerator_tests": targets.legacy_test_config(
+            ci_only = True,
+            experiment_percentage = 100,
+        ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             experiment_percentage = 100,
         ),
@@ -716,7 +729,31 @@ targets.legacy_basic_suite(
         "rust_gtest_interop_unittests": targets.legacy_test_config(),
         "sql_unittests": targets.legacy_test_config(),
         "url_unittests": targets.legacy_test_config(),
-        "vaapi_unittest": targets.legacy_test_config(),
+    },
+)
+
+# vaapi_unittest needs to run with fake driver in some builders but others with real driver.
+# Therefore these were isolated from chromeos_system_friendly_gtests.
+targets.legacy_basic_suite(
+    name = "chromeos_vaapi_gtests",
+    tests = {
+        "vaapi_unittest": targets.legacy_test_config(
+            mixins = [
+                "vaapi_unittest_args",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "chromeos_vaapi_fakelib_gtests",
+    tests = {
+        "vaapi_unittest": targets.legacy_test_config(
+            mixins = [
+                "vaapi_unittest_args",
+                "vaapi_unittest_libfake_args",
+            ],
+        ),
     },
 )
 
@@ -1380,6 +1417,22 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromium_web_tests_graphite_isolated_scripts",
+    tests = {
+        "graphite_enabled_blink_web_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "graphite_enabled_blink_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 7,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromium_web_tests_high_dpi_isolated_scripts",
     tests = {
         # high_dpi_blink_web_tests provides coverage for
@@ -1647,37 +1700,16 @@ targets.legacy_basic_suite(
     name = "cronet_gtests",
     tests = {
         "cronet_sample_test_apk": targets.legacy_test_config(),
+        "cronet_smoketests_apk": targets.legacy_test_config(),
         "cronet_smoketests_missing_native_library_instrumentation_apk": targets.legacy_test_config(),
         "cronet_smoketests_platform_only_instrumentation_apk": targets.legacy_test_config(),
         "cronet_test_instrumentation_apk": targets.legacy_test_config(
             mixins = [
                 "emulator-enable-network",
             ],
-        ),
-        "cronet_tests_android": targets.legacy_test_config(),
-        "cronet_unittests_android": targets.legacy_test_config(),
-        "net_unittests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 4,
+                shards = 3,
             ),
-        ),
-    },
-)
-
-# TODO(b/314092564): Merge with cronet_gtests test suite
-# after this test-suite has run on CI for a week and proved its
-# stability.
-targets.legacy_basic_suite(
-    name = "cronet_gtests_and_proguarded_smoketest",
-    tests = {
-        "cronet_sample_test_apk": targets.legacy_test_config(),
-        "cronet_smoketests_apk": targets.legacy_test_config(),  # This is the only new addition to this test-suite.
-        "cronet_smoketests_missing_native_library_instrumentation_apk": targets.legacy_test_config(),
-        "cronet_smoketests_platform_only_instrumentation_apk": targets.legacy_test_config(),
-        "cronet_test_instrumentation_apk": targets.legacy_test_config(
-            mixins = [
-                "emulator-enable-network",
-            ],
         ),
         "cronet_tests_android": targets.legacy_test_config(),
         "cronet_unittests_android": targets.legacy_test_config(),
@@ -2731,54 +2763,6 @@ targets.legacy_basic_suite(
             ],
             android_args = [
                 "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_mediapipe_passthrough_telemetry_tests",
-    tests = {
-        "mediapipe_passthrough_tests": targets.legacy_test_config(
-            args = [
-                "--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle",
-            ],
-            android_args = [
-                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
-            ],
-            chromeos_args = [
-                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
-            ],
-            lacros_args = [
-                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_mediapipe_validating_telemetry_tests",
-    tests = {
-        "mediapipe_validating_tests": targets.legacy_test_config(
-            args = [
-                "--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating",
-            ],
-            android_args = [
-                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
-            ],
-            chromeos_args = [
-                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
-            ],
-            lacros_args = [
-                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
             ],
         ),
     },
@@ -3896,26 +3880,16 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "lacros_cq_tast_tests_eve",
-    tests = {
-        "lacros_cq_tast_tests_eve": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-            experiment_percentage = 5,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "lacros_device_or_vm_gtests",
     tests = {
         "cc_unittests": targets.legacy_test_config(),
         "ozone_unittests": targets.legacy_test_config(),
-        "vaapi_unittest": targets.legacy_test_config(),
+        "vaapi_unittest": targets.legacy_test_config(
+            mixins = [
+                "vaapi_unittest_args",
+                "vaapi_unittest_libfake_args",
+            ],
+        ),
     },
 )
 
@@ -4445,6 +4419,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "optimization_guide_gtests",
     tests = {
+        "chrome_ml_unittests": targets.legacy_test_config(),
         "optimization_guide_browser_tests": targets.legacy_test_config(),
         "optimization_guide_components_unittests": targets.legacy_test_config(),
         "optimization_guide_unittests": targets.legacy_test_config(),
@@ -4539,16 +4514,6 @@ targets.legacy_basic_suite(
     name = "private_code_failure_test_isolated_scripts",
     tests = {
         "private_code_failure_test": targets.legacy_test_config(),
-    },
-)
-
-# TODO(dpranke): These are run on the p/chromium waterfall; they should
-# probably be run on other builders, and we should get rid of the p/chromium
-# waterfall.
-targets.legacy_basic_suite(
-    name = "public_build_scripts",
-    tests = {
-        "checkbins": targets.legacy_test_config(),
     },
 )
 
@@ -5131,6 +5096,13 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "webview_trichrome_64_cts_hostside_tests",
+    tests = {
+        "webview_trichrome_64_cts_hostside_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "webview_trichrome_64_cts_tests",
     tests = {
         "webview_trichrome_64_cts_tests": targets.legacy_test_config(
@@ -5246,7 +5218,7 @@ targets.legacy_basic_suite(
                 "--no-wpt-internal",
             ],
             swarming = targets.swarming(
-                shards = 4,
+                shards = 36,
                 expiration_sec = 18000,
                 hard_timeout_sec = 14400,
             ),

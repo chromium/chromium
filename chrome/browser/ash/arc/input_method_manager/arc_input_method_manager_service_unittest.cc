@@ -209,7 +209,7 @@ class TestIMEInputContextHandler : public ash::MockIMEInputContextHandler {
   ui::InputMethod* GetInputMethod() override { return input_method_; }
 
  private:
-  const raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
+  const raw_ptr<ui::InputMethod> input_method_;
 };
 
 class TestWindowDelegate : public ArcInputMethodManagerService::WindowDelegate {
@@ -325,14 +325,12 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
       chrome_keyboard_controller_client_test_helper_;
   std::unique_ptr<ash::ArcInputMethodBoundsTracker>
       input_method_bounds_tracker_;
-  raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>
-      input_method_manager_ = nullptr;
-  raw_ptr<TestInputMethodManagerBridge, ExperimentalAsh> test_bridge_ =
+  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_ =
+      nullptr;
+  raw_ptr<TestInputMethodManagerBridge> test_bridge_ =
       nullptr;  // Owned by |service_|
-  raw_ptr<ArcInputMethodManagerService, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
-  raw_ptr<TestWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      window_delegate_ = nullptr;
+  raw_ptr<ArcInputMethodManagerService, DanglingUntriaged> service_ = nullptr;
+  raw_ptr<TestWindowDelegate, DanglingUntriaged> window_delegate_ = nullptr;
 };
 
 }  // anonymous namespace

@@ -46,10 +46,8 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_android.h"
-#include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_android.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
-#include "content/browser/renderer_host/input/web_input_event_builders_android.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -61,6 +59,8 @@
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
+#include "content/common/input/input_router.h"
+#include "content/common/input/web_input_event_builders_android.h"
 #include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
@@ -553,7 +553,7 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
       pending_screen_state_.any_non_rotation_size_changed = true;
     }
     rwhva_->SynchronizeVisualProperties(
-        deadline_policy, absl::nullopt,
+        deadline_policy, std::nullopt,
         /*reuse_current_local_surface_id=*/false,
         /*ignore_ack=*/true);
   }
@@ -754,7 +754,7 @@ RenderWidgetHostViewAndroid::GetVirtualKeyboardMode() {
 
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
-    const absl::optional<viz::LocalSurfaceId>& child_local_surface_id,
+    const std::optional<viz::LocalSurfaceId>& child_local_surface_id,
     bool reuse_current_local_surface_id,
     bool ignore_ack) {
   if (IsFullscreenSurfaceSyncSupported()) {
@@ -969,7 +969,7 @@ void RenderWidgetHostViewAndroid::DismissTextHandles(
 jint RenderWidgetHostViewAndroid::GetBackgroundColor(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  absl::optional<SkColor> color =
+  std::optional<SkColor> color =
       RenderWidgetHostViewAndroid::GetCachedBackgroundColor();
   if (!color)
     return SK_ColorTRANSPARENT;
@@ -991,7 +991,7 @@ void RenderWidgetHostViewAndroid::OnViewportInsetBottomChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              absl::nullopt);
+                              std::nullopt);
 }
 
 void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
@@ -1260,7 +1260,7 @@ void RenderWidgetHostViewAndroid::OnImeCompositionRangeChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view,
     bool character_bounds_changed,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   DCHECK_EQ(text_input_manager_, text_input_manager);
   if (!ime_adapter_android_) {
     return;
@@ -1670,7 +1670,7 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurface(
 void RenderWidgetHostViewAndroid::EnsureSurfaceSynchronizedForWebTest() {
   ++latest_capture_sequence_number_;
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseInfiniteDeadline(),
-                              absl::nullopt);
+                              std::nullopt);
 }
 
 uint32_t RenderWidgetHostViewAndroid::GetCaptureSequenceNumber() const {
@@ -1731,7 +1731,7 @@ void RenderWidgetHostViewAndroid::ResetFallbackToFirstNavigationSurface() {
 
 bool RenderWidgetHostViewAndroid::RequestRepaintForTesting() {
   return SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                     absl::nullopt);
+                                     std::nullopt);
 }
 
 void RenderWidgetHostViewAndroid::SetSynchronousCompositorClient(
@@ -2176,8 +2176,8 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
       touch.event.unique_touch_event_id, event_consumed,
       is_source_touch_event_set_non_blocking,
       was_touch_blocked
-          ? absl::make_optional(touch.event.GetEventLatencyMetadata())
-          : absl::nullopt);
+          ? std::make_optional(touch.event.GetEventLatencyMetadata())
+          : std::nullopt);
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()
@@ -2462,8 +2462,7 @@ void RenderWidgetHostViewAndroid::SetTextHandlesTemporarilyHidden(
   SetTextHandlesHiddenInternal();
 }
 
-absl::optional<SkColor>
-RenderWidgetHostViewAndroid::GetCachedBackgroundColor() {
+std::optional<SkColor> RenderWidgetHostViewAndroid::GetCachedBackgroundColor() {
   return RenderWidgetHostViewBase::GetBackgroundColor();
 }
 
@@ -2556,7 +2555,7 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
     SynchronizeVisualProperties(
         cc::DeadlinePolicy::UseSpecifiedDeadline(
             ui::DelegatedFrameHostAndroid::ResizeTimeoutFrames()),
-        absl::nullopt);
+        std::nullopt);
   }
 
   if (!touch_selection_controller_) {
@@ -2677,7 +2676,7 @@ void RenderWidgetHostViewAndroid::OnSizeChanged() {
 }
 
 void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
-    absl::optional<base::TimeDelta> deadline_override) {
+    std::optional<base::TimeDelta> deadline_override) {
   // We may need to update the background color to match pre-surface-sync
   // behavior of EvictFrameIfNecessary.
   UpdateWebViewBackgroundColorIfNecessary();
@@ -2694,7 +2693,7 @@ void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
 
     SynchronizeVisualProperties(
         cc::DeadlinePolicy::UseSpecifiedDeadline(deadline_in_frames),
-        absl::nullopt);
+        std::nullopt);
   } else {
     // Cache the current rotation state so that we can start embedding with the
     // latest visual properties from SynchronizeVisualProperties().
@@ -2711,7 +2710,7 @@ void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
       BeginRotationBatching();
     SynchronizeVisualProperties(
         cc::DeadlinePolicy::UseSpecifiedDeadline(deadline_in_frames),
-        absl::nullopt);
+        std::nullopt);
     if (in_rotation)
       BeginRotationEmbed();
   }
@@ -2947,7 +2946,7 @@ void RenderWidgetHostViewAndroid::OnSynchronizedDisplayPropertiesChanged(
     if (screen_state_change_handler_.OnScreenInfoChanged(GetScreenInfo()))
       return;
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                absl::nullopt);
+                                std::nullopt);
   } else {
     if (rotation) {
       if (!in_rotation_) {
@@ -2968,11 +2967,11 @@ void RenderWidgetHostViewAndroid::OnSynchronizedDisplayPropertiesChanged(
       }
     }
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                absl::nullopt);
+                                std::nullopt);
   }
 }
 
-absl::optional<SkColor> RenderWidgetHostViewAndroid::GetBackgroundColor() {
+std::optional<SkColor> RenderWidgetHostViewAndroid::GetBackgroundColor() {
   return default_background_color_;
 }
 
@@ -3000,11 +2999,11 @@ void RenderWidgetHostViewAndroid::DidNavigate() {
     // source.
     if (!pre_navigation_content_) {
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
-                                  absl::nullopt,
+                                  std::nullopt,
                                   /*reuse_current_local_surface_id=*/true);
     } else {
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
-                                  absl::nullopt);
+                                  std::nullopt);
     }
     // Only notify of navigation once a surface has been embedded.
     delegated_frame_host_->DidNavigate();
@@ -3051,18 +3050,17 @@ void RenderWidgetHostViewAndroid::TransferTouches(
   // Touch transfer for Android is not implemented in content/.
 }
 
-absl::optional<DisplayFeature>
-RenderWidgetHostViewAndroid::GetDisplayFeature() {
+std::optional<DisplayFeature> RenderWidgetHostViewAndroid::GetDisplayFeature() {
   gfx::Size view_size(view_.GetSize());
   if (view_size.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // On Android, the display feature is exposed as a rectangle as a generic
   // concept. Here in the content layer, we translate that to a more
   // constrained concept, see content::DisplayFeature.
-  absl::optional<gfx::Rect> display_feature_rect = view_.GetDisplayFeature();
+  std::optional<gfx::Rect> display_feature_rect = view_.GetDisplayFeature();
   if (!display_feature_rect)
-    return absl::nullopt;
+    return std::nullopt;
 
   // The display feature and view location are both provided in device pixels,
   // relative to the window. Convert this to DIP and view relative coordinates,
@@ -3094,7 +3092,7 @@ RenderWidgetHostViewAndroid::GetDisplayFeature() {
                        transformed_display_feature.x(),
                        transformed_display_feature.width()};
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return display_feature;
@@ -3132,7 +3130,7 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
             ? cc::DeadlinePolicy::UseSpecifiedDeadline(
                   ui::DelegatedFrameHostAndroid::FirstFrameTimeoutFrames())
             : cc::DeadlinePolicy::UseDefaultDeadline(),
-        absl::nullopt);
+        std::nullopt);
     // If we navigated while hidden, we need to update the fallback surface only
     // after we've completed navigation, and embedded the new surface. The
     // |delegated_frame_host_| is always valid when |navigation_while_hidden_|
@@ -3148,7 +3146,7 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
     //
     // The rotation process will complete after this first surface is displayed.
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                absl::nullopt);
+                                std::nullopt);
   }
 
   // Whenever the page is restored, via back-forward cache, or tab changes,
@@ -3434,7 +3432,7 @@ void RenderWidgetHostViewAndroid::EndRotationAndSyncIfNecessary() {
 
   if (is_showing_) {
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                absl::nullopt,
+                                std::nullopt,
                                 /*reuse_current_local_surface_id=*/false,
                                 /*ignore_ack=*/true);
   } else {

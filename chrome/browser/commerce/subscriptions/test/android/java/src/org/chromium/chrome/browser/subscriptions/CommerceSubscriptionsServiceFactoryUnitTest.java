@@ -34,6 +34,7 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
     @Rule public JniMocker mMocker = new JniMocker();
 
     @Mock private Profile mProfileOne;
+    @Mock private Profile mIncognitoProfileOne;
 
     @Mock private Profile mProfileTwo;
 
@@ -43,28 +44,32 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(false).when(mProfileOne).isOffTheRecord();
+        doReturn(mProfileOne).when(mProfileOne).getOriginalProfile();
+
+        doReturn(true).when(mIncognitoProfileOne).isOffTheRecord();
+        doReturn(mProfileOne).when(mIncognitoProfileOne).getOriginalProfile();
+
         doReturn(false).when(mProfileTwo).isOffTheRecord();
+        doReturn(mProfileTwo).when(mProfileTwo).getOriginalProfile();
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
     @Test
     @SmallTest
     public void testFactoryMethod() {
-        CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
+        CommerceSubscriptionsServiceFactory factory =
+                CommerceSubscriptionsServiceFactory.getInstance();
 
-        Profile.setLastUsedProfileForTesting(mProfileOne);
-        CommerceSubscriptionsService regularProfileOneService = factory.getForLastUsedProfile();
-        Assert.assertEquals(regularProfileOneService, factory.getForLastUsedProfile());
+        CommerceSubscriptionsService regularProfileOneService = factory.getForProfile(mProfileOne);
+        Assert.assertEquals(regularProfileOneService, factory.getForProfile(mProfileOne));
 
-        Profile.setLastUsedProfileForTesting(mProfileTwo);
-        CommerceSubscriptionsService regularProfileTwoService = factory.getForLastUsedProfile();
+        CommerceSubscriptionsService regularProfileTwoService = factory.getForProfile(mProfileTwo);
         Assert.assertNotEquals(regularProfileOneService, regularProfileTwoService);
-        Assert.assertEquals(regularProfileTwoService, factory.getForLastUsedProfile());
+        Assert.assertEquals(regularProfileTwoService, factory.getForProfile(mProfileTwo));
 
-        Profile.setLastUsedProfileForTesting(mProfileOne);
-        Assert.assertEquals(regularProfileOneService, factory.getForLastUsedProfile());
+        Assert.assertEquals(regularProfileOneService, factory.getForProfile(mProfileOne));
+        Assert.assertEquals(regularProfileTwoService, factory.getForProfile(mProfileTwo));
 
-        Profile.setLastUsedProfileForTesting(mProfileTwo);
-        Assert.assertEquals(regularProfileTwoService, factory.getForLastUsedProfile());
+        Assert.assertEquals(regularProfileOneService, factory.getForProfile(mIncognitoProfileOne));
     }
 }

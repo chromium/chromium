@@ -25,8 +25,11 @@ ci.defaults.set(
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,
     health_spec = health_spec.modified_default({
-        "Unhealthy": struct(
-            fail_rate = None,
+        "Unhealthy": health_spec.unhealthy_thresholds(
+            fail_rate = struct(),
+        ),
+        "Low Value": health_spec.low_value_thresholds(
+            fail_rate = struct(),
         ),
     }),
     properties = {

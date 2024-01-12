@@ -1013,6 +1013,8 @@ if (enable_java_templates && is_android) {
         if (_group_name == "assetres") {
           # _other_deps are necessary when generating mergeable_android_manifests.
           deps += _assetres_deps + _other_deps
+        } else if (_group_name == "header" && defined(invoker.jar_deps)) {
+          deps += invoker.jar_deps
         }
       }
     }

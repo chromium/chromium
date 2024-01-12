@@ -551,6 +551,30 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
   TriggerNetworkListChanged();
 }
 
+TEST_F(ApnMigratorTest, MigrateNetworkEmptyIccid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
+
+  const std::string cellular_service_path_1 = AddTestCellularDeviceAndService(
+      kCellularName1, kTestCellularPath1,
+      /*device_iccid=*/std::string(), kTestCellularGuid1);
+
+  // A call to the migrator should exit early and not start the migration
+  // process for |cellular_service_path_1|.
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(0);
+  EXPECT_CALL(*network_metadata_store(),
+              GetPreRevampCustomApnList(kTestCellularGuid1))
+      .Times(0);
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              GetManagedProperties(LoginState::Get()->primary_user_hash(),
+                                   cellular_service_path_1, _))
+      .Times(0);
+  // Function under test.
+  TriggerNetworkListChanged();
+}
+
 TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);

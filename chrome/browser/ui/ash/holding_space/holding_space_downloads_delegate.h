@@ -42,7 +42,7 @@ class HoldingSpaceDownloadsDelegate
   // Attempts to mark the download underlying the given `item` to open when
   // complete. Returns `std::nullopt` on success or the reason if the attempt
   // was not successful.
-  std::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  std::optional<holding_space_metrics::ItemLaunchFailureReason>
   OpenWhenComplete(const HoldingSpaceItem* item);
 
  private:

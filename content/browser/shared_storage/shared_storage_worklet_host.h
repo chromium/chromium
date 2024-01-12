@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
@@ -85,14 +85,14 @@ class CONTENT_EXPORT SharedStorageWorkletHost
           urls_with_metadata,
       blink::CloneableMessage serialized_data,
       bool keep_alive_after_operation,
-      const absl::optional<std::string>& context_id,
-      const absl::optional<url::Origin>& aggregation_coordinator_origin,
+      const std::optional<std::string>& context_id,
+      const std::optional<url::Origin>& aggregation_coordinator_origin,
       SelectURLCallback callback) override;
   void Run(const std::string& name,
            blink::CloneableMessage serialized_data,
            bool keep_alive_after_operation,
-           const absl::optional<std::string>& context_id,
-           const absl::optional<url::Origin>& aggregation_coordinator_origin,
+           const std::optional<std::string>& context_id,
+           const std::optional<url::Origin>& aggregation_coordinator_origin,
            RunCallback callback) override;
 
   // Whether there are unfinished worklet operations (i.e. `addModule()`,
@@ -125,7 +125,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void SharedStorageRemainingBudget(
       SharedStorageRemainingBudgetCallback callback) override;
-  void ConsoleLog(const std::string& message) override;
+  void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                              const std::string& message) override;
   void RecordUseCounters(
       const std::vector<blink::mojom::WebFeature>& features) override;
 
@@ -215,8 +216,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // invalid `PendingRemote`.
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
   MaybeBindPrivateAggregationHost(
-      const absl::optional<std::string>& context_id,
-      const absl::optional<url::Origin>& aggregation_coordinator_origin);
+      const std::optional<std::string>& context_id,
+      const std::optional<url::Origin>& aggregation_coordinator_origin);
 
   bool IsSharedStorageAllowed();
   bool IsSharedStorageSelectURLAllowed();

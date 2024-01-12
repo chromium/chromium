@@ -24,10 +24,10 @@
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #import "content/browser/cocoa/system_hotkey_helper_mac.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
-#include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 #include "content/common/features.h"
+#include "content/common/input/web_input_event_builders_mac.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "content/public/common/content_features.h"
 #include "skia/ext/skia_utils_mac.h"
@@ -252,7 +252,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // keyCode value of an NSEvent. This field has a value while we're handling
   // a key down event.
-  absl::optional<unsigned short> _currentKeyDownCode;
+  std::optional<unsigned short> _currentKeyDownCode;
 
   // Indicates if a reconversion (which means a piece of committed text becomes
   // part of the composition again) is triggered in Japanese IME when Live
@@ -343,7 +343,7 @@ void ExtractUnderlines(NSAttributedString* string,
   uint64_t popup_parent_ns_view_id_;
 
   bool _keyboardLockActive;
-  absl::optional<base::flat_set<ui::DomCode>> _lockedKeys;
+  std::optional<base::flat_set<ui::DomCode>> _lockedKeys;
 
   NSCandidateListTouchBarItem* __strong _candidateListTouchBarItem;
   NSInteger _textSuggestionsSequenceNumber;
@@ -1000,7 +1000,7 @@ void ExtractUnderlines(NSAttributedString* string,
   }
 }
 
-- (void)lockKeyboard:(absl::optional<base::flat_set<ui::DomCode>>)keysToLock {
+- (void)lockKeyboard:(std::optional<base::flat_set<ui::DomCode>>)keysToLock {
   // TODO(joedow): Integrate System-level keyboard hook into this method.
   _lockedKeys = std::move(keysToLock);
   _keyboardLockActive = true;

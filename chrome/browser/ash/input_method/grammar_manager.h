@@ -85,9 +85,9 @@ class GrammarManager {
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
                             bool highlighted);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<GrammarServiceClient> grammar_client_;
-  raw_ptr<SuggestionHandlerInterface, ExperimentalAsh> suggestion_handler_;
+  raw_ptr<SuggestionHandlerInterface> suggestion_handler_;
   int context_id_ = 0;
   bool new_to_context_ = true;
   std::u16string current_text_;

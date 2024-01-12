@@ -410,8 +410,10 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // synchronously.
   void LoadEmptyForTest();
 
-  // TODO(crbug.com/1494120): Replace with an actual, non-test API.
-  void CreateAccountPermanentFoldersForTest();
+  // If a write to disk is scheduled, performs it immediately. This is useful
+  // for tests that restart the browser without necessarily shutting it down
+  // cleanly first.
+  void CommitPendingWriteForTest();
 
  private:
   friend class BookmarkCodecTest;
@@ -427,12 +429,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Notifies the observers for adding every descendant of `node`.
   void NotifyNodeAddedForAllDescendants(const BookmarkNode* node,
                                         bool added_by_user);
-
-  // Removes the node from internal maps and recurses through all children. If
-  // the node is a url, its url is added to removed_urls.
-  //
-  // This does NOT delete the node.
-  void RemoveNodeFromIndicesRecursive(BookmarkNode* node);
 
   // Clones `node` and all its descendants (if any) for adding it in
   // `dest_model`. Doesn't add it to `dest_model` - this is the responsibility
@@ -456,6 +452,17 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Adds `node` to all lookups indices and recursively invokes this for all
   // children.
   void AddNodeToIndicesRecursive(const BookmarkNode* node);
+
+  // Removes `node` and notifies its observers, returning and transferring
+  // ownership of the node removed. The caller is responsible for allowing undo,
+  // if applicable.
+  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node);
+
+  // Removes the node from internal maps and recurses through all children. If
+  // the node is a url, its url is added to removed_urls.
+  //
+  // This does NOT delete the node.
+  void RemoveNodeFromIndicesRecursive(BookmarkNode* node);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);

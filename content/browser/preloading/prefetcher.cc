@@ -33,9 +33,8 @@ bool Prefetcher::IsPrefetchAttemptFailedOrDiscarded(const GURL& url) {
 void Prefetcher::OnStartSinglePrefetch(
     const std::string& request_id,
     const network::ResourceRequest& request,
-    absl::optional<
-        std::pair<const GURL&,
-                  const network::mojom::URLResponseHeadDevToolsInfo&>>
+    std::optional<std::pair<const GURL&,
+                            const network::mojom::URLResponseHeadDevToolsInfo&>>
         redirect_info) {
   auto* ftn = render_frame_host_impl()->frame_tree_node();
   devtools_instrumentation::OnPrefetchRequestWillBeSent(

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include "chrome/browser/ui/autofill/risk_util.h"
+#include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -15,5 +17,29 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
 }
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
+
+void ChromePaymentsAutofillClient::LoadRiskData(
+    base::OnceCallback<void(const std::string&)> callback) {
+  risk_util::LoadRiskData(
+      0, web_contents(),
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::string&)> callback,
+             base::TimeTicks start_time, const std::string& risk_data) {
+            autofill::autofill_metrics::LogRiskDataLoadingLatency(
+                base::TimeTicks::Now() - start_time);
+            std::move(callback).Run(risk_data);
+          },
+          std::move(callback), base::TimeTicks::Now()));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
+    base::OnceClosure show_migration_dialog_closure) {
+  ManageMigrationUiController::CreateForWebContents(web_contents());
+  ManageMigrationUiController* controller =
+      ManageMigrationUiController::FromWebContents(web_contents());
+  controller->ShowBubble(std::move(show_migration_dialog_closure));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill::payments

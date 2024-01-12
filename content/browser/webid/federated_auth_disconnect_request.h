@@ -6,13 +6,13 @@
 #define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {

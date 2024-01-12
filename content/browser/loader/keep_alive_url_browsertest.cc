@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/loader/keep_alive_url_loader_service.h"
-
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -21,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
+#include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -43,7 +43,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -75,8 +74,7 @@ constexpr char kBeaconId[] = "beacon01";
 
 constexpr char kFetchLaterEndpoint[] = "/fetch-later";
 
-std::string GetKeepAliveEndpoint(
-    absl::optional<std::string> id = absl::nullopt) {
+std::string GetKeepAliveEndpoint(std::optional<std::string> id = std::nullopt) {
   std::string endpoint = kKeepAliveEndpoint;
   if (id.has_value()) {
     endpoint += "?id=" + *id;
@@ -322,7 +320,7 @@ class KeepAliveURLBrowserTest
   GURL GetKeepAlivePageURL(
       const std::string& method,
       size_t num_requests = 1,
-      absl::optional<std::string> headers = absl::nullopt) const {
+      std::optional<std::string> headers = std::nullopt) const {
     std::string url = base::StringPrintf(
         "/set-header-with-file/content/test/data/fetch-keepalive.html?"
         "method=%s&requests=%zu",
@@ -924,7 +922,7 @@ class SendBeaconBrowserTestBase : public KeepAliveURLBrowserTestBase {
   GURL GetBeaconPageURL(
       const GURL& beacon_url,
       bool with_non_cors_safelisted_content,
-      absl::optional<int> delay_iframe_removal_ms = absl::nullopt) const {
+      std::optional<int> delay_iframe_removal_ms = std::nullopt) const {
     std::vector<std::string> queries = {
         "/send-beacon-in-iframe.html?url=" + EncodeURL(beacon_url),
         "&payload_type=" + beacon_payload_type()};
@@ -953,7 +951,7 @@ class SendBeaconBrowserTestBase : public KeepAliveURLBrowserTestBase {
       net::test_server::ControllableHttpResponse* request_handler,
       const std::string& response,
       int expect_total_redirects,
-      absl::optional<int> delay_iframe_removal_ms = absl::nullopt) {
+      std::optional<int> delay_iframe_removal_ms = std::nullopt) {
     // Navigate to the page that calls sendBeacon with `beacon_url` from an
     // appended iframe.
     ASSERT_TRUE(NavigateToURL(
@@ -1397,11 +1395,13 @@ IN_PROC_BROWSER_TEST_F(FetchLaterNoActivationTimeoutBrowserTest,
   ExpectFetchLaterRequests(1, request_handlers);
 }
 
-// A pending FetchLater request should not be sent after its page gets restored
-// from BackForwardCache before getting evicted.
+// A pending FetchLater request should have been sent after its page gets
+// restored from BackForwardCache before getting evicted. It is because, by
+// default, pending requests are all flushed on BFCache no matter
+// BackgroundSync is on or not. See http://b/310541607#comment28.
 IN_PROC_BROWSER_TEST_F(
     FetchLaterNoActivationTimeoutBrowserTest,
-    NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
+    FlushedWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
   const std::string target_url = kFetchLaterEndpoint;
   auto request_handlers = RegisterRequestHandlers({target_url});
   ASSERT_TRUE(server()->Start());
@@ -1416,9 +1416,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // The same page is still alive.
   ExpectRestored(FROM_HERE);
-  // The loader should still exist, but the request should not be sent.
-  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 1u);
-  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+  // The FetchLater requests should've been sent.
+  ExpectFetchLaterRequests(1, request_handlers);
 }
 
 // Without an activateAfter set, a pending FetchLater request should not be

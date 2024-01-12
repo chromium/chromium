@@ -122,11 +122,6 @@ template <class T, class D>
 size_t EstimateMemoryUsage(const std::unique_ptr<T[], D>& array,
                            size_t array_length);
 
-// base::raw_ptr
-
-template <class T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-size_t EstimateMemoryUsage(const raw_ptr<T, Traits>& ptr);
-
 // std::shared_ptr
 
 template <class T>
@@ -249,7 +244,8 @@ concept IsIteratorOfStandardContainer =
 
 template <typename T>
 concept IsKnownNonAllocatingType =
-    std::is_trivially_destructible_v<T> || IsIteratorOfStandardContainer<T>;
+    std::is_trivially_destructible_v<T> || base::IsRawPtrV<T> ||
+    IsIteratorOfStandardContainer<T>;
 
 }  // namespace internal
 
@@ -347,13 +343,6 @@ template <class T, class D>
 size_t EstimateMemoryUsage(const std::unique_ptr<T[], D>& array,
                            size_t array_length) {
   return EstimateMemoryUsage(array.get(), array_length);
-}
-
-// base::raw_ptr
-
-template <class T, base::RawPtrTraits Traits>
-size_t EstimateMemoryUsage(const raw_ptr<T, Traits>& ptr) {
-  return ptr ? (sizeof(T) + EstimateItemMemoryUsage(*ptr)) : 0;
 }
 
 // std::shared_ptr

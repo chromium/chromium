@@ -56,7 +56,7 @@ class OsInstallScreen : public BaseScreen, public OsInstallClient::Observer {
   std::unique_ptr<base::RepeatingTimer> shutdown_countdown_;
 
   // Used for testing.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   base::ScopedObservation<OsInstallClient, OsInstallClient::Observer>
       scoped_observation_{this};

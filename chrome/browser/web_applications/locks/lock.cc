@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -30,7 +31,13 @@ std::string LockTypeToString(LockDescription::Type type) {
 
 LockDescription::LockDescription(base::flat_set<webapps::AppId> app_ids,
                                  LockDescription::Type type)
-    : app_ids_(std::move(app_ids)), type_(type) {}
+    : app_ids_(std::move(app_ids)), type_(type) {
+  for (const webapps::AppId& app_id : app_ids_) {
+    CHECK(!app_id.empty()) << "Cannot have an empty app_id";
+  }
+}
+LockDescription::LockDescription(LockDescription&&) = default;
+
 LockDescription::~LockDescription() = default;
 
 bool LockDescription::IncludesSharedWebContents() const {

@@ -4,23 +4,23 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import type {Crostini} from '../../background/js/crostini.js';
+import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
 import {getExtension} from '../../common/js/file_type.js';
+import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import {type FileTasks as StoreFileTasks} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
@@ -159,9 +159,9 @@ export class FileTasks {
   /** Returns whether the system is currently offline. */
   private static isOffline_(volumeManager: VolumeManager): boolean {
     const connection = volumeManager.getDriveConnectionState();
-    return connection.type ==
+    return connection.type ===
         chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
-        connection.reason ==
+        connection.reason ===
         chrome.fileManagerPrivate.DriveOfflineReason.NO_NETWORK;
   }
 
@@ -297,7 +297,7 @@ export class FileTasks {
     }
 
     // Legacy Files app task type is 'app', Files SWA is 'web'.
-    if (!(taskType === 'app' || taskType == 'web')) {
+    if (!(taskType === 'app' || taskType === 'web')) {
       return false;
     }
     const parsedActionId = parseActionId(actionId);

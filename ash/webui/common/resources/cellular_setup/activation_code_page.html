@@ -1,10 +1,8 @@
 <style include="iron-positioning">
   :host([expanded_]) #pageBody {
-    overflow: auto;
     transition-duration: 200ms;
   }
   :host(:not([expanded_])) #pageBody {
-    overflow: auto;
     transition-duration: 150ms;
   }
 
@@ -163,7 +161,7 @@
     font-size: var(--cr-form-field-label-font-size);
     letter-spacing: .4px;
     line-height: var(--cr-form-field-label-line-height);
-    position: absolute;
+    margin-top: -16px;
   }
 
   #video {

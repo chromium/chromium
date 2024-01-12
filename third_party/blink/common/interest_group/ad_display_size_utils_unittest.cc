@@ -55,6 +55,15 @@ TEST(AdDisplaySizeUtilsTest, ConvertAdSizeToString) {
   // clang-format on
 }
 
+TEST(AdDisplaySizeUtilsTest, ConvertAdDimensionToString) {
+  EXPECT_EQ(ConvertAdDimensionToString(10, AdSize::LengthUnit::kPixels),
+            "10px");
+  EXPECT_EQ(ConvertAdDimensionToString(0.5, AdSize::LengthUnit::kScreenWidth),
+            "0.5sw");
+  EXPECT_EQ(ConvertAdDimensionToString(0.5, AdSize::LengthUnit::kScreenHeight),
+            "0.5sh");
+}
+
 // Positive test cases.
 TEST(AdDisplaySizeUtilsTest, ParseSizeStringWithUnits) {
   RunTest("100px", 100.0, blink::AdSize::LengthUnit::kPixels);

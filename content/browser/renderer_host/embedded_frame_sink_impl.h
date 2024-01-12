@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_EMBEDDED_FRAME_SINK_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_EMBEDDED_FRAME_SINK_IMPL_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom.h"
 
 namespace viz {
@@ -80,7 +81,7 @@ class EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
 
  private:
   void CreateFrameSink(
-      const absl::optional<viz::FrameSinkBundleId>& bundle_id,
+      const std::optional<viz::FrameSinkBundleId>& bundle_id,
       mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver);
 

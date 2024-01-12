@@ -5,7 +5,7 @@
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {CurrentDirectory, PropStatus} from '../externs/ts/state.js';
+import {type CurrentDirectory, PropStatus} from '../state/state.js';
 import {getEmptyState, getStore} from '../state/store.js';
 
 import {BreadcrumbContainer} from './breadcrumb_container.js';

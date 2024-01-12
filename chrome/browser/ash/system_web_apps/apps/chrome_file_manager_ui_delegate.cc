@@ -16,10 +16,12 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {
@@ -34,6 +36,15 @@ base::Value::Dict ChromeFileManagerUIDelegate::GetLoadTimeData() const {
   const std::string locale = g_browser_process->GetApplicationLocale();
   AddFileManagerFeatureStrings(locale, Profile::FromWebUI(web_ui_), &dict);
   return dict;
+}
+
+std::unique_ptr<content::WebUIMessageHandler>
+ChromeFileManagerUIDelegate::GetPluralStringHandler() const {
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  for (const auto [key, value] : GetFileManagerPluralStrings()) {
+    plural_string_handler->AddLocalizedString(key, value.GetInt());
+  }
+  return plural_string_handler;
 }
 
 void ChromeFileManagerUIDelegate::ProgressPausedTasks() const {

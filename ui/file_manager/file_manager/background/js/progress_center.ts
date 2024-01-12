@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.js';
+import type {ProgressCenterPanel} from '../../foreground/js/ui/progress_center_panel.js';
 
 /**
- * Implementation of {ProgressCenter} at the background page.
+ * Implementation of ProgressCenter at the background page.
  */
-export class ProgressCenterImpl implements ProgressCenter {
+export class ProgressCenter {
   /**
    * Current items managed by the progress center.
    */
@@ -18,7 +17,7 @@ export class ProgressCenterImpl implements ProgressCenter {
   /**
    * List of panel UI managed by the progress center.
    */
-  private panels_: ProgressCenterPanelInterface[] = [];
+  private panels_: ProgressCenterPanel[] = [];
 
   /**
    * Inhibit end of operation updates for testing.
@@ -81,7 +80,7 @@ export class ProgressCenterImpl implements ProgressCenter {
    * Adds a panel UI to the notification center.
    * @param panel Panel UI.
    */
-  addPanel(panel: ProgressCenterPanelInterface) {
+  addPanel(panel: ProgressCenterPanel) {
     if (this.panels_.indexOf(panel) !== -1) {
       return;
     }
@@ -105,7 +104,7 @@ export class ProgressCenterImpl implements ProgressCenter {
    * Removes a panel UI from the notification center.
    * @param panel Panel UI.
    */
-  removePanel(panel: ProgressCenterPanelInterface) {
+  removePanel(panel: ProgressCenterPanel) {
     const index = this.panels_.indexOf(panel);
     if (index === -1) {
       return;

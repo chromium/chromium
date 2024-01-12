@@ -53,7 +53,8 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {features::kFencedFramesEnforceFocus, {}},
        {blink::features::kFencedFramesM120FeaturesPart1, {}},
        {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
-       {blink::features::kFencedFramesM120FeaturesPart2, {}}},
+       {blink::features::kFencedFramesM120FeaturesPart2, {}},
+       {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}}},
       {/* disabled_features */});
 }
 
@@ -105,9 +106,9 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   // embedder-initiation urn navigations make sense.
   EXPECT_EQ(mode, blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
   GURL potentially_urn_url = url;
-  absl::optional<GURL> urn_uuid = fenced_frame_parent_rfh->GetPage()
-                                      .fenced_frame_urls_map()
-                                      .AddFencedFrameURLForTesting(url);
+  std::optional<GURL> urn_uuid = fenced_frame_parent_rfh->GetPage()
+                                     .fenced_frame_urls_map()
+                                     .AddFencedFrameURLForTesting(url);
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   potentially_urn_url = *urn_uuid;
@@ -214,7 +215,7 @@ RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(
 void FencedFrameTestHelper::SendBasicRequest(
     WebContents* web_contents,
     GURL url,
-    absl::optional<std::string> content) {
+    std::optional<std::string> content) {
   // Construct the resource request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       web_contents->GetPrimaryMainFrame()
@@ -281,7 +282,7 @@ GURL AddAndVerifyFencedFrameURL(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     const GURL& https_url,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       fenced_frame_url_mapping->AddFencedFrameURLForTesting(
           https_url, std::move(fenced_frame_reporter));
   EXPECT_TRUE(urn_uuid.has_value());

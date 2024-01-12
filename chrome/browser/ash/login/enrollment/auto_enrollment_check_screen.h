@@ -114,6 +114,10 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   // The user requested a connection attempt to be performed.
   void OnConnectRequested();
 
+  // Returns true if the `error` blocks the state determination process and must
+  // be addressed.
+  bool IsBlockingError(const policy::AutoEnrollmentError& error) const;
+
   // Returns true if an error response from the server should cause a network
   // error screen to be displayed and block the wizard from continuing. If false
   // is returned, an error response from the server is treated as "no enrollment
@@ -124,7 +128,7 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   void ClearState();
 
   base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen> error_screen_;
   base::RepeatingCallback<void(Result result)> exit_callback_;
   raw_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_ =
       nullptr;

@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Oʻngga suring</translation>
 <translation id="3081586908890909590">Video yozib olish rejimi</translation>
 <translation id="313467653172006084">30 kadr/s</translation>
+<translation id="3158534262962737808">“<ph name="WIFINAME" />” tarmogʻiga ulanish</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Nusxalandi</translation>
 <translation id="3354465018370944241">Rasm sozlamalari</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Rasm tomonlar nisbati</translation>
 <translation id="5057360777601936059">Kamera hozirda ishlamayapti.
         Kamera bexato ulanganini tekshiring.</translation>
+<translation id="5157591164390831335">URL aniqlandi.</translation>
 <translation id="5163387177077603948">Oʻngga surish</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Hujjatning yuqori chap burchagi</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Kamera ilovasi haqidagi fikr-mulohazangiz uchun rahmat.
 
 Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni biriktirish orqali muammo haqida xabar qiling. (Masalan, rasm juda xira yoki obyekt fokuslanmagan)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> tarmogʻiga ulanish</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6617916774429601017">Barcha piksellar sigʻimini koʻrsatish</translation>
 <translation id="6631515515009660915">Koʻzgu tugmasi oʻchiq</translation>
@@ -158,6 +161,7 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="8711011893539266636">Mikrofonni ovozsiz qilish. Ovozsiz qilindi</translation>
 <translation id="8730621377337864115">Tayyor</translation>
 <translation id="8732462232047530626">Meta-maʼlumotlarga razm solish</translation>
+<translation id="874854738381978209">Wi-Fi tarmoq aniqlandi.</translation>
 <translation id="8815966864175525708">Portret rejimida suratga olish</translation>
 <translation id="8828441885228359828">Davom ettirish</translation>
 <translation id="8870695351537079478">Yozib olish boshlanmadi</translation>

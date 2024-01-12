@@ -57,14 +57,6 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD1(IsUrlAllowlisted, bool(const GURL&));
   MOCK_METHOD1(SetPolicyAllowlistDomains,
                void(const std::vector<std::string>&));
-  MOCK_METHOD3(CheckLookupMechanismExperimentEligibility,
-               void(const security_interstitials::UnsafeResource&,
-                    base::OnceCallback<void(bool)>,
-                    scoped_refptr<base::SequencedTaskRunner>));
-  MOCK_METHOD3(CheckExperimentEligibilityAndStartBlockingPage,
-               void(const security_interstitials::UnsafeResource&,
-                    base::OnceCallback<void(bool)>,
-                    scoped_refptr<base::SequencedTaskRunner>));
 
   SafeBrowsingDatabaseManager* GetDatabaseManager() override { return nullptr; }
 
@@ -185,6 +177,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       UnsafeResource::RenderProcessId render_process_id,
       const UnsafeResource::RenderFrameToken& render_frame_token,
       UnsafeResource::FrameTreeNodeId frame_tree_node_id,
+      absl::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
       bool can_check_db,
@@ -194,9 +187,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
-      scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-          mechanism_experimenter,
-      bool is_mechanism_experiment_allowed,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
       : SafeBrowsingUrlCheckerImpl(headers,
                                    load_flags,
@@ -208,6 +198,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    render_process_id,
                                    render_frame_token,
                                    frame_tree_node_id,
+                                   navigation_id,
                                    url_real_time_lookup_enabled,
                                    can_urt_check_subresource_url,
                                    can_check_db,
@@ -217,8 +208,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    ui_task_runner,
                                    url_lookup_service_on_ui,
                                    hash_realtime_service_on_ui,
-                                   mechanism_experimenter,
-                                   is_mechanism_experiment_allowed,
                                    hash_realtime_selection) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
@@ -239,6 +228,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
           /*proceed=*/callback_info.should_proceed,
           /*show_interstitial=*/
           callback_info.should_show_interstitial,
+          /*has_post_commit_interstitial_skipped=*/false,
           callback_info.performed_check);
     }
   }
@@ -251,6 +241,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
              /*proceed=*/callback_infos_[index].should_proceed,
              /*show_interstitial=*/
              callback_infos_[index].should_show_interstitial,
+             /*has_post_commit_interstitial_skipped=*/false,
              callback_infos_[index].performed_check);
   }
 
@@ -312,10 +303,10 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
                                : nullptr;
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter.Get(),
-        /*frame_tree_node_id=*/0,
+        /*frame_tree_node_id=*/0, /*navigation_id=*/absl::nullopt,
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
                                      : nullptr,
-        /*hash_realtime_service=*/nullptr, /*ping_manager=*/nullptr,
+        /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
         async_check_enabled
             ? hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService
@@ -332,7 +323,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*has_user_gesture=*/false, url_checker_delegate_,
             mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
             /*render_frame_token=*/std::nullopt,
-            UnsafeResource::kNoFrameTreeNodeId, url_real_time_lookup_enabled,
+            UnsafeResource::kNoFrameTreeNodeId, /*navigation_id=*/absl::nullopt,
+            url_real_time_lookup_enabled,
             /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,
             /*url_lookup_service_metric_suffix=*/"",
@@ -340,8 +332,6 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
             /*url_lookup_service_on_ui=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
-            /*mechanism_experimenter=*/nullptr,
-            /*is_mechanism_experiment_allowed=*/false,
             /*hash_realtime_selection=*/
             hash_realtime_utils::HashRealTimeSelection::kNone);
     sync_url_checker_ = sync_url_checker->GetWeakPtr();
@@ -356,7 +346,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               mock_web_contents_getter.Get(),
               UnsafeResource::kNoRenderProcessId,
               /*render_frame_token=*/std::nullopt,
-              UnsafeResource::kNoFrameTreeNodeId, url_real_time_lookup_enabled,
+              UnsafeResource::kNoFrameTreeNodeId,
+              /*navigation_id=*/absl::nullopt, url_real_time_lookup_enabled,
               /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
               /*can_check_high_confidence_allowlist=*/true,
               /*url_lookup_service_metric_suffix=*/"",
@@ -364,8 +355,6 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
               /*url_lookup_service_on_ui=*/nullptr,
               /*hash_realtime_service_on_ui=*/nullptr,
-              /*mechanism_experimenter=*/nullptr,
-              /*is_mechanism_experiment_allowed=*/false,
               /*hash_realtime_selection=*/
               hash_realtime_utils::HashRealTimeSelection::kNone);
       async_url_checker_ = async_url_checker->GetWeakPtr();

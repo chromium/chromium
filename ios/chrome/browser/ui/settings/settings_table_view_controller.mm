@@ -603,19 +603,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self addPromoToSigninSection];
 }
 
-// Helper method to update the Discover Section cells when called.
-- (void)updateDiscoverSection {
-  // Do not use self to access _managedFeedSettingsItem, as it is lazy loaded
-  // and will create a new item and the following will always be true.
-  if (_managedFeedSettingsItem) {
-    DCHECK(!_feedSettingsItem);
-    self.managedFeedSettingsItem.text = [self feedItemTitle];
-  } else {
-    DCHECK(_feedSettingsItem);
-    self.feedSettingsItem.text = [self feedItemTitle];
-  }
-}
-
 // Adds the identity promo to promote the sign-in or sync state.
 - (void)addPromoToSigninSection {
   TableViewItem* item = nil;
@@ -2194,6 +2181,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  // Feed settings are subject to sign-in status and account type, ensure
+  // that these sections are updated as necessary.
+  [self booleanDidChange:_contentSuggestionPolicyEnabled];
+
   [self updateSigninSection];
   // The Identity section may be added or removed depending on sign-in is
   // allowed. Reload all sections in the model to account for the change.
@@ -2233,7 +2224,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     [self reconfigureCellsForItems:@[ _showMemoryDebugToolsItem ]];
   } else if (observableBoolean == _allowChromeSigninPreference) {
     [self updateSigninSection];
-    [self updateDiscoverSection];
     // The Identity section may be added or removed depending on sign-in is
     // allowed. Reload all sections in the model to account for the change.
     [self.tableView reloadData];
@@ -2412,7 +2402,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                          completion:nil];
 }
 
-#pragma mark - NotificationsDelegate
+#pragma mark - NotificationsCoordinatorDelegate
 
 - (void)notificationsCoordinatorDidRemove:
     (NotificationsCoordinator*)coordinator {

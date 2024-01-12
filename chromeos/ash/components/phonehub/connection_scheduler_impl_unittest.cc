@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +34,8 @@ class ConnectionSchedulerImplTest : public testing::Test {
 
   void CreateConnectionScheduler() {
     connection_scheduler_ = std::make_unique<ConnectionSchedulerImpl>(
-        fake_connection_manager_.get(), fake_feature_status_provider_.get());
+        fake_connection_manager_.get(), fake_feature_status_provider_.get(),
+        phone_hub_structured_metrics_logger_.get());
   }
 
   base::TimeDelta GetCurrentBackoffDelay() {
@@ -49,6 +51,8 @@ class ConnectionSchedulerImplTest : public testing::Test {
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
+  std::unique_ptr<PhoneHubStructuredMetricsLogger>
+      phone_hub_structured_metrics_logger_;
   std::unique_ptr<ConnectionSchedulerImpl> connection_scheduler_;
 };
 
@@ -57,7 +61,8 @@ TEST_F(ConnectionSchedulerImplTest, SuccesssfullyAttemptConnection) {
       FeatureStatus::kEnabledButDisconnected);
   CreateConnectionScheduler();
 
-  connection_scheduler_->ScheduleConnectionNow();
+  connection_scheduler_->ScheduleConnectionNow(
+      DiscoveryEntryPoint::kUserSignIn);
   // Verify that the ConnectionManager has attempted to connect.
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
 
@@ -75,7 +80,8 @@ TEST_F(ConnectionSchedulerImplTest, FeatureDisabledDoesNotEstablishConnection) {
   fake_feature_status_provider_->SetStatus(FeatureStatus::kDisabled);
   CreateConnectionScheduler();
 
-  connection_scheduler_->ScheduleConnectionNow();
+  connection_scheduler_->ScheduleConnectionNow(
+      DiscoveryEntryPoint::kUserSignIn);
   // Verify that the ConnectionManager did not attempt connection.
   EXPECT_EQ(0u, fake_connection_manager_->num_attempt_connection_calls());
   // Verify that we did not attempt a backoff retry.
@@ -87,7 +93,8 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedConnection) {
       FeatureStatus::kEnabledButDisconnected);
   CreateConnectionScheduler();
 
-  connection_scheduler_->ScheduleConnectionNow();
+  connection_scheduler_->ScheduleConnectionNow(
+      DiscoveryEntryPoint::kUserSignIn);
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
   // Simulate state changes with AttemptConnection().
   fake_feature_status_provider_->SetStatus(
@@ -128,7 +135,8 @@ TEST_F(ConnectionSchedulerImplTest, BackoffRetryWithUpdatedFeatures) {
       FeatureStatus::kEnabledButDisconnected);
   CreateConnectionScheduler();
 
-  connection_scheduler_->ScheduleConnectionNow();
+  connection_scheduler_->ScheduleConnectionNow(
+      DiscoveryEntryPoint::kUserSignIn);
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
   // Simulate state changes with AttemptConnection().
   fake_feature_status_provider_->SetStatus(

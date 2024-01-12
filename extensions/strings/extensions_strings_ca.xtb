@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">No es pot trobar el camí absolut al directori per empaquetar.</translation>
 <translation id="5160071981665899014">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de JavaScript per a l'script.</translation>
 <translation id="5356315618422219272">Vista de l'aplicació: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Les finestres modelades no s'admeten.</translation>
 <translation id="5456409301717116725">Aquesta extensió inclou el fitxer de clau "<ph name="KEY_PATH" />". És probable que això no sigui convenient.</translation>
 <translation id="5486326529110362464">Ha d'existir el valor d'entrada de la clau privada.</translation>
 <translation id="5972529113578162692">L'administrador d'aquest dispositiu requereix que l'extensió <ph name="EXTENSION_NAME" /> estigui instal·lada. No es pot desinstal·lar.</translation>

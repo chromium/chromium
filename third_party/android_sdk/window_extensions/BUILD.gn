@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Contains placeholder files that define the API provided by the system library.
+# The method bodies are likely different on actual devices.
+android_library("androidx_window_extensions_java") {
+  visibility = [
+    ":*",
+  ]
+  sources = rebase_path(read_file("sources.txt", "list lines"), ".", "java")
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    ]
+}
+
+# Use an intermediate target that omits the "_java" suffix in order to avoid
+# the classes being linked into APKs (our build system links in targets based
+# on naming patterns).
+group("androidx_window_extensions") {
+  visibility = ["//third_party/android_sdk:*"]
+  deps = [ ":androidx_window_extensions_java" ]
+}

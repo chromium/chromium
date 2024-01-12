@@ -89,7 +89,8 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
       {CreateJpgBytes(), /*id=*/111,
        manta::proto::ImageResolution::RESOLUTION_64},
-      GetTempFileDirectory(), decode_sea_pen_image_future.GetCallback());
+      GetTempFileDirectory(), /*query_info=*/"test query",
+      decode_sea_pen_image_future.GetCallback());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
@@ -121,7 +122,8 @@ TEST_F(SeaPenWallpaperManagerTest, StoresOnlyTenLatestImages) {
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
       {CreateJpgBytes(), /*id=*/11,
        manta::proto::ImageResolution::RESOLUTION_64},
-      GetTempFileDirectory(), decode_sea_pen_image_future.GetCallback());
+      GetTempFileDirectory(), /*query_info=*/"test query",
+      decode_sea_pen_image_future.GetCallback());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.

@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">Olvassa el a Chromebook új, alkotóknak szóló digitális magazinját</translation>
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
+<translation id="1300115153046603471">Az APN típusa: alapértelmezett és <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Frissítés (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> perc</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">böngésző kezdőlapja</translation>
 <translation id="1526389707933164996">Animált képernyőkímélő</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
-<translation id="1539242642795599947">Az APN típusa: alapértelmezett és csatlakoztatás.</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1561927818299383735">háttérvilágítás színe</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">Bejelentkezési kép</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">diktálás be- vagy kikapcsolása</translation>
+<translation id="2656001153562991489">Kizárólag Chromebook Plus esetén</translation>
 <translation id="267442004702508783">frissítés</translation>
 <translation id="268270014981824665">billentyűzet halványítása</translation>
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="3862598938296403232">A leírás megadása kötelező</translation>
+<translation id="386280020966669610">Inspiráció</translation>
 <translation id="3865289341173661845">A súgótartalom nem áll rendelkezésre.</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="3866249974567520381">Leírás</translation>
@@ -405,6 +407,7 @@
 <translation id="4060260348856573701">Új APN</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
+<translation id="409469431304488632">Kísérlet</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
@@ -440,10 +443,12 @@
 <translation id="4289849978083912975">Diavetítés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
+<translation id="4310735698903592804">A legújabb háttérképeket a Google AI biztosítja</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">billentyű</translation>
 <translation id="4361257691546579041">Az APN típusa: alapértelmezett.</translation>
 <translation id="437294888293595148">Összes gyorsparancs visszaállítása</translation>
+<translation id="4376423484621194274">A rendszergazda nem engedélyezi a(z) <ph name="APP_NAME" /> bezárását</translation>
 <translation id="4378373042927530923">Nem fut</translation>
 <translation id="4378551569595875038">Kapcsolódás…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -552,6 +557,7 @@
 <translation id="5088172560898466307">Szerver gépneve</translation>
 <translation id="5089810972385038852">Állam</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Rokon értelmű:</translation>
 <translation id="5137451382116112100">Teljes</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
 <translation id="5145081769226915336">Szeretné a sötét mód automatikus bekapcsolását?</translation>
@@ -613,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Újbóli beolvasás</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett csatlakoztatott APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
 <translation id="5600027863942488546">A következő gomb tesztelve: <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5649768706273821470">Meghallgatás</translation>
@@ -644,6 +649,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">A rendszer automatikusan észlelt APN-t.</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Művészeti album</translation>
 <translation id="5859969039821714932">A billentyűparancs nem áll rendelkezésre. Nyomjon le új billentyűparancsot a(z) <ph name="KEY" /> billentyű nélkül.</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
@@ -659,12 +665,12 @@
 <translation id="5916664084637901428">Be</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fájlját a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}other{Fájljait a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}}</translation>
 <translation id="5931523347251946569">A fájl nem található</translation>
+<translation id="593880865674747800">Továbbiak létrehozása ebben a stílusban</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
 <translation id="5946538341867151940">Még nem csatlakozott. Ha mobilszolgáltatója egyéni APN-t javasol, adja meg az APN adatait. Ehhez válassza a „+ Új APN” lehetőséget.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Alapértelmezett háttérkép</translation>
-<translation id="6001235009374883388">Az APN típusa: csatlakoztatás.</translation>
 <translation id="6017514345406065928">Zöld</translation>
 <translation id="6019566113895157499">Billentyűparancsok</translation>
 <translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
@@ -682,6 +688,7 @@
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
+<translation id="6108952804512516814">Létrehozás AI használatával</translation>
 <translation id="6112878310391905610">Ezt a beállítást a rendszergazdák kezelik</translation>
 <translation id="6113701710518389813">Felfelé nyíl</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> és <ph name="NUMBER" /> további album</translation>
@@ -750,6 +757,7 @@
 <translation id="6526200165918397681">Háttérkép igazítása</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
 <translation id="6535178685492749208">Offline állapotban van. A visszajelzést később küldi majd el a rendszer.</translation>
+<translation id="6557784757915238407">Az APN típusa: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6560196641871357166">Élénk</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
@@ -809,6 +817,7 @@
 <translation id="7059230779847288458">Töltés. (<ph name="TIME_VALUE" /> a teljes feltöltésig.)</translation>
 <translation id="7066538517128343186">a következő gomb: <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Az eszköz előkészítése</translation>
+<translation id="7076851914315147928">Háttérkép kiválasztása</translation>
 <translation id="708426984172631313">LEÁLLÍTVA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Sikertelen – Sikertelen hitelesítés</translation>
@@ -862,6 +871,7 @@
 <translation id="741244894080940828">Átváltás</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett <ph name="ATTACH" /> APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
 <translation id="7458970041932198923">Az avatarok megtekintéséhez és beállításához csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7481312909269577407">Előre</translation>
@@ -913,9 +923,11 @@
 <translation id="7799817062559422778">Világos mód</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7805768142964895445">Állapot</translation>
+<translation id="7819831665603418705">Sablon használata</translation>
 <translation id="7819857487979277519">PSK (WPA vagy RSN)</translation>
 <translation id="7841134249932030522">Sötét mód engedélyezése</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>
+<translation id="7850847810298646851">A háttérképet a Google AI biztosítja</translation>
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
 <translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -958,7 +970,6 @@
 <translation id="8151185429379586178">Fejlesztői eszközök</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Csatolás</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
@@ -976,6 +987,7 @@
 <translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8329018942023753850">számológép alkalmazás</translation>
 <translation id="8336739000755212683">Eszközfiókhoz tartozó kép módosítása</translation>
+<translation id="8339024191194156249">További információ az automatikus indításról</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> vagy <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8349826889576450703">indító</translation>

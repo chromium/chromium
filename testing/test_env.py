@@ -123,8 +123,17 @@ def get_coverage_continuous_mode_env(env):
   if not llvm_profile_file:
     return {}
 
+  # Do not insert %c into LLVM_PROFILE_FILE if it's already there as that'll
+  # cause the coverage instrumentation to write coverage data to default.profraw
+  # instead of LLVM_PROFILE_FILE.
+  if "%c" in llvm_profile_file:
+    return {
+      'LLVM_PROFILE_FILE': llvm_profile_file
+    }
+
   dirname, basename = os.path.split(llvm_profile_file)
   root, ext = os.path.splitext(basename)
+
   return {
     'LLVM_PROFILE_FILE': os.path.join(dirname, root + "%c" + ext)
   }

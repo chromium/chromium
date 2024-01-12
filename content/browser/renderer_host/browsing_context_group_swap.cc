@@ -10,7 +10,7 @@
 namespace content {
 
 BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateDefault() {
-  return {BrowsingContextGroupSwapType::kNoSwap, absl::nullopt};
+  return {BrowsingContextGroupSwapType::kNoSwap, std::nullopt};
 }
 
 BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateNoSwap(
@@ -85,7 +85,7 @@ bool BrowsingContextGroupSwap::ShouldClearWindowName() const {
 
 BrowsingContextGroupSwap::BrowsingContextGroupSwap(
     BrowsingContextGroupSwapType type,
-    const absl::optional<ShouldSwapBrowsingInstance>& reason)
+    const std::optional<ShouldSwapBrowsingInstance>& reason)
     : type_(type), reason_(reason) {}
 
 }  // namespace content

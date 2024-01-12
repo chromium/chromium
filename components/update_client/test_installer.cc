@@ -31,8 +31,9 @@ TestInstaller::~TestInstaller() {
   // The unpack path is deleted unconditionally by the component state code,
   // which is driving this installer. Therefore, the unpack path must not
   // exist when this object is destroyed.
-  if (!unpack_path_.empty())
+  if (!unpack_path_.empty()) {
     EXPECT_FALSE(base::DirectoryExists(unpack_path_));
+  }
 }
 
 void TestInstaller::OnUpdateError(int error) {

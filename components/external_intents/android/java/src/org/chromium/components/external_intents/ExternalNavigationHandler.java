@@ -144,42 +144,6 @@ public class ExternalNavigationHandler {
         "com.google.android.instantapps.nmr1.VIEW"
     };
 
-    /**
-     * Histogram for the result of an intent scheme navigation.
-     * This enum is used in UMA, do not reorder values.
-     */
-    @IntDef({
-        IntentUriNavigationResult.WITH_FALLBACK_LAUNCHED_INTENT,
-        IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK,
-        IntentUriNavigationResult.WITH_FALLBACK_NO_OVERRIDE,
-        IntentUriNavigationResult.WITH_FALLBACK_ASYNC_RESULT,
-        IntentUriNavigationResult.NO_FALLBACK_LAUNCHED_INTENT,
-        IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE,
-        IntentUriNavigationResult.NO_FALLBACK_ASYNC_RESULT,
-        IntentUriNavigationResult.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface IntentUriNavigationResult {
-        /* Intent with an unused fallback URL was launched. */
-        int WITH_FALLBACK_LAUNCHED_INTENT = 0;
-        /* Intent fallback URL was used. */
-        int WITH_FALLBACK_USED_FALLBACK = 1;
-        /* Intent with an unused fallback URL was blocked. */
-        int WITH_FALLBACK_NO_OVERRIDE = 2;
-        /* Intent with a fallback URL prompted the user. */
-        int WITH_FALLBACK_ASYNC_RESULT = 3;
-        /* Intent without a fallback URL was launched. */
-        int NO_FALLBACK_LAUNCHED_INTENT = 4;
-        /* Intent without a fallback URL was blocked. */
-        int NO_FALLBACK_NO_OVERRIDE = 5;
-        /* Intent without a fallback URL prompted the user. */
-        int NO_FALLBACK_ASYNC_RESULT = 6;
-
-        int NUM_ENTRIES = 7;
-    }
-
-    private static final String INTENT_URI_RESULT_NAME = "Android.Intent.IntentUriNavigationResult";
-
     // Helper class to return a boolean by reference.
     private static class MutableBoolean {
         private Boolean mValue;
@@ -642,7 +606,6 @@ public class ExternalNavigationHandler {
                             canLaunchExternalFallbackResult.get());
         }
         if (debug()) printDebugShouldOverrideUrlLoadingResultType(result);
-        if (isIntentUrl) captureIntentSchemeMetrics(result, browserFallbackUrl);
 
         if (result.getResultType() == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION) {
             params.onAsyncActionStarted();
@@ -734,57 +697,6 @@ public class ExternalNavigationHandler {
                 break;
         }
         Log.i(TAG, "shouldOverrideUrlLoading result: " + resultString);
-    }
-
-    private void captureIntentSchemeMetrics(
-            OverrideUrlLoadingResult result, GURL browserFallbackUrl) {
-        @IntentUriNavigationResult int value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
-        if (browserFallbackUrl.isEmpty()) {
-            switch (result.getResultType()) {
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
-                    value = IntentUriNavigationResult.NO_FALLBACK_LAUNCHED_INTENT;
-                    break;
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
-                    value = IntentUriNavigationResult.NO_FALLBACK_ASYNC_RESULT;
-                    break;
-                case OverrideUrlLoadingResultType.NO_OVERRIDE:
-                    value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
-                    break;
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
-                    // Quirk of incognito intent scheme URLs synchronously clobbering the tab with
-                    // the target URL when the dialog can't be shown.
-                    value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
-                    break;
-                default:
-                    assert false;
-                    break;
-            }
-        } else {
-            switch (result.getResultType()) {
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
-                    if (result.wasExternalFallbackUrlLaunch()) {
-                        value = IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK;
-                    } else {
-                        value = IntentUriNavigationResult.WITH_FALLBACK_LAUNCHED_INTENT;
-                    }
-                    break;
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
-                    value = IntentUriNavigationResult.WITH_FALLBACK_ASYNC_RESULT;
-                    break;
-                case OverrideUrlLoadingResultType.NO_OVERRIDE:
-                    value = IntentUriNavigationResult.WITH_FALLBACK_NO_OVERRIDE;
-                    break;
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
-                    value = IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK;
-                    break;
-                default:
-                    assert false;
-                    break;
-            }
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                INTENT_URI_RESULT_NAME, value, IntentUriNavigationResult.NUM_ENTRIES);
     }
 
     private boolean resolversSubsetOf(List<ResolveInfo> infos, List<ResolveInfo> container) {

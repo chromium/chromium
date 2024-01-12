@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.NavigationRequestSecurityLevel"
-    enum="NavigationRequestSecurityLevel" expires_after="2024-05-05">
+    enum="NavigationRequestSecurityLevel" expires_after="2024-07-07">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteLanguageSupported"
-    enum="Boolean" expires_after="2024-04-28">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.GetReputationStatusWithEngagedSitesTime"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-08-11">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
@@ -545,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportCompletionStatus"
-    enum="SCTAuditingReportCompletionStatus" expires_after="2024-04-28">
+    enum="SCTAuditingReportCompletionStatus" expires_after="2024-06-30">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -833,46 +833,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteIsolation.ORB.BlockingReason"
-    enum="OrbBlockingDecisionReason" expires_after="2023-08-08">
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>vogelheim@chromium.org</owner>
-  <summary>
-    Logs why ORB has reached a blocking decision.
-
-    Logged for each response processed by OpaqueResponseBlockingAnalyzer.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.ORB.CorbVsOrb" enum="CorbVsOrb"
-    expires_after="2024-02-11">
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>vogelheim@chromium.org</owner>
-  <summary>
-    Logs whether ORB and CORB would take the same allow-vs-block decision. This
-    should help assess the backcompatibility risk of shipping ORB.
-
-    Logged at the end of lifetime of the ResponseAnalyzer (i.e. after processing
-    each response that is subject to CORB - most NetworkService responses, but
-    also CORB-covered web bundles).
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason"
-    enum="OrbBlockingDecisionReason" expires_after="2023-10-08">
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>vogelheim@chromium.org</owner>
-  <summary>
-    Logs why ORB has reached a blocking decision.
-
-    Logged when it turned out that CORB wouldn't have blocked the response, but
-    ORB blocked the response.
-  </summary>
-</histogram>
-
 <histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
     expires_after="2024-05-26">
   <owner>alexmos@chromium.org</owner>
@@ -899,7 +859,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason"
     enum="ProcessPerSiteWithMainFrameThresholdBlockReason"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

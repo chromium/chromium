@@ -79,8 +79,9 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
 
  private:
   ~UpdaterObserver() override {
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run(result_);
+    }
   }
 
   static UpdateService::UpdateState QueryUpdateState(
@@ -94,15 +95,17 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
       if (SUCCEEDED(hr)) {
         using State = UpdateService::UpdateState::State;
         std::optional<State> state = CheckedCastToEnum<State>(val_state);
-        if (state)
+        if (state) {
           update_service_state.state = *state;
+        }
       }
     }
     {
       base::win::ScopedBstr app_id;
       HRESULT hr = update_state->get_appId(app_id.Receive());
-      if (SUCCEEDED(hr))
+      if (SUCCEEDED(hr)) {
         update_service_state.app_id = base::WideToUTF8(app_id.Get());
+      }
     }
     {
       base::win::ScopedBstr next_version;
@@ -115,20 +118,23 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
     {
       LONGLONG downloaded_bytes = -1;
       HRESULT hr = update_state->get_downloadedBytes(&downloaded_bytes);
-      if (SUCCEEDED(hr))
+      if (SUCCEEDED(hr)) {
         update_service_state.downloaded_bytes = downloaded_bytes;
+      }
     }
     {
       LONGLONG total_bytes = -1;
       HRESULT hr = update_state->get_totalBytes(&total_bytes);
-      if (SUCCEEDED(hr))
+      if (SUCCEEDED(hr)) {
         update_service_state.total_bytes = total_bytes;
+      }
     }
     {
       LONG install_progress = -1;
       HRESULT hr = update_state->get_installProgress(&install_progress);
-      if (SUCCEEDED(hr))
+      if (SUCCEEDED(hr)) {
         update_service_state.install_progress = install_progress;
+      }
     }
     {
       LONG val_error_category = 0;
@@ -137,21 +143,24 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
         using ErrorCategory = UpdateService::ErrorCategory;
         std::optional<ErrorCategory> error_category =
             CheckedCastToEnum<ErrorCategory>(val_error_category);
-        if (error_category)
+        if (error_category) {
           update_service_state.error_category = *error_category;
+        }
       }
     }
     {
       LONG error_code = -1;
       HRESULT hr = update_state->get_errorCode(&error_code);
-      if (SUCCEEDED(hr))
+      if (SUCCEEDED(hr)) {
         update_service_state.error_code = error_code;
+      }
     }
     {
       LONG extra_code1 = -1;
       HRESULT hr = update_state->get_extraCode1(&extra_code1);
-      if (SUCCEEDED(hr))
+      if (SUCCEEDED(hr)) {
         update_service_state.extra_code1 = extra_code1;
+      }
     }
     {
       base::win::ScopedBstr installer_text;
@@ -230,8 +239,9 @@ class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
 
  private:
   ~UpdaterCallback() override {
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run(base::ok(status_code_));
+    }
   }
 
   base::OnceCallback<void(base::expected<LONG, RpcError>)> callback_;
@@ -308,7 +318,7 @@ class UpdaterAppStatesCallback
 
   static UpdateService::AppState IUpdaterAppStateToAppState(
       Microsoft::WRL::ComPtr<IUpdaterAppState> updater_app_state) {
-    DCHECK(updater_app_state);
+    CHECK(updater_app_state);
 
     UpdateService::AppState app_state;
     {

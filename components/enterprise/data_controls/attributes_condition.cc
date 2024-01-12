@@ -18,6 +18,7 @@ namespace {
 // an AttributesCondition.
 constexpr char kKeyUrls[] = "urls";
 constexpr char kKeyIncognito[] = "incognito";
+constexpr char kKeyOsClipboard[] = "os_clipboard";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kKeyComponents[] = "components";
@@ -46,6 +47,7 @@ AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
   }
 
   incognito_ = value.FindBool(kKeyIncognito);
+  os_clipboard_ = value.FindBool(kKeyOsClipboard);
 
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value::List* components_value = value.FindList(kKeyComponents);
@@ -69,12 +71,12 @@ AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
 AttributesCondition::AttributesCondition(AttributesCondition&& other) = default;
 
 bool AttributesCondition::IsValid() const {
+  bool valid = (url_matcher_ && !url_matcher_->IsEmpty()) ||
+               incognito_.has_value() || os_clipboard_.has_value();
 #if BUILDFLAG(IS_CHROMEOS)
-  return (url_matcher_ && !url_matcher_->IsEmpty()) || !components_.empty() ||
-         incognito_.has_value();
-#else
-  return (url_matcher_ && !url_matcher_->IsEmpty()) || incognito_.has_value();
+  valid |= !components_.empty();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  return valid;
 }
 
 bool AttributesCondition::URLMatches(GURL url) const {
@@ -107,13 +109,21 @@ bool AttributesCondition::ComponentMatches(Component component) const {
 
 bool AttributesCondition::IncognitoMatches(
     const absl::optional<bool>& incognito) const {
-  // When the condition has no assertion on the incognito status of the tab,
-  // `incognito` is always considered to have a matching value.
   if (!incognito_.has_value()) {
     return true;
   }
 
   return incognito.has_value() && incognito_.value() == incognito.value();
+}
+
+bool AttributesCondition::OsClipboardMatches(bool os_clipboard) const {
+  DCHECK(os_clipboard_.has_value());
+
+  return os_clipboard == os_clipboard_.value();
+}
+
+bool AttributesCondition::is_os_clipboard_condition() const {
+  return os_clipboard_.has_value();
 }
 
 // static
@@ -139,6 +149,12 @@ std::unique_ptr<Condition> SourceAttributesCondition::Create(
 
 bool SourceAttributesCondition::IsTriggered(
     const ActionContext& action_context) const {
+  if (is_os_clipboard_condition()) {
+    // This returns early as incognito, URLs, etc. don't need to be checked for
+    // an OS clipboard condition.
+    return OsClipboardMatches(action_context.source.os_clipboard);
+  }
+
   if (!IncognitoMatches(action_context.source.incognito)) {
     return false;
   }
@@ -172,6 +188,17 @@ std::unique_ptr<Condition> DestinationAttributesCondition::Create(
 
 bool DestinationAttributesCondition::IsTriggered(
     const ActionContext& action_context) const {
+  if (is_os_clipboard_condition()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (!ComponentMatches(action_context.destination.component)) {
+      return false;
+    }
+#endif
+    // This returns early as incognito, URLs, etc. don't need to be checked for
+    // an OS clipboard condition.
+    return OsClipboardMatches(action_context.destination.os_clipboard);
+  }
+
   if (!IncognitoMatches(action_context.destination.incognito)) {
     return false;
   }

@@ -106,7 +106,6 @@ public class TabSwitcherMessageManagerUnitTest {
         doNothing().when(mTabModelFilter).addObserver(mTabModelObserverCaptor.capture());
         doReturn(mTabModel).when(mTabModelFilter).getTabModel();
         mCurrentTabModelFilterSupplier.set(mTabModelFilter);
-        Profile.setLastUsedProfileForTesting(mProfile);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
@@ -130,7 +129,7 @@ public class TabSwitcherMessageManagerUnitTest {
         mMessageManager.addObserver(mMessageUpdateObserver);
 
         mMessageManager.setPriceMessageServiceForTesting(mPriceMessageService);
-        mMessageManager.initWithNative();
+        mMessageManager.initWithNative(mProfile);
 
         assertTrue(mCurrentTabModelFilterSupplier.hasObservers());
     }

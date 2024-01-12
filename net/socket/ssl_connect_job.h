@@ -106,8 +106,6 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
         const NetLogWithSource* net_log);
   };
 
-  // Note: the SSLConnectJob does not own |messenger| so it must outlive the
-  // job.
   SSLConnectJob(RequestPriority priority,
                 const SocketTag& socket_tag,
                 const CommonConnectJobParams* common_connect_job_params,

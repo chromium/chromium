@@ -379,6 +379,10 @@ bool WaylandWindow::SupportsConfigureMinimizedState() const {
   return false;
 }
 
+bool WaylandWindow::SupportsConfigurePinnedState() const {
+  return false;
+}
+
 void WaylandWindow::Close() {
   delegate_->OnClosed();
 }
@@ -536,11 +540,6 @@ void WaylandWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
-  // Wayland compositors always support translucency.
-  return true;
-}
-
 void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
   // TODO(crbug.com/1395267): Add window geometry to WaylandWindow::State.
   if ((!frame_insets_px_ && !insets_px) ||
@@ -646,6 +645,9 @@ void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
 }
 
+WaylandWindow::WindowStates::WindowStates() = default;
+WaylandWindow::WindowStates::~WindowStates() = default;
+
 std::string WaylandWindow::WindowStates::ToString() const {
   std::string states = "";
   if (is_maximized) {
@@ -654,6 +656,17 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_fullscreen) {
     states += "fullscreen ";
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_immersive_fullscreen) {
+    states += "immersive ";
+  }
+  if (is_pinned_fullscreen) {
+    states += "pinned ";
+  }
+  if (is_trusted_pinned_fullscreen) {
+    states += "trusted_pinned ";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (is_activated) {
     states += "activated ";
   }
@@ -662,7 +675,7 @@ std::string WaylandWindow::WindowStates::ToString() const {
   } else {
     base::TrimString(states, " ", &states);
   }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   states += "; tiled_edges: ";
   std::string tiled = "";
   if (tiled_edges.left) {

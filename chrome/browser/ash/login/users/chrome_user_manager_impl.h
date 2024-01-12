@@ -211,10 +211,10 @@ class ChromeUserManagerImpl
       const AccountId& account_id);
 
   // Interface to the signed settings store.
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<CrosSettings> cros_settings_;
 
   // Interface to device-local account definitions and associated policy.
-  raw_ptr<policy::DeviceLocalAccountPolicyService, ExperimentalAsh>
+  raw_ptr<policy::DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
 
   base::ScopedObservation<session_manager::SessionManager,

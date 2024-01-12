@@ -131,5 +131,5 @@ void StarView::EditBookmarksPrefUpdated() {
   Update();
 }
 
-BEGIN_METADATA(StarView, PageActionIconView)
+BEGIN_METADATA(StarView)
 END_METADATA

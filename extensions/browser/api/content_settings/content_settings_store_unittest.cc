@@ -35,7 +35,7 @@ void CheckRule(std::unique_ptr<content_settings::Rule> rule,
                ContentSetting setting) {
   EXPECT_EQ(primary_pattern.ToString(), rule->primary_pattern.ToString());
   EXPECT_EQ(secondary_pattern.ToString(), rule->secondary_pattern.ToString());
-  EXPECT_EQ(setting, content_settings::ValueToContentSetting(rule->value()));
+  EXPECT_EQ(setting, content_settings::ValueToContentSetting(rule->value));
 }
 
 // Helper class which returns monotonically-increasing base::Time objects.

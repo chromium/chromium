@@ -36,6 +36,7 @@
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace ash::shimless_rma {
 namespace {
@@ -330,12 +331,36 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
   EXPECT_EQ(result.error(), k3pDiagErrorCannotActivateExtension);
 }
 
-// Verify that IWA with permission policy will be blocked.
+// Verify that IWA with allowlisted permission policy will be installed.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
-       IWACannotHavePermissionsPolicy) {
+       IWACanHaveAllowlistedPermissionsPolicy) {
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
       blink::ParsedPermissionsPolicy{
-          {blink::ParsedPermissionsPolicyDeclaration{}}});
+          {blink::ParsedPermissionsPolicyDeclaration{
+               blink::mojom::PermissionsPolicyFeature::kCamera},
+           blink::ParsedPermissionsPolicyDeclaration{
+               blink::mojom::PermissionsPolicyFeature::kFullscreen},
+           blink::ParsedPermissionsPolicyDeclaration{
+               blink::mojom::PermissionsPolicyFeature::kMicrophone},
+           blink::ParsedPermissionsPolicyDeclaration{
+               blink::mojom::PermissionsPolicyFeature::kHid}}});
+
+  auto result = PrepareDiagnosticsAppBrowserContext(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .Append(kTestCrxPath));
+
+  EXPECT_TRUE(result.has_value());
+}
+
+// Verify that IWA with not-allowlisted permission policy will be blocked.
+TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
+       IWACannotHavePermissionsPolicyOutsideAllowlist) {
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
+      blink::ParsedPermissionsPolicy{
+          blink::ParsedPermissionsPolicyDeclaration{
+              blink::mojom::PermissionsPolicyFeature::kCamera},
+          {blink::ParsedPermissionsPolicyDeclaration{
+              blink::mojom::PermissionsPolicyFeature::kNotFound}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)

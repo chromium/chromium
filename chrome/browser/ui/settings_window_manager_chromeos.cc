@@ -8,6 +8,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/strings/strcat.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -164,6 +166,18 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
                                            int64_t display_id) {
   ShowChromePageForProfile(profile, chrome::GetOSSettingsUrl(sub_page),
                            display_id);
+}
+
+void SettingsWindowManager::ShowOSSettings(
+    Profile* profile,
+    const std::string& sub_page,
+    const chromeos::settings::mojom::Setting setting_id,
+    int64_t display_id) {
+  std::string path_with_setting_id =
+      base::StrCat({sub_page, std::string("?settingId="),
+                    base::NumberToString(base::to_underlying(setting_id))});
+
+  ShowOSSettings(profile, path_with_setting_id, display_id);
 }
 
 Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {

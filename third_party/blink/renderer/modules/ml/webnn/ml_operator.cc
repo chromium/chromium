@@ -96,6 +96,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "gather";
     case MLOperator::OperatorKind::kGemm:
       return "gemm";
+    case MLOperator::OperatorKind::kHardSigmoid:
+      return "hardSigmoid";
     case MLOperator::OperatorKind::kHardSwish:
       return "hardSwish";
     case MLOperator::OperatorKind::kAveragePool2d:

@@ -32,7 +32,7 @@ class FastInitiationScannerFeatureUsageMetrics final
   void RecordUsage(bool success);
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   ash::feature_usage::FeatureUsageMetrics feature_usage_metrics_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 };

@@ -514,6 +514,8 @@ NSInteger kFeedSymbolPointSize = 17;
                              ? kTopVerticalPaddingFollowing
                              : kTopVerticalPadding;
   }
+  CGFloat buttonMargin =
+      IsFeedContainmentEnabled() ? kButtonHorizontalMargin : 0;
   [self.feedHeaderConstraints addObjectsFromArray:@[
     // Anchor container and menu button.
     [self.view.heightAnchor constraintEqualToConstant:totalHeaderHeight],
@@ -526,7 +528,7 @@ NSInteger kFeedSymbolPointSize = 17;
     [self.container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
     [self.menuButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
-                       constant:-kButtonHorizontalMargin],
+                       constant:-buttonMargin],
     [self.menuButton.centerYAnchor
         constraintEqualToAnchor:self.container.centerYAnchor],
     // Set menu button size.
@@ -590,11 +592,13 @@ NSInteger kFeedSymbolPointSize = 17;
     }
 
   } else {
+    CGFloat titleMargin =
+        IsFeedContainmentEnabled() ? kTitleHorizontalMargin : 0;
     [self.feedHeaderConstraints addObjectsFromArray:@[
       // Anchors title label.
       [self.titleLabel.leadingAnchor
           constraintEqualToAnchor:self.container.leadingAnchor
-                         constant:kTitleHorizontalMargin],
+                         constant:titleMargin],
       [self.titleLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.menuButton.leadingAnchor],
       [self.titleLabel.centerYAnchor
@@ -613,8 +617,8 @@ NSInteger kFeedSymbolPointSize = 17;
     [self.segmentedControl.centerYAnchor
         constraintEqualToAnchor:self.container.centerYAnchor],
     [self.segmentedControl.trailingAnchor
-        constraintEqualToAnchor:self.menuButton.leadingAnchor
-                       constant:-kButtonHorizontalMargin],
+        constraintLessThanOrEqualToAnchor:self.menuButton.leadingAnchor
+                                 constant:-kButtonHorizontalMargin],
     [self.segmentedControl.leadingAnchor
         constraintEqualToAnchor:self.sortButton.trailingAnchor
                        constant:kButtonHorizontalMargin],

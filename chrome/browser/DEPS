@@ -596,6 +596,9 @@ specific_include_rules = {
   "chrome_navigation_browsertest.cc" : [
     "+content/common/content_navigation_policy.h",
   ],
+  "chrome_web_platform_security_metrics_browsertest.cc" : [
+    "+pdf/pdf_features.h",
+  ],
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+pdf/pdf_features.h",

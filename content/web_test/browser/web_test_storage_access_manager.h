@@ -42,7 +42,7 @@ class WebTestStorageAccessManager
                 receiver);
 
  private:
-  raw_ptr<BrowserContext> browser_context_;
+  raw_ref<BrowserContext> browser_context_;
 
   mojo::ReceiverSet<blink::test::mojom::StorageAccessAutomation> receivers_;
 };

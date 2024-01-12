@@ -17,9 +17,9 @@
 // View by explicitly not handling them in OnMousePressed.
 class TabCloseButton : public views::LabelButton,
                        public views::MaskedTargeterDelegate {
- public:
-  METADATA_HEADER(TabCloseButton);
+  METADATA_HEADER(TabCloseButton, views::LabelButton)
 
+ public:
   using MouseEventCallback =
       base::RepeatingCallback<void(views::View*, const ui::MouseEvent&)>;
 

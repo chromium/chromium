@@ -4,6 +4,7 @@
 
 #include "extensions/test/test_extension_dir.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/files/file_util.h"
@@ -32,7 +33,7 @@ TestExtensionDir::TestExtensionDir(TestExtensionDir&&) noexcept = default;
 
 TestExtensionDir& TestExtensionDir::operator=(TestExtensionDir&&) = default;
 
-void TestExtensionDir::WriteManifest(base::StringPiece manifest) {
+void TestExtensionDir::WriteManifest(std::string_view manifest) {
   WriteFile(FILE_PATH_LITERAL("manifest.json"), manifest);
 }
 
@@ -44,7 +45,7 @@ void TestExtensionDir::WriteManifest(const base::Value::Dict& manifest) {
 }
 
 void TestExtensionDir::WriteFile(const base::FilePath::StringType& filename,
-                                 base::StringPiece contents) {
+                                 std::string_view contents) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::WriteFile(dir_.GetPath().Append(filename), contents));
 }
@@ -58,7 +59,7 @@ void TestExtensionDir::CopyFileTo(
       << "Failed to copy file from " << from_path << " to " << local_filename;
 }
 
-base::FilePath TestExtensionDir::Pack(base::StringPiece custom_path) {
+base::FilePath TestExtensionDir::Pack(std::string_view custom_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ExtensionCreator creator;
   base::FilePath crx_path = crx_dir_.GetPath().AppendASCII(

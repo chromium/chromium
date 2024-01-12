@@ -87,7 +87,7 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   void RefreshUploadFrequency();
 
   // CloudPolicyClient used to issue requests to the server.
-  raw_ptr<CloudPolicyClient, ExperimentalAsh> client_;
+  raw_ptr<CloudPolicyClient> client_;
 
   // StatusCollector that provides status for uploading.
   std::unique_ptr<StatusCollector> collector_;

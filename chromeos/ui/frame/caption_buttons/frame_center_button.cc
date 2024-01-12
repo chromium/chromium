@@ -110,7 +110,7 @@ void FrameCenterButton::SetText(std::optional<std::u16string> text) {
     render_text->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     text_ = std::move(render_text);
   }
-  text_->SetText(*text);
+  text_->SetText(*std::move(text));
 
   if (parent())
     parent()->InvalidateLayout();

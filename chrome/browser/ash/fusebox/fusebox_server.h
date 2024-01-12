@@ -123,6 +123,11 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
       base::OnceCallback<void(const CreateResponseProto& response)>;
   void Create(const CreateRequestProto& request, CreateCallback callback);
 
+  // Flush flushes a file, like the C standard library's fsync.
+  using FlushCallback =
+      base::OnceCallback<void(const FlushResponseProto& response)>;
+  void Flush(const FlushRequestProto& request, FlushCallback callback);
+
   // MkDir is analogous to "/usr/bin/mkdir".
   using MkDirCallback =
       base::OnceCallback<void(const MkDirResponseProto& response)>;
@@ -217,9 +222,10 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
 
   // ----
 
+  using PendingFlush = std::pair<FlushRequestProto, FlushCallback>;
   using PendingRead2 = std::pair<Read2RequestProto, Read2Callback>;
   using PendingWrite2 = std::pair<Write2RequestProto, Write2Callback>;
-  using PendingOp = absl::variant<PendingRead2, PendingWrite2>;
+  using PendingOp = absl::variant<PendingFlush, PendingRead2, PendingWrite2>;
 
   struct FuseFileMapEntry {
     FuseFileMapEntry(scoped_refptr<storage::FileSystemContext> fs_context_arg,
@@ -232,6 +238,7 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
     FuseFileMapEntry(FuseFileMapEntry&&);
     ~FuseFileMapEntry();
 
+    void DoFlush(const FlushRequestProto& request, FlushCallback callback);
     void DoRead2(const Read2RequestProto& request, Read2Callback callback);
     void DoWrite2(const Write2RequestProto& request, Write2Callback callback);
     void Do(PendingOp& op,
@@ -310,6 +317,10 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
                           bool create_succeeded,
                           MakeTempDirCallback callback);
 
+  void OnFlush(uint64_t fuse_handle,
+               FlushCallback callback,
+               const FlushResponseProto& response);
+
   void OnRead2(uint64_t fuse_handle,
                Read2Callback callback,
                const Read2ResponseProto& response);
@@ -330,7 +341,7 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
   // Returns the fuse_handle that is the map key.
   uint64_t InsertFuseFileMapEntry(FuseFileMapEntry&& entry);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   FuseFileMap fuse_file_map_;
   fusebox::MonikerMap moniker_map_;
   PrefixMap prefix_map_;

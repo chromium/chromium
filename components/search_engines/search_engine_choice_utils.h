@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
 
 namespace policy {
@@ -106,23 +107,6 @@ enum class ChoicePromo {
   kFre = 2,
 };
 
-//  The location from which the default search engine was set.
-//  These values are persisted to logs. Entries should not be renumbered and
-//  numeric values should never be reused.
-//  Must be kept in sync with the ChoiceMadeLocation enum in
-//  search_engines_browser_proxy.ts
-enum class ChoiceMadeLocation {
-  // `chrome://settings/search`
-  kSearchSettings = 0,
-  // `chrome://settings/searchEngines`
-  // This value is also used for the settings pages on mobile.
-  kSearchEngineSettings = 1,
-  // The search engine choice dialog for existing users or the profile picker
-  // for new users.
-  kChoiceScreen = 2,
-  kMaxValue = kChoiceScreen,
-};
-
 // The cause for wiping the search engine choice preferences. Only used for
 // metrics.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -161,19 +145,21 @@ enum class RepromptResult {
 };
 
 // Whether the choice screen flag is generally enabled for the specific flow.
+// TODO(b/318824817): To be removed post-launch.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
-// Returns which version of the settings screen for the default search engine
-// setting should be shown.
-// TODO(b/306367986): Restrict this function to iOS.
+// Returns whether the version of the search engines settings screen showing
+// additional search engine info should be shown.
+// TODO(b/318824817): To be removed post-launch.
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
 
+#if BUILDFLAG(IS_IOS)
 // Returns whether the search engine choice screen can be displayed or not based
 // on device policies and profile properties.
-// TODO(b/306367986): Restrict this function to iOS.
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service);
+#endif
 
 // Returns the choice screen eligibility condition most relevant for the profile
 // associated with `profile_prefs` and `template_url_service`.

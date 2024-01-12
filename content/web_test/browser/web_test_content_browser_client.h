@@ -52,7 +52,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   WebTestBrowserContext* GetWebTestBrowserContext();
   void SetPopupBlockingEnabled(bool block_popups_);
   void ResetMockClipboardHosts();
-  void SetScreenOrientationChanged(bool screen_orientation_changed);
 
   // Retrieves the last created FakeBluetoothChooser instance.
   std::unique_ptr<FakeBluetoothChooser> GetNextFakeBluetoothChooser();
@@ -64,6 +63,9 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       RenderProcessHost* render_process_host) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
@@ -95,10 +97,10 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   bool CanAcceptUntrustedExchangesIfNeeded() override;
   BluetoothDelegate* GetBluetoothDelegate() override;
   content::TtsPlatform* GetTtsPlatform() override;
-  bool CanEnterFullscreenWithoutUserActivation() override;
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
       const content::GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame,
       const GURL& url,
@@ -122,6 +124,10 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       bool post_impression_reporting) override;
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
+  void RegisterMojoBinderPoliciesForSameOriginPrerendering(
+      MojoBinderPolicyMap& policy_map) override;
+  void RegisterMojoBinderPoliciesForPreview(
+      MojoBinderPolicyMap& policy_map) override;
 
  private:
   // ShellContentBrowserClient overrides.
@@ -172,7 +178,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver);
 
   bool block_popups_ = true;
-  bool screen_orientation_changed_ = false;
 
   // Stores the FakeBluetoothChooserFactory that produces FakeBluetoothChoosers.
   std::unique_ptr<FakeBluetoothChooserFactory> fake_bluetooth_chooser_factory_;

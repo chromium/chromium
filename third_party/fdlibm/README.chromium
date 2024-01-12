@@ -1,7 +1,7 @@
 Name: V8 fork of fdlibm
-URL: source.chromium.org/chromium/chromium/src/+/master:v8/src/base/ieee754.cc
+URL: https://source.chromium.org/chromium/chromium/src/+/master:v8/src/base/ieee754.cc
 Revision: c512d6173f33c6b8301d3fba9384edc9fc1f9e45
-Version: 0
+Version: N/A
 Security Critical: yes
 Shipped: yes
 License: fdlibm license

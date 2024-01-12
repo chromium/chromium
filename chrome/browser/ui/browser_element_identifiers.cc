@@ -9,6 +9,8 @@
 
 // Please keep this list alphabetized.
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(
+    kAnonymizedUrlCollectionPersonalizationSettingId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillStandaloneCvcSuggestionElementId);
@@ -40,6 +42,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceInsightsChipElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBookmarkViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingChipElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReadLaterSidePanelWebViewElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSavePasswordComboboxElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupBarElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupButtonElementId);

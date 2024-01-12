@@ -38,6 +38,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -376,7 +377,7 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   if (unclipped_size_) {
     gfx::SizeF target_size(*unclipped_size_);
     gfx::SizeF preview_size = GetTargetBoundsWithInsets().size();
-    target_size.Enlarge(0, -kHeaderHeightDp);
+    target_size.Enlarge(0, -kWindowMiniViewHeaderHeight);
 
     const float x_scale = target_size.width() / preview_size.width();
     const float y_scale = target_size.height() / preview_size.height();
@@ -443,7 +444,8 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
   const int top_view_inset = transform_window_.GetTopInset();
   gfx::RectF overview_item_bounds =
       transform_window_.ShrinkRectToFitPreservingAspectRatio(
-          screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
+          screen_rect, transformed_bounds, top_view_inset,
+          kWindowMiniViewHeaderHeight);
 
   if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
       transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
@@ -464,7 +466,8 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
       overview_item_bounds.set_y(
           overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
           window_top_inset_target_height);
-      overview_item_bounds.set_height(target_bounds.height() - kHeaderHeightDp +
+      overview_item_bounds.set_height(target_bounds.height() -
+                                      kWindowMiniViewHeaderHeight +
                                       window_top_inset_target_height);
     }
   }
@@ -517,7 +520,7 @@ gfx::RectF OverviewItem::GetWindowsUnionScreenBounds() const {
 
 gfx::RectF OverviewItem::GetTargetBoundsWithInsets() const {
   gfx::RectF target_bounds = target_bounds_;
-  target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
+  target_bounds.Inset(gfx::InsetsF::TLBR(kWindowMiniViewHeaderHeight, 0, 0, 0));
   return target_bounds;
 }
 
@@ -528,7 +531,7 @@ gfx::RectF OverviewItem::GetTransformedBounds() const {
 float OverviewItem::GetItemScale(int height) {
   return ScopedOverviewTransformWindow::GetItemScale(
       GetWindowsUnionScreenBounds().height(), height,
-      transform_window_.GetTopInset(), kHeaderHeightDp);
+      transform_window_.GetTopInset(), kWindowMiniViewHeaderHeight);
 }
 
 void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {

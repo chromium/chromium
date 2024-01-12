@@ -208,7 +208,8 @@ void BaseUIManager::OnBlockingPageDone(
     bool showed_interstitial) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& resource : resources) {
-    resource.DispatchCallback(FROM_HERE, proceed, showed_interstitial);
+    resource.DispatchCallback(FROM_HERE, proceed, showed_interstitial,
+                              false /* has_post_commit_interstitial_skipped */);
 
     GURL allowlist_url = GetAllowlistUrl(
         main_frame_url, false /* is subresource */,
@@ -244,8 +245,9 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
         (resource.threat_type == SB_THREAT_TYPE_URL_MALWARE &&
          resource.threat_metadata.threat_pattern_type ==
              ThreatPatternType::MALWARE_LANDING)) {
-      resource.DispatchCallback(FROM_HERE, true /* proceed */,
-                                false /* showed_interstitial */);
+      resource.DispatchCallback(
+          FROM_HERE, true /* proceed */, false /* showed_interstitial */,
+          false /* has_post_commit_interstitial_skipped */);
       return;
     }
   }
@@ -266,7 +268,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // and top-level domain.
   if (IsAllowlisted(resource)) {
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
-                              false /* showed_interstitial */);
+                              false /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -326,7 +329,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // LoadPostCommitErrorPage creates another navigation).
   resource.DispatchCallback(
       FROM_HERE, false /* proceed */,
-      !load_post_commit_error_page /* showed_interstitial */);
+      !load_post_commit_error_page /* showed_interstitial */,
+      !load_post_commit_error_page /* has_post_commit_interstitial_skipped */);
 
   if (!base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     DCHECK(!resource.is_delayed_warning);

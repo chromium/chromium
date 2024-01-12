@@ -47,10 +47,12 @@ class MockUploader : public FeedbackUploader {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void QueueReport(std::unique_ptr<std::string> data, bool has_email) override {
+  void QueueReport(std::unique_ptr<std::string> data,
+                   bool has_email,
+                   int product_id) override {
     report_had_email_ = has_email;
     called_queue_report_ = true;
-    FeedbackUploader::QueueReport(std::move(data), has_email);
+    FeedbackUploader::QueueReport(std::move(data), has_email, product_id);
   }
 
   bool called_queue_report() const { return called_queue_report_; }

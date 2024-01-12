@@ -21,7 +21,7 @@
 namespace content {
 
 ServiceWorkerCacheStorageMatcher::ServiceWorkerCacheStorageMatcher(
-    absl::optional<std::string> cache_name,
+    std::optional<std::string> cache_name,
     blink::mojom::FetchAPIRequestPtr request,
     scoped_refptr<ServiceWorkerVersion> version,
     ServiceWorkerFetchDispatcher::FetchCallback fetch_callback)

@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ios/public/provider/chrome/browser/primes/primes_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
@@ -271,6 +273,14 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 + (void)dismissSettings {
   [chrome_test_util::HandlerForActiveBrowser() closeSettingsUI];
+}
+
++ (void)primesStopLogging {
+  ios::provider::PrimesStopLogging();
+}
+
++ (void)primesTakeMemorySnapshot:(NSString*)eventName {
+  ios::provider::PrimesTakeMemorySnapshot(eventName);
 }
 
 #pragma mark - Tab Utilities (EG2)
@@ -1301,6 +1311,14 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   prefService->SetString(path, UTF8Value);
 }
 
++ (void)setStringValue:(NSString*)value forUserPref:(NSString*)prefName {
+  std::string UTF8Value = base::SysNSStringToUTF8(value);
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->SetString(path, UTF8Value);
+}
+
 + (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   PrefService* prefService = GetApplicationContext()->GetLocalState();
@@ -1520,7 +1538,7 @@ int watchRunNumber = 0;
 #pragma mark - Default Search Engine Choice Screen Utilities
 
 + (BOOL)IsSearchEngineChoiceScreenEnabledFre {
-  return ios::provider::IsSearchEngineChoiceScreenEnabledFre();
+  return ios::first_run::IsSearchEngineChoiceScreenEnabledFre();
 }
 
 #pragma mark - First Run Utilities

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
@@ -73,7 +74,9 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
         on_device_component_state_manager)
     : access_controller_(std::move(access_controller)),
       on_device_component_state_manager_(
-          std::move(on_device_component_state_manager)) {
+          std::move(on_device_component_state_manager)),
+      config_interpreter_(
+          std::make_unique<OnDeviceModelExecutionConfigInterpreter>()) {
   if (on_device_component_state_manager_) {
     on_device_component_state_manager_->AddObserver(this);
   }
@@ -85,11 +88,32 @@ OnDeviceModelServiceController::~OnDeviceModelServiceController() {
   }
 }
 
-void OnDeviceModelServiceController::Init(
-    const base::FilePath& model_path,
-    std::unique_ptr<OnDeviceModelExecutionConfigInterpreter>
-        config_interpreter) {
-  CHECK(!model_paths_.has_value());
+void OnDeviceModelServiceController::Init() {
+  auto model_path_override_switch =
+      switches::GetOnDeviceModelExecutionOverride();
+  if (model_path_override_switch) {
+    SetModelPath(*StringToFilePath(*model_path_override_switch));
+  } else if (on_device_component_state_manager_) {
+    const OnDeviceModelComponentState* state =
+        on_device_component_state_manager_->GetState();
+    if (state) {
+      SetModelPath(state->GetInstallDirectory());
+    }
+  }
+}
+
+void OnDeviceModelServiceController::ClearModelPath() {
+  model_paths_ = std::nullopt;
+  config_interpreter_->ClearState();
+  model_remote_.reset();
+}
+
+void OnDeviceModelServiceController::SetModelPath(
+    const base::FilePath& model_path) {
+  // Even if model_path didn't change, we want to go through this process anyway
+  // because the content in the directory may have changed.
+  ClearModelPath();
+
   on_device_model::ModelAssetPaths model_paths;
   model_paths.sp_model = model_path.Append(kSpModelFile);
   model_paths.model = model_path.Append(kModelFile);
@@ -101,28 +125,7 @@ void OnDeviceModelServiceController::Init(
         *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
   }
   model_paths_ = std::move(model_paths);
-  config_interpreter_ = std::move(config_interpreter);
   config_interpreter_->UpdateConfigWithFileDir(model_path);
-}
-
-void OnDeviceModelServiceController::Init() {
-  auto model_path_override_switch =
-      switches::GetOnDeviceModelExecutionOverride();
-  std::optional<base::FilePath> model_path;
-  if (model_path_override_switch) {
-    model_path = StringToFilePath(*model_path_override_switch);
-  } else if (on_device_component_state_manager_) {
-    const OnDeviceModelComponentState* state =
-        on_device_component_state_manager_->GetState();
-    if (state) {
-      model_path = state->GetInstallDirectory();
-    }
-  }
-
-  if (model_path) {
-    Init(*model_path,
-         std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
-  }
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
@@ -247,14 +250,14 @@ void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
 
 void OnDeviceModelServiceController::StateChanged(
     const OnDeviceModelComponentState* state) {
-  if (state && !model_paths_) {
-    Init();
+  if (switches::GetOnDeviceModelExecutionOverride()) {
+    return;
+  }
+
+  if (state) {
+    SetModelPath(state->GetInstallDirectory());
   } else {
-    // TODO(b/302327114): Support other cases. Decide how to handle:
-    // * If state is null and Init() has already been called. We should prevent
-    // future requests from being handled, and maybe kill in-flight tasks.
-    // * If state is non-null and Init() has already been called. We should
-    // probably re-load any files as they may have changed.
+    ClearModelPath();
   }
 }
 

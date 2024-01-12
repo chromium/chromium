@@ -14,7 +14,7 @@ using Config = base::HistogramSharedMemoryConfig;
 
 struct ProcessTypeToOptionalConfig {
   int process_type;
-  absl::optional<base::HistogramSharedMemoryConfig> expected;
+  std::optional<base::HistogramSharedMemoryConfig> expected;
 };
 
 using HistogramSharedMemoryConfigTest =
@@ -38,11 +38,11 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HistogramSharedMemoryConfigTest,
     testing::ValuesIn(std::vector<ProcessTypeToOptionalConfig>({
-        {PROCESS_TYPE_UNKNOWN, absl::nullopt},
-        {PROCESS_TYPE_BROWSER, absl::nullopt},
+        {PROCESS_TYPE_UNKNOWN, std::nullopt},
+        {PROCESS_TYPE_BROWSER, std::nullopt},
         {PROCESS_TYPE_RENDERER, Config{"RendererMetrics", 2 << 20}},
-        {PROCESS_TYPE_PLUGIN_DEPRECATED, absl::nullopt},
-        {PROCESS_TYPE_WORKER_DEPRECATED, absl::nullopt},
+        {PROCESS_TYPE_PLUGIN_DEPRECATED, std::nullopt},
+        {PROCESS_TYPE_WORKER_DEPRECATED, std::nullopt},
         {PROCESS_TYPE_UTILITY, Config{"UtilityMetrics", 512 << 10}},
         {PROCESS_TYPE_ZYGOTE, Config{"ZygoteMetrics", 64 << 10}},
         {PROCESS_TYPE_SANDBOX_HELPER, Config{"SandboxHelperMetrics", 64 << 10}},

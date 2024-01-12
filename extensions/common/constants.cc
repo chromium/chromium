@@ -4,9 +4,10 @@
 
 #include "extensions/common/constants.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -56,8 +57,8 @@ constexpr char kStagingHighlightsAppId[] = "glochkamldfopmdlegmcnjmgkopfiplb";
 constexpr char kBlazeyAttractLoopAppId[] = "lceekekmpiieklnpocjfahfakahjkhha";
 constexpr char kBlazeyHighlightsAppId[] = "jbpnmbcpgemgfblnjfhnmlffhkofekmf";
 
-bool IsDemoModeChromeApp(base::StringPiece extension_id) {
-  constexpr auto kDemoModeApps = base::MakeFixedFlatSet<base::StringPiece>({
+bool IsDemoModeChromeApp(std::string_view extension_id) {
+  constexpr auto kDemoModeApps = base::MakeFixedFlatSet<std::string_view>({
       // clang-format off
       kHighlightsAppId,
       kScreensaverAppId,
@@ -75,8 +76,8 @@ bool IsDemoModeChromeApp(base::StringPiece extension_id) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool IsSystemUIApp(base::StringPiece extension_id) {
-  constexpr auto kApps = base::MakeFixedFlatSet<base::StringPiece>({
+bool IsSystemUIApp(std::string_view extension_id) {
+  constexpr auto kApps = base::MakeFixedFlatSet<std::string_view>({
       // clang-format off
       kChromeVoxExtensionId,
       kFilesManagerAppId,
@@ -89,8 +90,8 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool IsQuickOfficeExtension(base::StringPiece extension_id) {
-  constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<base::StringPiece>({
+bool IsQuickOfficeExtension(std::string_view extension_id) {
+  constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<std::string_view>({
       // clang-format off
       kQuickOfficeComponentExtensionId,
       kQuickOfficeInternalExtensionId,
@@ -101,8 +102,8 @@ bool IsQuickOfficeExtension(base::StringPiece extension_id) {
 }
 
 // TODO(https://crbug.com/1257275): remove after default app migration is done.
-bool IsPreinstalledAppId(base::StringPiece app_id) {
-  constexpr auto kPreinstalledApps = base::MakeFixedFlatSet<base::StringPiece>({
+bool IsPreinstalledAppId(std::string_view app_id) {
+  constexpr auto kPreinstalledApps = base::MakeFixedFlatSet<std::string_view>({
       // clang-format off
       kGmailAppId,
       kGoogleDocsAppId,

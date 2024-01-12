@@ -136,7 +136,7 @@ class FileDescriptorWatcherTest
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
 
     char buffer;
-    ASSERT_TRUE(ReadFromFD(read_file_descriptor(), &buffer, sizeof(buffer)));
+    ASSERT_TRUE(ReadFromFD(read_file_descriptor(), make_span(&buffer, 1u)));
   }
 
   // Mock on wich callbacks are invoked.

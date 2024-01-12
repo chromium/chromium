@@ -51,7 +51,8 @@
           "builder": "mac-arm64-clobber-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-arm64-archive-rel/targets"
     }
   },
   "$build/reclient": {

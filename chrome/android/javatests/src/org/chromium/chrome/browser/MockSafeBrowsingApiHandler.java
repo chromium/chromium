@@ -19,6 +19,9 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
 
     // These codes are defined in safe_browsing_api_handler_util.h
     public static final int SOCIAL_ENGINEERING_CODE = 2;
+    public static final int ABUSIVE_EXPERIENCE_VIOLATION_CODE = 20;
+    public static final int BETTER_ADS_VIOLATION_CODE = 21;
+    public static final int THREAT_ATTRIBUTE_CANARY_CODE = 1;
     private static final int NO_THREAT_CODE = 0;
     private static final int SUCCESS_RESPONSE_STATUS_CODE = 0;
 
@@ -26,6 +29,8 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
     // it is cumbersome for tests to reach into the singleton instance directly. So just make this
     // static and modifiable from java tests using a static method.
     private static final Map<String, Integer> sResponseThreatTypeMap = new HashMap<>();
+    // Global url -> threatAttributes map.
+    private static final Map<String, int[]> sResponseThreatAttributesMap = new HashMap<>();
 
     @Override
     public void startUriLookup(long callbackId, String uri, int[] threatTypes, int protocol) {
@@ -36,7 +41,7 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
                                 callbackId,
                                 LookupResult.SUCCESS,
                                 getReturnedThreatType(uri, threatTypes),
-                                /* threatAttributes= */ new int[0],
+                                getReturnedThreatAttributes(uri),
                                 SUCCESS_RESPONSE_STATUS_CODE,
                                 DEFAULT_CHECK_DELTA_US));
     }
@@ -55,11 +60,22 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
     }
 
     /*
+     * Adds a mock response with threat attributes to the static map.
+     * Should be called before the main activity starts up, to avoid thread-unsafe behavior.
+     */
+    public static void addMockResponse(
+            String uri, int returnedThreatType, int[] returnedThreatAttributes) {
+        sResponseThreatTypeMap.put(uri, returnedThreatType);
+        sResponseThreatAttributesMap.put(uri, returnedThreatAttributes);
+    }
+
+    /*
      * Clears the mock responses from the static map.
      * Should be called in the test tearDown method.
      */
     public static void clearMockResponses() {
         sResponseThreatTypeMap.clear();
+        sResponseThreatAttributesMap.clear();
     }
 
     private int getReturnedThreatType(String uri, int[] threatTypes) {
@@ -73,5 +89,9 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
             }
         }
         return NO_THREAT_CODE;
+    }
+
+    private int[] getReturnedThreatAttributes(String uri) {
+        return sResponseThreatAttributesMap.getOrDefault(uri, new int[0]);
     }
 }

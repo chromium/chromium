@@ -5,27 +5,38 @@
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
 
 #include <stdint.h>
+#include <concepts>
 #include <sstream>
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-forward.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
+
+using mojom::user_education_internals::FeaturePromoDemoPageData;
+using mojom::user_education_internals::FeaturePromoDemoPageDataPtr;
+using mojom::user_education_internals::FeaturePromoDemoPageInfo;
+using mojom::user_education_internals::FeaturePromoDemoPageInfoPtr;
 
 namespace {
 
@@ -36,8 +47,23 @@ user_education::TutorialService* GetTutorialService(Profile* profile) {
 
 user_education::FeaturePromoRegistry* GetFeaturePromoRegistry(
     Profile* profile) {
-  auto* service = UserEducationServiceFactory::GetForBrowserContext(profile);
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
   return service ? &service->feature_promo_registry() : nullptr;
+}
+
+user_education::FeaturePromoStorageService* GetStorageService(
+    Profile* profile) {
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  return service ? &service->feature_promo_storage_service() : nullptr;
+}
+
+user_education::FeaturePromoController* GetFeaturePromoController(
+    content::WebUI* web_ui) {
+  return chrome::FindBrowserWithTab(web_ui->GetWebContents())
+      ->window()
+      ->GetFeaturePromoController();
 }
 
 std::string GetPromoTypeString(
@@ -58,17 +84,25 @@ std::string GetPromoTypeString(
   }
 }
 
-// Takes the name of a feature and creates a human-readable title out of it to
-// be displayed on the tester page.
-std::string GetTitleFromFeaturePromoData(
-    const base::Feature* feature,
-    const user_education::FeaturePromoSpecification& spec) {
-  std::string result;
-  std::string name = feature->name;
+const base::Feature* GetFeatureByName(const std::string& feature_name,
+                                      Profile* profile) {
+  auto* const registry = GetFeaturePromoRegistry(profile);
+  if (registry) {
+    const auto& feature_promo_specifications =
+        registry->GetRegisteredFeaturePromoSpecifications();
+    for (const auto& [feature, spec] : feature_promo_specifications) {
+      if (feature_name == feature->name) {
+        return feature;
+      }
+    }
+  }
+  return nullptr;
+}
 
-  // Remove the "IPH_" prefix if one is present.
-  if (name.starts_with("IPH_")) {
-    name = name.substr(4);
+std::string RemovePrefixAndCamelCase(std::string str, const char* prefix) {
+  // Remove the prefix if one is present.
+  if (str.starts_with(prefix)) {
+    str = str.substr(strlen(prefix));
   }
 
   // De-camel-case the string. This inserts spaces between segments that are
@@ -78,9 +112,10 @@ std::string GetTitleFromFeaturePromoData(
   //
   // This doesn't work for every possible string but does work for almost
   // anything that follows established IPH naming conventions.
+  std::string result;
   bool was_cap_before = false;
   bool was_cap = false;
-  for (char ch : name) {
+  for (char ch : str) {
     const bool is_cap = absl::ascii_isupper(ch);
     if (result.length() > 1U) {
       if (was_cap && (!is_cap || (is_cap && !was_cap_before))) {
@@ -96,6 +131,14 @@ std::string GetTitleFromFeaturePromoData(
   }
 
   return result;
+}
+
+// Takes the name of a feature and creates a human-readable title out of it to
+// be displayed on the tester page.
+std::string GetTitleFromFeaturePromoData(
+    const base::Feature* feature,
+    const user_education::FeaturePromoSpecification& spec) {
+  return RemovePrefixAndCamelCase(feature->name, "IPH_");
 }
 
 std::string GetDescriptionFromFeaturePromoData(
@@ -132,6 +175,16 @@ std::vector<std::string> GetSupportedPlatforms(
   if (result.empty()) {
     result.push_back("Unknown");
   }
+  return result;
+}
+
+std::vector<std::string> GetRequiredFeatures(
+    const user_education::FeaturePromoSpecification& spec) {
+  std::vector<std::string> result;
+  const auto& required_features = spec.metadata().required_features;
+  std::transform(required_features.begin(), required_features.end(),
+                 std::back_inserter(result),
+                 [](const base::Feature* feature) { return feature->name; });
   return result;
 }
 
@@ -207,6 +260,67 @@ std::string GetPromoFollowedBy(
   return spec.tutorial_id();
 }
 
+template <typename T>
+auto FormatDemoPageData(const char* key,
+                        const T& value,
+                        bool is_constant = false) {
+  std::string strvalue;
+  if constexpr (std::same_as<T, base::Time>) {
+    strvalue =
+        base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(value));
+  } else {
+    std::ostringstream oss;
+    oss << value;
+    strvalue = oss.str();
+    if (is_constant) {
+      strvalue = RemovePrefixAndCamelCase(strvalue, "k");
+    }
+  }
+  return FeaturePromoDemoPageData::New(key, strvalue);
+}
+
+auto GetPromoData(
+    const user_education::FeaturePromoSpecification& spec,
+    const user_education::FeaturePromoStorageService* storage_service,
+    const feature_engagement::Tracker* tracker) {
+  std::vector<FeaturePromoDemoPageDataPtr> result;
+  if (storage_service) {
+    auto promo_data = storage_service->ReadPromoData(*spec.feature());
+    if (promo_data.has_value()) {
+      if (spec.promo_subtype() ==
+          user_education::FeaturePromoSpecification::PromoSubtype::kPerApp) {
+        result.emplace_back(FormatDemoPageData(
+            "Shown for apps", promo_data->shown_for_apps.size()));
+      } else {
+        result.emplace_back(
+            FormatDemoPageData("Show count", promo_data->show_count));
+        result.emplace_back(
+            FormatDemoPageData("First show time", promo_data->first_show_time));
+        result.emplace_back(
+            FormatDemoPageData("Last show time", promo_data->last_show_time));
+        if (spec.promo_type() ==
+                user_education::FeaturePromoSpecification::PromoType::kSnooze ||
+            spec.promo_type() == user_education::FeaturePromoSpecification::
+                                     PromoType::kTutorial) {
+          result.emplace_back(
+              FormatDemoPageData("Snooze count", promo_data->snooze_count));
+          result.emplace_back(FormatDemoPageData("Last snooze time",
+                                                 promo_data->last_snooze_time));
+        }
+        result.emplace_back(FormatDemoPageData(
+            "Dismissed?", promo_data->is_dismissed ? "yes" : "no"));
+        result.emplace_back(FormatDemoPageData("Last dismissed by",
+                                               promo_data->last_dismissed_by,
+                                               /*is_constant=*/true));
+      }
+    }
+  }
+  result.emplace_back(FormatDemoPageData(
+      "Blocked by Feature Engagement?",
+      tracker->WouldTriggerHelpUI(*spec.feature()) ? "no" : "yes"));
+  return result;
+}
+
 std::string GetTutorialDescription(
     const user_education::TutorialDescription& desc) {
   return std::string();
@@ -245,8 +359,7 @@ UserEducationInternalsPageHandlerImpl::UserEducationInternalsPageHandlerImpl(
     mojo::PendingReceiver<
         mojom::user_education_internals::UserEducationInternalsPageHandler>
         receiver)
-    : tutorial_service_(GetTutorialService(profile)),
-      web_ui_(web_ui),
+    : web_ui_(web_ui),
       profile_(profile),
       receiver_(this, std::move(receiver)) {}
 
@@ -255,24 +368,26 @@ UserEducationInternalsPageHandlerImpl::
 
 void UserEducationInternalsPageHandlerImpl::GetTutorials(
     GetTutorialsCallback callback) {
-  std::vector<std::string> ids;
-  if (tutorial_service_)
-    ids = tutorial_service_->tutorial_registry()->GetTutorialIdentifiers();
+  auto* const tutorial_service = GetTutorialService(profile_);
+  if (!tutorial_service) {
+    std::move(callback).Run({});
+    return;
+  }
 
-  std::vector<mojom::user_education_internals::FeaturePromoDemoPageInfoPtr>
-      info_list;
+  std::vector<FeaturePromoDemoPageInfoPtr> info_list;
+  const auto ids =
+      tutorial_service->tutorial_registry()->GetTutorialIdentifiers();
   for (const auto& id : ids) {
-    auto* description =
-        tutorial_service_->tutorial_registry()->GetTutorialDescription(id);
+    auto* const description =
+        tutorial_service->tutorial_registry()->GetTutorialDescription(id);
     if (description) {
-      info_list.emplace_back(
-          mojom::user_education_internals::FeaturePromoDemoPageInfo::New(
-              id, GetTutorialDescription(*description), id,
-              GetTutorialTypeString(*description),
-              GetTutorialMilestone(*description),
-              GetSupportedPlatforms(*description),
-              GetTutorialInstructions(*description),
-              /*followed_by=*/""));
+      info_list.emplace_back(FeaturePromoDemoPageInfo::New(
+          id, GetTutorialDescription(*description), id,
+          GetTutorialTypeString(*description),
+          GetTutorialMilestone(*description),
+          GetSupportedPlatforms(*description), std::vector<std::string>(),
+          GetTutorialInstructions(*description),
+          /*followed_by=*/"", std::vector<FeaturePromoDemoPageDataPtr>()));
     } else {
       NOTREACHED();
     }
@@ -283,34 +398,40 @@ void UserEducationInternalsPageHandlerImpl::GetTutorials(
 void UserEducationInternalsPageHandlerImpl::StartTutorial(
     const std::string& tutorial_id,
     StartTutorialCallback callback) {
-  CHECK(tutorial_service_);
-  const ui::ElementContext context =
-      chrome::FindBrowserWithProfile(profile_)->window()->GetElementContext();
+  auto* const tutorial_service = GetTutorialService(profile_);
   std::string result;
-  tutorial_service_->StartTutorial(tutorial_id, context);
-  if (!tutorial_service_->IsRunningTutorial()) {
-    result = "Failed to start tutorial " + tutorial_id;
+  if (tutorial_service) {
+    const ui::ElementContext context =
+        chrome::FindBrowserWithProfile(profile_)->window()->GetElementContext();
+    tutorial_service->StartTutorial(tutorial_id, context);
+    if (!tutorial_service->IsRunningTutorial()) {
+      result = "Failed to start tutorial " + tutorial_id;
+    }
+  } else {
+    result = "No tutorial service.";
   }
   std::move(callback).Run(result);
 }
 
 void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
     GetFeaturePromosCallback callback) {
-  std::vector<mojom::user_education_internals::FeaturePromoDemoPageInfoPtr>
-      info_list;
+  std::vector<FeaturePromoDemoPageInfoPtr> info_list;
 
   auto* const registry = GetFeaturePromoRegistry(profile_);
+  auto* const storage_service = GetStorageService(profile_);
+  auto* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   if (registry) {
     const auto& feature_promo_specifications =
         registry->GetRegisteredFeaturePromoSpecifications();
     for (const auto& [feature, spec] : feature_promo_specifications) {
-      info_list.emplace_back(
-          mojom::user_education_internals::FeaturePromoDemoPageInfo::New(
-              GetTitleFromFeaturePromoData(feature, spec),
-              GetDescriptionFromFeaturePromoData(spec), feature->name,
-              GetPromoTypeString(spec), spec.metadata().launch_milestone,
-              GetSupportedPlatforms(spec), GetPromoInstructions(spec),
-              GetPromoFollowedBy(spec)));
+      info_list.emplace_back(FeaturePromoDemoPageInfo::New(
+          GetTitleFromFeaturePromoData(feature, spec),
+          GetDescriptionFromFeaturePromoData(spec), feature->name,
+          GetPromoTypeString(spec), spec.metadata().launch_milestone,
+          GetSupportedPlatforms(spec), GetRequiredFeatures(spec),
+          GetPromoInstructions(spec), GetPromoFollowedBy(spec),
+          GetPromoData(spec, storage_service, tracker)));
     }
   }
 
@@ -320,28 +441,13 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
 void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
     const std::string& feature_name,
     ShowFeaturePromoCallback callback) {
-  const base::Feature* feature = nullptr;
-  auto* const registry = GetFeaturePromoRegistry(profile_);
-  if (registry) {
-    const auto& feature_promo_specifications =
-        registry->GetRegisteredFeaturePromoSpecifications();
-    for (const auto& [cur, spec] : feature_promo_specifications) {
-      if (feature_name == cur->name) {
-        feature = cur;
-        break;
-      }
-    }
-  }
-
+  const base::Feature* feature = GetFeatureByName(feature_name, profile_);
   if (!feature) {
-    std::move(callback).Run(std::string("Cannot find IPH"));
+    std::move(callback).Run(std::string("Cannot find IPH."));
     return;
   }
 
-  user_education::FeaturePromoController* feature_promo_controller =
-      chrome::FindBrowserWithTab(web_ui_->GetWebContents())
-          ->window()
-          ->GetFeaturePromoController();
+  auto* const feature_promo_controller = GetFeaturePromoController(web_ui_);
 
   const auto showed_promo =
       feature_promo_controller->MaybeShowPromoForDemoPage(*feature);
@@ -376,4 +482,25 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
     }
   }
   std::move(callback).Run(reason);
+}
+
+void UserEducationInternalsPageHandlerImpl::ClearFeaturePromoData(
+    const std::string& feature_name,
+    ClearFeaturePromoDataCallback callback) {
+  const base::Feature* feature = GetFeatureByName(feature_name, profile_);
+  if (!feature) {
+    std::move(callback).Run(std::string("Cannot find IPH."));
+    return;
+  }
+
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+
+  // TODO(dfried): Clear FE tracker data.
+
+  storage_service->Reset(*feature);
+  std::move(callback).Run(std::string());
 }

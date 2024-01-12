@@ -22,15 +22,12 @@ import action_helpers
 # LINT.IfChange
 
 
-# `MULTI_TONE` is not defined in ../types.ts because this script removes any
-# multi-tone values before being outputted.
 class Tone(enum.IntEnum):
     LIGHT = 1
     MEDIUM_LIGHT = 2
     MEDIUM = 3
     MEDIUM_DARK = 4
     DARK = 5
-    MULTI_TONE = 6
 
 
 class Gender(enum.IntEnum):
@@ -53,6 +50,18 @@ TONE_MODIFIERS = {
 GENDER_MODIFIERS = {
     ord('♀'): Gender.WOMAN,
     ord('♂'): Gender.MAN,
+    ord('👩'): Gender.WOMAN,
+    ord('👨'): Gender.MAN,
+    ord('👧'): Gender.WOMAN,
+    ord('👦'): Gender.MAN,
+    ord('🤶'): Gender.WOMAN,
+    ord('🎅'): Gender.MAN,
+    ord('👸'): Gender.WOMAN,
+    ord('🤴'): Gender.MAN,
+    ord('👵'): Gender.WOMAN,
+    ord('👴'): Gender.MAN,
+    ord('🤰'): Gender.WOMAN,
+    ord('🫃'): Gender.MAN,
 }
 
 
@@ -81,25 +90,22 @@ def parse_emoji_metadata(metadata_file):
         return json.load(file)
 
 
-def get_tone(codepoints):
-    tone_matches = [
-        codepoint for codepoint in codepoints if codepoint in TONE_MODIFIERS
-    ]
-
-    if len(tone_matches) == 0:
-        return None
-    elif len(tone_matches) == 1:
-        return TONE_MODIFIERS[tone_matches[0]]
-    else:
-        return Tone.MULTI_TONE
+def get_codepoint_matches(codepoints, modifiers):
+    return [codepoint for codepoint in codepoints if codepoint in modifiers]
 
 
-def get_gender(codepoints):
-    for codepoint in codepoints:
-        if codepoint in GENDER_MODIFIERS:
-            return GENDER_MODIFIERS[codepoint]
+def get_attribute(codepoints, modifiers):
+    matches = get_codepoint_matches(codepoints, modifiers)
+
+    if len(matches) == 1:
+        return modifiers[matches[0]]
 
     return None
+
+
+# Returns True if the emoji is multi-tone or multi-gender.
+def is_multi(codepoints, modifiers):
+    return len(get_codepoint_matches(codepoints, modifiers)) > 1
 
 
 def transform_emoji_data(metadata, names, keywords, first_only):
@@ -150,18 +156,31 @@ def transform_emoji_data(metadata, names, keywords, first_only):
             }
             if emoji['alternates']:
                 newobj['alternates'] = []
+                has_multi_tone = False
+                has_multi_gender = False
 
-                has_multi_tone = any(
-                    get_tone(codepoints) == Tone.MULTI_TONE
-                    for codepoints in emoji['alternates'])
+                for codepoints in emoji['alternates']:
+                    if is_multi(codepoints, TONE_MODIFIERS):
+                        has_multi_tone = True
+
+                    if is_multi(codepoints, GENDER_MODIFIERS):
+                        has_multi_gender = True
+
+                    if has_multi_tone and has_multi_gender:
+                        break
 
                 for codepoints in emoji['alternates']:
                     variant = transform(codepoints, True)
+                    tone = None
+                    gender = None
 
                     # Multi-tone preferences are individual, so all tones are
-                    # ignored if any variant is multi-tone.
-                    tone = get_tone(codepoints) if not has_multi_tone else None
-                    gender = get_gender(codepoints)
+                    # ignored if any variant is multi-tone. Same for gender.
+                    if not has_multi_tone:
+                        tone = get_attribute(codepoints, TONE_MODIFIERS)
+
+                    if not has_multi_gender:
+                        gender = get_attribute(codepoints, GENDER_MODIFIERS)
 
                     if tone:
                         variant['tone'] = tone

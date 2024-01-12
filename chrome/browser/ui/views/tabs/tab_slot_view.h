@@ -12,9 +12,9 @@
 
 // View that can be laid out in the tabstrip.
 class TabSlotView : public views::View {
- public:
-  METADATA_HEADER(TabSlotView);
+  METADATA_HEADER(TabSlotView, views::View)
 
+ public:
   enum class ViewType {
     kTab,
     kTabGroupHeader,

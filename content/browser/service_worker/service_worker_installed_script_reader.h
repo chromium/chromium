@@ -42,7 +42,7 @@ class ServiceWorkerInstalledScriptReader {
    public:
     virtual void OnStarted(
         network::mojom::URLResponseHeadPtr response_head,
-        absl::optional<mojo_base::BigBuffer> metadata,
+        std::optional<mojo_base::BigBuffer> metadata,
         mojo::ScopedDataPipeConsumerHandle body_handle,
         mojo::ScopedDataPipeConsumerHandle meta_data_handle) = 0;
     // Called after both body and metadata have finished being written to the
@@ -65,10 +65,10 @@ class ServiceWorkerInstalledScriptReader {
   void OnReadResponseHeadComplete(
       int result,
       network::mojom::URLResponseHeadPtr response_head,
-      absl::optional<mojo_base::BigBuffer> metadata);
+      std::optional<mojo_base::BigBuffer> metadata);
   void OnReadDataPrepared(
       network::mojom::URLResponseHeadPtr response_head,
-      absl::optional<mojo_base::BigBuffer> metadata,
+      std::optional<mojo_base::BigBuffer> metadata,
       mojo::ScopedDataPipeConsumerHandle body_consumer_handle);
   void OnMetaDataSent(bool success);
   void OnReaderDisconnected();

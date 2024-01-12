@@ -1,0 +1,47 @@
+
+<html style="background-color:white">
+
+<script>
+function openFullscreen() {
+  document.body.requestFullscreen();
+  screen.orientation.lock('landscape-secondary');
+}
+
+function closeFullscreen() {
+  screen.orientation.lock("portrait");
+}
+
+function closeFullscreen() { document.exitFullscreen();  }
+
+function openFullscreenpotrait() {
+  document.body.requestFullscreen();
+    screen.orientation.lock("portrait");
+}
+</script>
+
+<body style="background-color:white">
+  <div style="margin-top:80px;margin-left:30%">
+    <div class="panel-body" >
+      <form action=""  id="form_register">
+        <div class="form-group mb15">
+          <input  onclick="openFullscreen()" autofocus="" type="email" name="reg_email" id="reg_email" class="form-control" placeholder="Email">
+        </div>
+        <div class="form-group mb15">
+          <input  type="text" id="reg_nama" name="reg_name" class="form-control" placeholder="Name">
+        </div>
+        <div class="form-group mb15">
+          <input  type="text" id="reg_nohp" name="reg_uname" class="form-control" placeholder="Username">
+        </div>
+        <div class="form-group mb15">
+          <input type="password" id="reg_pwd" name="reg_pwd" class="form-control" placeholder="Password">
+        </div>
+        <div class="form-group mb15">
+          <input type="password" id="reg_pwd_confirm" name="reg_pwd_confirm" class="form-control" placeholder="Confirm Password">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-success btn-quirk btn-block btn_register" fdprocessedid="5fd1v">Buat Akun</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

@@ -6,11 +6,15 @@
 
 #include "media/media_buildflags.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/constants.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/web_package/signed_exchange_consts.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -21,21 +25,6 @@ namespace {
 
 constexpr char kAlternate[] = "alternate";
 constexpr char kAllowedAltSxg[] = "allowed-alt-sxg";
-
-// These accept header values are also defined in
-// blink/renderer/platform/loader/fetch/url_loader/fetch_conversion.cc and
-// services/network/loader_util.h.
-// TODO(horo): Move somewhere and use shared constant value.
-const char kDefaultAcceptHeader[] = "*/*";
-const char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
-
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-constexpr char kImageAcceptHeader[] =
-    "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-#else
-constexpr char kImageAcceptHeader[] =
-    "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-#endif
 
 using AlternateSignedExchangeMachingKey =
     std::pair<String /* anchor */,
@@ -136,27 +125,23 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
     const KURL& url,
     absl::optional<ResourceType> resource_type,
     const Vector<String>& languages) const {
-  const char* accept_header = kDefaultAcceptHeader;
-  if (resource_type == ResourceType::kCSSStyleSheet) {
-    accept_header = kStylesheetAcceptHeader;
-  } else if (resource_type == ResourceType::kImage) {
-    accept_header = kImageAcceptHeader;
-  }
-  return FindMatchingEntry(url, accept_header, languages);
+  return FindMatchingEntry(
+      url,
+      resource_type
+          ? network_utils::GetAcceptHeaderForDestination(
+                ResourceFetcher::DetermineRequestDestination(*resource_type))
+          : network::kDefaultAcceptHeaderValue,
+      languages);
 }
 
 AlternateSignedExchangeResourceInfo::Entry*
 AlternateSignedExchangeResourceInfo::FindMatchingEntry(
     const KURL& url,
-    mojom::blink::RequestContextType request_context,
+    network::mojom::RequestDestination request_destination,
     const Vector<String>& languages) const {
-  const char* accept_header = kDefaultAcceptHeader;
-  if (request_context == mojom::blink::RequestContextType::STYLE) {
-    accept_header = kStylesheetAcceptHeader;
-  } else if (request_context == mojom::blink::RequestContextType::IMAGE) {
-    accept_header = kImageAcceptHeader;
-  }
-  return FindMatchingEntry(url, accept_header, languages);
+  return FindMatchingEntry(
+      url, network_utils::GetAcceptHeaderForDestination(request_destination),
+      languages);
 }
 
 AlternateSignedExchangeResourceInfo::Entry*

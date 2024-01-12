@@ -9,16 +9,18 @@
 #include <optional>
 
 #include "ash/system/notification_center/message_center_constants.h"
+#include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/notification_center/views/message_center_scroll_bar.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
-#include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
@@ -43,6 +45,11 @@ NotificationCenterView::NotificationCenterView()
       // breaking ARC.
       scroller_(new views::ScrollView()),
       notification_list_view_(new NotificationListView(this)) {
+  notification_list_view_tracker_.SetView(notification_list_view_);
+  notification_list_view_tracker_.SetIsDeletingCallback(
+      base::BindOnce(&NotificationCenterView::ClearNotificationListViewPtr,
+                     base::Unretained(this)));
+
   auto* scroll_bar = new MessageCenterScrollBar();
   scroll_bar->SetInsets(kScrollBarInsets);
   scroll_bar_ = scroll_bar;
@@ -56,9 +63,20 @@ NotificationCenterView::~NotificationCenterView() {
   scroller_->RemoveObserver(this);
 }
 
+// Used when `NotificationCenterController` is disabled.
 void NotificationCenterView::Init() {
   notification_list_view_->Init();
+  AddChildViews();
+}
 
+// Used when `NotificationCenterController` is enabled.
+void NotificationCenterView::Init(
+    const std::vector<message_center::Notification*>& notifications) {
+  notification_list_view_->Init(notifications);
+  AddChildViews();
+}
+
+void NotificationCenterView::AddChildViews() {
   // TODO(crbug.com/1247455): Be able to do
   // SetContentsLayerType(LAYER_NOT_DRAWN).
   auto scroller_contents_view = std::make_unique<views::BoxLayoutView>();
@@ -90,6 +108,10 @@ void NotificationCenterView::Init() {
 }
 
 bool NotificationCenterView::UpdateNotificationBar() {
+  if (!notification_list_view_) {
+    return false;
+  }
+
   return notification_bar_->Update(
       notification_list_view_->GetTotalNotificationCount(),
       notification_list_view_->GetTotalPinnedNotificationCount(),
@@ -97,6 +119,10 @@ bool NotificationCenterView::UpdateNotificationBar() {
 }
 
 void NotificationCenterView::ClearAllNotifications() {
+  if (!notification_list_view_) {
+    return;
+  }
+
   base::RecordAction(
       base::UserMetricsAction("StatusArea_Notifications_StackingBarClearAll"));
 
@@ -128,12 +154,21 @@ void NotificationCenterView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateNotificationBar();
 }
 
+void NotificationCenterView::ClearNotificationListViewPtr() {
+  notification_list_view_ = nullptr;
+}
+
 void NotificationCenterView::OnContentsScrolled() {
   UpdateNotificationBar();
 }
 
 std::vector<raw_ptr<message_center::Notification, VectorExperimental>>
 NotificationCenterView::GetStackedNotifications() const {
+  if (!notification_list_view_) {
+    return std::vector<
+        raw_ptr<message_center::Notification, VectorExperimental>>{};
+  }
+
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.
   if (scroller_->bounds().IsEmpty()) {
@@ -146,6 +181,10 @@ NotificationCenterView::GetStackedNotifications() const {
 
 std::vector<std::string>
 NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
+  if (!notification_list_view_) {
+    return std::vector<std::string>{};
+  }
+
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.
   if (scroller_->bounds().IsEmpty()) {

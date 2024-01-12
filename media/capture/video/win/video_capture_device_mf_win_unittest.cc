@@ -295,6 +295,10 @@ class MockMFExtendedCameraControl final
       case KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW:
         return (KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING |
                 KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL);
+      case KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION:
+        return (KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF |
+                KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+                KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE);
       default:
         return 0;
     }
@@ -305,6 +309,8 @@ class MockMFExtendedCameraControl final
         return KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF;
       case KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW:
         return KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
+      case KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION:
+        return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF;
       default:
         return 0;
     }
@@ -1992,6 +1998,20 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
                                 mojom::BackgroundBlurMode::BLUR),
             1);
   EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
+
+  ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
+  EXPECT_EQ(state->supported_eye_gaze_correction_modes->size(), 3u);
+  EXPECT_EQ(base::ranges::count(*state->supported_eye_gaze_correction_modes,
+                                mojom::EyeGazeCorrectionMode::OFF),
+            1);
+  EXPECT_EQ(base::ranges::count(*state->supported_eye_gaze_correction_modes,
+                                mojom::EyeGazeCorrectionMode::ON),
+            1);
+  EXPECT_EQ(base::ranges::count(*state->supported_eye_gaze_correction_modes,
+                                mojom::EyeGazeCorrectionMode::STARE),
+            1);
+  EXPECT_EQ(state->current_eye_gaze_correction_mode,
+            mojom::EyeGazeCorrectionMode::OFF);
 
   ASSERT_TRUE(state->supported_face_framing_modes);
   EXPECT_EQ(2u, state->supported_face_framing_modes->size());

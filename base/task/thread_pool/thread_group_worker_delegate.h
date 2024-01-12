@@ -64,8 +64,8 @@ class ThreadGroup::ThreadGroupWorkerDelegate : public BlockingObserver {
  protected:
   // Returns true if |worker| is allowed to cleanup and remove itself from the
   // thread group. Called from GetWork() when no work is available.
-  bool CanCleanupLockRequired(const WorkerThread* worker) const
-      EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_);
+  virtual bool CanCleanupLockRequired(const WorkerThread* worker)
+      EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) = 0;
 
   // Returns true iff the worker can get work. Cleans up the worker or puts it
   // on the idle set if it can't get work.

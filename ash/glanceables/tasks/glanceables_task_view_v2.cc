@@ -15,6 +15,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_textfield.h"
+#include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
@@ -49,16 +51,20 @@
 namespace ash {
 namespace {
 
-constexpr int kIconSize = 20;
+constexpr int kIconSize = 24;
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
 
 constexpr auto kSecondRowItemsMargin = gfx::Insets::TLBR(0, 0, 0, 4);
 
-constexpr auto kSingleRowButtonMargin = gfx::Insets::VH(13, 6);
-constexpr auto kDoubleRowButtonMargin = gfx::Insets::VH(16, 6);
+constexpr auto kSingleRowButtonMargin = gfx::Insets::VH(8, 0);
+constexpr auto kDoubleRowButtonMargin = gfx::Insets::VH(2, 0);
 
-constexpr auto kSingleRowTextMargins = gfx::Insets::TLBR(13, 13, 13, 16);
-constexpr auto kDoubleRowTextMargins = gfx::Insets::TLBR(7, 13, 7, 16);
+constexpr auto kSingleRowTextMargins = gfx::Insets::TLBR(6, 6, 6, 8);
+constexpr auto kDoubleRowTextMargins = gfx::Insets::TLBR(0, 6, 4, 8);
+
+constexpr auto kTitleAndDetailMarginsInViewState =
+    gfx::Insets::TLBR(0, 8, 0, 0);
+constexpr auto kTitleMarginsInEditState = gfx::Insets();
 
 views::Label* SetupLabel(views::View* parent) {
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
@@ -102,9 +108,9 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
   return icon_view;
 }
 
-class TaskViewTextField : public views::Textfield,
-                          public views::TextfieldController {
-  METADATA_HEADER(TaskViewTextField, views::Textfield)
+class TaskViewTextField : public SystemTextfield,
+                          public SystemTextfieldController {
+  METADATA_HEADER(TaskViewTextField, SystemTextfield)
 
  public:
   using OnFinishedEditingCallback =
@@ -112,44 +118,57 @@ class TaskViewTextField : public views::Textfield,
 
   TaskViewTextField(const std::u16string& title,
                     OnFinishedEditingCallback on_finished_editing)
-      : on_finished_editing_(std::move(on_finished_editing)) {
+      : SystemTextfield(Type::kMedium),
+        SystemTextfieldController(/*textfield=*/this),
+        on_finished_editing_(std::move(on_finished_editing)) {
     SetAccessibleName(u"[l10n] Title");
     SetBackgroundColor(SK_ColorTRANSPARENT);
-    SetBorder(nullptr);
     SetController(this);
     SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
     SetPlaceholderText(u"[l10n] Title");
     SetText(title);
+    SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosButton2));
+    SetActiveStateChangedCallback(base::BindRepeating(
+        &TaskViewTextField::OnActiveStateChanged, base::Unretained(this)));
   }
   TaskViewTextField(const TaskViewTextField&) = delete;
   TaskViewTextField& operator=(const TaskViewTextField&) = delete;
   ~TaskViewTextField() override = default;
 
-  // views::Textfield:
+  // SystemTextfield:
   gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(0, GetFontList().GetHeight());
+    return gfx::Size(0, TypographyProvider::Get()->ResolveLineHeight(
+                            TypographyToken::kCrosButton2));
   }
-
-  // views::TextfieldController:
-  bool HandleKeyEvent(views::Textfield* sender,
-                      const ui::KeyEvent& key_event) override {
-    if (key_event.type() == ui::ET_KEY_PRESSED &&
-        (key_event.key_code() == ui::VKEY_ESCAPE ||
-         key_event.key_code() == ui::VKEY_RETURN)) {
-      OnFinishedEditing();
-      return true;
-    }
-    return views::TextfieldController::HandleKeyEvent(sender, key_event);
-  }
-
-  // TODO(b/301253574): implement other triggers to run the callback:
-  // - tab navigation away from the text field;
-  // - mouse click outside.
 
  private:
-  void OnFinishedEditing() {
-    // Running `on_finished_editing_` deletes `this`.
-    std::move(on_finished_editing_).Run(GetText());
+  // SystemTextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override {
+    CHECK_EQ(this, sender);
+    if (key_event.type() != ui::ET_KEY_PRESSED) {
+      return false;
+    }
+
+    // Pressing escape should saves the change in the textfield. This works the
+    // same as the textfield in Google Tasks.
+    if (IsActive() && key_event.key_code() == ui::VKEY_ESCAPE) {
+      // Commit the changes and deactivate the textfield.
+      SetActive(false);
+      return true;
+    }
+
+    return SystemTextfieldController::HandleKeyEvent(sender, key_event);
+  }
+
+  void OnActiveStateChanged() {
+    // Entering inactive state from the active state implies the editing is
+    // done.
+    if (!IsActive()) {
+      // Running `on_finished_editing_` deletes `this`.
+      std::move(on_finished_editing_).Run(GetText());
+    }
   }
 
   OnFinishedEditingCallback on_finished_editing_;
@@ -248,11 +267,12 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
       task_title_(task ? base::UTF8ToUTF16(task->title) : u""),
       mark_as_completed_callback_(std::move(mark_as_completed_callback)),
       save_callback_(std::move(save_callback)) {
-  CHECK(features::IsGlanceablesTimeManagementStableLaunchEnabled());
+  CHECK(features::IsGlanceablesTimeManagementTasksViewEnabled());
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   SetOrientation(views::LayoutOrientation::kHorizontal);
+  SetCollapseMargins(true);
 
   button_ = AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
       &GlanceablesTaskViewV2::CheckButtonPressed, base::Unretained(this))));
@@ -272,11 +292,14 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+  tasks_title_view_->SetProperty(views::kMarginsKey, gfx::Insets::VH(4, 0));
 
   tasks_details_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_details_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_details_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  tasks_details_view_->SetProperty(views::kMarginsKey,
+                                   kTitleAndDetailMarginsInViewState);
 
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
@@ -360,6 +383,8 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
                                &GlanceablesTaskViewV2::TaskTitleButtonPressed,
                                base::Unretained(this))));
       task_title_button_->UpdateLabelForState(/*completed=*/button_->checked());
+      task_title_button_->SetProperty(views::kMarginsKey,
+                                      kTitleAndDetailMarginsInViewState);
       break;
     case TaskTitleViewState::kEdit:
       auto* const text_field =
@@ -367,6 +392,7 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
               task_title_,
               base::BindOnce(&GlanceablesTaskViewV2::OnFinishedEditing,
                              base::Unretained(this))));
+      text_field->SetProperty(views::kMarginsKey, kTitleMarginsInEditState);
       GetWidget()->widget_delegate()->SetCanActivate(true);
       text_field->RequestFocus();
       break;

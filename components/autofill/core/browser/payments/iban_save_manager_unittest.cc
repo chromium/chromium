@@ -215,7 +215,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferLocalSaveForTesting(iban));
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      iban, AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"  My teacher's IBAN ");
   const std::vector<const Iban*> ibans = personal_data().GetLocalIbans();
 
@@ -232,7 +232,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
   EXPECT_TRUE(personal_data().GetLocalIbans().empty());
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kDeclined);
+      iban, AutofillClient::SaveIbanOfferUserDecision::kDeclined);
   const std::vector<const Iban*> ibans = personal_data().GetLocalIbans();
 
   EXPECT_TRUE(personal_data().GetLocalIbans().empty());
@@ -245,7 +245,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
   EXPECT_TRUE(personal_data().GetLocalIbans().empty());
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kIgnored);
+      iban, AutofillClient::SaveIbanOfferUserDecision::kIgnored);
   const std::vector<const Iban*> ibans = personal_data().GetLocalIbans();
 
   EXPECT_TRUE(personal_data().GetLocalIbans().empty());
@@ -297,7 +297,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
   // successfully added to the strike database.
   EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      iban, AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
@@ -319,7 +319,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+      iban, AutofillClient::SaveIbanOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
@@ -341,7 +341,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
 
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+      iban, AutofillClient::SaveIbanOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
@@ -387,7 +387,7 @@ TEST_F(IbanSaveManagerTest, StrikesPresentWhenIbanSaved_Local) {
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferLocalSaveForTesting(iban));
   GetIbanSaveManager().OnUserDidDecideOnLocalSaveForTesting(
-      AutofillClient::SaveIbanOfferUserDecision::kAccepted,
+      iban, AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
   histogram_tester.ExpectBucketCount(
@@ -595,7 +595,7 @@ TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_SuccessShouldClearStrikes) {
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
 
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
-      /*show_save_prompt=*/true,
+      iban, /*show_save_prompt=*/true,
       AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
@@ -620,7 +620,7 @@ TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_FailureShouldAddStrike) {
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
 
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
-      /*show_save_prompt=*/true,
+      iban, /*show_save_prompt=*/true,
       AutofillClient::SaveIbanOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
@@ -638,7 +638,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Decline_AddsStrike) {
 
   IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
-      /*show_save_prompt=*/true,
+      iban, /*show_save_prompt=*/true,
       AutofillClient::SaveIbanOfferUserDecision::kDeclined);
 
   // Verify the IBAN's strikes have been added by 1.
@@ -657,7 +657,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Ignore_AddsStrike) {
 
   IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
-      /*show_save_prompt=*/true,
+      iban, /*show_save_prompt=*/true,
       AutofillClient::SaveIbanOfferUserDecision::kIgnored);
 
   // Verify the IBAN's strikes have been added by 1.

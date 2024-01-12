@@ -109,7 +109,7 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   gfx::Size size_;
   // aura::Window of the display being captured. This corresponds to one of
   // Ash's root windows.
-  raw_ptr<aura::Window, ExperimentalAsh> display_root_window_ = nullptr;
+  raw_ptr<aura::Window> display_root_window_ = nullptr;
 
   // We have 2 separate queues for handling incoming GPU buffers from Android
   // and also textures for the desktop we have captured already. Due to the

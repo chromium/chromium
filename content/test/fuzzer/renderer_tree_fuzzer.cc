@@ -115,7 +115,7 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
                                                    size_t size) {
     auto nodes = std::make_unique<NodeList>();
 
-    absl::optional<base::Value> value(base::JSONReader::Read(
+    std::optional<base::Value> value(base::JSONReader::Read(
         std::string(reinterpret_cast<const char*>(data), size)));
     if (value && value->is_list())
       nodes->ParseJsonList(value->GetList());

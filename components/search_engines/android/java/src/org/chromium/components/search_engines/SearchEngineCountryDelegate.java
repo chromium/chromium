@@ -16,7 +16,8 @@ public abstract class SearchEngineCountryDelegate {
 
     /**
      * Returns a {@link Promise} that will be fulfilled with the device country code. The promise
-     * may be rejected if unable to fetch device country code.
+     * may be rejected if unable to fetch device country code. Clients should implement proper
+     * callbacks to handle rejection. The promise is guaranteed to contain a non-null string.
      */
     @MainThread
     public abstract Promise<String> getDeviceCountry();

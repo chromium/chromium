@@ -131,8 +131,11 @@ found in the LICENSE file.
     height: auto;
   }
 </style>
+<!-- INITIAL UI STEP - EMPTY -->
+<oobe-adaptive-dialog for-step="default">
+</oobe-adaptive-dialog>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
-<oobe-loading-dialog id="loadingDialog" for-step="loading"
+<oobe-loading-dialog id="loadingDialog" for-step="connecting_to_phone"
     title-key="quickStartStartAfterResumeTitle"
     subtitle-key="quickStartStartAfterResumeSubtitle"
     on-cancel-loading="onCancelClicked_" can-cancel>
@@ -250,5 +253,26 @@ found in the LICENSE file.
     <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
         text-key="cancelButton" hidden="[[!canCancelSignin_]]">
     </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<!-- SETUP COMPLETE STEP -->
+<oobe-adaptive-dialog for-step="setup_complete">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    <div inner-h-t-m-l="[[getSetupCompleteTitle(locale)]]">
+    </div>
+  </h1>
+  <div slot="subtitle">
+    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale, userEmail_)]]">
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:quickstart-complete" class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" on-click="onNextClicked_">
+    </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

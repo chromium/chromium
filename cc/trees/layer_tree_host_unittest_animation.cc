@@ -1730,7 +1730,13 @@ class LayerTreeHostAnimationTestIsAnimating
   FakeContentLayerClient client_;
 };
 
+// Disabled on ChromeOS ASAN due to test flakiness. See
+// https://crbug.com/1517464
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);
+#else
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);
+#endif
 
 class LayerTreeHostAnimationTestAnimationFinishesDuringCommit
     : public LayerTreeHostAnimationTest {

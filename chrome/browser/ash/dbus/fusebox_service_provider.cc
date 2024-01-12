@@ -51,6 +51,7 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
 
   ExportProtoMethod(fusebox::kClose2Method, &fusebox::Server::Close2);
   ExportProtoMethod(fusebox::kCreateMethod, &fusebox::Server::Create);
+  ExportProtoMethod(fusebox::kFlushMethod, &fusebox::Server::Flush);
   ExportProtoMethod(fusebox::kMkDirMethod, &fusebox::Server::MkDir);
   ExportProtoMethod(fusebox::kOpen2Method, &fusebox::Server::Open2);
   ExportProtoMethod(fusebox::kRead2Method, &fusebox::Server::Read2);

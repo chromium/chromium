@@ -58,7 +58,7 @@ class ArcAuthContext : public signin::IdentityManager::Observer {
   void OnRefreshTokenTimeout();
 
   const CoreAccountId account_id_;
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   PrepareCallback callback_;
   bool context_prepared_ = false;

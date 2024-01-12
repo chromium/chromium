@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
@@ -59,18 +60,6 @@ VideoCaptureBufferPoolImpl::DuplicateAsUnsafeRegion(int buffer_id) {
   return tracker->DuplicateAsUnsafeRegion();
 }
 
-mojo::ScopedSharedBufferHandle
-VideoCaptureBufferPoolImpl::DuplicateAsMojoBuffer(int buffer_id) {
-  base::AutoLock lock(lock_);
-
-  VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
-  if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
-    return mojo::ScopedSharedBufferHandle();
-  }
-  return tracker->DuplicateAsMojoBuffer();
-}
-
 std::unique_ptr<VideoCaptureBufferHandle>
 VideoCaptureBufferPoolImpl::GetHandleForInProcessAccess(int buffer_id) {
   base::AutoLock lock(lock_);
@@ -94,6 +83,18 @@ gfx::GpuMemoryBufferHandle VideoCaptureBufferPoolImpl::GetGpuMemoryBufferHandle(
   }
 
   return tracker->GetGpuMemoryBufferHandle();
+}
+
+VideoCaptureBufferType VideoCaptureBufferPoolImpl::GetBufferType(
+    int buffer_id) {
+  base::AutoLock lock(lock_);
+
+  VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
+  if (!tracker) {
+    NOTREACHED_NORETURN() << "Unrecognized buffer id, buffer_id=" << buffer_id;
+  }
+
+  return tracker->GetBufferType();
 }
 
 VideoCaptureDevice::Client::ReserveResult

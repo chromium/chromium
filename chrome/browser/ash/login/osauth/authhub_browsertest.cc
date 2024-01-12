@@ -59,7 +59,7 @@ class AuthHubTest : public LoginManagerTest {
 
  protected:
   MockAuthAttemptConsumer attempt_consumer_;
-  raw_ptr<AuthHubConnector, DanglingUntriaged | ExperimentalAsh> connector_;
+  raw_ptr<AuthHubConnector, DanglingUntriaged> connector_;
   MockAuthFactorStatusConsumer status_consumer_;
   std::optional<AuthProofToken> auth_token_;
 

@@ -5,11 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NOTIFICATION_EVENT_DISPATCHER_H_
 #define CONTENT_PUBLIC_BROWSER_NOTIFICATION_EVENT_DISPATCHER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -39,8 +39,8 @@ class CONTENT_EXPORT NotificationEventDispatcher {
       BrowserContext* browser_context,
       const std::string& notification_id,
       const GURL& origin,
-      const absl::optional<int>& action_index,
-      const absl::optional<std::u16string>& reply,
+      const std::optional<int>& action_index,
+      const std::optional<std::u16string>& reply,
       NotificationDispatchCompleteCallback dispatch_complete_callback) = 0;
 
   // Dispatches the "notificationclose" event on the Service Worker associated

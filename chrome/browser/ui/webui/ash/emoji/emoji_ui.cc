@@ -43,14 +43,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
       : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
         contents_wrapper_(std::move(contents_wrapper)) {
     set_has_parent(false);
-
-    // With jelly support on, update border radius of bubble view.
-    // TODO(b/263055563): Remove this check once Jelly is fully launched in
-    // Emoji Picker.
-    if (base::FeatureList::IsEnabled(
-            ash::features::kImeSystemEmojiPickerJellySupport)) {
-      set_corner_radius(20);
-    }
+    set_corner_radius(20);
   }
 
  private:

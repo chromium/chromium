@@ -33,8 +33,8 @@ const base::FilePath::CharType kEntryPath[] =
 
 class FileSystemProviderOperationsRemoveWatcherTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsRemoveWatcherTest() {}
-  ~FileSystemProviderOperationsRemoveWatcherTest() override {}
+  FileSystemProviderOperationsRemoveWatcherTest() = default;
+  ~FileSystemProviderOperationsRemoveWatcherTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

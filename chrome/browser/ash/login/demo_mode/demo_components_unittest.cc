@@ -79,8 +79,7 @@ class DemoComponentsTest : public testing::Test {
         std::move(fake_cros_component_manager));
   }
 
-  raw_ptr<FakeCrOSComponentManager, ExperimentalAsh> cros_component_manager_ =
-      nullptr;
+  raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
 
  private:

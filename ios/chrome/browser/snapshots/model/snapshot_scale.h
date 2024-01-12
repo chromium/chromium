@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-enum ImageScale : NSInteger {
+typedef enum {
   kImageScale1X,
   kImageScale2X,
-};
+} ImageScale;
 
 @interface SnapshotImageScale : NSObject
 

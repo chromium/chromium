@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.Authenticator;
+import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -19,12 +20,15 @@ import org.chromium.url.Origin;
 public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
     private final RenderFrameHost mRenderFrameHost;
     private final CreateConfirmationUiDelegate.Factory mConfirmationFactory;
+    private final @WebauthnMode int mMode;
 
     public AuthenticatorFactory(
             RenderFrameHost renderFrameHost,
-            CreateConfirmationUiDelegate.Factory confirmationFactory) {
+            CreateConfirmationUiDelegate.Factory confirmationFactory,
+            @WebauthnMode int mode) {
         mRenderFrameHost = renderFrameHost;
         mConfirmationFactory = confirmationFactory;
+        mMode = mode;
     }
 
     @Override
@@ -55,6 +59,7 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
                 new AuthenticatorImpl.WindowIntentSender(window),
                 createConfirmationUiDelegate,
                 mRenderFrameHost,
-                topOrigin);
+                topOrigin,
+                mMode);
     }
 }

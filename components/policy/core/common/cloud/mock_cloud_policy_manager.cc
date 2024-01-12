@@ -4,7 +4,9 @@
 
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -14,12 +16,12 @@
 namespace policy {
 
 MockCloudPolicyManager::MockCloudPolicyManager(
-    CloudPolicyStore* store,
+    std::unique_ptr<CloudPolicyStore> store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : CloudPolicyManager(
           dm_protocol::kChromeUserPolicyType,
           std::string(),
-          store,
+          std::move(store),
           task_runner,
           network::TestNetworkConnectionTracker::CreateGetter()) {}
 

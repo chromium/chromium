@@ -219,6 +219,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
 
 - (void)shutdown {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [NSObject cancelPreviousPerformRequestsWithTarget:self];
   _taskRunner = nullptr;
   _browserState = nullptr;
 }

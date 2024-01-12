@@ -8,8 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 
 namespace autofill {
 
@@ -69,7 +69,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
           autofill_client_->GetPersonalDataManager());
 
   autofill_client_->GetPaymentsNetworkInterface()->Prepare();
-  autofill_client_->LoadRiskData(
+  autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
       base::BindOnce(&CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -78,7 +78,7 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
     const std::string& risk_data) {
   unmask_request_details_->risk_data = risk_data;
   autofill_metrics::LogRiskBasedAuthAttempt(card_.record_type());
-  unmask_card_request_timestamp_ = AutofillTickClock::NowTicks();
+  unmask_card_request_timestamp_ = base::TimeTicks::Now();
   autofill_client_->GetPaymentsNetworkInterface()->UnmaskCard(
       *unmask_request_details_,
       base::BindOnce(
@@ -92,7 +92,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
         response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
     autofill_metrics::LogRiskBasedAuthLatency(
-        AutofillTickClock::NowTicks() - unmask_card_request_timestamp_.value(),
+        base::TimeTicks::Now() - unmask_card_request_timestamp_.value(),
         card_.record_type());
   }
 

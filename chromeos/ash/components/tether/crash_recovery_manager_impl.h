@@ -70,9 +70,9 @@ class CrashRecoveryManagerImpl : public CrashRecoveryManager {
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid);
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<HostScanCache> host_scan_cache_;
 
   base::WeakPtrFactory<CrashRecoveryManagerImpl> weak_ptr_factory_{this};
 };

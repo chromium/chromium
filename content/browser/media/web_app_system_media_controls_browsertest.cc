@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread_win.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/browser/media/web_app_system_media_controls.h"
@@ -21,10 +24,8 @@
 namespace content {
 
 // This test suite tests playing media in a content window and verifies control
-// via system media controls controls the expected window.
-// As instanced system media controls is developed under
-// kWebAppSystemMediaControlsWin this suite will expand to focus on testing
-// instanced web app system media controls.
+// via system media controls controls the expected window. As instanced system
+// media controls is developed under kWebAppSystemMediaControlsWin.
 
 // Currently, this test suite only runs on windows.
 class WebAppSystemMediaControlsBrowserTest
@@ -51,12 +52,24 @@ class WebAppSystemMediaControlsBrowserTest
     // Also start listening to events from a few different classes.
     MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
         BrowserMainLoop::GetInstance()->media_keys_listener_manager();
-    media_keys_listener_manager_impl->SetTestObserver(this);
+    media_keys_listener_manager_impl->SetObserverForTesting(this);
 
     WebAppSystemMediaControlsManager* web_app_system_media_controls_manager =
         media_keys_listener_manager_impl->web_app_system_media_controls_manager_
             .get();
     web_app_system_media_controls_manager->SetObserverForTesting(this);
+
+    // Tests may want to utilize this runloop to detect when browser has been
+    // bookkeeping added. We need to create this runloop early enough so that
+    // the runloop always wins the race between the waiter asking to "wait for
+    // browser added" and the browser actually being added.
+    browser_added_run_loop_.emplace();
+
+    // Do a similar thing for the web app added run loop.
+    web_app_added_run_loop_.emplace();
+
+    // And finally a similar thing for the watching media key run loop.
+    start_watching_media_key_run_loop_.emplace();
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
@@ -125,74 +138,50 @@ class WebAppSystemMediaControlsBrowserTest
 
   // This mechanism allows us to wait for the browser to be added to
   // WebAppSystemMediaControls bookkeeping.
-  void OnBrowserAdded() override {
-    if (waiting_for_browser_added_) {
-      waiting_for_browser_added_ = false;
-      CHECK(browser_added_run_loop_);
-      browser_added_run_loop_->Quit();
-    }
-  }
-
-  void PrepareToWaitForBrowserAdded(base::RunLoop* run_loop) {
-    browser_added_run_loop_ = run_loop;
-    waiting_for_browser_added_ = true;
-  }
+  void OnBrowserAdded() override { browser_added_run_loop_->Quit(); }
 
   void WaitForBrowserAdded() {
-    CHECK(browser_added_run_loop_);
     browser_added_run_loop_->Run();
+    // Reset the runloop for the next use.
+    browser_added_run_loop_.emplace();
   }
 
   // This mechanism allows us to wait for a web app to be added to the
   // WebAppSystemMediaControls bookkeeping.
   void OnWebAppAdded(base::UnguessableToken request_id) override {
-    if (waiting_for_web_app_added_) {
-      waiting_for_web_app_added_ = false;
-      CHECK(web_app_added_run_loop_);
-      web_app_request_id_ = request_id;
-      web_app_added_run_loop_->Quit();
-    }
-  }
-
-  void PrepareToWaitForWebAppAdded(base::RunLoop* run_loop) {
-    web_app_added_run_loop_ = run_loop;
-    waiting_for_web_app_added_ = true;
+    last_web_app_request_id_ = request_id;
+    web_app_added_run_loop_->Quit();
   }
 
   base::UnguessableToken WaitForWebAppAdded() {
-    CHECK(web_app_added_run_loop_);
     web_app_added_run_loop_->Run();
-    CHECK(web_app_request_id_ != base::UnguessableToken::Null());
-    base::UnguessableToken cached_token = web_app_request_id_;
-    web_app_request_id_ = base::UnguessableToken::Null();
-    return cached_token;
+    EXPECT_FALSE(last_web_app_request_id_.is_empty());
+    base::UnguessableToken cached_request_id = last_web_app_request_id_;
+    last_web_app_request_id_ = base::UnguessableToken::Null();
+    // Reset the runloop for the next use.
+    web_app_added_run_loop_.emplace();
+    return cached_request_id;
   }
 
   // This mechanism allows us to wait for MediaKeysListenerImpl to be ready
   // to listen to keys.
   void OnStartWatchingMediaKey(bool is_pwa) override {
-    if (!waiting_for_start_watching_media_key_) {
-      return;
-    }
-    waiting_for_start_watching_media_key_ = false;
-    CHECK(start_watching_media_key_run_loop_);
     start_watching_media_key_run_loop_->Quit();
     last_watch_was_for_pwa_ = is_pwa;
   }
 
-  void PrepareToWaitForStartWatchingMediaKey(base::RunLoop* run_loop) {
-    start_watching_media_key_run_loop_ = run_loop;
-    waiting_for_start_watching_media_key_ = true;
-    last_watch_was_for_pwa_ = absl::nullopt;
-  }
-
+  // This function returns whether the last "watching key" event was for a PWA
+  // or not.
   bool WaitForStartWatchingMediaKey() {
-    CHECK(start_watching_media_key_run_loop_);
     start_watching_media_key_run_loop_->Run();
     EXPECT_TRUE(
         last_watch_was_for_pwa_);  // Check the value got set, optional resolves
                                    // to true if the value got set.
-    return last_watch_was_for_pwa_.value();
+    bool cached_last_watch_was_for_pwa = last_watch_was_for_pwa_.value();
+    last_watch_was_for_pwa_ = std::nullopt;
+    // Reset the runloop for the next use.
+    start_watching_media_key_run_loop_.emplace();
+    return cached_last_watch_was_for_pwa;
   }
 
  protected:
@@ -206,16 +195,13 @@ class WebAppSystemMediaControlsBrowserTest
   }
 
  private:
-  bool waiting_for_web_app_added_ = false;
-  raw_ptr<base::RunLoop> web_app_added_run_loop_ = nullptr;
-  base::UnguessableToken web_app_request_id_ = base::UnguessableToken::Null();
+  std::optional<base::RunLoop> web_app_added_run_loop_;
+  base::UnguessableToken last_web_app_request_id_;
 
-  bool waiting_for_browser_added_ = false;
-  raw_ptr<base::RunLoop> browser_added_run_loop_ = nullptr;
+  std::optional<base::RunLoop> browser_added_run_loop_;
 
-  bool waiting_for_start_watching_media_key_ = false;
-  raw_ptr<base::RunLoop> start_watching_media_key_run_loop_ = nullptr;
-  absl::optional<bool> last_watch_was_for_pwa_;
+  std::optional<base::RunLoop> start_watching_media_key_run_loop_;
+  std::optional<bool> last_watch_was_for_pwa_;
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
@@ -225,11 +211,6 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
                        SimpleOneBrowserTest) {
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
-
-  base::RunLoop run_loop;
-  PrepareToWaitForBrowserAdded(&run_loop);
-  base::RunLoop watcher_run_loop;
-  PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
 
   // Run javascript to play the video, and wait for it to begin playing.
   StartPlaybackAndWait(shell(), "long-video-loop");
@@ -243,10 +224,10 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
 
-  // Unfortunately, even though we wait for the browser to be added
-  // the MediaKeysListenerManager can still not have the browser
-  // registered properly. We have to wait for MKLM to also add it to it's
-  // bookkeeping.
+  // Unfortunately, even though we wait for the browser to be added the
+  // MediaKeysListenerManager can still not have the browser registered
+  // properly. We have to wait for MediaKeysListenerManager to also add it to
+  // it's bookkeeping.
   bool is_for_pwa = WaitForStartWatchingMediaKey();
   EXPECT_FALSE(is_for_pwa);
 
@@ -269,11 +250,6 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
   EXPECT_TRUE(NavigateToURL(browser2, http_url));
   EXPECT_TRUE(NavigateToURL(browser3, http_url));
 
-  base::RunLoop run_loop;
-  PrepareToWaitForBrowserAdded(&run_loop);
-  base::RunLoop watcher_run_loop;
-  PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
-
   // Press play and wait for each one to start.
   StartPlaybackAndWait(shell(), "long-video-loop");
   StartPlaybackAndWait(browser2, "long-video-loop");
@@ -283,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
   EXPECT_TRUE(IsPlaying(browser2, "long-video-loop"));
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 
-  // Now we have 3 things playing at the same time.
-  // Browser 3 should have control and be shown in SMTC.
+  // Now we have 3 things playing at the same time. Browser 3 should have
+  // control and be shown in SMTC.
 
   // Wait till the WebAppSystemMediaControlsManager adds the browser.
   WaitForBrowserAdded();
@@ -308,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
 
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
                        BrowserAndWebAppTest) {
-  // navigate two shells to the page.
+  // Navigate two shells to the page.
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
@@ -321,14 +297,11 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   // Start two playbacks, but set the testing flag so that the second window
   // will register as a web app to WebAppSystemMediaControlsManager.
   {
-    base::RunLoop watcher_run_loop;
-    PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
-
     StartPlaybackAndWait(shell(), "long-video-loop");
     EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 
-    // We need to be careful here that this first play is completely done
-    // before we set the flag to pretend subsequent plays are from apps.
+    // We need to be careful here that this first play is completely done before
+    // we set the flag to pretend subsequent plays are from apps.
     bool is_for_pwa = WaitForStartWatchingMediaKey();
     EXPECT_FALSE(is_for_pwa);
 
@@ -337,20 +310,14 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
 
   SetAlwaysAssumeWebAppForTesting();
 
-  base::RunLoop run_loop;
-  PrepareToWaitForWebAppAdded(&run_loop);
-  base::RunLoop watcher_run_loop;
-  PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
-
   StartPlaybackAndWait(web_app, "long-video-loop");
   base::UnguessableToken request_id = WaitForWebAppAdded();
 
   EXPECT_TRUE(IsPlaying(web_app, "long-video-loop"));
 
-  EXPECT_NE(request_id, base::UnguessableToken::Null());
+  EXPECT_FALSE(request_id.is_empty());
 
-  // Now retrieve the SMC and make a call to pause the
-  // video.
+  // Now retrieve the SMC and make a call to pause the video.
   system_media_controls::SystemMediaControls* system_media_controls =
       GetSystemMediaControlsForWebApp(request_id);
 
@@ -363,22 +330,22 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
 
   media_keys_listener_manager_impl->OnPause(system_media_controls);
 
-  // the "web app" should be paused.
+  // The "web app" should be paused.
   WaitForStop(web_app);
 
-  // the browser is still playing.
+  // The browser is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 
-  // now start the webapp again.
+  // Now start the webapp again.
   media_keys_listener_manager_impl->OnPlay(system_media_controls);
   WaitForStart(web_app);
 
-  // the browser is still playing.
+  // The browser is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
-  // navigate two shells to the page.
+  // Navigate two shells to the page.
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
   // We're mostly going to ignore this shell() based browser.
 
@@ -389,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   EXPECT_TRUE(NavigateToURL(web_app2, http_url));
   EXPECT_TRUE(NavigateToURL(web_app3, http_url));
 
-  // start all the playbacks.
+  // Start all the playbacks.
   SetAlwaysAssumeWebAppForTesting();
 
   base::UnguessableToken web_app1_request_id;
@@ -397,11 +364,6 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   base::UnguessableToken web_app3_request_id;
 
   {
-    base::RunLoop watcher_run_loop;
-    PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
-
-    base::RunLoop run_loop;
-    PrepareToWaitForWebAppAdded(&run_loop);
     StartPlaybackAndWait(web_app1, "long-video-loop");
     web_app1_request_id = WaitForWebAppAdded();
 
@@ -411,11 +373,6 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   }
 
   {
-    base::RunLoop watcher_run_loop;
-    PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
-
-    base::RunLoop run_loop;
-    PrepareToWaitForWebAppAdded(&run_loop);
     StartPlaybackAndWait(web_app2, "long-video-loop");
     web_app2_request_id = WaitForWebAppAdded();
 
@@ -425,11 +382,6 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   }
 
   {
-    base::RunLoop watcher_run_loop;
-    PrepareToWaitForStartWatchingMediaKey(&watcher_run_loop);
-
-    base::RunLoop run_loop;
-    PrepareToWaitForWebAppAdded(&run_loop);
     StartPlaybackAndWait(web_app3, "long-video-loop");
     web_app3_request_id = WaitForWebAppAdded();
 
@@ -438,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
     EXPECT_TRUE(is_for_pwa);
   }
 
-  // all request ids should be valid
+  // All request ids should be valid.
   EXPECT_NE(web_app1_request_id, base::UnguessableToken::Null());
   EXPECT_NE(web_app2_request_id, base::UnguessableToken::Null());
   EXPECT_NE(web_app3_request_id, base::UnguessableToken::Null());
@@ -460,13 +412,13 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   EXPECT_TRUE(IsPlaying(web_app1, "long-video-loop"));
   EXPECT_TRUE(IsPlaying(web_app3, "long-video-loop"));
 
-  // pause 3, only 1 remains.
+  // Pause 3, only 1 remains.
   media_keys_listener_manager_impl->OnPause(web_app3_system_media_controls);
   WaitForStop(web_app3);
 
   EXPECT_TRUE(IsPlaying(web_app1, "long-video-loop"));
 
-  // pause 1, only 1 remains.
+  // Pause 1, only 1 remains.
   media_keys_listener_manager_impl->OnPause(web_app1_system_media_controls);
   WaitForStop(web_app1);
 }

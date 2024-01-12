@@ -1093,20 +1093,10 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
     auto* init = RequestInit::Create();
     if (barrier_callback->Signal()) {
-      if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
-        HeapVector<Member<AbortSignal>> signals;
-        signals.push_back(barrier_callback->Signal());
-        signals.push_back(request_list[i]->signal());
-        init->setSignal(
-            MakeGarbageCollected<AbortSignal>(script_state, signals));
-      } else {
-        // Chain the AbortSignal objects together so the requests will abort if
-        // the |barrier_callback| encounters an error.
-        if (barrier_callback->Signal()) {
-          request_list[i]->signal()->Follow(script_state,
-                                            barrier_callback->Signal());
-        }
-      }
+      HeapVector<Member<AbortSignal>> signals;
+      signals.push_back(barrier_callback->Signal());
+      signals.push_back(request_list[i]->signal());
+      init->setSignal(MakeGarbageCollected<AbortSignal>(script_state, signals));
     }
 
     V8RequestInfo* info = MakeGarbageCollected<V8RequestInfo>(request_list[i]);

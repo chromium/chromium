@@ -18,14 +18,11 @@
 #include "url/origin.h"
 
 class GURL;
+class SharingTargetDeviceInfo;
 
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
 
 namespace arc {
 
@@ -84,7 +81,7 @@ void OnIntentPickerClosedForTesting(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,

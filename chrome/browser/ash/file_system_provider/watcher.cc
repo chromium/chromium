@@ -10,8 +10,7 @@ WatcherKey::WatcherKey(const base::FilePath& entry_path, bool recursive)
     : entry_path(entry_path), recursive(recursive) {
 }
 
-WatcherKey::~WatcherKey() {
-}
+WatcherKey::~WatcherKey() = default;
 
 bool WatcherKey::Comparator::operator()(const WatcherKey& a,
                                         const WatcherKey& b) const {
@@ -25,15 +24,13 @@ Subscriber::Subscriber() : persistent(false) {
 
 Subscriber::Subscriber(const Subscriber& other) = default;
 
-Subscriber::~Subscriber() {
-}
+Subscriber::~Subscriber() = default;
 
 Watcher::Watcher() : recursive(false) {
 }
 
 Watcher::Watcher(const Watcher& other) = default;
 
-Watcher::~Watcher() {
-}
+Watcher::~Watcher() = default;
 
 }  // namespace ash::file_system_provider

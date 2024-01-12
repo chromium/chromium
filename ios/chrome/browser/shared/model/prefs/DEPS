@@ -20,6 +20,7 @@ specific_include_rules = {
     "+ios/chrome/browser/ui",
     "+components/ntp_snippets",
     "+ios/chrome/browser/metrics/model/constants.h",
+    "+ios/chrome/browser/upgrade/model/upgrade_constants.h",
   ],
 }
 

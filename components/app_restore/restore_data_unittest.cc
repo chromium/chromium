@@ -5,6 +5,7 @@
 #include "components/app_restore/restore_data.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -247,10 +248,10 @@ class RestoreDataTest : public testing::Test {
       chromeos::WindowStateType window_state_type,
       ui::WindowShowState pre_minimized_show_state_type,
       uint32_t snap_percentage,
-      absl::optional<gfx::Size> max_size,
-      absl::optional<gfx::Size> min_size,
-      absl::optional<std::u16string> title,
-      absl::optional<gfx::Rect> bounds_in_root,
+      std::optional<gfx::Size> max_size,
+      std::optional<gfx::Size> min_size,
+      std::optional<std::u16string> title,
+      std::optional<gfx::Rect> bounds_in_root,
       uint32_t primary_color,
       uint32_t status_bar_color,
       std::vector<tab_groups::TabGroupInfo> expected_tab_group_infos,
@@ -413,10 +414,9 @@ class RestoreDataTest : public testing::Test {
         MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
         kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kDeskGuid2,
         kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
-        /*snap_percentage=*/0, absl::nullopt, kMinSize2,
-        std::u16string(kTitle2), kBoundsInRoot2, kPrimaryColor2,
-        kStatusBarColor2, std::move(expected_tab_group_infos),
-        test_tab_group_infos);
+        /*snap_percentage=*/0, std::nullopt, kMinSize2, std::u16string(kTitle2),
+        kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2,
+        std::move(expected_tab_group_infos), test_tab_group_infos);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -433,8 +433,8 @@ class RestoreDataTest : public testing::Test {
         MakeIntent(kIntentActionView, kMimeType, kShareText1), kAppTypeBrower3,
         kActivationIndex3, kFirstNonPinnedTabIndex, kDeskId3, kDeskGuid3,
         kCurrentBounds3, kWindowStateType3, kPreMinimizedWindowStateType3,
-        kSnapPercentage, absl::nullopt, absl::nullopt, absl::nullopt,
-        absl::nullopt, 0, 0,
+        kSnapPercentage, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        0, 0,
         /*expected_tab_group_infos=*/{});
   }
 
@@ -497,7 +497,7 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
       MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
       kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kDeskGuid2,
       kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
-      /*snap_percentage=*/0, absl::nullopt, kMinSize2, std::u16string(kTitle2),
+      /*snap_percentage=*/0, std::nullopt, kMinSize2, std::u16string(kTitle2),
       kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2,
       /*expected_tab_group_infos=*/{});
 

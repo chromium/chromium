@@ -30,7 +30,6 @@ after discussions on the right group.
       <annotation id="partner_bookmarks_reader_get_favicon"/>
       <annotation id="rlz"/>
       <annotation id="webapk_create"/>
-      <annotation id="webapk_create_for_service"/>
       <annotation id="webapk_update"/>
       <annotation id="webview_proxy_config"/>
     </sender>
@@ -147,7 +146,6 @@ after discussions on the right group.
       <annotation id="dom_distiller"/>
       <annotation id="download_manager_resume"/>
       <annotation id="parallel_download_job"/>
-      <annotation id="cast_udp_socket"/>
       <annotation id="icon_cacher"/>
       <annotation id="omnibox_suggest_deletion"/>
       <annotation id="omnibox_suggest"/>
@@ -289,6 +287,7 @@ after discussions on the right group.
       <annotation id="almanac_launcher_app"/>
       <annotation id="ip_protection_service_get_proxy_config"/>
       <annotation id="customize_chrome_page_handler"/>
+      <annotation id="customize_chrome_page_handler_image"/>
       <annotation id="almanac_icon_cache"/>
       <annotation id="blink_fetch_later_manager"/>
       <annotation id="carrier_lock_manager_fetch_configuration"/>
@@ -299,6 +298,11 @@ after discussions on the right group.
       <annotation id="webauthn_rp_id_check"/>
       <annotation id="tasks_integration"/>
       <annotation id="search_engine_adapter"/>
+      <annotation id="launcher_manatee"/>
+      <annotation id="chromeos_picker_gif_fetcher"/>
+      <annotation id="prewarm_http_disk_cache"/>
+      <annotation id="admin_specified_ppd_fetch"/>
+      <annotation id="shopping_list_ui_image_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -357,7 +361,6 @@ after discussions on the right group.
       <annotation id="safe_browsing_binary_upload_app"/>
       <annotation id="safe_browsing_binary_upload_connector"/>
       <annotation id="safe_browsing_realtime_url_lookup"/>
-      <annotation id="safe_browsing_hashprefix_realtime_lookup_direct"/>
       <annotation id="safe_browsing_hashprefix_realtime_lookup_ohttp"/>
       <annotation id="sct_auditing"/>
       <annotation id="sct_auditing_hashdance"/>

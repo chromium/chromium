@@ -53,6 +53,8 @@ class AttributionVerificationMediatorTest : public testing::Test {
         std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
   }
 
+  void TearDown() override { fake_cryptographer_ = nullptr; }
+
   net::HttpRequestHeaders RunGetHeadersForVerificationWith(
       const GURL& url,
       std::vector<Message> messages) {
@@ -121,7 +123,7 @@ class AttributionVerificationMediatorTest : public testing::Test {
 
   // We hold onto a raw ptr to configure the call expectations, the helper owns
   // the unique_ptr.
-  raw_ptr<FakeCryptographer, DanglingUntriaged> fake_cryptographer_;
+  raw_ptr<FakeCryptographer> fake_cryptographer_;
   std::unique_ptr<AttributionVerificationMediator> mediator_;
 
   base::HistogramTester histograms_;

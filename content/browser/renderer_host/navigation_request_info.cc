@@ -27,11 +27,11 @@ NavigationRequestInfo::NavigationRequestInfo(
     const base::UnguessableToken& devtools_frame_token,
     net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    const absl::optional<std::vector<net::SourceStream::SourceType>>&
+    const std::optional<std::vector<net::SourceStream::SourceType>>&
         devtools_accepted_stream_types,
     bool is_pdf,
     int initiator_process_id,
-    absl::optional<blink::DocumentToken> initiator_document_token,
+    std::optional<blink::DocumentToken> initiator_document_token,
     const GlobalRenderFrameHostId& previous_render_frame_host_id,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         prefetch_serving_page_metrics_container,

@@ -42,7 +42,7 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   void UpdateLabel();
 
   const ash::login::SecurityTokenSessionController::Behavior behavior_;
-  raw_ptr<const base::TickClock, ExperimentalAsh> clock_;
+  raw_ptr<const base::TickClock> clock_;
   const std::string domain_;
   base::TimeTicks end_time_;
   base::RepeatingTimer update_timer_;

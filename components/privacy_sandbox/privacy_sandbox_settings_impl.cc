@@ -676,26 +676,21 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
 
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides());
-}
-
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
-  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
-  if (!IsAllowed(status)) {
-    return false;
-  }
-
-  // For Measurement and Relevance APIs, we explicitly do not require the
-  // underlying pref to be enabled if there is a local flag enabling the APIs to
-  // allow for local testing.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
+  content_settings::CookieSettingsBase::CookieSettingWithMetadata
+      cookie_setting_with_metadata;
+  if (cookie_settings_->IsFullCookieAccessAllowed(
+          reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+          net::CookieSettingOverrides(), &cookie_setting_with_metadata)) {
     return true;
   }
 
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
+  // Third-party cookie access is disabled, but we may still allow Private
+  // Aggregation's debug mode in this context if it was only blocked due to the
+  // 3PCD experiment.
+  return base::FeatureList::IsEnabled(
+             kPrivateAggregationDebugReportingCookieDeprecationTesting) &&
+         cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+         delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
 }
 
 void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
@@ -706,10 +701,6 @@ void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
 
 void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
   pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-}
-
-void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {

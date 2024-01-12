@@ -204,6 +204,15 @@ struct IDLSequence final : public IDLBase {
 // Frozen array types
 template <typename T>
 struct IDLArray final : public IDLBase {
+  // IDL FrozenArray is implemented as FrozenArray<IDLType>, but it's convenient
+  // for NativeValueTraits<IDLArray<T>> to use (Heap)Vector<T>. Generally, for
+  // inputs (attribute setters, operation arguments), (Heap)Vector is convenient
+  // while FrozenArray<IDLType> should be used for outputs (attribute getters,
+  // operation return values).
+  //
+  // Since IDLType is tightly bound to NativeValueTraits rather than ToV8Traits,
+  // IDLArray<T>::ImplType is defined as (Heap)Vector<T> rather than
+  // FrozenArray<T>.
   using ImplType =
       VectorOf<std::remove_pointer_t<typename NativeValueTraits<T>::ImplType>>;
 };

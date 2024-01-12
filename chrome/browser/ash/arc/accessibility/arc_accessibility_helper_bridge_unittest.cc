@@ -102,7 +102,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
       return filter_type_for_test_;
     }
 
-    const raw_ptr<extensions::TestEventRouter, ExperimentalAsh> event_router_;
+    const raw_ptr<extensions::TestEventRouter> event_router_;
     ax::android::mojom::AccessibilityFilterType filter_type_for_test_ =
         ax::android::mojom::AccessibilityFilterType::ALL;
   };

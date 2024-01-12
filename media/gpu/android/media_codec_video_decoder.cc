@@ -480,7 +480,8 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
 
     if (decoder_config_.is_encrypted()) {
       LOG(ERROR) << "MediaCrypto is not available";
-      EnterTerminalState(State::kError, "MediaCrypto is not available");
+      EnterTerminalState(State::kError, {DecoderStatus::Codes::kFailed,
+                                         "MediaCrypto is not available"});
       std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
@@ -557,7 +558,8 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
   TRACE_EVENT0("media",
                "MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized");
   if (!texture_owner) {
-    EnterTerminalState(State::kError, "Could not allocated TextureOwner");
+    EnterTerminalState(State::kError, {DecoderStatus::Codes::kFailed,
+                                       "Could not allocated TextureOwner"});
     return;
   }
   texture_owner_bundle_ =
@@ -640,7 +642,8 @@ void MediaCodecVideoDecoder::OnSurfaceDestroyed(AndroidOverlay* overlay) {
   // no idea that this has happened.  We should unback the frames here.  This
   // might work now that we have CodecImageGroup -- verify this.
   if (!device_info_->IsSetOutputSurfaceSupported()) {
-    EnterTerminalState(State::kSurfaceDestroyed, "Surface destroyed");
+    EnterTerminalState(State::kSurfaceDestroyed,
+                       {DecoderStatus::Codes::kFailed, "Surface destroyed"});
     return;
   }
 
@@ -679,7 +682,9 @@ void MediaCodecVideoDecoder::TransitionToTargetSurface() {
 
   if (!codec_->SetSurface(target_surface_bundle_)) {
     video_frame_factory_->SetSurfaceBundle(nullptr);
-    EnterTerminalState(State::kError, "Could not switch codec output surface");
+    EnterTerminalState(State::kError,
+                       {DecoderStatus::Codes::kFailed,
+                        "Could not switch codec output surface"});
     return;
   }
 
@@ -762,7 +767,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   }
 
   if (!codec) {
-    EnterTerminalState(State::kError, "Unable to allocate codec");
+    EnterTerminalState(State::kError, {DecoderStatus::Codes::kFailed,
+                                       "Unable to allocate codec"});
     return;
   }
 
@@ -869,7 +875,8 @@ void MediaCodecVideoDecoder::FlushCodec() {
 
   DVLOG(2) << "Flushing codec";
   if (!codec_->Flush())
-    EnterTerminalState(State::kError, "Codec flush failed");
+    EnterTerminalState(State::kError,
+                       {DecoderStatus::Codes::kFailed, "Codec flush failed"});
 }
 
 void MediaCodecVideoDecoder::PumpCodec() {
@@ -941,25 +948,27 @@ bool MediaCodecVideoDecoder::QueueInput() {
   }
 
   auto status = codec_->QueueInputBuffer(*pending_decode.buffer);
-  DVLOG((status == CodecWrapper::QueueStatus::kTryAgainLater ||
-                 status == CodecWrapper::QueueStatus::kOk
+  DVLOG((status.code() == CodecWrapper::QueueStatus::Codes::kTryAgainLater ||
+                 status.is_ok()
              ? 3
              : 2))
       << "QueueInput(" << pending_decode.buffer->AsHumanReadableString()
-      << ") status=" << static_cast<int>(status);
+      << ") status=" << MediaSerialize(status);
 
-  switch (status) {
-    case CodecWrapper::QueueStatus::kOk:
+  switch (status.code()) {
+    case CodecWrapper::QueueStatus::Codes::kOk:
       break;
-    case CodecWrapper::QueueStatus::kTryAgainLater:
+    case CodecWrapper::QueueStatus::Codes::kTryAgainLater:
       return false;
-    case CodecWrapper::QueueStatus::kNoKey:
+    case CodecWrapper::QueueStatus::Codes::kNoKey:
       // Retry when a key is added.
       waiting_for_key_ = true;
       waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
       return false;
-    case CodecWrapper::QueueStatus::kError:
-      EnterTerminalState(State::kError, "QueueInputBuffer failed");
+    case CodecWrapper::QueueStatus::Codes::kError:
+      EnterTerminalState(State::kError,
+                         {DecoderStatus::Codes::kFailed,
+                          "QueueInputBuffer failed", std::move(status)});
       return false;
   }
 
@@ -999,14 +1008,16 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   std::unique_ptr<CodecOutputBuffer> output_buffer;
   auto status =
       codec_->DequeueOutputBuffer(&presentation_time, &eos, &output_buffer);
-  switch (status) {
-    case CodecWrapper::DequeueStatus::kOk:
+  switch (status.code()) {
+    case CodecWrapper::DequeueStatus::Codes::kOk:
       break;
-    case CodecWrapper::DequeueStatus::kTryAgainLater:
+    case CodecWrapper::DequeueStatus::Codes::kTryAgainLater:
       return false;
-    case CodecWrapper::DequeueStatus::kError:
+    case CodecWrapper::DequeueStatus::Codes::kError:
       DVLOG(1) << "DequeueOutputBuffer() error";
-      EnterTerminalState(State::kError, "DequeueOutputBuffer failed");
+      EnterTerminalState(State::kError,
+                         {DecoderStatus::Codes::kFailed,
+                          "DequeueOutputBuffer failed", std::move(status)});
       return false;
   }
   DVLOG(3) << "DequeueOutputBuffer(): pts="
@@ -1084,7 +1095,8 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   // No |frame| indicates an error creating it.
   if (!frame) {
     DLOG(ERROR) << __func__ << " |frame| is null";
-    EnterTerminalState(State::kError, "Could not create VideoFrame");
+    EnterTerminalState(State::kError, {DecoderStatus::Codes::kFailed,
+                                       "Could not create VideoFrame"});
     return;
   }
 
@@ -1166,9 +1178,11 @@ void MediaCodecVideoDecoder::OnCodecDrained() {
 }
 
 void MediaCodecVideoDecoder::EnterTerminalState(State state,
-                                                const char* reason) {
-  DVLOG(2) << __func__ << " " << static_cast<int>(state) << " " << reason;
-  MEDIA_LOG(INFO, media_log_) << "Entering Terminal State: " << reason;
+                                                DecoderStatus reason) {
+  // Any nested error inside `reason` not displayed as the error is propagated
+  // to the caller.
+  DVLOG(2) << __func__ << " " << static_cast<int>(state) << " "
+           << reason.message();
 
   state_ = state;
   DCHECK(InTerminalState());
@@ -1178,10 +1192,15 @@ void MediaCodecVideoDecoder::EnterTerminalState(State state,
   ReleaseCodec();
   target_surface_bundle_ = nullptr;
   texture_owner_bundle_ = nullptr;
-  if (state == State::kError)
-    CancelPendingDecodes({DecoderStatus::Codes::kFailed, reason});
-  if (drain_type_)
+  if (state == State::kError) {
+    CancelPendingDecodes(reason);
+  } else {
+    MEDIA_LOG(INFO, media_log_)
+        << "Entering Terminal State: " << reason.message();
+  }
+  if (drain_type_) {
     OnCodecDrained();
+  }
 }
 
 bool MediaCodecVideoDecoder::InTerminalState() {

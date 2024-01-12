@@ -45,7 +45,7 @@ FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
       fuzzer_thread_("fuzzer_thread") {
   TestTimeouts::Initialize();
 
-  logging::SetMinLogLevel(logging::LOG_FATAL);
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
   mojo::core::Init();
   base::i18n::InitializeICU();
 

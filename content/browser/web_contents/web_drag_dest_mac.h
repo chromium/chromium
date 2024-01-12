@@ -93,7 +93,7 @@ CONTENT_EXPORT
 - (BOOL)performDragOperation:(const remote_cocoa::mojom::DraggingInfo*)info
     withWebContentsViewDelegate:
         (content::WebContentsViewDelegate*)webContentsViewDelegate;
-- (void)completeDropAsync:(absl::optional<content::DropData>)dropData
+- (void)completeDropAsync:(std::optional<content::DropData>)dropData
               withContext:(const content::DropContext)context;
 
 // Helper to call WebWidgetHostInputEventRouter::GetRenderWidgetHostAtPoint().

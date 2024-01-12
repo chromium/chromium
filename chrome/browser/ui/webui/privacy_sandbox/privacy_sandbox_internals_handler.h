@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace privacy_sandbox_internals {
@@ -28,11 +29,20 @@ class PrivacySandboxInternalsHandler
   PrivacySandboxInternalsHandler& operator=(
       const PrivacySandboxInternalsHandler&) = delete;
 
+  void ReadPref(const std::string& pref_name,
+                ReadPrefCallback callback) override;
   void ContentSettingsPatternToString(
       const ContentSettingsPattern& pattern,
       ContentSettingsPatternToStringCallback callback) override;
+
+  void StringToContentSettingsPattern(
+      const std::string& s,
+      StringToContentSettingsPatternCallback callback) override;
+
   void GetCookieSettings(GetCookieSettingsCallback callback) override;
   void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
+  void GetTpcdHeuristicsGrants(GetTpcdMetadataGrantsCallback callback) override;
+  void GetTpcdSupport(GetTpcdMetadataGrantsCallback callback) override;
 
  private:
   raw_ptr<Profile> profile_;

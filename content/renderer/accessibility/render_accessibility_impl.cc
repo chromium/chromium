@@ -895,7 +895,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 #if DCHECK_IS_ON()
   // Protect against lifecycle changes in the popup document, if any.
   WebDocument popup_document = GetPopupDocument();
-  absl::optional<blink::WebDisallowTransitionScope> disallow2;
+  std::optional<blink::WebDisallowTransitionScope> disallow2;
   if (!popup_document.IsNull()) {
     disallow2.emplace(&popup_document);
   }
@@ -1030,7 +1030,6 @@ void RenderAccessibilityImpl::OnDestruct() {
 void RenderAccessibilityImpl::AddPluginTreeToUpdate(
     ui::AXTreeUpdate* update,
     bool mark_plugin_subtree_dirty) {
-  const WebDocument& document = GetMainDocument();
   if (mark_plugin_subtree_dirty) {
     plugin_serializer_->Reset();
   }

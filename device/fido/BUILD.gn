@@ -148,6 +148,8 @@ component("fido") {
       "device_operation.h",
       "device_response_converter.cc",
       "device_response_converter.h",
+      "enclave/constants.cc",
+      "enclave/constants.h",
       "enclave/enclave_authenticator.cc",
       "enclave/enclave_authenticator.h",
       "enclave/enclave_discovery.cc",
@@ -156,6 +158,10 @@ component("fido") {
       "enclave/enclave_protocol_utils.h",
       "enclave/enclave_websocket_client.cc",
       "enclave/enclave_websocket_client.h",
+      "enclave/transact.cc",
+      "enclave/transact.h",
+      "enclave/types.cc",
+      "enclave/types.h",
       "fido_authenticator.cc",
       "fido_authenticator.h",
       "fido_device.cc",
@@ -494,26 +500,6 @@ if (is_mac) {
     deps = [
       "//base",
       "//device/fido",
-    ]
-  }
-}
-
-if (is_win || is_linux || is_mac) {
-  static_library("enclave_service") {
-    testonly = true
-    sources = [
-      "enclave/test/enclave_http_server.cc",
-      "enclave/test/enclave_http_server.h",
-    ]
-    deps = [
-      ":fido",
-      "//base",
-      "//components/cbor",
-      "//components/device_event_log",
-      "//components/sync/protocol:protocol",
-      "//mojo/public/cpp/bindings",
-      "//net",
-      "//net:test_support",
     ]
   }
 }

@@ -370,7 +370,7 @@ TEST_F(HttpClientTest, TestHttpError) {
         network::URLLoaderCompletionStatus(), &done_callback);
 
     TestHttpResponse expected_response =
-        TestHttpResponse(http_status, net::ERR_HTTP_RESPONSE_CODE_FAILURE, "",
+        TestHttpResponse(http_status, 0, "error_response_data",
                          /*response_header_keys*/ {"Foo", "Bar"},
                          /*response_header_values*/ {"foo_value", "bar_value"});
 

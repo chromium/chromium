@@ -166,7 +166,7 @@ TEST_F(MultipartUploadRequestTest, RetriesCorrectly) {
         .Times(1)
         .WillRepeatedly(Invoke([&mock_request]() {
           mock_request.RetryOrFinish(net::OK, net::HTTP_BAD_REQUEST,
-                                     std::make_unique<std::string>("response"));
+                                     "response");
         }));
     mock_request.Start();
     task_environment_.FastForwardUntilNoTasksRemain();
@@ -178,7 +178,7 @@ TEST_F(MultipartUploadRequestTest, RetriesCorrectly) {
         .Times(3)
         .WillRepeatedly(Invoke([&mock_request]() {
           mock_request.RetryOrFinish(net::OK, net::HTTP_SERVICE_UNAVAILABLE,
-                                     std::make_unique<std::string>("response"));
+                                     "response");
         }));
     mock_request.Start();
     task_environment_.FastForwardUntilNoTasksRemain();
@@ -244,8 +244,7 @@ TEST_P(MultipartUploadDataPipeRequestTest, MAYBE_Retries) {
                       std::unique_ptr<network::ResourceRequest> request) {
           EXPECT_EQ(expected_body,
                     mock_request->GetBodyFromFileOrPageRequest());
-          mock_request->RetryOrFinish(
-              net::OK, net::HTTP_OK, std::make_unique<std::string>("response"));
+          mock_request->RetryOrFinish(net::OK, net::HTTP_OK, "response");
         });
     mock_request->Start();
     task_environment_.FastForwardUntilNoTasksRemain();
@@ -281,7 +280,7 @@ TEST_P(MultipartUploadDataPipeRequestTest, MAYBE_Retries) {
           mock_request->RetryOrFinish(
               net::OK,
               retry_count < 3 ? net::HTTP_SERVICE_UNAVAILABLE : net::HTTP_OK,
-              std::make_unique<std::string>("response"));
+              "response");
         });
     mock_request->Start();
     task_environment_.FastForwardUntilNoTasksRemain();
@@ -328,8 +327,7 @@ TEST_P(MultipartUploadDataPipeRequestTest, DataControls) {
       .WillOnce([&mock_request, &expected_body](
                     std::unique_ptr<network::ResourceRequest> request) {
         EXPECT_EQ(expected_body, mock_request->GetBodyFromFileOrPageRequest());
-        mock_request->RetryOrFinish(net::OK, net::HTTP_OK,
-                                    std::make_unique<std::string>("response"));
+        mock_request->RetryOrFinish(net::OK, net::HTTP_OK, "response");
       });
   mock_request->Start();
   task_environment_.FastForwardUntilNoTasksRemain();

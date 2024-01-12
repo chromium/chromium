@@ -121,7 +121,7 @@ ProxyConfigServiceLinux::Delegate::~Delegate() = default;
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
     base::StringPiece variable,
     ProxyServer::Scheme scheme,
-    ProxyServer* result_server) {
+    ProxyChain* result_chain) {
   std::string env_value;
   if (!env_var_getter_->GetVar(variable, &env_value))
     return false;
@@ -130,10 +130,11 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
     return false;
 
   env_value = FixupProxyHostScheme(scheme, env_value);
-  ProxyServer proxy_server =
-      ProxyUriToProxyServer(env_value, ProxyServer::SCHEME_HTTP);
-  if (proxy_server.is_valid() && !proxy_server.is_direct()) {
-    *result_server = proxy_server;
+  ProxyChain proxy_chain =
+      ProxyUriToProxyChain(env_value, ProxyServer::SCHEME_HTTP);
+  if (proxy_chain.IsValid() &&
+      (proxy_chain.is_direct() || proxy_chain.is_single_proxy())) {
+    *result_chain = proxy_chain;
     return true;
   }
   LOG(ERROR) << "Failed to parse environment variable " << variable;
@@ -142,9 +143,9 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
 
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVar(
     base::StringPiece variable,
-    ProxyServer* result_server) {
+    ProxyChain* result_chain) {
   return GetProxyFromEnvVarForScheme(variable, ProxyServer::SCHEME_HTTP,
-                                     result_server);
+                                     result_chain);
 }
 
 absl::optional<ProxyConfigWithAnnotation>
@@ -168,25 +169,25 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
         config, NetworkTrafficAnnotationTag(traffic_annotation_));
   }
   // "all_proxy" is a shortcut to avoid defining {http,https,ftp}_proxy.
-  ProxyServer proxy_server;
-  if (GetProxyFromEnvVar("all_proxy", &proxy_server)) {
+  ProxyChain proxy_chain;
+  if (GetProxyFromEnvVar("all_proxy", &proxy_chain)) {
     config.proxy_rules().type = ProxyConfig::ProxyRules::Type::PROXY_LIST;
-    config.proxy_rules().single_proxies.SetSingleProxyServer(proxy_server);
+    config.proxy_rules().single_proxies.SetSingleProxyChain(proxy_chain);
   } else {
-    bool have_http = GetProxyFromEnvVar("http_proxy", &proxy_server);
+    bool have_http = GetProxyFromEnvVar("http_proxy", &proxy_chain);
     if (have_http)
-      config.proxy_rules().proxies_for_http.SetSingleProxyServer(proxy_server);
+      config.proxy_rules().proxies_for_http.SetSingleProxyChain(proxy_chain);
     // It would be tempting to let http_proxy apply for all protocols
     // if https_proxy and ftp_proxy are not defined. Googling turns up
     // several documents that mention only http_proxy. But then the
     // user really might not want to proxy https. And it doesn't seem
     // like other apps do this. So we will refrain.
-    bool have_https = GetProxyFromEnvVar("https_proxy", &proxy_server);
+    bool have_https = GetProxyFromEnvVar("https_proxy", &proxy_chain);
     if (have_https)
-      config.proxy_rules().proxies_for_https.SetSingleProxyServer(proxy_server);
-    bool have_ftp = GetProxyFromEnvVar("ftp_proxy", &proxy_server);
+      config.proxy_rules().proxies_for_https.SetSingleProxyChain(proxy_chain);
+    bool have_ftp = GetProxyFromEnvVar("ftp_proxy", &proxy_chain);
     if (have_ftp)
-      config.proxy_rules().proxies_for_ftp.SetSingleProxyServer(proxy_server);
+      config.proxy_rules().proxies_for_ftp.SetSingleProxyChain(proxy_chain);
     if (have_http || have_https || have_ftp) {
       // mustn't change type unless some rules are actually set.
       config.proxy_rules().type =
@@ -202,9 +203,9 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
     if (env_var_getter_->GetVar("SOCKS_VERSION", &env_version)
         && env_version == "4")
       scheme = ProxyServer::SCHEME_SOCKS4;
-    if (GetProxyFromEnvVarForScheme("SOCKS_SERVER", scheme, &proxy_server)) {
+    if (GetProxyFromEnvVarForScheme("SOCKS_SERVER", scheme, &proxy_chain)) {
       config.proxy_rules().type = ProxyConfig::ProxyRules::Type::PROXY_LIST;
-      config.proxy_rules().single_proxies.SetSingleProxyServer(proxy_server);
+      config.proxy_rules().single_proxies.SetSingleProxyChain(proxy_chain);
     }
   }
   // Look for the proxy bypass list.
@@ -1056,8 +1057,9 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   // gsettings settings do not appear to distinguish between SOCKS version. We
   // default to version 5. For more information on this policy decision, see:
   // http://code.google.com/p/chromium/issues/detail?id=55912#c2
-  ProxyServer::Scheme scheme = (host_key == SettingGetter::PROXY_SOCKS_HOST) ?
-      ProxyServer::SCHEME_SOCKS5 : ProxyServer::SCHEME_HTTP;
+  ProxyServer::Scheme scheme = host_key == SettingGetter::PROXY_SOCKS_HOST
+                                   ? ProxyServer::SCHEME_SOCKS5
+                                   : ProxyServer::SCHEME_HTTP;
   host = FixupProxyHostScheme(scheme, host);
   ProxyServer proxy_server =
       ProxyUriToProxyServer(host, ProxyServer::SCHEME_HTTP);

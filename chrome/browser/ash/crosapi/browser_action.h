@@ -18,7 +18,7 @@
 namespace crosapi {
 
 struct VersionedBrowserService {
-  raw_ptr<mojom::BrowserService, ExperimentalAsh> service;
+  raw_ptr<mojom::BrowserService> service;
   uint32_t interface_version;
 };
 

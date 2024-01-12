@@ -44,6 +44,13 @@ class DefaultProvider : public ObservableProvider {
       bool off_the_record,
       const PartitionKey& partition_key) const override;
 
+  std::unique_ptr<Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record,
+      const PartitionKey& partition_key) const override;
+
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          ContentSettingsType content_type,
@@ -95,7 +102,7 @@ class DefaultProvider : public ObservableProvider {
   // thread safety.
   mutable base::Lock lock_;
 
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.

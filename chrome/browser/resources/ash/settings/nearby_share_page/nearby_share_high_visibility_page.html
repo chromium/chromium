@@ -11,23 +11,13 @@
 
   #help {
     align-items: flex-start;
+    color: var(--cros-sys-secondary);
     display: flex;
     flex-direction: row;
+    font: var(--cros-annotation-2-font);
     margin-inline-end: 24px;
     margin-inline-start: 24px;
     padding: 8px;
-  }
-
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) #help {
-    color: var(--cros-text-color-disabled);
-    font-size: 9px;
-    line-height: 12px;
-  }
-
-  :host-context(body.jelly-enabled) #help {
-    color: var(--cros-sys-secondary);
-    font: var(--cros-annotation-2-font);
   }
 
   #helpText {
@@ -36,36 +26,16 @@
 
   #infoIcon {
     flex-shrink: 0;
-  }
-
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) #infoIcon {
-    margin-inline-end: 12px;
-    height: 20px;
-    width: 20px;
-  }
-
-  :host-context(body.jelly-enabled) #infoIcon {
-    margin-inline-end: 8px;
     height: 16px;
+    margin-inline-end: 8px;
     width: 16px;
   }
 
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) .icon-help-state {
-    fill: var(--cros-icon-color-disabled);
-  }
-
-  :host-context(body.jelly-enabled) .icon-help-state {
+  .icon-help-state {
     fill: var(--cros-sys-secondary);
   }
 
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) .icon-error-state {
-    fill: var(--cros-icon-color-alert);
-  }
-
-  :host-context(body.jelly-enabled) .icon-error-state {
+  .icon-error-state {
     fill: var(--cros-sys-error);
   }
 
@@ -75,33 +45,13 @@
     flex-direction: column;
   }
 
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) #error {
-    font-size: 12px;
-  }
-
   #errorTitle {
+    color: var(--cros-sys-error);
+    font: var(--cros-button-2-font);
     margin-bottom: 3px;
   }
 
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) #errorTitle {
-    color: var(--cros-text-color-alert);
-    font-weight: bold;
-  }
-
-  :host-context(body.jelly-enabled) #errorTitle {
-    color: var(--cros-sys-error);
-    font: var(--cros-button-2-font);
-  }
-
-  /* TODO(b/279623883): Remove once Jelly is launched. */
-  :host-context(body:not(.jelly-enabled)) #errorDescription {
-    color: var(--cros-text-color-secondary);
-    line-height: 13px;
-  }
-
-  :host-context(body.jelly-enabled) #errorDescription {
+  #errorDescription {
     color: var(--cros-sys-secondary);
     font: var(--cros-annotation-2-font);
   }
@@ -122,11 +72,7 @@
     cancel-button-label="$i18n{cancel}"
     close-only="[[getErrorTitle_(errorState_)]]">
   <div id="content" slot="content">
-    <!-- TODO(b/279623883): Remove dark mode handling. -->
-    <iron-media-query query="(prefers-color-scheme: dark)"
-        query-matches="{{isDarkModeActive_}}">
-    </iron-media-query>
-      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
+      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_()]]"
           autoplay dynamic aria-hidden>
       </cros-lottie-renderer>
     <div id="help">

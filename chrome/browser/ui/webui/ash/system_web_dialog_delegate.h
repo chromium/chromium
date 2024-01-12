@@ -105,7 +105,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   content::WebUI* webui() { return webui_; }
 
  private:
-  raw_ptr<content::WebUI, DanglingUntriaged | ExperimentalAsh> webui_ = nullptr;
+  raw_ptr<content::WebUI, DanglingUntriaged> webui_ = nullptr;
   gfx::NativeWindow dialog_window_ = gfx::NativeWindow();
 };
 

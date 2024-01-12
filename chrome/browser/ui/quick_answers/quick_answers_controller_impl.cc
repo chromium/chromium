@@ -356,6 +356,11 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
   }
 }
 
+base::WeakPtr<QuickAnswersControllerImpl>
+QuickAnswersControllerImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void QuickAnswersControllerImpl::ShowUserConsent(
     const std::u16string& intent_type,
     const std::u16string& intent_text) {

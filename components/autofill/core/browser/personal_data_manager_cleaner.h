@@ -40,9 +40,6 @@ class PersonalDataManagerCleaner {
   // |model_type|.
   void ApplyAddressAndCardFixesAndCleanups(syncer::ModelType model_type);
 
-  // TODO(crbug.com/1477292): Remove.
-  void SyncStarted(syncer::ModelType model_type);
-
 #if defined(UNIT_TEST)
   // Getter for |alternative_state_name_map_updater_| used for testing purposes.
   AlternativeStateNameMapUpdater*
@@ -61,35 +58,27 @@ class PersonalDataManagerCleaner {
   // Applies various fixes and cleanups on autofill credit cards.
   void ApplyCardFixesAndCleanups();
 
-  // Removes settings-inaccessible profiles values from all profiles stored in
-  // the |personal_data_manager_|.
-  void RemoveInaccessibleProfileValues();
-
-  // Applies the deduping routine once per major version if the feature is
-  // enabled. Calls DedupeProfiles with the content of
-  // |PersonalDataManager::GetProfiles()| as a parameter. Removes the profiles
-  // to delete from the database and updates the others.
+  // Applies the deduping routine once per major version. Calls DedupeProfiles()
+  // with the content of `PersonalDataManager::GetProfiles()` as a parameter.
+  // Removes the profiles to delete from the database and updates the others.
   // Returns true if the routine was run.
   bool ApplyDedupingRoutine();
 
-  // Goes through all the |existing_profiles| and merges all similar unverified
-  // profiles together. Also discards unverified profiles that are similar to a
-  // verified profile. All the profiles except the results of the merges will be
-  // added to |profile_guids_to_delete|. This routine should be run once per
+  // Goes through all the `existing_profiles` and merges all similar profiles
+  // together. All the profiles except the results of the merges will be
+  // added to `profile_guids_to_delete`. This routine should be run once per
   // major version.
   //
-  // This method should only be called by ApplyDedupingRoutine. It is split for
-  // testing purposes.
+  // This method should only be called by ApplyDedupingRoutine(). It is split
+  // for testing purposes.
   void DedupeProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
       std::unordered_set<std::string>* profile_guids_to_delete) const;
 
-  // Tries to delete disused addresses once per major version if the
-  // feature is enabled.
+  // Tries to delete disused addresses once per major version.
   bool DeleteDisusedAddresses();
 
-  // Tries to delete disused credit cards once per major version if the
-  // feature is enabled.
+  // Tries to delete disused credit cards on startup.
   bool DeleteDisusedCreditCards();
 
   // Clears the value of the origin field of cards that were not created from

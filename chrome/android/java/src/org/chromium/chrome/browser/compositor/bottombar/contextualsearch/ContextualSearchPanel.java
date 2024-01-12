@@ -918,11 +918,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     private static @ColorInt int getScrimmedColor(
             Context context, @ColorInt int baseColor, float scrimFraction) {
-        int scrimColor = context.getColor(R.color.default_scrim_color);
-        float scrimColorAlpha = (scrimColor >>> 24) / 255f;
-        int scrimColorOpaque = scrimColor & 0xFF000000;
-        return ColorUtils.getColorWithOverlay(
-                baseColor, scrimColorOpaque, scrimFraction * scrimColorAlpha);
+        @ColorInt int scrimColor = context.getColor(R.color.default_scrim_color);
+        return ColorUtils.overlayColor(baseColor, scrimColor, scrimFraction);
     }
 
     // ============================================================================================

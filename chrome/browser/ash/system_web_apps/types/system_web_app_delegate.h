@@ -128,8 +128,9 @@ class SystemWebAppDelegate {
   // the order in go/default-apps.
   virtual bool ShouldShowInLauncher() const;
 
-  // If false, this app will be hidden from the Chrome OS search.
-  virtual bool ShouldShowInSearch() const;
+  // If false, this app will be hidden from both the Chrome OS search and shelf.
+  // If true, this app will be shown in both the ChromeOS search and shelf.
+  virtual bool ShouldShowInSearchAndShelf() const;
 
   // If true, in Ash browser, navigations (e.g. Omnibox URL, anchor link) to
   // this app will open in the app's window instead of the navigation's context

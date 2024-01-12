@@ -29,6 +29,11 @@ constexpr char kInactiveToReloadTimeHistogram[] =
 constexpr char kReloadToCloseTimeHistogram[] =
     "TabManager.Discarding.ReloadToCloseTime";
 
+constexpr char kDiscardToReloadTimeProactiveHistogram[] =
+    "TabManager.Discarding.DiscardToReloadTime.Proactive";
+constexpr char kInactiveToReloadTimeProactiveHistogram[] =
+    "TabManager.Discarding.InactiveToReloadTime.Proactive";
+
 class DiscardMetricsLifecycleUnitObserverTest : public testing::Test {
  public:
   DiscardMetricsLifecycleUnitObserverTest(
@@ -97,6 +102,26 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest, DiscardToReloadTime) {
                             LifecycleUnitStateChangeReason::BROWSER_INITIATED);
   histograms_.ExpectTimeBucketCount(kDiscardToReloadTimeHistogram, kShortDelay,
                                     1);
+  // The discard is extension initiated, so the "proactive" histogram isn't
+  // recorded.
+  histograms_.ExpectTotalCount(kDiscardToReloadTimeProactiveHistogram, 0);
+}
+
+TEST_F(DiscardMetricsLifecycleUnitObserverTest, DiscardToReloadTimeProactive) {
+  histograms_.ExpectTotalCount(kDiscardToReloadTimeHistogram, 0);
+
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED,
+                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  test_clock_.Advance(kShortDelay);
+  histograms_.ExpectTotalCount(kDiscardToReloadTimeHistogram, 0);
+
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
+                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  histograms_.ExpectTimeBucketCount(kDiscardToReloadTimeHistogram, kShortDelay,
+                                    1);
+  // The discard is browser initiated, so the "proactive" histogram is recorded.
+  histograms_.ExpectTimeBucketCount(kDiscardToReloadTimeProactiveHistogram,
+                                    kShortDelay, 1);
 }
 
 TEST_F(DiscardMetricsLifecycleUnitObserverTest, InactiveToReloadTime) {
@@ -114,6 +139,29 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest, InactiveToReloadTime) {
   lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
                             LifecycleUnitStateChangeReason::BROWSER_INITIATED);
   histograms_.ExpectTimeBucketCount(kInactiveToReloadTimeHistogram,
+                                    2 * kShortDelay, 1);
+  // The discard is extension initiated, so the "proactive" histogram isn't
+  // recorded.
+  histograms_.ExpectTotalCount(kInactiveToReloadTimeProactiveHistogram, 0);
+}
+
+TEST_F(DiscardMetricsLifecycleUnitObserverTest, InactiveToReloadTimeProactive) {
+  histograms_.ExpectTotalCount(kInactiveToReloadTimeHistogram, 0);
+
+  const base::TimeTicks last_focused_time = NowTicks();
+  lifecycle_unit_->SetLastFocusedTime(last_focused_time);
+  test_clock_.Advance(kShortDelay);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED,
+                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  test_clock_.Advance(kShortDelay);
+  histograms_.ExpectTotalCount(kInactiveToReloadTimeHistogram, 0);
+
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
+                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  histograms_.ExpectTimeBucketCount(kInactiveToReloadTimeHistogram,
+                                    2 * kShortDelay, 1);
+  // The discard is browser initiated, so the "proactive" histogram is recorded.
+  histograms_.ExpectTimeBucketCount(kInactiveToReloadTimeProactiveHistogram,
                                     2 * kShortDelay, 1);
 }
 

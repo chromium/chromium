@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -65,7 +65,7 @@ class AttributionStorage {
       int limit = -1) = 0;
 
   // Returns the first report time strictly after `time`.
-  virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;
+  virtual std::optional<base::Time> GetNextReportTime(base::Time time) = 0;
 
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
@@ -106,7 +106,7 @@ class AttributionStorage {
   // method returns null, no delay is applied. Otherwise, applies a random value
   // between `min_delay` and `max_delay`, both inclusive. Returns the new first
   // report time in storage, if any.
-  virtual absl::optional<base::Time> AdjustOfflineReportTimes() = 0;
+  virtual std::optional<base::Time> AdjustOfflineReportTimes() = 0;
 
   // Deletes all data in storage for reporting origins matching `filter`,
   // between `delete_begin` and `delete_end` time. More specifically, this:

@@ -30,6 +30,7 @@ source_set("elements") {
   ]
   deps = [
     "//base",
+    "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:constants",

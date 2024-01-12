@@ -155,6 +155,7 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   // must be uninitialized.
   DCHECK_EQ(-1, event.main_thread_incremental.total_wall_clock_duration_in_us);
   DCHECK_LE(-1, event.main_thread_incremental.mark_wall_clock_duration_in_us);
+  DCHECK_LE(-1, event.incremental_marking_start_stop_wall_clock_duration_in_us);
   DCHECK_EQ(-1, event.main_thread_incremental.weak_wall_clock_duration_in_us);
   DCHECK_EQ(-1,
             event.main_thread_incremental.compact_wall_clock_duration_in_us);
@@ -225,6 +226,12 @@ void V8MetricsRecorder::AddMainThreadEvent(
         "V8.GC.Cycle.MainThread.Full.Incremental.Sweep",
         base::Microseconds(
             event.main_thread_incremental.sweep_wall_clock_duration_in_us));
+  }
+  if (event.incremental_marking_start_stop_wall_clock_duration_in_us >= 0) {
+    UMA_HISTOGRAM_TIMES(
+        "V8.GC.Cycle.MainThread.Full.Incremental.Mark.StartStop",
+        base::Microseconds(
+            event.incremental_marking_start_stop_wall_clock_duration_in_us));
   }
 
   // TODO(chromium:1154636): emit the following when they are populated:

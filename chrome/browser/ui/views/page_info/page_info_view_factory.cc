@@ -144,12 +144,13 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
-    ContentSettingsType type) {
+    ContentSettingsType type,
+    content::WebContents* web_contents) {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type),
                           presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
-                                                      type));
+                                                      type, web_contents));
 }
 
 std::unique_ptr<views::View>

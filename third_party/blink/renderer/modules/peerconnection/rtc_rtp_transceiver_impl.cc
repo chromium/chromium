@@ -189,7 +189,8 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
           native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpTransceiverState state,
-      bool require_encoded_insertable_streams)
+      bool require_encoded_insertable_streams,
+      std::unique_ptr<webrtc::Metronome> decode_metronome)
       : main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
         webrtc_transceiver_(state.webrtc_transceiver()),
@@ -199,7 +200,7 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
         require_encoded_insertable_streams);
     receiver_ = std::make_unique<blink::RTCRtpReceiverImpl>(
         native_peer_connection, state_.MoveReceiverState(),
-        require_encoded_insertable_streams);
+        require_encoded_insertable_streams, std::move(decode_metronome));
   }
 
   const RtpTransceiverState& state() const {
@@ -334,12 +335,14 @@ RTCRtpTransceiverImpl::RTCRtpTransceiverImpl(
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
     RtpTransceiverState transceiver_state,
-    bool encoded_insertable_streams)
+    bool encoded_insertable_streams,
+    std::unique_ptr<webrtc::Metronome> decode_metronome)
     : internal_(base::MakeRefCounted<RTCRtpTransceiverInternal>(
           std::move(native_peer_connection),
           std::move(track_map),
           std::move(transceiver_state),
-          encoded_insertable_streams)) {}
+          encoded_insertable_streams,
+          std::move(decode_metronome))) {}
 
 RTCRtpTransceiverImpl::RTCRtpTransceiverImpl(const RTCRtpTransceiverImpl& other)
     : internal_(other.internal_) {}

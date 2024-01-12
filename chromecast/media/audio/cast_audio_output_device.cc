@@ -64,13 +64,26 @@ class CastAudioOutputDevice::Internal
   // One time init on IO thread.
   void Initialize(
       mojo::PendingRemote<mojom::AudioSocketBroker> audio_socket_broker,
-      mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
-          pending_app_media_info_manager) {
-    app_media_info_manager_.Bind(std::move(pending_app_media_info_manager));
+      const std::string& session_id) {
+    audio_output_service::CmaBackendParams cma_backend_params;
 
-    app_media_info_manager_->GetCastApplicationMediaInfo(
-        base::BindOnce(&Internal::OnApplicationMediaInfoReceived,
-                       base::Unretained(this), std::move(audio_socket_broker)));
+    audio_output_service::AudioDecoderConfig* audio_config =
+        cma_backend_params.mutable_audio_decoder_config();
+    audio_config->set_audio_codec(audio_service::AudioCodec::AUDIO_CODEC_PCM);
+    audio_config->set_sample_rate(audio_params_.sample_rate());
+    audio_config->set_sample_format(
+        audio_service::SampleFormat::SAMPLE_FORMAT_INT16_I);
+    audio_config->set_num_channels(audio_params_.channels());
+
+    audio_output_service::ApplicationMediaInfo* app_media_info =
+        cma_backend_params.mutable_application_media_info();
+    app_media_info->set_application_session_id(session_id);
+
+    audio_bus_ = ::media::AudioBus::Create(audio_params_);
+    output_connection_ =
+        std::make_unique<audio_output_service::OutputStreamConnection>(
+            this, cma_backend_params, std::move(audio_socket_broker));
+    output_connection_->Connect();
   }
 
   void StartRender() {
@@ -188,31 +201,6 @@ class CastAudioOutputDevice::Internal
     TryPushBuffer();
   }
 
-  void OnApplicationMediaInfoReceived(
-      mojo::PendingRemote<mojom::AudioSocketBroker> pending_socket_broker,
-      ::media::mojom::CastApplicationMediaInfoPtr application_media_info) {
-    audio_output_service::CmaBackendParams cma_backend_params;
-
-    audio_output_service::AudioDecoderConfig* audio_config =
-        cma_backend_params.mutable_audio_decoder_config();
-    audio_config->set_audio_codec(audio_service::AudioCodec::AUDIO_CODEC_PCM);
-    audio_config->set_sample_rate(audio_params_.sample_rate());
-    audio_config->set_sample_format(
-        audio_service::SampleFormat::SAMPLE_FORMAT_INT16_I);
-    audio_config->set_num_channels(audio_params_.channels());
-
-    audio_output_service::ApplicationMediaInfo* app_media_info =
-        cma_backend_params.mutable_application_media_info();
-    app_media_info->set_application_session_id(
-        application_media_info->application_session_id);
-
-    audio_bus_ = ::media::AudioBus::Create(audio_params_);
-    output_connection_ =
-        std::make_unique<audio_output_service::OutputStreamConnection>(
-            this, cma_backend_params, std::move(pending_socket_broker));
-    output_connection_->Connect();
-  }
-
   void TryPushBuffer() {
     if (paused_ || !backend_initialized_ || !playback_started_ ||
         push_timer_.IsRunning()) {
@@ -324,8 +312,6 @@ class CastAudioOutputDevice::Internal
       output_connection_;
 
   mojo::PendingRemote<mojom::AudioSocketBroker> pending_socket_broker_;
-  mojo::Remote<::media::mojom::CastApplicationMediaInfoManager>
-      app_media_info_manager_;
   ::media::AudioParameters audio_params_;
   size_t media_pos_frames_ = 0;
   // When we start playing media. Used to determine the current position in the track.
@@ -356,21 +342,18 @@ class CastAudioOutputDevice::Internal
 
 CastAudioOutputDevice::CastAudioOutputDevice(
     mojo::PendingRemote<mojom::AudioSocketBroker> audio_socket_broker,
-    mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
-        application_media_info_manager)
+    const std::string& session_id)
     : CastAudioOutputDevice(std::move(audio_socket_broker),
-                            std::move(application_media_info_manager),
+                            session_id,
                             AudioIoThread::Get()->task_runner()) {}
 
 CastAudioOutputDevice::CastAudioOutputDevice(
     mojo::PendingRemote<mojom::AudioSocketBroker> audio_socket_broker,
-    mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
-        application_media_info_manager,
+    const std::string& session_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),
       pending_socket_broker_(std::move(audio_socket_broker)),
-      pending_app_media_info_manager_(
-          std::move(application_media_info_manager)) {}
+      session_id_(session_id) {}
 
 CastAudioOutputDevice::~CastAudioOutputDevice() {
   if (!internal_) {
@@ -391,8 +374,7 @@ void CastAudioOutputDevice::Initialize(const ::media::AudioParameters& params,
   internal_.emplace(task_runner_, std::move(internal));
 
   internal_.AsyncCall(&Internal::Initialize)
-      .WithArgs(std::move(pending_socket_broker_),
-                std::move(pending_app_media_info_manager_));
+      .WithArgs(std::move(pending_socket_broker_), session_id_);
 }
 
 void CastAudioOutputDevice::Start() {

@@ -408,7 +408,7 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
+base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     AutofillDriver* source,
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence,
@@ -430,8 +430,13 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
                     ? internal::FormForest::SecurityOptions::TrustAllOrigins()
                     : internal::FormForest::SecurityOptions(&triggered_origin,
                                                             &field_type_map));
-  for (const FormData& renderer_form : renderer_forms.renderer_forms) {
+  for (FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
+      // Remove unsafe fields from the list to be sent to the renderer.
+      std::erase_if(
+          renderer_form.fields, [&renderer_forms](const FormFieldData& field) {
+            return !renderer_forms.safe_fields.contains(field.global_id());
+          });
       callback(target, action_type, action_persistence,
                renderer_form.unique_renderer_id, renderer_form.fields);
     }
@@ -537,28 +542,6 @@ void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
     const std::vector<FormDataPredictions>& renderer_fdp = p.second;
     if (auto* target = DriverOfFrame(frame)) {
       callback(target, renderer_fdp);
-    }
-  }
-}
-
-void AutofillDriverRouter::SendFieldsEligibleForManualFillingToRenderer(
-    AutofillDriver* source,
-    const std::vector<FieldGlobalId>& fields,
-    void (*callback)(AutofillDriver* target,
-                     const std::vector<FieldRendererId>& fields)) {
-  // Splits FieldGlobalIds by their frames and reduce them to the
-  // FieldRendererIds.
-  std::map<LocalFrameToken, std::vector<FieldRendererId>> fields_by_frame;
-  for (FieldGlobalId field : fields) {
-    fields_by_frame[field.frame_token].push_back(field.renderer_id);
-  }
-
-  // Send the FieldRendererIds to the individual frames.
-  for (const auto& p : fields_by_frame) {
-    LocalFrameToken frame = p.first;
-    const std::vector<FieldRendererId>& frame_fields = p.second;
-    if (auto* target = DriverOfFrame(frame)) {
-      callback(target, frame_fields);
     }
   }
 }

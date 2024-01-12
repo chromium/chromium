@@ -8,6 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -15,6 +19,7 @@ import android.app.Activity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,10 +27,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -40,41 +47,65 @@ public class HubProviderUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Tab> mTabSupplierMock = new ObservableSupplierImpl<>();
+
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private Pane mMockPane;
+    @Mock private Pane mMockTabSwitcherPane;
+    @Mock private Pane mMockIncognitoTabSwitcherPane;
+    @Mock private Pane mMockBookmarksPane;
     @Mock private BackPressManager mBackPressManagerMock;
-    @Mock private ObservableSupplier<Tab> mTabSupplierMock;
 
     private Activity mActivity;
+    private HubProvider mHubProvider;
 
     @Before
     public void setUp() {
+        when(mMockTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mMockIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mMockBookmarksPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);
+
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mTabSupplierMock);
+        when(mTabModelSelector.getCurrentModelTabCountSupplier()).thenReturn(mTabCountSupplier);
+        mTabCountSupplier.set(0);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+
     }
 
     private void onActivity(Activity activity) {
         mActivity = activity;
-    }
 
-    @Test
-    @SmallTest
-    public void testHubProvider() {
-        HubProvider provider =
+        mHubProvider =
                 new HubProvider(
                         mActivity,
                         new DefaultPaneOrderController(),
                         mBackPressManagerMock,
                         () -> mTabModelSelector);
+    }
 
-        PaneListBuilder builder = provider.getPaneListBuilder();
+    @After
+    public void tearDown() {
+        mHubProvider.destroy();
+    }
 
-        var hubManagerSupplier = provider.getHubManagerSupplier();
+    @Test
+    @SmallTest
+    public void testHubProvider() {
+        PaneListBuilder builder = mHubProvider.getPaneListBuilder();
+
+        var hubManagerSupplier = mHubProvider.getHubManagerSupplier();
         assertNotNull(hubManagerSupplier);
         assertFalse(hubManagerSupplier.hasValue());
 
-        builder.registerPane(PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockPane));
+        builder.registerPane(
+                PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockTabSwitcherPane));
+        builder.registerPane(
+                PaneId.INCOGNITO_TAB_SWITCHER,
+                LazyOneshotSupplier.fromValue(mMockIncognitoTabSwitcherPane));
+        builder.registerPane(PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mMockBookmarksPane));
         assertFalse(builder.isBuilt());
+
 
         HubManager hubManager = hubManagerSupplier.get();
         assertNotNull(hubManager);
@@ -83,7 +114,34 @@ public class HubProviderUnitTest {
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
+
+        ShadowLooper.runUiThreadTasks();
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+
         paneManager.focusPane(PaneId.TAB_SWITCHER);
-        assertEquals(mMockPane, paneManager.getFocusedPaneSupplier().get());
+        assertEquals(mMockTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
+        verify(mTabModelSelector, never()).commitAllTabClosures();
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+
+        paneManager.focusPane(PaneId.BOOKMARKS);
+        assertEquals(mMockBookmarksPane, paneManager.getFocusedPaneSupplier().get());
+        verify(mTabModelSelector, never()).commitAllTabClosures();
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSwitcher.IncognitoClickedIsEmpty", true);
+        paneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
+        assertEquals(mMockIncognitoTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
+        verify(mTabModelSelector).commitAllTabClosures();
+        verify(mTabModelSelector).selectModel(true);
+        watcher.assertExpected();
+
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
+
+        paneManager.focusPane(PaneId.TAB_SWITCHER);
+        assertEquals(mMockTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
+        verify(mTabModelSelector, times(2)).commitAllTabClosures();
+        verify(mTabModelSelector).selectModel(false);
     }
 }

@@ -118,9 +118,11 @@ public abstract class ChildConnectionAllocator {
 
     private static void checkServiceExists(
             Context context, String packageName, String serviceClassName) {
-        // On R+ it's possible for the app to lose visibility of the WebView package in rare cases;
-        // see crbug.com/1363832 - we attempt to get re-granted visibility here to work around it.
+        // On R/S/T it's possible for the app to lose visibility of the WebView package in rare
+        // cases; see crbug.com/1363832 - we attempt to get re-granted visibility here to work
+        // around it.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
                 && !packageName.equals(context.getPackageName())) {
             workAroundWebViewPackageVisibility();
         }

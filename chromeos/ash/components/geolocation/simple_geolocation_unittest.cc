@@ -444,7 +444,7 @@ class SimpleGeolocationWirelessTest : public SimpleGeolocationTestBase,
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
-  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
+  raw_ptr<ShillManagerClient::TestInterface> manager_test_;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
 };

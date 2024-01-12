@@ -21,14 +21,17 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
+#include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
@@ -276,6 +279,23 @@ class CONTENT_EXPORT IndexedDBBucketContext
   storage::mojom::FileSystemAccessContext* file_system_access_context() {
     return file_system_access_context_.get();
   }
+
+  // `pending_factory_client` must be bound on the thread that uses it, hence it
+  // is not safe to bind it before passing here.
+  void OpenDatabase(
+      const std::u16string& name,
+      int64_t version,
+      mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+          pending_factory_client,
+      mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+          database_callbacks_remote,
+      int64_t transaction_id,
+      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+          transaction_receiver,
+      bool was_cold_open,
+      IndexedDBDataLossInfo data_loss_info,
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+          state_checker);
 
   // `pending_factory_client` must be bound on the thread that uses it, hence it
   // is not safe to bind it before passing here.

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isFakeEntry, isInteractiveVolume, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashRootType} from '../../common/js/entry_utils.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {State} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {State} from '../../state/state.js';
 import {getFileData} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
+import type {CommandHandlerDeps} from './command_handler.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileSelection} from './file_selection.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
@@ -305,7 +305,7 @@ export function isRootEntry(
  * @return True if the event was triggered by the selection menu button.
  */
 export function isFromSelectionMenu(event: Event) {
-  return (event.target as HTMLElement).id == 'selection-menu-button';
+  return (event.target as HTMLElement).id === 'selection-menu-button';
 }
 
 /**
@@ -361,7 +361,7 @@ export function shouldShowMenuItemsForEntry(
 export function hasCapability(
     fileManager: CommandHandlerDeps, entries: Array<Entry|FilesAppEntry>,
     capability: MetadataKey) {
-  if (entries.length == 0) {
+  if (entries.length === 0) {
     return false;
   }
 

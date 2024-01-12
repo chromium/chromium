@@ -158,7 +158,7 @@ class BleMediumTest : public testing::Test {
               std::string(byte_array.data(), byte_array.size()));
   }
 
-  raw_ptr<bluetooth::FakeAdapter, ExperimentalAsh> fake_adapter_;
+  raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleMedium> ble_medium_;
 

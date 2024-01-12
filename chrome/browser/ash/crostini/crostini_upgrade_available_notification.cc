@@ -87,7 +87,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
 
   CrostiniUpgradeAvailableNotificationClosed disposition_ =
       CrostiniUpgradeAvailableNotificationClosed::kUnknown;
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   base::WeakPtr<CrostiniUpgradeAvailableNotification> notification_;
   base::OnceClosure closure_;
 

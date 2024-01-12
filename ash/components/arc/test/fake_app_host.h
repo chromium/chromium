@@ -66,8 +66,7 @@ class FakeAppHost : public mojom::AppHost {
 
  private:
   // The connection holder must outlive |this| object.
-  const raw_ptr<ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>,
-                ExperimentalAsh>
+  const raw_ptr<ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>>
       app_connection_holder_;
 };
 

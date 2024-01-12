@@ -154,6 +154,11 @@ MATCHER_P(WithQueryRequestFor, test_case, "") {
          test_case->expected_query_request().SerializeAsString();
 }
 
+template <typename Error>
+AutoEnrollmentState ToState(Error error) {
+  return base::unexpected(error);
+}
+
 }  // namespace
 
 class EnrollmentStateFetcherTest : public testing::Test {
@@ -307,8 +312,7 @@ TEST_F(EnrollmentStateFetcherTest, SystemClockNotSynchronized) {
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, base::unexpected(AutoEnrollmentError(
-                       AutoEnrollmentSystemClockSyncError{})));
+  EXPECT_EQ(state, ToState(AutoEnrollmentSystemClockSyncError{}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmbargoDateNotPassed) {
@@ -404,7 +408,7 @@ TEST_F(EnrollmentStateFetcherTest, EmptyOprfResponse) {
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnOprfRequest) {
@@ -412,11 +416,13 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnOprfRequest) {
   EXPECT_CALL(
       job_creation_handler_,
       OnJobCreation(JobWithPsmRlweRequest(WithOprfRequestFor(&psm_test_case_))))
-      .WillOnce(fake_dm_service_->SendJobResponseAsync(-1, 0));
+      .WillOnce(fake_dm_service_->SendJobResponseAsync(net::ERR_FAILED, 0));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_REQUEST_FAILED,
+                       .network_error = net::ERR_FAILED}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, ServerErrorOnOprfRequest) {
@@ -425,11 +431,12 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnOprfRequest) {
       job_creation_handler_,
       OnJobCreation(JobWithPsmRlweRequest(WithOprfRequestFor(&psm_test_case_))))
       .WillOnce(fake_dm_service_->SendJobResponseAsync(
-          0, DM_STATUS_HTTP_STATUS_ERROR));
+          net::OK, DM_STATUS_HTTP_STATUS_ERROR));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_HTTP_STATUS_ERROR}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
@@ -472,7 +479,7 @@ TEST_F(EnrollmentStateFetcherTest, EmptyQueryResponse) {
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnQueryRequest) {
@@ -480,11 +487,13 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnQueryRequest) {
   ExpectOprfRequest();
   EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithPsmRlweRequest(
                                          WithQueryRequestFor(&psm_test_case_))))
-      .WillOnce(fake_dm_service_->SendJobResponseAsync(-1, 0));
+      .WillOnce(fake_dm_service_->SendJobResponseAsync(net::ERR_FAILED, 0));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_REQUEST_FAILED,
+                       .network_error = net::ERR_FAILED}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, ServerErrorOnQueryRequest) {
@@ -493,11 +502,12 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnQueryRequest) {
   EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithPsmRlweRequest(
                                          WithQueryRequestFor(&psm_test_case_))))
       .WillOnce(fake_dm_service_->SendJobResponseAsync(
-          0, DM_STATUS_HTTP_STATUS_ERROR));
+          net::OK, DM_STATUS_HTTP_STATUS_ERROR));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_HTTP_STATUS_ERROR}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, PsmReportsNoState) {
@@ -527,7 +537,7 @@ TEST_F(EnrollmentStateFetcherTest, EmptyEnrollmentStateResponse) {
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentStateRetrievalResponseError{}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnEnrollmentStateRequest) {
@@ -538,11 +548,13 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnEnrollmentStateRequest) {
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
                   kTestStateKey, kTestSerialNumber, kTestBrandCode)))
-      .WillOnce(fake_dm_service_->SendJobResponseAsync(-1, 0));
+      .WillOnce(fake_dm_service_->SendJobResponseAsync(net::ERR_FAILED, 0));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_REQUEST_FAILED,
+                       .network_error = net::ERR_FAILED}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, ServerErrorOnEnrollmentStateRequest) {
@@ -558,7 +570,8 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnEnrollmentStateRequest) {
 
   AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_HTTP_STATUS_ERROR}));
 }
 
 TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {

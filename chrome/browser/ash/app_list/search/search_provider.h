@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
@@ -28,6 +29,8 @@ class SearchController;
 class SearchProvider {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
+  using OnSearchResultsCallback =
+      base::RepeatingCallback<void(ash::AppListSearchResultType, Results)>;
 
   // Each provider should assign its control category during construction to
   // indicate whether or not they need a control to disable themselves. The
@@ -42,7 +45,8 @@ class SearchProvider {
   virtual ~SearchProvider();
 
   // Invoked to start a query search. |query| is guaranteed to be non-empty.
-  virtual void Start(const std::u16string& query) {}
+  virtual void Start(const std::u16string& query,
+                     OnSearchResultsCallback on_search_done);
 
   // Called when search query is cleared. The provider should stop/cancel
   // any pending search query handling. This should not affect zero state
@@ -50,7 +54,7 @@ class SearchProvider {
   virtual void StopQuery() {}
 
   // Invoked to start a zero-state search.
-  virtual void StartZeroState() {}
+  virtual void StartZeroState(OnSearchResultsCallback on_search_done);
 
   // Invoked to cancel zero-state search - called when app list view gets
   // hidden.
@@ -64,10 +68,6 @@ class SearchProvider {
   // Returns the main result type created by this provider.
   virtual ash::AppListSearchResultType ResultType() const = 0;
 
-  void set_controller(SearchController* controller) {
-    search_controller_ = controller;
-  }
-
   // Returns the launcher search control category of this provider.
   ControlCategory control_category() const { return control_category_; }
 
@@ -75,6 +75,8 @@ class SearchProvider {
   // Swaps the internal results with |new_results|.
   // This is useful when multiple results will be added, and the notification is
   // desired to be done only once when all results are added.
+  // TODO(b/315709613): Deprecated. To be removed. Use `on_search_done_`
+  // directly.
   void SwapResults(Results* new_results);
 
   // The control category setters should be called in derived class constructor
@@ -83,10 +85,19 @@ class SearchProvider {
     control_category_ = control_category;
   }
 
+  // A callback to be called when a search is done.
+  OnSearchResultsCallback on_search_done_;
+
  private:
-  raw_ptr<SearchController, ExperimentalAsh> search_controller_ = nullptr;
+  // TODO(b/315709613): Deprecated. To be removed.
+  virtual void Start(const std::u16string& query) {}
+
+  // TODO(b/315709613): Deprecated. To be removed.
+  virtual void StartZeroState() {}
+
   // The launcher search control category of the provider. Each provider is
   // enabled by default.
+  // TODO(b/315709613): Deprecated. To be removed.
   ControlCategory control_category_ = ControlCategory::kCannotToggle;
 };
 

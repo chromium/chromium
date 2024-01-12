@@ -123,23 +123,20 @@ class AccountManagerUIHandler
   // Refreshes the UI.
   void RefreshUI();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // A non-owning pointer to |account_manager::AccountManager|.
-  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
-      account_manager_;
+  const raw_ptr<account_manager::AccountManager> account_manager_;
 
   // A non-owning pointer to |AccountManagerFacade|.
-  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
-      account_manager_facade_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 
   // A non-owning pointer to |IdentityManager|.
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // A non-owning pointer to |AccountAppsAvailability| which is a KeyedService
   // and should outlive this class.
-  raw_ptr<AccountAppsAvailability, ExperimentalAsh> account_apps_availability_ =
-      nullptr;
+  raw_ptr<AccountAppsAvailability> account_apps_availability_ = nullptr;
 
   // An observer for |AccountManagerFacade|. Automatically deregisters when
   // |this| is destructed.

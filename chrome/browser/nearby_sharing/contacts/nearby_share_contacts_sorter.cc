@@ -128,7 +128,7 @@ class ContactRecordComparator {
     return *a < *b ? UCOL_LESS : UCOL_GREATER;
   }
 
-  raw_ptr<icu::Collator, ExperimentalAsh> collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 }  // namespace

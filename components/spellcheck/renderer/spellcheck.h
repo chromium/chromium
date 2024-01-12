@@ -52,8 +52,7 @@ class DictionaryUpdateObserver {
 // See http://crbug.com/73699.
 // Shared spellchecking logic/data for a RenderProcess. All RenderViews use
 // this object to perform spellchecking tasks.
-class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
-                   public spellcheck::mojom::SpellChecker {
+class SpellCheck : public spellcheck::mojom::SpellChecker {
  public:
   // TODO(groby): I wonder if this can be private, non-mac only.
   class SpellcheckRequest;

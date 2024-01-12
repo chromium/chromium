@@ -38,6 +38,10 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
   MOCK_METHOD(void, ShowAndroidHybridSignIn, (), (override));
   MOCK_METHOD(bool, IsAndroidHybridAvailable, (), (const override));
 #endif
+  base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<MockWebAuthnCredentialsDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

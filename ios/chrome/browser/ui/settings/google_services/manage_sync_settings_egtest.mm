@@ -881,8 +881,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Tap on the batch upload button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -925,8 +928,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Tap on the batch upload button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -971,8 +977,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Tap on the batch upload button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -1017,8 +1026,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Tap on the batch upload button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -1109,8 +1121,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Tap on the batch upload button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -1158,11 +1173,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // TODO(crbug.com/1482823): Test that items were actually moved.
 }
 
+// TODO(crbug.com/1515517): ManageSyncSettingsTestCase is failing
 // Tests that bulk upload moves the following data types to account:
 // - Passwords
 // - Bookmarks
 // - Reading List
-- (void)testBulkUploadForAllDataTypes {
+- (void)DISABLED_testBulkUploadForAllDataTypes {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
@@ -1180,8 +1196,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Tap on the batch upload button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -1246,8 +1265,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                  grey_accessibilityID(
                      kBatchUploadRecommendationItemAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBatchUploadAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kBatchUploadAccessibilityIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notVisible()];
 
   // TODO(crbug.com/1482823): Test that items were actually moved.

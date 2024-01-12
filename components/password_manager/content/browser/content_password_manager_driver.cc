@@ -269,6 +269,11 @@ void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
   }
 }
 
+base::WeakPtr<password_manager::PasswordManagerDriver>
+ContentPasswordManagerDriver::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ContentPasswordManagerDriver::GeneratePassword(
     autofill::mojom::PasswordGenerationAgent::TriggeredGeneratePasswordCallback
         callback) {

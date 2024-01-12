@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.AdaptiveChargingDelayDelta.{AdaptiveChargingState}.{OnTimeStatus}"
-    units="minutes" expires_after="2024-04-28">
+    units="minutes" expires_after="2024-06-30">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1139,7 +1139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatterySaver.UserBrightenedSec" units="seconds"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>cwd@google.com</owner>
   <owner>chromeos-bsm@google.com</owner>
   <summary>
@@ -1169,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1322,6 +1322,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Power.DisplayAfterResumeDurationMs{PowerSource}" units="ms"
+    expires_after="2024-05-26">
+  <owner>mhiramat@google.com</owner>
+  <owner>cros-suspend-resume@google.com</owner>
+  <summary>
+    The time that the user process took to display UI on the Chrome OS device
+    from suspend-to-RAM and suspend-to-Disk state, which starts when user
+    processes are woken up by the kernel, and stops when SetIsProjecting signal
+    is caught by power_manager. This is recorded when resuming from suspend. The
+    device is on {PowerSource} when the metrics is recorded.
+  </summary>
+  <token key="PowerSource">
+    <variant name="OnAC" summary="charging"/>
+    <variant name="OnBattery" summary="battery"/>
+  </token>
+</histogram>
+
 <histogram name="Power.ExternalBrightnessRequestResult"
     enum="ExternalDisplaySendResult" expires_after="M100">
   <owner>puthik@chromium.org</owner>
@@ -1440,7 +1457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds{Exclusive}" units="uAh"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1482,7 +1499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1675,8 +1692,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnBattery" units="ms"
-    expires_after="M85">
+    expires_after="2024-05-26">
   <owner>tbroch@chromium.org</owner>
+  <owner>mhiramat@google.com</owner>
   <summary>
     The time that the kernel took to resume the Chrome OS device from
     suspend-to-RAM state when running on battery at pre-suspend time.
@@ -1726,7 +1744,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2024-04-28">
+<histogram base="true" name="Power.Mac" units="mW" expires_after="2024-06-30">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
@@ -1806,7 +1824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PeripheralReadErrorLatencyMs" units="ms"
-    expires_after="2024-05-05">
+    expires_after="2024-07-07">
   <owner>skyostil@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1816,7 +1834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PeripheralReadLatencyMs" units="ms"
-    expires_after="2024-05-05">
+    expires_after="2024-07-07">
   <owner>skyostil@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1837,14 +1855,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonMenuAction" enum="PowerButtonMenuActionType"
-    expires_after="2024-05-01">
+    expires_after="2024-06-30">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Actions performed while the power button menu is open.</summary>
 </histogram>
 
 <histogram name="Power.PowerButtonPressed" units="units"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -1886,9 +1904,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SmartCharging.Messages" enum="SmartChargingMessages"
-    expires_after="2024-02-04">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
+    expires_after="2024-07-01">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>Type of messages that are reported by smart charging.</summary>
 </histogram>
 
@@ -1904,7 +1922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeCancel" units="units"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1918,7 +1936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeSuccess" units="units"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1930,7 +1948,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.SuspendDelay" units="seconds" expires_after="2024-05-05">
+<histogram name="Power.SuspendDelay" units="seconds" expires_after="2024-07-07">
   <owner>niwa@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1970,7 +1988,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnAC" units="units"
     expires_after="2024-03-23">
-  <owner>tbroch@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
     The number of times that the user adjusted the brightness during a session
@@ -1981,7 +2000,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
     units="units" expires_after="2024-05-26">
-  <owner>tbroch@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
     The number of times that the user adjusted the brightness during a session
@@ -2011,8 +2031,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
     expires_after="2024-05-12">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
   <summary>
     What happens when UserActivityManager receives a screen dim imminent
     notification. Only applicable to Chrome OS.
@@ -2021,6 +2042,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
     expires_after="2024-05-19">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2030,7 +2053,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2040,7 +2065,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2109,8 +2136,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
     expires_after="2024-05-19">
+  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>pmalani@chromium.org</owner>
   <summary>
@@ -2121,8 +2148,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
     expires_after="2024-05-19">
+  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>pmalani@chromium.org</owner>
   <summary>
@@ -2133,6 +2160,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimModel.Result"
     enum="PowerMLSmartDimModelResult" expires_after="2024-05-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2146,6 +2175,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimParameter.Result"
     enum="PowerMLSmartDimParameterResult" expires_after="2024-05-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

@@ -28,7 +28,7 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.version_info.VersionInfo;
+import org.chromium.base.version_info.VersionInfo;
 
 import java.io.File;
 import java.io.FileWriter;

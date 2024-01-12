@@ -85,9 +85,9 @@ class PasswordSyncTokenFetcher final {
   void ProcessValidTokenResponse(base::Value::Dict json_response);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   // `consumer_` to call back when this request completes.
-  const raw_ptr<Consumer, ExperimentalAsh> consumer_;
+  const raw_ptr<Consumer> consumer_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>

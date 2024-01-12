@@ -47,7 +47,7 @@ class PluginVmLicenseChecker {
   void CallEndpointWithAccessToken(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo access_token_info);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   GURL validation_url_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 

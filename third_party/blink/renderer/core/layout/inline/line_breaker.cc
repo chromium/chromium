@@ -1395,6 +1395,7 @@ LineBreaker::BreakResult LineBreaker::BreakText(
   const ComputedStyle& style = *item.Style();
   breaker.SetTextSpacingTrim(style.GetFontDescription().GetTextSpacingTrim());
   breaker.SetLineStart(line_info->StartOffset());
+  breaker.SetIsAfterForcedBreak(previous_line_had_forced_break_);
 
   // Reshaping between the last character and trailing spaces is needed only
   // when we need accurate end position, because kerning between trailing spaces

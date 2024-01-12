@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 
 namespace web_app {
 
@@ -22,13 +23,21 @@ LaunchWebAppCommand::LaunchWebAppCommand(
     apps::AppLaunchParams params,
     LaunchWebAppWindowSetting launch_setting,
     LaunchWebAppCallback callback)
-    : WebAppCommandTemplate<AppLock>("LaunchWebAppCommand"),
+    : WebAppCommand<AppLock,
+                    base::WeakPtr<Browser>,
+                    base::WeakPtr<content::WebContents>,
+                    apps::LaunchContainer>(
+          "LaunchWebAppCommand",
+          AppLockDescription(params.app_id),
+          std::move(callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(nullptr,
+                          nullptr,
+                          apps::LaunchContainer::kLaunchContainerNone)),
       params_(std::move(params)),
       launch_setting_(launch_setting),
-      callback_(std::move(callback)),
-      lock_description_(std::make_unique<AppLockDescription>(params_.app_id)),
-      profile_(profile),
-      provider_(provider) {
+      profile_(*profile),
+      provider_(*provider) {
   CHECK(provider);
 }
 
@@ -42,22 +51,11 @@ void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
                                 weak_factory_.GetWeakPtr()));
 }
 
-const LockDescription& LaunchWebAppCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value LaunchWebAppCommand::ToDebugValue() const {
-  return base::Value(debug_value_.Clone());
-}
-
-void LaunchWebAppCommand::OnShutdown() {
-  Complete(CommandResult::kShutdown);
-}
-
 void LaunchWebAppCommand::FirstRunServiceCompleted(bool success) {
-  debug_value_.Set("first_run_success", base::Value(success));
+  GetMutableDebugValue().Set("first_run_success", base::Value(success));
   if (!success) {
-    Complete(CommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
+                            apps::LaunchContainer::kLaunchContainerNone);
     return;
   }
 
@@ -73,19 +71,12 @@ void LaunchWebAppCommand::OnAppLaunched(
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container,
     base::Value debug_value) {
-  debug_value_.Set("launch_web_app_debug_value", std::move(debug_value));
-  Complete(CommandResult::kSuccess, std::move(browser), std::move(web_contents),
-           container);
-}
-
-void LaunchWebAppCommand::Complete(
-    CommandResult result,
-    base::WeakPtr<Browser> browser,
-    base::WeakPtr<content::WebContents> web_contents,
-    apps::LaunchContainer container) {
-  SignalCompletionAndSelfDestruct(
-      result,
-      base::BindOnce(std::move(callback_), browser, web_contents, container));
+  LOG(ERROR) << "LaunchWebAppCommand::OnAppLaunched  "
+             << GetDebugValue().DebugString();
+  GetMutableDebugValue().Set("launch_web_app_debug_value",
+                             std::move(debug_value));
+  CompleteAndSelfDestruct(CommandResult::kSuccess, std::move(browser),
+                          std::move(web_contents), container);
 }
 
 }  // namespace web_app

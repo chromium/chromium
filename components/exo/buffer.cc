@@ -220,7 +220,10 @@ Buffer::Texture::Texture(
       query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
-  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  // These SharedImages are used over the raster interface as both the source
+  // and destination of writes. Add GLES2 usage as they will be used by
+  // RasterImplementationGLES if OOP-R is not enabled.
+  // NOTE: After OOP-R ships GLES2 usage can be removed here.
   const uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;

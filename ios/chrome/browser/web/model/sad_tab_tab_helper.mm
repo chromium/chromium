@@ -39,13 +39,9 @@ SadTabTabHelper::SadTabTabHelper(web::WebState* web_state,
                                  base::TimeDelta repeat_failure_interval)
     : web_state_(web_state), repeat_failure_interval_(repeat_failure_interval) {
   web_state_->AddObserver(this);
-
-  NotificationCallback callback = base::BindRepeating(
-      &SadTabTabHelper::OnAppDidBecomeActive, weak_factory_.GetWeakPtr());
-
-  application_did_become_active_observer_ = [[NotificationObserverBridge alloc]
-      initForNotification:UIApplicationDidBecomeActiveNotification
-            usingCallback:callback];
+  if (web_state_->IsRealized()) {
+    CreateNotificationObserver();
+  }
 }
 
 SadTabTabHelper::~SadTabTabHelper() {
@@ -138,6 +134,23 @@ void SadTabTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_ = nullptr;
 }
 
+void SadTabTabHelper::WebStateRealized(web::WebState* web_state) {
+  CHECK(!background_notification_observer_, base::NotFatalUntil::M125);
+  CreateNotificationObserver();
+}
+
+void SadTabTabHelper::CreateNotificationObserver() {
+  base::RepeatingCallback<void(NSNotification*)> backgrounding_closure =
+      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
+          &SadTabTabHelper::OnAppDidBecomeActive, weak_factory_.GetWeakPtr()));
+
+  background_notification_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidBecomeActiveNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(backgrounding_closure)];
+}
+
 void SadTabTabHelper::OnVisibleCrash(const GURL& url_causing_failure) {
   // Is this failure a repeat-failure requiring the presentation of the Feedback
   // UI rather than the Reload UI?
@@ -183,7 +196,7 @@ void SadTabTabHelper::ReloadTab() {
   web_state_->GetNavigationManager()->LoadIfNecessary();
 }
 
-void SadTabTabHelper::OnAppDidBecomeActive(NSNotification* notification) {
+void SadTabTabHelper::OnAppDidBecomeActive() {
   if (!requires_reload_on_becoming_active_)
     return;
   if (web_state_->IsVisible()) {

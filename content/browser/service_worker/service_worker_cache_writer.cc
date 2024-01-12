@@ -71,7 +71,7 @@ class ServiceWorkerCacheWriter::ReadResponseHeadCallbackAdapter
 
   void DidReadResponseHead(int result,
                            network::mojom::URLResponseHeadPtr response_head,
-                           absl::optional<mojo_base::BigBuffer>) {
+                           std::optional<mojo_base::BigBuffer>) {
     result_ = result;
     if (!owner_)
       return;

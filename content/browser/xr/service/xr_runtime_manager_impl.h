@@ -125,7 +125,7 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
 
   ~XRRuntimeManagerImpl() override;
 
-  void InitializeProviders();
+  void InitializeProviders(VRServiceImpl* initializing_service);
   bool AreAllProvidersInitialized();
 
   bool IsInitializedOnCompatibleAdapter(BrowserXRRuntimeImpl* runtime);

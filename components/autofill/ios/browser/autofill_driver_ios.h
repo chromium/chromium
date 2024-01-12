@@ -5,14 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_H_
 
-#include <string>
+#import <string>
 
-#include "base/containers/flat_map.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "ios/web/public/js_messaging/web_frame_user_data.h"
-#include "url/origin.h"
+#import "base/containers/flat_map.h"
+#import "base/containers/flat_set.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/autofill_client.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "ios/web/public/js_messaging/web_frame_user_data.h"
+#import "url/origin.h"
 
 namespace web {
 class WebFrame;
@@ -41,6 +43,14 @@ class AutofillDriverIOS : public AutofillDriver,
   static AutofillDriverIOS* FromWebStateAndWebFrame(web::WebState* web_state,
                                                     web::WebFrame* web_frame);
 
+  // Convenience method that grabs the frame associated with `token` and returns
+  // the associated driver. Creates the driver if `token` refers to a valid
+  // frame but no driver exists; returns nullptr if `token` does not refer to a
+  // valid frame.
+  static AutofillDriverIOS* FromWebStateAndLocalFrameToken(
+      web::WebState* web_state,
+      LocalFrameToken token);
+
   ~AutofillDriverIOS() override;
 
   // AutofillDriver:
@@ -53,7 +63,7 @@ class AutofillDriverIOS : public AutofillDriver,
   bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
-  std::vector<FieldGlobalId> ApplyFormAction(
+  base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& data,
@@ -79,8 +89,6 @@ class AutofillDriverIOS : public AutofillDriver,
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override;
-  void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) override;
   void TriggerFormExtractionInDriverFrame() override;
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
@@ -106,6 +114,11 @@ class AutofillDriverIOS : public AutofillDriver,
   void set_processed(bool processed) { processed_ = processed; }
   web::WebFrame* web_frame() const;
 
+  // Notifies this driver that a child frame with RemoteFrameToken `token` has
+  // been seen during form extraction. May safely be called repeatedly for the
+  // same token; this becomes a no-op on subsequent calls.
+  void NotifyOfChildFrame(RemoteFrameToken token);
+
  private:
   friend AutofillDriverIOSFactory;
 
@@ -114,6 +127,11 @@ class AutofillDriverIOS : public AutofillDriver,
                     AutofillClient* client,
                     id<AutofillDriverIOSBridge> bridge,
                     const std::string& app_locale);
+
+  void SetParent(base::WeakPtr<AutofillDriverIOS> parent);
+
+  // Sets `this` as the parent of the frame identified by `token`.
+  void SetSelfAsParent(LocalFrameToken token);
 
   // Only used by the AutofillDriverIOSFactory.
   // Other callers should use FromWebStateAndWebFrame() instead.
@@ -125,6 +143,18 @@ class AutofillDriverIOS : public AutofillDriver,
   // The id of the WebFrame with which this object is associated.
   // "" if frame messaging is disabled.
   std::string web_frame_id_;
+
+  // A LocalFrameToken containing a value equivalent to `web_frame_id_` if that
+  // string is populated with a valid 128-bit hex value, or empty otherwise.
+  LocalFrameToken local_frame_token_;
+
+  // The driver of this frame's parent frame, if it is known and valid. Always
+  // null for the main (root) frame.
+  base::WeakPtr<AutofillDriverIOS> parent_ = nullptr;
+
+  // All RemoteFrameTokens that have ever been dispatched from this frame to
+  // a child frame.
+  base::flat_set<RemoteFrameToken> known_child_frames_;
 
   // AutofillDriverIOSBridge instance that is passed in.
   __unsafe_unretained id<AutofillDriverIOSBridge> bridge_;
@@ -139,6 +169,8 @@ class AutofillDriverIOS : public AutofillDriver,
   // BrowserAutofillManager instance via which this object drives the shared
   // Autofill code.
   std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
+
+  base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

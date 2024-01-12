@@ -84,8 +84,9 @@ bool FakeCrOSComponentManager::FinishLoadRequest(
 
 bool FakeCrOSComponentManager::ResetComponentState(const std::string& name,
                                                    const ComponentInfo& state) {
-  if (!supported_components_.count(name))
+  if (!supported_components_.count(name)) {
     return false;
+  }
 
   installed_components_.erase(name);
   mounted_components_.erase(name);
@@ -179,8 +180,9 @@ void FakeCrOSComponentManager::UnregisterCompatiblePath(
 base::FilePath FakeCrOSComponentManager::GetCompatiblePath(
     const std::string& name) const {
   const auto& it = installed_components_.find(name);
-  if (it == installed_components_.end())
+  if (it == installed_components_.end()) {
     return base::FilePath();
+  }
   return it->second.path;
 }
 

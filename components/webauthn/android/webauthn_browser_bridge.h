@@ -9,15 +9,15 @@
 
 namespace webauthn {
 
-class WebAuthnBrowserBridge {
+class WebauthnBrowserBridge {
  public:
-  WebAuthnBrowserBridge(JNIEnv* env,
+  WebauthnBrowserBridge(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jbridge);
 
-  WebAuthnBrowserBridge(const WebAuthnBrowserBridge&) = delete;
-  WebAuthnBrowserBridge& operator=(const WebAuthnBrowserBridge&) = delete;
+  WebauthnBrowserBridge(const WebauthnBrowserBridge&) = delete;
+  WebauthnBrowserBridge& operator=(const WebauthnBrowserBridge&) = delete;
 
-  ~WebAuthnBrowserBridge();
+  ~WebauthnBrowserBridge();
 
   void OnCredentialsDetailsListReceived(
       JNIEnv* env,
@@ -56,7 +56,7 @@ class WebAuthnBrowserBridge {
   void Destroy(JNIEnv* env);
 
  private:
-  // Java object that owns this WebAuthnBrowserBridge.
+  // Java object that owns this WebauthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
 };
 

@@ -15,9 +15,9 @@ class Checkbox;
 }
 
 class FirstRunDialog : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(FirstRunDialog);
+  METADATA_HEADER(FirstRunDialog, views::DialogDelegateView)
 
+ public:
   FirstRunDialog(const FirstRunDialog&) = delete;
   FirstRunDialog& operator=(const FirstRunDialog&) = delete;
 

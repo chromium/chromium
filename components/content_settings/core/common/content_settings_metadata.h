@@ -54,6 +54,11 @@ class RuleMetaData {
   void SetExpirationAndLifetime(base::Time expiration,
                                 base::TimeDelta lifetime);
 
+  // Returns whether the Rule is expired. Expiration is handled by
+  // HostContentSettingsMap automatically, clients do not have to check this
+  // attribute manually.
+  bool IsExpired() const;
+
   // Computes the setting's lifetime, based on the lifetime and expiration that
   // were read from persistent storage.
   static base::TimeDelta ComputeLifetime(base::TimeDelta lifetime,

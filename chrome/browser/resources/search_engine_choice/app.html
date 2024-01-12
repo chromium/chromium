@@ -197,6 +197,7 @@
 
   #infoLink {
     color: var(--google-blue-600);
+    white-space: nowrap;
   }
 
   cr-dialog {
@@ -436,9 +437,10 @@
     </a>
   </p>
   <cr-radio-group id="choiceList" class="custom-scrollbar"
-      selected="{{selectedChoice_}}">
+      selected="{{selectedChoice_}}" role="list" tabindex="0">
     <template is="dom-repeat" items="[[choiceList_]]">
-        <cr-radio-button class="label-first" name="[[item.prepopulateId]]">
+        <cr-radio-button role="listitem" class="label-first"
+            name="[[item.prepopulateId]]">
           <div class="choice">
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
@@ -462,9 +464,8 @@
 <div class="button-container">
   <cr-button class="action-button" id="actionButton"
       on-click="onActionButtonClicked_" disabled="[[isActionButtonDisabled_]]">
-      <div class="cr-icon" title=""
-          hidden="[[!needsScrollToTheBottom_(hasUserScrolledToTheBottom_)]]"
-          slot="prefix-icon">
+      <div class="cr-icon" slot="prefix-icon" title=""
+          hidden="[[hasUserScrolledToTheBottom_]]">
       </div>
       [[actionButtonText_]]
   </cr-button>

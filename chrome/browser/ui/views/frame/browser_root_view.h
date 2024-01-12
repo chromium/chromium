@@ -25,9 +25,9 @@ class OSExchangeData;
 // dropping above the tabstrip BrowserRootView forwards drop events to the
 // TabStrip.
 class BrowserRootView : public views::internal::RootView {
- public:
-  METADATA_HEADER(BrowserRootView);
+  METADATA_HEADER(BrowserRootView, views::internal::RootView)
 
+ public:
   struct DropIndex {
     // The index within the tabstrip to drop on/before (see
     // |insert_before_index| below).

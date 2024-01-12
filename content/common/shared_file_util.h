@@ -6,11 +6,11 @@
 #define CONTENT_COMMON_SHARED_FILE_UTIL_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -37,7 +37,7 @@ class SharedFileSwitchValueBuilder final {
   std::string switch_value_;
 };
 
-absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
+std::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value);
 
 }  // namespace content

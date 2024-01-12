@@ -43,15 +43,18 @@ namespace search_engines {
 
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
-  SearchEngineChoiceUtilsTest()
-      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {
+  SearchEngineChoiceUtilsTest() {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
+    DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
+
+    template_url_service_ =
+        std::make_unique<TemplateURLService>(&pref_service_);
 
     InitMockPolicyService();
     CheckPoliciesInitialState();
@@ -59,41 +62,13 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
   ~SearchEngineChoiceUtilsTest() override = default;
 
-  void VerifyWillShowChoiceScreen(
-      const policy::PolicyService& policy_service,
-      const search_engines::ProfileProperties& profile_properties,
-      TemplateURLService& template_url_service) {
-    PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
-    EXPECT_TRUE(search_engines::ShouldShowUpdatedSettings(prefs));
-    EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(
-        policy_service, profile_properties, &template_url_service));
-  }
-
-  void VerifyEligibleButWillNotShowChoiceScreen(
-      const policy::PolicyService& policy_service,
-      const search_engines::ProfileProperties& profile_properties,
-      TemplateURLService& template_url_service) {
-    PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
-    EXPECT_TRUE(search_engines::ShouldShowUpdatedSettings(prefs));
-    EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
-        policy_service, profile_properties, &template_url_service));
-  }
-
-  void VerifyNotEligibleAndWillNotShowChoiceScreen(
-      const policy::PolicyService& policy_service,
-      const search_engines::ProfileProperties& profile_properties,
-      TemplateURLService& template_url_service) {
-    PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
-    EXPECT_FALSE(search_engines::ShouldShowUpdatedSettings(prefs));
-    EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
-        policy_service, profile_properties, &template_url_service));
-  }
-
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }
   PrefService* pref_service() { return &pref_service_; }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-  TemplateURLService& template_url_service() { return template_url_service_; }
+  TemplateURLService& template_url_service() {
+    return CHECK_DEREF(template_url_service_.get());
+  }
   base::HistogramTester histogram_tester_;
 
  private:
@@ -123,30 +98,51 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   policy::PolicyMap policy_map_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::test::ScopedFeatureList feature_list_;
-  TemplateURLService template_url_service_;
+  std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
 // Test that the choice screen doesn't get displayed if the profile is not
 // regular.
 TEST_F(SearchEngineChoiceUtilsTest,
        DoNotShowChoiceScreenWithNotRegularProfile) {
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = false, .pref_service = pref_service()},
-      template_url_service());
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), /*profile_properties=*/
+                {.is_regular_profile = false, .pref_service = pref_service()},
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
 }
 
 // Test that the choice screen gets displayed if the
 // `DefaultSearchProviderEnabled` policy is not set.
 TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenIfPoliciesAreNotSet) {
-  VerifyWillShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+  search_engines::ProfileProperties profile_properties{
+      .is_regular_profile = true, .pref_service = pref_service()};
 
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+
+  SearchEngineChoiceScreenConditions expected_choice_screen_condition =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+      SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
+#else
+      SearchEngineChoiceScreenConditions::kEligible;
+#endif
+
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            expected_choice_screen_condition);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      expected_choice_screen_condition);
+
+#if BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(ShouldShowChoiceScreen(policy_service(), profile_properties,
+                                     &template_url_service()));
   histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
+      kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+#endif
 }
 
 // Test that the choice screen does not get displayed if the provider list is
@@ -157,15 +153,18 @@ TEST_F(SearchEngineChoiceUtilsTest,
   pref_service()->SetList(prefs::kSearchProviderOverrides,
                           override_list.Clone());
 
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::
-          kSearchProviderOverride,
-      1);
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), /*profile_properties=*/
+                {.is_regular_profile = true, .pref_service = pref_service()},
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kSearchProviderOverride
+#endif
+  );
 }
 
 // Test that the choice screen doesn't get displayed if the
@@ -174,52 +173,72 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfPolicySetToFalse) {
   policy_map().Set(policy::key::kDefaultSearchProviderEnabled,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy,
-      1);
+
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), /*profile_properties=*/
+                {.is_regular_profile = true, .pref_service = pref_service()},
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kControlledByPolicy
+#endif
+  );
 }
 
 // Test that the choice screen gets displayed if the
 // 'DefaultSearchProviderEnabled' policy is set to true but the
 // 'DefaultSearchProviderSearchURL' policy is not set.
 TEST_F(SearchEngineChoiceUtilsTest,
-       DoNotShowChoiceScreenIfPolicySetToTrueWithoutUrlSet) {
+       ShowChoiceScreenIfPolicySetToTrueWithoutUrlSet) {
   policy_map().Set(policy::key::kDefaultSearchProviderEnabled,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  VerifyWillShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
+  search_engines::ProfileProperties profile_properties{
+      .is_regular_profile = true, .pref_service = pref_service()};
+
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kEligible);
+#endif
 }
 
 // Test that the choice screen doesn't get displayed if the
 // 'DefaultSearchProviderEnabled' policy is set to true and the
 // DefaultSearchProviderSearchURL' is set.
 TEST_F(SearchEngineChoiceUtilsTest,
-       ShowChoiceScreenIfPolicySetToTrueWithUrlSet) {
+       DoNotShowChoiceScreenIfPolicySetToTrueWithUrlSet) {
   policy_map().Set(policy::key::kDefaultSearchProviderEnabled,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   policy_map().Set(policy::key::kDefaultSearchProviderSearchURL,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value("test"), nullptr);
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy,
-      1);
+
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), /*profile_properties=*/
+                {.is_regular_profile = true, .pref_service = pref_service()},
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kControlledByPolicy
+#endif
+  );
 }
 
 // Test that the choice screen gets displayed if and only if the
@@ -228,41 +247,64 @@ TEST_F(SearchEngineChoiceUtilsTest,
 // screen.
 TEST_F(SearchEngineChoiceUtilsTest,
        ShowChoiceScreenIfTheTimestampPrefIsNotSet) {
-  VerifyWillShowChoiceScreen(
-      policy_service(),
-      /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
+  search_engines::ProfileProperties profile_properties{
+      .is_regular_profile = true, .pref_service = pref_service()};
+
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kEligible);
+#endif
 
   search_engines::RecordChoiceMade(
       pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(),
-      /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kAlreadyCompleted, 1);
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kAlreadyCompleted);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kAlreadyCompleted);
+#endif
 }
 
 // Test that there is a regional condition controlling eligibility.
 TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfCountryOutOfScope) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "US");
-  VerifyNotEligibleAndWillNotShowChoiceScreen(
-      policy_service(),
-      /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
-  histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kNotInRegionalScope,
-      1);
+#if BUILDFLAG(IS_IOS)
+  // TODO(b/318820137): There should not be a dependency on the country here.
+  EXPECT_FALSE(ShouldShowUpdatedSettings(*pref_service()));
+#else
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#endif
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), /*profile_properties=*/
+                {.is_regular_profile = true, .pref_service = pref_service()},
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kNotInRegionalScope
+#endif
+  );
 }
 
 // Test that the choice screen does get displayed even if completed if the
@@ -274,35 +316,67 @@ TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
       pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
       &template_url_service());
 
-  VerifyWillShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+  search_engines::ProfileProperties profile_properties{
+      .is_regular_profile = true, .pref_service = pref_service()};
+
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kEligible);
+#endif
 }
 
 // Ensure that the choice screen doesn't get displayed if the flag is disabled.
 TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
   feature_list()->Reset();
-  feature_list()->InitWithFeatures(
-      {}, {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
-  VerifyNotEligibleAndWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+  feature_list()->InitWithFeatures({}, {switches::kSearchEngineChoiceTrigger});
+  EXPECT_FALSE(ShouldShowUpdatedSettings(*pref_service()));
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), /*profile_properties=*/
+                {.is_regular_profile = true, .pref_service = pref_service()},
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kFeatureSuppressed
+#endif
+  );
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithTriggerFeature) {
+  search_engines::ProfileProperties profile_properties{
+      .is_regular_profile = true, .pref_service = pref_service()};
+
   // SearchEngineChoiceTrigger is enabled and not set to trigger only for
   // tagged profiles: the dialog should trigger, regardless of the state of
   // the other feature flags.
   feature_list()->Reset();
-  feature_list()->InitWithFeatures(
-      {switches::kSearchEngineChoiceTrigger},
-      {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
-  VerifyWillShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+  feature_list()->InitWithFeatures({switches::kSearchEngineChoiceTrigger},
+                                   {switches::kSearchEngineChoice});
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kEligible);
+#endif
 
   // When the param is set and the profile untagged, the dialog will not be
   // displayed.
@@ -311,18 +385,38 @@ TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithTriggerFeature) {
   feature_list()->Reset();
   feature_list()->InitWithFeaturesAndParameters(
       {{switches::kSearchEngineChoiceTrigger, tagged_only_params}},
-      {switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+      {switches::kSearchEngineChoice});
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kProfileOutOfScope);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kEligible);
+#endif
 
   // When the profile is tagged, the dialog can also be displayed.
   pref_service()->SetBoolean(prefs::kDefaultSearchProviderChoicePending, true);
-  VerifyWillShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kEligible);
+#endif
 }
 
 // Test that the choice screen does not get displayed if the command line
@@ -331,10 +425,19 @@ TEST_F(SearchEngineChoiceUtilsTest,
        DoNotShowChoiceScreenWithDisableCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSearchEngineChoiceScreen);
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(),
+                {.is_regular_profile = true, .pref_service = pref_service()},
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+
+            SearchEngineChoiceScreenConditions::kFeatureSuppressed
+#endif
+  );
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, GetSearchEngineChoiceCountryId) {
@@ -392,6 +495,9 @@ TEST_F(SearchEngineChoiceUtilsTest, IsEeaChoiceCountry) {
 
 TEST_F(SearchEngineChoiceUtilsTest,
        DoNotShowChoiceScreenIfUserHasCustomSearchEngineSetAsDefault) {
+  search_engines::ProfileProperties profile_properties{
+      .is_regular_profile = true, .pref_service = pref_service()};
+
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
   TemplateURLData template_url_data;
@@ -400,15 +506,29 @@ TEST_F(SearchEngineChoiceUtilsTest,
   template_url_service().SetUserSelectedDefaultSearchProvider(
       template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
-  VerifyEligibleButWillNotShowChoiceScreen(
-      policy_service(), /*profile_properties=*/
-      {.is_regular_profile = true, .pref_service = pref_service()},
-      template_url_service());
+
+  EXPECT_TRUE(ShouldShowUpdatedSettings(*pref_service()));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(GetStaticChoiceScreenConditions(
+                policy_service(), profile_properties, template_url_service()),
+            SearchEngineChoiceScreenConditions::kEligible);
+  EXPECT_EQ(
+      GetDynamicChoiceScreenConditions(*pref_service(), template_url_service()),
+      SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
+#endif
+
+#if BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(ShouldShowChoiceScreen(policy_service(), profile_properties,
+                                      &template_url_service()));
   histogram_tester_.ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::
-          kHasCustomSearchEngine,
-      1);
+      kSearchEngineChoiceScreenProfileInitConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kHasCustomSearchEngine, 1);
+#endif
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
@@ -802,7 +922,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
 
 class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
  public:
@@ -839,6 +960,7 @@ TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
+        // BUILDFLAG(CHROME_FOR_TESTING)
 
 }  // namespace search_engines

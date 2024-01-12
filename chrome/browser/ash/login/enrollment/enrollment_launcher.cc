@@ -157,7 +157,7 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
 
-  raw_ptr<EnrollmentStatusConsumer, ExperimentalAsh> status_consumer_;
+  raw_ptr<EnrollmentStatusConsumer> status_consumer_;
 
   // Returns either OAuth token or DM token needed for the device attribute
   // update permission request.
@@ -651,8 +651,6 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
     case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       UMA(policy::kMetricEnrollmentNoDeviceIdentification);
       break;
-    case policy::EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
-      NOTREACHED_NORETURN();
     case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       UMA(policy::kMetricEnrollmentStoreDMTokenFailed);
       break;

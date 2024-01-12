@@ -138,6 +138,9 @@ class MockAccessibilityPrivate {
     /** @private {?string} */
     this.highlightColor_ = null;
 
+    /** @private {!chrome.accessibilityPrivate.ScreenRect} */
+    this.selectToSpeakFocus_ = null;
+
     /** @private {function<boolean>} */
     this.dictationToggleListener_ = null;
 
@@ -193,6 +196,11 @@ class MockAccessibilityPrivate {
     };
 
     this.onMagnifierBoundsChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakFocusChanged = {
       addListener: listener => {},
       removeListener: listener => {},
     };
@@ -297,6 +305,14 @@ class MockAccessibilityPrivate {
     this.selectToSpeakPanelState_ = {show, anchor, isPaused, speed};
   }
 
+  /**
+   * Sets the Select to Speak reading focus.
+   * @param {!chrome.accessibilityPrivate.ScreenRect} bounds
+   */
+  setSelectToSpeakFocus(bounds) {
+    this.selectToSpeakFocus_ = bounds;
+  }
+
   /** Called in order to toggle Dictation listening. */
   toggleDictation() {
     this.dictationActivated_ = !this.dictationActivated_;
@@ -390,6 +406,10 @@ class MockAccessibilityPrivate {
     return this.highlightRects_;
   }
 
+  clearHighlightRects() {
+    this.highlightRects_ = [];
+  }
+
   /**
    * Gets the color of the last highlight created.
    * @return {?string}
@@ -403,6 +423,17 @@ class MockAccessibilityPrivate {
    */
   getSelectToSpeakPanelState() {
     return this.selectToSpeakPanelState_;
+  }
+
+  /**
+   * @return {?chrome.AccessibilityPrivate.ScreenRect}
+   */
+  getSelectToSpeakFocus() {
+    return this.selectToSpeakFocus_;
+  }
+
+  clearSelectToSpeakFocus() {
+    this.selectToSpeakFocus_ = null;
   }
 
   /**
@@ -477,6 +508,11 @@ class MockAccessibilityPrivate {
     return this.spokenFeedbackSilenceCount_;
   }
 
+  /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
+  getDisplayBounds(callback) {
+    callback([{left: 0, top: 0, width: 1200, height: 800}]);
+  }
+
   /**
    * @param {!chrome.accessibilityPrivate.ToastType} type
    * @return {number}
@@ -492,6 +528,10 @@ class MockAccessibilityPrivate {
   /** @return {?chrome.accessibilityPrivate.ScreenPoint} */
   getLatestCursorPosition() {
     return this.latestCursorPosition_;
+  }
+
+  clearCursorPosition() {
+    this.latestCursorPosition_ = null;
   }
 
   /**
@@ -524,7 +564,7 @@ class MockAccessibilityPrivate {
     };
 
     const data = {};
-    const pumpkinDir = '../../accessibility_common/dictation/parse/pumpkin';
+    const pumpkinDir = '../../accessibility_common/third_party/pumpkin';
     data.js_pumpkin_tagger_bin_js =
         await getFileBytes(`${pumpkinDir}/js_pumpkin_tagger_bin.js`);
     data.tagger_wasm_main_js =

@@ -220,6 +220,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   void OnCreditCardFetched(CreditCardFetchResult result,
                            const CreditCard* credit_card);
 
+  // Triggered when the user completes the authentication flow needed to access
+  // virtual credit card details.
+  void OnVirtualCreditCardFetched(CreditCardFetchResult result,
+                                  const CreditCard* credit_card);
+
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that
   // if there are Autofill warnings, they will be at the head of the vector and
@@ -240,6 +245,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // duplicate autocomplete (not Autofill) suggestions, keeping their datalist
   // version.
   void InsertDataListValues(std::vector<Suggestion>* suggestions);
+
+  bool IsPaymentsManualFallbackOnNonPaymentsField() const;
 
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;

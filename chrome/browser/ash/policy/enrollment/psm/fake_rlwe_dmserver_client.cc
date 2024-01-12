@@ -7,12 +7,17 @@
 #include <utility>
 
 #include "base/check.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "net/base/net_errors.h"
 
 namespace policy::psm {
 
 FakeRlweDmserverClient::FakeRlweDmserverClient()
-    : result_holder_(psm::RlweResult::kConnectionError) {}
+    : result_holder_(
+          AutoEnrollmentDMServerError{.dm_error = DM_STATUS_REQUEST_FAILED,
+                                      .network_error = net::ERR_FAILED}) {}
 
 void FakeRlweDmserverClient::CheckMembership(CompletionCallback callback) {
   DCHECK(callback);

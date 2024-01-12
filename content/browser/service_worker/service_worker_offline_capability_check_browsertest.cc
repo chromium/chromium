@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -22,7 +24,6 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -63,7 +64,7 @@ class FetchEventTestHelper {
     for (const FetchEventDispatchParamAndExpectedResult&
              param_and_expected_result : test_inputs) {
       fetch_event_dispatches_.push_back(
-          FetchEventDispatch{param_and_expected_result, absl::nullopt});
+          FetchEventDispatch{param_and_expected_result, std::nullopt});
     }
   }
 
@@ -97,7 +98,7 @@ class FetchEventTestHelper {
  private:
   struct FetchEventDispatch {
     FetchEventDispatchParamAndExpectedResult param_and_expected_result;
-    absl::optional<FetchResult> fetch_result;
+    std::optional<FetchResult> fetch_result;
     std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher;
   };
 
@@ -223,7 +224,7 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
 
   OfflineCapability CheckOfflineCapability(const std::string& path) {
     base::RunLoop fetch_run_loop;
-    absl::optional<OfflineCapability> out_offline_capability;
+    std::optional<OfflineCapability> out_offline_capability;
     GURL url = embedded_test_server()->GetURL(path);
     wrapper()->CheckOfflineCapability(
         url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),

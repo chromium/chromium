@@ -29,8 +29,8 @@ void FederatedAuthRequestRequestTokenCallbackHelper::Reset() {
 
 void FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod(
     blink::mojom::RequestTokenStatus status,
-    const absl::optional<GURL>& selected_idp_config_url,
-    const absl::optional<std::string>& token,
+    const std::optional<GURL>& selected_idp_config_url,
+    const std::optional<std::string>& token,
     blink::mojom::TokenErrorPtr error,
     bool is_auto_selected) {
   CHECK(!was_called_);

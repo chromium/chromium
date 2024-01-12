@@ -57,12 +57,13 @@ ManifestError::ManifestError(const std::string& extension_id,
                              const std::u16string& message,
                              const std::string& manifest_key,
                              const std::u16string& manifest_specific)
-    : ExtensionError(ExtensionError::MANIFEST_ERROR,
-                     extension_id,
-                     false,  // extensions can't be installed while incognito.
-                     logging::LOG_WARNING,  // All manifest errors are warnings.
-                     base::FilePath(kManifestFilename).AsUTF16Unsafe(),
-                     message),
+    : ExtensionError(
+          ExtensionError::MANIFEST_ERROR,
+          extension_id,
+          false,  // extensions can't be installed while incognito.
+          logging::LOGGING_WARNING,  // All manifest errors are warnings.
+          base::FilePath(kManifestFilename).AsUTF16Unsafe(),
+          message),
       manifest_key_(manifest_key),
       manifest_specific_(manifest_specific) {}
 

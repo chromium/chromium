@@ -44,9 +44,13 @@ void BrowserViewAsh::UpdateWindowRoundedCorners() {
 
   // If side panel is visible, round one of the bottom two corners of the side
   // panel based on its alignment w.r.t to web contents.
-  side_panel->SetBackgroundRadii(gfx::RoundedCornersF(
+  const gfx::RoundedCornersF side_panel_radii(
       0, 0, right_aligned_side_panel_showing ? corner_radius : 0,
-      left_aligned_side_panel_showing ? corner_radius : 0));
+      left_aligned_side_panel_showing ? corner_radius : 0);
+
+  if (side_panel_radii != side_panel->background_radii()) {
+    side_panel->SetBackgroundRadii(side_panel_radii);
+  }
 
   views::WebView* devtools_webview = devtools_web_view();
   CHECK(devtools_webview);
@@ -57,9 +61,14 @@ void BrowserViewAsh::UpdateWindowRoundedCorners() {
   // devtools cover the full bounds of the web contents container, if the side
   // panel is not visible, we have to round the bottom two corners of side panel
   // irrespective of its docked placement.
-  devtools_webview->holder()->SetCornerRadii(gfx::RoundedCornersF(
+  const gfx::RoundedCornersF devtools_webview_radii(
       0, 0, right_aligned_side_panel_showing ? 0 : corner_radius,
-      left_aligned_side_panel_showing ? 0 : corner_radius));
+      left_aligned_side_panel_showing ? 0 : corner_radius);
+
+  if (devtools_webview_radii_ != devtools_webview_radii) {
+    devtools_webview_radii_ = devtools_webview_radii;
+    devtools_webview->holder()->SetCornerRadii(devtools_webview_radii_);
+  }
 
   const DevToolsDockedPlacement devtools_placement =
       devtools_docked_placement();
@@ -96,13 +105,21 @@ void BrowserViewAsh::UpdateWindowRoundedCorners() {
     if (auto* sad_tab_helper =
             SadTabHelper::FromWebContents(contents_webview->web_contents());
         sad_tab_helper->sad_tab()) {
-      static_cast<SadTabView*>(sad_tab_helper->sad_tab())
-          ->SetBackgroundRadii(contents_webview_radii);
+      SadTabView* sad_tab_view =
+          static_cast<SadTabView*>(sad_tab_helper->sad_tab());
+      if (sad_tab_view->GetBackgroundRadii() != contents_webview_radii) {
+        sad_tab_view->SetBackgroundRadii(contents_webview_radii);
+      }
     } else {
       // We only round contents_webview, if SadTabView is not showing.
-      contents_webview->holder()->SetCornerRadii(contents_webview_radii);
+      if (contents_webview_radii_ != contents_webview_radii) {
+        contents_webview_radii_ = contents_webview_radii;
+        contents_webview->holder()->SetCornerRadii(contents_webview_radii);
+      }
     }
   }
 
-  contents_webview->SetBackgroundRadii(contents_webview_radii);
+  if (contents_webview->background_radii() != contents_webview_radii) {
+    contents_webview->SetBackgroundRadii(contents_webview_radii);
+  }
 }

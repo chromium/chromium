@@ -285,7 +285,7 @@ void StoreString(std::string* result,
 }
 
 int GetInt(const base::Value::Dict& dict, base::StringPiece key) {
-  absl::optional<int> out = dict.FindInt(key);
+  std::optional<int> out = dict.FindInt(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(0);
 }
@@ -297,7 +297,7 @@ std::string GetString(const base::Value::Dict& dict, base::StringPiece key) {
 }
 
 bool GetBoolean(const base::Value::Dict& dict, base::StringPiece key) {
-  absl::optional<bool> out = dict.FindBool(key);
+  std::optional<bool> out = dict.FindBool(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(false);
 }
@@ -1221,8 +1221,8 @@ IN_PROC_BROWSER_TEST_F(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
              "\n"});
 
         URLLoaderInterceptor::WriteResponse(
-            path, params->client.get(), &headers,
-            absl::optional<net::SSLInfo>(), params->url_request.url);
+            path, params->client.get(), &headers, std::optional<net::SSLInfo>(),
+            params->url_request.url);
 
         if (--it->second == 0)
           expected_request_urls.erase(it);
@@ -1399,7 +1399,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
   void RegisterCustomResponse(const std::string& relative_url,
                               const net::HttpStatusCode code,
-                              const absl::optional<std::string>& reason,
+                              const std::optional<std::string>& reason,
                               const base::StringPairs& headers,
                               const std::string& content) {
     embedded_test_server()->RegisterRequestHandler(
@@ -1438,7 +1438,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   class CustomResponse : public net::test_server::HttpResponse {
    public:
     explicit CustomResponse(const net::HttpStatusCode code,
-                            const absl::optional<std::string>& reason,
+                            const std::optional<std::string>& reason,
                             const base::StringPairs& headers,
                             const std::string& content)
         : code_(code), reason_(reason), headers_(headers), content_(content) {}
@@ -1457,7 +1457,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
    private:
     net::HttpStatusCode code_;
-    absl::optional<std::string> reason_;
+    std::optional<std::string> reason_;
     base::StringPairs headers_;
     std::string content_;
   };
@@ -1481,7 +1481,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> CustomRequestHandler(
       const std::string& relative_url,
       const net::HttpStatusCode code,
-      const absl::optional<std::string>& reason,
+      const std::optional<std::string>& reason,
       const base::StringPairs& headers,
       const std::string& content,
       const net::test_server::HttpRequest& request) const {
@@ -1917,7 +1917,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
 
-  absl::optional<base::Value> result = base::JSONReader::Read(
+  std::optional<base::Value> result = base::JSONReader::Read(
       LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
 
   // The page request must be sent only once, since the worker responded with
@@ -1971,7 +1971,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
 
-  absl::optional<base::Value> result = base::JSONReader::Read(
+  std::optional<base::Value> result = base::JSONReader::Read(
       LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
 
   // The page request must be sent only once, since the worker responded with
@@ -2600,7 +2600,7 @@ class CacheStorageSideDataSizeChecker
     blob_handle->get()->ReadSideData(base::BindOnce(
         [](scoped_refptr<storage::BlobHandle> blob_handle, int* result,
            base::OnceClosure continuation,
-           const absl::optional<mojo_base::BigBuffer> data) {
+           const std::optional<mojo_base::BigBuffer> data) {
           *result = data ? data->size() : 0;
           std::move(continuation).Run();
         },
@@ -2608,7 +2608,7 @@ class CacheStorageSideDataSizeChecker
   }
 
   mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
-  absl::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
+  std::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
       cache_storage_cache_;
   const std::string cache_name_;
   const GURL url_;
@@ -2988,7 +2988,8 @@ class ThrottlingContentBrowserClient
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     auto throttle = std::make_unique<HeaderInjectingThrottle>();
     throttles.push_back(std::move(throttle));
@@ -3047,7 +3048,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
   ASSERT_TRUE(result.error.empty());
-  absl::optional<base::Value> parsed_result =
+  std::optional<base::Value> parsed_result =
       base::JSONReader::Read(result.ExtractString());
   ASSERT_TRUE(parsed_result);
   base::Value::Dict* dict = parsed_result->GetIfDict();
@@ -5061,7 +5062,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBypassFetchHandlerOriginTrialTest,
 
         URLLoaderInterceptor::WriteResponse(
             "content/test/data/service_worker" + params->url_request.url.path(),
-            params->client.get(), &headers, absl::optional<net::SSLInfo>(),
+            params->client.get(), &headers, std::optional<net::SSLInfo>(),
             params->url_request.url);
 
         if (--it->second == 0) {
@@ -6167,7 +6168,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 // TODO(crbug.com/1431421): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1517557): Flaky on Android.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect \
   DISABLED_Subresource_FetchHandler_Wins_Redirect
 #else
@@ -6747,7 +6749,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest,
 
         URLLoaderInterceptor::WriteResponse(
             "content/test/data/service_worker" + params->url_request.url.path(),
-            params->client.get(), &headers, absl::optional<net::SSLInfo>(),
+            params->client.get(), &headers, std::optional<net::SSLInfo>(),
             params->url_request.url);
 
         if (--it->second == 0) {
@@ -6944,7 +6946,7 @@ class CacheStorageDataChecker
   }
 
   mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
-  absl::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
+  std::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
       cache_storage_cache_;
   const std::string cache_name_;
   const GURL url_;
@@ -7524,12 +7526,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterOriginTrialBrowserTest,
               "[ServiceWorkerStaticRouter] Response from the network";
           URLLoaderInterceptor::WriteResponse(
               headers, body, params->client.get(),
-              absl::optional<net::SSLInfo>(), params->url_request.url);
+              std::optional<net::SSLInfo>(), params->url_request.url);
         } else {
           URLLoaderInterceptor::WriteResponse(
               "content/test/data/service_worker" +
                   params->url_request.url.path(),
-              params->client.get(), &headers, absl::optional<net::SSLInfo>(),
+              params->client.get(), &headers, std::optional<net::SSLInfo>(),
               params->url_request.url);
         }
 

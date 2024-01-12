@@ -12,6 +12,7 @@
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -36,11 +37,24 @@ bool DisableContentSuggestions() {
 }
 
 bool DisableDiscoverFeed() {
+  // Performance tests may disable the discover feed by setting the
+  // DISABLE_DISCOVER_FEED environment variable. Possible values
+  // the variable may be set to are described in the apple documentation for
+  // boolValue:
+  // https://developer.apple.com/documentation/foundation/nsstring/1409420-boolvalue
+  if ([[NSProcessInfo.processInfo.environment
+          objectForKey:@"DISABLE_DISCOVER_FEED"] boolValue]) {
+    return true;
+  }
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableDiscoverFeed);
 }
 
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
+  return true;
+}
+
+bool DisableDefaultSearchEngineChoice() {
   return true;
 }
 
@@ -164,6 +178,10 @@ void RunTestsIfPresent() {
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No delays for eg tests.
   return base::Seconds(0);
+}
+
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return std::make_unique<drive::TestDriveService>();
 }
 
 }  // namespace tests_hook

@@ -222,6 +222,7 @@
     "onmouseover",
     "onmouseup",
     "onmousewheel",
+    "onmove",
     "ononline",
     "onoffline",
     "onorientationchange",

@@ -136,6 +136,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
       LanguageCode language_code = LanguageCode::kNone);
   bool IsAnyLanguagePackInstalledForTesting() const;
 
+  const std::set<LanguageCode> InstalledLanguages() const;
+
  protected:
   // Registers the preference tracking the installed SODA language packs.
   static void RegisterRegisteredLanguagePackPref(PrefRegistrySimple* registry);

@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/extension_localization_throttle.h"
 
+#include <string_view>
+
 #include "base/test/task_environment.h"
 #include "extensions/renderer/shared_l10n_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -66,7 +68,7 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   // Implements blink::URLLoaderThrottle::Delegate.
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
+                       std::string_view custom_reason) override {
     cancel_error_code_ = error_code;
     cancel_custom_reason_ = std::string(custom_reason);
   }

@@ -5,10 +5,10 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
@@ -197,7 +197,7 @@ class SubresourceFilterAgentTest : public ::testing::Test {
         .WillByDefault(::testing::Return(GURL("http://example.com/")));
   }
 
-  void SetTestRulesetToDisallowURLsWithPathSuffix(base::StringPiece suffix) {
+  void SetTestRulesetToDisallowURLsWithPathSuffix(std::string_view suffix) {
     testing::TestRulesetPair test_ruleset_pair;
     ASSERT_NO_FATAL_FAILURE(
         test_ruleset_creator_.CreateRulesetToDisallowURLsWithPathSuffix(
@@ -284,7 +284,7 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   }
 
   void ExpectLoadPolicy(
-      base::StringPiece url_spec,
+      std::string_view url_spec,
       blink::WebDocumentSubresourceFilter::LoadPolicy expected_policy) {
     blink::WebURL url = GURL(url_spec);
     blink::mojom::RequestContextType request_context =

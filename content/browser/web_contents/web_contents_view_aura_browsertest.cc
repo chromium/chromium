@@ -26,7 +26,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/browser/render_frame_host.h"
@@ -81,7 +80,7 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
     if (allow_drop_) {
       drop_callback_ = base::BindOnce(std::move(callback), drop_data);
     } else {
-      drop_callback_ = base::BindOnce(std::move(callback), absl::nullopt);
+      drop_callback_ = base::BindOnce(std::move(callback), std::nullopt);
     }
 
     renderer_told_to_force_default_action_ =

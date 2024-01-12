@@ -76,7 +76,6 @@
 <translation id="162175252992296058">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی</translation>
 <translation id="1629521517399325891">گواهینامه کاربر برای اصالت‌سنجی شبکه دردسترس نیست.</translation>
 <translation id="1641780993263690097">چینی (پین‌یین)</translation>
-<translation id="1646019627374511909">تنظیم <ph name="NUMBER_OF_ITEMS" /> فایل برای دسترسی آفلاین</translation>
 <translation id="164969095109328410">‏دستگاه Chrome</translation>
 <translation id="1661207570040737402">‏از کل فضای ذخیره‌سازی درایو مشترک Google Workspace استفاده کرده‌اید.</translation>
 <translation id="1661867754829461514">پین جا افتاده</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">‏صفحه‌گسترده Google</translation>
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3486821258960016770">مغولی</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
 <translation id="3509680540198371098">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="3511705761158917664">درحال آماده شدن برای همگام‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="3522708245912499433">پرتغالی</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">خط‌مشی سرپرست کپی کردن <ph name="COUNT" /> فایل را مسدود کرده است</translation>
 <translation id="6509122719576673235">نروژی</translation>
 <translation id="6528513914570774834">به سایر کاربران این دستگاه اجازه داده شود از این شبکه استفاده کنند</translation>
-<translation id="653019979737152879">در حال همگام‌سازی <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">اخیر</translation>
 <translation id="6558280019477628686">خطایی روی داد. ممکن است بعضی از موارد حذف نشده باشند.</translation>
 <translation id="656398493051028875">در حال حذف «<ph name="FILENAME" />»...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">‏به برنامه‌های Linux اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشند</translation>
 <translation id="7555339735447658365">درحال‌حاضر آفلاین هستید. وقتی به اینترنت متصل شدید، همگام‌سازی فایل ازسر گرفته می‌شود.</translation>
 <translation id="7589661784326793847">چند ثانیه صبر کنید</translation>
-<translation id="7592775719802218421">تنظیم <ph name="FILE_NAME" /> برای دسترسی آفلاین</translation>
 <translation id="7600126690270271294">صربی</translation>
 <translation id="7603724359189955920">شبکه‌ها</translation>
 <translation id="7627790789328695202">اوه، <ph name="FILE_NAME" /> از قبل وجود دارد. نام آن را تغییر دهید و دوباره امتحان کنید.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8147028810663464959">عرض نویسه روی «کامل» تنظیم شده است</translation>
 <translation id="8151638057146502721">پیکربندی</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{‫۱ خطا.}one{‫# خطا.}other{‫# خطا.}}</translation>
 <translation id="8154842056504218462">همه ورودی‌ها انتخاب شد.</translation>
 <translation id="8157684860301034423">اطلاعات برنامه بازیابی نشد.</translation>
 <translation id="8175731104491895765">فرانسوی (بلژیک)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">به <ph name="VM_NAME" /> اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشد</translation>
 <translation id="8372369524088641025">‏کلید WEP نادرست</translation>
 <translation id="8372852072747894550">یونانی</translation>
+<translation id="8377269993083688872">طرح‌بندی‌های ایمیل</translation>
 <translation id="8386903983509584791">اسکن کامل شد</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> استخراج شد.</translation>
 <translation id="8395901698320285466">ابعاد</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">انتخاب فایلی برای باز کردن</translation>
 <translation id="8577897833047451336">کروات</translation>
 <translation id="8578308463707544055">اندونزیایی</translation>
-<translation id="8579285237314169903">در حال همگام‌سازی <ph name="NUMBER_OF_FILES" /> مورد...</translation>
 <translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
 <translation id="8609695766746872526">ایسلندی</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">پراکسی‌های شبکه‌های مشترک مجاز باشند</translation>
 <translation id="8790981080411996443">شخصی درحال آبیاری گیاهان</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{‫۱ هشدار.}one{‫# هشدار.}other{‫# هشدار.}}</translation>
 <translation id="8808686172382650546">گربه</translation>
 <translation id="8810671769985673465">فشرده‌سازی انجام نشد، موارد موجود: «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">اسپانیایی (اسپانیا)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. لطفاً نام دیگری انتخاب کنید.</translation>
 <translation id="9046895021617826162">اتصال برقرار نشد</translation>
 <translation id="9065512565307033593">اگر نتوانید به‌تأیید برسانید، دسترسی شما به شبکه غیرفعال خواهد شد.</translation>
-<translation id="9083722265619106011">{0,plural, =1{۱ هشدار.}one{<ph name="COUNT" /> هشدار.}other{<ph name="COUNT" /> هشدار.}}</translation>
 <translation id="908378762078012445">‏روسی با صفحه‌کلید آوایی AATSEEL</translation>
 <translation id="9086302186042011942">همگام‌سازی</translation>
 <translation id="9099674669267916096">تعداد صفحه</translation>

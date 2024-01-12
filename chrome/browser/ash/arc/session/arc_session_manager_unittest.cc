@@ -115,7 +115,7 @@ class ArcInitialStartHandler : public ArcSessionManagerObserver {
  private:
   bool was_called_ = false;
 
-  const raw_ptr<ArcSessionManager, ExperimentalAsh> session_manager_;
+  const raw_ptr<ArcSessionManager> session_manager_;
 };
 
 class FileExpansionObserver : public ArcSessionManagerObserver {
@@ -160,7 +160,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
  private:
   std::optional<ArcSupportHost::ErrorInfo> error_info_;
-  const raw_ptr<ArcSessionManager, ExperimentalAsh> session_manager_;
+  const raw_ptr<ArcSessionManager> session_manager_;
 };
 
 class ArcSessionManagerInLoginScreenTest : public testing::Test {

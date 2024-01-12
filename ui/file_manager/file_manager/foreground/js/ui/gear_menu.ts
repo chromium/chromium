@@ -98,7 +98,7 @@ export class GearMenu {
       return;
     }
 
-    if (this.spaceInfoPromise_ != spaceInfoPromise) {
+    if (this.spaceInfoPromise_ !== spaceInfoPromise) {
       return;
     }
 

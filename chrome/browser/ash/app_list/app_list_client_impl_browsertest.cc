@@ -152,7 +152,7 @@ class ActiveWindowWaiter : public wm::ActivationChangeObserver {
 
  private:
   base::RunLoop run_loop_;
-  raw_ptr<aura::Window, ExperimentalAsh> found_window_ = nullptr;
+  raw_ptr<aura::Window> found_window_ = nullptr;
 
   base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
       observation_{this};
@@ -303,7 +303,7 @@ class SelfDestroyAppItem : public ChromeAppListItem {
   }
 
  private:
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> updater_;
+  raw_ptr<AppListModelUpdater> updater_;
 };
 
 // Verifies that activating an app item which destroys itself during activation
@@ -1000,8 +1000,7 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
-  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
-      model_updater_;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged> model_updater_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,

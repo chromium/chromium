@@ -419,6 +419,24 @@ class SignedWebBundleReaderTest : public testing::Test {
   web_package::mojom::BundleResponsePtr response_;
 };
 
+TEST(SignedWebBundleReaderFileFalureTest, CantOpenFile) {
+  base::test::TaskEnvironment env;
+  base::FilePath file_path = base::FilePath::FromASCII("does-not-exist.swbn");
+
+  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
+      file_path, absl::nullopt,
+      std::make_unique<FakeSignatureVerifier>(absl::nullopt));
+
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      error_future;
+  reader->StartReading(base::DoNothing(), error_future.GetCallback());
+
+  auto parse_status = error_future.Take();
+  EXPECT_FALSE(parse_status.has_value());
+  EXPECT_EQ(parse_status.error().value(),
+            UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError);
+}
+
 TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       parse_status_future;

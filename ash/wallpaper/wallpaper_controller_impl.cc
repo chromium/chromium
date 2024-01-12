@@ -1106,6 +1106,7 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
 void WallpaperControllerImpl::SetSeaPenWallpaper(
     const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
+    const std::string& query_info,
     SetWallpaperCallback callback) {
   CHECK(features::IsSeaPenEnabled());
   DCHECK(callback);
@@ -1124,7 +1125,7 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
       GetUserSeaPenWallpaperDir(account_id).Append(sea_pen_file_name);
 
   sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
-      sea_pen_image, GetUserSeaPenWallpaperDir(account_id),
+      sea_pen_image, GetUserSeaPenWallpaperDir(account_id), query_info,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
                      sea_pen_wallpaper_path, std::move(callback)));
@@ -2479,7 +2480,8 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
   if (should_save_to_disk) {
     wallpaper_file_manager_->SaveWallpaperToDisk(
         type, GlobalChromeOSCustomWallpapersDir(), file_name, layout, image,
-        std::move(image_saved_callback), wallpaper_files_id);
+        /*image_metadata=*/"", std::move(image_saved_callback),
+        wallpaper_files_id);
   }
 
   if (show_wallpaper) {

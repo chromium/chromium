@@ -995,8 +995,9 @@ TEST_F(PasswordManagerTest, FormSubmitNoGoodMatch) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(manager()->form_managers().front());
-  const VotesUploader& votes_uploader =
+  const VotesUploader* votes_uploader =
       manager()->form_managers().front()->votes_uploader();
+  ASSERT_TRUE(votes_uploader);
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
@@ -1015,7 +1016,7 @@ TEST_F(PasswordManagerTest, FormSubmitNoGoodMatch) {
   task_environment_.RunUntilIdle();
 
   // Check that suggested value was properly recorded in VotesUploader.
-  EXPECT_EQ(form.username_value, votes_uploader.suggested_username());
+  EXPECT_EQ(form.username_value, votes_uploader->suggested_username());
 
   // Simulate saving the form.
   ASSERT_TRUE(form_manager_to_save);
@@ -1202,8 +1203,9 @@ TEST_F(PasswordManagerTest, FormSubmit) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(manager()->form_managers().front());
-  const VotesUploader& votes_uploader =
+  const VotesUploader* votes_uploader =
       manager()->form_managers().front()->votes_uploader();
+  ASSERT_TRUE(votes_uploader);
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
@@ -1220,7 +1222,7 @@ TEST_F(PasswordManagerTest, FormSubmit) {
   task_environment_.RunUntilIdle();
 
   // Check that suggested value was properly recorded in VotesUploader.
-  EXPECT_EQ(form.username_value, votes_uploader.suggested_username());
+  EXPECT_EQ(form.username_value, votes_uploader->suggested_username());
 
   // Simulate saving the form, as if the info bar was accepted.
   ASSERT_TRUE(form_manager_to_save);
@@ -4784,8 +4786,9 @@ TEST_F(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(manager()->form_managers().front());
-  const VotesUploader& votes_uploader =
+  const VotesUploader* votes_uploader =
       manager()->form_managers().front()->votes_uploader();
+  ASSERT_TRUE(votes_uploader);
 
   form_data.fields[0].value = u"oldpass";
   form_data.fields[1].value = u"newpass";
@@ -4799,7 +4802,7 @@ TEST_F(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   manager()->OnPasswordFormCleared(&driver_, form_data);
 
   // Check that suggested username was properly recorded in VotesUploader.
-  EXPECT_EQ(saved_match.username_value, votes_uploader.suggested_username());
+  EXPECT_EQ(saved_match.username_value, votes_uploader->suggested_username());
 }
 
 TEST_F(PasswordManagerTest,

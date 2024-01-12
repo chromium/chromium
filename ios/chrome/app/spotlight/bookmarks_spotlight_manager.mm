@@ -50,7 +50,7 @@ class SpotlightBookmarkModelBridge;
 @property(nonatomic, assign) BOOL modelUpdatesShouldBeIgnored;
 
 // The operation for processing the next batch of bookmarks from the indexing
-// queue, if any.
+// stack, if any.
 @property(nonatomic, weak) NSOperation* nextBatchOperation;
 
 @end
@@ -61,10 +61,7 @@ class SpotlightBookmarkModelBridge;
   // Bridge to register for account bookmark model changes.
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
 
-  // Keep a reference to detach before deallocing. Life cycle of
-  // `_localOrSyncalbeBookmarkModel` and `_accountBookmarkModel` is longer than
-  // life cycle of a SpotlightManager as `BookmarkModelBeingDeleted` will cause
-  // deletion of SpotlightManager.
+  // Keep a reference to detach before deallocing.
   bookmarks::BookmarkModel* _localOrSyncableBookmarkModel;  // weak
   // `_accountBookmarkModel` can be `nullptr`.
   bookmarks::BookmarkModel* _accountBookmarkModel;  // weak
@@ -78,7 +75,7 @@ class SpotlightBookmarkModelBridge;
   // Timer that counts how long it takes to index all bookmarks.
   std::unique_ptr<base::ElapsedTimer> _initialIndexTimer;
 
-  // The nodes stored in this queue will be indexed.
+  // The nodes stored in this stack will be indexed.
   std::stack<const bookmarks::BookmarkNode*> _indexingStack;
 
   // Number of times the indexing was interrupted by model updates.
@@ -300,11 +297,11 @@ class SpotlightBookmarkModelBridge;
 - (void)refreshNodeInIndex:(const bookmarks::BookmarkNode*)node {
   _indexingStack.push(node);
   if (!self.nextBatchOperation) {
-    [self indexNextBatchInQueue];
+    [self indexNextBatchInStack];
   }
 }
 
-- (void)indexNextBatchInQueue {
+- (void)indexNextBatchInStack {
   self.nextBatchOperation = nil;
 
   if (self.isShuttingDown) {
@@ -338,7 +335,7 @@ class SpotlightBookmarkModelBridge;
   // Dispatch the next batch asynchronously to avoid blocking the main thread.
   __weak BookmarksSpotlightManager* weakSelf = self;
   NSOperation* nextBatchOperation = [NSBlockOperation blockOperationWithBlock:^{
-    [weakSelf indexNextBatchInQueue];
+    [weakSelf indexNextBatchInStack];
   }];
 
   [[NSOperationQueue mainQueue] addOperation:nextBatchOperation];
@@ -376,7 +373,7 @@ class SpotlightBookmarkModelBridge;
   self.modelUpdatesShouldBeIgnored = NO;
   self.modelUpdatesShouldCauseFullReindex = YES;
 
-  // Indexing queue should be empty. There should be no ongoing indexing
+  // Indexing stack should be empty. There should be no ongoing indexing
   // operations.
   DCHECK(_indexingStack.empty());
   DCHECK(!self.nextBatchOperation);
@@ -387,7 +384,8 @@ class SpotlightBookmarkModelBridge;
   // shutdown, so the reindex can't happen until next app start. In the former
   // case, unset _initialIndexDone flag. This makes sure indexing will happen
   // once the model loads.
-  if (!_localOrSyncableBookmarkModel->loaded()) {
+  if (_localOrSyncableBookmarkModel &&
+      !_localOrSyncableBookmarkModel->loaded()) {
     _initialIndexDone = NO;
   }
   if (_accountBookmarkModel && !_accountBookmarkModel->loaded()) {
@@ -396,12 +394,14 @@ class SpotlightBookmarkModelBridge;
 
   _nodesIndexed = 0;
   _pendingLargeIconTasksCount = 0;
-  _indexingStack.push(_localOrSyncableBookmarkModel->root_node());
+  if (_localOrSyncableBookmarkModel) {
+    _indexingStack.push(_localOrSyncableBookmarkModel->root_node());
+  }
   if (_accountBookmarkModel) {
     _indexingStack.push(_accountBookmarkModel->root_node());
   }
   _initialIndexTimer = std::make_unique<base::ElapsedTimer>();
-  [self indexNextBatchInQueue];
+  [self indexNextBatchInStack];
 
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
                             _pendingLargeIconTasksCount);
@@ -430,7 +430,7 @@ class SpotlightBookmarkModelBridge;
   return localOrSyncableNodes;
 }
 
-// Clears the reindex queue.
+// Clears the reindex stack.
 - (void)stopIndexing {
   _initialIndexTimer.reset();
   _indexingStack = std::stack<const bookmarks::BookmarkNode*>();
@@ -467,6 +467,16 @@ class SpotlightBookmarkModelBridge;
 
 - (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   [self reindexBookmarksIfNeeded];
+}
+
+- (void)bookmarkModelBeingDeleted:(bookmarks::BookmarkModel*)model {
+  if (_accountBookmarkModel == model) {
+    _accountBookmarkModel = nullptr;
+  }
+
+  if (_localOrSyncableBookmarkModel == model) {
+    _localOrSyncableBookmarkModel = nullptr;
+  }
 }
 
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model

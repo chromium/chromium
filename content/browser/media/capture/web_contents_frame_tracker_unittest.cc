@@ -46,9 +46,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   ~SimpleContext() override = default;
 
   // WebContentsFrameTracker::Context overrides.
-  absl::optional<gfx::Rect> GetScreenBounds() override {
-    return screen_bounds_;
-  }
+  std::optional<gfx::Rect> GetScreenBounds() override { return screen_bounds_; }
 
   WebContentsImpl::CaptureTarget GetCaptureTarget() override {
     return WebContentsImpl::CaptureTarget{frame_sink_id_, gfx::NativeView{}};
@@ -69,7 +67,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   void set_frame_sink_id(viz::FrameSinkId frame_sink_id) {
     frame_sink_id_ = frame_sink_id;
   }
-  void set_screen_bounds(absl::optional<gfx::Rect> screen_bounds) {
+  void set_screen_bounds(std::optional<gfx::Rect> screen_bounds) {
     screen_bounds_ = std::move(screen_bounds);
   }
   float scale_override() const { return scale_override_; }
@@ -78,7 +76,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   int capturer_count_ = 0;
   viz::FrameSinkId frame_sink_id_ = kInitSinkId;
   gfx::Size last_capture_size_;
-  absl::optional<gfx::Rect> screen_bounds_;
+  std::optional<gfx::Rect> screen_bounds_;
   float scale_override_ = 1.0f;
 };
 
@@ -88,7 +86,7 @@ class MockCaptureDevice : public WebContentsVideoCaptureDevice,
                           public base::SupportsWeakPtr<MockCaptureDevice> {
  public:
   MOCK_METHOD2(OnTargetChanged,
-               void(const absl::optional<viz::VideoCaptureTarget>&, uint32_t));
+               void(const std::optional<viz::VideoCaptureTarget>&, uint32_t));
   MOCK_METHOD0(OnTargetPermanentlyLost, void());
 };
 
@@ -349,7 +347,7 @@ TEST_F(WebContentsFrameTrackerTest, NotifiesOfTargetChanges) {
   SetFrameSinkId(kNewId);
   EXPECT_CALL(
       *device(),
-      OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(kNewId),
+      OnTargetChanged(std::make_optional<viz::VideoCaptureTarget>(kNewId),
                       /*sub_capture_target_version=*/0))
       .Times(1);
 
@@ -375,7 +373,7 @@ TEST_F(WebContentsFrameTrackerTest,
 
   // Expect OnTargetChanged() to be invoked once with the crop-ID.
   EXPECT_CALL(*device(),
-              OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(
+              OnTargetChanged(std::make_optional<viz::VideoCaptureTarget>(
                                   kInitSinkId, kCropId),
                               /*sub_capture_target_version=*/1))
       .Times(1);

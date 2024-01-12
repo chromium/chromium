@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstddef>
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,11 +14,13 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
-#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -52,7 +55,7 @@ class MockAccessoryView
               ConfirmDeletion,
               (const std::u16string&,
                const std::u16string&,
-               base::OnceClosure));
+               base::OnceCallback<void(bool)>));
 };
 
 Suggestion createPasswordEntry(std::string password,
@@ -241,13 +244,11 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, RemoveAfterConfirmation) {
   controller()->set_suggestions(createSuggestions());
   NotifyAboutSuggestions();
 
-  base::OnceClosure confirm;
+  base::OnceCallback<void(bool)> deletion_callback;
   EXPECT_CALL(*controller(), GetRemovalConfirmationText(0, _, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*view(), ConfirmDeletion(_, _, _))
-      .WillOnce(WithArg<2>(Invoke([&](base::OnceClosure closure) -> void {
-        confirm = std::move(closure);
-      })));
+  EXPECT_CALL(*view(), ConfirmDeletion)
+      .WillOnce(MoveArg<2>(&deletion_callback));
   EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(
       0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 
@@ -256,7 +257,49 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, RemoveAfterConfirmation) {
       RemoveSuggestion(
           0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory))
       .WillOnce(Return(true));
-  std::move(confirm).Run();
+  std::move(deletion_callback).Run(/*confirmed=*/true);
+}
+
+TEST_F(AutofillKeyboardAccessoryAdapterTest,
+       MetricsAfterAddressDeletionDeclined) {
+  controller()->set_suggestions({test::CreateAutofillSuggestion(
+      PopupItemId::kAddressEntry, u"Your address")});
+  NotifyAboutSuggestions();
+
+  base::HistogramTester histogram;
+  base::OnceCallback<void(bool)> deletion_callback;
+  EXPECT_CALL(*controller(), GetRemovalConfirmationText(0, _, _))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*view(), ConfirmDeletion)
+      .WillOnce(MoveArg<2>(&deletion_callback));
+  EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(
+      0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+  EXPECT_CALL(*controller(), RemoveSuggestion).Times(0);
+
+  std::move(deletion_callback).Run(/*confirmed=*/false);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 0, 1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
+}
+
+TEST_F(AutofillKeyboardAccessoryAdapterTest,
+       MetricsAfterCreditCardDeletionDeclined) {
+  controller()->set_suggestions({test::CreateAutofillSuggestion(
+      PopupItemId::kCreditCardEntry, u"Your credit card")});
+  NotifyAboutSuggestions();
+
+  base::HistogramTester histogram;
+  base::OnceCallback<void(bool)> deletion_callback;
+  EXPECT_CALL(*controller(), GetRemovalConfirmationText(0, _, _))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*view(), ConfirmDeletion)
+      .WillOnce(MoveArg<2>(&deletion_callback));
+  EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(
+      0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+  EXPECT_CALL(*controller(), RemoveSuggestion).Times(0);
+
+  std::move(deletion_callback).Run(/*confirmed=*/false);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 0, 0);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 0);
 }
 
 }  // namespace autofill

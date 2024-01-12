@@ -267,7 +267,7 @@ class ScreenLocker
 
   // Delegate to forward all login status events to.
   // Tests can use this to receive login status events.
-  raw_ptr<AuthStatusConsumer, ExperimentalAsh> auth_status_consumer_ = nullptr;
+  raw_ptr<AuthStatusConsumer> auth_status_consumer_ = nullptr;
 
   // Number of bad login attempts in a row.
   int incorrect_passwords_count_ = 0;

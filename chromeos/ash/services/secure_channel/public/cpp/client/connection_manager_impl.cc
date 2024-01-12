@@ -86,12 +86,12 @@ ConnectionManager::Status ConnectionManagerImpl::GetStatus() const {
   return Status::kDisconnected;
 }
 
-void ConnectionManagerImpl::AttemptNearbyConnection() {
+bool ConnectionManagerImpl::AttemptNearbyConnection() {
   if (GetStatus() != Status::kDisconnected) {
     PA_LOG(WARNING) << "Connection to host already established or is "
                     << "currently attempting to establish, exiting "
                     << "AttemptConnection().";
-    return;
+    return false;
   }
 
   const std::optional<multidevice::RemoteDeviceRef> remote_device =
@@ -102,7 +102,7 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
   if (!remote_device || !local_device) {
     PA_LOG(ERROR) << "AttemptConnection() failed because either remote or "
                   << "local device is null.";
-    return;
+    return false;
   }
 
   connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
@@ -116,6 +116,7 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
   timer_->Start(FROM_HERE, kConnectionTimeout,
                 base::BindOnce(&ConnectionManagerImpl::OnConnectionTimeout,
                                weak_ptr_factory_.GetWeakPtr()));
+  return true;
 }
 
 void ConnectionManagerImpl::Disconnect() {

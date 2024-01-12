@@ -34,10 +34,11 @@
 #include "content/public/test/browser_test_base.h"
 
 #if BUILDFLAG(IS_MAC)
+#include <optional>
+
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/memory/stack_allocated.h"
 #include "base/test/scoped_path_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace content {
@@ -121,9 +122,9 @@ class ContentBrowserTest : public BrowserTestBase {
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
   STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
-  absl::optional<base::apple::ScopedNSAutoreleasePool> pool_;
+  std::optional<base::apple::ScopedNSAutoreleasePool> pool_;
 
-  absl::optional<base::ScopedPathOverride> file_exe_override_;
+  std::optional<base::ScopedPathOverride> file_exe_override_;
 #endif
 
   // Used to detect incorrect overriding of PreRunTestOnMainThread() with

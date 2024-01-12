@@ -41,7 +41,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     int file_handle() { return file_handle_; }
     base::File::Error result() { return result_; }
@@ -51,12 +51,12 @@ class CallbackLogger {
     base::File::Error result_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnOpenFile(int file_handle, base::File::Error result) {
     events_.push_back(std::make_unique<Event>(file_handle, result));
@@ -72,8 +72,8 @@ class CallbackLogger {
 
 class FileSystemProviderOperationsOpenFileTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsOpenFileTest() {}
-  ~FileSystemProviderOperationsOpenFileTest() override {}
+  FileSystemProviderOperationsOpenFileTest() = default;
+  ~FileSystemProviderOperationsOpenFileTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

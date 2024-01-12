@@ -102,7 +102,7 @@ scoped_refptr<cc::SkottieWrapper> CreateSkottieWrapper(
           lottie_json_resource_id);
   DCHECK(!animation_json.empty());
   base::span<const uint8_t> lottie_data_bytes =
-      base::as_bytes(base::make_span(animation_json));
+      base::as_byte_span(animation_json);
   scoped_refptr<cc::SkottieWrapper> animation;
   if (serializable) {
     // Create a serializable SkottieWrapper since the SkottieWrapper may have to

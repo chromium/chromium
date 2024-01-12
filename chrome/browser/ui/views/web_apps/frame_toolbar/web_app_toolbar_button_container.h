@@ -29,6 +29,7 @@ class WebAppMenuButton;
 class WebAppOriginText;
 class WindowControlsOverlayToggleButton;
 class SystemAppAccessibleName;
+class ExtensionsToolbarCoordinator;
 
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
@@ -148,6 +149,9 @@ class WebAppToolbarButtonContainer : public views::View,
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
   int page_action_insertion_point_ = 0;
+
+  std::unique_ptr<ExtensionsToolbarCoordinator>
+      extensions_toolbar_coordinator_ = nullptr;
 
   // All remaining members are owned by the views hierarchy.
   raw_ptr<WebAppOriginText> web_app_origin_text_ = nullptr;

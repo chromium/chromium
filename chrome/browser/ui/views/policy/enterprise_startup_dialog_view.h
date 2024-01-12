@@ -20,8 +20,9 @@
 namespace policy {
 
 class EnterpriseStartupDialogView : public views::DialogDelegateView {
+  METADATA_HEADER(EnterpriseStartupDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(EnterpriseStartupDialogView);
   EnterpriseStartupDialogView(
       EnterpriseStartupDialog::DialogResultCallback callback);
   EnterpriseStartupDialogView(const EnterpriseStartupDialogView&) = delete;

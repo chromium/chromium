@@ -347,9 +347,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   void UpdateMetricsBeforeShutdown();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
 
-  const raw_ref<AppRegistryCache, ExperimentalAsh> app_registry_cache_;
+  const raw_ref<AppRegistryCache> app_registry_cache_;
 
   bool should_record_metrics_on_new_day_ = false;
 

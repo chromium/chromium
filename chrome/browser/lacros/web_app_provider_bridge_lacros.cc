@@ -212,15 +212,16 @@ void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const webapps::AppId& app_id,
   DCHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
-      "WebAppServiceAsh::GetSubApps",
-      std::make_unique<web_app::AppLockDescription>(app_id),
+  provider->scheduler().ScheduleCallbackWithResult(
+      "WebAppServiceAsh::GetSubApps", web_app::AppLockDescription(app_id),
       base::BindOnce(
-          [](webapps::AppId app_id, web_app::AppLock& lock) {
+          [](const webapps::AppId& app_id, web_app::AppLock& lock,
+             base::Value::Dict&) {
             return lock.registrar().GetAllSubAppIds(app_id);
           },
-          app_id)
-          .Then(std::move(callback)));
+          app_id),
+      std::move(callback),
+      /*arg_for_shutdown=*/std::vector<webapps::AppId>());
 }
 
 // static
@@ -231,12 +232,14 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMapImpl(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
 
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
+  provider->scheduler().ScheduleCallbackWithResult(
       "WebAppProviderBridgeLacros::GetSubAppToParentMap",
-      std::make_unique<web_app::AllAppsLockDescription>(),
-      base::BindOnce([](web_app::AllAppsLock& lock) {
+      web_app::AllAppsLockDescription(),
+      base::BindOnce([](web_app::AllAppsLock& lock, base::Value::Dict&) {
         return lock.registrar().GetSubAppToParentMap();
-      }).Then(std::move(callback)));
+      }),
+      std::move(callback),
+      /*arg_for_shutdown=*/base::flat_map<webapps::AppId, webapps::AppId>());
 }
 
 // static
@@ -262,7 +265,7 @@ void WebAppProviderBridgeLacros::LaunchIsolatedWebAppInstallerImpl(
   CHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
-  provider->ui_manager().LaunchIsolatedWebAppInstaller(bundle_path);
+  provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(bundle_path);
 }
 
 }  // namespace crosapi

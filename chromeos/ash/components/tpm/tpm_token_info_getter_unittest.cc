@@ -70,7 +70,7 @@ class FakeTaskRunner : public base::TaskRunner {
 
  private:
   // The vector of delays.
-  raw_ptr<std::vector<int64_t>, ExperimentalAsh> delays_;
+  raw_ptr<std::vector<int64_t>> delays_;
 };
 
 // Implementation of CryptohomePkcs11Client used in these tests.

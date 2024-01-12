@@ -9,8 +9,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -88,9 +88,10 @@ SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(
 SearchEngineChoiceDialogView::~SearchEngineChoiceDialogView() = default;
 
 void SearchEngineChoiceDialogView::Initialize() {
-  auto* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(browser_->profile());
-  search_engine_choice_service->NotifyDialogOpened(
+  auto* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          browser_->profile());
+  search_engine_choice_dialog_service->NotifyDialogOpened(
       browser_, /*close_dialog_callback=*/base::BindOnce(
           &SearchEngineChoiceDialogView::CloseView,
           weak_ptr_factory_.GetWeakPtr()));
@@ -145,7 +146,7 @@ void SearchEngineChoiceDialogView::Initialize() {
                          &SearchEngineChoiceDialogView::ShowNativeView,
                          base::Unretained(this)),
                      /*on_choice_made_callback=*/base::OnceClosure(),
-                     SearchEngineChoiceService::EntryPoint::kDialog);
+                     SearchEngineChoiceDialogService::EntryPoint::kDialog);
 
   SetUseDefaultFillLayout(true);
 }
@@ -166,5 +167,5 @@ void SearchEngineChoiceDialogView::CloseView() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(SearchEngineChoiceDialogView, views::View)
+BEGIN_METADATA(SearchEngineChoiceDialogView)
 END_METADATA

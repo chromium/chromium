@@ -29,6 +29,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -352,12 +353,16 @@ void LoginUnlockThroughputRecorder::OnBeforeRestoredWindowShown(
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsShown);
   }
 
-  if (!compositor)
-    return;
-
-  restore_windows_presentation_time_requested_.insert(restore_window_id);
-  compositor->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-      &OnRestoredWindowPresentationTimeReceived, restore_window_id));
+  if (compositor &&
+      display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
+    restore_windows_presentation_time_requested_.insert(restore_window_id);
+    compositor->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+        &OnRestoredWindowPresentationTimeReceived, restore_window_id));
+  } else if (compositor) {
+    // Primary display not detected. Assume it's a headless unit.
+    restore_windows_presentation_time_requested_.insert(restore_window_id);
+    OnRestoredWindowPresented(restore_window_id);
+  }
 }
 
 void LoginUnlockThroughputRecorder::OnRestoredWindowPresented(
@@ -376,9 +381,13 @@ void LoginUnlockThroughputRecorder::OnRestoredWindowPresented(
         base::TimeTicks::Now() - primary_user_logged_in_;
     constexpr char kAshLoginSessionRestoreAllBrowserWindowsPresented[] =
         "Ash.LoginSessionRestore.AllBrowserWindowsPresented";
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        kAshLoginSessionRestoreAllBrowserWindowsPresented, duration_ms,
-        base::Milliseconds(1), base::Seconds(100), 100);
+    // Headless units do not report presentation time, so we only report
+    // the histogram if primary display is functional.
+    if (display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          kAshLoginSessionRestoreAllBrowserWindowsPresented, duration_ms,
+          base::Milliseconds(1), base::Seconds(100), 100);
+    }
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented);
     all_restored_windows_presented_ = true;
     ScheduleWaitForShelfAnimationEndIfNeeded();
@@ -617,11 +626,23 @@ void LoginUnlockThroughputRecorder::AddLoginTimeMarker(
                    << login_time_markers_.size();
 }
 
-void LoginUnlockThroughputRecorder::RestoreDataLoaded() {
-  if (windows_to_restore_.empty()) {
-    browser_windows_will_not_be_restored_ = true;
-    ScheduleWaitForShelfAnimationEndIfNeeded();
+void LoginUnlockThroughputRecorder::BrowserSessionRestoreDataLoaded() {
+  if (login_finished_reported_) {
+    return;
   }
+
+  DCHECK(!browser_session_restore_data_loaded_);
+  browser_session_restore_data_loaded_ = true;
+  MaybeRestoreDataLoaded();
+}
+
+void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded() {
+  if (login_finished_reported_) {
+    return;
+  }
+  DCHECK(!full_session_restore_data_loaded_);
+  full_session_restore_data_loaded_ = true;
+  MaybeRestoreDataLoaded();
 }
 
 void LoginUnlockThroughputRecorder::ArcUiAvailableAfterLogin() {
@@ -632,6 +653,10 @@ void LoginUnlockThroughputRecorder::ArcUiAvailableAfterLogin() {
                                 duration, base::Milliseconds(100),
                                 base::Seconds(30), 100);
   LOCAL_HISTOGRAM_TIMES("Ash.Tast.ArcUiAvailableAfterLogin.Duration", duration);
+}
+
+void LoginUnlockThroughputRecorder::SetLoginFinishedReportedForTesting() {
+  login_finished_reported_ = true;
 }
 
 void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
@@ -669,7 +694,20 @@ void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {
   TRACE_EVENT0(
       "startup",
       "LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired");
+  login_finished_reported_ = true;
   post_login_deferred_task_runner_->Start();
+}
+
+void LoginUnlockThroughputRecorder::MaybeRestoreDataLoaded() {
+  DCHECK(!restore_data_loaded_);
+  if (browser_session_restore_data_loaded_ &&
+      full_session_restore_data_loaded_) {
+    restore_data_loaded_ = true;
+    if (windows_to_restore_.empty() && !first_restored_window_created_) {
+      browser_windows_will_not_be_restored_ = true;
+      ScheduleWaitForShelfAnimationEndIfNeeded();
+    }
+  }
 }
 
 }  // namespace ash

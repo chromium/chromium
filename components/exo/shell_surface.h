@@ -158,6 +158,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   absl::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   void SetUseImmersiveForFullscreen(bool value) override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -243,6 +245,11 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   void UpdateLayerSurfaceRange(ui::Layer* layer,
                                const viz::LocalSurfaceId& current_lsi);
+
+  // Called when the widget window's position in screen coordinates may have
+  // changed.
+  // TODO(tluk): Screen position changes should be merged into Configure().
+  void OnWidgetScreenPositionChanged();
 
   std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
 

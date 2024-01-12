@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class ContentSettingsType;
@@ -59,6 +60,9 @@ enum class RequestType {
 #endif
   kStorageAccess,
   kVrSession,
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+  kWebPrinting,
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   kWindowManagement,
   kMaxValue = kWindowManagement

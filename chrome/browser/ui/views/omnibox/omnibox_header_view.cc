@@ -239,6 +239,6 @@ OmniboxPopupSelection OmniboxHeaderView::GetHeaderSelection() const {
                                OmniboxPopupSelection::FOCUSED_BUTTON_HEADER);
 }
 
-BEGIN_METADATA(OmniboxHeaderView, views::View)
+BEGIN_METADATA(OmniboxHeaderView)
 ADD_READONLY_PROPERTY_METADATA(OmniboxPopupSelection, HeaderSelection)
 END_METADATA

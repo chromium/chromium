@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Движење надесно</translation>
 <translation id="3081586908890909590">Префрли на снимање видео</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Придружете се на „<ph name="WIFINAME" />“</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Врската е копирана</translation>
 <translation id="3354465018370944241">Поставки за фотографија</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Сооднос на фотографија</translation>
 <translation id="5057360777601936059">Камерата е недостапна во моментов.
         Проверете дали камерата е правилно поврзана.</translation>
+<translation id="5157591164390831335">Откриена е URL-адреса.</translation>
 <translation id="5163387177077603948">Се преместува надесно</translation>
 <translation id="5235304959032763950">16 на 9</translation>
 <translation id="5266635337630551423">Горен лев агол на документот</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Фала за повратните информации за апликацијата „Камера“.
 
 Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
+<translation id="6519884562954018934">Придружете се на <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6617916774429601017">Прикажи ги сите резолуции</translation>
 <translation id="6631515515009660915">Исклучено е отсликување</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">Исклучете го звукот на микрофонот. Копчето за исклучување звук е вклучено</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Прегледувај метаподатоци</translation>
+<translation id="874854738381978209">Откриена е Wi-Fi мрежа.</translation>
 <translation id="8815966864175525708">Префрли за фотографирање во портрет</translation>
 <translation id="8828441885228359828">Продолжи со снимање</translation>
 <translation id="8870695351537079478">Не може да се започне со снимање</translation>

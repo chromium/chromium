@@ -158,12 +158,13 @@ class CookieSettings
     if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
         std::cmp_greater_equal(settings.size(),
                                features::kMetadataGrantsThreshold.Get())) {
-      indexed_settings_for_3pcd_metadata_grants_ = ToHostIndexedMap(settings);
+      indexed_settings_for_3pcd_metadata_grants_ =
+          HostIndexedContentSettings(settings);
       // TODO(b/314800700): clear settings_for_3pcd_metadata_grants_ since we
       // only need one copy.
     } else {
       // only need one list.
-      indexed_settings_for_3pcd_metadata_grants_.clear();
+      indexed_settings_for_3pcd_metadata_grants_.Clear();
     }
   }
 
@@ -301,7 +302,6 @@ class CookieSettings
   ContentSettingsForOneType settings_for_3pcd_metadata_grants_
       GUARDED_BY(tpcd_lock_);
 
-  // Map indexed by a setting's primary_pattern host.
   HostIndexedContentSettings indexed_settings_for_3pcd_metadata_grants_
       GUARDED_BY(tpcd_lock_);
 

@@ -696,10 +696,21 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.isDeviceCellularCapable_ = !!cellularDeviceState;
   }
 
+  private async isInstantHotspotAvailable_(): Promise<boolean> {
+    const {result: deviceStateList} =
+        await this.networkConfig_.getDeviceStateList();
+    const tetherDeviceState = deviceStateList.find(
+        deviceState => deviceState.type === NetworkType.kTether);
+
+    return !!tetherDeviceState;
+  }
+
   /**
    * Updates the "Internet" menu item description to one of the followings:
    * - If there are networks connected, show the name of one connected network
    *   with the priority: Ethernet, Wi-Fi, mobile(Cellular, Tether) and VPN.
+   * - If there is no networks connected but instant hotspot is available, show
+   * "Instant hotspot available".
    * - If there is no networks connected and mobile data is not supported, show
    * "Wi-Fi".
    * - If there is no networks connected but mobile data is supported, show
@@ -727,8 +738,13 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       return;
     }
 
-    // TODO(b/310253896): Check if there are available instant hotspot, if
-    // there're, show "Instant hotspot available".
+    const tetherNetworkState = networkStateList.find(
+        networkState => networkState.type === NetworkType.kTether);
+    if (tetherNetworkState && await this.isInstantHotspotAvailable_()) {
+      this.internetMenuItemDescription_ =
+          this.i18n('internetMenuItemDescriptionInstantHotspotAvailable');
+      return;
+    }
 
     if (this.isDeviceCellularCapable_) {
       this.internetMenuItemDescription_ =

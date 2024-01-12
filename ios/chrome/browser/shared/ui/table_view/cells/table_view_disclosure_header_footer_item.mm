@@ -17,8 +17,6 @@
 namespace {
 // Identity rotation angle that positions disclosure pointing down.
 constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
-
-static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 }  // namespace
 
 @implementation TableViewDisclosureHeaderFooterItem
@@ -174,7 +172,6 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
   _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if (disabled) {
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _subtitleLabel.alpha = kDisabledOpacity;
   } else {
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }

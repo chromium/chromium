@@ -75,7 +75,6 @@ process_template() (
     -e "s#@@PACKAGE@@#${PACKAGE}#g" \
     -e "s#@@PACKAGE_ORIG@@#${PACKAGE_ORIG}#g" \
     -e "s#@@PACKAGE_FILENAME@@#${PACKAGE_FILENAME}#g" \
-    -e "s#@@SNAPNAME@@#${SNAPNAME}#g" \
     -e "s#@@PROGNAME@@#${PROGNAME}#g" \
     -e "s#@@CHANNEL@@#${CHANNEL}#g" \
     -e "s#@@COMPANY_FULLNAME@@#${COMPANY_FULLNAME}#g" \

@@ -9,6 +9,8 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 
 namespace autofill {
@@ -16,7 +18,7 @@ namespace autofill {
 // Encodes the given FormStructure as a vector of protobufs.
 //
 // On success, the returned vector is non-empty. The first element encodes the
-// entire FormStructure. In some cases, a |login_form_signature| is included
+// entire FormStructure. In some cases, a `login_form_signature` is included
 // as part of the upload. This field is empty when sending upload requests for
 // non-login forms.
 //
@@ -51,15 +53,35 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     std::string_view login_form_signature,
     bool observed_submission);
 
-// Encodes the list of |forms| and their fields that are valid into an
-// AutofillPageQueryRequest proto. The queried FormSignatures and
-// FieldSignatures are also returned in the same order as in |query|. In case
+// Encodes the list of `forms` and their fields that are valid into an
+// `AutofillPageQueryRequest` proto. The queried FormSignatures and
+// FieldSignatures are also returned in the same order as in `query`. In case
 // multiple FormStructures have the same FormSignature, only the first one is
-// included in AutofillPageQueryRequest and the returned queried form
+// included in `AutofillPageQueryRequest` and the returned queried form
 // signatures.
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+
+// Parses `payload` as AutofillQueryResponse proto and calls
+// `ProcessServerPredictionsQueryResponse`.
+void ParseServerPredictionsQueryResponse(
+    std::string_view payload,
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+    const std::vector<FormSignature>& queried_form_signatures,
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager);
+
+// Parses the field types from the server query response. `forms` must be the
+// same as the one passed to `EncodeAutofillPageQueryRequest()` when
+// constructing the query. `form_interactions_ukm_logger` is used to provide
+// logs to UKM and can be null in tests.
+void ProcessServerPredictionsQueryResponse(
+    const AutofillQueryResponse& response,
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+    const std::vector<FormSignature>& queried_form_signatures,
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager);
 
 }  // namespace autofill
 

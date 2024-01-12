@@ -149,15 +149,14 @@ class CrostiniSshfsHelperTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
-      disk_manager_;
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged> disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   const std::string kMountName = "crostini_test_termina_penguin";
   std::vector<std::string> default_mount_options_;
   std::unique_ptr<file_manager::VolumeManager> volume_manager_;
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
-  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
+  raw_ptr<CrostiniManager> crostini_manager_;
   base::HistogramTester histogram_tester{};
 };
 

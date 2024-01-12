@@ -246,7 +246,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
 
   // Owned by the parent |Service| which will destroy |this| before |context_|.
-  const raw_ptr<ServiceContext, ExperimentalAsh> context_;
+  const raw_ptr<ServiceContext> context_;
 
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<DeviceSettingsHost> device_settings_host_;

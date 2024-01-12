@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.ARCHIVED_TABS_EXPAND_CLICK_HANDLER;
+import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.ARCHIVED_TAB_COUNT;
+import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.DECLUTTER_INFO_TEXT;
+import static org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardViewProperties.DECLUTTER_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.ACCEPTED;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.DISMISSED;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.NOT_CONSIDERED;
@@ -27,6 +32,8 @@ import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestio
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsObserver;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,17 +52,14 @@ public class TabSuggestionMessageService extends MessageService
     public class TabSuggestionMessageData implements MessageData {
         private final TabSuggestion mTabSuggestion;
         private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
-        private Profile mProfile;
         private CustomMessageCardProvider mCustomMessageCardProvider;
 
         public TabSuggestionMessageData(
                 TabSuggestion tabSuggestion,
                 Callback<TabSuggestionFeedback> feedbackCallback,
-                Profile profile,
                 CustomMessageCardProvider customMessageCardProvider) {
             mTabSuggestion = tabSuggestion;
             mTabSuggestionFeedback = feedbackCallback;
-            mProfile = profile;
             mCustomMessageCardProvider = customMessageCardProvider;
         }
 
@@ -116,36 +120,40 @@ public class TabSuggestionMessageService extends MessageService
     }
 
     private final Context mContext;
+    private final Profile mProfile;
     private final Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final Supplier<TabListEditorCoordinator.TabListEditorController>
             mTabListEditorControllerSupplier;
     private final CustomMessageCardProvider mCustomMessageCardProvider;
     private final View mCustomCardView;
+    private final PropertyModel mModel;
 
     public TabSuggestionMessageService(
             Context context,
+            Profile profile,
             Supplier<TabModelFilter> currentTabModelFilterSupplier,
             Supplier<TabListEditorCoordinator.TabListEditorController>
                     tabListEditorControllerSupplier) {
-        this(
-                context,
-                currentTabModelFilterSupplier,
-                tabListEditorControllerSupplier,
-                LayoutInflater.from(context).inflate(R.layout.declutter_message_card_layout, null));
-    }
-
-    protected TabSuggestionMessageService(
-            Context context,
-            Supplier<TabModelFilter> currentTabModelFilterSupplier,
-            Supplier<TabListEditorCoordinator.TabListEditorController>
-                    tabListEditorControllerSupplier,
-            View customCardView) {
         super(MessageType.TAB_SUGGESTION);
         mContext = context;
+        mProfile = profile;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mCustomMessageCardProvider = this;
-        mCustomCardView = customCardView;
+        mCustomCardView =
+                LayoutInflater.from(context).inflate(R.layout.declutter_message_card_layout, null);
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(DECLUTTER_INFO_TEXT, R.plurals.tab_declutter_message_card_text_info)
+                        .with(
+                                ARCHIVED_TAB_COUNT,
+                                currentTabModelFilterSupplier.get().getTotalTabCount())
+                        .with(ARCHIVED_TABS_EXPAND_CLICK_HANDLER, () -> {})
+                        .with(DECLUTTER_SETTINGS_CLICK_HANDLER, () -> {})
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                mModel, mCustomCardView, DeclutterMessageCardViewBinder::bind);
     }
 
     @VisibleForTesting
@@ -283,7 +291,6 @@ public class TabSuggestionMessageService extends MessageService
                     new TabSuggestionMessageData(
                             tabSuggestion,
                             tabSuggestionFeedback,
-                            Profile.getLastUsedRegularProfile(),
                             mCustomMessageCardProvider));
         }
     }

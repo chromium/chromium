@@ -9,7 +9,7 @@ namespace ash {
 PickerSearchResult::PickerSearchResult(const std::u16string& text)
     : text_(text) {}
 
-std::u16string_view PickerSearchResult::text() const {
+const std::u16string& PickerSearchResult::text() const {
   return text_;
 }
 
@@ -24,6 +24,10 @@ PickerSearchResults::Section& PickerSearchResults::Section::operator=(
     const Section& other) = default;
 
 PickerSearchResults::Section::~Section() = default;
+
+const std::u16string& PickerSearchResults::Section::heading() const {
+  return heading_;
+}
 
 base::span<const PickerSearchResult> PickerSearchResults::Section::results()
     const {

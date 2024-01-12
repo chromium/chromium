@@ -52,11 +52,11 @@ bool MainDisplaySampler::GetIsDisplaySleeping() {
   return CGDisplayIsAsleep(main_display_);
 }
 
-absl::optional<float> MainDisplaySampler::GetDisplayBrightness() {
+std::optional<float> MainDisplaySampler::GetDisplayBrightness() {
   float brightness = 0.0;
   int err = DisplayServicesGetBrightness(main_display_, &brightness);
   if (err != 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   return brightness;
 }

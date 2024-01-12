@@ -28,7 +28,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -389,9 +388,7 @@ public class MerchantTrustSignalsCoordinator
 
     @VisibleForTesting
     void maybeShowStoreIcon(@Nullable String messageAssociatedUrl, boolean canShowIph) {
-        if (isStoreInfoFeatureEnabled()
-                && mOmniboxIconController != null
-                && messageAssociatedUrl != null) {
+        if (mOmniboxIconController != null && messageAssociatedUrl != null) {
             mOmniboxIconController.showStoreIcon(
                     mWindowAndroid,
                     messageAssociatedUrl,
@@ -399,11 +396,6 @@ public class MerchantTrustSignalsCoordinator
                     R.string.merchant_viewer_omnibox_icon_iph,
                     canShowIph);
         }
-    }
-
-    @VisibleForTesting
-    boolean isStoreInfoFeatureEnabled() {
-        return PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled();
     }
 
     @VisibleForTesting

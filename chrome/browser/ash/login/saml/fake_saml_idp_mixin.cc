@@ -78,7 +78,7 @@ std::string GetTpmResponse() {
 
 std::string GetTpmResponseBase64() {
   const std::string response = GetTpmResponse();
-  return base::Base64Encode(base::as_bytes(base::make_span(response)));
+  return base::Base64Encode(base::as_byte_span(response));
 }
 
 // Returns relay state from http get/post requests.

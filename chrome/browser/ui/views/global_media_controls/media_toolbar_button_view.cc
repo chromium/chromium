@@ -176,5 +176,5 @@ void MediaToolbarButtonView::ClosePromoBubble() {
       feature_engagement::kIPHGMCCastStartStopFeature);
 }
 
-BEGIN_METADATA(MediaToolbarButtonView, ToolbarButton)
+BEGIN_METADATA(MediaToolbarButtonView)
 END_METADATA

@@ -64,7 +64,10 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
   bool IsAccessibilityEnabled() const;
   void DocumentUpdated(const std::vector<gfx::RectF>& page_locations,
                        const std::vector<uint64_t>& dirty_pages);
-  void ViewportUpdated(const gfx::RectF& viewport_box, float scaleFactor);
+
+  // ash::media_app_ui::mojom::OcrUntrustedPageHandler:
+  void ViewportUpdated(const gfx::RectF& viewport_box,
+                       float scale_factor) override;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   const std::vector<std::unique_ptr<ui::AXTreeManager>>& GetPagesForTesting() {

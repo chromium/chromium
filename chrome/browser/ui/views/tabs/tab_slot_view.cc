@@ -16,5 +16,5 @@ gfx::Rect TabSlotView::GetAnchorBoundsInScreen() const {
   return bounds;
 }
 
-BEGIN_METADATA(TabSlotView, views::View)
+BEGIN_METADATA(TabSlotView)
 END_METADATA

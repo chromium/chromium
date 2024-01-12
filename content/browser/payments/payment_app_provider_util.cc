@@ -34,8 +34,6 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
     return false;
   }
 
-  // TODO(crbug.com/855312): Unify duplicated code between here and
-  // ServiceWorkerProviderHost::IsValidRegisterMessage.
   std::vector<GURL> urls = {manifest_url, sw_js_url, sw_scope};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
@@ -64,9 +62,9 @@ PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
     payments::mojom::PaymentEventResponseType response_type) {
   return payments::mojom::PaymentHandlerResponse::New(
       /*method_name=*/"", /*stringified_details=*/"", response_type,
-      /*payer_name=*/absl::nullopt, /*payer_email=*/absl::nullopt,
-      /*payer_phone=*/absl::nullopt, /*shipping_address=*/nullptr,
-      /*shipping_option=*/absl::nullopt);
+      /*payer_name=*/std::nullopt, /*payer_email=*/std::nullopt,
+      /*payer_phone=*/std::nullopt, /*shipping_address=*/nullptr,
+      /*shipping_option=*/std::nullopt);
 }
 
 }  // namespace content

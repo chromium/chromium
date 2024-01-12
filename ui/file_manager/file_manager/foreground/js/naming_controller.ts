@@ -4,13 +4,13 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getFile} from '../../common/js/api.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isFakeEntry, isSameEntry} from '../../common/js/entry_utils.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {strf} from '../../common/js/translations.js';
 import {FileErrorToDomError, UserCanceledError} from '../../common/js/util.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import type {FileFilter} from './directory_contents.js';
 import type {DirectoryModel} from './directory_model.js';
@@ -99,7 +99,7 @@ export class NamingController {
       await getFile(directory, filename, {create: false});
     } catch (error) {
       if (error instanceof DOMException) {
-        if (error.name == FileErrorToDomError.NOT_FOUND_ERR) {
+        if (error.name === FileErrorToDomError.NOT_FOUND_ERR) {
           // The file does not exist, so it should be ok to create a new file.
           return fileUrl;
         }
@@ -205,7 +205,7 @@ export class NamingController {
 
     const leadListItem: ListItem = this.listContainer_.findListItemForNode(
         this.listContainer_.renameInput)!;
-    if (this.listContainer_.currentListType == ListType.DETAIL) {
+    if (this.listContainer_.currentListType === ListType.DETAIL) {
       this.listContainer_.table.updateFileMetadata(leadListItem, leadEntry);
     }
     this.listContainer_.currentList.restoreLeadItem(leadListItem);
@@ -266,7 +266,7 @@ export class NamingController {
         this.listContainer_.findListItemForNode(
             this.listContainer_.renameInput)!;
     const nameNode = renamedItemElement.querySelector('.filename-label')!;
-    if (!newName || newName == nameNode?.textContent) {
+    if (!newName || newName === nameNode?.textContent) {
       this.cancelRename_();
       return;
     }

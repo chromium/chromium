@@ -11,27 +11,29 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 namespace flat_rule = url_pattern_index::flat;
 
-// Returns whether the request to |url| is third party to its |document_origin|.
+// Returns whether the request to `url` is third party to its `document_origin`.
 // TODO(crbug.com/696822): Look into caching this.
 bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
   if (document_origin.opaque())
@@ -60,8 +62,70 @@ content::GlobalRenderFrameHostId GetFrameRoutingId(
   return host->GetGlobalId();
 }
 
+// Returns if the request's `response_headers` matches the `headers` condition.
+// This returns true at the end if at least one response header matches a
+// HeaderCondition. A header matches a condition if:
+// - the header exists AND
+// - contains a value in condition->values() if specified AND
+// - does not contain any values in condition->excluded_values() if specified.
+bool MatchesHeaders(
+    const net::HttpResponseHeaders& response_headers,
+    const flatbuffers::Vector<flatbuffers::Offset<flat::HeaderCondition>>&
+        header_conditions) {
+  for (const flat::HeaderCondition* header_condition : header_conditions) {
+    base::StringPiece header =
+        CreateString<base::StringPiece>(*header_condition->header());
+    if (!response_headers.HasHeader(header)) {
+      continue;
+    }
+
+    // Match on the existence of the header if no values or excluded values are
+    // specified.
+    if (!header_condition->values() && !header_condition->excluded_values()) {
+      return true;
+    }
+
+    auto has_header_value = [&response_headers,
+                             header](const flatbuffers::String* value) {
+      return response_headers.HasHeaderValue(
+          header, CreateString<base::StringPiece>(*value));
+    };
+
+    // The condition for `header` does not match if there's an excluded value,
+    // continue to the next header.
+    if (header_condition->excluded_values() &&
+        base::ranges::any_of(*header_condition->excluded_values(),
+                             has_header_value)) {
+      continue;
+    }
+
+    // Match if the response contains at least one header value in
+    // `header_condition->values()`.
+    if (!header_condition->values() ||
+        base::ranges::any_of(*header_condition->values(), has_header_value)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Returns if `response_headers` contains any headers from `excluded_headers`.
+bool MatchesExcludedHeaders(
+    const net::HttpResponseHeaders& response_headers,
+    const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>&
+        excluded_headers) {
+  return base::ranges::any_of(
+      excluded_headers,
+      [&response_headers](const flatbuffers::String* excluded_header) {
+        return response_headers.HasHeader(
+            CreateString<base::StringPiece>(*excluded_header));
+      });
+}
+
 bool DoEmbedderConditionsMatch(
     int tab_id,
+    scoped_refptr<const net::HttpResponseHeaders> response_headers,
     const flatbuffers::Vector<uint8_t>& conditions_buffer) {
 #if DCHECK_IS_ON()
   // Verify that `conditions_buffer` corresponds to a valid Flatbuffer with
@@ -83,20 +147,37 @@ bool DoEmbedderConditionsMatch(
       flatbuffers::GetRoot<flat::EmbedderConditions>(conditions_buffer.Data());
   DCHECK(embedder_conditions);
 
-  auto matches = [tab_id](const flatbuffers::Vector<int32_t>& sorted_tab_ids) {
-    DCHECK(std::is_sorted(sorted_tab_ids.begin(), sorted_tab_ids.end()));
-    return std::binary_search(sorted_tab_ids.begin(), sorted_tab_ids.end(),
-                              tab_id);
-  };
+  auto matches_tab_ids =
+      [tab_id](const flatbuffers::Vector<int32_t>& sorted_tab_ids) {
+        DCHECK(std::is_sorted(sorted_tab_ids.begin(), sorted_tab_ids.end()));
+        return std::binary_search(sorted_tab_ids.begin(), sorted_tab_ids.end(),
+                                  tab_id);
+      };
 
   if (embedder_conditions->tab_ids_included() &&
-      !matches(*embedder_conditions->tab_ids_included())) {
+      !matches_tab_ids(*embedder_conditions->tab_ids_included())) {
     return false;
   }
 
   if (embedder_conditions->tab_ids_excluded() &&
-      matches(*embedder_conditions->tab_ids_excluded())) {
+      matches_tab_ids(*embedder_conditions->tab_ids_excluded())) {
     return false;
+  }
+
+  if (response_headers) {
+    if (embedder_conditions->excluded_response_headers() &&
+        MatchesExcludedHeaders(
+            *response_headers,
+            *embedder_conditions->excluded_response_headers())) {
+      return false;
+    }
+
+    if (embedder_conditions->response_headers() &&
+        embedder_conditions->response_headers()->size() &&
+        !MatchesHeaders(*response_headers,
+                        *embedder_conditions->response_headers())) {
+      return false;
+    }
   }
 
   return true;
@@ -104,19 +185,24 @@ bool DoEmbedderConditionsMatch(
 
 }  // namespace
 
-RequestParams::RequestParams(const WebRequestInfo& info)
+RequestParams::RequestParams(
+    const WebRequestInfo& info,
+    scoped_refptr<const net::HttpResponseHeaders> response_headers)
     : url(&info.url),
       first_party_origin(info.initiator.value_or(url::Origin())),
       element_type(GetElementType(info.web_request_type)),
       method(GetRequestMethod(info.url.SchemeIsHTTPOrHTTPS(), info.method)),
       parent_routing_id(info.parent_routing_id),
       embedder_conditions_matcher(base::BindRepeating(DoEmbedderConditionsMatch,
-                                                      info.frame_data.tab_id)) {
+                                                      info.frame_data.tab_id,
+                                                      response_headers)) {
   is_third_party = IsThirdPartyRequest(*url, first_party_origin);
 }
 
-RequestParams::RequestParams(content::RenderFrameHost* host,
-                             bool is_post_navigation)
+RequestParams::RequestParams(
+    content::RenderFrameHost* host,
+    bool is_post_navigation,
+    scoped_refptr<const net::HttpResponseHeaders> response_headers)
     : url(&host->GetLastCommittedURL()),
       method(is_post_navigation ? flat_rule::RequestMethod_POST
                                 : flat_rule::RequestMethod_GET),
@@ -124,7 +210,7 @@ RequestParams::RequestParams(content::RenderFrameHost* host,
   if (host->GetParentOrOuterDocument()) {
     // Note the discrepancy with the WebRequestInfo constructor. For a
     // navigation request, we'd use the request initiator as the
-    // |first_party_origin|. But here we use the origin of the parent frame.
+    // `first_party_origin`. But here we use the origin of the parent frame.
     // This is the same as crbug.com/996998.
     first_party_origin =
         host->GetParentOrOuterDocument()->GetLastCommittedOrigin();
@@ -142,7 +228,7 @@ RequestParams::RequestParams(content::RenderFrameHost* host,
       content::WebContents::FromRenderFrameHost(host), &tab_id,
       &window_id_unused);
   embedder_conditions_matcher =
-      base::BindRepeating(DoEmbedderConditionsMatch, tab_id);
+      base::BindRepeating(DoEmbedderConditionsMatch, tab_id, response_headers);
 }
 
 RequestParams::RequestParams(
@@ -150,17 +236,18 @@ RequestParams::RequestParams(
     const url::Origin& initiator,
     const api::declarative_net_request::ResourceType request_type,
     const api::declarative_net_request::RequestMethod request_method,
-    int tab_id)
+    int tab_id,
+    scoped_refptr<const net::HttpResponseHeaders> response_headers)
     : url(&url),
       first_party_origin(initiator),
       element_type(GetElementType(request_type)),
       is_third_party(IsThirdPartyRequest(url, first_party_origin)),
       method(GetRequestMethod(url.SchemeIsHTTPOrHTTPS(), request_method)),
-      embedder_conditions_matcher(
-          base::BindRepeating(DoEmbedderConditionsMatch, tab_id)) {}
+      embedder_conditions_matcher(base::BindRepeating(DoEmbedderConditionsMatch,
+                                                      tab_id,
+                                                      response_headers)) {}
 
 RequestParams::RequestParams() = default;
 RequestParams::~RequestParams() = default;
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -17,7 +17,7 @@ class VcBackgroundUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   VcBackgroundUIBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSeaPen, manta::features::kMantaService}, {});
+        {features::kSeaPen, features::kFeatureManagementSeaPen}, {});
     set_test_loader_host(std::string(kChromeUIVcBackgroundHost));
   }
 

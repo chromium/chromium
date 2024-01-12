@@ -34,7 +34,7 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler {
   // Relaunches Plugin VM.
   void HandleRelaunchPluginVm(const base::Value::List& args);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<PluginVmHandler> weak_ptr_factory_{this};
 };

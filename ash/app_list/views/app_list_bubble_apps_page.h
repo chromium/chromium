@@ -115,6 +115,7 @@ class ASH_EXPORT AppListBubbleAppsPage
   // views::View:
   void Layout() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+  void OnBoundsChanged(const gfx::Rect& old_bounds) override;
 
   // view::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,

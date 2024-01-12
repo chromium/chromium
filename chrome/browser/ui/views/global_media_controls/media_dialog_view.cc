@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -557,8 +556,9 @@ void MediaDialogView::InitializeLiveTranslateSection() {
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
   auto live_translate_image = std::make_unique<views::ImageView>();
-  live_translate_image->SetImage(ui::ImageModel::FromVectorIcon(
-      kTranslateChromeRefreshIcon, ui::kColorIcon, kImageWidthDip));
+  live_translate_image->SetImage(
+      ui::ImageModel::FromVectorIcon(vector_icons::kTranslateChromeRefreshIcon,
+                                     ui::kColorIcon, kImageWidthDip));
   live_translate_container->AddChildView(std::move(live_translate_image));
 
   auto live_translate_label_wrapper = std::make_unique<View>();

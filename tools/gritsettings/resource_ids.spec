@@ -389,7 +389,7 @@
     "includes": [3720],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"sizes": {"includes": [55],}},
     "includes": [3740],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/history_clusters/resources.grd": {
@@ -792,7 +792,7 @@
     "includes": [5720],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
-    "META": {"sizes": {"includes": [700]}},
+    "META": {"sizes": {"includes": [800]}},
     "includes": [5760],
   },
   "ash/webui/help_app_ui/resources/help_app_resources.grd": {
@@ -857,10 +857,6 @@
     "META": {"sizes": {"includes": [30],}},
     "includes": [5960],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [5980],
-  },
   "chromeos/resources/chromeos_resources.grd": {
     "includes": [6000],
   },
@@ -916,26 +912,9 @@
   "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [6180],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/face_ml_app_ui/resources/trusted/ash_face_ml_app_resources.grd": {
-    "META": {"join": 2, "sizes": {"includes": [50],}},
-    "includes": [6200],
-  },
-  # Both face_ml_app_bundle_resources.grd and face_ml_app_bundle_mock_resources.grd
-  # start with the same id because only one of them is built depending on if
-  # src_internal is available.
-  "ash/webui/face_ml_app_ui/resources/prod/face_ml_app_bundle_resources.grd": {
-    "META": {"sizes": {"includes": [120],}},  # Relies on src-internal.
-    "includes": [6220],
-  },
-  "ash/webui/face_ml_app_ui/resources/mock/face_ml_app_bundle_mock_resources.grd": {
-    "includes": [6220],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/face_ml_app_ui/resources/untrusted/ash_face_ml_app_untrusted_resources.grd": {
-    "META": {"join": 2, "sizes": {"includes": [50],}},
-    "includes": [6240],
-  },
+
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/vc_background_ui/resources/resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [6260],
   },
   # END chromeos/ section.

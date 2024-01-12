@@ -325,8 +325,7 @@ class WifiLanMediumTest : public ::testing::Test {
   base::OnceClosure on_listen_calls_finished_;
 
   // TCP socket factory:
-  raw_ptr<ash::nearby::FakeTcpSocketFactory, ExperimentalAsh>
-      fake_socket_factory_;
+  raw_ptr<ash::nearby::FakeTcpSocketFactory> fake_socket_factory_;
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
       socket_factory_shared_remote_;
 
@@ -347,8 +346,7 @@ class WifiLanMediumTest : public ::testing::Test {
   NsdServiceInfo nsd_service_info_;
 
   // Firewall hole factory:
-  raw_ptr<ash::nearby::FakeFirewallHoleFactory, ExperimentalAsh>
-      fake_firewall_hole_factory_;
+  raw_ptr<ash::nearby::FakeFirewallHoleFactory> fake_firewall_hole_factory_;
   mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_shared_remote_;
 

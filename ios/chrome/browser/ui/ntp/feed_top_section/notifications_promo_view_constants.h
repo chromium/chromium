@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, NotificationsExperimentType) {
 typedef NS_ENUM(NSInteger, NotificationsPromoButtonType) {
   NotificationsPromoButtonTypePrimary = 0,
   NotificationsPromoButtonTypeSecondary = 1,
+  NotificationsPromoButtonTypeClose = 2,
 };
 
 extern NSString* const kNotificationsPromoCloseButtonId;

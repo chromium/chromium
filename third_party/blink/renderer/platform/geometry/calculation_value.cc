@@ -125,11 +125,10 @@ CalculationValue::SubtractFromOneHundredPercent() const {
 
 scoped_refptr<const CalculationValue> CalculationValue::Add(
     const CalculationValue& other) const {
-  CHECK_EQ(GetValueRange(), other.GetValueRange());
   auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
       {GetOrCreateExpression(), other.GetOrCreateExpression()},
       CalculationOperator::kAdd);
-  return CreateSimplified(result_expression, GetValueRange());
+  return CreateSimplified(result_expression, Length::ValueRange::kAll);
 }
 
 scoped_refptr<const CalculationValue> CalculationValue::Zoom(

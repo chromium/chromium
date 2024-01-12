@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
@@ -31,7 +32,7 @@ const char kGmailDomain[] = "gmail.com";
 const char kGoogleDomain[] = "google.com";
 const char kGooglemailDomain[] = "googlemail.com";
 
-std::string CanonicalizeEmailImpl(base::StringPiece email_address,
+std::string CanonicalizeEmailImpl(std::string_view email_address,
                                   bool change_googlemail_to_gmail) {
   std::string lower_case_email = base::ToLowerASCII(email_address);
   std::vector<std::string> parts = base::SplitString(
@@ -59,7 +60,7 @@ ListedAccount::ListedAccount(const ListedAccount& other) = default;
 
 ListedAccount::~ListedAccount() {}
 
-std::string CanonicalizeEmail(base::StringPiece email_address) {
+std::string CanonicalizeEmail(std::string_view email_address) {
   // CanonicalizeEmail() is called to process email strings that are eventually
   // shown to the user, and may also be used in persisting email strings.  To
   // avoid breaking this existing behavior, this function will not try to
@@ -67,13 +68,13 @@ std::string CanonicalizeEmail(base::StringPiece email_address) {
   return CanonicalizeEmailImpl(email_address, false);
 }
 
-std::string CanonicalizeDomain(base::StringPiece domain) {
+std::string CanonicalizeDomain(std::string_view domain) {
   // Canonicalization of domain names means lower-casing them. Make sure to
   // update this function in sync with Canonicalize if this ever changes.
   return base::ToLowerASCII(domain);
 }
 
-std::string SanitizeEmail(base::StringPiece email_address) {
+std::string SanitizeEmail(std::string_view email_address) {
   std::string sanitized(email_address);
 
   // Apply a default domain if necessary.
@@ -85,12 +86,12 @@ std::string SanitizeEmail(base::StringPiece email_address) {
   return sanitized;
 }
 
-bool AreEmailsSame(base::StringPiece email1, base::StringPiece email2) {
+bool AreEmailsSame(std::string_view email1, std::string_view email2) {
   return CanonicalizeEmailImpl(gaia::SanitizeEmail(email1), true) ==
       CanonicalizeEmailImpl(gaia::SanitizeEmail(email2), true);
 }
 
-std::string ExtractDomainName(base::StringPiece email_address) {
+std::string ExtractDomainName(std::string_view email_address) {
   // First canonicalize which will also verify we have proper domain part.
   std::string email = CanonicalizeEmail(email_address);
   size_t separator_pos = email.find('@');
@@ -103,11 +104,11 @@ std::string ExtractDomainName(base::StringPiece email_address) {
   return std::string();
 }
 
-bool IsGoogleInternalAccountEmail(base::StringPiece email) {
+bool IsGoogleInternalAccountEmail(std::string_view email) {
   return ExtractDomainName(SanitizeEmail(email)) == kGoogleDomain;
 }
 
-bool IsGoogleRobotAccountEmail(base::StringPiece email) {
+bool IsGoogleRobotAccountEmail(std::string_view email) {
   std::string domain_name = gaia::ExtractDomainName(SanitizeEmail(email));
   return base::EndsWith(domain_name, "gserviceaccount.com") ||
          base::EndsWith(domain_name, "googleusercontent.com");
@@ -124,7 +125,7 @@ bool HasGaiaSchemeHostPort(const GURL& url) {
   return url::SchemeHostPort(url) == gaia_scheme_host_port;
 }
 
-bool ParseListAccountsData(base::StringPiece data,
+bool ParseListAccountsData(std::string_view data,
                            std::vector<ListedAccount>* accounts,
                            std::vector<ListedAccount>* signed_out_accounts) {
   if (accounts)
@@ -197,7 +198,7 @@ bool ParseListAccountsData(base::StringPiece data,
   return true;
 }
 
-bool ParseOAuth2MintTokenConsentResult(base::StringPiece consent_result,
+bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
                                        bool* approved,
                                        std::string* gaia_id) {
   DCHECK(approved);

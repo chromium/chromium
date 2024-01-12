@@ -115,7 +115,7 @@ class MirroringActivity : public CastActivity,
   void OnSessionSet(const CastSession& session) override;
   void StartSession(const std::string& destination_id,
                     bool enable_rtcp_reporting = false);
-  void CreateMediaController(
+  void BindMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
   std::string GetRouteDescription(const CastSession& session) const override;

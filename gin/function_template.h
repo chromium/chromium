@@ -12,10 +12,12 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
+#include "gin/per_isolate_data.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -47,6 +49,14 @@ struct CallbackParamTraits<const T*> {
 // base::RepeatingCallback from CreateFunctionTemplate through v8 (via
 // v8::FunctionTemplate) to DispatchToCallback, where it is invoked.
 
+// CallbackHolder will clean up the callback in two different scenarios:
+// - If the garbage collector finds that it's garbage and collects it. (But note
+//   that even _if_ we become garbage, we might never get collected!)
+// - If the isolate gets disposed.
+//
+// TODO(crbug.com/1285119): When gin::Wrappable gets migrated over to using
+//   cppgc, this class should also be considered for migration.
+
 // This simple base class is used so that we can share a single object template
 // among every CallbackHolder instance.
 class GIN_EXPORT CallbackHolderBase {
@@ -61,12 +71,26 @@ class GIN_EXPORT CallbackHolderBase {
   virtual ~CallbackHolderBase();
 
  private:
+  class DisposeObserver : gin::PerIsolateData::DisposeObserver {
+   public:
+    DisposeObserver(gin::PerIsolateData* per_isolate_data,
+                    CallbackHolderBase* holder);
+    ~DisposeObserver() override;
+    void OnBeforeDispose(v8::Isolate* isolate) override;
+    void OnDisposed() override;
+
+   private:
+    const raw_ref<gin::PerIsolateData> per_isolate_data_;
+    const raw_ref<CallbackHolderBase> holder_;
+  };
+
   static void FirstWeakCallback(
       const v8::WeakCallbackInfo<CallbackHolderBase>& data);
   static void SecondWeakCallback(
       const v8::WeakCallbackInfo<CallbackHolderBase>& data);
 
   v8::Global<v8::External> v8_ref_;
+  DisposeObserver dispose_observer_;
 };
 
 template<typename Sig>
@@ -269,6 +293,12 @@ struct Dispatcher<ReturnType(ArgTypes...)> {
 // internal reasons, thus it is generally a good idea to cache the template
 // returned by this function.  Otherwise, repeated method invocations from JS
 // will create substantial memory leaks. See http://crbug.com/463487.
+//
+// The callback will be destroyed if either the function template gets garbage
+// collected or _after_ the isolate is disposed. Garbage collection can never be
+// relied upon. As such, any destructors for objects bound to the callback must
+// not depend on the isolate being alive at the point they are called. The order
+// in which callbacks are destroyed is not guaranteed.
 template <typename Sig>
 v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
     v8::Isolate* isolate,

@@ -69,8 +69,6 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
   }
 
  protected:
-  IPC::TestSink& test_sink() { return render_thread_->sink(); }
-
   void SetIsLowEndDeviceForTesting() {
     delegate_manager_->SetIdleCleanupParamsForTesting(
         kIdleTimeout, base::TimeDelta(), &tick_clock_, true);

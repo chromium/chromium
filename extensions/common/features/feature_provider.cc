@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/containers/map_util.h"
 #include "base/debug/alias.h"
@@ -13,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -143,7 +143,7 @@ const Feature* FeatureProvider::GetParent(const Feature& feature) const {
   if (feature.no_parent())
     return nullptr;
 
-  std::vector<base::StringPiece> split = base::SplitStringPiece(
+  std::vector<std::string_view> split = base::SplitStringPiece(
       feature.name(), ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (split.size() < 2)
     return nullptr;
@@ -177,7 +177,7 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
   return features_;
 }
 
-void FeatureProvider::AddFeature(base::StringPiece name,
+void FeatureProvider::AddFeature(std::string_view name,
                                  std::unique_ptr<Feature> feature) {
   DCHECK(feature);
   const auto& map =
@@ -192,7 +192,7 @@ void FeatureProvider::AddFeature(base::StringPiece name,
   features_[std::string(name)] = std::move(feature);
 }
 
-void FeatureProvider::AddFeature(base::StringPiece name, Feature* feature) {
+void FeatureProvider::AddFeature(std::string_view name, Feature* feature) {
   AddFeature(name, base::WrapUnique(feature));
 }
 

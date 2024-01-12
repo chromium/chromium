@@ -568,11 +568,11 @@ RenderProcessHostBadIpcMessageWaiter::RenderProcessHostBadIpcMessageWaiter(
     : internal_waiter_(render_process_host,
                        "Stability.BadMessageTerminated.Content") {}
 
-absl::optional<bad_message::BadMessageReason>
+std::optional<bad_message::BadMessageReason>
 RenderProcessHostBadIpcMessageWaiter::Wait() {
-  absl::optional<int> internal_result = internal_waiter_.Wait();
+  std::optional<int> internal_result = internal_waiter_.Wait();
   if (!internal_result.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
@@ -683,6 +683,10 @@ void BeforeUnloadBlockingDelegate::Wait() {
 JavaScriptDialogManager*
 BeforeUnloadBlockingDelegate::GetJavaScriptDialogManager(WebContents* source) {
   return this;
+}
+
+bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported() {
+  return true;
 }
 
 void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(

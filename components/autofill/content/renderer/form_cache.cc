@@ -403,7 +403,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
           "\nhtml type: ",
           field.html_type,
           "\nserver type: ",
-          field.server_type,
+          field.server_type.has_value() ? field.server_type.value()
+                                        : "SERVER_RESPONSE_PENDING",
           "\nheuristic type: ",
           field.heuristic_type,
           "\nlabel: ",
@@ -469,12 +470,6 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   logger.Flush();
 
   return true;
-}
-
-void FormCache::SetFieldsEligibleForManualFilling(
-    const std::vector<FieldRendererId>& fields_eligible_for_manual_filling) {
-  fields_eligible_for_manual_filling_ = base::flat_set<FieldRendererId>(
-      std::move(fields_eligible_for_manual_filling));
 }
 
 void FormCache::SaveInitialValues(

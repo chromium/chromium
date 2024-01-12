@@ -68,8 +68,7 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
                                 /*has_email_link=*/false, /*has_notes=*/false,
                                 /*updated=*/due);
     const auto view = GlanceablesTaskView(
-        &task, /*mark_as_completed_callback=*/base::DoNothing(),
-        /*save_callback=*/base::DoNothing());
+        &task, /*mark_as_completed_callback=*/base::DoNothing());
 
     const auto* const due_label =
         views::AsViewClass<views::Label>(view.GetViewByID(
@@ -91,8 +90,7 @@ TEST_F(GlanceablesTaskViewTest,
   widget->SetFullscreen(true);
   const auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
-          &task, /*mark_as_completed_callback=*/base::DoNothing(),
-          /*save_callback=*/base::DoNothing()));
+          &task, /*mark_as_completed_callback=*/base::DoNothing()));
   ASSERT_TRUE(view);
 
   const auto* const checkbox = view->GetButtonForTest();
@@ -128,8 +126,7 @@ TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
   widget->SetFullscreen(true);
   const auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
-          &task, /*mark_as_completed_callback=*/future.GetRepeatingCallback(),
-          /*save_callback=*/base::DoNothing()));
+          &task, /*mark_as_completed_callback=*/future.GetRepeatingCallback()));
   ASSERT_TRUE(view);
 
   EXPECT_FALSE(view->GetCompletedForTest());

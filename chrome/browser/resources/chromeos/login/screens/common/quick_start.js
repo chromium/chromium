@@ -30,12 +30,14 @@ import {getTemplate} from './quick_start.html.js';
  * @enum {string}
  */
 export const QuickStartUIState = {
-  LOADING: 'loading',
+  DEFAULT: 'default',
+  CONNECTING_TO_PHONE: 'connecting_to_phone',
   VERIFICATION: 'verification',
   CONNECTING_TO_WIFI: 'connecting_to_wifi',
   CONNECTED_TO_WIFI: 'connected_to_wifi',
   CONFIRM_GOOGLE_ACCOUNT: 'confirm_google_account',
   SIGNING_IN: 'signing_in',
+  SETUP_COMPLETE: 'setup_complete',
 };
 
 /**
@@ -107,11 +109,14 @@ class QuickStartScreen extends QuickStartScreenBase {
     return [
       'setQRCode',
       'setPin',
+      'showInitialUiStep',
+      'showConnectingToPhoneStep',
       'showConnectingToWifi',
       'setDiscoverableName',
       'showConfirmGoogleAccount',
       'showSigningInStep',
       'showCreatingAccountStep',
+      'showSetupCompleteStep',
       'setUserEmail',
       'setUserFullName',
       'setUserAvatarUrl',
@@ -122,6 +127,18 @@ class QuickStartScreen extends QuickStartScreenBase {
     return this.i18nAdvanced('quickStartSetupSubtitle', {
       substitutions:
         [loadTimeData.getString('deviceType'), this.discoverableName_],
+    });
+  }
+
+  getSetupCompleteTitle(locale) {
+    return this.i18nAdvanced('quickStartSetupCompleteTitle', {
+      substitutions: [loadTimeData.getString('deviceType')],
+    });
+  }
+
+  getSetupCompleteSubtitle(locale, email) {
+    return this.i18nAdvanced('quickStartSetupCompleteSubtitle', {
+      substitutions: [this.userEmail_],
     });
   }
 
@@ -140,7 +157,15 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   /** @override */
   defaultUIStep() {
-    return QuickStartUIState.LOADING;
+    return QuickStartUIState.DEFAULT;
+  }
+
+  showInitialUiStep() {
+    this.setUIStep(this.defaultUIStep());
+  }
+
+  showConnectingToPhoneStep() {
+    this.setUIStep(QuickStartUIState.CONNECTING_TO_PHONE);
   }
 
   showConnectingToWifi() {
@@ -182,6 +207,10 @@ class QuickStartScreen extends QuickStartScreenBase {
     // Same UI as 'Signing in...' but without a cancel button.
     this.setUIStep(QuickStartUIState.SIGNING_IN);
     this.canCancelSignin_ = false;
+  }
+
+  showSetupCompleteStep() {
+    this.setUIStep(QuickStartUIState.SETUP_COMPLETE);
   }
 
   setUserEmail(email) {
@@ -227,6 +256,10 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   onCancelClicked_() {
     this.userActed('cancel');
+  }
+
+  onNextClicked_() {
+    this.userActed('next');
   }
 
   isEq_(a, b) {

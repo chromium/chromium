@@ -120,7 +120,7 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
       return static_cast<arc::FakeArcSession*>(
           runner_->GetArcSessionForTesting());
     }
-    raw_ptr<arc::ArcSessionRunner, ExperimentalAsh> runner_;
+    raw_ptr<arc::ArcSessionRunner> runner_;
   };
 
   content::BrowserTaskEnvironment& task_environment() {

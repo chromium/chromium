@@ -173,22 +173,6 @@ BASE_FEATURE(kPMProcessPriorityPolicy,
 const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
                                                  "downvote_ad_frames", false};
 
-BASE_FEATURE(kProbabilisticProactiveDiscarding,
-             "ProbabilisticProactiveDiscarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kProactiveDiscardingTargetFalsePositivePercent{
-    &kProbabilisticProactiveDiscarding,
-    "proactive_discarding_target_false_positive_percent", 35};
-
-const base::FeatureParam<base::TimeDelta> kProactiveDiscardingSamplingInterval{
-    &kProbabilisticProactiveDiscarding,
-    "proactive_discarding_sampling_interval", base::Minutes(10)};
-
-const base::FeatureParam<bool> kProactiveDiscardingSimulationMode{
-    &kProbabilisticProactiveDiscarding, "proactive_discarding_simulation_mode",
-    true};
-
 BASE_FEATURE(kModalMemorySaver,
              "ModalMemorySaver",
              base::FEATURE_DISABLED_BY_DEFAULT);

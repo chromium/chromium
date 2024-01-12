@@ -98,6 +98,7 @@ extern const char kEnableExtensionActivityLogging[];
 extern const char kEnableExtensionActivityLogTesting[];
 extern const char kEnableHangoutServicesExtensionForTesting[];
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kEnableLacrosForkZygotesAtLoginScreen[];
 extern const char kEnableLacrosSharedComponentsDir[];
 #endif
 extern const char kEnableNaCl[];
@@ -214,6 +215,7 @@ extern const char kForceDisableSigninFRE[];
 extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
 extern const char kRequestDesktopSites[];
+extern const char kStartStackProfilerWithJavaNameHashing[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

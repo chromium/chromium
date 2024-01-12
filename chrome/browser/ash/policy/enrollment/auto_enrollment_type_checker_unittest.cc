@@ -178,37 +178,23 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
 }
 
-// Without this macro Chrome is never branded so test always fail. Disable them
-// because there there's nothing to test in this case.
-// TODO(drcrash): Always enable tests and check against is_google_branded_.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_FREEnabledWhenSwitchIsOfficialBuild \
-  DISABLED_FREEnabledWhenSwitchIsOfficialBuild
-#define MAYBE_FREEnabledWhenSwitchIsEmpty DISABLED_FREEnabledWhenSwitchIsEmpty
-#else
-#define MAYBE_FREEnabledWhenSwitchIsOfficialBuild \
-  FREEnabledWhenSwitchIsOfficialBuild
-#define MAYBE_FREEnabledWhenSwitchIsEmpty FREEnabledWhenSwitchIsEmpty
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       MAYBE_FREEnabledWhenSwitchIsOfficialBuild) {
+TEST_F(AutoEnrollmentTypeCheckerTest, FREEnabledWhenSwitchIsOfficialBuild) {
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNormal);
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment,
       AutoEnrollmentTypeChecker::kForcedReEnrollmentOfficialBuild);
 
-  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(), is_google_branded_);
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest, MAYBE_FREEnabledWhenSwitchIsEmpty) {
+TEST_F(AutoEnrollmentTypeCheckerTest, FREEnabledWhenSwitchIsEmpty) {
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNormal);
   command_line_.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kEnterpriseEnableForcedReEnrollment);
 
-  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(), is_google_branded_);
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
@@ -259,39 +245,27 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled());
 }
 
-// Without this macro Chrome is never branded so test always fail. Disable them
-// because there there's nothing to test in this case.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_InitialEnrollmentEnabledWhenSwitchIsOfficialBuild \
-  DISABLED_InitialEnrollmentEnabledWhenSwitchIsOfficialBuild
-#define MAYBE_InitialEnrollmentEnabledWhenSwitchIsEmpty \
-  DISABLED_InitialEnrollmentEnabledWhenSwitchIsEmpty
-#else
-#define MAYBE_InitialEnrollmentEnabledWhenSwitchIsOfficialBuild \
-  InitialEnrollmentEnabledWhenSwitchIsOfficialBuild
-#define MAYBE_InitialEnrollmentEnabledWhenSwitchIsEmpty \
-  InitialEnrollmentEnabledWhenSwitchIsEmpty
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 TEST_F(AutoEnrollmentTypeCheckerTest,
-       MAYBE_InitialEnrollmentEnabledWhenSwitchIsOfficialBuild) {
+       InitialEnrollmentEnabledWhenSwitchIsOfficialBuild) {
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNormal);
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment,
       AutoEnrollmentTypeChecker::kInitialEnrollmentOfficialBuild);
 
-  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled());
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
+            is_google_branded_);
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
-       MAYBE_InitialEnrollmentEnabledWhenSwitchIsEmpty) {
+       InitialEnrollmentEnabledWhenSwitchIsEmpty) {
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNormal);
   command_line_.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kEnterpriseEnableInitialEnrollment);
 
-  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled());
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
+            is_google_branded_);
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
@@ -468,9 +442,7 @@ class AutoEnrollmentTypeCheckerInitializationTest
     AutoEnrollmentTypeCheckerTest::SetUp();
     AutoEnrollmentTypeChecker::
         ClearUnifiedStateDeterminationKillSwitchForTesting();
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
+    test_shared_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
   }
 
  protected:

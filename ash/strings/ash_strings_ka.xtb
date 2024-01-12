@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Wi-Fi-ს გადართვა. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">თქვენს Chromebook-ში შესვლა ვერ მოხერხდა</translation>
 <translation id="2367972762794486313">პროგრამების ჩვენება</translation>
+<translation id="2368828502825385061">მიკვლევა</translation>
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2382875860893882175">ტრანსლირება ამჟამად დაპაუზებულია. ტრანსლირების გაგრძელება ან შეწყვეტა ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="2386292613071805067">ყველაფრის არჩევა გვერდზე</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">მაუწყებლობა</translation>
 <translation id="5546397813406633847">მომხმარებლის აღდგენა</translation>
 <translation id="554893713779400387">კარნახის გადართვა</translation>
+<translation id="5550417424894892620">ჩავლებით გადაიტანეთ ფაილები დესკტოპზე, ისინი <ph name="HOLDING_SPACE_TITLE" />-ს რომ დაამატოთ. ფაილებს დესკტოპს ვერ დაამატებთ.</translation>
 <translation id="5551456515017410630">კალენდრის გახსნა/დახურვა</translation>
 <translation id="5551974246223970793">ძიების მომდევნო შესატყვისზე გადასვლა გვერდზე ძიებისას</translation>
 <translation id="5555639311269196631">უსადენო ქსელის გამორთვა</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">დაუკავშირეთ <ph name="DEVICE_NAME" /> თქვენს ტელეფონს</translation>
 <translation id="7026338066939101231">დეკრემენტი</translation>
 <translation id="7029814467594812963">სესიიდან გამოსვლა</translation>
+<translation id="7031303610220416229">ყველა ამოცანის ნახვა Google Tasks-ში</translation>
 <translation id="7032161822340700104">დაშვებულია მხოლოდ 6 შაბლონი. ახლის დასამატებლად წაშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />-ს სურს, გამოიყენოს <ph name="DEVICE_NAME" />. ჩართეთ მოწყობილობის ფიზიკური გადამრთველი, რომლითაც რეგულირდება <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ასისტენტი</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> გამოიყენება.</translation>
 <translation id="8369166482916924789">შენახული სამუშაო მაგიდა, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">მოიძებნოს <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">ერთი ასოთი წინ</translation>
 <translation id="8371991222807690464">პერიფერიული მოწყობილობების წარმადობა, შესაძლოა, შეზღუდული იყოს სტუმრის რეჟიმში</translation>
 <translation id="8374601332003098278">ეკრანის ნაწილობრივ ჩასაწერად დააჭირეთ Enter-ს</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">დაალაგეთ თქვენი აპები სახელის ან ფერის მიხედვით</translation>
 <translation id="8609384513243082612">ახალი ჩანართის გახსნა</translation>
+<translation id="8612216344243590325">შეინახეთ მნიშვნელოვანი ფაილები დესკტოპის ნაცვლად <ph name="HOLDING_SPACE_TITLE" />-ში. უბრალოდ, ჩავლებით გადაიტანეთ ფაილები <ph name="HOLDING_SPACE_TITLE" />-ში.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />-ისა და <ph name="APP_2_TITLE" />-ის შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="8619138598101195078">ხმის დაწევა</translation>
 <translation id="8627191004499078455">დაკავშირებულია <ph name="DEVICE_NAME" />-თან</translation>

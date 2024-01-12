@@ -24,20 +24,23 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.common.crash.AwCrashReporterClient;
+import org.chromium.base.JniAndroid;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Test suite for actions that should cause java exceptions to be
- * propagated to the embedding application.
+ * Test suite for actions that should cause java exceptions to be propagated to the embedding
+ * application.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@DoNotBatch(reason = "uncaught exceptions leave the process in a bad state")
 public class AwUncaughtExceptionTest extends AwParameterizedTest {
     // Initialization of WebView is delayed until a background thread
     // is started. This gives us the chance to process the uncaught
@@ -109,6 +112,7 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
+    private boolean mCleanupBackgroundThread = true;
 
     // Since this test overrides the UI thread, Android's ActivityLifecycleMonitor assertions fail
     // as our UI thread isn't the Main Looper thread, so we have to disable them.
@@ -139,11 +143,13 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
 
     @After
     public void tearDown() throws InterruptedException {
-        Looper backgroundThreadLooper = mBackgroundThread.getLooper();
-        if (backgroundThreadLooper != null) {
-            backgroundThreadLooper.quitSafely();
+        if (mCleanupBackgroundThread) {
+            Looper backgroundThreadLooper = mBackgroundThread.getLooper();
+            if (backgroundThreadLooper != null) {
+                backgroundThreadLooper.quitSafely();
+            }
+            mBackgroundThread.join();
         }
-        mBackgroundThread.join();
         Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
     }
 
@@ -155,6 +161,10 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
             Runnable onException) {
         Thread.setDefaultUncaughtExceptionHandler(
                 (thread, exception) -> {
+                    if (exception instanceof JniAndroid.UncaughtExceptionException) {
+                        // Unwrap the UncaughtExceptionException.
+                        exception = exception.getCause();
+                    }
                     if ((onThread == null || onThread.equals(thread))
                             && (exceptionClass == null || exceptionClass.isInstance(exception))
                             && (message == null || exception.getMessage().equals(message))) {
@@ -178,7 +188,10 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 msg,
                 /* reportable= */ true,
                 () -> {
+                    mCleanupBackgroundThread = false;
                     latch.countDown();
+                    // Do not return to native as this will terminate the process.
+                    Looper.loop();
                 });
 
         Runnable r =
@@ -225,7 +238,10 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 msg,
                 /* reportable= */ false,
                 () -> {
+                    mCleanupBackgroundThread = false;
                     latch.countDown();
+                    // Do not return to native as this will terminate the process.
+                    Looper.loop();
                 });
 
         Runnable r =

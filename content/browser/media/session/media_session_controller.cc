@@ -164,8 +164,8 @@ RenderFrameHost* MediaSessionController::render_frame_host() const {
   return RenderFrameHost::FromID(id_.frame_routing_id);
 }
 
-absl::optional<media_session::MediaPosition>
-MediaSessionController::GetPosition(int player_id) const {
+std::optional<media_session::MediaPosition> MediaSessionController::GetPosition(
+    int player_id) const {
   DCHECK_EQ(player_id_, player_id);
   return position_;
 }

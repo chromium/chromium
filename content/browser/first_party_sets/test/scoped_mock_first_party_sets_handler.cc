@@ -4,6 +4,7 @@
 
 #include "content/browser/first_party_sets/test/scoped_mock_first_party_sets_handler.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -35,7 +35,7 @@ void ScopedMockFirstPartySetsHandler::SetPublicFirstPartySets(
     const base::Version& version,
     base::File sets_file) {}
 
-absl::optional<net::FirstPartySetEntry>
+std::optional<net::FirstPartySetEntry>
 ScopedMockFirstPartySetsHandler::FindEntry(
     const net::SchemefulSite& site,
     const net::FirstPartySetsContextConfig& config) const {
@@ -46,16 +46,16 @@ void ScopedMockFirstPartySetsHandler::Init(
     const base::FilePath& user_data_dir,
     const net::LocalSetDeclaration& local_set) {}
 
-[[nodiscard]] absl::optional<net::GlobalFirstPartySets>
+[[nodiscard]] std::optional<net::GlobalFirstPartySets>
 ScopedMockFirstPartySetsHandler::GetSets(
     base::OnceCallback<void(net::GlobalFirstPartySets)> callback) {
   if (should_deadlock_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (invoke_callbacks_asynchronously_ && !callback.is_null()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), global_sets_.Clone()));
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return global_sets_.Clone();

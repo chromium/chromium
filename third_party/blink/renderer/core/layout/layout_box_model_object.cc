@@ -441,11 +441,27 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   LayoutObject::RecalcVisualOverflow();
 }
 
+bool LayoutBoxModelObject::ShouldBeHandledAsInline(
+    const ComputedStyle& style) const {
+  if (style.IsDisplayInlineType()) {
+    return true;
+  }
+  // Table-internal display types create anonymous inline or block <table>s
+  // depending on the parent. But if an element with a table-internal display
+  // type creates a domain-specific LayoutObject such as LayoutImage, such
+  // anonymous <table> is not created, and the LayoutObject should adjust
+  // IsInline flag for inlinifying.
+  //
+  // LayoutRubyBase and LayoutRubyText should be blocks even in a ruby.
+  return style.IsInInlinifyingDisplay() && !IsTablePart() && !IsRubyBase() &&
+         !IsRubyText();
+}
+
 void LayoutBoxModelObject::UpdateFromStyle() {
   NOT_DESTROYED();
   const ComputedStyle& style_to_use = StyleRef();
   SetHasBoxDecorationBackground(style_to_use.HasBoxDecorationBackground());
-  SetInline(style_to_use.IsDisplayInlineType());
+  SetInline(ShouldBeHandledAsInline(style_to_use));
   SetPositionState(style_to_use.GetPosition());
   SetHorizontalWritingMode(style_to_use.IsHorizontalWritingMode());
   SetCanContainAbsolutePositionObjects(

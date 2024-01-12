@@ -35,10 +35,8 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
-import org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -85,7 +83,7 @@ public class Fido2CredentialRequest
     private RenderFrameHost mFrameHost;
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
-    private WebAuthnBrowserBridge mBrowserBridge;
+    private WebauthnBrowserBridge mBrowserBridge;
     private boolean mAttestationAcceptable;
     private boolean mIsCrossOrigin;
     // mIsHybridRequest is true if this request comes from a hybrid (i.e. cross-device) flow rather
@@ -117,9 +115,7 @@ public class Fido2CredentialRequest
     public Fido2CredentialRequest(FidoIntentSender intentSender) {
         mIntentSender = intentSender;
         mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
-        mCredManHelper =
-                new CredManHelper(
-                        this, mPlayServicesAvailable, GpmCredManRequestDecorator.getInstance());
+        mCredManHelper = new CredManHelper(this, mPlayServicesAvailable);
         mBarrier = new Barrier(this::returnErrorAndResetCallback);
     }
 
@@ -380,6 +376,37 @@ public class Fido2CredentialRequest
             mAppIdExtensionUsed = true;
         }
 
+        final String callerOriginString = convertOriginToString(origin);
+        if (!isChrome()) {
+            if (options.isConditional) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+                return;
+            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (!mPlayServicesAvailable) {
+                    Log.e(TAG, "Google Play Services' Fido2 Api is not available.");
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+                maybeDispatchGetAssertionRequest(
+                        options, callerOriginString, maybeClientDataHash, null);
+            } else {
+                int result =
+                        mCredManHelper.startGetRequest(
+                                mContext,
+                                mFrameHost,
+                                options,
+                                callerOriginString,
+                                mIsCrossOrigin,
+                                maybeClientDataHash,
+                                mGetAssertionCallback,
+                                this::returnErrorAndResetCallback,
+                                /* ignoreGpm= */ false);
+                if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+            }
+            return;
+        }
+
         // Payments should still go through Google Play Services. Also, if the request has
         // pre-hashed PRF inputs then we cannot represent that in JSON and so can only forward to
         // Play Services.
@@ -433,10 +460,8 @@ public class Fido2CredentialRequest
             return;
         }
 
-        final String callerOriginString = convertOriginToString(origin);
         byte[] clientDataHash = maybeClientDataHash;
-        if (payment != null
-                && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
+        if (payment != null) {
             assert options.challenge != null;
             assert clientDataHash == null;
             clientDataHash =
@@ -482,7 +507,7 @@ public class Fido2CredentialRequest
                             (credentials) ->
                                     mBarrier.onFido2ApiSuccessful(
                                             () ->
-                                                    onWebAuthnCredentialDetailsListReceived(
+                                                    onWebauthnCredentialDetailsListReceived(
                                                             options,
                                                             callerOriginString,
                                                             finalClientDataHash,
@@ -597,12 +622,12 @@ public class Fido2CredentialRequest
     }
 
     private void onGetMatchingCredentialIdsListReceived(
-            List<WebAuthnCredentialDetails> retrievedCredentials,
+            List<WebauthnCredentialDetails> retrievedCredentials,
             byte[][] allowCredentialIds,
             boolean requireThirdPartyPayment,
             GetMatchingCredentialIdsResponseCallback callback) {
         List<byte[]> matchingCredentialIds = new ArrayList<>();
-        for (WebAuthnCredentialDetails credential : retrievedCredentials) {
+        for (WebauthnCredentialDetails credential : retrievedCredentials) {
             if (requireThirdPartyPayment && !credential.mIsPayment) continue;
 
             for (byte[] allowedId : allowCredentialIds) {
@@ -619,7 +644,7 @@ public class Fido2CredentialRequest
         mIsHybridRequest = isHybridRequest;
     }
 
-    public void overrideBrowserBridgeForTesting(WebAuthnBrowserBridge bridge) {
+    public void overrideBrowserBridgeForTesting(WebauthnBrowserBridge bridge) {
         mBrowserBridge = bridge;
     }
 
@@ -631,11 +656,11 @@ public class Fido2CredentialRequest
         mBarrier = barrier;
     }
 
-    private void onWebAuthnCredentialDetailsListReceived(
+    private void onWebauthnCredentialDetailsListReceived(
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
             byte[] clientDataHash,
-            List<WebAuthnCredentialDetails> credentials) {
+            List<WebauthnCredentialDetails> credentials) {
         assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
                 || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
 
@@ -651,8 +676,8 @@ public class Fido2CredentialRequest
             return;
         }
 
-        List<WebAuthnCredentialDetails> discoverableCredentials = new ArrayList<>();
-        for (WebAuthnCredentialDetails credential : credentials) {
+        List<WebauthnCredentialDetails> discoverableCredentials = new ArrayList<>();
+        for (WebauthnCredentialDetails credential : credentials) {
             if (!credential.mIsDiscoverable) continue;
 
             if (!hasAllowCredentials) {
@@ -682,7 +707,7 @@ public class Fido2CredentialRequest
         }
 
         if (mBrowserBridge == null) {
-            mBrowserBridge = new WebAuthnBrowserBridge();
+            mBrowserBridge = new WebauthnBrowserBridge();
         }
 
         Runnable hybridCallback = null;
@@ -762,7 +787,7 @@ public class Fido2CredentialRequest
             PublicKeyCredentialRequestOptions options,
             Origin callerOrigin,
             byte[] maybeClientDataHash,
-            List<WebAuthnCredentialDetails> retrievedCredentials) {
+            List<WebauthnCredentialDetails> retrievedCredentials) {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
@@ -770,7 +795,7 @@ public class Fido2CredentialRequest
         Barrier.Mode mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
-        for (WebAuthnCredentialDetails credential : retrievedCredentials) {
+        for (WebauthnCredentialDetails credential : retrievedCredentials) {
             // In ONLY_CRED_MAN mode, all discoverable credentials are handled by CredMan. It is not
             // required to check for discoverable credentials.
             if (mode == Barrier.Mode.ONLY_CRED_MAN && credential.mIsDiscoverable) {
@@ -1118,14 +1143,18 @@ public class Fido2CredentialRequest
 
     private boolean isHybridClientApiAvailable() {
         return PackageUtils.getPackageVersion("com.google.android.gms")
-                        >= GMSCORE_MIN_VERSION_HYBRID_API
-                && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
+                        >= GMSCORE_MIN_VERSION_HYBRID_API;
+    }
+
+    private boolean isChrome() {
+        return WebauthnModeProvider.getInstance().getWebauthnMode()
+                == WebauthnModeProvider.WebauthnMode.CHROME;
     }
 
     @Override
-    public WebAuthnBrowserBridge getBridge() {
+    public WebauthnBrowserBridge getBridge() {
         if (mBrowserBridge == null) {
-            mBrowserBridge = new WebAuthnBrowserBridge();
+            mBrowserBridge = new WebauthnBrowserBridge();
         }
         return mBrowserBridge;
     }

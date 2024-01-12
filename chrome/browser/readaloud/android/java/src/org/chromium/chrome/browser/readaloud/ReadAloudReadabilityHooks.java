@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.HashSet;
+
 /**
  * Interface providing access to ReadAloud page readability checking.
  * Page can only be played if it's readable, which is true if (among others) there's enough text to
@@ -15,12 +19,25 @@ public interface ReadAloudReadabilityHooks {
         /**
          * Called if isPageReadable() succeeds.
          *
+         * @param tab tab of a page to check
          * @param url url of the page to check
-         * @param isReadable          if page can be played
-         * @param timepointsSupported whether timepoints are supported. Timepoints are
-         *                            used forword-by-word highlighting.
+         * @param isReadable if page can be played
+         * @param timepointsSupported whether timepoints are supported. Timepoints are used
+         *     forword-by-word highlighting.
          */
-        void onSuccess(String url, boolean isReadable, boolean timepointsSupported);
+        default void onSuccess(
+                Tab tab, String url, boolean isReadable, boolean timepointsSupported) {}
+
+        /**
+         * Called if isPageReadable() succeeds. (To be removed once the overloaded function is
+         * overridden in clank)
+         *
+         * @param url url of the page to check
+         * @param isReadable if page can be played
+         * @param timepointsSupported whether timepoints are supported. Timepoints are used
+         *     forword-by-word highlighting.
+         */
+        default void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {}
 
         /** Called if isPageReadable() fails. */
         void onFailure(String url, Throwable t);
@@ -30,9 +47,29 @@ public interface ReadAloudReadabilityHooks {
     boolean isEnabled();
 
     /**
-     * Checks whether a given page is readable.
+     * Checks whether a given page is readable. (To be removed once the overloaded function is
+     * overridden in clank)
+     *
      * @param url url of a page to check
      * @param callback callback to get result
      */
     void isPageReadable(String url, ReadabilityCallback callback);
+
+    /**
+     * Checks whether a given page is readable.
+     *
+     * @param tab tab of a page to check
+     * @param url url of a page to check
+     * @param callback callback to get result
+     */
+    default void isPageReadable(Tab tab, String url, ReadabilityCallback callback) {}
+
+    /**
+     * Get the languages that are compatible with the voices.
+     *
+     * @return a hashset of compatible languages with the voices.
+     */
+    default HashSet<String> getCompatibleLanguages() {
+        return new HashSet<String>();
+    }
 }

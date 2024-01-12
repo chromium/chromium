@@ -73,12 +73,6 @@ GpuMemoryBufferTrackerApple::DuplicateAsUnsafeRegion() {
   return base::UnsafeSharedMemoryRegion();
 }
 
-mojo::ScopedSharedBufferHandle
-GpuMemoryBufferTrackerApple::DuplicateAsMojoBuffer() {
-  NOTREACHED() << "Unsupported operation";
-  return mojo::ScopedSharedBufferHandle();
-}
-
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerApple::GetGpuMemoryBufferHandle() {
   DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
@@ -87,6 +81,10 @@ GpuMemoryBufferTrackerApple::GetGpuMemoryBufferHandle() {
   gmb_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   gmb_handle.io_surface = io_surface_;
   return gmb_handle;
+}
+
+VideoCaptureBufferType GpuMemoryBufferTrackerApple::GetBufferType() {
+  return VideoCaptureBufferType::kGpuMemoryBuffer;
 }
 
 void GpuMemoryBufferTrackerApple::OnHeldByConsumersChanged(

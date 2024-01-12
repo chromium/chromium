@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_BIDDING_AND_AUCTION_RESPONSE_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,14 +15,13 @@
 #include "base/values.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
-absl::optional<base::span<const uint8_t>> CONTENT_EXPORT
+std::optional<base::span<const uint8_t>> CONTENT_EXPORT
 ExtractCompressedBiddingAndAuctionResponse(
     base::span<const uint8_t> decrypted_data);
 
@@ -32,7 +32,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   BiddingAndAuctionResponse(BiddingAndAuctionResponse&& other);
   BiddingAndAuctionResponse& operator=(BiddingAndAuctionResponse&& other);
 
-  static absl::optional<BiddingAndAuctionResponse> TryParse(
+  static std::optional<BiddingAndAuctionResponse> TryParse(
       base::Value input,
       const base::flat_map<url::Origin, std::vector<std::string>>& group_names);
 
@@ -43,10 +43,9 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
     ReportingURLs(ReportingURLs&& other);
     ReportingURLs& operator=(ReportingURLs&& other);
 
-    static absl::optional<ReportingURLs> TryParse(
-        base::Value::Dict* input_dict);
+    static std::optional<ReportingURLs> TryParse(base::Value::Dict* input_dict);
 
-    absl::optional<GURL> reporting_url;
+    std::optional<GURL> reporting_url;
     base::flat_map<std::string, GURL> beacon_urls;
   };
 
@@ -63,12 +62,12 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   std::string interest_group_name;
   url::Origin interest_group_owner;
   std::vector<blink::InterestGroupKey> bidding_groups;
-  absl::optional<double> score, bid;
-  absl::optional<url::Origin> top_level_seller;
-  absl::optional<std::string> ad_metadata;
+  std::optional<double> score, bid;
+  std::optional<url::Origin> top_level_seller;
+  std::optional<std::string> ad_metadata;
 
-  absl::optional<std::string> error;
-  absl::optional<ReportingURLs> buyer_reporting, seller_reporting;
+  std::optional<std::string> error;
+  std::optional<ReportingURLs> buyer_reporting, seller_reporting;
 };
 
 }  // namespace content

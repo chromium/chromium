@@ -38,7 +38,7 @@ class ProviderInterface {
     SIZE_32_32,
   };
 
-  virtual ~ProviderInterface() {}
+  virtual ~ProviderInterface() = default;
 
   // Returns a pointer to a created file system.
   virtual std::unique_ptr<ProvidedFileSystemInterface> CreateProvidedFileSystem(

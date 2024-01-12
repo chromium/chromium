@@ -10,6 +10,7 @@ import {AutomationPredicate} from './automation_predicate.js';
 import {constants} from './constants.js';
 import {AutomationTreeWalker, AutomationTreeWalkerRestriction} from './tree_walker.js';
 
+type AutomationNode = chrome.automation.AutomationNode;
 const HasPopup = chrome.automation.HasPopup;
 const RoleType = chrome.automation.RoleType;
 
@@ -22,8 +23,8 @@ export class AutomationUtil {
    * @return the node found, or null if none was found.
    */
   static findNodePre(
-      cur: chrome.automation.AutomationNode, dir: constants.Dir,
-      pred: AutomationPredicate.Unary): chrome.automation.AutomationNode|null {
+      cur: AutomationNode, dir: constants.Dir,
+      pred: AutomationPredicate.Unary): AutomationNode|null {
     if (!cur) {
       return null;
     }
@@ -51,8 +52,7 @@ export class AutomationUtil {
    * 'false'|undefined -> false
    * @return True if the value represents something 'truthy'.
    */
-  static isTruthy(node: chrome.automation.AutomationNode, attrib: string):
-      boolean {
+  static isTruthy(node: AutomationNode, attrib: string): boolean {
     if (!node) {
       return false;
     }
@@ -93,8 +93,7 @@ export class AutomationUtil {
    * node.selected === false
    * @return If it represents something 'falsey'.
    */
-  static isFalsey(node: chrome.automation.AutomationNode, attrib: string):
-      boolean {
+  static isFalsey(node: AutomationNode, attrib: string): boolean {
     if (!node) {
       return false;
     }
@@ -116,8 +115,8 @@ export class AutomationUtil {
    * @return The node found or null
    */
   static findNodePost(
-      cur: chrome.automation.AutomationNode, dir: constants.Dir,
-      pred: AutomationPredicate.Unary): chrome.automation.AutomationNode|null {
+      cur: AutomationNode, dir: constants.Dir,
+      pred: AutomationPredicate.Unary): AutomationNode|null {
     if (!cur) {
       return null;
     }
@@ -162,10 +161,8 @@ export class AutomationUtil {
    * @return The next node found
    */
   static findNextNode(
-      cur: chrome.automation.AutomationNode, dir: constants.Dir,
-      pred: AutomationPredicate.Unary,
-      optRestrictions?: AutomationTreeWalkerRestriction):
-      chrome.automation.AutomationNode|null {
+      cur: AutomationNode, dir: constants.Dir, pred: AutomationPredicate.Unary,
+      optRestrictions?: AutomationTreeWalkerRestriction): AutomationNode|null {
     const walker = createWalker(cur, dir, pred, optRestrictions);
     return walker.next().node;
   }
@@ -193,10 +190,8 @@ export class AutomationUtil {
    * @return All the nodes found.
    */
   static findAllNodes(
-      cur: chrome.automation.AutomationNode, dir: constants.Dir,
-      pred: AutomationPredicate.Unary,
-      optRestrictions?: AutomationTreeWalkerRestriction):
-      chrome.automation.AutomationNode[] {
+      cur: AutomationNode, dir: constants.Dir, pred: AutomationPredicate.Unary,
+      optRestrictions?: AutomationTreeWalkerRestriction): AutomationNode[] {
     const walker = createWalker(cur, dir, pred, optRestrictions);
     const nodes = [];
     let currentNode = walker.next().node;
@@ -216,11 +211,10 @@ export class AutomationUtil {
    * @return The node found.
    */
   static findNodeUntil(
-      cur: chrome.automation.AutomationNode, dir: constants.Dir,
-      pred: AutomationPredicate.Binary,
-      optBefore?: boolean): chrome.automation.AutomationNode|null {
+      cur: AutomationNode, dir: constants.Dir, pred: AutomationPredicate.Binary,
+      optBefore?: boolean): AutomationNode|null {
     let before = cur;
-    let after: chrome.automation.AutomationNode|null = before;
+    let after: AutomationNode|null = before;
     do {
       before = after;
       after =
@@ -234,10 +228,9 @@ export class AutomationUtil {
    * node.
    * @return The array of ancestors found.
    */
-  static getAncestors(node: chrome.automation.AutomationNode):
-      chrome.automation.AutomationNode[] {
+  static getAncestors(node: AutomationNode): AutomationNode[] {
     const ret = [];
-    let candidate: chrome.automation.AutomationNode|undefined = node;
+    let candidate: AutomationNode|undefined = node;
     while (candidate) {
       ret.push(candidate);
 
@@ -251,8 +244,8 @@ export class AutomationUtil {
    * @return The ancestor found.
    */
   static getFirstAncestorWithRole(
-      node: chrome.automation.AutomationNode,
-      role: chrome.automation.RoleType): chrome.automation.AutomationNode|null {
+      node: AutomationNode, role: chrome.automation.RoleType): AutomationNode
+      |null {
     if (!node.parent) {
       return null;
     }
@@ -268,8 +261,7 @@ export class AutomationUtil {
    * @return The index or -1.
    */
   static getDivergence(
-      ancestorsA: chrome.automation.AutomationNode[],
-      ancestorsB: chrome.automation.AutomationNode[]): number {
+      ancestorsA: AutomationNode[], ancestorsB: AutomationNode[]): number {
     for (let i = 0; i < ancestorsA.length; i++) {
       if (ancestorsA[i] !== ancestorsB[i]) {
         return i;
@@ -285,10 +277,8 @@ export class AutomationUtil {
    * Returns ancestors of |node| that are not also ancestors of |prevNode|.
    * @return The ancestors found.
    */
-  static getUniqueAncestors(
-      prevNode: chrome.automation.AutomationNode,
-      node: chrome.automation.AutomationNode):
-      chrome.automation.AutomationNode[] {
+  static getUniqueAncestors(prevNode: AutomationNode, node: AutomationNode):
+      AutomationNode[] {
     const prevAncestors = AutomationUtil.getAncestors(prevNode);
     const ancestors = AutomationUtil.getAncestors(node);
     const divergence = AutomationUtil.getDivergence(prevAncestors, ancestors);
@@ -300,9 +290,8 @@ export class AutomationUtil {
    * document.
    * @return The direction representing the ordering.
    */
-  static getDirection(
-      nodeA: chrome.automation.AutomationNode,
-      nodeB: chrome.automation.AutomationNode): constants.Dir {
+  static getDirection(nodeA: AutomationNode, nodeB: AutomationNode):
+      constants.Dir {
     const ancestorsA = AutomationUtil.getAncestors(nodeA);
     const ancestorsB = AutomationUtil.getAncestors(nodeB);
     const divergence = AutomationUtil.getDivergence(ancestorsA, ancestorsB);
@@ -340,9 +329,7 @@ export class AutomationUtil {
   /**
    * Determines whether the two given nodes come from the same tree source.
    */
-  static isInSameTree(
-      a: chrome.automation.AutomationNode,
-      b: chrome.automation.AutomationNode): boolean {
+  static isInSameTree(a: AutomationNode, b: AutomationNode): boolean {
     if (!a || !b) {
       return true;
     }
@@ -358,10 +345,9 @@ export class AutomationUtil {
    * Determines whether or not a node is or is the descendant of another node.
    * @return Whether the node is a descendant of the other node.
    */
-  static isDescendantOf(
-      node: chrome.automation.AutomationNode,
-      ancestor: chrome.automation.AutomationNode): boolean {
-    let testNode: chrome.automation.AutomationNode|undefined = node;
+  static isDescendantOf(node: AutomationNode, ancestor: AutomationNode):
+      boolean {
+    let testNode: AutomationNode|undefined = node;
     while (testNode && testNode !== ancestor) {
       testNode = testNode.parent;
     }
@@ -376,9 +362,8 @@ export class AutomationUtil {
    * @param node Subtree to search.
    * @return The deepest node containing the point.
    */
-  static hitTest(
-      node: chrome.automation.AutomationNode,
-      point: constants.Point): chrome.automation.AutomationNode|null {
+  static hitTest(node: AutomationNode, point: constants.Point): AutomationNode
+      |null {
     let child = node.firstChild;
     while (child) {
       const hit = AutomationUtil.hitTest(child, point);
@@ -407,8 +392,7 @@ export class AutomationUtil {
    * Gets a top level root.
    * @return The top level root.
    */
-  static getTopLevelRoot(node: chrome.automation.AutomationNode):
-      chrome.automation.AutomationNode|null {
+  static getTopLevelRoot(node: AutomationNode): AutomationNode|null {
     let root = node.root;
     if (!root || root.role === RoleType.DESKTOP) {
       return null;
@@ -424,10 +408,8 @@ export class AutomationUtil {
   /**
    * @return The least common ancestor of the two nodes.
    */
-  static getLeastCommonAncestor(
-      prevNode: chrome.automation.AutomationNode,
-      node: chrome.automation.AutomationNode): chrome.automation.AutomationNode
-      |undefined {
+  static getLeastCommonAncestor(prevNode: AutomationNode, node: AutomationNode):
+      AutomationNode|undefined {
     if (prevNode === node) {
       return node;
     }
@@ -443,7 +425,7 @@ export class AutomationUtil {
    * This text is suitable for caret navigation and selection in the node.
    * @return The accessible text.
    */
-  static getText(node: chrome.automation.AutomationNode): string {
+  static getText(node: AutomationNode): string {
     if (!node) {
       return '';
     }
@@ -458,9 +440,8 @@ export class AutomationUtil {
    * Gets the root of editable node.
    * @return The root if it is editable and focused.
    */
-  static getEditableRoot(node: chrome.automation.AutomationNode):
-      chrome.automation.AutomationNode|undefined {
-    let testNode: chrome.automation.AutomationNode|undefined = node;
+  static getEditableRoot(node: AutomationNode): AutomationNode|undefined {
+    let testNode: AutomationNode|undefined = node;
     let rootEditable;
     do {
       // TODO(b/267329383): testNode.state may be undefined.
@@ -490,10 +471,9 @@ export class AutomationUtil {
    * @param pred A predicate to apply
    * @return The node found.
    */
-  static findLastNode(
-      root: chrome.automation.AutomationNode,
-      pred: AutomationPredicate.Unary): chrome.automation.AutomationNode|null {
-    let node: chrome.automation.AutomationNode|null = root;
+  static findLastNode(root: AutomationNode, pred: AutomationPredicate.Unary):
+      AutomationNode|null {
+    let node: AutomationNode|null = root;
     while (node.lastChild) {
       node = node.lastChild;
     }
@@ -504,7 +484,7 @@ export class AutomationUtil {
       }
 
       // Get the shallowest node matching the predicate.
-      let walker: chrome.automation.AutomationNode|undefined = node;
+      let walker: AutomationNode|undefined = node;
       let shallowest = null;
       while (walker) {
         if (walker === root) {
@@ -538,8 +518,7 @@ export class AutomationUtil {
  * @return Instance of tree walker initialized with given parameters.
  */
 function createWalker(
-    cur: chrome.automation.AutomationNode, dir: constants.Dir,
-    pred: AutomationPredicate.Unary,
+    cur: AutomationNode, dir: constants.Dir, pred: AutomationPredicate.Unary,
     optRestrictions?: AutomationTreeWalkerRestriction): AutomationTreeWalker {
   const restrictions: AutomationTreeWalkerRestriction = {};
   optRestrictions = optRestrictions || {
@@ -555,7 +534,7 @@ function createWalker(
   restrictions.skipInitialSubtree = optRestrictions.skipInitialSubtree;
   restrictions.skipInitialAncestry = optRestrictions.skipInitialAncestry;
 
-  restrictions.visit = function(node: chrome.automation.AutomationNode) {
+  restrictions.visit = function(node: AutomationNode) {
     return pred(node) && !AutomationPredicate.shouldIgnoreNode(node);
   };
 

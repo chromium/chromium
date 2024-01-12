@@ -245,7 +245,7 @@ TEST_F(MLServiceImplCrOSTest, LoadModelAndCompute) {
       std::move(compute_input),
       base::BindLambdaForTesting(
           [&](ml::model_loader::mojom::ComputeResult result,
-              const absl::optional<base::flat_map<
+              const std::optional<base::flat_map<
                   std::string, std::vector<uint8_t>>>& output_tensors) {
             ASSERT_TRUE(output_tensors.has_value());
             ASSERT_EQ(output_tensors->size(), 2u);

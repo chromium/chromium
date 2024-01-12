@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   // public key to be able to inject invitations.
   ASSERT_TRUE(SetupSyncTransportWithoutPasswordAccountStorage());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(CrossUserSharingKeysChecker().Wait());
+  ASSERT_TRUE(ServerCrossUserSharingPublicKeyChangedChecker().Wait());
 
   // Let the user opt in to the account-scoped password storage, and wait for it
   // to become active.
@@ -385,9 +385,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
 }
 
 // This test verifies that Incoming Password Sharing Invitation data type is
-// stopped when the Password data type stops.
+// stopped when the Password data type is opted out in the transport mode.
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
-                       ShouldStopReceivingPasswordsWhenPasswordsInactive) {
+                       ShouldStopReceivingPasswordsWhenPasswordsOptedOut) {
   ASSERT_TRUE(SetupSyncTransportWithoutPasswordAccountStorage());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
@@ -415,5 +415,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
           .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+// This test verifies that Incoming Password Sharing Invitation data type is
+// stopped when the Password data type is encountered error.
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
+                       ShouldStopIncomingInvitationsOnPasswordsFailure) {
+  ASSERT_TRUE(SetupSync());
+
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::INCOMING_PASSWORD_SHARING_INVITATION));
+
+  // Simulate Passwords data type error.
+  GetSyncService(0)->ReportDataTypeErrorForTest(syncer::PASSWORDS);
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::PASSWORDS});
+
+  EXPECT_TRUE(
+      IncomingPasswordSharingInvitationInactiveChecker(GetSyncService(0))
+          .Wait());
+}
 
 }  // namespace

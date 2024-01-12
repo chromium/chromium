@@ -7,6 +7,7 @@ import './shared_style.css.js';
 import './prefs/pref_toggle_button.js';
 import './user_utils_mixin.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
+import './dialogs/move_passwords_dialog.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
@@ -16,9 +17,11 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MoveToAccountStoreTrigger} from './dialogs/move_passwords_dialog.js';
 // <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
@@ -121,6 +124,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
           return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
         },
       },
+
+      showMovePasswordsDialog_: Boolean,
+
+      passwordsOnDevice_: {
+        type: Array,
+      },
     };
   }
 
@@ -128,8 +137,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private hasPasskeys_: boolean;
   private hasPasswordsToExport_: boolean;
   private showPasswordsImporter_: boolean;
+  private showMovePasswordsDialog_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
   private enableButterOnDesktopFollowup_: boolean;
+  private movePasswordsLabel_: string;
+  private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[] = [];
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -146,6 +158,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.updatePasswordsOnDevice_();
     this.setBlockedSitesListListener_ = blockedSites => {
       this.blockedSites_ = blockedSites;
     };
@@ -157,6 +171,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.setCredentialsChangedListener_ =
         (passwords: chrome.passwordsPrivate.PasswordUiEntry[]) => {
           this.hasPasswordsToExport_ = passwords.length > 0;
+          this.updatePasswordsOnDevice_();
         };
     PasswordManagerImpl.getInstance().getSavedPasswordList().then(
         this.setCredentialsChangedListener_);
@@ -316,6 +331,43 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     const pref = this.getPref('credentials_enable_service');
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
         !pref.value;
+  }
+
+  private onMovePasswordsClicked_(e: Event) {
+    e.preventDefault();
+    this.showMovePasswordsDialog_ = true;
+  }
+
+  private onMovePasswordsDialogClose_() {
+    this.showMovePasswordsDialog_ = false;
+  }
+
+  private getMovePasswordsDialogTrigger_(): MoveToAccountStoreTrigger {
+    return MoveToAccountStoreTrigger
+        .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS;
+  }
+
+  private shouldShowMovePasswordsEntry_(): boolean {
+    return this.enableButterOnDesktopFollowup_ && this.isAccountStoreUser &&
+        this.passwordsOnDevice_.length > 0;
+  }
+
+  private async updatePasswordsOnDevice_() {
+    const groups =
+        await PasswordManagerImpl.getInstance().getCredentialGroups();
+    const localStorage = [
+      chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
+      chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+    ];
+
+    this.passwordsOnDevice_ =
+        groups.map(group => group.entries)
+            .flat()
+            .filter(entry => localStorage.includes(entry.storedIn));
+
+    this.movePasswordsLabel_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'deviceOnlyPasswordsIconTooltip', this.passwordsOnDevice_.length);
   }
 }
 

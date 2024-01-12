@@ -8,6 +8,8 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
@@ -38,7 +40,7 @@ public class MiniPlayerMediator {
     private final BrowserControlsSizer mBrowserControlsSizer;
     // Height of MiniPlayerLayout's background (without shadow).
     private int mLayoutHeightPx;
-
+    private static boolean sIsAnimationStarted;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateObserver =
             new BrowserControlsStateProvider.Observer() {
                 @Override
@@ -48,12 +50,39 @@ public class MiniPlayerMediator {
                         int bottomOffset,
                         int bottomControlsMinHeightOffset,
                         boolean needsAnimate) {
+                    if (!sIsAnimationStarted) {
+                        sIsAnimationStarted = true;
+                    }
                     if (getVisibility() == VisibilityState.HIDING
                             && bottomControlsMinHeightOffset == 0) {
                         onBottomControlsShrunk();
                     } else if (getVisibility() == VisibilityState.SHOWING
                             && mLayoutHeightPx == bottomControlsMinHeightOffset) {
                         onBottomControlsGrown();
+                    }
+                }
+
+                @Override
+                public void onBottomControlsHeightChanged(
+                        int bottomControlContainerHeight, int bottomControlsMinHeight) {
+                    // Hack: bottom controls don't animate on NTP, tab switcher, and potentially
+                    // other non tab pages.
+                    // As a result we show an empty bottom bar with no UI controls. This is trying
+                    // to prevent that from happening by forcing fading in player controls if bottom
+                    // controls are visible and no animation is running.
+                    if (getVisibility() == VisibilityState.SHOWING
+                            && mBrowserControlsSizer.getBottomControlsHeight() > 0) {
+                        PostTask.postDelayedTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    if (getVisibility() == VisibilityState.SHOWING
+                                            && !sIsAnimationStarted
+                                            && mBrowserControlsSizer.getBottomControlsHeight()
+                                                    > 0) {
+                                        onBottomControlsGrown();
+                                    }
+                                },
+                                200);
                     }
                 }
             };
@@ -97,7 +126,6 @@ public class MiniPlayerMediator {
         mModel.set(Properties.VISIBILITY, VisibilityState.SHOWING);
         mModel.set(Properties.ANIMATE_VISIBILITY_CHANGES, animate);
         mModel.set(Properties.COMPOSITED_VIEW_VISIBLE, true);
-
         if (mLayoutHeightPx != 0) {
             // Grow immediately if height is already known.
             growBottomControls();
@@ -185,6 +213,7 @@ public class MiniPlayerMediator {
     }
 
     private void setBottomControlsHeight(int height, int minHeight) {
+        sIsAnimationStarted = false;
         mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(
                 mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES));
         mBrowserControlsSizer.setBottomControlsHeight(height, minHeight);

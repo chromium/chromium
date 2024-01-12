@@ -41,15 +41,12 @@
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
-#include "content/browser/indexed_db/indexed_db_client_state_checker_wrapper.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
-#include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
@@ -178,7 +175,7 @@ IndexedDBFactory::~IndexedDBFactory() {
 }
 
 void IndexedDBFactory::AddReceiver(
-    absl::optional<storage::BucketInfo> bucket,
+    std::optional<storage::BucketInfo> bucket,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
@@ -192,7 +189,7 @@ void IndexedDBFactory::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::GetDatabaseInfo");
 
-  const absl::optional<storage::BucketInfo>& bucket =
+  const std::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
   // Return error if failed to retrieve bucket from the QuotaManager.
@@ -259,16 +256,14 @@ void IndexedDBFactory::Open(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::Open");
 
-  const absl::optional<storage::BucketInfo>& bucket =
+  const std::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
-
-  auto factory_client = std::make_unique<IndexedDBFactoryClient>(
-      std::move(pending_factory_client));
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!bucket) {
-    factory_client->OnError(IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    IndexedDBFactoryClient(std::move(pending_factory_client))
+        .OnError(IndexedDBDatabaseError(
+            blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
@@ -288,37 +283,26 @@ void IndexedDBFactory::Open(
                                /*create_if_missing=*/true);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
-    factory_client->OnError(error);
+    IndexedDBFactoryClient(std::move(pending_factory_client)).OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
     return;
   }
 
-  auto connection = std::make_unique<IndexedDBPendingConnection>(
-      std::move(factory_client),
-      std::make_unique<IndexedDBDatabaseCallbacks>(
-          std::move(database_callbacks_remote)),
-      transaction_id, version, std::move(transaction_receiver));
-  connection->was_cold_open = was_cold_open;
-  connection->data_loss_info = data_loss_info;
-
-  auto it = bucket_context_handle->databases().find(name);
-  if (it != bucket_context_handle->databases().end()) {
-    it->second->ScheduleOpenConnection(
-        std::move(connection),
-        receivers_.current_context().client_state_checker);
-    return;
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      state_checker;
+  // May be null in unit tests.
+  if (receivers_.current_context().client_state_checker_remote) {
+    receivers_.current_context().client_state_checker_remote->MakeClone(
+        state_checker.InitWithNewPipeAndPassReceiver());
   }
-  auto database = std::make_unique<IndexedDBDatabase>(
-      name, *bucket_context_handle.bucket_context(),
-      IndexedDBDatabase::Identifier(bucket_locator, name));
-  // The database must be added before the schedule call, as the
-  // CreateDatabaseDeleteClosure can be called synchronously.
-  auto* database_ptr = database.get();
-  bucket_context_handle->AddDatabase(name, std::move(database));
-  database_ptr->ScheduleOpenConnection(
-      std::move(connection), receivers_.current_context().client_state_checker);
+
+  bucket_context_handle->OpenDatabase(
+      name, version, std::move(pending_factory_client),
+      std::move(database_callbacks_remote), transaction_id,
+      std::move(transaction_receiver), was_cold_open, data_loss_info,
+      std::move(state_checker));
 }
 
 void IndexedDBFactory::DeleteDatabase(
@@ -329,7 +313,7 @@ void IndexedDBFactory::DeleteDatabase(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::DeleteDatabase");
 
-  const absl::optional<storage::BucketInfo>& bucket =
+  const std::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
   // Return error if failed to retrieve bucket from the QuotaManager.
@@ -942,13 +926,11 @@ void IndexedDBFactory::OnDatabaseDeleted(
 }
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(
-    absl::optional<storage::BucketInfo> bucket,
+    std::optional<storage::BucketInfo> bucket,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker_remote)
+        client_state_checker)
     : bucket(bucket),
-      client_state_checker(
-          base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
-              std::move(client_state_checker_remote))) {}
+      client_state_checker_remote(std::move(client_state_checker)) {}
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(
     IndexedDBFactory::ReceiverContext&&) noexcept = default;

@@ -29,9 +29,15 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_manager_bridge.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_utils.h"
+#include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"
+#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "content/public/browser/download_item_utils.h"
+#include "ui/base/device_form_factor.h"
 #endif
 
 using OfflineItemFilter = offline_items_collection::OfflineItemFilter;
@@ -55,6 +61,9 @@ const base::TimeDelta kCheckExternallyRemovedDownloadsDelay =
 #if BUILDFLAG(IS_ANDROID)
 // Invalid system download Id.
 const int kInvalidSystemDownloadId = -1;
+
+// Pdf MIME type.
+const char kPdfMimeType[] = "application/pdf";
 #endif
 
 bool ShouldShowDownloadItem(const DownloadItem* item) {
@@ -499,8 +508,21 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
     return;
   }
 
-  if (DownloadUtils::ShouldAutoOpenDownload(item))
+  if (DownloadUtils::ShouldAutoOpenDownload(item)) {
     item->OpenDownload();
+  } else if (item->IsFromExternalApp()) {
+    if (item->GetMimeType() == kPdfMimeType) {
+      if (profile_ &&
+          DownloadPrefs::FromBrowserContext(profile_)->IsAutoOpenPdfEnabled()) {
+        item->OpenDownload();
+      } else if (base::FeatureList::IsEnabled(
+                     chrome::android::kOpenDownloadDialog)) {
+        content::WebContents* web_contents =
+            content::DownloadItemUtils::GetWebContents(item);
+        open_download_dialog_delegate_.CreateDialog(item, web_contents);
+      }
+    }
+  }
 #endif
 }
 

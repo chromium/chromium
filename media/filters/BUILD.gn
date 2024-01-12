@@ -4,7 +4,6 @@
 
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
-import("//third_party/libgav1/options.gni")
 
 source_set("filters") {
   # Do not expand the visibility here without double-checking with OWNERS, this
@@ -53,8 +52,6 @@ source_set("filters") {
     "offloading_video_decoder.h",
     "pipeline_controller.cc",
     "pipeline_controller.h",
-    "resolution_monitor.cc",
-    "resolution_monitor.h",
     "source_buffer_parse_warnings.h",
     "source_buffer_range.cc",
     "source_buffer_range.h",
@@ -84,8 +81,6 @@ source_set("filters") {
 
   configs += [ "//media:subcomponent_config" ]
 
-  assert(use_libgav1_parser)
-
   deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -94,9 +89,7 @@ source_set("filters") {
     "//media/base",
     "//media/cdm",
     "//media/formats",
-    "//media/parsers",
     "//media/video",
-    "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
     "//ui/gfx/geometry:geometry",
   ]
@@ -327,9 +320,9 @@ source_set("unit_tests") {
     "memory_data_source_unittest.cc",
     "offloading_video_decoder_unittest.cc",
     "pipeline_controller_unittest.cc",
-    "resolution_monitor_unittest.cc",
     "source_buffer_state_unittest.cc",
     "source_buffer_stream_unittest.cc",
+    "stream_parser_factory_unittest.cc",
     "video_cadence_estimator_unittest.cc",
     "video_decoder_stream_unittest.cc",
     "video_renderer_algorithm_unittest.cc",

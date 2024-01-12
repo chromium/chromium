@@ -178,8 +178,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         assertNotNull("The clip data should have intent set.", data.getItemAt(0).getIntent());
         assertTrue(
                 "The clip data should contain chrome/tab mimetype.",
-                data.getDescription()
-                        .hasMimeType(ChromeDragAndDropBrowserDelegate.CHROME_MIMETYPE_TAB));
+                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
         assertTrue(
                 "The clip data should contain chrome/link mimetype.",
                 data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK));
@@ -210,8 +209,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
         assertTrue(
                 "The clip data should contain chrome/tab mimetype.",
-                data.getDescription()
-                        .hasMimeType(ChromeDragAndDropBrowserDelegate.CHROME_MIMETYPE_TAB));
+                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
 
         assertFalse(
                 "The clip data should not contain chrome/link mimetype.",

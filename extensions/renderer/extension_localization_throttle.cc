@@ -6,7 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -229,8 +228,8 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
 std::unique_ptr<ExtensionLocalizationThrottle>
 ExtensionLocalizationThrottle::MaybeCreate(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-    const blink::WebURL& request_url) {
-  if (!request_url.ProtocolIs(extensions::kExtensionScheme)) {
+    const GURL& request_url) {
+  if (!request_url.SchemeIs(extensions::kExtensionScheme)) {
     return nullptr;
   }
   return base::WrapUnique(new ExtensionLocalizationThrottle(local_frame_token));

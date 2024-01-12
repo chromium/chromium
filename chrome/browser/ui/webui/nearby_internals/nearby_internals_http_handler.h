@@ -64,7 +64,7 @@ class NearbyInternalsHttpHandler : public content::WebUIMessageHandler,
   // Message handler callback that calls List Contacts RPC.
   void ListContactPeople(const base::Value::List& args);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<NearbyShareHttpNotifier,
                           NearbyShareHttpNotifier::Observer>
       observation_{this};

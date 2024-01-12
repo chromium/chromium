@@ -426,7 +426,7 @@ class CONTENT_EXPORT FrameTree {
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
       CreateRenderViewHostCase create_case,
-      absl::optional<viz::FrameSinkId> frame_sink_id);
+      std::optional<viz::FrameSinkId> frame_sink_id);
 
   // Returns the existing RenderViewHost for a new RenderFrameHost.
   // There should always be such a RenderViewHost, because the main frame

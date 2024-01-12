@@ -8,9 +8,10 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/sequence_token.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_checker_impl.h"
+#include "base/threading/platform_thread_ref.h"
 
 namespace base {
 namespace debug {
@@ -59,8 +60,21 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
   void DetachFromSequence();
 
  private:
-  // SequenceCheckerImpl uses ThreadCheckerImpl for shared storage.
-  ThreadCheckerImpl thread_checker_;
+  void EnsureAssigned() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Members are mutable so that `CalledOnValidSequence()` can set them.
+
+  mutable Lock lock_;
+
+  // Stack from which this was bound (set if `EnableStackLogging()` was called).
+  mutable std::unique_ptr<debug::StackTrace> bound_at_ GUARDED_BY(lock_);
+
+  // Sequence to which this is bound.
+  mutable internal::SequenceToken sequence_token_ GUARDED_BY(lock_);
+
+  // Thread to which this is bound. Only used to evaluate
+  // `CalledOnValidSequence()` after TLS destruction.
+  mutable PlatformThreadRef thread_ref_ GUARDED_BY(lock_);
 };
 
 }  // namespace base

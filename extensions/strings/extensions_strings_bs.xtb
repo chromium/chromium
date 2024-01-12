@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorija za pakiranje.</translation>
 <translation id="5160071981665899014">Učitavanje JavaScripta "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Oblikovanje prozora nije podržano.</translation>
 <translation id="5456409301717116725">Ova ekstenzija uključuje fajl s ključem "<ph name="KEY_PATH" />". Vjerovatno to ne želite učiniti.</translation>
 <translation id="5486326529110362464">Mora postojati ulazna vrijednost za privatni ključ.</translation>
 <translation id="5972529113578162692">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Nije je moguće deinstalirati.</translation>

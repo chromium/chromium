@@ -220,6 +220,9 @@ component("base") {
     "allocator/dispatcher/internal/dispatch_data.h",
     "allocator/dispatcher/internal/dispatcher_internal.h",
     "allocator/dispatcher/internal/tools.h",
+    "allocator/dispatcher/memory_tagging.cc",
+    "allocator/dispatcher/memory_tagging.h",
+    "allocator/dispatcher/notification_data.h",
     "allocator/dispatcher/reentry_guard.cc",
     "allocator/dispatcher/reentry_guard.h",
     "allocator/dispatcher/subsystem.h",
@@ -276,6 +279,7 @@ component("base") {
     "containers/flat_map.h",
     "containers/flat_set.h",
     "containers/flat_tree.h",
+    "containers/heap_array.h",
     "containers/id_map.h",
     "containers/intrusive_heap.cc",
     "containers/intrusive_heap.h",
@@ -351,6 +355,7 @@ component("base") {
     "functional/function_ref.h",
     "functional/overloaded.h",
     "functional/unretained_traits.h",
+    "gtest_prod_util.cc",
     "gtest_prod_util.h",
     "hash/hash.cc",
     "hash/hash.h",
@@ -817,6 +822,8 @@ component("base") {
     "task/thread_pool/worker_thread.cc",
     "task/thread_pool/worker_thread.h",
     "task/thread_pool/worker_thread_observer.h",
+    "task/thread_pool/worker_thread_semaphore.cc",
+    "task/thread_pool/worker_thread_semaphore.h",
     "task/thread_pool/worker_thread_set.cc",
     "task/thread_pool/worker_thread_set.h",
     "task/thread_pool/worker_thread_waitable_event.cc",
@@ -1138,16 +1145,12 @@ component("base") {
     sources += [
       "android/android_hardware_buffer_compat.cc",
       "android/android_hardware_buffer_compat.h",
-      "android/android_image_reader_abi.h",
       "android/android_image_reader_compat.cc",
       "android/android_image_reader_compat.h",
       "android/apk_assets.cc",
       "android/apk_assets.h",
       "android/application_status_listener.cc",
       "android/application_status_listener.h",
-      "android/base_feature_map.cc",
-      "android/base_features.cc",
-      "android/base_features.h",
       "android/build_info.cc",
       "android/build_info.h",
       "android/bundle_utils.cc",
@@ -1191,6 +1194,8 @@ component("base") {
       "android/path_service_android.cc",
       "android/path_utils.cc",
       "android/path_utils.h",
+      "android/pre_freeze_background_memory_trimmer.cc",
+      "android/pre_freeze_background_memory_trimmer.h",
       "android/radio_utils.cc",
       "android/radio_utils.h",
       "android/reached_addresses_bitset.cc",
@@ -3138,6 +3143,7 @@ test("base_unittests") {
     "containers/flat_map_unittest.cc",
     "containers/flat_set_unittest.cc",
     "containers/flat_tree_unittest.cc",
+    "containers/heap_array_unittest.cc",
     "containers/id_map_unittest.cc",
     "containers/intrusive_heap_unittest.cc",
     "containers/linked_list_unittest.cc",
@@ -3702,7 +3708,6 @@ test("base_unittests") {
     }
 
     sources += [
-      "android/android_image_reader_compat_unittest.cc",
       "android/application_status_listener_unittest.cc",
       "android/child_process_unittest.cc",
       "android/content_uri_utils_unittest.cc",
@@ -3717,6 +3722,7 @@ test("base_unittests") {
       "android/linker/linker_unittest.cc",
       "android/meminfo_dump_provider_unittest.cc",
       "android/path_utils_unittest.cc",
+      "android/pre_freeze_background_memory_trimmer_unittest.cc",
       "android/radio_utils_unittest.cc",
       "android/reached_addresses_bitset_unittest.cc",
       "android/scoped_java_ref_unittest.cc",
@@ -3848,6 +3854,7 @@ test("base_unittests") {
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export_pa_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu_pa_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging_pa_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor_pa_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util_pa_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/cstring_builder_pa_unittest.cc",
@@ -4139,6 +4146,7 @@ if (enable_nocompile_tests) {
       "containers/checked_iterators_nocompile.nc",
       "containers/contains_nocompile.nc",
       "containers/enum_set_nocompile.nc",
+      "containers/heap_array_nocompile.nc",
       "containers/span_nocompile.nc",
       "debug/crash_logging_nocompile.nc",
       "functional/bind_nocompile.nc",
@@ -4172,7 +4180,6 @@ if (is_android || is_robolectric) {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/ApplicationStatus.java",
-      "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/Callback.java",
@@ -4220,22 +4227,15 @@ if (is_android || is_robolectric) {
       ]
     }
 
-    public_deps = [
-      ":android_runtime_jni_headers",
-      ":android_runtime_unchecked_jni_headers",
-    ]
+    public_deps = [ ":android_runtime_jni_headers" ]
   }
 
   generate_jar_jni("android_runtime_jni_headers") {
     classes = [
+      "java/lang/Runnable.class",
       "java/lang/Runtime.class",
       "java/lang/Throwable.class",
     ]
-  }
-
-  generate_jar_jni("android_runtime_unchecked_jni_headers") {
-    classes = [ "java/lang/Runnable.class" ]
-    unchecked_exceptions = true
   }
 
   generate_jni("process_launcher_jni") {
@@ -4253,7 +4253,6 @@ if (is_android) {
     visibility = [ ":*" ]
     sources = [
       "allocator/partition_alloc_features.cc",
-      "android/base_features.cc",
       "features.cc",
       "task/task_features.cc",
     ]
@@ -4310,7 +4309,6 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -4321,7 +4319,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/ApiCompatibilityUtils.java",
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/ApplicationStatus.java",
-      "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/Callback.java",
@@ -4498,6 +4495,17 @@ if (is_android) {
     ]
   }
 
+  android_library("base_cached_flags_java") {
+    deps = [
+      ":base_java",
+      ":base_shared_preferences_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+
+    sources = [ "android/java/src/org/chromium/base/cached_flags/CachedFlagsSharedPreferences.java" ]
+  }
+
   android_aidl("process_launcher_aidl") {
     import_include = [ "android/java/src" ]
     sources = [
@@ -4539,6 +4547,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/PackageUtilsTest.java",
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
+      "android/javatests/src/org/chromium/base/jank_tracker/JankTrackerTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
       "android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java",
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",

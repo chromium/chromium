@@ -37,7 +37,7 @@ class FakePluginVmFeatures : public PluginVmFeatures {
  private:
   // Original global static when this instance is created. It is captured when
   // FakePluginVmFeatures is created and replaced at destruction.
-  raw_ptr<PluginVmFeatures, ExperimentalAsh> original_features_;
+  raw_ptr<PluginVmFeatures> original_features_;
 
   absl::optional<bool> allowed_;
   std::string disallowed_reason_;

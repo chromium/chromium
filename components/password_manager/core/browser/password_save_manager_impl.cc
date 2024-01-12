@@ -455,7 +455,9 @@ void PasswordSaveManagerImpl::PresaveGeneratedPassword(
     PasswordForm parsed_form) {
   if (!HasGeneratedPassword()) {
     generation_manager_ = std::make_unique<PasswordGenerationManager>(client_);
-    votes_uploader_->set_generated_password_changed(false);
+    if (votes_uploader_) {
+      votes_uploader_->set_generated_password_changed(false);
+    }
     metrics_recorder_->SetGeneratedPasswordStatus(
         PasswordFormMetricsRecorder::GeneratedPasswordStatus::
             kPasswordAccepted);
@@ -466,13 +468,17 @@ void PasswordSaveManagerImpl::PresaveGeneratedPassword(
     // recorded as a password change.
     if (generation_manager_->generated_password() !=
         parsed_form.password_value) {
-      votes_uploader_->set_generated_password_changed(true);
+      if (votes_uploader_) {
+        votes_uploader_->set_generated_password_changed(true);
+      }
       metrics_recorder_->SetGeneratedPasswordStatus(
           PasswordFormMetricsRecorder::GeneratedPasswordStatus::
               kPasswordEdited);
     }
   }
-  votes_uploader_->set_has_generated_password(true);
+  if (votes_uploader_) {
+    votes_uploader_->set_has_generated_password(true);
+  }
 
   generation_manager_->PresaveGeneratedPassword(
       std::move(parsed_form),
@@ -496,8 +502,10 @@ void PasswordSaveManagerImpl::PasswordNoLongerGenerated() {
   generation_manager_->PasswordNoLongerGenerated(GetFormSaverForGeneration());
   generation_manager_.reset();
 
-  votes_uploader_->set_has_generated_password(false);
-  votes_uploader_->set_generated_password_changed(false);
+  if (votes_uploader_) {
+    votes_uploader_->set_has_generated_password(false);
+    votes_uploader_->set_generated_password_changed(false);
+  }
   metrics_recorder_->SetGeneratedPasswordStatus(
       PasswordFormMetricsRecorder::GeneratedPasswordStatus::kPasswordDeleted);
 }
@@ -870,11 +878,13 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
       parsed_submitted_form.submission_event);
   metrics_recorder_->SetSubmissionIndicatorEvent(
       parsed_submitted_form.submission_event);
-  // TODO(crbug.com/959776): Get rid of this method, by passing
-  // |pending_credentials_| directly to MaybeSendSingleUsernameVotes.
-  votes_uploader_->CalculateUsernamePromptEditState(
-      /*saved_username=*/pending_credentials_.username_value,
-      parsed_submitted_form.all_alternative_usernames);
+  if (votes_uploader_) {
+    // TODO(crbug.com/959776): Get rid of this method, by passing
+    // |pending_credentials_| directly to MaybeSendSingleUsernameVotes.
+    votes_uploader_->CalculateUsernamePromptEditState(
+        /*saved_username=*/pending_credentials_.username_value,
+        parsed_submitted_form.all_alternative_usernames);
+  }
 
   if (IsNewLogin()) {
     metrics_util::LogNewlySavedPasswordMetrics(
@@ -883,7 +893,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
         client_->GetPasswordFeatureManager()
             ->ComputePasswordAccountStorageUsageLevel());
     // Don't send votes if there was no observed form.
-    if (observed_form) {
+    if (observed_form && votes_uploader_) {
       votes_uploader_->SendVotesOnSave(*observed_form, parsed_submitted_form,
                                        form_fetcher_->GetBestMatches(),
                                        &pending_credentials_);
@@ -900,6 +910,9 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
   CHECK(!client_->IsOffTheRecord());
 
   password_manager_util::UpdateMetadataForUsage(&pending_credentials_);
+  if (!votes_uploader_) {
+    return;
+  }
 
   // Check to see if this form is a candidate for password generation.
   // Do not send votes if there was no observed form. Furthermore, don't send

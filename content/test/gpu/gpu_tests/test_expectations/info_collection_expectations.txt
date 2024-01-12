@@ -37,7 +37,7 @@
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm ]
+#         qualcomm qualcomm-0x41333430 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -87,6 +87,9 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
+# This Qualcomm GPU does not support Vulkan.
+[ win qualcomm-0x41333430 ] InfoCollection_dx12_vulkan [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -98,8 +101,7 @@
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
-
-
+crbug.com/1493542 [ win10 intel-0x9bc5 ] InfoCollection_direct_composition [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

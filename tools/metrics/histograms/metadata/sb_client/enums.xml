@@ -69,6 +69,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Zip has AES"/>
 </enum>
 
+<enum name="CancelEphemeralWarningEvent">
+  <int value="0" label="CancellationScheduled"/>
+  <int value="1" label="CancellationTriggered"/>
+  <int value="2" label="CancellationFailedDownloadNotFound"/>
+  <int value="3" label="CancellationFailedDownloadNotEphemeral"/>
+  <int value="4" label="CancellationSucceeded"/>
+</enum>
+
 <enum name="ClientSidePhishingImageEmbeddingResult">
   <summary>
     Enumerates the possible results from client side phishing image embedding
@@ -265,6 +273,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Disk full"/>
   <int value="8" label="No filename"/>
   <int value="9" label="Unsupported feature in LZMA SDK"/>
+</enum>
+
+<enum name="TailoredWarningType">
+  <int value="0" label="NoTailoredWarning"/>
+  <int value="1" label="CookieTheft"/>
+  <int value="2" label="CookieTheftWithAccountInfo"/>
+  <int value="3" label="SuspiciousArchive"/>
 </enum>
 
 </enums>

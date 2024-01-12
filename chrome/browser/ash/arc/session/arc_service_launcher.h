@@ -107,7 +107,7 @@ class ArcServiceLauncher : public ArcSessionManagerObserver {
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
 
   // |scheduler_configuration_manager_| outlives |this|.
-  const raw_ptr<ash::SchedulerConfigurationManagerBase, ExperimentalAsh>
+  const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
   // Observes ArcSessionManager for changes to ARC-enabled.

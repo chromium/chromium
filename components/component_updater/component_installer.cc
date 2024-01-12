@@ -57,6 +57,10 @@ bool ComponentInstallerPolicy::AllowCachedCopies() const {
   return true;
 }
 
+bool ComponentInstallerPolicy::AllowUpdatesOnMeteredConnections() const {
+  return true;
+}
+
 ComponentInstaller::RegistrationInfo::RegistrationInfo()
     : version(kNullVersion) {}
 
@@ -64,17 +68,20 @@ ComponentInstaller::RegistrationInfo::~RegistrationInfo() = default;
 
 ComponentInstaller::ComponentInstaller(
     std::unique_ptr<ComponentInstallerPolicy> installer_policy,
-    scoped_refptr<update_client::ActionHandler> action_handler)
+    scoped_refptr<update_client::ActionHandler> action_handler,
+    base::TaskPriority task_priority)
     : current_version_(kNullVersion),
       installer_policy_(std::move(installer_policy)),
       action_handler_(action_handler),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), task_priority,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 ComponentInstaller::~ComponentInstaller() = default;
 
 void ComponentInstaller::Register(ComponentUpdateService* cus,
-                                  base::OnceClosure callback,
-                                  base::TaskPriority task_priority) {
+                                  base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(cus);
 
@@ -82,20 +89,15 @@ void ComponentInstaller::Register(ComponentUpdateService* cus,
   installer_policy_->GetHash(&public_key_hash);
   Register(base::BindOnce(&ComponentUpdateService::RegisterComponent,
                           base::Unretained(cus)),
-           std::move(callback), task_priority,
+           std::move(callback),
            cus->GetRegisteredVersion(
                update_client::GetCrxIdFromPublicKeyHash(public_key_hash)));
 }
 
 void ComponentInstaller::Register(RegisterCallback register_callback,
                                   base::OnceClosure callback,
-                                  base::TaskPriority task_priority,
                                   const base::Version& registered_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), task_priority,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (!installer_policy_) {
     VLOG(0) << "A ComponentInstaller has been created but "
@@ -469,17 +471,20 @@ void ComponentInstaller::UninstallOnTaskRunner() {
   DCHECK(task_runner_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  const absl::optional<base::FilePath> base_dir = GetComponentDirectory();
+  if (!base_dir) {
+    return;
+  }
   // Only try to delete any files that are in our user-level install path.
   base::FilePath userInstallPath;
   if (!base::PathService::Get(DIR_COMPONENT_USER, &userInstallPath)) {
     return;
   }
-  if (!userInstallPath.IsParent(current_install_dir_)) {
+  if (!userInstallPath.IsParent(*base_dir)) {
     return;
   }
 
-  const base::FilePath base_dir = current_install_dir_.DirName();
-  base::FileEnumerator file_enumerator(base_dir, false,
+  base::FileEnumerator file_enumerator(*base_dir, false,
                                        base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
        path = file_enumerator.Next()) {
@@ -497,9 +502,9 @@ void ComponentInstaller::UninstallOnTaskRunner() {
   }
 
   // Delete the base directory if it's empty now.
-  if (base::IsDirectoryEmpty(base_dir)) {
-    if (!base::DeleteFile(base_dir)) {
-      DVLOG(0) << "Couldn't delete " << base_dir.value();
+  if (base::IsDirectoryEmpty(*base_dir)) {
+    if (!base::DeleteFile(*base_dir)) {
+      DVLOG(0) << "Couldn't delete " << base_dir->value();
     }
   }
 
@@ -529,7 +534,8 @@ void ComponentInstaller::FinishRegistration(
                installer_policy_->GetInstallerAttributes(), action_handler_,
                this, installer_policy_->RequiresNetworkEncryption(),
                installer_policy_->SupportsGroupPolicyEnabledComponentUpdates(),
-               installer_policy_->AllowCachedCopies()))) {
+               installer_policy_->AllowCachedCopies(),
+               installer_policy_->AllowUpdatesOnMeteredConnections()))) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
     if (!callback.is_null()) {

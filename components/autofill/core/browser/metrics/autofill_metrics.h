@@ -632,8 +632,10 @@ class AutofillMetrics {
     kIsFocusable = 0,
     kWasFocused = 1,
     kWasAutofillTriggered = 2,
-    // kWasAutofilled is only set when kWasAutofillTriggered is set.
-    kWasAutofilled = 3,
+    // Note that this is set before checking the iframe security policy.
+    // This value is true even when the filling was prevented because of the
+    // cross iframe autofill security policy.
+    kWasAutofilledBeforeSecurityPolicy = 3,
     kWasRefill = 4,
     // The below suggestion statuses are set only when kWasFocused is set.
     kSuggestionWasAvailable = 5,
@@ -644,7 +646,11 @@ class AutofillMetrics {
     kHadValueBeforeFilling = 10,
     kHadTypedOrFilledValueAtSubmission = 11,
     kIsInSubFrame = 12,
-    kMaxValue = kIsInSubFrame
+    kFillingPreventedByIframeSecurityPolicy = 13,
+    // The field was sent to the renderer for autofilling. Note that this is
+    // still true if the user later edited the autofilled value.
+    kWasAutofilledAfterSecurityPolicy = 14,
+    kMaxValue = kWasAutofilledAfterSecurityPolicy
   };
 
   struct FormEventSetTraits {
@@ -1309,12 +1315,6 @@ class AutofillMetrics {
   // Logs the roundtrip latency for fetching an image in AutofillImageFetcher.
   static void LogImageFetcherRequestLatency(const base::TimeDelta& latency);
 
-  // Logs whether the submitted field value is same as the non-empty value
-  // to be autofilled in the field, when the field had a different prefilled
-  // value.
-  static void LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(
-      bool is_same);
-
   // Logs a field's (PredictionState, AutocompleteState) pair on form submit.
   static void LogAutocompletePredictionCollisionState(
       PredictionState prediction_state,
@@ -1374,6 +1374,10 @@ class AutofillMetrics {
   // This metric is recorded when an address is deleted from a first-level popup
   // using shift+delete.
   static void LogDeleteAddressProfileFromPopup();
+
+  // This metric is recorded when an address is deleted from the keyboard
+  // accessory.
+  static void LogDeleteAddressProfileFromKeyboardAccessory();
 
  private:
   static void Log(AutocompleteEvent event);

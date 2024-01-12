@@ -40,6 +40,7 @@
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -921,6 +922,45 @@ TEST(Delimiter, ByAnyChar) {
   EXPECT_FALSE(IsFoundAt("a", empty, 0));
   EXPECT_TRUE(IsFoundAt("ab", empty, 1));
   EXPECT_TRUE(IsFoundAt("abc", empty, 1));
+}
+
+//
+// Tests for ByAsciiWhitespace
+//
+TEST(Split, ByAsciiWhitespace) {
+  using absl::ByAsciiWhitespace;
+  using absl::SkipEmpty;
+  std::vector<absl::string_view> results;
+
+  results = absl::StrSplit("aaaa\n", ByAsciiWhitespace());
+  EXPECT_THAT(results, ElementsAre("aaaa", ""));
+
+  results = absl::StrSplit("aaaa\n", ByAsciiWhitespace(), SkipEmpty());
+  EXPECT_THAT(results, ElementsAre("aaaa"));
+
+  results = absl::StrSplit(" ", ByAsciiWhitespace());
+  EXPECT_THAT(results, ElementsAre("", ""));
+
+  results = absl::StrSplit(" ", ByAsciiWhitespace(), SkipEmpty());
+  EXPECT_THAT(results, IsEmpty());
+
+  results = absl::StrSplit("a", ByAsciiWhitespace());
+  EXPECT_THAT(results, ElementsAre("a"));
+
+  results = absl::StrSplit("", ByAsciiWhitespace());
+  EXPECT_THAT(results, ElementsAre(""));
+
+  results = absl::StrSplit("", ByAsciiWhitespace(), SkipEmpty());
+  EXPECT_THAT(results, IsEmpty());
+
+  results = absl::StrSplit("a b\tc\n  d\n", ByAsciiWhitespace());
+  EXPECT_THAT(results, ElementsAre("a", "b", "c", "", "", "d", ""));
+
+  results = absl::StrSplit("a b\tc\n  d  \n", ByAsciiWhitespace(), SkipEmpty());
+  EXPECT_THAT(results, ElementsAre("a", "b", "c", "d"));
+
+  results = absl::StrSplit("a\t\n\v\f\r b", ByAsciiWhitespace(), SkipEmpty());
+  EXPECT_THAT(results, ElementsAre("a", "b"));
 }
 
 //

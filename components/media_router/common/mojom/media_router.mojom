@@ -296,20 +296,19 @@ interface MediaRouteProvider {
   // initiate discovery of media sinks in response.
   DiscoverSinksNow();
 
-  // Registers a controller for the media route with given |route_id| and binds
-  // it to |media_controller| for receiving media commands. Multiple media
-  // controllers may be registered for the same route ID. This method returns
-  // false if such a media route doesn't exist or there was an error while
-  // creating the controller. This method must close |media_controller| in case
-  // of such a failure. |media_controller| and the created controller become
-  // invalid when the media route is terminated by calling |TerminateRoute|.
-  // This method also sets |observer| to be notified whenever there is a change
-  // in the status of the media route.
-  // TODO(crbug.com/1456500): Rename to RegisterMediaRouteController().
-  CreateMediaRouteController(string route_id,
-                             pending_receiver<MediaController> media_controller,
-                             pending_remote<MediaStatusObserver> observer) =>
-                                 (bool success);
+  // Binds the |media_controller| for the media route with given |route_id| to
+  // receive media commands, and binds the |observer| to be notified whenever
+  // there is a change in the status of the media route. This method can be
+  // called multiple times with the same |route_id| to bind multiple
+  // |media_controller|s and |observer|s. This method returns false if the media
+  // route for |route_id| does not exist or there was an error while binding the
+  // |media_controller|. This method must close |media_controller| in case
+  // of such a failure. |media_controller| becomes invalid when the media route
+  // is terminated by calling |TerminateRoute|.
+  BindMediaController(
+      string route_id,
+      pending_receiver<MediaController> media_controller,
+      pending_remote<MediaStatusObserver> observer) => (bool success);
 
   // Returns the state of this Media Route Provider for debugging; returns null
   // if this MRP does not report any state.

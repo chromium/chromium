@@ -4,11 +4,11 @@
     "debuggable_apks": false,
     "ffmpeg_branding": "Chrome",
     "is_official_build": true,
-    "is_on_release_branch": true,
     "proprietary_codecs": true,
     "symbol_level": 1,
     "target_cpu": "arm64",
     "target_os": "android",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "v8_is_on_release_branch": true
   }
 }

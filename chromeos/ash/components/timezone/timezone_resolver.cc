@@ -129,7 +129,7 @@ class TimeZoneResolver::TimeZoneResolverImpl
   bool ShouldSendCellularGeolocationData();
 
  private:
-  raw_ptr<const TimeZoneResolver, ExperimentalAsh> resolver_;
+  raw_ptr<const TimeZoneResolver> resolver_;
 
   // Helper to check timezone detection policy against expected value
   bool CheckTimezoneManagementSetting(int expected_policy_value);
@@ -182,8 +182,7 @@ class TZRequest {
   // This is called by network detector when network is available.
   void StartRequestOnNetworkAvailable();
 
-  const raw_ptr<TimeZoneResolver::TimeZoneResolverImpl, ExperimentalAsh>
-      resolver_;
+  const raw_ptr<TimeZoneResolver::TimeZoneResolverImpl> resolver_;
 
   base::WeakPtrFactory<TZRequest> weak_ptr_factory_{this};
 };

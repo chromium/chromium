@@ -589,7 +589,7 @@ void AuctionMetricsRecorder::SetNumAndMaybeMeanLatency(
 
 void AuctionMetricsRecorder::MaybeRecordGenerateBidDependencyLatency(
     GenerateBidDependencyCriticalPath::Dependency dependency,
-    absl::optional<base::TimeDelta> latency,
+    std::optional<base::TimeDelta> latency,
     LatencyAggregator& aggregator,
     GenerateBidDependencyCriticalPath& critical_path) {
   if (latency) {
@@ -637,7 +637,7 @@ void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencyCriticalPath(
 
 void AuctionMetricsRecorder::MaybeRecordScoreAdDependencyLatency(
     ScoreAdDependencyCriticalPath::Dependency dependency,
-    absl::optional<base::TimeDelta> latency,
+    std::optional<base::TimeDelta> latency,
     LatencyAggregator& aggregator,
     ScoreAdDependencyCriticalPath& critical_path) {
   if (latency) {

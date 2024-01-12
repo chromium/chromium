@@ -37,9 +37,9 @@ class Window {
   views::Widget* GetDialogWidgetForTesting();
 
  private:
-  raw_ptr<DialogDelegate, ExperimentalAsh> dialog_delegate_ = nullptr;
-  raw_ptr<LoginWebView, ExperimentalAsh> dialog_view_ = nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
+  raw_ptr<DialogDelegate> dialog_delegate_ = nullptr;
+  raw_ptr<LoginWebView> dialog_view_ = nullptr;
+  raw_ptr<views::Widget> dialog_widget_ = nullptr;
 };
 
 class WindowFactory {

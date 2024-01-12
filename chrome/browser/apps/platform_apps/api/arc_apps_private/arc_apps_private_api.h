@@ -49,7 +49,7 @@ class ArcAppsPrivateAPI : public extensions::BrowserContextKeyedAPI,
   // extensions::BrowserContextKeyedAPI:
   static const bool kServiceIsNULLWhileTesting = true;
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       scoped_prefs_observation_{this};

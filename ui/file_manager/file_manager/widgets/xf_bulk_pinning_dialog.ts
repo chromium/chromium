@@ -9,7 +9,7 @@ import {calculateBulkPinRequiredSpace} from '../common/js/api.js';
 import {RateLimiter} from '../common/js/async_util.js';
 import {bytesToString, getCurrentLocaleOrDefault, str, strf} from '../common/js/translations.js';
 import {visitURL} from '../common/js/util.js';
-import {State as AppState} from '../externs/ts/state.js';
+import type {State as AppState} from '../state/state.js';
 import {getStore} from '../state/store.js';
 
 import {css, customElement, html, query, XfBase} from './xf_base.js';

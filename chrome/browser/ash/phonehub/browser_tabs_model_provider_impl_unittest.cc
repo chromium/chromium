@@ -126,8 +126,8 @@ class ScopedLacrosOnlyHandle {
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
@@ -295,8 +295,7 @@ class BrowserTabsModelProviderImplTest
 
   bool enable_tab_sync_ = true;
   raw_ptr<std::vector<
-              raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>,
-          ExperimentalAsh>
+      raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>>
       sessions_ = nullptr;
   base::RepeatingClosure foreign_sessions_changed_callback_;
 };

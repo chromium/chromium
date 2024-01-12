@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/sync_bundle.h"
@@ -35,10 +36,10 @@ class ExtensionSyncData;
 
 // SyncableService implementation responsible for the APPS and EXTENSIONS data
 // types, i.e. "proper" apps/extensions (not themes).
-class ExtensionSyncService : public syncer::SyncableService,
-                             public KeyedService,
-                             public extensions::ExtensionRegistryObserver,
-                             public extensions::ExtensionPrefsObserver {
+class ExtensionSyncService final : public syncer::SyncableService,
+                                   public KeyedService,
+                                   public extensions::ExtensionRegistryObserver,
+                                   public extensions::ExtensionPrefsObserver {
  public:
   explicit ExtensionSyncService(Profile* profile);
 
@@ -66,6 +67,7 @@ class ExtensionSyncService : public syncer::SyncableService,
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   void SetSyncStartFlareForTesting(
       const syncer::SyncableService::StartSyncFlare& flare);
@@ -155,7 +157,9 @@ class ExtensionSyncService : public syncer::SyncableService,
   // Run()ning tells sync to try and start soon, because syncable changes
   // have started happening. It will cause sync to call us back
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
-  syncer::SyncableService::StartSyncFlare flare_;
+  SyncableService::StartSyncFlare flare_;
+
+  base::WeakPtrFactory<ExtensionSyncService> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_

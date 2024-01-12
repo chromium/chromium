@@ -20,10 +20,13 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// Whether the First Run UI will be always be displayed.
+// Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
-// Whether the Upgrade Promo UI will be always be displayed.
+// Whether the search engine choice UI will always be displayed.
+bool AlwaysDisplaySearchEngineChoice();
+
+// Whether the Upgrade Promo UI will always be displayed.
 bool AlwaysDisplayUpgradePromo();
 
 // Returns the host name for an alternative Origin Server host for use by
@@ -119,6 +122,9 @@ std::optional<int> GetSafetyCheckReusedPasswordsCount();
 // Returns the forced number of compromised passwords for the Safety Check
 // (Magic Stack) module.
 std::optional<int> GetSafetyCheckCompromisedPasswordsCount();
+
+// Returns the forced number of days since first run.
+std::optional<int> GetFirstRunRecency();
 
 // Returns the selected device segment the user wants to simulate as a string;
 // the string should either be nil or one of the options from synthetic trial

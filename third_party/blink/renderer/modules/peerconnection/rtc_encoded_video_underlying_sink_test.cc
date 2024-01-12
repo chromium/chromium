@@ -56,7 +56,7 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         webrtc_callback_(
             new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
-        transformer_(main_task_runner_) {}
+        transformer_(main_task_runner_, /*metronome=*/nullptr) {}
 
   void SetUp() override {
     EXPECT_FALSE(transformer_.HasTransformedFrameSinkCallback(kSSRC));

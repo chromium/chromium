@@ -531,12 +531,12 @@ bool WebContentsObserverConsistencyChecker::TaskChecker::IsRunningInSameTask() {
   return sequence_num_ == GetSequenceNumberOfCurrentTask();
 }
 
-absl::optional<int> WebContentsObserverConsistencyChecker::TaskChecker::
+std::optional<int> WebContentsObserverConsistencyChecker::TaskChecker::
     GetSequenceNumberOfCurrentTask() {
   return base::TaskAnnotator::CurrentTaskForThread()
-             ? absl::make_optional(
+             ? std::make_optional(
                    base::TaskAnnotator::CurrentTaskForThread()->sequence_num)
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 }  // namespace content

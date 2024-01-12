@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Versi protokol yang tidak serasi telah dikesan. Sila pastikan bahawa anda telah memasang versi terkini perisian pada kedua-dua komputer dan cuba lagi.</translation>
 <translation id="1008557486741366299">Bukan Sekarang</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
-<translation id="1296511125400541222">Hak Cipta 2023 The Chromium Authors. Hak Cipta Terpelihara.</translation>
 <translation id="1297009705180977556">Ralat menyambung ke <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Objek yang diminta tidak wujud.</translation>
 <translation id="1480046233931937785">Kredit</translation>
@@ -89,7 +88,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="4808503597364150972">Sila masukkan PIN anda untuk <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Hos</translation>
 <translation id="4867841927763172006">Hantar PrtScn</translation>
-<translation id="4960795469833295568">Hak Cipta 2023 Google LLC. Hak Cipta Terpelihara.</translation>
 <translation id="4974476491460646149">Sambungan ditutup untuk <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Anda perlu menyediakan komputer untuk akses jauh terlebih dahulu</translation>
 <translation id="4987330545941822761">Desktop Jauh Chrome tidak dapat menentukan penyemak imbas untuk membuka URL secara setempat. Sila pilih penyemak imbas daripada senarai di bawah.</translation>
@@ -154,6 +152,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="7693372326588366043">Muat semula senarai hos</translation>
 <translation id="7714222945760997814">Laporkan ini</translation>
 <translation id="7868137160098754906">Sila masukkan PIN anda untuk komputer jauh.</translation>
+<translation id="7881455334687220899">Hak Cipta 2024 The Chromium Authors. Hak Cipta Terpelihara.</translation>
 <translation id="7895403300744144251">Dasar keselamatan pada komputer jauh tidak membenarkan sambungan daripada akaun anda.</translation>
 <translation id="7936528439960309876">Dokkan di Kanan</translation>
 <translation id="7970576581263377361">Pengesahan gagal. Sila log masuk ke Chromium sekali lagi.</translation>
@@ -162,7 +161,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8060029310790625334">Pusat Bantuan</translation>
 <translation id="806699900641041263">Menyambung ke <ph name="HOSTNAME" /></translation>
-<translation id="8073845705237259513">Untuk menggunakan Desktop Jauh Chrome, anda perlu menambahkan Akaun Google kepada peranti anda.</translation>
+<translation id="8073845705237259513">Untuk menggunakan Desktop Jauh Chrome, anda perlu menambahkan Google Account kepada peranti anda.</translation>
 <translation id="809687642899217504">Komputer Saya</translation>
 <translation id="8116630183974937060">Ralat rangkaian berlaku. Sila pastikan peranti anda berada dalam talian dan cuba lagi.</translation>
 <translation id="8295077433896346116">Untuk menggunakan <ph name="PRODUCT_NAME" />, anda perlu memberi 'Kebolehaksesan' kebenaran supaya input daripada mesin jauh boleh disuntik pada Mac ini.
@@ -171,7 +170,7 @@ Untuk memberikan kebenaran ini, klik '<ph name="BUTTON_NAME" />' di bawah. Dalam
 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tandai sekali lagi.</translation>
 <translation id="8305209735512572429">Proses Pengawalan Pengesahan Web dari Jauh</translation>
-<translation id="8383794970363966105">Untuk menggunakan Chromoting, anda perlu menambahkan Akaun Google kepada peranti anda.</translation>
+<translation id="8383794970363966105">Untuk menggunakan Chromoting, anda perlu menambahkan Google Account kepada peranti anda.</translation>
 <translation id="8386846956409881180">Hos dikonfigurasikan dengan bukti kelayakan OAuth yang tidak sah.</translation>
 <translation id="8397385476380433240">Berikan kebenaran kepada <ph name="PRODUCT_NAME" /></translation>
 <translation id="8406498562923498210">Pilih sesi untuk dilancarkan dalam persekitaran Desktop Jauh Chrome anda. (Sila ambil perhatian bahawa sesetengah jenis sesi mungkin tidak menyokong dijalankan secara serentak dalam Desktop Jauh Chrome dan konsol setempat.)</translation>
@@ -185,6 +184,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="8747048596626351634">Sesi mengalami ranap sistem atau gagal dimulakan. Jika sesi ~/.chrome-remote-desktop-session wujud pada komputer jauh, pastikan komputer tersebut memulakan proses latar depan yang memakan masa yang lama, seperti persekitaran desktop atau pengurus tetingkap.</translation>
 <translation id="8804164990146287819">Dasar Privasi</translation>
 <translation id="8906511416443321782">Akses mikrofon diperlukan untuk menangkap audio dan menstrimkan audio tersebut ke klien Desktop Jauh Chrome.</translation>
+<translation id="9042277333359847053">Hak Cipta 2024 Google LLC. Hak Cipta Terpelihara.</translation>
 <translation id="9111855907838866522">Anda dihubungkan ke peranti jauh anda. Untuk membuka menu, sila ketik skrin menggunakan empat jari.</translation>
 <translation id="9126115402994542723">Jangan meminta PIN lagi apabila bersambung ke hos ini dari peranti ini.</translation>
 <translation id="916856682307586697">Lancarkan XSession lalai</translation>

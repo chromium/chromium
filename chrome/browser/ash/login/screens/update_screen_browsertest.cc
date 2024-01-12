@@ -260,14 +260,11 @@ class UpdateScreenTest : public OobeBaseTest,
 
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
-  raw_ptr<UpdateScreen, DanglingUntriaged | ExperimentalAsh> update_screen_ =
-      nullptr;
+  raw_ptr<UpdateScreen, DanglingUntriaged> update_screen_ = nullptr;
   // Version updater - owned by `update_screen_`.
-  raw_ptr<VersionUpdater, DanglingUntriaged | ExperimentalAsh>
-      version_updater_ = nullptr;
+  raw_ptr<VersionUpdater, DanglingUntriaged> version_updater_ = nullptr;
   // Error screen - owned by OobeUI.
-  raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_ =
-      nullptr;
+  raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 

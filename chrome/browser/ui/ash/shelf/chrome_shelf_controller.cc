@@ -205,7 +205,7 @@ class ChromeShelfControllerUserSwitchObserver
   void AddUser(Profile* profile);
 
   // The owning ChromeShelfController.
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
+  raw_ptr<ChromeShelfController> controller_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

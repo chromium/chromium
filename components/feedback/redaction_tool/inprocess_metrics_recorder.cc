@@ -27,6 +27,11 @@ void InprocessMetricsRecorder::RecordCreditCardRedactionHistogram(
   UMA_HISTOGRAM_ENUMERATION(kCreditCardRedactionHistogram, step);
 }
 
+void InprocessMetricsRecorder::RecordRedactionToolCallerHistogram(
+    RedactionToolCaller step) {
+  UMA_HISTOGRAM_ENUMERATION(kRedactionToolCallerHistogram, step);
+}
+
 void InprocessMetricsRecorder::RecordTimeSpentRedactingHistogram(
     base::TimeDelta time_spent) {
   UMA_HISTOGRAM_MEDIUM_TIMES(kTimeSpentRedactingHistogram, time_spent);

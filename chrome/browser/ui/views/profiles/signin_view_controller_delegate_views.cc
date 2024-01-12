@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -86,10 +86,11 @@ void CloseModalSigninInBrowser(
 
   browser->signin_view_controller()->CloseModalSignin();
 
-  SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(browser->profile());
-  if (search_engine_choice_service &&
-      search_engine_choice_service->CanShowDialog(CHECK_DEREF(browser.get()))) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(browser->profile());
+  if (search_engine_choice_dialog_service &&
+      search_engine_choice_dialog_service->CanShowDialog(
+          CHECK_DEREF(browser.get()))) {
     ShowSearchEngineChoiceDialog(*browser);
   }
 
@@ -437,7 +438,7 @@ void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
 }
 #endif
 
-BEGIN_METADATA(SigninViewControllerDelegateViews, views::DialogDelegateView)
+BEGIN_METADATA(SigninViewControllerDelegateViews)
 END_METADATA
 
 // --------------------------------------------------------------------

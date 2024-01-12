@@ -522,13 +522,12 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
   SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest() {
     // Various features that are required for types to be supported in transport
     // mode are unconditionally enabled.
-    // TODO(crbug.com/1494120): Re-enable
-    // `syncer::kEnableBookmarksAccountStorage` when possible.
     default_features_.InitWithFeatures(
         /*enabled_features=*/
         {syncer::kReadingListEnableSyncTransportModeUponSignIn,
          password_manager::features::kEnablePasswordsAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
+         syncer::kEnableBookmarkFoldersForAccountStorage,
          syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
 #define CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
 
+#include "base/time/default_clock.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -40,6 +42,9 @@ class PlusAddressCreationControllerDesktop
   // Used to validate storage and clearing of `maybe_plus_profile_`.
   std::optional<PlusProfile> get_plus_profile_for_testing();
 
+  // For setting custom `clock_` during test.
+  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+
  private:
   // WebContentsUserData:
   explicit PlusAddressCreationControllerDesktop(
@@ -60,6 +65,15 @@ class PlusAddressCreationControllerDesktop
   bool suppress_ui_for_testing_ = false;
   // This is set by OnPlusAddressReserved and cleared when the dialog is closed.
   std::optional<PlusProfile> plus_profile_;
+
+  // Record the time between `modal_shown_time_` and now as modal shown duration
+  // and clear `modal_shown_time_`.
+  void RecordModalShownDuration(
+      const PlusAddressMetrics::PlusAddressModalCompletionStatus status);
+
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+  // This is set on `OfferCreation`.
+  absl::optional<base::Time> modal_shown_time_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{
       this};

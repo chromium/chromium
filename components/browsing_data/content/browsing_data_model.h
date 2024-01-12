@@ -132,7 +132,7 @@ class BrowsingDataModel {
   };
 
   // A delegate to handle non components/ data type retrieval and deletion.
-  class Delegate : public base::SupportsWeakPtr<Delegate> {
+  class Delegate {
    public:
     struct DelegateEntry {
       DelegateEntry(const DataKey& data_key,
@@ -173,6 +173,9 @@ class BrowsingDataModel {
 
     // Returns whether cookie deletion for a given `url` is disabled.
     virtual bool IsCookieDeletionDisabled(const GURL& url) = 0;
+
+    // Get a WeakPtr to the instance.
+    virtual base::WeakPtr<Delegate> AsWeakPtr() = 0;
 
     virtual ~Delegate() = default;
   };

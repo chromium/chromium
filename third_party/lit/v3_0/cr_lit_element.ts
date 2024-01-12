@@ -39,4 +39,44 @@ export class CrLitElement extends LitElement {
       },
     });
   }
+
+  // Modifies the 'properties' object by automatically specifying
+  // "attribute: <attr_name>" for each reactive property where attr_name is a
+  // dash-case equivalent of the property's name. For example a 'fooBar'
+  // property will be mapped to a 'foo-bar' attribute, matching Polymer's
+  // behavior, instead of Lit's default behavior (which would map to 'foobar').
+  // This is done to make it easier to migrate Polymer elements to Lit.
+  private static patchPropertiesObject() {
+    if (!this.hasOwnProperty('properties')) {
+      // Return early if there's no `properties` block on the element.
+      // Note: This does not take into account properties defined with
+      // decorators.
+      return;
+    }
+
+    const properties = this.properties;
+    for (const [key, value] of Object.entries(properties)) {
+      // Skip properties that explicitly specify the attribute name.
+      if (value.attribute != null) {
+        continue;
+      }
+
+      type Mutable<T> = { -readonly[P in keyof T]: T[P]; };
+
+      // Specify a dash-case attribute name, derived from the property name,
+      // similar to what Polymer did.
+      (value as Mutable<typeof value>).attribute =
+          key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    }
+
+    // Mutating the properties object alone isn't enough, in the case where
+    // the properties block is defined as a getter, need to also override the
+    // getter.
+    Object.defineProperty(this, 'properties', {value: properties});
+  }
+
+  protected static override finalize() {
+    this.patchPropertiesObject();
+    super.finalize();
+  }
 }

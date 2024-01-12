@@ -17,6 +17,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace {
@@ -65,7 +66,7 @@ void RichAnswersTranslationView::InitLayout() {
   AddLanguageTitle(translation_result_.target_locale, /*is_header_view=*/false);
 
   // Translated text.
-  views::FlexLayoutView* translated_text_view = AddLanguageText(
+  views::BoxLayoutView* translated_text_view = AddLanguageText(
       translation_result_.translated_text, /*maybe_append_buttons=*/true);
 
   // Read and copy buttons.
@@ -88,7 +89,7 @@ void RichAnswersTranslationView::AddLanguageTitle(const std::string& locale,
       /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
 }
 
-views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
+views::BoxLayoutView* RichAnswersTranslationView::AddLanguageText(
     const std::string& language_text,
     bool maybe_append_buttons) {
   std::unique_ptr<QuickAnswersTextLabel> language_text_label =
@@ -103,14 +104,16 @@ views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
        kReadAndCopyButtonsWidth) <= kContentTextWidth) {
     should_append_buttons_ = true;
 
-    views::View* container_view = AddFillLayoutChildView(content_view_);
-    views::FlexLayoutView* language_text_view = container_view->AddChildView(
-        views::Builder<views::FlexLayoutView>()
-            .SetOrientation(views::LayoutOrientation::kHorizontal)
-            .Build());
-    language_text_view->AddChildView(std::move(language_text_label));
+    // This box layout will have the view flex values as:
+    // - text label (flex=1): resize (either shrink or expand as necessary)
+    // - read and copy buttons (flex=0): no resize
+    views::BoxLayoutView* box_layout_view =
+        content_view_->AddChildView(CreateHorizontalBoxLayoutView());
+    views::View* text_label_view =
+        box_layout_view->AddChildView(std::move(language_text_label));
+    box_layout_view->SetFlexForView(text_label_view, /*flex=*/1);
 
-    return language_text_view;
+    return box_layout_view;
   }
 
   content_view_->AddChildView(std::move(language_text_label));
@@ -118,22 +121,23 @@ views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
 }
 
 void RichAnswersTranslationView::AddReadAndCopyButtons(
-    views::FlexLayoutView* translated_text_view) {
-  views::View* container_view;
+    views::BoxLayoutView* container_view) {
+  views::BoxLayoutView* box_layout_view;
 
-  // If `should_append_buttons_` is true and the provided `translated_text_view`
-  // is valid, then append the buttons to the `translated_text_view`.
-  // Otherwise, add the buttons on a separate line.
-  if (should_append_buttons_ && translated_text_view) {
-    translated_text_view->SetDefault(views::kMarginsKey,
-                                     kViewHorizontalSpacingMargins);
-    container_view = translated_text_view;
+  // If `should_append_buttons_` is true and the provided `container_view`
+  // is valid, then append the buttons to the `container_view`.
+  // Otherwise, add the buttons in a separate horizontal view.
+  if (should_append_buttons_ && container_view) {
+    box_layout_view = container_view;
   } else {
-    container_view = AddFillLayoutChildView(content_view_);
+    box_layout_view =
+        content_view_->AddChildView(CreateHorizontalBoxLayoutView());
   }
 
   views::View* button_views =
-      container_view->AddChildView(CreateHorizontalLayoutView());
+      box_layout_view->AddChildView(CreateHorizontalFlexLayoutView());
+  // We never want button_views to resize, either appended or not.
+  box_layout_view->SetFlexForView(button_views, /*flex=*/0);
 
   // Setup an invisible web view to play TTS audio.
   tts_audio_web_view_ = container_view->AddChildView(

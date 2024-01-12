@@ -31,7 +31,6 @@ namespace safe_browsing {
 
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
-class PingManager;
 class AsyncCheckTracker;
 
 // BrowserURLLoaderThrottle is used in the browser process to query
@@ -46,9 +45,7 @@ class AsyncCheckTracker;
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   // Helper class to perform whether the check can be skipped on the SB thread.
-  class SkipCheckCheckerOnSB
-      : public base::SupportsWeakPtr<
-            BrowserURLLoaderThrottle::SkipCheckCheckerOnSB> {
+  class SkipCheckCheckerOnSB final {
    public:
     using OnCompleteCheckCallback =
         base::OnceCallback<void(bool /* should_skip */)>;
@@ -62,10 +59,15 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                           bool originated_from_service_worker);
     void CheckRedirectUrl(OnCompleteCheckCallback callback);
 
+    base::WeakPtr<SkipCheckCheckerOnSB> AsWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
    private:
     UrlCheckerOnSB::GetDelegateCallback delegate_getter_;
     int frame_tree_node_id_;
     bool should_skip_checks_ = false;
+    base::WeakPtrFactory<SkipCheckCheckerOnSB> weak_factory_{this};
   };
 
   static std::unique_ptr<BrowserURLLoaderThrottle> Create(
@@ -73,9 +75,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
@@ -110,9 +112,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 

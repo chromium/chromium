@@ -131,13 +131,11 @@ std::vector<std::unique_ptr<Pairing>> GetSyncedDevices(Profile* const profile) {
 
   syncer::DeviceInfoTracker* const tracker =
       sync_service->GetDeviceInfoTracker();
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices =
-      tracker->GetAllDeviceInfo();
+  std::vector<const syncer::DeviceInfo*> devices = tracker->GetAllDeviceInfo();
 
   const base::Time now = base::Time::Now();
-  for (const auto& device : devices) {
-    std::unique_ptr<Pairing> pairing =
-        PairingFromSyncedDevice(device.get(), now);
+  for (const syncer::DeviceInfo* device : devices) {
+    std::unique_ptr<Pairing> pairing = PairingFromSyncedDevice(device, now);
     if (!pairing) {
       continue;
     }
@@ -223,8 +221,9 @@ std::string FindUniqueName(const std::string& orig_name,
 
 // PairingFromSyncedDevice extracts the caBLEv2 information from Sync's
 // DeviceInfo (if any) into a caBLEv2 pairing. It may return nullptr.
-std::unique_ptr<Pairing> PairingFromSyncedDevice(syncer::DeviceInfo* device,
-                                                 const base::Time& now) {
+std::unique_ptr<Pairing> PairingFromSyncedDevice(
+    const syncer::DeviceInfo* device,
+    const base::Time& now) {
   const absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>&
       maybe_paask_info = device->paask_info();
   if (!maybe_paask_info) {

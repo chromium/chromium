@@ -32,7 +32,8 @@ class HostStopper final : public ServiceClient::Delegate {
   void OnStopped(DaemonController::AsyncResult);
 
   // remoting::ServiceClient::Delegate
-  void OnHostRegistered(const std::string& authorization_code) override;
+  void OnHostRegistered(const std::string& host_id,
+                        const std::string& authorization_code) override;
   void OnHostUnregistered() override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;

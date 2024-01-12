@@ -258,20 +258,19 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   std::string last_sent_password_;
 
   // Local state prefs, not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Notification which informs the user that System-proxy requires credentials
   // for authentication to the remote proxy.
   std::unique_ptr<SystemProxyNotification> notification_handler_;
 
   // Owned by |auth_widget_|.
-  raw_ptr<RequestSystemProxyCredentialsView, ExperimentalAsh>
-      active_auth_dialog_ = nullptr;
+  raw_ptr<RequestSystemProxyCredentialsView> active_auth_dialog_ = nullptr;
   // Owned by the UI code (NativeWidget).
-  raw_ptr<views::Widget, ExperimentalAsh> auth_widget_ = nullptr;
+  raw_ptr<views::Widget> auth_widget_ = nullptr;
 
   // Primary profile, not owned.
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<Profile> primary_profile_ = nullptr;
   std::unique_ptr<extensions::PrefsUtil> extension_prefs_util_;
 
   // Observer for Kerberos-related prefs.

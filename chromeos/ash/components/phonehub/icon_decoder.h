@@ -25,7 +25,7 @@ class IconDecoder {
     DecodingData(unsigned long id, const std::string& input_data);
 
     const unsigned long id;
-    const raw_ref<const std::string, ExperimentalAsh> input_data;
+    const raw_ref<const std::string> input_data;
     gfx::Image result;
   };
 

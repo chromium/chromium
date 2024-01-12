@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
@@ -31,8 +30,10 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
+#include "chrome/browser/web_applications/commands/install_from_info_and_replace_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
+#include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -102,14 +103,6 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
     OnceInstallCallback callback,
     bool use_fallback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), webapps::AppId(),
-                                  webapps::InstallResultCode::
-                                      kCancelledOnWebAppProviderShuttingDown));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
           install_surface, std::move(contents), std::move(dialog_callback),
@@ -124,12 +117,6 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
     GURL install_url,
     webapps::ManifestId parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
           std::move(manifest_id), std::move(install_url),
@@ -142,19 +129,11 @@ void WebAppCommandScheduler::InstallFromInfo(
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(install_callback), webapps::AppId(),
-                                  webapps::InstallResultCode::
-                                      kCancelledOnWebAppProviderShuttingDown));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
           &profile_.get(), std::move(install_info),
           overwrite_existing_manifest_fields, install_surface,
-          std::move(install_callback)),
+          std::move(install_callback), /*install_params=*/absl::nullopt),
       location);
 }
 
@@ -165,14 +144,6 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
     OnceInstallCallback install_callback,
     const WebAppInstallParams& install_params,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(install_callback), webapps::AppId(),
-                                  webapps::InstallResultCode::
-                                      kCancelledOnWebAppProviderShuttingDown));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
           &profile_.get(), std::move(install_info),
@@ -191,18 +162,8 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
     const WebAppInstallParams& install_params,
     const std::vector<webapps::AppId>& apps_to_uninstall,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(install_callback), webapps::AppId(),
-            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
-            /*did_uninstall_and_replace=*/false));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<InstallFromInfoCommand>(
+      std::make_unique<InstallFromInfoAndReplaceCommand>(
           &profile_.get(), std::move(install_info),
           overwrite_existing_manifest_fields, std::move(install_surface),
           std::move(install_callback), install_params, apps_to_uninstall),
@@ -214,18 +175,6 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
     absl::optional<webapps::AppId> installed_placeholder_app_id,
     ExternalAppResolutionCommand::InstalledCallback installed_callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(installed_callback),
-                       web_app::ExternallyManagedAppManager::InstallResult(
-                           webapps::InstallResultCode::
-                               kCancelledOnWebAppProviderShuttingDown,
-                           webapps::AppId(),
-                           /*did_uninstall_and_replace=*/false)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ExternalAppResolutionCommand>(
           *profile_, external_install_options,
@@ -239,12 +188,6 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
     bool allowed,
     base::OnceClosure callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       UpdateFileHandlerCommand::CreateForPersistUserChoice(app_id, allowed,
                                                            std::move(callback)),
@@ -258,14 +201,6 @@ void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
     base::WeakPtr<content::WebContents> contents,
     ManifestUpdateCheckCommand::CompletedCallback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  ManifestUpdateCheckResult::kSystemShutdown,
-                                  /*install_info_=*/absl::nullopt));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateCheckCommand>(
           url, app_id, check_time, contents, std::move(callback),
@@ -282,15 +217,6 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     ManifestWriteCallback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  /*url=*/GURL(),
-                                  /*app_id=*/webapps::AppId(),
-                                  ManifestUpdateResult::kWebContentsDestroyed));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateFinalizeCommand>(
           url, app_id, std::move(install_info), std::move(callback),
@@ -304,14 +230,6 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
     base::WeakPtr<content::WebContents> web_contents,
     FetchInstallabilityForChromeManagementCallback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  InstallableCheckResult::kNotInstallable,
-                                  /*app_id=*/absl::nullopt));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<web_app::FetchInstallabilityForChromeManagement>(
           url, web_contents,
@@ -327,14 +245,6 @@ void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
     bool is_renderer_initiated,
     NavigateAndTriggerInstallDialogCommandCallback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       NavigateAndTriggerInstallDialogCommandResult::kFailure));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<NavigateAndTriggerInstallDialogCommand>(
           install_url, origin, is_renderer_initiated, std::move(callback),
@@ -354,15 +264,6 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
     const base::Location& call_location) {
   CHECK(optional_profile_keep_alive == nullptr ||
         optional_profile_keep_alive->profile() == &*profile_);
-
-  if (IsShuttingDown()) {
-    InstallIsolatedWebAppCommandError error;
-    error.message = "The profile and/or browser are shutting down.";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::unexpected(error)));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, location, expected_version,
@@ -385,15 +286,6 @@ void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
     base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
         callback,
     const base::Location& call_location) {
-  if (IsShuttingDown()) {
-    IsolatedWebAppUpdatePrepareAndStoreCommandError error{
-        .message = "The profile and/or browser are shutting down."};
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::unexpected(error)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<IsolatedWebAppUpdatePrepareAndStoreCommand>(
           update_info, url_info,
@@ -415,15 +307,6 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
     base::OnceCallback<void(
         base::expected<void, IsolatedWebAppApplyUpdateCommandError>)> callback,
     const base::Location& call_location) {
-  if (IsShuttingDown()) {
-    IsolatedWebAppApplyUpdateCommandError error{
-        .message = "The profile and/or browser are shutting down."};
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::unexpected(error)));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<IsolatedWebAppApplyUpdateCommand>(
           url_info,
@@ -442,21 +325,9 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
 // check the installability of the bundle.
 void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
     const SignedWebBundleMetadata& bundle_metadata,
-    base::OnceCallback<void(CheckIsolatedWebAppBundleInstallabilityCommand::
-                                InstallabilityCheckResult,
+    base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                             absl::optional<base::Version>)> callback,
     const base::Location& call_location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       CheckIsolatedWebAppBundleInstallabilityCommand::
-                           InstallabilityCheckResult::kShutdown,
-                       /*installed_version=*/
-                       absl::nullopt));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<CheckIsolatedWebAppBundleInstallabilityCommand>(
           &profile_.get(), bundle_metadata, std::move(callback)),
@@ -466,13 +337,6 @@ void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
 void WebAppCommandScheduler::GetIsolatedWebAppBrowsingData(
     base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
     const base::Location& call_location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::flat_map<url::Origin, int64_t>()));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<GetIsolatedWebAppBrowsingDataCommand>(
           &profile_.get(), std::move(callback)),
@@ -486,17 +350,12 @@ void WebAppCommandScheduler::GetControlledFramePartition(
     base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
         callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
-      "GetControlledFramePartition",
-      std::make_unique<AppLockDescription>(url_info.app_id()),
+  provider_->scheduler().ScheduleCallbackWithResult(
+      "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
       base::BindOnce(&GetControlledFramePartitionWithLock, &profile_.get(),
-                     url_info, partition_name, in_memory, std::move(callback)),
-      location);
+                     url_info, partition_name, in_memory),
+      std::move(callback), /*arg_for_shutdown=*/
+      absl::optional<content::StoragePartitionConfig>(absl::nullopt), location);
 }
 
 void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
@@ -521,18 +380,10 @@ void WebAppCommandScheduler::RemoveInstallUrl(
     webapps::WebappUninstallSource uninstall_source,
     UninstallJob::Callback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  webapps::UninstallResultCode::kCancelled));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveInstallUrlJob>(uninstall_source, *profile_,
-                                                std::move(app_id),
-                                                install_source, install_url),
-          std::move(callback)),
+      WebAppUninstallCommand::CreateForRemoveInstallUrl(
+          uninstall_source, *profile_, std::move(app_id), install_source,
+          install_url, std::move(callback)),
       location);
 }
 
@@ -542,16 +393,9 @@ void WebAppCommandScheduler::RemoveInstallSource(
     webapps::WebappUninstallSource uninstall_source,
     UninstallJob::Callback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  webapps::UninstallResultCode::kCancelled));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveInstallSourceJob>(uninstall_source, *profile_,
-                                                   app_id, install_source),
+      WebAppUninstallCommand::CreateForRemoveInstallSource(
+          uninstall_source, *profile_, app_id, install_source,
           std::move(callback)),
       location);
 }
@@ -561,17 +405,9 @@ void WebAppCommandScheduler::UninstallWebApp(
     webapps::WebappUninstallSource uninstall_source,
     UninstallJob::Callback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  webapps::UninstallResultCode::kCancelled));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(uninstall_source, *profile_,
-                                            app_id),
-          std::move(callback)),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          uninstall_source, *profile_, app_id, std::move(callback)),
       location);
 }
 
@@ -579,14 +415,6 @@ void WebAppCommandScheduler::UninstallAllUserInstalledWebApps(
     webapps::WebappUninstallSource uninstall_source,
     UninstallAllUserInstalledWebAppsCommand::Callback callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       ConvertUninstallResultCodeToString(
-                           webapps::UninstallResultCode::kCancelled)));
-    return;
-  }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
           uninstall_source, *profile_, std::move(callback)),
@@ -598,12 +426,6 @@ void WebAppCommandScheduler::SetRunOnOsLoginMode(
     RunOnOsLoginMode login_mode,
     base::OnceClosure callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(app_id, login_mode,
                                                  std::move(callback)),
@@ -614,12 +436,6 @@ void WebAppCommandScheduler::SyncRunOnOsLoginMode(
     const webapps::AppId& app_id,
     base::OnceClosure callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, std::move(callback)),
       location);
@@ -631,12 +447,6 @@ void WebAppCommandScheduler::UpdateProtocolHandlerUserApproval(
     ApiApprovalState approval_state,
     base::OnceClosure callback,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<UpdateProtocolHandlerApprovalCommand>(
           app_id, protocol_scheme, approval_state, std::move(callback)),
@@ -648,91 +458,33 @@ void WebAppCommandScheduler::ClearWebAppBrowsingData(
     const base::Time& end_time,
     base::OnceClosure done,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                             std::move(done));
-    return;
-  }
-
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "ClearWebAppBrowsingData", std::make_unique<AllAppsLockDescription>(),
-      base::BindOnce(web_app::ClearWebAppBrowsingData, begin_time, end_time,
-                     std::move(done)),
-      location);
+  provider_->scheduler().ScheduleCallback(
+      "ClearWebAppBrowsingData", AllAppsLockDescription(),
+      base::BindOnce(web_app::ClearWebAppBrowsingData, begin_time, end_time),
+      std::move(done), location);
 }
 
 void WebAppCommandScheduler::SetAppIsDisabled(const webapps::AppId& app_id,
                                               bool is_disabled,
                                               base::OnceClosure callback,
                                               const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
-
-  provider_->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
-      "SetAppIsDisabled",
-      std::make_unique<web_app::AppLockDescription,
-                       base::flat_set<webapps::AppId>>({app_id}),
+  provider_->scheduler().ScheduleCallback(
+      "SetAppIsDisabled", AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id, bool is_disabled,
-             web_app::AppLock& lock) {
+             web_app::AppLock& lock, base::Value::Dict& debug_value) {
             lock.sync_bridge().SetAppIsDisabled(lock, app_id, is_disabled);
           },
           app_id, is_disabled),
-      location);
+      std::move(callback), location);
 }
 
 void WebAppCommandScheduler::ComputeAppSize(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(absl::optional<ComputeAppSizeCommand::Size>)>
-        callback) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
-    return;
-  }
-
+    base::OnceCallback<void(absl::optional<ComputedAppSize>)> callback) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ComputeAppSizeCommand>(app_id, &profile_.get(),
                                               std::move(callback)));
-}
-
-template <class LockType, class DescriptionType>
-void WebAppCommandScheduler::ScheduleCallbackWithLock(
-    const std::string& operation_name,
-    std::unique_ptr<DescriptionType> lock_description,
-    base::OnceCallback<void(LockType& lock)> callback,
-    const base::Location& location) {
-  if (IsShuttingDown()) {
-    return;
-  }
-
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<CallbackCommand<LockType>>(
-          operation_name, std::move(lock_description), std::move(callback)),
-      location);
-}
-
-template <class LockType, class DescriptionType>
-void WebAppCommandScheduler::ScheduleCallbackWithLock(
-    const std::string& operation_name,
-    std::unique_ptr<DescriptionType> lock_description,
-    base::OnceCallback<base::Value(LockType& lock)> callback,
-    const base::Location& location,
-    base::OnceClosure on_complete) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_complete));
-    return;
-  }
-
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<CallbackCommand<LockType>>(
-          operation_name, std::move(lock_description), std::move(callback),
-          std::move(on_complete)),
-      location);
 }
 
 void WebAppCommandScheduler::LaunchApp(
@@ -782,12 +534,6 @@ void WebAppCommandScheduler::LaunchAppWithCustomParams(
 void WebAppCommandScheduler::InstallAppLocally(const webapps::AppId& app_id,
                                                base::OnceClosure callback,
                                                const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallAppLocallyCommand>(app_id, std::move(callback)),
       location);
@@ -798,12 +544,6 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
     base::OnceClosure synchronize_callback,
     absl::optional<SynchronizeOsOptions> synchronize_options,
     const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(synchronize_callback));
-    return;
-  }
-
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(
           app_id, synchronize_options, std::move(synchronize_callback)),
@@ -817,12 +557,6 @@ void WebAppCommandScheduler::ScheduleDedupeInstallUrls(
 
   base::UmaHistogramCounts100("WebApp.DedupeInstallUrls.SessionRunCount",
                               ++dedupe_install_urls_run_count_);
-
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<DedupeInstallUrlsCommand>(profile_.get(),
@@ -838,17 +572,11 @@ void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED() << "Preferred apps in ChromeOS are implemented in AppService";
 #else
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                             std::move(done));
-    return;
-  }
-
-  ScheduleCallbackWithLock(
-      "SetAppCapturesSupporedLinks", std::make_unique<AllAppsLockDescription>(),
+  ScheduleCallback(
+      "SetAppCapturesSupporedLinks", AllAppsLockDescription(),
       base::BindOnce(::web_app::SetAppCapturesSupportedLinksDisableOverlapping,
                      app_id, set_to_preferred),
-      location, std::move(done));
+      std::move(done), location);
 #endif
 }
 
@@ -860,6 +588,8 @@ void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,
                                        LaunchWebAppWindowSetting option,
                                        LaunchWebAppCallback callback,
                                        const base::Location& location) {
+  // Note: Handle the shutdown here, as we have to catch when KeepAlives cannot
+  // be created.
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr, nullptr,
@@ -920,72 +650,5 @@ bool WebAppCommandScheduler::IsShuttingDown() const {
          KeepAliveRegistry::GetInstance()->IsShuttingDown() ||
          profile_->ShutdownStarted();
 }
-
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<NoopLock>(
-    const std::string& operation_name,
-    std::unique_ptr<NoopLock::LockDescription> lock_description,
-    base::OnceCallback<void(NoopLock& lock)> callback,
-    const base::Location& location);
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<NoopLock>(
-    const std::string& operation_name,
-    std::unique_ptr<NoopLock::LockDescription> lock_description,
-    base::OnceCallback<base::Value(NoopLock& lock)> callback,
-    const base::Location& location,
-    base::OnceClosure on_complete);
-
-template void
-WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
-    const std::string& operation_name,
-    std::unique_ptr<SharedWebContentsLock::LockDescription> lock_description,
-    base::OnceCallback<void(SharedWebContentsLock& lock)> callback,
-    const base::Location& location);
-template void
-WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
-    const std::string& operation_name,
-    std::unique_ptr<SharedWebContentsLock::LockDescription> lock_description,
-    base::OnceCallback<base::Value(SharedWebContentsLock& lock)> callback,
-    const base::Location& location,
-    base::OnceClosure on_complete);
-
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
-    const std::string& operation_name,
-    std::unique_ptr<AppLock::LockDescription> lock_description,
-    base::OnceCallback<void(AppLock& lock)> callback,
-    const base::Location& location);
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
-    const std::string& operation_name,
-    std::unique_ptr<AppLock::LockDescription> lock_description,
-    base::OnceCallback<base::Value(AppLock& lock)> callback,
-    const base::Location& location,
-    base::OnceClosure on_complete);
-
-template void
-WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
-    const std::string& operation_name,
-    std::unique_ptr<SharedWebContentsWithAppLock::LockDescription>
-        lock_description,
-    base::OnceCallback<void(SharedWebContentsWithAppLock& lock)> callback,
-    const base::Location& location);
-template void
-WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
-    const std::string& operation_name,
-    std::unique_ptr<SharedWebContentsWithAppLock::LockDescription>
-        lock_description,
-    base::OnceCallback<base::Value(SharedWebContentsWithAppLock& lock)>
-        callback,
-    const base::Location& location,
-    base::OnceClosure on_complete);
-
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<AllAppsLock>(
-    const std::string& operation_name,
-    std::unique_ptr<AllAppsLock::LockDescription> lock_description,
-    base::OnceCallback<void(AllAppsLock& lock)> callback,
-    const base::Location& location);
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<AllAppsLock>(
-    const std::string& operation_name,
-    std::unique_ptr<AllAppsLock::LockDescription> lock_description,
-    base::OnceCallback<base::Value(AllAppsLock& lock)> callback,
-    const base::Location& location,
-    base::OnceClosure on_complete);
 
 }  // namespace web_app

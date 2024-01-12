@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
@@ -19,10 +21,10 @@ FrameNavigationEntry::FrameNavigationEntry(
     scoped_refptr<SiteInstanceImpl> site_instance,
     scoped_refptr<SiteInstanceImpl> source_site_instance,
     const GURL& url,
-    const absl::optional<url::Origin>& origin,
+    const std::optional<url::Origin>& origin,
     const Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
-    const absl::optional<GURL>& initiator_base_url,
+    const std::optional<url::Origin>& initiator_origin,
+    const std::optional<GURL>& initiator_base_url,
     const std::vector<GURL>& redirect_chain,
     const blink::PageState& page_state,
     const std::string& method,
@@ -78,10 +80,10 @@ void FrameNavigationEntry::UpdateEntry(
     SiteInstanceImpl* site_instance,
     scoped_refptr<SiteInstanceImpl> source_site_instance,
     const GURL& url,
-    const absl::optional<url::Origin>& origin,
+    const std::optional<url::Origin>& origin,
     const Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
-    const absl::optional<GURL>& initiator_base_url,
+    const std::optional<url::Origin>& initiator_origin,
+    const std::optional<GURL>& initiator_base_url,
     const std::vector<GURL>& redirect_chain,
     const blink::PageState& page_state,
     const std::string& method,
@@ -149,9 +151,17 @@ void FrameNavigationEntry::SetPageState(const blink::PageState& page_state) {
 }
 
 void FrameNavigationEntry::SetBindings(int bindings) {
+  // TODO(nasko): Remove this debugging info once https://crbug.com/1456884
+  // is understood and resolved.
+  base::debug::Alias(&bindings);
+  base::debug::Alias(&bindings_);
+  SCOPED_CRASH_KEY_NUMBER("SetBindings", "bindings", bindings);
+  SCOPED_CRASH_KEY_NUMBER("SetBindings", "bindings_", bindings_);
+
   // Ensure this is set to a valid value, and that it stays the same once set.
   CHECK_NE(bindings, kInvalidBindings);
-  CHECK(bindings_ == kInvalidBindings || bindings_ == bindings);
+  CHECK(bindings_ == kInvalidBindings || bindings_ == bindings)
+      << "bindings:" << bindings << " | bindings_: " << bindings_;
   bindings_ = bindings;
 }
 

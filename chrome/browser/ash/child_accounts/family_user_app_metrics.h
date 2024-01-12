@@ -77,10 +77,9 @@ class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
   // Returns true if the app is currently open.
   bool IsAppWindowOpen(const std::string& app_id);
 
-  const raw_ptr<const extensions::ExtensionRegistry, ExperimentalAsh>
-      extension_registry_;
-  const raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_;
-  const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
+  const raw_ptr<const extensions::ExtensionRegistry> extension_registry_;
+  const raw_ptr<apps::AppRegistryCache> app_registry_;
+  const raw_ptr<apps::InstanceRegistry> instance_registry_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

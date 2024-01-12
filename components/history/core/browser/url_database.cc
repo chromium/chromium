@@ -35,8 +35,10 @@ URLDatabase::URLEnumeratorBase::~URLEnumeratorBase() = default;
 URLDatabase::URLEnumerator::URLEnumerator() = default;
 
 bool URLDatabase::URLEnumerator::GetNextURL(URLRow* r) {
+  CHECK(r);
   while (statement_.Step()) {
     if (FillURLRow(statement_, r)) {
+      CHECK(r->url().is_valid());
       return true;
     }
   }

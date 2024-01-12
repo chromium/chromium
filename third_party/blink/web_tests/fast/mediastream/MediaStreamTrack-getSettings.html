@@ -32,6 +32,8 @@ promise_test(function() {
                 'Automatic gain control missing: ' + JSON.stringify(settings));
     assert_true('noiseSuppression' in settings,
                 'Noise suppression missing: ' + JSON.stringify(settings));
+    assert_true('voiceIsolation' in settings,
+                'Voice isolation missing: ' + JSON.stringify(settings));
   });
 }, 'An audio track returns the expected variables');
 

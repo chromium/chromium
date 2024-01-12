@@ -17,23 +17,13 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/mac/keystone_glue.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/google/google_brand_chromeos.h"
 #endif
 
-
-// Helpers --------------------------------------------------------------------
-
-namespace {
+namespace google_brand {
 
 const char* g_brand_for_testing = nullptr;
-
-}  // namespace
-
-
-namespace google_brand {
 
 // Global functions -----------------------------------------------------------
 
@@ -69,7 +59,7 @@ bool GetReactivationBrand(std::string* brand) {
   return ret;
 }
 
-#else
+#elif !BUILDFLAG(IS_MAC)
 
 bool GetBrand(std::string* brand) {
   if (g_brand_for_testing) {
@@ -77,9 +67,7 @@ bool GetBrand(std::string* brand) {
     return true;
   }
 
-#if BUILDFLAG(IS_MAC)
-  brand->assign(keystone_glue::BrandCode());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   brand->assign(google_brand::chromeos::GetBrand());
 #else
   brand->clear();
@@ -176,6 +164,5 @@ BrandForTesting::BrandForTesting(const std::string& brand) : brand_(brand) {
 BrandForTesting::~BrandForTesting() {
   g_brand_for_testing = nullptr;
 }
-
 
 }  // namespace google_brand

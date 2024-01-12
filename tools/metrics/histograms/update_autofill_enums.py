@@ -2,7 +2,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Scans components/autofill/core/browser/field_types.h for ServerFieldTypes
+"""Scans components/autofill/core/browser/field_types.h for FieldTypes
 and updates histograms that are calculated form this enum.
 """
 
@@ -36,7 +36,7 @@ def ReadEnum(filename, first_line, last_line_exclusive):
     Dictionary from enum ids (integers) to names (strings).
   """
 
-  # Read the enum ServerFieldType as a list of lines
+  # Read the enum FieldType as a list of lines.
   before_enum = True
   content = []
   with open(path_util.GetInputFile(filename)) as f:
@@ -68,8 +68,8 @@ def ReadEnum(filename, first_line, last_line_exclusive):
   return enums
 
 
-def ReadServerFieldTypes(filename):
-  return ReadEnum(filename, 'enum ServerFieldType {', 'MAX_VALID_FIELD_TYPE =')
+def ReadFieldTypes(filename):
+  return ReadEnum(filename, 'enum FieldType {', 'MAX_VALID_FIELD_TYPE =')
 
 
 def ReadFieldPredictionGroups(filename):
@@ -122,10 +122,10 @@ def GenerateAutofillFieldPredictionQualityByFieldType():
 
 
 if __name__ == '__main__':
-  server_field_types = ReadServerFieldTypes(FIELD_TYPES_PATH)
+  server_field_types = ReadFieldTypes(FIELD_TYPES_PATH)
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml', 'AutofillServerFieldType',
+      'tools/metrics/histograms/enums.xml', 'AutofillFieldType',
       server_field_types, FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(

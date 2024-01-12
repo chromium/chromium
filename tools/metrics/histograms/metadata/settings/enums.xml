@@ -1,0 +1,416 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanRedirected">
+  <int value="0" label="Not redirected"/>
+  <int value="1" label="Redirected"/>
+</enum>
+
+<enum name="ClearBrowsingDataMyActivityNavigation">
+  <int value="0" label="Top level MyActivity URL"/>
+  <int value="1" label="Search history in MyActivity"/>
+</enum>
+
+<enum name="FirstPartySetsState">
+  <int value="0" label="Not Relevant"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
+<enum name="HomepageLocationType">
+  <int value="0" label="POLICY_NTP"/>
+  <int value="1" label="POLICY_OTHER"/>
+  <int value="2" label="PARTNER_PROVIDED_NTP"/>
+  <int value="3" label="PARTNER_PROVIDED_OTHER"/>
+  <int value="4" label="USER_CUSTOMIZED_NTP"/>
+  <int value="5" label="USER_CUSTOMIZED_OTHER"/>
+  <int value="6" label="DEFAULT_NTP"/>
+</enum>
+
+<enum name="IOSDefaultBrowserPromoSource">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Omnibox"/>
+  <int value="2" label="External Intent"/>
+  <int value="3" label="Set Up List"/>
+  <int value="4" label="External Action"/>
+</enum>
+
+<enum name="LockScreenProgress">
+  <int value="0" label="Start screen lock"/>
+  <int value="1" label="Enter password correctly"/>
+  <int value="2" label="Choose pin or password"/>
+  <int value="3" label="Enter pin"/>
+  <int value="4" label="Confirm pin"/>
+</enum>
+
+<enum name="PreloadPagesState">
+  <int value="0" label="No preloading"/>
+  <int value="1" label="Standard preloading"/>
+  <int value="2" label="Extended preloading"/>
+</enum>
+
+<enum name="PrivacySandboxReferrer">
+  <int value="0" label="Privacy Settings"/>
+  <int value="1" label="Cookie Settings Snackbar"/>
+  <int value="2" label="Privacy Sandbox Notice"/>
+</enum>
+
+<enum name="SafetyCheckNotificationsModuleInteractions">
+  <int value="0" label="Block"/>
+  <int value="1" label="Block all"/>
+  <int value="2" label="Ignore"/>
+  <int value="3" label="Minimize"/>
+  <int value="4" label="Reset"/>
+  <int value="5" label="Undo block"/>
+  <int value="6" label="Undo ignore"/>
+  <int value="7" label="Undo reset"/>
+  <int value="8" label="Open review UI"/>
+  <int value="9" label="Undo block all"/>
+  <int value="10" label="Go to settings"/>
+</enum>
+
+<enum name="SafetyCheckPasswordsStatus">
+  <int value="0" label="CHECKING"/>
+  <int value="1" label="SAFE"/>
+  <int value="2" label="COMPROMISED_EXIST"/>
+  <int value="3" label="OFFLINE"/>
+  <int value="4" label="NO_PASSWORDS"/>
+  <int value="5" label="SIGNED_OUT"/>
+  <int value="6" label="QUOTA_LIMIT"/>
+  <int value="7" label="FAILED"/>
+  <int value="8" label="FEATURE_UNAVAILABLE"/>
+  <int value="9" label="WEAK_PASSWORDS_EXIST"/>
+  <int value="10" label="REUSED_PASSWORDS_EXIST"/>
+  <int value="11" label="MUTED_COMPROMISED_EXIST"/>
+</enum>
+
+<enum name="SafetyCheckSafeBrowsingStatus">
+  <int value="0" label="CHECKING"/>
+  <int value="1" label="ENABLED"/>
+  <int value="2" label="DISABLED"/>
+  <int value="3" label="DISABLED_BY_ADMIN"/>
+  <int value="4" label="DISABLED_BY_EXTENSION"/>
+  <int value="5" label="ENABLED_STANDARD"/>
+  <int value="6" label="ENABLED_ENHANCED"/>
+  <int value="7" label="ENABLED_STANDARD_AVAILABLE_ENHANCED"/>
+</enum>
+
+<enum name="SafetyCheckUnusedSitePermissionsModuleInteractions">
+  <int value="0" label="Open review UI"/>
+  <int value="1" label="Allow again"/>
+  <int value="2" label="Acknowledge all"/>
+  <int value="3" label="Undo allow again"/>
+  <int value="4" label="Undo acknowledge all"/>
+  <int value="5" label="Minimize review UI"/>
+  <int value="6" label="Go to settings"/>
+</enum>
+
+<enum name="SafetyCheckUpdateStatus">
+  <int value="0" label="CHECKING"/>
+  <int value="1" label="UPDATED"/>
+  <int value="2" label="UPDATING"/>
+  <int value="3" label="RELAUNCH"/>
+  <int value="4" label="DISABLED_BY_ADMIN"/>
+  <int value="5" label="FAILED_OFFLINE"/>
+  <int value="6" label="FAILED"/>
+  <int value="7" label="UNKNOWN"/>
+  <int value="8" label="OUTDATED"/>
+</enum>
+
+<enum name="SafetyHubCardState">
+  <int value="0" label="WARNING"/>
+  <int value="1" label="WEAK"/>
+  <int value="2" label="INFO"/>
+  <int value="3" label="SAFE"/>
+</enum>
+
+<enum name="SafetyHubEntryPoint">
+  <int value="0" label="Privacy page (safe)"/>
+  <int value="1" label="Privacy page (warning)"/>
+  <int value="2" label="Site settings"/>
+  <int value="3" label="Three-dot menu notification"/>
+  <int value="4" label="Notification settings"/>
+</enum>
+
+<enum name="SafetyHubModuleType">
+  <int value="0" label="Unused site permissions"/>
+  <int value="1" label="Notification permissions"/>
+  <int value="2" label="Safe browsing"/>
+  <int value="3" label="Extensions"/>
+  <int value="4" label="Passwords"/>
+  <int value="5" label="Version"/>
+</enum>
+
+<enum name="SafetyHubSurfaces">
+  <int value="0" label="Three-dot menu"/>
+  <int value="1" label="Safety Hub page"/>
+</enum>
+
+<enum name="SessionStartupPref">
+  <int value="0" label="Open home page (unused)"/>
+  <int value="1" label="Restore the last session"/>
+  <int value="4" label="Open URLs"/>
+  <int value="5" label="Open new tab page"/>
+  <int value="6" label="Restore the last session and open URLs"/>
+</enum>
+
+<enum name="SettingsPrivacyElementInteractions">
+  <int value="0" label="Sync control button"/>
+  <int value="1" label="Allow Chrome sign in toggle"/>
+  <int value="2" label="Do not track toggle"/>
+  <int value="3" label="Check payment methods toggle"/>
+  <int value="4" label="Network prediction toggle"/>
+  <int value="5" label="Manage certificates link row"/>
+  <int value="6" label="Safe browsing toggle"/>
+  <int value="7" label="Passwords leak detection toggle"/>
+  <int value="8" label="Safe browsing reporting toggle"/>
+  <int value="9" label="Cookies allow all radio"/>
+  <int value="10" label="Cookies block third incognito radio"/>
+  <int value="11" label="Cookies block third radio"/>
+  <int value="12" label="Cookies block all radio"/>
+  <int value="13" label="Cookies session only toggle"/>
+  <int value="14" label="Remove all on site data page"/>
+  <int value="15" label="Remove based on current filter on site data page"/>
+  <int value="16" label="Remove site on site data page"/>
+  <int value="17" label="Remove all on cookie details page"/>
+  <int value="18" label="Remove item on cookie details page"/>
+  <int value="19" label="Clear data on site details page"/>
+  <int value="20" label="Third-party cookies allow all radio"/>
+  <int value="21" label="Third-party cookies block in incognito radio"/>
+  <int value="22" label="Third-party cookies block all radio"/>
+  <int value="23" label="Block all third-party cookies toggle"/>
+</enum>
+
+<enum name="SettingsPrivacyGuideInteractions">
+  <int value="0" label="Welcome Page Next Button"/>
+  <int value="1" label="MSBB Next Button"/>
+  <int value="2" label="History Sync Next Button"/>
+  <int value="3" label="Safe Browsing Next Button"/>
+  <int value="4" label="Cookies Next Button"/>
+  <int value="5" label="Completion Next Button"/>
+  <int value="6" label="Settings Link Row Entry"/>
+  <int value="7" label="Privacy Guide Promo Entry"/>
+  <int value="8" label="sWAA Completion Link"/>
+  <int value="9" label="Privacy Sandbox Completion Link"/>
+  <int value="10" label="Search Suggestions Next Button"/>
+</enum>
+
+<enum name="SettingsPrivacyGuideSettingsStates">
+  <int value="0" label="MSBB Remains On"/>
+  <int value="1" label="MSBB Turned Off"/>
+  <int value="2" label="MSBB Turned On"/>
+  <int value="3" label="MSBB Remains Off"/>
+  <int value="4" label="Cookies Remains Block 3P Incognito"/>
+  <int value="5" label="Cookies Turned to Block 3P"/>
+  <int value="6" label="Cookies Turned to Block 3P Incognito"/>
+  <int value="7" label="Cookies Remains Block 3P"/>
+  <int value="8" label="History Sync Remains On"/>
+  <int value="9" label="History Sync Turned Off"/>
+  <int value="10" label="History Sync Turned On"/>
+  <int value="11" label="History Sync Remains Off"/>
+  <int value="12" label="Safe Browsing Remains Enhanced"/>
+  <int value="13" label="Safe Browsing Turned To Standard"/>
+  <int value="14" label="Safe Browsing Turned to Enhanced"/>
+  <int value="15" label="Safe Browsing Remains Standard"/>
+  <int value="16" label="Search Suggestions Remain On"/>
+  <int value="17" label="Search Suggestions Turned Off"/>
+  <int value="18" label="Search Suggestions Turned On"/>
+  <int value="19" label="Search Suggestions Remain Off"/>
+</enum>
+
+<enum name="SettingsPrivacyGuideStepsEligibleAndReached">
+  <int value="0" label="MSBB card is eligible to be shown"/>
+  <int value="1" label="MSBB card is reached"/>
+  <int value="2" label="History Sync card is eligible to be shown"/>
+  <int value="3" label="History Sync card is reached"/>
+  <int value="4" label="Safe Browsing card is eligible to be shown"/>
+  <int value="5" label="Safe Browsing card is reached"/>
+  <int value="6" label="Cookies card is eligible to be shown"/>
+  <int value="7" label="Cookies card is reached"/>
+  <int value="8" label="Completion card is eligible to be shown"/>
+  <int value="9" label="Completion card is reached"/>
+  <int value="10" label="Search Suggestions card is eligible to be shown"/>
+  <int value="11" label="Search Suggestions card is reached"/>
+</enum>
+
+<enum name="SettingsPrivacySandboxDialogDisplayHostHash">
+  <int value="-2051070284" label="about:blank"/>
+  <int value="-1854305789" label="new-tab-page-third-party"/>
+  <int value="-1840427391" label="settings"/>
+  <int value="-1762176184" label="history"/>
+  <int value="-1652896464" label="new-tab-page"/>
+</enum>
+
+<enum name="SettingsPrivacySandboxEnabled">
+  <int value="0" label="PS enabled, allow all cookies"/>
+  <int value="1" label="PS enabled, block 3P cookies"/>
+  <int value="2" label="PS enabled, block all cookies"/>
+  <int value="3" label="PS disabled, allow all cookies"/>
+  <int value="4" label="PS disabled, block 3P cookies"/>
+  <int value="5" label="PS disabled, block all cookies"/>
+  <int value="6" label="PS disabled, policy block 3P cookies"/>
+  <int value="7" label="PS disabled, policy block all cookies"/>
+  <int value="8"
+      label="PS enabled, FLoC disabled, allow all cookies (deprecated
+             07/2022)"/>
+  <int value="9"
+      label="PS enabled, FLoC disabled, block 3P cookies (deprecated 07/2022)"/>
+  <int value="10"
+      label="PS enabled, FLoC disabled, block all cookies (deprecated
+             07/2022)"/>
+</enum>
+
+<enum name="SettingsPrivacySandboxPromptHelperEvent">
+  <int value="0" label="Helper Created"/>
+  <int value="1" label="Prompt not required"/>
+  <int value="2" label="Non top frame navigation"/>
+  <int value="3" label="About blank opened"/>
+  <int value="4" label="URL not suitable"/>
+  <int value="5" label="Sync setup in progress"/>
+  <int value="6" label="Signin dialog currently shown"/>
+  <int value="7" label="Prompt already exists for browser"/>
+  <int value="8" label="Window too small for dialog"/>
+  <int value="9" label="Prompt shown"/>
+  <int value="10"
+      label="Search engine choice dialog will be or has been displayed"/>
+  <int value="11" label="Browser not a normal tabbed browser"/>
+</enum>
+
+<enum name="SettingsPrivacySandboxPromptStartupState">
+  <int value="0" label="EEA consent prompt waiting to show"/>
+  <int value="1" label="EEA notice prompt waiting to show"/>
+  <int value="2" label="ROW notice prompt waiting to show"/>
+  <int value="3" label="EEA flow completed with topics accepted"/>
+  <int value="4" label="EEA flow completed with topics declined"/>
+  <int value="5" label="ROW notice flow completed"/>
+  <int value="6"
+      label="Prompt not shown because privacy sandbox is restricted"/>
+  <int value="7"
+      label="Prompt not shown because third-party cookies are blocked"/>
+  <int value="8"
+      label="Prompt not shown because the trial consent was declined"/>
+  <int value="9"
+      label="Prompt not shown because the trials were disabled after seeing
+             the notice"/>
+  <int value="10" label="Prompt not shown because it is managed"/>
+  <int value="11"
+      label="Prompt not shown because of a notice shown to guardian"/>
+  <int value="12" label="Restricted notice prompt waiting to show"/>
+  <int value="13" label="Restricted notice flow completed"/>
+  <int value="14"
+      label="Restricted notice not shown due to full notice acknowledged"/>
+  <int value="15"
+      label="User is waiting for graduation and notice flow is not completed"/>
+  <int value="16"
+      label="User is waiting for graduation and notice flow is completed"/>
+</enum>
+
+<enum name="SettingsPrivacySandboxStartupStates">
+  <int value="0" label="Prompt waiting to show"/>
+  <int value="1" label="Prompt Off, previously disabled, Enabled"/>
+  <int value="2" label="Prompt Off, previously disabled, Disalbed"/>
+  <int value="3" label="Consent Shown, Enabled"/>
+  <int value="4" label="Consent Shown, Disabled"/>
+  <int value="5" label="Notice Shown, Enabled"/>
+  <int value="6" label="Notice Shown, Disabled"/>
+  <int value="7" label="Prompt Off, 3PC Off, Enabled"/>
+  <int value="8" label="Prompt Off, 3PC Off, Disabled"/>
+  <int value="9" label="Prompt Off, Managed, Enabled"/>
+  <int value="10" label="Prompt Off, Managed, Disabled"/>
+  <int value="11" label="Prompt Off, User is restricted"/>
+  <int value="12" label="Prompt Off, Manually Controlled, Enabled"/>
+  <int value="13" label="Prompt Off, Manually Controlled, Disabled"/>
+  <int value="14" label="Prompt not required, Enabled"/>
+  <int value="15" label="Prompt not required, Disabled"/>
+</enum>
+
+<enum name="SettingsSafetyCheckInteractions">
+  <int value="0" label="Safety check started"/>
+  <int value="1" label="Updates, relaunch after updates"/>
+  <int value="2" label="Passwords, manage compromised passwords"/>
+  <int value="3" label="Safe browsing, manage safe browsing"/>
+  <int value="4" label="Extensions, review extensions"/>
+  <int value="5" label="Deprecated (Chrome cleaner, reboot)"/>
+  <int value="6" label="Deprecated (Chrome cleaner, review infected state)"/>
+  <int value="7" label="Passwords, caret navigation"/>
+  <int value="8" label="Safe browsing, caret navigation"/>
+  <int value="9" label="Extensions, caret navigation"/>
+  <int value="10" label="Chrome cleaner, caret navigation"/>
+  <int value="11" label="Passwords, manage weak passwords"/>
+</enum>
+
+<enum name="SettingsSearchEnginesInteractions">
+  <int value="0" label="Search engine activated"/>
+  <int value="1" label="Search engine deactivated"/>
+  <int value="2" label="Keyboard shortcut switched to Tab only"/>
+  <int value="3" label="Keyboard shortcut switched to Space or Tab"/>
+</enum>
+
+<enum name="TrackedPreference">
+  <int value="0" label="kShowHomeButton"/>
+  <int value="1" label="kHomePageIsNewTabPage"/>
+  <int value="2" label="kHomePage"/>
+  <int value="3" label="kRestoreOnStartup"/>
+  <int value="4" label="kURLsToRestoreOnStartup"/>
+  <int value="5" label="extensions::pref_names::kExtensions"/>
+  <int value="6" label="kGoogleServicesLastSyncingUsername"/>
+  <int value="7" label="kSearchProviderOverrides"/>
+  <int value="8" label="kDefaultSearchProviderSearchURL (Obsolete 12/2016)"/>
+  <int value="9" label="kDefaultSearchProviderKeyword (Obsolete 12/2016)"/>
+  <int value="10" label="kDefaultSearchProviderName (Obsolete 12/2016)"/>
+  <int value="11" label="kPinnedTabs"/>
+  <int value="12" label="kKnownDisabled (Obsolete 07/2014)"/>
+  <int value="13" label="kProfileResetPromptMemento (Obsolete 11/2015)"/>
+  <int value="14" label="kDefaultSearchProviderDataPrefName"/>
+  <int value="15" label="kPreferenceResetTime"/>
+  <int value="16" label="kSafeBrowsingIncidentReportSent"/>
+  <int value="17" label="kSyncRemainingRollbackTries"/>
+  <int value="18" label="kSafeBrowsingIncidentsSent"/>
+  <int value="19" label="kSwReporterPromptVersion (Obsolete 9/2023)"/>
+  <int value="20" label="kSwReporterPromptReason (Obsolete 9/2023)"/>
+  <int value="21" label="kGoogleServicesUsername (Obsolete 9/2019)"/>
+  <int value="22" label="kSwReporterPromptSeed (Obsolete 9/2023)"/>
+  <int value="23" label="kGoogleServicesAccountId"/>
+  <int value="24" label="kGoogleServicesLastSyncingAccountId"/>
+  <int value="25" label="kSettingsResetPromptPromptWave (Obsolete 9/2023)"/>
+  <int value="26"
+      label="kSettingsResetPromptLastTriggeredForDefaultSearch (Obsolete
+             9/2023)"/>
+  <int value="27"
+      label="kSettingsResetPromptLastTriggeredForStartupUrls (Obsolete
+             9/2023)"/>
+  <int value="28"
+      label="kSettingsResetPromptLastTriggeredForHomepage (Obsolete 9/2023)"/>
+  <int value="29" label="kMediaStorageIdSalt"/>
+  <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
+  <int value="32" label="kMediaCdmOriginData"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

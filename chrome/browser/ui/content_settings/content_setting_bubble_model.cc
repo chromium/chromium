@@ -947,7 +947,7 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
   state_ = content_settings->GetMicrophoneCameraState();
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
 
   if (CameraAccessed()) {
     content_settings->OnActivityIndicatorBubbleOpened(
@@ -1012,7 +1012,7 @@ ContentSettingMediaStreamBubbleModel::AsMediaStreamBubbleModel() {
 }
 
 void ContentSettingMediaStreamBubbleModel::OnManageButtonClicked() {
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
   if (!delegate())
     return;
 
@@ -1064,7 +1064,7 @@ bool ContentSettingMediaStreamBubbleModel::CameraBlocked() const {
 }
 
 void ContentSettingMediaStreamBubbleModel::SetIsUserModifiable() {
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
   PageSpecificContentSettings* page_content_settings =
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
 
@@ -1080,7 +1080,7 @@ void ContentSettingMediaStreamBubbleModel::SetIsUserModifiable() {
 }
 
 void ContentSettingMediaStreamBubbleModel::SetTitle() {
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
   int title_id = 0;
   if (MicrophoneBlocked() && CameraBlocked())
     title_id = IDS_MICROPHONE_CAMERA_BLOCKED_TITLE;
@@ -1095,12 +1095,12 @@ void ContentSettingMediaStreamBubbleModel::SetTitle() {
   else if (CameraAccessed())
     title_id = IDS_CAMERA_ACCESSED_TITLE;
   else
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   set_title(l10n_util::GetStringUTF16(title_id));
 }
 
 void ContentSettingMediaStreamBubbleModel::SetMessage() {
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
   int message_id = 0;
   if (MicrophoneBlocked() && CameraBlocked())
     message_id = IDS_MICROPHONE_CAMERA_BLOCKED;
@@ -1115,7 +1115,7 @@ void ContentSettingMediaStreamBubbleModel::SetMessage() {
   else if (CameraAccessed())
     message_id = IDS_CAMERA_ACCESSED;
   else
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   set_message(l10n_util::GetStringUTF16(message_id));
 }
 
@@ -1127,7 +1127,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   radio_group.url = url;
   const std::u16string& display_url = GetUrlForDisplay(GetProfile(), url);
 
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
   int radio_allow_label_id = 0;
   int radio_block_label_id = 0;
   if (state_.Has(PageSpecificContentSettings::kMicrophoneBlocked) ||
@@ -1284,7 +1284,7 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
 }
 
 void ContentSettingMediaStreamBubbleModel::SetManageText() {
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed());
   set_manage_text(l10n_util::GetStringUTF16(IDS_MANAGE));
 }
 

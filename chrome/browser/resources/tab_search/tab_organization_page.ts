@@ -13,24 +13,25 @@ import './tab_organization_results.js';
 import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {TabOrganizationFailureElement} from './tab_organization_failure.js';
+import {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
+import {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
 import {getTemplate} from './tab_organization_page.html.js';
+import {TabOrganizationResultsElement} from './tab_organization_results.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
-const BODY_VERTICAL_MARGIN: number = 40;
-const HEIGHT_ANIMATION_LENGTH: number = 250;
-
 export interface TabOrganizationPageElement {
   $: {
-    contents: HTMLElement,
-    notStarted: HTMLElement,
-    inProgress: HTMLElement,
-    results: HTMLElement,
-    failure: HTMLElement,
+    notStarted: TabOrganizationNotStartedElement,
+    inProgress: TabOrganizationInProgressElement,
+    results: TabOrganizationResultsElement,
+    failure: TabOrganizationFailureElement,
   };
 }
 
@@ -114,48 +115,8 @@ export class TabOrganizationPageElement extends PolymerElement {
     }
   }
 
-  updateContentsHeightAfterNextRender() {
-    afterNextRender(this, () => this.updateContentsHeight_());
-  }
-
-  private updateContentsHeight_() {
-    let contentsHeight = 0;
-    switch (this.state_) {
-      case TabOrganizationState.kNotStarted:
-        // Subtract padding out here and below as this is variable during
-        // animation and should not affect contents height.
-        contentsHeight = this.$.notStarted.scrollHeight -
-            this.getPaddingTopValue_(this.$.notStarted) + BODY_VERTICAL_MARGIN;
-        break;
-      case TabOrganizationState.kInProgress:
-        contentsHeight = this.$.inProgress.scrollHeight -
-            this.getPaddingTopValue_(this.$.inProgress) + BODY_VERTICAL_MARGIN;
-        break;
-      case TabOrganizationState.kSuccess:
-        contentsHeight = this.$.results.scrollHeight -
-            this.getPaddingTopValue_(this.$.results) + BODY_VERTICAL_MARGIN;
-        break;
-      case TabOrganizationState.kFailure:
-        contentsHeight = this.$.failure.scrollHeight -
-            this.getPaddingTopValue_(this.$.failure) + BODY_VERTICAL_MARGIN;
-        if (this.showFRE_) {
-          // If the failure footer is shown, exclude bottom margin as the
-          // footer should extend to the bottom of the bubble.
-          contentsHeight -= BODY_VERTICAL_MARGIN / 2;
-        }
-        break;
-    }
-    this.$.contents.style.height = contentsHeight + 'px';
-  }
-
   private onVisible_() {
-    // When the UI goes from not shown to shown, bypass height transition.
-    this.$.contents.classList.toggle('no-transition', true);
     this.updateAvailableHeight_();
-    // TODO(emshack): We should find a way to avoid using a timeout here.
-    setTimeout(
-        () => this.$.contents.classList.toggle('no-transition', false),
-        HEIGHT_ANIMATION_LENGTH);
   }
 
   // TODO(emshack): Consider moving the available height calculation into
@@ -167,13 +128,7 @@ export class TabOrganizationPageElement extends PolymerElement {
       const activeWindow = profileData.windows.find((t) => t.active);
       this.availableHeight_ =
           activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
-      this.updateContentsHeight_();
     });
-  }
-
-  private getPaddingTopValue_(element: HTMLElement): number {
-    const pxValue = getComputedStyle(element).getPropertyValue('padding-top');
-    return Number.parseInt(pxValue.trim().slice(0, -2), 10);
   }
 
   private setSession_(session: TabOrganizationSession) {
@@ -192,7 +147,8 @@ export class TabOrganizationPageElement extends PolymerElement {
   }
 
   private setState_(state: TabOrganizationState) {
-    this.classList.toggle('changed-state', this.state_ !== state);
+    const changedState = this.state_ !== state;
+    this.classList.toggle('changed-state', changedState);
     this.classList.toggle(
         'from-not-started', this.state_ === TabOrganizationState.kNotStarted);
     this.classList.toggle(
@@ -202,9 +158,25 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.classList.toggle(
         'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
-    // Wait for a rendering pass so the new state's scroll height is up to date
-    // with any new data.
-    this.updateContentsHeightAfterNextRender();
+    if (!changedState) {
+      return;
+    }
+    switch (state) {
+      case TabOrganizationState.kNotStarted:
+        this.$.notStarted.announceHeader();
+        break;
+      case TabOrganizationState.kInProgress:
+        this.$.inProgress.announceHeader();
+        break;
+      case TabOrganizationState.kSuccess:
+        this.$.results.announceHeader();
+        break;
+      case TabOrganizationState.kFailure:
+        this.$.failure.announceHeader();
+        break;
+      default:
+        assertNotReached('Invalid tab organization state');
+    }
   }
 
   private isState_(state: TabOrganizationState): boolean {

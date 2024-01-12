@@ -13,9 +13,9 @@
 class Browser;
 
 class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(StoragePressureBubbleView);
+  METADATA_HEADER(StoragePressureBubbleView, views::BubbleDialogDelegateView)
 
+ public:
   static void ShowBubble(const url::Origin& origin);
 
  private:

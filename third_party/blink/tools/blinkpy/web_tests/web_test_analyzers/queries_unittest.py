@@ -110,3 +110,21 @@ class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
                 only_check_sheriff_builds=False)
         self.assertEqual(result_query, QUERY_DATA_3)
         self.assertEqual(self._subprocess_mock.call_count, 1)
+
+    def testInsertWebTestAnalyzerResult(self) -> None:
+        """Tests that the correct insert query is generated."""
+
+        def side_effect(*_, **kwargs) -> uu.FakeProcess:
+            query = kwargs['input']
+            self.assertEqual(
+                query,
+                queries.WEB_TEST_ANALYZER_RESULT_UPDATE_QUERY.format(
+                    values="(CURRENT_TIMESTAMP, 'analyzer_type',"
+                    " 'bug_type', '1')"
+                    ",(CURRENT_TIMESTAMP, 'analyzer_type',"
+                    " 'bug_type', '2')"))
+
+        self._subprocess_mock.side_effect = side_effect
+        self._querier_instance.insert_web_test_analyzer_result(
+            'analyzer_type', 'bug_type', [1, 2])
+        self.assertEqual(self._subprocess_mock.call_count, 1)

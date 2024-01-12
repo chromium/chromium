@@ -298,6 +298,10 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
   android_backend_->OnSyncServiceInitialized(sync_service);
 }
 
+base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 template <typename ResultT>
 void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
     base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>

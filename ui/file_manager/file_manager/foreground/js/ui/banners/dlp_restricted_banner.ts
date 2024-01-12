@@ -4,7 +4,7 @@
 
 import {str} from '../../../../common/js/translations.js';
 import {RootType} from '../../../../common/js/volume_manager_types.js';
-import {DialogType} from '../../../../externs/ts/state.js';
+import {DialogType} from '../../../../state/state.js';
 
 import {getTemplate} from './dlp_restricted_banner.html.js';
 import {StateBanner} from './state_banner.js';
@@ -55,7 +55,7 @@ export class DlpRestrictedBanner extends StateBanner {
    * determines the text used in the banner.
    */
   override onFilteredContext(context: {type: DialogType}) {
-    if (!context || context.type == null) {
+    if (!context || context.type === null) {
       console.warn('Context not supplied or dialog type key missing.');
       return;
     }

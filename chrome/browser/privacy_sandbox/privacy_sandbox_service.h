@@ -94,8 +94,11 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kRestrictedNoticeMoreButtonClicked,
   };
 
-  // TODO(crbug.com/1378703): Integrate this when handling Notice and Consent
-  // logic for m1.
+  // If during the trials a previous consent decision was made, or the notice
+  // was already acknowledged, and the privacy sandbox is disabled,
+  // `prefs::kPrivacySandboxM1PromptSuppressed` was set to either
+  // `kTrialsConsentDeclined` or `kTrialsDisabledAfterNotice` accordingly and
+  // the prompt is suppressed. This logic is now deprecated after launching GA.
   enum class PromptSuppressedReason {
     // Prompt has never been suppressed
     kNone = 0,
@@ -164,29 +167,10 @@ class PrivacySandboxService : public KeyedService {
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
 
-  // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
-  // is true, context specific as well as restriction checks will still be
-  // performed to determine if specific APIs are available in specific contexts.
-  virtual void SetPrivacySandboxEnabled(bool enabled) = 0;
-
-  // Used by the UI to check if the API is enabled. This is a UI function ONLY.
-  // Checks the primary pref directly, and _only_ the primary pref. There are
-  // many other reasons that API access may be denied that are not checked by
-  // this function. All decisions for allowing access to APIs should be routed
-  // through the PrivacySandboxSettings class.
-  // TODO(crbug.com/1310157): Rename this function to better reflect this.
-  virtual bool IsPrivacySandboxEnabled() = 0;
-
-  // Returns whether the state of the API is managed.
-  virtual bool IsPrivacySandboxManaged() = 0;
-
   // Returns whether the Privacy Sandbox is currently restricted for the
   // profile. UI code should consult this to ensure that when restricted,
   // Privacy Sandbox related UI is updated appropriately.
   virtual bool IsPrivacySandboxRestricted() = 0;
-
-  // Called when the V2 Privacy Sandbox preference is changed.
-  virtual void OnPrivacySandboxV2PrefChanged() = 0;
 
   // Returns whether the Privacy Sandbox is configured to show a restricted
   // notice.

@@ -7,8 +7,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {State} from '../../externs/ts/state.js';
 import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
+import type {State} from '../../state/state.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, getEntry, getFileData, getStore, type Store} from '../store.js';
 

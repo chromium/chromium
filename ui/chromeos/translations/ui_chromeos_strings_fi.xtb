@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugali, Yhdysvaltain kansainvälinen näppäimistö</translation>
 <translation id="1629521517399325891">Käyttäjävarmenne ei ole saatavilla verkon todennukseen.</translation>
 <translation id="1641780993263690097">kiina (pinyin)</translation>
-<translation id="1646019627374511909">Otetaan <ph name="NUMBER_OF_ITEMS" /> tiedostoa käyttöön offline-tilassa</translation>
 <translation id="164969095109328410">Chrome-laite</translation>
 <translation id="1661207570040737402">Olet käyttänyt jaetun Google Workspace ‐tallennustilasi kokonaan.</translation>
 <translation id="1661867754829461514">PIN-koodi puuttuu</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google-laskentataulukko</translation>
 <translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3486821258960016770">mongoli</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
 <translation id="3509680540198371098">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, lisätietoja</translation>
 <translation id="3511705761158917664">Valmistellaan <ph name="NUMBER_OF_ITEMS" /> tiedoston synkronointia…</translation>
 <translation id="3522708245912499433">portugali</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Järjestelmänvalvojakäytäntö on estänyt <ph name="COUNT" /> tiedoston kopioimisen</translation>
 <translation id="6509122719576673235">norja</translation>
 <translation id="6528513914570774834">Anna muiden laitteen käyttäjien käyttää tätä verkkoa</translation>
-<translation id="653019979737152879">Synkronoidaan kohdetta <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Viimeisimmät</translation>
 <translation id="6558280019477628686">Tapahtui virhe. Kaikkia kohteita ei välttämättä poistettu.</translation>
 <translation id="656398493051028875">Poistetaan tiedostoa <ph name="FILENAME" />…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Myönnä Linux-sovelluksille pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
 <translation id="7555339735447658365">Olet tällä hetkellä offline-tilassa. Tiedostojen synkronointia jatketaan, kun olet yhteydessä internetiin</translation>
 <translation id="7589661784326793847">Odota hetki</translation>
-<translation id="7592775719802218421">Otetaan <ph name="FILE_NAME" /> käyttöön offline-tilassa</translation>
 <translation id="7600126690270271294">serbia</translation>
 <translation id="7603724359189955920">Ruudukot</translation>
 <translation id="7627790789328695202">Hups, <ph name="FILE_NAME" /> on jo olemassa. Anna kohteelle toinen nimi ja yritä uudelleen.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8147028810663464959">Merkkileveys on täysleveä</translation>
 <translation id="8151638057146502721">Määritä</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 virhe.}other{# virhettä.}}</translation>
 <translation id="8154842056504218462">Kaikki kohteet valittiin.</translation>
 <translation id="8157684860301034423">Sovellustietojen noutaminen epäonnistui.</translation>
 <translation id="8175731104491895765">ranska (Belgia)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Myönnä virtuaalikoneelle (<ph name="VM_NAME" />) pääsy kansiossa (<ph name="FOLDER_NAME" />) oleviin tiedostoihin</translation>
 <translation id="8372369524088641025">Väärä WEP-avain</translation>
 <translation id="8372852072747894550">kreikkalainen</translation>
+<translation id="8377269993083688872">Sähköpostin asettelut</translation>
 <translation id="8386903983509584791">Etsintä valmis</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> noudettu</translation>
 <translation id="8395901698320285466">Mittasuhteet</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Valitse avattava tiedosto</translation>
 <translation id="8577897833047451336">kroatia</translation>
 <translation id="8578308463707544055">indonesia</translation>
-<translation id="8579285237314169903">Synkronoidaan <ph name="NUMBER_OF_FILES" /> kohdetta…</translation>
 <translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
 <translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
 <translation id="8609695766746872526">islanti</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Salli välityspalvelimet jaetuilla verkoilla</translation>
 <translation id="8790981080411996443">Kukkia kasteleva henkilö</translation>
 <translation id="8798099450830957504">Oletus</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 varoitus.}other{# varoitusta.}}</translation>
 <translation id="8808686172382650546">Kissa</translation>
 <translation id="8810671769985673465">Pakkaus epäonnistui, koska kohde on jo olemassa: <ph name="FILE_NAME" /></translation>
 <translation id="8813284582615685103">espanja (Espanja)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Valitse toinen nimi.</translation>
 <translation id="9046895021617826162">Yhdistäminen epäonnistui</translation>
 <translation id="9065512565307033593">Jos vahvistus ei onnistu, pääsy verkkoon estyy.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 varoitus.}other{<ph name="COUNT" /> varoitusta.}}</translation>
 <translation id="908378762078012445">venäjä, foneettinen AATSEEL-näppäimistö</translation>
 <translation id="9086302186042011942">Synkronoidaan</translation>
 <translation id="9099674669267916096">Sivumäärä</translation>

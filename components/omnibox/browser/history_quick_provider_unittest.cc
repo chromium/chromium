@@ -225,6 +225,7 @@ void HistoryQuickProviderTest::SetUp() {
 }
 
 void HistoryQuickProviderTest::TearDown() {
+  ac_matches_.clear();
   provider_ = nullptr;
   client_.reset();
   task_environment_.RunUntilIdle();

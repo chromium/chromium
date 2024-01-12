@@ -57,7 +57,7 @@ ModelExecutionFetcher::~ModelExecutionFetcher() {
     std::move(model_execution_callback_)
         .Run(base::unexpected(
             OptimizationGuideModelExecutionError::FromModelExecutionError(
-                ModelExecutionError::kGenericFailure)));
+                ModelExecutionError::kCancelled)));
   }
 }
 
@@ -70,7 +70,7 @@ void ModelExecutionFetcher::ExecuteModel(
   DCHECK_NE(proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED,
             feature);
 
-  if (active_url_loader_) {
+  if (model_execution_callback_) {
     RecordRequestStatusHistogram(feature, FetcherRequestStatus::kFetcherBusy);
     std::move(callback).Run(base::unexpected(
         OptimizationGuideModelExecutionError::FromModelExecutionError(

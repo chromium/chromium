@@ -59,7 +59,15 @@ IncomingPasswordSharingInvitationModelTypeController::GetPreconditionState()
     return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
   }
 
-  // TODO(crbug.com/1445868): add a dependency on password data type.
+  // Disable current data type if PASSWORDS encountered error. Note that
+  // GetActiveDataTypes() can't be used here because it's always empty during
+  // configuration (e.g. on browser startup) and disabling this data type during
+  // browser startup might cause an extra GetUpdates request.
+  if (sync_service_->GetDownloadStatusFor(syncer::PASSWORDS) ==
+      syncer::SyncService::ModelTypeDownloadStatus::kError) {
+    return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
+  }
+
   return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
 }
 

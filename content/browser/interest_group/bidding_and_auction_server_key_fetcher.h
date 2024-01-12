@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_BIDDING_AND_AUCTION_SERVER_KEY_FETCHER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_BIDDING_AND_AUCTION_SERVER_KEY_FETCHER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -55,7 +55,7 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // network with the provided loader_factory if necessary. If the key is
   // immediately available then the callback may be called synchronously.
   void GetOrFetchKey(network::mojom::URLLoaderFactory* loader_factory,
-                     absl::optional<url::Origin> maybe_coordinator,
+                     std::optional<url::Origin> maybe_coordinator,
                      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
@@ -90,6 +90,8 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
     // expiration_ contains the expiration time for any keys that are cached by
     // this object.
     base::Time expiration = base::Time::Min();
+
+    base::TimeTicks fetch_start;
 
     // loader_ contains the SimpleURLLoader being used to fetch the keys.
     std::unique_ptr<network::SimpleURLLoader> loader;

@@ -78,7 +78,7 @@ bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInSearch() const {
+bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

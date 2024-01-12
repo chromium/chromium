@@ -149,7 +149,7 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& stack_trace) {
+      const std::optional<std::u16string>& stack_trace) {
     web_ui_->GetWebUIMainFrameObserverForTest()->OnDidAddMessageToConsole(
         source_frame, log_level, message, line_no, source_id, stack_trace);
   }
@@ -208,10 +208,10 @@ TEST_F(WebUIMainFrameObserverTest, NoStackTrace) {
   NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->GetRenderFrameHost(),
                                blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceURL16, absl::nullopt);
+                               kMessage16, 5, kSourceURL16, std::nullopt);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 1);
-  EXPECT_EQ(processor_->last_error_report().stack_trace, absl::nullopt);
+  EXPECT_EQ(processor_->last_error_report().stack_trace, std::nullopt);
 }
 
 TEST_F(WebUIMainFrameObserverTest, NonErrorsIgnored) {

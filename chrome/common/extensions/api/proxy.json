@@ -5,7 +5,7 @@
 [
   {
     "namespace": "proxy",
-    "description": "Use the <code>chrome.proxy</code> API to manage Chrome's proxy settings. This API relies on the <a href='types#ChromeSetting'>ChromeSetting prototype of the type API</a> for getting and setting the proxy configuration.",
+    "description": "Use the <code>chrome.proxy</code> API to manage Chrome's proxy settings. This API relies on the <a href='reference/api/types#type-ChromeSetting'>ChromeSetting prototype of the type API</a> for getting and setting the proxy configuration.",
     "types": [
       {
         "id": "Scheme",

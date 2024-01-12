@@ -1460,18 +1460,21 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kNone,
     // The HighlightData from the old style can be re-used.
     kReuse,
-    // The HighlightData contains font relative units and may need recalc.
-    kFontRelative,
+    // The HighlightData contains relative units and may need recalc.
+    kRelativeUnits,
     // Highlights must be calculated in full.
     kFull,
   };
 
   // Determine whether pseudo highlight style must be recalculated,
-  // either because full recalc is required or the parent has font relative
-  // units and the parent's font size differs from the originating element.
-  bool ShouldRecalcHighlightPseudoStyle(HighlightRecalc,
-                                        const ComputedStyle*,
-                                        const ComputedStyle&);
+  // either because full recalc is required or the parent has relative
+  // units and the parent's relative units source differs from the
+  // originating element (font size, container or writing mode).
+  bool ShouldRecalcHighlightPseudoStyle(
+      HighlightRecalc highlight_recalc,
+      const ComputedStyle* highlight_parent,
+      const ComputedStyle& originating_style,
+      const Element* originating_container) const;
 
   // Recalc those custom highlights that require it.
   void RecalcCustomHighlightPseudoStyle(const StyleRecalcContext&,
@@ -1705,9 +1708,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // in the parent, but virtually all existing content uses universal rules
   // like *::selection. To improve runtime and keep copy-on-write inheritance,
   // avoid recalc if neither parent nor child matched any non-universal rules.
-  HighlightRecalc CalculateHighlightRecalc(const ComputedStyle* old_style,
-                                           const ComputedStyle& new_style,
-                                           const ComputedStyle* parent_style);
+  HighlightRecalc CalculateHighlightRecalc(
+      const ComputedStyle* old_style,
+      const ComputedStyle& new_style,
+      const ComputedStyle* parent_style) const;
 
   // This checks that the feature KeyboardFocusableScrollers is enabled and
   // element is a scroller. This will call IsScrollableNode, which might update

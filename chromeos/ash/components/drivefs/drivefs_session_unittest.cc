@@ -196,8 +196,7 @@ class MockDriveFsConnection : public DriveFsConnection,
     return nullptr;
   }
 
-  raw_ptr<mojom::DriveFsDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_ = nullptr;
+  raw_ptr<mojom::DriveFsDelegate, DanglingUntriaged> delegate_ = nullptr;
   base::OnceClosure on_disconnected_;
 };
 
@@ -317,12 +316,9 @@ class DriveFsSessionTest : public ::testing::Test,
   base::test::TaskEnvironment task_environment_;
 
   struct PointerHolder {
-    raw_ptr<MockDiskMounter, DanglingUntriaged | ExperimentalAsh> mounter =
-        nullptr;
-    raw_ptr<MockDriveFsConnection, DanglingUntriaged | ExperimentalAsh>
-        connection = nullptr;
-    raw_ptr<mojom::DriveFsDelegate, DanglingUntriaged | ExperimentalAsh>
-        delegate = nullptr;
+    raw_ptr<MockDiskMounter, DanglingUntriaged> mounter = nullptr;
+    raw_ptr<MockDriveFsConnection, DanglingUntriaged> connection = nullptr;
+    raw_ptr<mojom::DriveFsDelegate, DanglingUntriaged> delegate = nullptr;
   };
   base::MockOneShotTimer timer_;
   std::unique_ptr<PointerHolder> holder_;

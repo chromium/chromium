@@ -23,9 +23,10 @@ constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 // styles, accessibility support, etc.
 class FileSystemAccessRestorePermissionBubbleView
     : public LocationBarBubbleDelegateView {
- public:
-  METADATA_HEADER(FileSystemAccessRestorePermissionBubbleView);
+  METADATA_HEADER(FileSystemAccessRestorePermissionBubbleView,
+                  LocationBarBubbleDelegateView)
 
+ public:
   FileSystemAccessRestorePermissionBubbleView(
       const std::u16string window_title,
       const std::vector<

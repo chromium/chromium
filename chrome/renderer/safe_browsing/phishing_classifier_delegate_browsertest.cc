@@ -344,7 +344,10 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_F(PhishingClassifierDelegateTest, NoScorer) {
+TEST_F(PhishingClassifierDelegateTest, NoScorerWithRetry) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_list->InitWithFeatures(
+      {{safe_browsing::kClientSideDetectionRetryLimit}}, {});
   // For this test, we'll create the delegate with no scorer available yet.
   ASSERT_FALSE(classifier_->is_ready());
 
@@ -383,7 +386,10 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
+TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_list->InitWithFeatures(
+      {{safe_browsing::kClientSideDetectionRetryLimit}}, {});
   // Similar to the last test, but navigates within the page before
   // setting the scorer.
   ASSERT_FALSE(classifier_->is_ready());
@@ -408,6 +414,80 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
+  EXPECT_CALL(*classifier_, BeginClassification(Pointee(page_text), _));
+  OnStartPhishingDetection(url);
+
+  // If we set a new scorer while a classification is going on the
+  // classification should be cancelled.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+  SetScorer(/*model_version=*/2);
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_F(PhishingClassifierDelegateTest, NoScorer) {
+  // For this test, we'll create the delegate with no scorer available yet.
+  ASSERT_FALSE(classifier_->is_ready());
+
+  // Queue up a pending classification, cancel it, then queue up another one.
+  GURL url("http://host.test");
+  std::u16string page_text = u"dummy";
+  LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
+  OnStartPhishingDetection(url);
+  delegate_->PageCaptured(&page_text, false);
+
+  GURL url2("http://host2.com");
+  page_text = u"dummy";
+  LoadHTMLWithUrlOverride("dummy", url2.spec().c_str());
+  OnStartPhishingDetection(url2);
+  delegate_->PageCaptured(&page_text, false);
+
+  // Now set a scorer, which should cause a classifier to be created, but no
+  // classification will start.
+  page_text = u"dummy";
+  SetScorer(/*model_version=*/1);
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  // Manually start a classification, so that when a new scorer is set, it
+  // should cancel.
+  EXPECT_CALL(*classifier_, BeginClassification(Pointee(page_text), _));
+  OnStartPhishingDetection(url2);
+
+  // If we set a new scorer while a classification is going on the
+  // classification should be cancelled.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+  SetScorer(/*model_version=*/2);
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
+  // Similar to the last test, but navigates within the page before
+  // setting the scorer.
+  ASSERT_FALSE(classifier_->is_ready());
+
+  // Queue up a pending classification, cancel it, then queue up another one.
+  GURL url("http://host.test");
+  std::u16string page_text = u"dummy";
+  LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
+  OnStartPhishingDetection(url);
+  delegate_->PageCaptured(&page_text, false);
+
+  page_text = u"dummy";
+  OnStartPhishingDetection(url);
+  delegate_->PageCaptured(&page_text, false);
+
+  // Now set a scorer, which should cause a classifier to be created, but no
+  // classification will start.
+  page_text = u"dummy";
+  SetScorer(/*model_version=*/1);
+  Mock::VerifyAndClearExpectations(classifier_);
+
+  // Manually start a classification
   EXPECT_CALL(*classifier_, BeginClassification(Pointee(page_text), _));
   OnStartPhishingDetection(url);
 

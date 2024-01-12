@@ -87,7 +87,7 @@ oobe_screens_js_files = [
   "screens/oobe/hid_detection.js",
   "screens/oobe/oobe_network.js",
   "screens/oobe/packaged_license.ts",
-  "screens/oobe/update.js",
+  "screens/oobe/update.ts",
   "screens/oobe/welcome.js",
   "screens/oobe/welcome_dialog.js",
 ]
@@ -111,8 +111,8 @@ foreach(f, oobe_screens_html_files) {
 common_screens_js_files = [
   "screens/common/adb_sideloading.ts",
   "screens/common/add_child.ts",
-  "screens/common/app_downloading.js",
-  "screens/common/app_launch_splash.js",
+  "screens/common/app_downloading.ts",
+  "screens/common/app_launch_splash.ts",
   "screens/common/assistant_optin.js",
   "screens/common/autolaunch.ts",
   "screens/common/choobe.ts",
@@ -129,7 +129,7 @@ common_screens_js_files = [
   "screens/common/guest_tos.js",
   "screens/common/hw_data_collection.ts",
   "screens/common/local_state_error.ts",
-  "screens/common/managed_terms_of_service.js",
+  "screens/common/managed_terms_of_service.ts",
   "screens/common/marketing_opt_in.ts",
   "screens/common/multidevice_setup.js",
   "screens/common/offline_ad_login.js",
@@ -174,13 +174,13 @@ foreach(f, common_screens_html_files) {
 }
 
 login_screens_js_files = [
-  "screens/login/arc_vm_data_migration.js",
+  "screens/login/arc_vm_data_migration.ts",
   "screens/login/checking_downloading_update.js",
   "screens/login/encryption_migration.ts",
-  "screens/login/lacros_data_backward_migration.js",
+  "screens/login/lacros_data_backward_migration.ts",
   "screens/login/lacros_data_migration.ts",
-  "screens/login/management_transition.js",
-  "screens/login/offline_login.js",
+  "screens/login/management_transition.ts",
+  "screens/login/offline_login.ts",
   "screens/login/update_required_card.js",
 ]
 

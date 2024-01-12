@@ -58,7 +58,8 @@ aria-label$="[[i18nDynamic(locale, 'guestTosCrosEulaTitle')]]">
   </h1>
   <div slot="content" class="flex layout vertical">
     <webview id="guestTosCrosEulaWebview" role="document"
-        class="oobe-tos-webview tos-webview">
+        class="oobe-tos-webview tos-webview"
+        on-contentload="onCrosEulaContentLoad_">
     </webview>
   </div>
   <div slot="bottom-buttons">
@@ -68,8 +69,8 @@ aria-label$="[[i18nDynamic(locale, 'guestTosCrosEulaTitle')]]">
   </div>
 </oobe-adaptive-dialog>
 
-<!-- Loaded Dialog -->
-<oobe-adaptive-dialog id="loaded" for-step="loaded" role="dialog"
+<!-- Overview Dialog -->
+<oobe-adaptive-dialog id="overview" for-step="overview" role="dialog"
 aria-label$="[[i18nDynamic(locale, 'guestTosTitle')]]">
   <iron-icon slot="icon" icon="oobe-32:avatar"></iron-icon>
   <h1 slot="title">

@@ -53,9 +53,11 @@ enum class TaskType : unsigned char {
   // This is a part of Networking task that should not be frozen when a page is
   // frozen.
   kNetworkingUnfreezable = 75,
-  // Tasks associated with image loading. Split off from kNetworkingUnfreezable
-  // so image loading tasks can be prioritized.
-  kNetworkingUnfreezableImageLoading = 83,
+  // Tasks associated with loading that should also block rendering. Split off
+  // from kNetworkingUnfreezable so tasks such as image loading can be
+  // prioritized above rendering. Note that not all render-blocking resources
+  // use this queue (e.g., script load tasks are not put here).
+  kNetworkingUnfreezableRenderBlockingLoading = 83,
   // This task source is used for control messages between kNetworking tasks.
   kNetworkingControl = 4,
   // Tasks used to run low priority scripts.

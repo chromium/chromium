@@ -40,16 +40,11 @@ void StripCodecs(std::vector<std::string>* codecs) {
   GetMimeUtil()->StripCodecs(codecs);
 }
 
-bool ParseVideoCodecString(base::StringPiece mime_type,
-                           base::StringPiece codec_id,
-                           bool* ambiguous_codec_string,
-                           VideoCodec* out_codec,
-                           VideoCodecProfile* out_profile,
-                           uint8_t* out_level,
-                           VideoColorSpace* out_colorspace) {
-  return GetMimeUtil()->ParseVideoCodecString(
-      mime_type, codec_id, ambiguous_codec_string, out_codec, out_profile,
-      out_level, out_colorspace);
+absl::optional<VideoType> ParseVideoCodecString(std::string_view mime_type,
+                                                std::string_view codec_id,
+                                                bool allow_ambiguous_matches) {
+  return GetMimeUtil()->ParseVideoCodecString(mime_type, codec_id,
+                                              allow_ambiguous_matches);
 }
 
 bool ParseAudioCodecString(base::StringPiece mime_type,

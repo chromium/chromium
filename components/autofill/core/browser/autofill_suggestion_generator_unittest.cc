@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/autofill_suggestion_generator.h"
+
 #include <string>
 #include <vector>
 
@@ -15,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
-#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -761,6 +763,21 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
 }
 
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_PartialNameFieldHasFullNameMainText) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillGranularFillingAvailable);
+  AutofillProfile profile = test::GetFullProfile();
+
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {NAME_FIRST, NAME_LAST},
+          /*last_targeted_fields=*/absl::nullopt, NAME_FIRST,
+          /*trigger_field_max_length=*/0),
+      SuggestionVectorMainTextsAre(Suggestion::Text(
+          profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
+}
+
 // TODO(crbug.com/1459990): Move AutofillChildrenSuggestionGeneratorTest.
 // CreateSuggestionsFromProfiles_GroupFillingLabels_* tests under this fixture.
 // Text fixture for label generation related tests. Parameterized by triggering
@@ -909,7 +926,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
       /*last_targeted_fields=*/
       GetAddressFieldsForGroupFilling(),
       /*trigger_field_type=*/ADDRESS_HOME_LINE1,
-      /*field_types=*/{ADDRESS_HOME_LINE1});
+      /*field_types=*/{ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -932,7 +949,7 @@ TEST_F(
   // will lead to the necessity of a differentiating label (`NAME_FULL`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1},
+          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_LINE1,
           /*trigger_field_max_length=*/0);
 
@@ -960,7 +977,7 @@ TEST_F(
   // (`EMAIL_ADDRESS`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {ADDRESS_HOME_ZIP},
+          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_ZIP,
           /*trigger_field_max_length=*/0);
 
@@ -981,7 +998,9 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
       /*last_targeted_fields=*/
-      GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST);
+      GetFieldTypesOfGroup(FieldTypeGroup::kName),
+      /*trigger_field_type=*/NAME_FIRST,
+      /*field_types=*/{NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -995,23 +1014,41 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillNameAndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
-  profile_1.SetRawInfo(NAME_FULL, u"Cersei Lannister");
+  profile_1.SetRawInfo(ADDRESS_HOME_ZIP, u"100100");
 
   AutofillProfile profile_2 = test::GetFullProfile();
-  profile_2.SetRawInfo(NAME_FULL, u"Cersei Baratheon");
+  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"200200");
 
-  // `profile_1` and `profile_2` have the same `NAME_FIRST`, which will lead to
-  // the necessity of a differentiating label (`NAME_FULL`).
+  // `profile_1` and `profile_2` have the same `NAME_FULL`, which will lead to
+  // the necessity of a differentiating label (`ADDRESS_HOME_ZIP`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {NAME_FIRST},
+          {&profile_1, &profile_2}, {NAME_FIRST, NAME_LAST},
           GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);
+  EXPECT_EQ(
+      suggestions[0].labels,
+      std::vector<std::vector<Suggestion::Text>>(
+          {{Suggestion::Text(u"Fill full name - 666 Erebus St., 100100")}}));
+}
+
+// Test that no labels are added when filling targets only one field.
+TEST_F(
+    AutofillChildrenSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GroupFillingLabels_SingleFieldFillingHasNoLabels) {
+  AutofillProfile profile = test::GetFullProfile();
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {NAME_FULL}, GetFieldTypesOfGroup(FieldTypeGroup::kName),
+          NAME_FULL,
+          /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
-            std::vector<std::vector<Suggestion::Text>>({{Suggestion::Text(
-                u"Fill full name - Cersei Lannister, 666 Erebus St.")}}));
+            std::vector<std::vector<Suggestion::Text>>({{}}));
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
@@ -1025,7 +1062,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   EXPECT_THAT(suggestions,
               ElementsAre(Field(
                   &Suggestion::main_text,
-                  Suggestion::Text(profile().GetInfo(NAME_FIRST, app_locale()),
+                  Suggestion::Text(profile().GetInfo(NAME_FULL, app_locale()),
                                    Suggestion::Text::IsPrimary(true)))));
 
   // The children suggestions should be.
@@ -1126,7 +1163,7 @@ TEST_F(
   EXPECT_THAT(suggestions[0],
               EqualsFieldByFieldFillingSuggestion(
                   PopupItemId::kAddressFieldByFieldFilling,
-                  profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
+                  profile().GetInfo(NAME_FULL, app_locale()), NAME_FIRST,
                   Suggestion::Guid(profile().guid()), {{}}));
 }
 
@@ -1401,15 +1438,15 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        SuggestionsAreCorrectAndExpectedLabelsAreCreated) {
   std::vector<AutofillProfile> profiles(
       5, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
-  profiles[0].SetRawInfo(NAME_FULL, u"test0");
-  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"test0_label");
-  profiles[1].SetRawInfo(NAME_FULL, u"test1");
-  profiles[1].SetRawInfo(ADDRESS_HOME_CITY, u"test1_label");
-  profiles[2].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"test2");
-  profiles[2].SetRawInfo(ADDRESS_HOME_CITY, u"test2_label");
-  profiles[3].SetRawInfo(ADDRESS_HOME_CITY, u"test3");
-  profiles[3].SetRawInfo(EMAIL_ADDRESS, u"test3_label");
-  profiles[4].SetRawInfo(EMAIL_ADDRESS, u"test4");
+  profiles[0].SetRawInfo(NAME_FULL, u"John Doe");
+  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Address 123");
+  profiles[1].SetRawInfo(NAME_FULL, u"Johnas Dhonas");
+  profiles[1].SetRawInfo(ADDRESS_HOME_CITY, u"New York");
+  profiles[2].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Other Address 33");
+  profiles[2].SetRawInfo(ADDRESS_HOME_CITY, u"Old City");
+  profiles[3].SetRawInfo(ADDRESS_HOME_CITY, u"Munich");
+  profiles[3].SetRawInfo(EMAIL_ADDRESS, u"munich@gmail.com");
+  profiles[4].SetRawInfo(EMAIL_ADDRESS, u"other@gmail.com");
 
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
@@ -1424,39 +1461,39 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
       suggestions,
       ElementsAre(
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test0",
+                      Suggestion::Text(u"John Doe",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test0_label")}}),
+                          {Suggestion::Text(u"Address 123")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test1",
+                      Suggestion::Text(u"Johnas Dhonas",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test1_label")}}),
+                          {Suggestion::Text(u"New York")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test2",
+                      Suggestion::Text(u"Other Address 33",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test2_label")}}),
+                          {Suggestion::Text(u"Old City")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test3",
+                      Suggestion::Text(u"Munich",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test3_label")}}),
+                          {Suggestion::Text(u"munich@gmail.com")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test4",
+                      Suggestion::Text(u"other@gmail.com",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{{}}),
@@ -2688,6 +2725,71 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(server_card_suggestion.acceptance_a11y_announcement,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY));
+}
+
+// Verify that the virtual credit card suggestion has the correct
+// `Suggestion::popup_item_id, AX label and is selectable.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard) {
+  CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+
+  Suggestion enrolled_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          enrolled_card, UNKNOWN_TYPE, /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  // Only the name is displayed on the first line.
+  EXPECT_EQ(enrolled_card_suggestion.popup_item_id,
+            PopupItemId::kVirtualCreditCardEntry);
+  EXPECT_TRUE(enrolled_card_suggestion.is_acceptable);
+  EXPECT_EQ(enrolled_card_suggestion.acceptance_a11y_announcement,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY));
+}
+
+// Verify that the virtual credit card suggestion has the correct labels.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard_Labels) {
+  CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+
+  Suggestion enrolled_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          enrolled_card, UNKNOWN_TYPE, /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  // For Desktop, split the first line and populate the card name and
+  // the last 4 digits separately.
+  EXPECT_EQ(enrolled_card_suggestion.main_text.value, u"Mastercard");
+  EXPECT_EQ(enrolled_card_suggestion.minor_text.value,
+            enrolled_card.ObfuscatedNumberWithVisibleLastFourDigits(4));
+
+  // The label is the expiration date formatted as mm/yy.
+  EXPECT_EQ(enrolled_card_suggestion.labels.size(), 2U);
+  EXPECT_EQ(enrolled_card_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(
+      enrolled_card_suggestion.labels[0][0].value,
+      enrolled_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale()));
+  EXPECT_EQ(enrolled_card_suggestion.labels[1].size(), 1U);
+  EXPECT_EQ(enrolled_card_suggestion.labels[1][0].value,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE));
+}
+
+// Verify that the virtual credit card suggestion has no nested suggestions.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard_NestedSuggestions) {
+  CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+
+  Suggestion enrolled_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          enrolled_card, UNKNOWN_TYPE, /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  EXPECT_TRUE(enrolled_card_suggestion.children.empty());
 }
 
 // Verify that the nested suggestion's texts are populated correctly for a

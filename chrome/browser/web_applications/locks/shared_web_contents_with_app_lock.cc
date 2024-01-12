@@ -19,6 +19,9 @@ SharedWebContentsWithAppLockDescription::
     : LockDescription(std::move(app_ids),
                       LockDescription::Type::kAppAndWebContents) {}
 SharedWebContentsWithAppLockDescription::
+    SharedWebContentsWithAppLockDescription(
+        SharedWebContentsWithAppLockDescription&&) = default;
+SharedWebContentsWithAppLockDescription::
     ~SharedWebContentsWithAppLockDescription() = default;
 
 SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(

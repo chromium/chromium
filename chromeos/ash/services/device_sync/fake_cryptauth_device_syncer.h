@@ -98,14 +98,12 @@ class FakeCryptAuthDeviceSyncerFactory
 
   std::vector<raw_ptr<FakeCryptAuthDeviceSyncer, VectorExperimental>>
       instances_;
-  raw_ptr<CryptAuthDeviceRegistry, ExperimentalAsh> last_device_registry_ =
-      nullptr;
-  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> last_key_registry_ = nullptr;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
-      nullptr;
-  raw_ptr<SyncedBluetoothAddressTracker, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CryptAuthDeviceRegistry> last_device_registry_ = nullptr;
+  raw_ptr<CryptAuthKeyRegistry> last_key_registry_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> last_client_factory_ = nullptr;
+  raw_ptr<SyncedBluetoothAddressTracker, DanglingUntriaged>
       last_synced_bluetooth_address_tracker_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> last_pref_service_ = nullptr;
+  raw_ptr<PrefService> last_pref_service_ = nullptr;
 };
 
 }  // namespace device_sync

@@ -120,8 +120,9 @@ class ASH_EXPORT GameDashboardMainMenuView
   void UpdateRecordGameTile(bool is_recording_game_window);
 
   // Adds pulse animation and an education nudge for
-  // `game_controls_setup_button_` if it exists.
-  void MaybeDecorateSetupButton();
+  // `game_controls_setup_button_` if it exists and `is_o4c` is false. `is_o4c`
+  // is true if the ARC game is optimized for ChromeOS.
+  void MaybeDecorateSetupButton(bool is_o4c);
   // Performs pulse animation for `game_controls_setup_button_`.
   void PerformPulseAnimationForSetupButton(int pulse_count);
   // Shows education nudge for `game_controls_setup_button_`.

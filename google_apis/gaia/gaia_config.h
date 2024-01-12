@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
 
@@ -57,13 +57,13 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
   // Returns true if |key| exists and contains a valid URL. |out_url| will be
   // set to that URL.
   // Otherwise, returns false. |out_url| will be unmodified.
-  bool GetURLIfExists(base::StringPiece key, GURL* out_url);
+  bool GetURLIfExists(std::string_view key, GURL* out_url);
 
   // Searches for an API key, OAuth2 client ID or secret by |key|.
   // Returns true if |key| exists and contains a valid string.
   // |out_api_key| will be set to that string.
   // Otherwise, returns false. |out_api_key| will be unmodified.
-  bool GetAPIKeyIfExists(base::StringPiece key, std::string* out_api_key);
+  bool GetAPIKeyIfExists(std::string_view key, std::string* out_api_key);
 
   // Serializes the state of |this| into |command_line|, in a way that
   // GaiaConfig::GetInstance() would honor. Internally, it uses switch

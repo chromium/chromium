@@ -15,7 +15,9 @@ FaceGazeTest = class extends FaceGazeTestBase {
 };
 
 AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
-  this.setMouseLocation({x: 600, y: 400});
+  const config = new Config().withMouseLocation({x: 600, y: 400});
+  await this.configureFaceGaze(config);
+
   const result =
       new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.1, 0.2);
   this.processFaceLandmarkerResult(result);
@@ -24,14 +26,19 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
 });
 
 AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
-  // Assert default mapping of gestures to actions.
-  assertEquals(
-      Action.CLICK_LEFT, this.getActionForGesture(FacialGesture.JAW_OPEN));
-  assertEquals(
-      Action.CLICK_RIGHT,
-      this.getActionForGesture(FacialGesture.BROW_INNER_UP));
+  const gestureToAction =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, Action.CLICK_LEFT)
+          .set(FacialGesture.BROW_INNER_UP, Action.CLICK_RIGHT);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.6)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToAction(gestureToAction)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
 
-  this.setMouseLocation({x: 600, y: 400});
   const result =
       new MockFaceLandmarkerResult()
           .addGestureWithConfidence(FacialGesture.JAW_OPEN, 0.9)
@@ -63,14 +70,20 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
 // separate facial gestures. This test ensures that the associated action is
 // only performed when both gestures are detected.
 AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
-  assertEquals(
-      Action.RESET_MOUSE,
-      this.getActionForGesture(FacialGesture.BROW_DOWN_LEFT));
-  assertEquals(
-      Action.RESET_MOUSE,
-      this.getActionForGesture(FacialGesture.BROW_DOWN_RIGHT));
+  const gestureToAction =
+      new Map()
+          .set(FacialGesture.BROW_DOWN_LEFT, Action.RESET_MOUSE)
+          .set(FacialGesture.BROW_DOWN_RIGHT, Action.RESET_MOUSE);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.BROW_DOWN_LEFT, 0.6)
+                                  .set(FacialGesture.BROW_DOWN_RIGHT, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 0, y: 0})
+                     .withGestureToAction(gestureToAction)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+  this.mockAccessibilityPrivate.clearCursorPosition();
 
-  this.setMouseLocation({x: 0, y: 0});
   let result =
       new MockFaceLandmarkerResult()
           .addGestureWithConfidence(FacialGesture.BROW_DOWN_LEFT, 0.9)

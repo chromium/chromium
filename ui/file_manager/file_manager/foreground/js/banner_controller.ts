@@ -4,20 +4,19 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import type {Crostini} from '../../background/js/crostini.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {getTeamDriveName} from '../../common/js/entry_utils.js';
+import {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
 import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType, State} from '../../externs/ts/state.js';
-import {Store} from '../../externs/ts/store.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
-import {getStore} from '../../state/store.js';
+import {DialogType, type State} from '../../state/state.js';
+import {getStore, type Store} from '../../state/store.js';
 
 import {DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
 import {DirectoryModel} from './directory_model.js';

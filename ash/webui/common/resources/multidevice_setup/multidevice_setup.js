@@ -152,19 +152,6 @@ const MultiDeviceSetup = Polymer({
       type: Boolean,
       value: false,
     },
-
-    /**
-     * Return true if the Jelly feature flag is enabled.
-     * @private
-     */
-    isJellyEnabled: {
-      type: Boolean,
-      readOnly: true,
-      value() {
-        return loadTimeData.valueExists('isJellyEnabled') &&
-            loadTimeData.getBoolean('isJellyEnabled');
-      },
-    },
   },
 
   listeners: {

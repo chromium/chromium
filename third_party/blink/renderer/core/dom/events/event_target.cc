@@ -38,6 +38,7 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_event_listener_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_eventlisteneroptions.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -222,7 +223,8 @@ class ObservableEventListener final : public NativeEventListener {
   ObservableEventListener(Subscriber*,
                           ScriptState*,
                           const AtomicString&,
-                          EventTarget*);
+                          EventTarget*,
+                          const ObservableEventListenerOptions*);
 
   // NativeEventListener overrides:
   void Invoke(ExecutionContext*, Event*) final;
@@ -240,10 +242,12 @@ class ObservableEventListener final : public NativeEventListener {
   const Member<ScriptState> script_state_;
 };
 
-ObservableEventListener::ObservableEventListener(Subscriber* subscriber,
-                                                 ScriptState* script_state,
-                                                 const AtomicString& event_type,
-                                                 EventTarget* event_target)
+ObservableEventListener::ObservableEventListener(
+    Subscriber* subscriber,
+    ScriptState* script_state,
+    const AtomicString& event_type,
+    EventTarget* event_target,
+    const ObservableEventListenerOptions* options)
     : subscriber_(subscriber), script_state_(script_state) {
   // `event_target_` is non-null here. If the event target were null (i.e.,
   // garbage collected before this gets called), then this constructor would not
@@ -259,19 +263,15 @@ ObservableEventListener::ObservableEventListener(Subscriber* subscriber,
 
   AddEventListenerOptionsResolved* options_resolved =
       MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  if (options->hasCapture()) {
+    options_resolved->setCapture(options->capture());
+  }
+  if (options->hasPassive()) {
+    options_resolved->setPassive(options->passive());
+  }
   options_resolved->setSignal(subscriber->signal());
 
-  event_target->addEventListener(
-      event_type, this,
-      // TODO(crbug.com/1485981): For now we're just using a default-constructed
-      // `AddEventListenerOptionsResolved` here (with the `subscriber`'s
-      // AbortSignal. Eventually we'll consume an
-      // `ObservableEventListenerOptions` dictionary [1], and convert *that*
-      // into a properly-resolved `AddEventListenerOptionsResolved`.
-      //
-      // [1]:
-      // https://wicg.github.io/observable/#dictdef-observableeventlisteneroptions
-      options_resolved);
+  event_target->addEventListener(event_type, this, options_resolved);
 }
 
 void ObservableEventListener::Invoke(ExecutionContext* execution_context,
@@ -300,7 +300,9 @@ void ObservableEventListener::Trace(Visitor* visitor) const {
 // `Subscriber`.
 class ObservableSubscribeDelegate final : public Observable::SubscribeDelegate {
  public:
-  ObservableSubscribeDelegate(EventTarget*, const AtomicString&);
+  ObservableSubscribeDelegate(EventTarget*,
+                              const AtomicString&,
+                              const ObservableEventListenerOptions*);
 
   // Observable::SubscribeDelegate overrides:
   void OnSubscribe(Subscriber*, ScriptState*) final;
@@ -323,12 +325,14 @@ class ObservableSubscribeDelegate final : public Observable::SubscribeDelegate {
   //       to `Subscriber::next()`.
   const WeakMember<EventTarget> event_target_;
   AtomicString event_type_;
+  const Member<const ObservableEventListenerOptions> options_;
 };
 
 ObservableSubscribeDelegate::ObservableSubscribeDelegate(
     EventTarget* event_target,
-    const AtomicString& event_type)
-    : event_target_(event_target), event_type_(event_type) {}
+    const AtomicString& event_type,
+    const ObservableEventListenerOptions* options)
+    : event_target_(event_target), event_type_(event_type), options_(options) {}
 
 void ObservableSubscribeDelegate::OnSubscribe(Subscriber* subscriber,
                                               ScriptState* script_state) {
@@ -359,12 +363,13 @@ void ObservableSubscribeDelegate::OnSubscribe(Subscriber* subscriber,
   // This freshly-created event listener immediately gets owned by
   // `event_target_`'s event listener vector. `this` does not need to hold onto
   // any of the event listeners created here.
-  MakeGarbageCollected<ObservableEventListener>(subscriber, script_state,
-                                                event_type_, event_target_);
+  MakeGarbageCollected<ObservableEventListener>(
+      subscriber, script_state, event_type_, event_target_, options_);
 }
 
 void ObservableSubscribeDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(event_target_);
+  visitor->Trace(options_);
 
   Observable::SubscribeDelegate::Trace(visitor);
 }
@@ -512,11 +517,12 @@ void EventTarget::SetDefaultAddEventListenerOptions(
   }
 }
 
-Observable* EventTarget::on(const AtomicString& event_type) {
+Observable* EventTarget::on(const AtomicString& event_type,
+                            const ObservableEventListenerOptions* options) {
   DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled());
   return MakeGarbageCollected<Observable>(
-      GetExecutionContext(),
-      MakeGarbageCollected<ObservableSubscribeDelegate>(this, event_type));
+      GetExecutionContext(), MakeGarbageCollected<ObservableSubscribeDelegate>(
+                                 this, event_type, options));
 }
 
 bool EventTarget::addEventListener(const AtomicString& event_type,
@@ -1075,7 +1081,6 @@ bool EventTarget::FireEventListeners(Event& event,
     event.SetHandlingPassive(EventPassiveMode(*registered_listener));
 
     probe::UserCallback probe(context, nullptr, event.type(), false, this);
-    probe::InvokeEventHandler probe_scope(context, this, &event, listener);
     probe::AsyncTask async_task(context, listener->async_task_context(),
                                 "event",
                                 IsInstrumentedForAsyncStack(event.type()));

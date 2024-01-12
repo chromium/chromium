@@ -16,7 +16,7 @@
 namespace base {
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 namespace component_updater {
 

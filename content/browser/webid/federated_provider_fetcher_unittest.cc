@@ -693,7 +693,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidNetworkError) {
       blink::mojom::FederatedAuthRequestResult::
           kErrorFetchingConfigHttpNotFound,
       FedCmRequestIdTokenStatus::kConfigHttpNotFound,
-      /*additional_console_error_message=*/absl::nullopt);
+      /*additional_console_error_message=*/std::nullopt);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();

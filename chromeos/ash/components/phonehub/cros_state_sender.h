@@ -68,12 +68,10 @@ class CrosStateSender
   void RecordResultMetrics(bool is_attestation_certificate_valid);
 
   bool is_certificate_requested_ = false;
-  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
-  raw_ptr<PhoneModel, ExperimentalAsh> phone_model_;
+  raw_ptr<MessageSender> message_sender_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+  raw_ptr<PhoneModel> phone_model_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   base::TimeDelta retry_delay_;
   std::unique_ptr<AttestationCertificateGenerator>

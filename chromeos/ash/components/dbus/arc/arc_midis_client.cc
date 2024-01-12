@@ -60,7 +60,7 @@ class ArcMidisClientImpl : public ArcMidisClient {
     std::move(callback).Run(response != nullptr);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

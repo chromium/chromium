@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -26,7 +27,6 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -352,13 +352,6 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // queryable forms will be updated once the field type query is complete.
   driver().SendAutofillTypePredictionsToRenderer(non_queryable_forms);
   driver().SendAutofillTypePredictionsToRenderer(queryable_forms);
-  // Send the fields that are eligible for manual filling to the renderer. If
-  // server predictions are not yet available for these forms, the eligible
-  // fields would be updated again once they are available.
-  driver().SendFieldsEligibleForManualFillingToRenderer(
-      FormStructure::FindFieldsEligibleForManualFilling(non_queryable_forms));
-  driver().SendFieldsEligibleForManualFillingToRenderer(
-      FormStructure::FindFieldsEligibleForManualFilling(queryable_forms));
   LogAutofillTypePredictionsAvailable(log_manager_, non_queryable_forms);
   LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
 
@@ -847,7 +840,7 @@ void AutofillManager::OnLoadedServerPredictions(
   }
 
   // Parse and store the server predictions.
-  FormStructure::ParseApiQueryResponse(
+  ParseServerPredictionsQueryResponse(
       std::move(response), queried_forms, queried_form_signatures,
       form_interactions_ukm_logger(), log_manager_);
 
@@ -862,17 +855,12 @@ void AutofillManager::OnLoadedServerPredictions(
   // Send field type predictions to the renderer so that it can possibly
   // annotate forms with the predicted types or add console warnings.
   driver().SendAutofillTypePredictionsToRenderer(queried_forms);
-
-  driver().SendFieldsEligibleForManualFillingToRenderer(
-      FormStructure::FindFieldsEligibleForManualFilling(queried_forms));
-
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
 
   for (const FormStructure* form : queried_forms) {
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
   }
-
   NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
 }
 

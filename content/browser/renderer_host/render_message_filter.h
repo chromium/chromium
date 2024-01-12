@@ -8,49 +8,30 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "content/common/render_message_filter.mojom.h"
-#include "content/public/browser/browser_associated_interface.h"
-#include "content/public/browser/browser_message_filter.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace content {
-class BrowserContext;
 class RenderWidgetHelper;
 
-// This class filters out incoming IPC messages for the renderer process on the
-// IPC thread.
-class RenderMessageFilter
-    : public BrowserMessageFilter,
-      public BrowserAssociatedInterface<mojom::RenderMessageFilter> {
+// This class processes timing critical messages on the IO thread.
+class RenderMessageFilter : public mojom::RenderMessageFilter {
  public:
   // Create the filter.
   RenderMessageFilter(int render_process_id,
-                      BrowserContext* browser_context,
                       RenderWidgetHelper* render_widget_helper);
+  ~RenderMessageFilter() override;
 
   RenderMessageFilter(const RenderMessageFilter&) = delete;
   RenderMessageFilter& operator=(const RenderMessageFilter&) = delete;
 
-  // BrowserMessageFilter methods:
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnDestruct() const override;
-
-  int render_process_id() const { return render_process_id_; }
-
- protected:
-  ~RenderMessageFilter() override;
-
  private:
-  friend class BrowserThread;
-  friend class base::DeleteHelper<RenderMessageFilter>;
-
   // mojom::RenderMessageFilter:
   void GenerateFrameRoutingID(GenerateFrameRoutingIDCallback callback) override;
-  void HasGpuProcess(HasGpuProcessCallback callback) override;
 
   scoped_refptr<RenderWidgetHelper> render_widget_helper_;
 
-  int render_process_id_;
+  const int render_process_id_;
 };
 
 }  // namespace content

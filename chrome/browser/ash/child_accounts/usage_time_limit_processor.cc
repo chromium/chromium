@@ -211,13 +211,13 @@ class UsageTimeLimitProcessor {
   const base::Time current_time_;
 
   // Unowned. The device's timezone.
-  const raw_ptr<const icu::TimeZone, ExperimentalAsh> time_zone_;
+  const raw_ptr<const icu::TimeZone> time_zone_;
 
   // Current weekday, extracted from current time.
   internal::Weekday current_weekday_;
 
   // The previous state calculated by this class.
-  const raw_ref<const std::optional<State>, ExperimentalAsh> previous_state_;
+  const raw_ref<const std::optional<State>> previous_state_;
 
   // The active time window limit. If this is set, it means that the user
   // session should be locked, in other words, there is a time window limit set

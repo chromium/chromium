@@ -10,7 +10,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '/nearby/nearby-share-internal-icons.m.js';
 // </if>
 
-import '/shared/settings/controls/password_prompt_dialog.js';
+import '../common/password_prompt_dialog/password_prompt_dialog.js';
 import '../settings_shared.css.js';
 import '../nearby_share_page/nearby_share_subpage.js';
 import '../os_settings_page/os_settings_animated_pages.js';

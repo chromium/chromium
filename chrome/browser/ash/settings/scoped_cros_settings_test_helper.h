@@ -96,8 +96,7 @@ class ScopedCrosSettingsTestHelper {
   std::unique_ptr<ScopedTestCrosSettings> test_cros_settings_;
   std::unique_ptr<CrosSettingsProvider> real_settings_provider_;
   std::unique_ptr<CrosSettingsProvider> stub_settings_provider_;
-  raw_ptr<StubCrosSettingsProvider, ExperimentalAsh>
-      stub_settings_provider_ptr_;
+  raw_ptr<StubCrosSettingsProvider> stub_settings_provider_ptr_;
 
   void Initialize(bool create_settings_service);
 };

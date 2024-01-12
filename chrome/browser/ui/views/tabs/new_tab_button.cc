@@ -187,8 +187,9 @@ void NewTabButton::OnMouseReleased(const ui::MouseEvent& event) {
   point = display::win::ScreenWin::DIPToScreenPoint(point);
   auto weak_this = weak_factory_.GetWeakPtr();
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(this), point);
-  if (!weak_this)
+  if (!weak_this) {
     return;
+  }
   SetState(views::Button::STATE_NORMAL);
 }
 #endif
@@ -222,8 +223,9 @@ bool NewTabButton::GetHitTestMask(SkPath* mask) const {
   DCHECK(mask);
 
   gfx::Point origin = GetContentsBounds().origin();
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     origin.set_x(GetInsets().right());
+  }
   SkPath border =
       GetBorderPath(origin, tab_strip_->controller()->IsFrameCondensed());
   mask->addPath(border);
@@ -288,5 +290,5 @@ void NewTabButton::PaintIcon(gfx::Canvas* canvas) {
   canvas->DrawLine(gfx::PointF(center, start), gfx::PointF(center, end), flags);
 }
 
-BEGIN_METADATA(NewTabButton, views::ImageButton)
+BEGIN_METADATA(NewTabButton)
 END_METADATA

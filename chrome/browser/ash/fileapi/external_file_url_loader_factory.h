@@ -56,7 +56,7 @@ class ExternalFileURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
-  raw_ptr<void, DanglingUntriaged | ExperimentalAsh> profile_id_;
+  raw_ptr<void, DanglingUntriaged> profile_id_;
   const int render_process_host_id_;
 };
 

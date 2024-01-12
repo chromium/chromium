@@ -76,7 +76,6 @@
 <translation id="162175252992296058">امریکی بین الاقوامی کی بورڈ کے ساتھ پرتگالی</translation>
 <translation id="1629521517399325891">صارف کا سرٹیفیکیٹ نیٹ ورک کی تصدیق کے لئے دستیاب نہیں ہے۔</translation>
 <translation id="1641780993263690097">‏چینی Pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> فائلز کو آف لائن دستیاب بنایا جا رہا ہے</translation>
 <translation id="164969095109328410">‏Chrome آلہ</translation>
 <translation id="1661207570040737402">‏آپ نے مشترکہ ڈرائیو کیGoogle Workspace کی اپنی تمام اسٹوریج استعمال کر لی ہے۔</translation>
 <translation id="1661867754829461514">‏PIN غائب ہے</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">‏Google اسپریڈ شیٹ</translation>
 <translation id="3479552764303398839">ابھی نہیں</translation>
 <translation id="3486821258960016770">منگؤلی</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> خرابیاں۔</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، تفصیلات</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو مطابقت پذیری کرنے کی تیاری ہو رہی ہے...</translation>
 <translation id="3522708245912499433">پُرتگالی</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">منتظم کی پالیسی کے تحت، <ph name="COUNT" /> فائلز کو کاپی کرنا مسدود ہے</translation>
 <translation id="6509122719576673235">نارويجين</translation>
 <translation id="6528513914570774834">اس آلہ کے دیگر صارفین کو یہ نیٹ ورک استعمال کرنے کی اجازت دیں</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="6549689063733911810">حالیہ</translation>
 <translation id="6558280019477628686">ایک خرابی پیش آ گئی۔ ہو سکتا ہے کچھ آئٹمز حذف نہ ہوئے ہوں۔</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" کو حذف کیا جا رہا ہے…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">‏Linux ایپس کو <ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کرنے کی اجازت دیں</translation>
 <translation id="7555339735447658365">آپ فی الحال آف لائن ہیں۔ جب آپ انٹرنیٹ سے منسلک ہوں گے تو فائل کی مطابقت پذیری دوبارہ شروع ہو جائے گی۔</translation>
 <translation id="7589661784326793847">بس ایک سیکنڈ انتظار کریں</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> آف لائن دستیاب بنائی جا رہی ہے</translation>
 <translation id="7600126690270271294">سربیائی</translation>
 <translation id="7603724359189955920">گرڈز</translation>
 <translation id="7627790789328695202">افوہ، <ph name="FILE_NAME" /> پہلے سے موجود ہے۔ اس کا نام تبدیل کریں اور دوبارہ کوشش کریں۔</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8147028810663464959">حرف کی چوڑائی پوری ہے</translation>
 <translation id="8151638057146502721">کنفیگر کریں</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 خرابی۔}other{# خرابیاں۔}}</translation>
 <translation id="8154842056504218462">تمام اندراجات منتخب کئے گئے۔</translation>
 <translation id="8157684860301034423">ایپ کی معلومات دوبارہ حاصل کرنے میں ناکام ہو گئے۔</translation>
 <translation id="8175731104491895765">فرانسیسی (بیلجیم)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> کو <ph name="FOLDER_NAME" /> فولڈر میں موجود فائلز تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="8372369524088641025">‏غلط WEP کلید</translation>
 <translation id="8372852072747894550">يونانی</translation>
+<translation id="8377269993083688872">ای میل لے آؤٹس</translation>
 <translation id="8386903983509584791">اسکین مکمل ہو گیا</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> کو ایکسٹریکٹ کیا گیا۔</translation>
 <translation id="8395901698320285466">ڈائمینشنز</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">کھولنے کیلئے ایک فائل منتخب کریں</translation>
 <translation id="8577897833047451336">کروشیائی</translation>
 <translation id="8578308463707544055">انڈونیشیائی</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> آئٹمز کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="8600173386174225982">فائل فہرست کو تھمب نیل منظر میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="8601932370724196034">‏Crostini تصویر فائل</translation>
 <translation id="8609695766746872526">آئس لینڈک</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">مشترکہ نیٹ ورکس کیلئے پراکسیز کی اجازت دیں</translation>
 <translation id="8790981080411996443">پودوں کو پانی دیتا ہوا شخص</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 وارننگ۔}other{# وارننگز۔}}</translation>
 <translation id="8808686172382650546">بلی</translation>
 <translation id="8810671769985673465">زپ بنانے کا عمل ناکام ہو گیا، آئٹم موجود ہے: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ہسپانوی (اسپین)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ براہ کرم ایک مختلف نام منتخب کریں۔</translation>
 <translation id="9046895021617826162">منسلک کرنا ناکام ہوگیا</translation>
 <translation id="9065512565307033593">اگر آپ توثیق کرنے میں ناکام ہوتے ہیں تو آپ کے نیٹ ورک کی رسائی کو غیر فعال کر دیا جائے گا۔</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 وارننگ۔}other{<ph name="COUNT" /> وارننگز۔}}</translation>
 <translation id="908378762078012445">‏فونیٹک AATSEEL کی بورڈ کے ساتھ روسی</translation>
 <translation id="9086302186042011942">مطابقت پذیری کی جا رہی ہے</translation>
 <translation id="9099674669267916096">صفحات کی تعداد</translation>

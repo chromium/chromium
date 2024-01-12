@@ -478,6 +478,24 @@ suite('Performance', () => {
     assertTrue(sections.length > 1);
   }
 
+  test('performanceSectionTitlesVisible', async function() {
+    await createNewBasicPage();
+    page.pageVisibility = pageVisibility;
+    flush();
+
+    assertEquals(
+        queryPerformanceSettingsSection()!.shadowRoot!.querySelector('h2')
+            ?.innerText,
+        loadTimeData.getString('memoryPageTitle'));
+    assertEquals(
+        queryBatterySettingsSection()!.shadowRoot!.querySelector('h2')
+            ?.innerText,
+        loadTimeData.getString('batteryPageTitle'));
+    assertEquals(
+        querySpeedSettingsSection()!.shadowRoot!.querySelector('h2')?.innerText,
+        loadTimeData.getString('speedPageTitle'));
+  });
+
   test('performanceVisibilityTestFeaturesAvailable', async function() {
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.

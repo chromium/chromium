@@ -69,7 +69,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   base::TimeDelta GetPeriod();
 
   // The delegate handling sync requests when they are fired.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // The time to wait until the next refresh when the last sync attempt was
   // successful.

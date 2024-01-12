@@ -733,12 +733,6 @@
   <message name="IDS_FILE_BROWSER_ZIP_FILESYSTEM_ERROR" desc="File Manager error message.">
     Zipping failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_SYNC_FILE_NAME" desc="File Manager status message.">
-    Syncing <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
-  </message>
-  <message name="IDS_FILE_BROWSER_SYNC_FILE_NUMBER" desc="File Manager status message.">
-    Syncing <ph name="NUMBER_OF_FILES">$1<ex>7</ex></ph> items...
-  </message>
   <message name="IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR" desc="File Manager status message shown when the drive sync is failed because a user try to remove shared files that the user does not own.">
     "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" has been shared with you. You cannot delete it because you do not own it.
   </message>
@@ -805,13 +799,15 @@
   <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR_DESC" desc="Description of message informing users they can't open files from the Trash folder">
     Restore the items or drag them to a new folder outside of trash
   </message>
-  <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
-    <ph name="COUNT">$1<ex>10</ex></ph> errors.
+  <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY" desc="Summary message for one or more errors above the progress bar. This message may be placed at the next to other *_PROGRESS_SUMMARY messages.">
+    {NUM_ERROR, plural,
+        =1 {1 error.}
+        other {# errors.}}
   </message>
-  <message name="IDS_FILE_BROWSER_WARNING_PROGRESS_SUMMARY" desc="Summary message for one or more warnings above the progress bar. This message may be placed next to other *_PROGERSS_SUMMARY messages.">
-    {0, plural,
+  <message name="IDS_FILE_BROWSER_WARNING_PROGRESS_SUMMARY" desc="Summary message for one or more warnings above the progress bar. This message may be placed next to other *_PROGRESS_SUMMARY messages.">
+    {NUM_WARNING, plural,
         =1 {1 warning.}
-        other {<ph name="COUNT">$1<ex>10</ex></ph> warnings.}}
+        other {# warnings.}}
   </message>
   <message name="IDS_FILE_BROWSER_PERCENT_COMPLETE" desc="Percentage of file operation that is complete in a progress message.">
     <ph name="PERCENT">$1<ex>10</ex></ph>% complete.
@@ -1238,12 +1234,6 @@
   <message name="IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_SUBTITLE" desc="Message title of banner informing user they can make files available offline.">
     Select a file, and toggle <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> on for offline access to your files.
   </message>
-  <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE" desc="Message informing the user a Google Drive file is being downloaded for offline use.">
-    Making <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
-  </message>
-  <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL" desc="Message informing the user multiple Google Drive files are being downloaded for offline use.">
-    Making <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> files available offline
-  </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_FAILURE_MESSAGE" desc="Message informing the user a Google Drive file failed to be downloaded for offline use.">
     Could not make <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
   </message>
@@ -1517,6 +1507,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_GSITE_DOCUMENT_FILE_TYPE" desc="Google site file type">
     Google site
+  </message>
+  <message name="IDS_FILE_BROWSER_EMAIL_LAYOUTS_DOCUMENT_FILE_TYPE" desc="Email layouts file type">
+    Email layouts
   </message>
   <message name="IDS_FILE_BROWSER_GLINK_DOCUMENT_FILE_TYPE" desc="Google Drive link file type">
     Google Drive link

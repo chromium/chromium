@@ -62,9 +62,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnSetMute(int player_id, bool mute) override {}
   void OnRequestMediaRemoting(int player_id) override {}
 
-  absl::optional<media_session::MediaPosition> GetPosition(
+  std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool IsPictureInPictureAvailable(int player_id) const override {

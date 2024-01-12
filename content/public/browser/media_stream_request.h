@@ -162,7 +162,7 @@ class MediaStreamUI {
   //   but the cropped-to region ended up having zero pixels.
   // * Nullopt indicates that cropping stopped.
   virtual void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) {}
+      const std::optional<gfx::Rect>& region_capture_rect) {}
 
 #if !BUILDFLAG(IS_ANDROID)
   // Focuses the display surface represented by |media_id|.

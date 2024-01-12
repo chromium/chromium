@@ -90,6 +90,10 @@ bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
   return base::Contains(initialized_app_types_, app_type);
 }
 
+bool AppRegistryCache::IsAppTypePublished(apps::AppType app_type) const {
+  return base::Contains(published_app_types_, app_type);
+}
+
 bool AppRegistryCache::IsAppInstalled(const std::string& app_id) const {
   bool installed = false;
   ForOneApp(app_id, [&installed](const AppUpdate& update) {
@@ -103,6 +107,7 @@ void AppRegistryCache::ReinitializeForTesting() {
   deltas_in_progress_.clear();
   deltas_pending_.clear();
   in_progress_initialized_app_types_.clear();
+  published_app_types_.clear();
 
   // On most platforms, we can't clear initialized_app_types_ here as observers
   // expect each type to be initialized only once.
@@ -125,8 +130,11 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
   if (should_notify_initialized) {
     DCHECK_NE(apps::AppType::kUnknown, app_type);
 
-    for (auto& obs : observers_) {
-      obs.OnAppsInitialized(deltas, app_type);
+    if (!IsAppTypePublished(app_type)) {
+      published_app_types_.insert(app_type);
+      for (auto& obs : observers_) {
+        obs.OnAppTypePublishing(deltas, app_type);
+      }
     }
 
     if (!IsAppTypeInitialized(app_type)) {
@@ -134,6 +142,10 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
     }
   }
 
+  OnApps(std::move(deltas));
+}
+
+void AppRegistryCache::OnApps(std::vector<AppPtr> deltas) {
   if (!deltas_in_progress_.empty()) {
     std::move(deltas.begin(), deltas.end(),
               std::back_inserter(deltas_pending_));
@@ -241,6 +253,18 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
     }
   }
   deltas_in_progress_.clear();
+}
+
+void AppRegistryCache::InitApps(apps::AppType app_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  CHECK_NE(apps::AppType::kUnknown, app_type);
+
+  if (!IsAppTypeInitialized(app_type)) {
+    in_progress_initialized_app_types_.insert(app_type);
+  }
+
+  OnAppTypeInitialized();
 }
 
 void AppRegistryCache::OnAppTypeInitialized() {

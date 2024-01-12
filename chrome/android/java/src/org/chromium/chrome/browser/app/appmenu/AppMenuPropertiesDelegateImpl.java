@@ -952,7 +952,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     /** Sets visibility of the "Listen to this page" menu item. */
-    private void prepareReadAloudMenuItem(Menu menu, @Nullable Tab currentTab) {
+    protected void prepareReadAloudMenuItem(Menu menu, @Nullable Tab currentTab) {
         boolean visible = false;
         if (mReadAloudControllerSupplier != null) {
             ReadAloudController readAloudController = mReadAloudControllerSupplier.get();

@@ -8,6 +8,7 @@ import android.accounts.Account;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.TraceEvent;
@@ -39,8 +40,7 @@ public class SigninChecker
     private final AccountTrackerService mAccountTrackerService;
     private final SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
-    // TODO(crbug/1491005): Delete this once SeedAccountsRevamp is fully enabled.
-    @Nullable private SigninManager mSigninManager;
+    private final SigninManager mSigninManager;
     // Counter to record the number of child account checks done for tests.
     private int mNumOfChildAccountChecksDone;
 
@@ -52,19 +52,24 @@ public class SigninChecker
             SigninManager signinManager,
             AccountTrackerService accountTrackerService,
             SyncService syncService) {
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            mSigninManager = signinManager;
-        }
+        mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
         mSyncService = syncService;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.addObserver(this);
+        } else {
+            mAccountTrackerService.addObserver(this);
+        }
         mNumOfChildAccountChecksDone = 0;
-        mAccountTrackerService.addObserver(this);
     }
 
     @Override
     public void destroy() {
         mAccountTrackerService.removeObserver(this);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.removeObserver(this);
+        }
     }
 
     private void validateAccountSettings() {
@@ -143,13 +148,13 @@ public class SigninChecker
         }
         // Check whether the primary account is renamed to another account when it is not on device
         AccountRenameChecker.get()
-                .getNewNameOfRenamedAccountAsync(oldAccount.getEmail(), coreAccountInfos)
+                .getNewEmailOfRenamedAccountAsync(oldAccount.getEmail(), coreAccountInfos)
                 .then(
-                        newAccountName -> {
-                            if (newAccountName != null) {
+                        newAccountEmail -> {
+                            if (newAccountEmail != null) {
                                 // Sign in to the new account if the current primary account is
                                 // renamed to a new account.
-                                resigninAfterAccountRename(newAccountName, oldSyncConsent);
+                                resigninAfterAccountRename(newAccountEmail, oldSyncConsent);
                             } else {
                                 // Sign out if the current primary account is not renamed
                                 mSigninManager.runAfterOperationInProgress(
@@ -161,17 +166,16 @@ public class SigninChecker
                         });
     }
 
-    private void resigninAfterAccountRename(String newAccountName, boolean shouldEnableSync) {
+    private void resigninAfterAccountRename(String newAccountEmail, boolean shouldEnableSync) {
         if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             throw new IllegalStateException(
                     "This method should never be called when SEED_ACCOUNTS_REVAMP is enabled");
         }
-        mSigninManager.signOut(
-                SignoutReason.ACCOUNT_EMAIL_UPDATED,
-                () -> {
+        Callback<CoreAccountInfo> resigninCallback =
+                coreAccountInfo -> {
                     if (shouldEnableSync) {
                         mSigninManager.signinAndEnableSync(
-                                AccountUtils.createAccountFromName(newAccountName),
+                                coreAccountInfo,
                                 SigninAccessPoint.ACCOUNT_RENAMED,
                                 new SignInCallback() {
                                     @Override
@@ -185,11 +189,16 @@ public class SigninChecker
                                 });
                     } else {
                         mSigninManager.signin(
-                                AccountUtils.createAccountFromName(newAccountName),
-                                SigninAccessPoint.ACCOUNT_RENAMED,
-                                null);
+                                coreAccountInfo, SigninAccessPoint.ACCOUNT_RENAMED, null);
                     }
-                },
+                };
+        CoreAccountInfo accountInfo =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(), newAccountEmail);
+        assert accountInfo != null;
+        mSigninManager.signOut(
+                SignoutReason.ACCOUNT_EMAIL_UPDATED,
+                () -> resigninCallback.onResult(accountInfo),
                 false);
     }
 

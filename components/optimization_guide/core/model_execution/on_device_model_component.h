@@ -20,17 +20,6 @@ class PrefService;
 
 namespace optimization_guide {
 
-// Disk space requirements in bytes.
-// TODO(b/302327114): Make these constants finch params.
-inline constexpr int64_t kMaxModelDiskUsage = 5 /*GB*/ * (1024ll * 1024 * 1024);
-inline constexpr int64_t kMinDiskSpaceBeforeInstall =
-    20 /*GB*/ * (1024ll * 1024 * 1024);
-inline constexpr int64_t kMinDiskSpaceBeforeUninstall =
-    10 /*GB*/ * (1024ll * 1024 * 1024);
-// Make sure we won't immediately uninstall after install.
-static_assert(kMinDiskSpaceBeforeUninstall + kMaxModelDiskUsage <
-              kMinDiskSpaceBeforeInstall);
-
 inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 

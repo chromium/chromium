@@ -79,9 +79,9 @@ class BluetoothDeviceStatusNotifierImpl
   base::OneShotTimer suspend_cooldown_timer_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<DeviceCache, ExperimentalAsh> device_cache_;
+  raw_ptr<DeviceCache> device_cache_;
 
-  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
+  raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
 
   base::ScopedObservation<DeviceCache, DeviceCache::Observer>
       device_cache_observation_{this};

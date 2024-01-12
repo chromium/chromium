@@ -187,6 +187,17 @@
   return nil;
 }
 
++ (void)commitPendingWrite {
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
+      [BookmarkEarlGreyAppInterface localOrSyncableBookmarkModel];
+  localOrSyncableBookmarkModel->CommitPendingWriteForTest();
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      [BookmarkEarlGreyAppInterface accountBookmarkModel];
+  if (accountBookmarkModel) {
+    accountBookmarkModel->CommitPendingWriteForTest();
+  }
+}
+
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title
                        expectedCount:(NSUInteger)expectedCount
                            inStorage:(bookmarks::StorageType)storageType {

@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/values.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -24,6 +25,13 @@ void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
       ::reporting::metrics::kDefaultAppUsageTelemetryCollectionRate
           .InMilliseconds());
   registry->RegisterListPref(kAppsInstalled);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  CHECK(registry);
+  registry->RegisterBooleanPref(
+      ::ash::kHeartbeatEnabled,
+      ::reporting::metrics::kHeartbeatTelemetryDefaultValue);
 }
 
 std::optional<std::string> GetAppReportingCategoryForType(

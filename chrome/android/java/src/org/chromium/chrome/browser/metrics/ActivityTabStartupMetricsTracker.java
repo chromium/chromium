@@ -8,6 +8,7 @@ import android.os.SystemClock;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -77,6 +78,7 @@ public class ActivityTabStartupMetricsTracker {
     private boolean mFirstVisibleContentRecorded;
     private boolean mFirstVisibleContent2Recorded;
     private boolean mVisibleContentRecorded;
+    private boolean mBackPressOccurred;
 
     // Records whether the tracked first navigation commit was recorded pre-the app being in the
     // foreground. Used for investigating crbug.com/1273097.
@@ -229,6 +231,21 @@ public class ActivityTabStartupMetricsTracker {
         mShouldTrackStartupMetrics = false;
     }
 
+    /**
+     * TODO(crbug.com/1504020): This is exposed in order to investigate whether back press will
+     * interrupt the recording of first visible content related histograms. Remove this once a
+     * definitive conclusion is reached.
+     *
+     * @return Whether first visible content related histogram is recorded.
+     */
+    public boolean isFirstVisibleContentRecorded() {
+        return mFirstVisibleContent2Recorded;
+    }
+
+    public void onBackPressed() {
+        mBackPressOccurred = true;
+    }
+
     public void destroy() {
         mShouldTrackStartupMetrics = false;
         clearNavigationObservers();
@@ -367,6 +384,9 @@ public class ActivityTabStartupMetricsTracker {
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent2", durationMs);
         TraceEvent.startupTimeToFirstVisibleContent2(mActivityId, mActivityStartTimeMs, durationMs);
+        if (mBackPressOccurred) {
+            RecordUserAction.record("FirstVisibleContentAfterBackPress");
+        }
     }
 
     /**

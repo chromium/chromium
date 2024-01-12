@@ -10,6 +10,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/common/extension.h"
@@ -38,15 +40,15 @@ class ManifestTest : public testing::Test {
   // to a manifest or the manifest itself.
   class ManifestData {
    public:
-    explicit ManifestData(base::StringPiece name);
+    explicit ManifestData(std::string_view name);
     explicit ManifestData(base::Value::Dict manifest);
-    ManifestData(base::Value::Dict manifest, base::StringPiece name);
+    ManifestData(base::Value::Dict manifest, std::string_view name);
     ManifestData(ManifestData&& other);
     ~ManifestData();
 
     // Constructs a ManifestData object from the given `json` string.
     // Calls ADD_FAILURE() if `json` is not valid JSON.
-    static ManifestData FromJSON(base::StringPiece json);
+    static ManifestData FromJSON(std::string_view json);
 
     const std::string& name() const { return name_; }
 

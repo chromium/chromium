@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,23 +16,30 @@ import static org.chromium.chrome.browser.password_manager.PasswordCheckReferrer
 
 import android.accounts.Account;
 import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
@@ -55,6 +66,10 @@ public class PasswordCheckupLauncherTest {
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Spy private Context mContext = RuntimeEnvironment.application.getApplicationContext();
+
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     @Mock private Profile mProfile;
 
@@ -121,8 +136,7 @@ public class PasswordCheckupLauncherTest {
         mFakePasswordCheckupClientHelper.setIntentForAccountCheckup(
                 mMockPendingIntentForAccountCheckup);
 
-        when(mMockWindowAndroid.getContext())
-                .thenReturn(new WeakReference<>(ContextUtils.getApplicationContext()));
+        when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(mContext));
         mModalDialogManager =
                 new ModalDialogManager(
                         mock(ModalDialogManager.Presenter.class),
@@ -170,5 +184,23 @@ public class PasswordCheckupLauncherTest {
                 mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);
 
         verify(mMockPendingIntentForLocalCheckup).send();
+    }
+
+    @Test
+    public void testLaunchSafetyCheckOpensSafetyCheckInChromeSettings()
+            throws PendingIntent.CanceledException {
+        when(mMockSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
+        when(mMockPasswordManagerUtilBridgeJni.canUseUPMBackend(true, mPrefService))
+                .thenReturn(true);
+
+        PasswordCheckupLauncher.launchSafetyCheck(mMockWindowAndroid);
+
+        verify(mContext, times(1)).startActivity(mIntentCaptor.capture(), isNull());
+
+        Intent intent = mIntentCaptor.getValue();
+        assertThat(
+                intent.getExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                is(SafetyCheckSettingsFragment.class.getName()));
     }
 }

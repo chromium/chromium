@@ -76,7 +76,6 @@
 <translation id="162175252992296058">सं. रा. अमेरिकी अन्तर्राष्ट्रिय ढाँचाको पोर्तुगाली किबोर्ड</translation>
 <translation id="1629521517399325891">नेटवर्क प्रमाणित गर्नका लागि प्रयोगकर्ताको प्रमाणपत्र उपलब्ध छैन।</translation>
 <translation id="1641780993263690097">चिनियाँ पिनयिन</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> वटा फाइल अफलाइन उपलब्ध गराइँदै छन्</translation>
 <translation id="164969095109328410">Chrome यन्त्र</translation>
 <translation id="1661207570040737402">तपाईंले आफ्नो Google Workspace को साझा ड्राइभमा भएको भण्डारण पूरै प्रयोग गरिसक्नुभएको छ।</translation>
 <translation id="1661867754829461514">पिन छुटिरहेको छ</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री सिंक गर्ने तयारी गरिँदै छ…</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल कपी गर्न पाइँदैन</translation>
 <translation id="6509122719576673235">नर्वेयन</translation>
 <translation id="6528513914570774834">यस डिभाइसका अन्य प्रयोगकर्ताहरूलाई यो नेटवर्क प्रयोग गर्न दिनुहोस्</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> लाई समक्रमण गर्दै...</translation>
 <translation id="6549689063733911810">हालै</translation>
 <translation id="6558280019477628686">एउटा त्रुटि भयो। केही वस्तुहरू नमेटिएका हुनसक्छन्।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" लाई मेटाउँदै...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux का एपलाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="7555339735447658365">तपाईं अहिले अफलाइन हुनुहुन्छ। तपाईंको डिभाइस इन्टरनेटमा कनेक्ट भएपछि फाइल सिंक गर्ने सुविधा सुचारु गरिने छ</translation>
 <translation id="7589661784326793847">केवल एक सेकेन्ड प्रतिक्षा गर्नुहोस्</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> अफलाइनमा उपलब्ध गराइँदै छ</translation>
 <translation id="7600126690270271294">सर्बियाली</translation>
 <translation id="7603724359189955920">ग्रिडहरू</translation>
 <translation id="7627790789328695202">ओहो, <ph name="FILE_NAME" /> पहिले नै विद्यमान छ। यसलाई अर्को नाम दिनुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
 <translation id="8147028810663464959">वर्णको चौडाइ पूर्ण छ</translation>
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{एउटा त्रुटि।}other{# वटा त्रुटि।}}</translation>
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
 <translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
 <translation id="8175731104491895765">फ्रान्सेली (बेल्जियम)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> लाई <ph name="FOLDER_NAME" /> फोल्डरमा भएका फाइलहरू एक्सेस गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8372852072747894550">ग्रिक</translation>
+<translation id="8377269993083688872">इमेलका लेआउटहरू</translation>
 <translation id="8386903983509584791">स्क्यान कार्य पूरा भयो</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> एक्स्ट्रयाक्ट गरियो।</translation>
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">खोल्नको लागि फाइल चयन गर्नुहोस्</translation>
 <translation id="8577897833047451336">क्रोएसियाली</translation>
 <translation id="8578308463707544055">इन्डोनेसियाली</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> वस्तुहरू समक्रमण गर्दै...</translation>
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
 <translation id="8601932370724196034">Crostini छवि फाइल</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">साझा नेटवर्क को लागि प्रोक्सीहरू अनुमति दिनुहोस्</translation>
 <translation id="8790981080411996443">बोटबिरुवामा पानी हालिरहेका व्यक्ति</translation>
 <translation id="8798099450830957504">डिफल्ट</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{एउटा चेतावनी।}other{# वटा चेतावनी।}}</translation>
 <translation id="8808686172382650546">बिरालो</translation>
 <translation id="8810671769985673465">जिप गर्न सकिएन, विद्यमान वस्तु: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">स्पेनी (स्पेन)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
-<translation id="9083722265619106011">{0,plural, =1{एउटा चेतावनी।}other{<ph name="COUNT" /> वटा चेतावनी।}}</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>

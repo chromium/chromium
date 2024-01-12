@@ -515,7 +515,7 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<CryptAuthKeyRegistry> key_registry_;
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
 
   std::unique_ptr<FakeCryptAuthKeyCreatorFactory>
       fake_cryptauth_key_creator_factory_;

@@ -116,8 +116,12 @@ source_set("grid_ui") {
     "group_bottom_trailing_view.mm",
     "group_grid_cell.h",
     "group_grid_cell.mm",
+    "group_grid_configurable_view.h",
+    "group_grid_configurable_view.mm",
     "group_tab_info.h",
     "group_tab_info.mm",
+    "group_tab_view.h",
+    "group_tab_view.mm",
     "legacy_grid_layout.h",
     "legacy_grid_layout.mm",
   ]

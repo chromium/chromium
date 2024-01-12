@@ -397,7 +397,7 @@ void NativeAppWindowViews::SetContentSizeConstraints(
 }
 
 bool NativeAppWindowViews::CanHaveAlphaEnabled() const {
-  return widget_->IsTranslucentWindowOpacitySupported();
+  return views::Widget::IsWindowCompositingSupported();
 }
 
 void NativeAppWindowViews::SetVisibleOnAllWorkspaces(bool always_visible) {

@@ -37,7 +37,7 @@
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm ]
+#         qualcomm qualcomm-0x41333430 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -301,8 +301,6 @@ crbug.com/1488026 [ android android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 # JavaScript after the SVG is loaded.
 [ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
 
-[ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Slow ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -365,13 +363,20 @@ crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaF
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
-# Fails / flaky on Linux AMD RX 5500 XT with RADV 20.0.8
+crbug.com/1517110 [ win10 nvidia-0x2184 renderer-skia-gl ] Pixel_Video_* [ RetryOnFailure ]
+
+# Fails / flaky on Linux AMD RX 5500 XT
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
 crbug.com/1478354 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ RetryOnFailure ]
-
+crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DAlphaCanvas [ RetryOnFailure ]
+crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ RetryOnFailure ]
+crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
+crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
+crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
+crbug.com/1516990 [ linux amd-0x7340 renderer-skia-vulkan ] Pixel_SVGHuge [ RetryOnFailure ]
 
 # Lacros consistent failures on CrOS devices, skip to save some time
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
@@ -395,11 +400,10 @@ crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUToDataURL
 crbug.com/1469875 [ mac graphite-enabled amd release no-asan ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release no-asan ] Pixel_SVGHuge [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled intel release asan ] Pixel_CSSFilterEffects [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release asan ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
 
 # Flaky, but if it fails, retries also always fail.
-crbug.com/1494227 [ mac graphite-enabled intel release no-asan ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1494227 [ mac graphite-enabled intel ] Pixel_CSSFilterEffects [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
@@ -416,6 +420,13 @@ crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan
 crbug.com/1495573 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 crbug.com/1495573 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
 crbug.com/1495573 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+
+# ChromeOS Volteer failures
+crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_ScissorTestWithPreserveDrawingBuffer [ Failure ]
+crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
+crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear [ Failure ]
+crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

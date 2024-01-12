@@ -83,8 +83,6 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // Returns true if user represents any type of the kiosk.
   static bool TypeIsKiosk(UserType user_type);
 
-  explicit User(const AccountId& account_id);
-
   User(const User&) = delete;
   User& operator=(const User&) = delete;
 
@@ -98,10 +96,10 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   const AccountId& GetAccountId() const override;
 
   // Returns the user type.
-  virtual UserType GetType() const = 0;
+  UserType GetType() const { return type_; }
 
   // Will LOG(FATAL) unless overridden.
-  virtual void UpdateType(UserType user_type);
+  void UpdateType(UserType new_type);
 
   // Returns true if user has gaia account. True for users of types
   // USER_TYPE_REGULAR and USER_TYPE_CHILD.
@@ -112,9 +110,6 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // Returns true if user is child.
   virtual bool IsChild() const;
-
-  // True if user image can be synced.
-  virtual bool CanSyncImage() const;
 
   // The displayed (non-canonical) user email.
   virtual std::string display_email() const;
@@ -247,6 +242,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);
 
+  User(const AccountId& account_id, UserType type);
+
   const std::string* GetAccountLocale() const { return account_locale_.get(); }
 
   // Setters are private so only UserManager can call them.
@@ -305,6 +302,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
  private:
   AccountId account_id_;
+  UserType type_;
   std::u16string display_name_;
   std::u16string given_name_;
   // User email for display, which may include capitals and non-significant

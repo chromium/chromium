@@ -9,6 +9,8 @@
 
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
@@ -16,6 +18,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using KeyCodeLookupEntry = AcceleratorKeycodeLookupCache::KeyCodeLookupEntry;
 
 class AcceleratorKeycodeLookupCacheTest : public testing::Test {
  public:
@@ -57,8 +61,8 @@ class AcceleratorKeycodeLookupCacheTest : public testing::Test {
   ~AcceleratorKeycodeLookupCacheTest() override = default;
 
  protected:
-  std::map<ui::KeyboardCode, std::u16string> cache() {
-    return lookup_cache_->key_code_to_string16_cache_;
+  std::map<std::pair<ui::KeyboardCode, bool>, KeyCodeLookupEntry> cache() {
+    return lookup_cache_->key_code_to_cache_entry_;
   }
 
   std::unique_ptr<AcceleratorKeycodeLookupCache> lookup_cache_;
@@ -71,18 +75,22 @@ TEST_F(AcceleratorKeycodeLookupCacheTest, ImeChanged) {
   const std::u16string expected = u"a";
 
   EXPECT_TRUE(cache().empty());
-  lookup_cache_->InsertOrAssign(ui::KeyboardCode::VKEY_A, expected);
+  lookup_cache_->InsertOrAssign(ui::KeyboardCode::VKEY_A,
+                                /*remap_positional_key=*/false,
+                                ui::DomCode::NONE, ui::DomKey::NONE,
+                                ui::KeyboardCode::VKEY_A, expected);
   // Expect the cache to be populated.
-  std::optional<std::u16string> found_key_string =
-      lookup_cache_->Find(ui::KeyboardCode::VKEY_A);
-  EXPECT_TRUE(found_key_string.has_value());
-  EXPECT_EQ(expected, found_key_string.value());
+  std::optional<KeyCodeLookupEntry> found_entry = lookup_cache_->Find(
+      ui::KeyboardCode::VKEY_A, /*remap_positional_key=*/false);
+  EXPECT_TRUE(found_entry.has_value());
+  EXPECT_EQ(expected, found_entry->key_display);
 
   // Trigger IME change event, expect the cache to be cleared.
   input_method_manager_->NotifyInputMethodChanged();
   EXPECT_TRUE(cache().empty());
-  found_key_string = lookup_cache_->Find(ui::KeyboardCode::VKEY_A);
-  EXPECT_FALSE(found_key_string.has_value());
+  found_entry = lookup_cache_->Find(ui::KeyboardCode::VKEY_A,
+                                    /*remap_positional_key=*/false);
+  EXPECT_FALSE(found_entry.has_value());
 }
 
 }  // namespace ash

@@ -63,11 +63,11 @@ class ArcTermsOfServiceDefaultNegotiator
   // Shows "Terms of service" page on ARC support Chrome App.
   void StartNegotiationImpl() override;
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   // Owned by ArcSessionManager.
-  const raw_ptr<ArcSupportHost, ExperimentalAsh> support_host_;
+  const raw_ptr<ArcSupportHost> support_host_;
 
-  const raw_ptr<metrics::MetricsService, ExperimentalAsh> metrics_service_;
+  const raw_ptr<metrics::MetricsService> metrics_service_;
 
   std::unique_ptr<ArcOptInPreferenceHandler> preference_handler_;
 

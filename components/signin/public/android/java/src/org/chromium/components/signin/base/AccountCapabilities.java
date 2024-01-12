@@ -100,6 +100,14 @@ public class AccountCapabilities {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
     }
 
+    /**
+     * @return canUseModelExecutionFeatures capability value.
+     */
+    public @Tribool int canUseModelExecutionFeatures() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME);
+    }
+
     /** @return isAllowedForMachineLearning capability value. */
     public @Tribool int isAllowedForMachineLearning() {
         return getCapabilityByName(

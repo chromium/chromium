@@ -407,6 +407,9 @@ interface ThemeObserver {
 
   // Notifies the JS side about the current state of the static color.
   OnStaticColorChanged(skia.mojom.SkColor? color);
+
+  // Notifies the JS side about the system geolocation permission change.
+  OnGeolocationPermissionForSystemServicesChanged(bool enabled);
 };
 
 // Provides APIs to expose theme settings such dark/light color mode.
@@ -428,6 +431,9 @@ interface ThemeProvider {
   // @see //ash/style/color_palette_controller.h
   SetStaticColor(skia.mojom.SkColor static_color);
 
+  // Sets the system geolocation permission to "Only allowed for system".
+  EnableGeolocationForSystemServices();
+
   // Retrieves the color scheme for dynamic color.
   GetColorScheme() => (ash.style.mojom.ColorScheme color_scheme);
 
@@ -442,6 +448,10 @@ interface ThemeProvider {
 
   // Returns whether dark mode is enabled.
   IsDarkModeEnabled() => (bool dark_mode_enabled);
+
+  // Returns if the system geolocation permission is enabled for system
+  // services.
+  IsGeolocationEnabledForSystemServices() => (bool geolocation_enabled);
 };
 
 // Contains information about the current user.
@@ -647,6 +657,11 @@ interface AmbientObserver {
 
   // Notifies the JS side when ambient visibility is changed.
   OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility);
+
+  // Notifies the JS side about the system geolocation permission change.
+  // TODO(b/319443587): Refactor out the Geolocation interfaces from Ambient*
+  // and Theme* intefaces.
+  OnGeolocationPermissionForSystemServicesChanged(bool enabled);
 };
 
 // Provides APIs to expose Ambient mode settings.
@@ -696,6 +711,13 @@ interface AmbientProvider {
 
   // Called when the time of day promo banner is dismissed.
   HandleTimeOfDayBannerDismissed();
+
+  // Returns if the system geolocation permission is enabled for system
+  // services.
+  IsGeolocationEnabledForSystemServices() => (bool geolocation_enabled);
+
+  // Sets the system geolocation permission to "Only allowed for system".
+  EnableGeolocationForSystemServices();
 };
 
 // The supported preset colors for keyboard backlight.

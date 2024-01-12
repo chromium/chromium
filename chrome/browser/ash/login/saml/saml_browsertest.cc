@@ -355,8 +355,7 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
 
  protected:
-  raw_ptr<SecretInterceptingFakeUserDataAuthClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<SecretInterceptingFakeUserDataAuthClient, DanglingUntriaged>
       cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -1577,8 +1576,11 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlReauthWithSamlRedirect) {
   test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
 
-  // Verify that samlredirect Gaia path is used by the Gaia screen.
-  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+  // Since this is a reauth of existing user, we expect them to use reauth
+  // endpoint regardless of LoginAuthenticationBehavior policy.
+  EXPECT_EQ(GaiaPath(), features::IsGaiaReauthEndpointEnabled()
+                            ? WizardContext::GaiaPath::kReauth
+                            : WizardContext::GaiaPath::kSamlRedirect);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {
@@ -2156,8 +2158,7 @@ class SAMLDeviceAttestationTest : public SamlTestBase {
       const std::vector<std::string>& allowed_urls);
 
   ScopedTestingCrosSettings settings_helper_;
-  raw_ptr<StubCrosSettingsProvider, ExperimentalAsh> settings_provider_ =
-      nullptr;
+  raw_ptr<StubCrosSettingsProvider> settings_provider_ = nullptr;
 
   policy::DevicePolicyCrosTestHelper policy_helper_;
 

@@ -36,8 +36,17 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
 
   ~ZxLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   zx_status_t zx_status_;
+};
+
+class BASE_EXPORT ZxLogMessageFatal final : public ZxLogMessage {
+ public:
+  using ZxLogMessage::ZxLogMessage;
+  [[noreturn]] ~ZxLogMessageFatal() override;
 };
 
 }  // namespace logging

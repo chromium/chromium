@@ -4,6 +4,8 @@
 
 #include "content/public/browser/url_loader_throttles.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/memory/safe_ref.h"
 #include "components/variations/net/omnibox_url_loader_throttle.h"
@@ -30,7 +32,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
@@ -41,11 +42,12 @@ CreateContentBrowserURLLoaderThrottles(
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottles(
           request, browser_context, wc_getter, navigation_ui_data,
-          frame_tree_node_id);
+          frame_tree_node_id, navigation_id);
   variations::OmniboxURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
   // TODO(crbug.com/1094303): Consider whether we want to use the WebContents to
   // determine the value for variations::Owner. Alternatively, this is the
@@ -99,7 +101,7 @@ CreateContentBrowserURLLoaderThrottles(
     // headers are changed, any idempotent method is still allowed to make
     // further changes to server state.
     if (net::HttpUtil::IsMethodSafe(request.method) && origin_trials_delegate) {
-      absl::optional<url::Origin> top_origin = absl::nullopt;
+      std::optional<url::Origin> top_origin = std::nullopt;
       // The throttle should only use a top-frame origin for partitioning if
       // this is not the outermost frame.
       if (frame_tree_node && frame_tree_node->GetParentOrOuterDocument()) {

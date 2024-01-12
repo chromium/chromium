@@ -133,9 +133,9 @@ class FakeNearbyConnectionsManager
   void HandleStartAdvertisingCallback(ConnectionsStatus status);
   void HandleStopAdvertisingCallback(ConnectionsStatus status);
 
-  raw_ptr<IncomingConnectionListener, DanglingUntriaged | ExperimentalAsh>
-      advertising_listener_ = nullptr;
-  raw_ptr<DiscoveryListener, ExperimentalAsh> discovery_listener_ = nullptr;
+  raw_ptr<IncomingConnectionListener, DanglingUntriaged> advertising_listener_ =
+      nullptr;
+  raw_ptr<DiscoveryListener> discovery_listener_ = nullptr;
   base::WeakPtr<BandwidthUpgradeListener> bandwidth_upgrade_listener_;
   bool is_shutdown_ = false;
   DataUsage advertising_data_usage_ = DataUsage::kUnknown;
@@ -143,7 +143,7 @@ class FakeNearbyConnectionsManager
   std::set<std::string> upgrade_bandwidth_endpoint_ids_;
   std::map<std::string, std::string> endpoint_auth_tokens_;
   std::map<std::string, std::vector<uint8_t>> endpoint_raw_auth_tokens_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_ = nullptr;
+  raw_ptr<NearbyConnection> connection_ = nullptr;
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
   base::RepeatingCallback<void(PayloadPtr,
                                base::WeakPtr<PayloadStatusListener>)>

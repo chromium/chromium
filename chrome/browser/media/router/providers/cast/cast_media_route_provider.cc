@@ -315,12 +315,12 @@ void CastMediaRouteProvider::DiscoverSinksNow() {
   app_discovery_service_->Refresh();
 }
 
-void CastMediaRouteProvider::CreateMediaRouteController(
+void CastMediaRouteProvider::BindMediaController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-    CreateMediaRouteControllerCallback callback) {
-  std::move(callback).Run(activity_manager_->CreateMediaController(
+    BindMediaControllerCallback callback) {
+  std::move(callback).Run(activity_manager_->BindMediaController(
       route_id, std::move(media_controller), std::move(observer)));
 }
 

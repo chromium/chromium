@@ -35,7 +35,7 @@ class BrowserProcessPlatformPartTestApi {
   bool CanRestoreUrlsForProfile(const Profile* profile);
 
  private:
-  const raw_ptr<BrowserProcessPlatformPart, ExperimentalAsh> platform_part_;
+  const raw_ptr<BrowserProcessPlatformPart> platform_part_;
 };
 
 #endif  // CHROME_TEST_BASE_BROWSER_PROCESS_PLATFORM_PART_TEST_API_CHROMEOS_H_

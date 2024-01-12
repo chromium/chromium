@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
 namespace content {
@@ -98,7 +98,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
                   /*negative=*/{})),
       };
 
-  absl::optional<attribution_reporting::FilterData> source_filter_data =
+  std::optional<attribution_reporting::FilterData> source_filter_data =
       attribution_reporting::FilterData::Create({{"filter", {"value"}}});
   ASSERT_TRUE(source_filter_data.has_value());
 
@@ -176,7 +176,7 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
                 {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
             .BuildAggregatableAttribution();
 
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         CreateAggregatableReportRequest(report);
     ASSERT_TRUE(request.has_value());
     const base::Value::Dict& additional_fields =
@@ -200,7 +200,7 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
           .SetAggregationCoordinatorOrigin(*coordinator_origin)
           .BuildAggregatableAttribution();
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(report);
   ASSERT_TRUE(request.has_value());
   EXPECT_EQ(request->payload_contents().aggregation_coordinator_origin,
@@ -208,7 +208,7 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
 }
 
 TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(
           ReportBuilder(
               AttributionInfoBuilder().Build(),
@@ -229,7 +229,7 @@ TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
 
 TEST(AggregatableAttributionUtilsTest,
      AggregatableReportRequestExcludingSourceRegistrationTime) {
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(
           ReportBuilder(
               AttributionInfoBuilder().Build(),

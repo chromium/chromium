@@ -831,9 +831,6 @@ void ThreatDetails::FillReferrerChain(
 }
 
 bool ThreatDetails::ShouldFillInterstitialInteractions() {
-  if (!base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
-    return false;
-  }
   static constexpr auto valid_report_types =
       base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
           {ClientSafeBrowsingReportRequest::URL_PHISHING,

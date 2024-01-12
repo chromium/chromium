@@ -22,6 +22,7 @@ class Browser;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
+@class TabGridToolbarsConfiguration;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGroupsCommands;
 @protocol TabPresentationDelegate;
@@ -70,6 +71,10 @@ class WebStateList;
 // Called when toolbars should be updated. This function should be implemented
 // in a subclass.
 - (void)configureToolbarsButtons;
+
+// Called when the buttons needs to be updated for the selection mode.
+- (void)configureButtonsInSelectionMode:
+    (TabGridToolbarsConfiguration*)configuration;
 
 @end
 

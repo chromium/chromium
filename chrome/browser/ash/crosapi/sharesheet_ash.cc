@@ -79,7 +79,7 @@ void SharesheetAsh::ShowBubbleWithOnClosed(
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   sharesheet_service->ShowBubble(
       apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_), source,
-      base::BindOnce(&GetNativeWindowFromId, window_id), base::NullCallback(),
+      base::BindOnce(&GetNativeWindowFromId, window_id), base::DoNothing(),
       base::BindOnce(&OnClosedCallbackWrapper, std::move(callback)));
 }
 

@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,7 +57,7 @@ class ProfileTokenQualityTest : public testing::Test {
     FormFieldData& field = form.fields[field_index];
     field.value = std::move(new_value);
     bam_.OnTextFieldDidChange(form, field, gfx::RectF(),
-                              AutofillTickClock::NowTicks());
+                              base::TimeTicks::Now());
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
@@ -323,7 +322,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Large form: Expect that four observations are dropped, such that
         // the limit of eight observations are collected.
         DropObservationTest{
-            {NAME_FIRST, NAME_LAST_FIRST, NAME_LAST_SECOND, COMPANY_NAME,
+            {NAME_FIRST, NAME_MIDDLE, NAME_LAST, COMPANY_NAME,
              ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
              ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE,
              ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},

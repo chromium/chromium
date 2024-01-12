@@ -311,6 +311,8 @@ function onCompanionMessageEvent(event: MessageEvent) {
         data[ParamType.COMPANION_LOADING_STATE]);
   } else if (methodType === MethodType.kRefreshCompanionPage) {
     companionProxy.handler.refreshCompanionPage();
+  } else if (methodType === MethodType.kServerSideUrlFilterEvent) {
+    companionProxy.handler.onServerSideUrlFilterEvent();
   }
 }
 

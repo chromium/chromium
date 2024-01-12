@@ -33,6 +33,14 @@ void QuickStartScreenHandler::SetDiscoverableName(
   CallExternalAPI("setDiscoverableName", discoverable_name);
 }
 
+void QuickStartScreenHandler::ShowInitialUiStep() {
+  CallExternalAPI("showInitialUiStep");
+}
+
+void QuickStartScreenHandler::ShowConnectingToPhoneStep() {
+  CallExternalAPI("showConnectingToPhoneStep");
+}
+
 void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
 }
@@ -47,6 +55,10 @@ void QuickStartScreenHandler::ShowSigningInStep() {
 
 void QuickStartScreenHandler::ShowCreatingAccountStep() {
   CallExternalAPI("showCreatingAccountStep");
+}
+
+void QuickStartScreenHandler::ShowSetupCompleteStep() {
+  CallExternalAPI("showSetupCompleteStep");
 }
 
 void QuickStartScreenHandler::SetUserEmail(const std::string email) {
@@ -83,6 +95,10 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE);
   builder->Add("quickStartAccountTransferSubtitle",
                IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE);
+  builder->Add("quickStartSetupCompleteTitle",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_TITLE);
+  builder->Add("quickStartSetupCompleteSubtitle",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE);
   builder->Add("quickStartSetupFromSigninTitle",
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE);
   builder->Add("quickStartSetupFromSigninSubtitle",

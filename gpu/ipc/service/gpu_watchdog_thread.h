@@ -349,7 +349,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // Set by the watchdog thread and Read by the test thread.
   base::AtomicFlag test_result_timeout_and_gpu_hang_without_kill_;
 
-  SEQUENCE_CHECKER(watchdog_thread_sequence_checker_);
   SEQUENCE_CHECKER(watched_thread_sequence_checker_);
 
   base::WeakPtr<GpuWatchdogThread> weak_ptr_;

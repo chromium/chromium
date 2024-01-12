@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
 
 #include "base/logging.h"
+#include "base/task/task_traits.h"
 #include "components/component_updater/installer_policies/masked_domain_list_component_installer_policy.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -31,7 +32,9 @@ void RegisterMaskedDomainListComponent(ComponentUpdateService* cus) {
             }
           }));
 
-  base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus, base::OnceClosure(), base::TaskPriority::USER_BLOCKING);
+  base::MakeRefCounted<ComponentInstaller>(std::move(policy),
+                                           /*action_handler=*/nullptr,
+                                           base::TaskPriority::USER_BLOCKING)
+      ->Register(cus, base::OnceClosure());
 }
 }  // namespace component_updater

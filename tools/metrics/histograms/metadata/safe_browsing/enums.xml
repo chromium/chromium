@@ -162,17 +162,6 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Hash-prefix real-time experiment"/>
 </enum>
 
-<enum name="HPRTExperimentCombinedResult">
-  <int value="0" label="No mechanism"/>
-  <int value="1" label="URL real-time only"/>
-  <int value="2" label="Hash database only"/>
-  <int value="3" label="Hash real-time only"/>
-  <int value="4" label="URL real-time + hash database"/>
-  <int value="5" label="URL real-time + hash real-time"/>
-  <int value="6" label="Hash database + hash real-time"/>
-  <int value="7" label="All mechanisms"/>
-</enum>
-
 <enum name="SafeBrowsingAllowlistAsyncMatch">
   <int value="0" label="ASYNC"/>
   <int value="1" label="MATCH"/>
@@ -306,7 +295,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="WithoutToken"/>
 </enum>
 
-<enum name="SafeBrowsingHPRTOperationResult">
+<enum name="SafeBrowsingHPRTOperationOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Parse response error"/>
   <int value="2" label="No cache duration in response"/>
@@ -315,6 +304,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Network error"/>
   <int value="6" label="HTTP error"/>
   <int value="7" label="Bug: Reached NOTREACHED code"/>
+  <int value="8" label="Result found in local cache"/>
+  <int value="9" label="Service is in backoff mode"/>
+  <int value="10" label="OHTTP key fetch failed"/>
 </enum>
 
 <enum name="SafeBrowsingOhttpFetchKeyTriggerReason">

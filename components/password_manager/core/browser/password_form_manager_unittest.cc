@@ -4114,6 +4114,65 @@ TEST_P(PasswordFormManagerTest,
   EXPECT_EQ(u"", form_manager_->GetPendingCredentials().username_value);
 }
 
+// Tests that PasswordManager does not use server precictions to parse
+// localhost forms.
+TEST_P(PasswordFormManagerTest, ServerPredictionsIgnoredOnLocalhost) {
+  // Observe a single text field form on localhost.
+  FormData observed_form;
+  const std::string kLocalHostUrl = "http://localhost";
+  observed_form.url = GURL(kLocalHostUrl);
+  observed_form.unique_renderer_id = FormRendererId(1);
+  FormFieldData field;
+  field.form_control_type = autofill::FormControlType::kInputText;
+  field.unique_renderer_id = kSingleUsernameFieldRendererId;
+  observed_form.fields.push_back(field);
+  CreateFormManager(observed_form);
+
+  // Expect no filling on receiving saved matches, because single username
+  // field cannot be filled without server predictions.
+  PasswordForm localhost_match = saved_match_;
+  localhost_match.url = GURL(kLocalHostUrl);
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+  Mock::VerifyAndClearExpectations(&driver_);
+
+  // Receive single username predictions.
+  const FormSignature kFormSignature = CalculateFormSignature(observed_form);
+  FormPredictions predictions = MakeSingleUsernamePredictions(
+      kFormSignature, kSingleUsernameFieldRendererId,
+      kSingleUsernameFieldSignature);
+
+  // Expect no filling on receiving predictions.
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  form_manager_->ProcessServerPredictions({{kFormSignature, predictions}});
+}
+
+// Tests that crowdsourcing votes are not uploaded for forms on localhost.
+TEST_P(PasswordFormManagerTest, NoVotesUploadedForLocalHost) {
+  observed_form_.url = GURL("http://localhost");
+  CreateFormManager(observed_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  submitted_form_.url = observed_form_.url;
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+  EXPECT_TRUE(form_manager_->IsNewLogin());
+
+  // Saving a new credential normally triggers uploading a password vote,
+  // but it shouldn't in case of the form on localhost.
+  EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
+  form_manager_->Save();
+}
+
+// Tests that VotesUploader is not created for HTTP auth forms.
+TEST_P(PasswordFormManagerTest, NoVotesUploaderForHTTPAuth) {
+  PasswordFormDigest form_digest(PasswordForm::Scheme::kBasic,
+                                 saved_match_.signon_realm, saved_match_.url);
+  auto form_manager = std::make_unique<PasswordFormManager>(
+      &client_, form_digest, fetcher_.get(),
+      std::make_unique<PasswordSaveManagerImpl>(&client_));
+  EXPECT_FALSE(form_manager->votes_uploader());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorResolvable) {

@@ -55,7 +55,7 @@ class NotificationWaiter : public KioskAppManagerObserver {
   }
 
   base::test::RepeatingTestFuture<bool> notifications_received_;
-  raw_ptr<ArcKioskAppManager, ExperimentalAsh> manager_;
+  raw_ptr<ArcKioskAppManager> manager_;
 };
 
 std::string GenerateAccountId(std::string package_name) {

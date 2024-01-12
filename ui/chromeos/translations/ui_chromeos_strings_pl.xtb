@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugalski z klawiaturą amerykańską międzynarodową</translation>
 <translation id="1629521517399325891">Certyfikat użytkownika do uwierzytelniania w sieci nie jest dostępny.</translation>
 <translation id="1641780993263690097">Chiński pinyin</translation>
-<translation id="1646019627374511909">Udostępniam pliki (<ph name="NUMBER_OF_ITEMS" />) offline</translation>
 <translation id="164969095109328410">Urządzenie z Chrome</translation>
 <translation id="1661207570040737402">Skończyło Ci się miejsce na dysku współdzielonym w Google Workspace.</translation>
 <translation id="1661867754829461514">Brak kodu PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Arkusz kalkulacyjny Google</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3486821258960016770">Mongolski</translation>
-<translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3511705761158917664">Przygotowuję do synchronizacji <ph name="NUMBER_OF_ITEMS" /> elementów…</translation>
 <translation id="3522708245912499433">Portugalski</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Kopiowanie <ph name="COUNT" /> plików jest zablokowane przez zasady administratora</translation>
 <translation id="6509122719576673235">Norweski</translation>
 <translation id="6528513914570774834">Zezwól innym użytkownikom tego urządzenia na używanie tej sieci</translation>
-<translation id="653019979737152879">Synchronizuję <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Ostatnie</translation>
 <translation id="6558280019477628686">Wystąpił błąd. Niektóre elementy mogły nie zostać usunięte.</translation>
 <translation id="656398493051028875">Usuwam „<ph name="FILENAME" />”...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Przyznaj aplikacjom na Linuksa uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Jesteś teraz offline. Synchronizacja plików zostanie wznowiona, gdy będziesz mieć połączenie z internetem.</translation>
 <translation id="7589661784326793847">Chwileczkę</translation>
-<translation id="7592775719802218421">Pobieram plik <ph name="FILE_NAME" /> do udostępnienia w trybie offline</translation>
 <translation id="7600126690270271294">Serbski</translation>
 <translation id="7603724359189955920">Siatki</translation>
 <translation id="7627790789328695202">Ups, plik <ph name="FILE_NAME" /> już istnieje. Zmień jego nazwę i spróbuj ponownie.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8147028810663464959">Szerokość znaków: pełna</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 błąd.}few{# błędy.}many{# błędów.}other{# błędu.}}</translation>
 <translation id="8154842056504218462">Zaznaczono wszystkie elementy.</translation>
 <translation id="8157684860301034423">Nie udało się pobrać informacji o aplikacji.</translation>
 <translation id="8175731104491895765">Francuski (Belgia)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Przyznaj maszynie wirtualnej <ph name="VM_NAME" /> uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Błędny klucz WEP</translation>
 <translation id="8372852072747894550">Grecki</translation>
+<translation id="8377269993083688872">Układy e-maili</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
 <translation id="8387733224523483503">Element <ph name="FILE_NAME" /> został wyodrębniony.</translation>
 <translation id="8395901698320285466">Wymiary</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Wybierz plik do otwarcia</translation>
 <translation id="8577897833047451336">Chorwacki</translation>
 <translation id="8578308463707544055">Indonezyjski</translation>
-<translation id="8579285237314169903">Synchronizuję elementy – <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Lista plików została przełączona na widok miniatur.</translation>
 <translation id="8601932370724196034">Plik graficzny Crostini</translation>
 <translation id="8609695766746872526">Islandzki</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Zezwalaj na serwery proxy w sieciach współdzielonych</translation>
 <translation id="8790981080411996443">Osoba podlewająca rośliny</translation>
 <translation id="8798099450830957504">Domyślny</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ostrzeżenie.}few{# ostrzeżenia.}many{# ostrzeżeń.}other{# ostrzeżenia.}}</translation>
 <translation id="8808686172382650546">Kot</translation>
 <translation id="8810671769985673465">Pakowanie nie powiodło się, ponieważ element już istnieje: „<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Hiszpański (Hiszpania)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Istnieje już plik o nazwie „<ph name="FILE_NAME" />”. Wybierz inną nazwę.</translation>
 <translation id="9046895021617826162">Łączenie nie powiodło się</translation>
 <translation id="9065512565307033593">Jeśli nie uda Ci się dokonać weryfikacji, dostęp do sieci zostanie wyłączony.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ostrzeżenie.}few{<ph name="COUNT" /> ostrzeżenia.}many{<ph name="COUNT" /> ostrzeżeń.}other{<ph name="COUNT" /> ostrzeżenia.}}</translation>
 <translation id="908378762078012445">Rosyjski z klawiaturą fonetyczną AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizuję</translation>
 <translation id="9099674669267916096">Liczba stron</translation>

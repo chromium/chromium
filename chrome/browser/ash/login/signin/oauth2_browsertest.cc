@@ -199,7 +199,7 @@ class ThreadBlocker {
   static void BlockThreadOnThread(base::WaitableEvent* event) { event->Wait(); }
 
   // `unblock_event_` is deleted after BlockThreadOnThread returns.
-  const raw_ptr<base::WaitableEvent, ExperimentalAsh> unblock_event_;
+  const raw_ptr<base::WaitableEvent> unblock_event_;
 };
 
 // Helper class that is added as a RequestMonitor of embedded test server to

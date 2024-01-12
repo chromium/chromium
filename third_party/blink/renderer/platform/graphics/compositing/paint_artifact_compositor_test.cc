@@ -2824,9 +2824,7 @@ TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleSolidColorChunk) {
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(10, 10), LayerAt(0)->bounds());
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
-  }
+  EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
   EXPECT_FALSE(LayerAt(0)->draws_content());
   EXPECT_FALSE(LayerAt(0)->GetPicture());
 }
@@ -3883,9 +3881,7 @@ TEST_P(PaintArtifactCompositorTest, SolidColor) {
   EXPECT_EQ(gfx::Vector2dF(100, 200), layer->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(300, 400), layer->bounds());
   EXPECT_TRUE(layer->draws_content());
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
-  }
+  EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
   EXPECT_EQ(SkColors::kBlack, layer->background_color());
 }
 

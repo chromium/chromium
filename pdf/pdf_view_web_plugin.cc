@@ -87,7 +87,6 @@
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
@@ -1069,6 +1068,10 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
   }
 
   return std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
+}
+
+v8::Isolate* PdfViewWebPlugin::GetIsolate() {
+  return client_->GetIsolate();
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>

@@ -31,6 +31,7 @@ import {Route, routes} from '../router.js';
 
 import {getTemplate} from './audio.html.js';
 import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.js';
+import {BatteryStatus} from './device_page_browser_proxy.js';
 import {FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
 /** Utility for keeping percent in inclusive range of [0,100].  */
@@ -87,12 +88,9 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Number,
       },
 
-      systemSoundsEnabled_: {
+      powerSoundsHidden_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('areSystemSoundsEnabled');
-        },
-        readOnly: true,
+        computed: 'computePowerSoundsHidden_(batteryStatus_)',
       },
 
       startupSoundEnabled_: {
@@ -138,8 +136,9 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private isNoiseCancellationEnabled_: boolean;
   private isNoiseCancellationSupported_: boolean;
   private outputVolume_: number;
-  private systemSoundsEnabled_: boolean;
   private startupSoundEnabled_: boolean;
+  private batteryStatus_: BatteryStatus|undefined;
+  private powerSoundsHidden_: boolean;
 
   constructor() {
     super();
@@ -161,6 +160,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         'startup-sound-setting-retrieved', (startupSoundEnabled: boolean) => {
           this.startupSoundEnabled_ = startupSoundEnabled;
         });
+    this.addWebUiListener(
+        'battery-status-changed', this.set.bind(this, 'batteryStatus_'));
   }
 
   /**
@@ -405,6 +406,14 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
   private toggleStartupSoundEnabled_(e: CustomEvent<boolean>): void {
     this.audioAndCaptionsBrowserProxy_.setStartupSoundEnabled(e.detail);
+  }
+
+  private computePowerSoundsHidden_(): boolean {
+    if (!loadTimeData.getBoolean('areSystemSoundsEnabled')) {
+      return true;
+    }
+
+    return !this.batteryStatus_?.present;
   }
 }
 

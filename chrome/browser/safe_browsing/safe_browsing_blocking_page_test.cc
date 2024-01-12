@@ -483,34 +483,15 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             is_proceed_anyway_disabled,
             is_safe_browsing_surveys_enabled,
             std::move(trust_safety_sentiment_service_trigger),
-            /*url_loader_for_testing=*/nullptr),
-        wait_for_delete_(false) {
+            /*url_loader_for_testing=*/nullptr) {
     // Don't wait the whole 3 seconds for the browser test.
     SetThreatDetailsProceedDelayForTesting(100);
-  }
-
-  ~TestSafeBrowsingBlockingPage() override {
-    if (!wait_for_delete_) {
-      return;
-    }
-
-    // Notify that we are gone
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-    wait_for_delete_ = false;
-  }
-
-  void WaitForDelete() {
-    wait_for_delete_ = true;
-    content::RunMessageLoop();
   }
 
   // SecurityInterstitialPage methods:
   void CommandReceived(const std::string& command) override {
     SafeBrowsingBlockingPage::CommandReceived(command);
   }
-
- private:
-  bool wait_for_delete_;
 };
 
 void AssertNoInterstitial(Browser* browser, bool wait_for_delete) {
@@ -1052,27 +1033,6 @@ class SafeBrowsingBlockingPageBrowserTest
   raw_ptr<TestSafeBrowsingBlockingPageFactory, DanglingUntriaged>
       raw_blocking_page_factory_;
   net::EmbeddedTestServer https_server_;
-};
-
-class AntiPhishingTelemetryBrowserTest
-    : public SafeBrowsingBlockingPageBrowserTest {
- public:
-  AntiPhishingTelemetryBrowserTest() {
-    base::test::FeatureRefAndParams anti_phishing_telemetry_feature(
-        safe_browsing::kAntiPhishingTelemetry, {});
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {anti_phishing_telemetry_feature}, {});
-  }
-  ~AntiPhishingTelemetryBrowserTest() override = default;
-
-  void SetUp() override { SafeBrowsingBlockingPageBrowserTest::SetUp(); }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SafeBrowsingHatsSurveyBrowserTest
@@ -2415,6 +2375,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The timstamp of the warning shown should be in CSBRRs.
   EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
 }
+
+class AntiPhishingTelemetryBrowserTest
+    : public SafeBrowsingBlockingPageBrowserTest {};
 
 INSTANTIATE_TEST_SUITE_P(
     AntiPhishingTelemetryBrowserTestWithThreatTypeAndIsolationSetting,

@@ -5,9 +5,10 @@
 #include "google_apis/tasks/tasks_api_response_types.h"
 
 #include <memory>
-#include <string>
-
 #include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/json/json_value_converter.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -37,12 +38,12 @@ constexpr char kApiResponseUpdatedKey[] = "updated";
 
 constexpr char kLinkTypeEmail[] = "email";
 
-bool ConvertTaskStatus(base::StringPiece input, TaskStatus* output) {
+bool ConvertTaskStatus(std::string_view input, TaskStatus* output) {
   *output = TaskStatusFromString(input);
   return true;
 }
 
-bool ConvertTaskDueDate(base::StringPiece input,
+bool ConvertTaskDueDate(std::string_view input,
                         std::optional<base::Time>* output) {
   base::Time due;
   if (!util::GetTimeFromString(input, &due)) {
@@ -52,7 +53,7 @@ bool ConvertTaskDueDate(base::StringPiece input,
   return true;
 }
 
-bool ConvertTaskLinkType(base::StringPiece input, TaskLink::Type* output) {
+bool ConvertTaskLinkType(std::string_view input, TaskLink::Type* output) {
   *output = input == kLinkTypeEmail ? TaskLink::Type::kEmail
                                     : TaskLink::Type::kUnknown;
   return true;

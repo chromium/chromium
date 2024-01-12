@@ -51,6 +51,7 @@ class AccountPickerBottomSheetMediator
     private final AccountManagerFacade mAccountManagerFacade;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
+    // TODO(crbug.com/1515277): Use CoreAccountInfo here instead.
     private @Nullable String mSelectedAccountEmail;
     private @Nullable String mDefaultAccountEmail;
     private @Nullable String mAddedAccountEmail;
@@ -294,7 +295,14 @@ class AccountPickerBottomSheetMediator
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
 
-        mAccountPickerDelegate.signIn(mSelectedAccountEmail, this::onSigninFailed);
+        CoreAccountInfo accountInfo =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
+                        mSelectedAccountEmail);
+        if (accountInfo == null) {
+            return;
+        }
+        mAccountPickerDelegate.signIn(accountInfo, this::onSigninFailed);
     }
 
     private void onSigninFailed(GoogleServiceAuthError error) {

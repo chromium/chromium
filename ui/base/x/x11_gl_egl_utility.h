@@ -19,9 +19,6 @@ void GetPlatformExtraDisplayAttribs(EGLenum platform_type,
 void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
                                             EGLint* buffer_size);
 
-// Returns whether transparent background is suppored.
-bool IsTransparentBackgroundSupported();
-
 }  // namespace ui
 
 #endif  // UI_BASE_X_X11_GL_EGL_UTILITY_H_

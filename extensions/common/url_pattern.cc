@@ -7,12 +7,12 @@
 #include <stddef.h>
 
 #include <ostream>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/url_constants.h"
@@ -83,7 +83,7 @@ static_assert(static_cast<int>(URLPattern::ParseResult::kNumParseResults) ==
 
 const char kPathSeparator[] = "/";
 
-bool IsStandardScheme(base::StringPiece scheme) {
+bool IsStandardScheme(std::string_view scheme) {
   // "*" gets the same treatment as a standard scheme.
   if (scheme == "*")
     return true;
@@ -92,7 +92,7 @@ bool IsStandardScheme(base::StringPiece scheme) {
                          url::Component(0, static_cast<int>(scheme.length())));
 }
 
-bool IsValidPortForScheme(base::StringPiece scheme, base::StringPiece port) {
+bool IsValidPortForScheme(std::string_view scheme, std::string_view port) {
   if (port == "*")
     return true;
 
@@ -115,14 +115,14 @@ bool IsValidPortForScheme(base::StringPiece scheme, base::StringPiece port) {
 // the path will have only a single wildcard at the end. This makes figuring
 // out overlap much easier. It seems like there is probably a computer-sciency
 // way to solve the general case, but we don't need that yet.
-base::StringPiece StripTrailingWildcard(base::StringPiece path) {
+std::string_view StripTrailingWildcard(std::string_view path) {
   if (base::EndsWith(path, "*"))
     path.remove_suffix(1);
   return path;
 }
 
 // Removes trailing dot from |host_piece| if any.
-base::StringPiece CanonicalizeHostForMatching(base::StringPiece host_piece) {
+std::string_view CanonicalizeHostForMatching(std::string_view host_piece) {
   if (base::EndsWith(host_piece, "."))
     host_piece.remove_suffix(1);
   return host_piece;
@@ -131,7 +131,7 @@ base::StringPiece CanonicalizeHostForMatching(base::StringPiece host_piece) {
 }  // namespace
 
 // static
-bool URLPattern::IsValidSchemeForExtensions(base::StringPiece scheme) {
+bool URLPattern::IsValidSchemeForExtensions(std::string_view scheme) {
   for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (scheme == kValidSchemes[i])
       return true;
@@ -159,7 +159,7 @@ URLPattern::URLPattern(int valid_schemes)
       match_subdomains_(false),
       port_("*") {}
 
-URLPattern::URLPattern(int valid_schemes, base::StringPiece pattern)
+URLPattern::URLPattern(int valid_schemes, std::string_view pattern)
     // Strict error checking is used, because this constructor is only
     // appropriate when we know |pattern| is valid.
     : valid_schemes_(valid_schemes),
@@ -199,7 +199,7 @@ std::ostream& operator<<(std::ostream& out, const URLPattern& url_pattern) {
   return out << '"' << url_pattern.GetAsString() << '"';
 }
 
-URLPattern::ParseResult URLPattern::Parse(base::StringPiece pattern) {
+URLPattern::ParseResult URLPattern::Parse(std::string_view pattern) {
   spec_.clear();
   SetMatchAllURLs(false);
   SetMatchSubdomains(false);
@@ -216,13 +216,14 @@ URLPattern::ParseResult URLPattern::Parse(base::StringPiece pattern) {
   bool has_standard_scheme_separator = true;
 
   // Some urls also use ':' alone as the scheme separator.
-  if (scheme_end_pos == base::StringPiece::npos) {
+  if (scheme_end_pos == std::string_view::npos) {
     scheme_end_pos = pattern.find(':');
     has_standard_scheme_separator = false;
   }
 
-  if (scheme_end_pos == base::StringPiece::npos)
+  if (scheme_end_pos == std::string_view::npos) {
     return ParseResult::kMissingSchemeSeparator;
+  }
 
   if (!SetScheme(pattern.substr(0, scheme_end_pos)))
     return ParseResult::kInvalidScheme;
@@ -245,7 +246,7 @@ URLPattern::ParseResult URLPattern::Parse(base::StringPiece pattern) {
     path_start_pos = host_start_pos;
   } else if (scheme_ == url::kFileScheme) {
     size_t host_end_pos = pattern.find(kPathSeparator, host_start_pos);
-    if (host_end_pos == base::StringPiece::npos) {
+    if (host_end_pos == std::string_view::npos) {
       // Allow hostname omission.
       // e.g. file://* is interpreted as file:///*,
       // file://foo* is interpreted as file:///foo*.
@@ -262,20 +263,22 @@ URLPattern::ParseResult URLPattern::Parse(base::StringPiece pattern) {
     if (host_start_pos == host_end_pos)
       return ParseResult::kEmptyHost;
 
-    if (host_end_pos == base::StringPiece::npos)
+    if (host_end_pos == std::string_view::npos) {
       return ParseResult::kEmptyPath;
+    }
 
-    base::StringPiece host_and_port =
+    std::string_view host_and_port =
         pattern.substr(host_start_pos, host_end_pos - host_start_pos);
 
-    size_t port_separator_pos = base::StringPiece::npos;
+    size_t port_separator_pos = std::string_view::npos;
     if (host_and_port[0] != '[') {
       // Not IPv6 (either IPv4 or just a normal address).
       port_separator_pos = host_and_port.find(':');
     } else {  // IPv6.
       size_t ipv6_host_end_pos = host_and_port.find(']');
-      if (ipv6_host_end_pos == base::StringPiece::npos)
+      if (ipv6_host_end_pos == std::string_view::npos) {
         return ParseResult::kInvalidHost;
+      }
       if (ipv6_host_end_pos == 1)
         return ParseResult::kEmptyHost;
 
@@ -289,21 +292,21 @@ URLPattern::ParseResult URLPattern::Parse(base::StringPiece pattern) {
       }
     }
 
-    if (port_separator_pos != base::StringPiece::npos &&
+    if (port_separator_pos != std::string_view::npos &&
         !SetPort(host_and_port.substr(port_separator_pos + 1))) {
       return ParseResult::kInvalidPort;
     }
 
     // Note: this substr() will be the entire string if the port position
     // wasn't found.
-    base::StringPiece host_piece = host_and_port.substr(0, port_separator_pos);
+    std::string_view host_piece = host_and_port.substr(0, port_separator_pos);
 
     if (host_piece.empty())
       return ParseResult::kEmptyHost;
 
     if (host_piece == "*") {
       match_subdomains_ = true;
-      host_piece = base::StringPiece();
+      host_piece = std::string_view();
     } else if (base::StartsWith(host_piece, "*.")) {
       if (host_piece.length() == 2) {
         // We don't allow just '*.' as a host.
@@ -354,7 +357,7 @@ void URLPattern::SetValidSchemes(int valid_schemes) {
   valid_schemes_ = valid_schemes;
 }
 
-void URLPattern::SetHost(base::StringPiece host) {
+void URLPattern::SetHost(std::string_view host) {
   spec_.clear();
   host_ = host;
 }
@@ -376,7 +379,7 @@ void URLPattern::SetMatchSubdomains(bool val) {
   match_subdomains_ = val;
 }
 
-bool URLPattern::SetScheme(base::StringPiece scheme) {
+bool URLPattern::SetScheme(std::string_view scheme) {
   spec_.clear();
   scheme_ = scheme;
   if (scheme_ == "*") {
@@ -387,7 +390,7 @@ bool URLPattern::SetScheme(base::StringPiece scheme) {
   return true;
 }
 
-bool URLPattern::IsValidScheme(base::StringPiece scheme) const {
+bool URLPattern::IsValidScheme(std::string_view scheme) const {
   if (valid_schemes_ == SCHEME_ALL)
     return true;
 
@@ -399,7 +402,7 @@ bool URLPattern::IsValidScheme(base::StringPiece scheme) const {
   return false;
 }
 
-void URLPattern::SetPath(base::StringPiece path) {
+void URLPattern::SetPath(std::string_view path) {
   spec_.clear();
   path_ = path;
   path_escaped_ = path_;
@@ -407,7 +410,7 @@ void URLPattern::SetPath(base::StringPiece path) {
   base::ReplaceSubstringsAfterOffset(&path_escaped_, 0, "?", "\\?");
 }
 
-bool URLPattern::SetPort(base::StringPiece port) {
+bool URLPattern::SetPort(std::string_view port) {
   spec_.clear();
   if (IsValidPortForScheme(scheme_, port)) {
     port_ = port;
@@ -471,14 +474,14 @@ bool URLPattern::MatchesSecurityOrigin(const GURL& test) const {
   return MatchesSecurityOriginHelper(*test_url);
 }
 
-bool URLPattern::MatchesScheme(base::StringPiece test) const {
+bool URLPattern::MatchesScheme(std::string_view test) const {
   if (!IsValidScheme(test))
     return false;
 
   return scheme_ == "*" || test == scheme_;
 }
 
-bool URLPattern::MatchesHost(base::StringPiece host) const {
+bool URLPattern::MatchesHost(std::string_view host) const {
   // TODO(devlin): This is a bit sad. Parsing urls is expensive. However, it's
   // important that we do this conversion to a GURL in order to canonicalize the
   // host (the pattern's host_ already is canonicalized from Parse()). We can't
@@ -488,8 +491,8 @@ bool URLPattern::MatchesHost(base::StringPiece host) const {
 }
 
 bool URLPattern::MatchesHost(const GURL& test) const {
-  base::StringPiece test_host(CanonicalizeHostForMatching(test.host_piece()));
-  const base::StringPiece pattern_host(CanonicalizeHostForMatching(host_));
+  std::string_view test_host(CanonicalizeHostForMatching(test.host_piece()));
+  const std::string_view pattern_host(CanonicalizeHostForMatching(host_));
 
   // If the hosts are exactly equal, we have a match.
   if (test_host == pattern_host)
@@ -555,7 +558,7 @@ bool URLPattern::MatchesSingleOrigin() const {
   return !MatchesEffectiveTld() && scheme_ != "*" && !match_subdomains_;
 }
 
-bool URLPattern::MatchesPath(base::StringPiece test) const {
+bool URLPattern::MatchesPath(std::string_view test) const {
   // Make the behaviour of OverlapsWith consistent with MatchesURL, which is
   // need to match hosted apps on e.g. 'google.com' also run on 'google.com/'.
   // The below if is a no-copy way of doing (test + "/*" == path_escaped_).
@@ -678,12 +681,12 @@ std::optional<URLPattern> URLPattern::CreateIntersection(
 
   // Note: Alias the function type (rather than using auto) because
   // MatchesHost() is overloaded.
-  using match_function_type = bool (URLPattern::*)(base::StringPiece) const;
+  using match_function_type = bool (URLPattern::*)(std::string_view) const;
 
-  auto get_intersection = [this, &other](base::StringPiece own_str,
-                                         base::StringPiece other_str,
+  auto get_intersection = [this, &other](std::string_view own_str,
+                                         std::string_view other_str,
                                          match_function_type match_function,
-                                         base::StringPiece* out) {
+                                         std::string_view* out) {
     if ((this->*match_function)(other_str)) {
       *out = other_str;
       return true;
@@ -695,10 +698,10 @@ std::optional<URLPattern> URLPattern::CreateIntersection(
     return false;
   };
 
-  base::StringPiece scheme;
-  base::StringPiece host;
-  base::StringPiece port;
-  base::StringPiece path;
+  std::string_view scheme;
+  std::string_view host;
+  std::string_view port;
+  std::string_view path;
   // If any pieces fail to overlap, then there is no intersection.
   if (!get_intersection(scheme_, other.scheme_, &URLPattern::MatchesScheme,
                         &scheme) ||
@@ -710,14 +713,14 @@ std::optional<URLPattern> URLPattern::CreateIntersection(
   }
 
   // Only match subdomains if both patterns match subdomains.
-  base::StringPiece subdomains;
+  std::string_view subdomains;
   if (match_subdomains_ && other.match_subdomains_) {
     // The host may be empty (e.g., in the case of *://*/* - in that case, only
     // append '*' instead of '*.'.
     subdomains = host.empty() ? "*" : "*.";
   }
 
-  base::StringPiece scheme_separator =
+  std::string_view scheme_separator =
       IsStandardScheme(scheme) ? url::kStandardSchemeSeparator : ":";
 
   std::string pattern_str = base::StrCat(
@@ -764,7 +767,7 @@ bool URLPattern::MatchesSecurityOriginHelper(const GURL& test) const {
   return true;
 }
 
-bool URLPattern::MatchesPortPattern(base::StringPiece port) const {
+bool URLPattern::MatchesPortPattern(std::string_view port) const {
   return port_ == "*" || port_ == port;
 }
 

@@ -54,28 +54,6 @@ public class ContextualSearchFieldTrial {
                 : RELATED_SEARCHES_CONFIG_DEFAULT_STAMP;
     }
 
-    /**
-     * Gets the given parameter from the RelatedSearches FieldTrial feature.
-     * @param paramName The name of the parameter to get.
-     * @return The value of the parameter from the feature. If no param is present then an empty
-     *         string is returned.
-     */
-    static String getRelatedSearchesParam(String paramName) {
-        return ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.RELATED_SEARCHES, paramName);
-    }
-
-    /**
-     * Determines whether the specified parameter is present and enabled in the RelatedSearches
-     * Feature.
-     * @param relatedSearchesParamName The name of the param to get from the Feature.
-     * @return Whether the given parameter is enabled or not (has a value of "true").
-     */
-    static boolean isRelatedSearchesParamEnabled(String relatedSearchesParamName) {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.RELATED_SEARCHES, relatedSearchesParamName, false);
-    }
-
     /** Return The minimum height dp for the contextual search page. */
     static int getContextualSearchMinimumBasePageHeightDp() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(

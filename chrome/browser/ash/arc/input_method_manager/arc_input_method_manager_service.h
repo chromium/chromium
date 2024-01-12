@@ -148,7 +148,7 @@ class ArcInputMethodManagerService
   void SendHideVirtualKeyboard();
   void NotifyVirtualKeyboardVisibilityChange(bool visible);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<ArcInputMethodManagerBridge> imm_bridge_;
   std::set<std::string> enabled_arc_ime_ids_;
@@ -168,7 +168,7 @@ class ArcInputMethodManagerService
 
   // The current (active) input method, observed for
   // OnVirtualKeyboardVisibilityChangedIfEnabled.
-  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_ = nullptr;
+  raw_ptr<ui::InputMethod> input_method_ = nullptr;
   bool is_arc_ime_active_ = false;
 
   std::unique_ptr<InputConnectionImpl> active_connection_;

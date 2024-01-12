@@ -37,11 +37,14 @@ class ASH_EXPORT FocusModeFeaturePodController
 
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
-  void OnTimerTick() override;
-  void OnSessionDurationChanged() override;
+  void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
+  void OnInactiveSessionDurationChanged(
+      const base::TimeDelta& session_duration) override;
+  void OnActiveSessionDurationChanged(
+      const FocusModeSession::Snapshot& session_snapshot) override;
 
  private:
-  void UpdateUI();
+  void UpdateUI(const FocusModeSession::Snapshot& session_snapshot);
 
   // Owned by views hierarchy.
   raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;

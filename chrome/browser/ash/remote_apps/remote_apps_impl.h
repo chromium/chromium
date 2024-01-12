@@ -84,7 +84,7 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
 
   void DisconnectHandler(mojo::RemoteSetElementId id);
 
-  raw_ptr<RemoteAppsManager, ExperimentalAsh> manager_ = nullptr;
+  raw_ptr<RemoteAppsManager> manager_ = nullptr;
   SourceToRemoteIds source_id_to_remote_id_map_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteApps> receivers_;
   // Observers with an associated source in `source_id_to_remote_id_map_`.

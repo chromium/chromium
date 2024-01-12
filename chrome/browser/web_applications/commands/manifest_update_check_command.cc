@@ -6,11 +6,14 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/time_formatting.h"
+#include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -36,33 +39,29 @@ ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     CompletedCallback callback,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     std::unique_ptr<WebAppIconDownloader> icon_downloader)
-    : WebAppCommandTemplate<AppLock>("ManifestUpdateCheckCommand"),
+    : WebAppCommand<AppLock,
+                    ManifestUpdateCheckResult,
+                    absl::optional<WebAppInstallInfo>>(
+          "ManifestUpdateCheckCommand",
+          AppLockDescription(app_id),
+          std::move(callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(ManifestUpdateCheckResult::kSystemShutdown,
+                          /*new_install_info=*/absl::nullopt)),
       url_(url),
       app_id_(app_id),
       check_time_(check_time),
-      completed_callback_(std::move(callback)),
-      lock_description_(app_id),
       web_contents_(web_contents),
       data_retriever_(std::move(data_retriever)),
-      icon_downloader_(std::move(icon_downloader)) {}
+      icon_downloader_(std::move(icon_downloader)) {
+  GetMutableDebugValue().Set("app_id", app_id_);
+  GetMutableDebugValue().Set("url", url_.spec());
+  GetMutableDebugValue().Set("stage", base::ToString(stage_));
+  GetMutableDebugValue().Set("check_time",
+                             base::TimeFormatFriendlyDateAndTime(check_time_));
+}
 
 ManifestUpdateCheckCommand::~ManifestUpdateCheckCommand() = default;
-
-const LockDescription& ManifestUpdateCheckCommand::lock_description() const {
-  return lock_description_;
-}
-
-void ManifestUpdateCheckCommand::OnShutdown() {
-  CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kSystemShutdown);
-}
-
-base::Value ManifestUpdateCheckCommand::ToDebugValue() const {
-  base::Value::Dict data = debug_log_.Clone();
-  data.Set("app_id", app_id_);
-  data.Set("url", url_.spec());
-  data.Set("stage", base::ToString(stage_));
-  return base::Value(std::move(data));
-}
 
 void ManifestUpdateCheckCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
@@ -167,8 +166,9 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
     webapps::InstallableStatusCode installable_status) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
-  debug_log_.Set("manifest_url", manifest_url.spec());
-  debug_log_.Set("manifest_installable_result", base::ToString(installable_status));
+  GetMutableDebugValue().Set("manifest_url", manifest_url.spec());
+  GetMutableDebugValue().Set("manifest_installable_result",
+                             base::ToString(installable_status));
 
   if (installable_status != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppNotEligible);
@@ -216,7 +216,7 @@ void ManifestUpdateCheckCommand::StashNewIconBitmaps(
     DownloadedIconsHttpResults icons_http_results) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
-  debug_log_.Set("icon_download_result", base::ToString(result));
+  GetMutableDebugValue().Set("icon_download_result", base::ToString(result));
 
   RecordIconDownloadMetrics(result, icons_http_results);
 
@@ -572,7 +572,7 @@ bool ManifestUpdateCheckCommand::IsWebContentsDestroyed() {
 
 void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
     ManifestUpdateCheckResult check_result) {
-  debug_log_.Set("result", base::ToString(check_result));
+  GetMutableDebugValue().Set("result", base::ToString(check_result));
 
   CommandResult command_result = [&] {
     switch (check_result) {
@@ -588,18 +588,17 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
       case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
         return CommandResult::kFailure;
       case ManifestUpdateCheckResult::kSystemShutdown:
-        return CommandResult::kShutdown;
+        NOTREACHED_NORETURN() << "This should be handled by OnShutdown()";
     }
   }();
 
   Observe(nullptr);
-  SignalCompletionAndSelfDestruct(
-      command_result,
-      base::BindOnce(std::move(completed_callback_), check_result,
-                     check_result == ManifestUpdateCheckResult::kAppUpdateNeeded
-                         ? absl::make_optional<WebAppInstallInfo>(
-                               std::move(*new_install_info_))
-                         : absl::nullopt));
+  CompleteAndSelfDestruct(
+      command_result, check_result,
+      check_result == ManifestUpdateCheckResult::kAppUpdateNeeded
+          ? absl::make_optional<WebAppInstallInfo>(
+                std::move(*new_install_info_))
+          : absl::nullopt);
 }
 
 }  // namespace web_app

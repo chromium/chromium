@@ -38,8 +38,10 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
 class ReadAnythingControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kReadAnythingLocalSidePanel);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingLocalSidePanel,
+         features::kReadAnythingWebUIToolbar},
+        {});
     TestWithBrowserView::SetUp();
 
     model_ = std::make_unique<ReadAnythingModel>();

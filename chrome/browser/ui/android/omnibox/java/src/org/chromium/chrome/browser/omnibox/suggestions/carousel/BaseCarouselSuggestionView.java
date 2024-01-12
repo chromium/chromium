@@ -104,7 +104,6 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         mDecoration.notifyViewMeasuredSizeChanged();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     /* package */ void setSelectionControllerForTesting(
             RecyclerViewSelectionController controller) {
         removeOnChildAttachStateChangeListener(mSelectionController);
@@ -116,7 +115,6 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         return mDecoration;
     }
 
-    @VisibleForTesting
     /* package */ void setItemDecorationForTesting(
             DynamicSpacingRecyclerViewItemDecoration decoration) {
         removeItemDecoration(mDecoration);

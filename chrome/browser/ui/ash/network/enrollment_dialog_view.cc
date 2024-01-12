@@ -67,7 +67,7 @@ class EnrollmentDialogView : public views::DialogDelegateView {
 
   bool accepted_;
   std::string network_name_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   GURL target_uri_;
 };
 
@@ -159,7 +159,7 @@ class DialogEnrollmentDelegate {
  private:
   std::string network_guid_;
   std::string network_name_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 DialogEnrollmentDelegate::DialogEnrollmentDelegate(

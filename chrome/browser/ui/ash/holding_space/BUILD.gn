@@ -42,7 +42,6 @@ source_set("browser_tests") {
     "//ui/events:test_support",
     "//ui/gfx:test_support",
     "//ui/views",
-    "//ui/wm:test_support",
     "//ui/wm/public",
   ]
 }

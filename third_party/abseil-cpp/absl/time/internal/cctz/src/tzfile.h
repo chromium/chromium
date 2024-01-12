@@ -21,14 +21,6 @@
 ** Information about time zone files.
 */
 
-#ifndef TZDIR
-#define TZDIR "/usr/share/zoneinfo" /* Time zone object file directory */
-#endif                              /* !defined TZDIR */
-
-#ifndef TZDEFAULT
-#define TZDEFAULT "/etc/localtime"
-#endif /* !defined TZDEFAULT */
-
 #ifndef TZDEFRULES
 #define TZDEFRULES "posixrules"
 #endif /* !defined TZDEFRULES */

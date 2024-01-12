@@ -152,6 +152,12 @@ void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
     child_process_command_line->AppendSwitchASCII(
         switches::kStartStackProfiler,
         switches::kStartStackProfilerBrowserTest);
+#if BUILDFLAG(IS_ANDROID)
+  } else if (IsJavaNameHashingEnabled()) {
+    child_process_command_line->AppendSwitchASCII(
+        switches::kStartStackProfiler,
+        switches::kStartStackProfilerWithJavaNameHashing);
+#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     child_process_command_line->AppendSwitch(switches::kStartStackProfiler);
   }
@@ -159,16 +165,14 @@ void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
 
 #if BUILDFLAG(IS_ANDROID)
 bool ThreadProfilerConfiguration::IsJavaNameHashingEnabled() const {
-  // For now, this is only enabled in the browser process, to verify that
-  // the java name hashing is working correctly.
-  //
-  // TODO(crbug.com/1475718): enable this in the other processes too.
   if (const auto* config =
           absl::get_if<BrowserProcessConfiguration>(&configuration_)) {
     return config->variation_group == kProfileEnabledWithJavaNameHashing;
   }
 
-  return false;
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->GetSwitchValueASCII(switches::kStartStackProfiler) ==
+         switches::kStartStackProfilerWithJavaNameHashing;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

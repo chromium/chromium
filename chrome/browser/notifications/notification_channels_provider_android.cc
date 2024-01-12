@@ -136,7 +136,7 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
     content_settings::RuleMetaData metadata;
     metadata.set_last_modified(channel.timestamp);
     std::unique_ptr<content_settings::Rule> rule =
-        std::make_unique<content_settings::OwnedRule>(
+        std::make_unique<content_settings::Rule>(
             ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
             ContentSettingsPattern::Wildcard(),
             base::Value(ChannelStatusToContentSetting(channel.status)),
@@ -388,7 +388,8 @@ bool NotificationChannelsProviderAndroid::UpdateLastUsedTime(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const base::Time time) {
+    const base::Time time,
+    const content_settings::PartitionKey& partition_key) {
   // Last used tracking is not implemented for this type.
   return false;
 }
@@ -396,7 +397,8 @@ bool NotificationChannelsProviderAndroid::UpdateLastUsedTime(
 bool NotificationChannelsProviderAndroid::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   // Last visited tracking is not implemented for this type.
   return false;
 }
@@ -404,7 +406,8 @@ bool NotificationChannelsProviderAndroid::ResetLastVisitTime(
 bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   // Last visited tracking is not implemented for this type.
   return false;
 }
@@ -414,7 +417,8 @@ NotificationChannelsProviderAndroid::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    absl::optional<ContentSetting> setting_to_match) {
+    absl::optional<ContentSetting> setting_to_match,
+    const content_settings::PartitionKey& partition_key) {
   // Setting renewal is not implemented for this type.
   return absl::nullopt;
 }
@@ -455,7 +459,7 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
   DCHECK(!origin.opaque());
   const std::string origin_string = origin.Serialize();
   ContentSetting content_setting =
-      content_settings::ValueToContentSetting(rule.value());
+      content_settings::ValueToContentSetting(rule.value);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       CreateChannelIfRequired(origin_string,

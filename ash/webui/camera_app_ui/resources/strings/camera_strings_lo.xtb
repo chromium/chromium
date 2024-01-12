@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">ເລື່ອນໄປຂວາ</translation>
 <translation id="3081586908890909590">ປ່ຽນເປັນບັນທຶກວິດີໂອ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">ເຂົ້າຮ່ວມ "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
 <translation id="3240426699337459095">ອັດ​ສຳ​ເນົາ​ລິ້ງ​ແລ້ວ</translation>
 <translation id="3354465018370944241">ການຕັ້ງຄ່າຮູບພາບ</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">ອັດຕາສ່ວນຮູບພາບ</translation>
 <translation id="5057360777601936059">ກ້ອງຖ່າຍຮູບຂອງທ່ານບໍ່ສາມາດໃຊ້ໄດ້ໃນຂະນະນີ້.
         ກະລຸນາກວດເບິ່ງວ່າໄດ້ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຢ່າງຖືກຕ້ອງຫຼືບໍ່.</translation>
+<translation id="5157591164390831335">ກວດພົບ URL.</translation>
 <translation id="5163387177077603948">ກຳລັງຍ້າຍໄປທາງຂວາ</translation>
 <translation id="5235304959032763950">16 ຕໍ່ 9</translation>
 <translation id="5266635337630551423">ມຸມຊ້າຍເທິງຂອງເອກະສານ</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">ຂອບໃຈທີ່ໃຫ້ຄຳຕິຊົມກ່ຽວກັບແອັບກ້ອງຖ່າຍຮູບ.
 
 ຖ້າຄຳຕິຊົມຂອງທ່ານກ່ຽວກັບຄຸນນະພາບຮູບ ຫຼື ວິດີໂອ, ກະລຸນາແນບຮູບ ຫຼື ວິດີໂອຕົວຢ່າງມານຳ ແລະ ໃຫ້ລາຍລະອຽດວ່າມີຫຍັງຜິດພາດ. (ຕົວຢ່າງ: ຮູບມືດເກີນໄປ ຫຼື ຮູບເປົ້າໝາຍບໍ່ຢູ່ໃນໂຟກັສ.)</translation>
+<translation id="6519884562954018934">ເຂົ້າຮ່ວມ <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="6617916774429601017">ສະແດງຄວາມລະອຽດທັງໝົດ</translation>
 <translation id="6631515515009660915">ປິດການສະທ້ອນແລ້ວ</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ. ກຳລັງປິດສຽງຢູ່</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>
+<translation id="874854738381978209">ກວດພົບເຄືອຂ່າຍ Wi-Fi.</translation>
 <translation id="8815966864175525708">ປ່ຽນເປັນຖ່າຍຮູບພອດເທຣດ</translation>
 <translation id="8828441885228359828">ສືບຕໍ່ການບັນທຶກ</translation>
 <translation id="8870695351537079478">ບໍ່ສາມາດເລີ່ມການບັນທຶກໄດ້</translation>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ConsentState, OpenMetadata, StyleModifiers, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy} from 'chrome://compose/compose_api_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -16,7 +16,7 @@ function getDefaultComposeState(): ComposeState {
 
 function getDefaultOpenMetadata(): OpenMetadata {
   return {
-    consentState: ConsentState.kConsented,
+    freComplete: true,
     msbbState: true,
     composeState: getDefaultComposeState(),
     initialInput: '',
@@ -57,6 +57,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
     this.methodCalled('acceptComposeResult');
     return Promise.resolve(true);
   }
+
+  completeFirstRun() {}
 
   acknowledgeConsentDisclaimer() {}
 

@@ -56,17 +56,14 @@ class ConversationStateListenerImpl
       assistant::AssistantInteractionResolution resolution);
 
   // Owned by |LibassistantService|.
-  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>,
-                ExperimentalAsh>
+  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>>
       speech_recognition_observers_;
 
   // Owned by |ConversationController|.
-  const raw_ref<const mojo::RemoteSet<mojom::ConversationObserver>,
-                ExperimentalAsh>
+  const raw_ref<const mojo::RemoteSet<mojom::ConversationObserver>>
       conversation_observers_;
 
-  const raw_ptr<AudioInputController, ExperimentalAsh> audio_input_controller_ =
-      nullptr;
+  const raw_ptr<AudioInputController> audio_input_controller_ = nullptr;
 
   // The callbacks from Libassistant are called on a different sequence,
   // so this sequence checker ensures that no other methods are called on the

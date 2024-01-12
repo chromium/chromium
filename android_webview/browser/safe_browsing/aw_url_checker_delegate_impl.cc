@@ -156,7 +156,9 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 
   // Proceed with the request iff GMS is present, enabled, accessible to
   // WebView and has minimum version to support safe browsing
-  if (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck) ||
+      base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
     bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
     if (!can_use_gms) {
       return true;
@@ -202,9 +204,9 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.
-    resource.callback_sequence->PostTask(
-        FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
-                                  false /* showed_interstitial */));
+    resource.DispatchCallback(FROM_HERE, true /* proceed */,
+                              false /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -312,22 +314,9 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
   }
 
   // Reporting back that it is not okay to proceed with loading the URL.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(resource.callback, false /* proceed */,
-                                false /* showed_interstitial */));
-}
-
-void AwUrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  NOTREACHED();
-}
-void AwUrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  NOTREACHED();
+  resource.DispatchCallback(FROM_HERE, false /* proceed */,
+                            false /* showed_interstitial */,
+                            false /* has_post_commit_interstitial_skipped */);
 }
 
 }  // namespace android_webview

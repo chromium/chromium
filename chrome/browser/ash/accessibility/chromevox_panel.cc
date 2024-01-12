@@ -56,7 +56,7 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
   }
 
  private:
-  raw_ptr<ChromeVoxPanel, ExperimentalAsh> panel_;
+  raw_ptr<ChromeVoxPanel> panel_;
 };
 
 ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)

@@ -67,8 +67,8 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   void EndCurrentSession();
   void OnBindingDisconnected();
 
-  raw_ptr<Hierarchy, ExperimentalAsh> hierarchy_;
-  raw_ptr<OsSettingsSections, ExperimentalAsh> sections_;
+  raw_ptr<Hierarchy> hierarchy_;
+  raw_ptr<OsSettingsSections> sections_;
   raw_ptr<PrefService> profile_pref_service_;
 
   std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;

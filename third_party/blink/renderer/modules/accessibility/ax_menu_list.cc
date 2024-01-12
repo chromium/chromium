@@ -102,7 +102,12 @@ void AXMenuList::ChildrenChangedWithCleanLayout() {
   AXLayoutObject::ChildrenChangedWithCleanLayout();
 }
 
-void AXMenuList::SetNeedsToUpdateChildren() const {
+void AXMenuList::SetNeedsToUpdateChildren(bool update) const {
+  if (!update) {
+    AXLayoutObject::SetNeedsToUpdateChildren(false);
+    return;
+  }
+
   if (!children_.empty()) {
     CHECK_EQ(children_.size(), 1U);
     CHECK_EQ(children_[0], popup_);
@@ -133,17 +138,26 @@ void AXMenuList::AddChildren() {
                            << children_[0]->ToString(true, true);
 #endif
 
-  CHECK(children_dirty_);
+  CHECK(NeedsToUpdateChildren());
 
   GetOrCreateMockPopupChild();
   CHECK(popup_);
   children_.push_back(popup_);
   popup_->SetParent(this);
 
-  children_dirty_ = false;
-
   // Update mock AXMenuListPopup children.
+  if (ChildrenNeedToUpdateCachedValues()) {
+    popup_->InvalidateCachedValues();
+  }
+  // Update cached values preemptively, where we can control the
+  // notify_parent_of_ignored_changes parameter, so that we do not try to notify
+  // a parent of children changes (which would be redundant as we are already
+  // processing children changed on the parent).
+  popup_->UpdateCachedAttributeValuesIfNeeded(
+      /*notify_parent_of_ignored_changes*/ false);
   popup_->UpdateChildrenIfNecessary();
+
+  SetNeedsToUpdateChildren(false);
 }
 
 AXObject* AXMenuList::GetOrCreateMockPopupChild() {

@@ -67,7 +67,7 @@ class AppInstallEventLogManagerWrapper {
   void OnAppTerminating();
 
   // The profile whose app push-install events are being logged.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Handles collection, storage and upload of app push-install event logs.
   std::unique_ptr<ArcAppInstallEventLogManager> log_manager_;

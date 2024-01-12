@@ -56,6 +56,7 @@ MediaStreamSource* CreateMediaStreamSource(
   capabilities.echo_cancellation = Vector<bool>({false});
   capabilities.auto_gain_control = Vector<bool>({false});
   capabilities.noise_suppression = Vector<bool>({false});
+  capabilities.voice_isolation = Vector<bool>({false});
   capabilities.sample_size = {
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16),  // min
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)   // max

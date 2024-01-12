@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -98,7 +99,8 @@ TEST_F(AutofillCvcSaveMessageDelegateTest, MessageAccepted) {
   message_wrapper->HandleActionClick(base::android::AttachCurrentThread());
 }
 
-// Tests that declining the message calls the callback with user decision.
+// Tests that clicking the cancel button to decline the message calls the
+// callback with user decision.
 TEST_F(AutofillCvcSaveMessageDelegateTest, MessageDeclined) {
   // Show the message, and save the created `MessageWrapper`.
   messages::MessageWrapper* message_wrapper;
@@ -108,7 +110,24 @@ TEST_F(AutofillCvcSaveMessageDelegateTest, MessageDeclined) {
 
   EXPECT_CALL(*save_card_delegate, OnUiCanceled);
 
-  // Simulate user rejection on the prompt.
+  // Simulate user rejection by clicking the "No thanks" button.
+  message_wrapper->HandleDismissCallback(
+      base::android::AttachCurrentThread(),
+      static_cast<int>(messages::DismissReason::SECONDARY_ACTION));
+}
+
+// Tests that swiping to dismiss the message calls the callback with user
+// decision.
+TEST_F(AutofillCvcSaveMessageDelegateTest, MessageDismissedBySwiping) {
+  // Show the message, and save the created `MessageWrapper`.
+  messages::MessageWrapper* message_wrapper;
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+      .WillOnce(DoAll(SaveArg<0>(&message_wrapper), Return(true)));
+  auto* save_card_delegate = ShowMessage();
+
+  EXPECT_CALL(*save_card_delegate, OnUiIgnored);
+
+  // Simulate user dismissing the prompt by swiping on the UI.
   message_wrapper->HandleDismissCallback(
       base::android::AttachCurrentThread(),
       static_cast<int>(messages::DismissReason::GESTURE));
@@ -148,6 +167,9 @@ TEST_F(AutofillCvcSaveMessageDelegateTest, MessagePropertiesAreSet) {
   EXPECT_EQ(message_wrapper->GetPrimaryButtonText(), ui_info.confirm_text);
   EXPECT_EQ(message_wrapper->GetIconResourceId(),
             ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id));
+  EXPECT_EQ(message_wrapper->GetSecondaryIconResourceId(),
+            ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+  EXPECT_EQ(message_wrapper->GetSecondaryButtonMenuText(), ui_info.cancel_text);
 }
 
 }  // namespace autofill

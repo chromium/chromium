@@ -285,8 +285,7 @@ bool ContentSettingImageView::IsBubbleShowing() const {
   return bubble_view_ != nullptr;
 }
 
-ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
-    const {
+ContentSettingImageModel::ImageType ContentSettingImageView::GetType() const {
   return content_setting_image_model_->image_type();
 }
 
@@ -345,6 +344,6 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
-BEGIN_METADATA(ContentSettingImageView, IconLabelBubbleView)
+BEGIN_METADATA(ContentSettingImageView)
 ADD_PROPERTY_METADATA(std::optional<SkColor>, IconColor)
 END_METADATA

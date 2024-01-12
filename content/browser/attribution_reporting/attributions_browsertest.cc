@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -68,7 +69,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -1446,7 +1446,7 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
         /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
-        /*winner_aggregation_coordinator_origin=*/absl::nullopt);
+        /*winner_aggregation_coordinator_origin=*/std::nullopt);
   }
 
  private:
@@ -1454,7 +1454,7 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
       FencedFrameURLMapping* fenced_frame_url_mapping,
       const GURL& https_url,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
-    absl::optional<GURL> urn_uuid =
+    std::optional<GURL> urn_uuid =
         fenced_frame_url_mapping->AddFencedFrameURLForTesting(
             https_url, std::move(fenced_frame_reporter));
     EXPECT_TRUE(urn_uuid.has_value());

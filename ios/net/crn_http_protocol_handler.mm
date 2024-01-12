@@ -514,8 +514,8 @@ void HttpProtocolHandlerCore::AllocateReadBuffer(int last_read_data_size) {
     read_buffer_size_ = std::max(read_buffer_size_ / 2, kIOBufferMinSize);
   }
   read_buffer_.reset(static_cast<char*>(malloc(read_buffer_size_)));
-  read_buffer_wrapper_ = base::MakeRefCounted<WrappedIOBuffer>(
-      static_cast<const char*>(read_buffer_.get()), read_buffer_size_);
+  read_buffer_wrapper_ = base::MakeRefCounted<WrappedIOBuffer>(base::make_span(
+      read_buffer_.get(), static_cast<size_t>(read_buffer_size_)));
 }
 
 HttpProtocolHandlerCore::~HttpProtocolHandlerCore() {

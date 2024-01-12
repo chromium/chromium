@@ -44,6 +44,7 @@ public class HubPaneHostMediator {
 
     /** Cleans up observers. */
     public void destroy() {
+        mPropertyModel.set(PANE_ROOT_VIEW, null);
         mPaneSupplier.removeObserver(mOnPangeChangeCallback);
         if (mActionButtonDataSupplier != null) {
             mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);

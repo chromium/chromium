@@ -23,6 +23,7 @@ source_set("internals") {
 
   public_deps = [
     "../:commerce_constants",
+    "../webui",
     "./mojom:mojo_bindings",
     "./resources",
   ]

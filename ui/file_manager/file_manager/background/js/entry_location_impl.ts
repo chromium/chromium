@@ -4,21 +4,30 @@
 
 import {isRecentRootType} from '../../common/js/entry_utils.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {EntryLocation} from '../../externs/entry_location.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 
-// To avoid the import being elided, closure requires this name here because of
-// the @implements.
-export const _unused = EntryLocation;
+import type {VolumeInfo} from './volume_info.js';
 
 /**
  * Location information which shows where the path points in FileManager's
  * file system.
- * @implements {EntryLocation}
  */
-export class EntryLocationImpl implements EntryLocation {
+export class EntryLocation {
+  /**
+   * Whether the location is under Google Drive or a special search root which
+   * represents a special search from Google Drive.
+   */
   isSpecialSearchRoot: boolean;
+
+  /**
+   * Whether the location is under Google Drive or a special search root which
+   * represents a special search from Google Drive.
+   */
   isDriveBased: boolean;
+
+  /**
+   * Whether the entry should be displayed with a fixed name instead of
+   * individual entry's name. (e.g. "Downloads" is a fixed name)
+   */
   hasFixedLabel: boolean;
 
   constructor(

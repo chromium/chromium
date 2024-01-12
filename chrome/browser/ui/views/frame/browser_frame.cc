@@ -182,18 +182,12 @@ void BrowserFrame::InitBrowserFrame() {
     }
   }
 
-  params.native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
   Init(std::move(params));
 
 #if BUILDFLAG(IS_LINUX)
-  // Because getting `linux_ui_theme` requires `native_widget_` to be
-  // initialized, this needs to happen after Init().
-  if (!IsIncognitoBrowser() &&
-      ui::LinuxUiTheme::GetForWindow(GetNativeWindow()) &&
-      !browser_view_->AppUsesWindowControlsOverlay()) {
-    SelectNativeTheme();
-  }
+  SelectNativeTheme();
+#else
+  SetNativeTheme(ui::NativeTheme::GetInstanceForNativeUi());
 #endif
 
   if (!native_browser_frame_->UsesNativeSystemMenu()) {

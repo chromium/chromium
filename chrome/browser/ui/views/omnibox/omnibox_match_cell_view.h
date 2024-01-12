@@ -18,9 +18,9 @@ class OmniboxResultView;
 class OmniboxTextView;
 
 class OmniboxMatchCellView : public views::View {
- public:
-  METADATA_HEADER(OmniboxMatchCellView);
+  METADATA_HEADER(OmniboxMatchCellView, views::View)
 
+ public:
   // Constants used in layout. Exposed so other views can coordinate margins.
   static constexpr int kMarginLeft = 4;
   static constexpr int kMarginRight = 8;

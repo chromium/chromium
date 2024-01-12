@@ -98,6 +98,11 @@ class TopSitesDatabase {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // If recovery is attempted during one of the preliminary open attempts, the
+  // database should be checked for broken constraints. See comment in the
+  // DatabaseErrorCallback for more details.
+  bool needs_fixing_up_ = false;
+
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

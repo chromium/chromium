@@ -106,6 +106,9 @@ class ASH_EXPORT NonClientFrameViewAsh
   base::RepeatingCallback<void()> GetToggleResizeLockMenuCallback() const;
   void ClearToggleResizeLockMenuCallback();
 
+  // views::NonClientFrameView:
+  void UpdateWindowRoundedCorners() override;
+
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,

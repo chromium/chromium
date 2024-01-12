@@ -94,7 +94,7 @@ bool IbanSaveManager::IsIbanUploadEnabled(
   return true;
 }
 
-bool IbanSaveManager::AttemptToOfferSave(const Iban& import_candidate) {
+bool IbanSaveManager::AttemptToOfferSave(Iban& import_candidate) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   switch (DetermineHowToSaveIban(import_candidate)) {
     case TypeOfOfferToSave::kDoNotOfferToSave:
@@ -148,42 +148,38 @@ bool IbanSaveManager::MatchesExistingServerIban(
       });
 }
 
-bool IbanSaveManager::AttemptToOfferLocalSave(const Iban& import_candidate) {
-  iban_save_candidate_ = import_candidate;
-
+bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
   if (observer_for_testing_) {
     observer_for_testing_->OnOfferLocalSave();
   }
 
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.
-  bool show_save_prompt =
-      !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(GetPartialIbanHashString(
-          base::UTF16ToUTF8(iban_save_candidate_.value())));
+  bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
+      GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
   if (!show_save_prompt) {
     autofill_metrics::LogIbanSaveNotOfferedDueToMaxStrikesMetric(
         AutofillMetrics::SaveTypeMetric::LOCAL);
   }
 
   client_->ConfirmSaveIbanLocally(
-      iban_save_candidate_, show_save_prompt,
+      import_candidate, show_save_prompt,
       base::BindOnce(&IbanSaveManager::OnUserDidDecideOnLocalSave,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), import_candidate));
   return show_save_prompt;
 }
 
-bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {
-  iban_save_candidate_ = import_candidate;
+bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
   // If the max strikes limit has been reached, do not show the save prompt.
-  bool show_save_prompt =
-      !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(GetPartialIbanHashString(
-          base::UTF16ToUTF8(iban_save_candidate_.value())));
+  bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
+      GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
   client_->GetPaymentsNetworkInterface()->GetIbanUploadDetails(
       personal_data_manager_->app_locale(),
       payments::GetBillingCustomerId(personal_data_manager_),
       payments::kUploadPaymentMethodBillableServiceNumber,
       base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
-                     weak_ptr_factory_.GetWeakPtr(), show_save_prompt));
+                     weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
+                     import_candidate));
   return show_save_prompt;
 }
 
@@ -196,16 +192,17 @@ IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
 }
 
 void IbanSaveManager::OnUserDidDecideOnLocalSave(
+    Iban import_candidate,
     AutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
   if (!nickname.empty()) {
     std::u16string trimmed_nickname;
     base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
-    iban_save_candidate_.set_nickname(trimmed_nickname);
+    import_candidate.set_nickname(trimmed_nickname);
   }
 
   const std::string& partial_iban_hash =
-      GetPartialIbanHashString(base::UTF16ToUTF8(iban_save_candidate_.value()));
+      GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value()));
   switch (user_decision) {
     case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
       autofill_metrics::LogStrikesPresentWhenIbanSaved(
@@ -215,7 +212,7 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
       // the strike count starts over with respect to re-saving it.
       GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
       client_->GetPersonalDataManager()->OnAcceptedLocalIbanSave(
-          std::move(iban_save_candidate_));
+          std::move(import_candidate));
       if (observer_for_testing_) {
         observer_for_testing_->OnAcceptSaveIbanComplete();
       }
@@ -231,6 +228,7 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
 }
 
 void IbanSaveManager::OnUserDidDecideOnUploadSave(
+    Iban import_candidate,
     bool show_save_prompt,
     AutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
@@ -238,23 +236,24 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
     std::u16string trimmed_nickname;
     base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
     if (!trimmed_nickname.empty()) {
-      iban_save_candidate_.set_nickname(trimmed_nickname);
+      import_candidate.set_nickname(trimmed_nickname);
     }
   }
 
   switch (user_decision) {
     case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
-      return SendUploadRequest(show_save_prompt);
+      return SendUploadRequest(import_candidate, show_save_prompt);
     case AutofillClient::SaveIbanOfferUserDecision::kIgnored:
     case AutofillClient::SaveIbanOfferUserDecision::kDeclined:
       GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
-          base::UTF16ToUTF8(iban_save_candidate_.value())));
+          base::UTF16ToUTF8(import_candidate.value())));
       return;
   }
 }
 
 void IbanSaveManager::OnDidGetUploadDetails(
     bool show_save_prompt,
+    Iban import_candidate,
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message) {
@@ -268,21 +267,23 @@ void IbanSaveManager::OnDidGetUploadDetails(
       // If `show_save_prompt`'s value is false, desktop builds will still offer
       // save in the omnibox without popping-up the bubble.
       client_->ConfirmUploadIbanToCloud(
-          iban_save_candidate_, std::move(parsed_legal_message_lines),
+          import_candidate, std::move(parsed_legal_message_lines),
           show_save_prompt,
           base::BindOnce(&IbanSaveManager::OnUserDidDecideOnUploadSave,
-                         weak_ptr_factory_.GetWeakPtr(), show_save_prompt));
+                         weak_ptr_factory_.GetWeakPtr(), import_candidate,
+                         show_save_prompt));
       return;
     }
   }
 
   // If the upload details request failed, attempt to offer local save.
-  if (!MatchesExistingLocalIban(iban_save_candidate_)) {
-    AttemptToOfferLocalSave(iban_save_candidate_);
+  if (!MatchesExistingLocalIban(import_candidate)) {
+    AttemptToOfferLocalSave(import_candidate);
   }
 }
 
-void IbanSaveManager::SendUploadRequest(bool show_save_prompt) {
+void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
+                                        bool show_save_prompt) {
   payments::PaymentsNetworkInterface::UploadIbanRequestDetails details;
   details.app_locale = personal_data_manager_->app_locale();
   details.billable_service_number =
@@ -290,19 +291,20 @@ void IbanSaveManager::SendUploadRequest(bool show_save_prompt) {
   details.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
   details.context_token = context_token_;
-  details.value = iban_save_candidate_.value();
-  details.nickname = iban_save_candidate_.nickname();
+  details.value = import_candidate.value();
+  details.nickname = import_candidate.nickname();
   client_->GetPaymentsNetworkInterface()->UploadIban(
-      details,
-      base::BindOnce(&IbanSaveManager::OnDidUploadIban,
-                     weak_ptr_factory_.GetWeakPtr(), show_save_prompt));
+      details, base::BindOnce(&IbanSaveManager::OnDidUploadIban,
+                              weak_ptr_factory_.GetWeakPtr(), import_candidate,
+                              show_save_prompt));
 }
 
 void IbanSaveManager::OnDidUploadIban(
+    const Iban& import_candidate,
     bool show_save_prompt,
     AutofillClient::PaymentsRpcResult result) {
   const std::string& partial_iban_hash =
-      GetPartialIbanHashString(base::UTF16ToUTF8(iban_save_candidate_.value()));
+      GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value()));
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Clear all IbanSave strikes for this IBAN, so that if it's later removed
     // the strike count starts over with respect to re-saving it.

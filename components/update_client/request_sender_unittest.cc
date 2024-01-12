@@ -104,8 +104,9 @@ void RequestSenderTest::RunThreads() {
 }
 
 void RequestSenderTest::Quit() {
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 void RequestSenderTest::RequestSenderComplete(int error,

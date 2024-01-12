@@ -115,9 +115,7 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
         equivalent_builder_percentage = 100,
-        equivalent_builder_whitelist = "google/chromeos-pa@google.com",
-        # Use dummypath to make sure it's not auto triggered.
-        location_filters = ["dummypath/.+"],
+        equivalent_builder_whitelist = "chromeos-pa-with-chromium-accounts",
     ),
 )
 
@@ -283,16 +281,16 @@ try_.builder(
 )
 
 try_.orchestrator_builder(
-    name = "lacros-amd64-generic-rel",
+    name = "lacros-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_BRANCHES,
     description_html = """\
 Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab""",
     mirrors = [
-        "ci/lacros-amd64-generic-rel",
+        "ci/lacros-amd64-generic-rel-renamed",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/lacros-amd64-generic-rel",
+            "ci/lacros-amd64-generic-rel-renamed",
             "dcheck_always_on",
         ],
     ),
@@ -302,11 +300,20 @@ Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab"""
     tryjob = try_.job(),
 )
 
+LACROS_SHARED_CACHE = "shared_lacros_amd64_generic_rel_cache"
+
 try_.compilator_builder(
     name = "lacros-amd64-generic-rel-compilator",
     branch_selector = branches.selector.CROS_BRANCHES,
     builderless = not settings.is_main,
     cores = 8,
+    caches = [
+        swarming.cache(
+            name = LACROS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
 )
@@ -425,6 +432,7 @@ This builder should be removed after migrating linux-chromeos-compile-dbg from N
         is_compile_only = True,
     ),
     gn_args = "try/linux-chromeos-compile-dbg",
+    builderless = False,
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -459,6 +467,7 @@ try_.builder(
     ],
     gn_args = "ci/chromeos-jacuzzi-rel-skylab-fyi",
     contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
 
@@ -472,6 +481,7 @@ try_.builder(
     ],
     gn_args = "ci/chromeos-octopus-rel-skylab-fyi",
     contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
 

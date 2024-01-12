@@ -63,7 +63,7 @@ class StringSourceStream : public net::SourceStream {
 
  private:
   size_t read_ofs_ = 0;
-  const raw_ref<const std::string, ExperimentalAsh> src_;
+  const raw_ref<const std::string> src_;
 };
 
 class PpdLineReaderImpl : public PpdLineReader {

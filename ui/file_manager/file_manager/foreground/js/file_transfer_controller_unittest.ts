@@ -10,12 +10,12 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {DialogType} from '../../externs/ts/state.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import {DialogType} from '../../state/state.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';

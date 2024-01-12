@@ -112,15 +112,15 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   struct MODULES_EXPORT CodecProfile {
     CodecId codec_id;
     absl::optional<media::VideoCodecProfile> profile;
-    absl::optional<uint8_t> level;
+    absl::optional<media::VideoCodecLevel> level;
 
     explicit CodecProfile(CodecId codec_id);
     CodecProfile(CodecId codec_id,
                  absl::optional<media::VideoCodecProfile> opt_profile,
-                 absl::optional<uint8_t> opt_level);
+                 absl::optional<media::VideoCodecLevel> opt_level);
     CodecProfile(CodecId codec_id,
                  media::VideoCodecProfile profile,
-                 uint8_t level);
+                 media::VideoCodecLevel level);
   };
 
   using OnEncodedVideoCB = base::RepeatingCallback<void(

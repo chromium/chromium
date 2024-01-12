@@ -110,7 +110,6 @@ BrowserSavePasswordProgressLogger::StringID FormSchemeToStringID(
     case PasswordForm::Scheme::kUsernameOnly:
       return BrowserSavePasswordProgressLogger::STRING_SCHEME_USERNAME_ONLY;
   }
-  NOTREACHED();
   return BrowserSavePasswordProgressLogger::STRING_INVALID;
 }
 

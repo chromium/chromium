@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,7 +22,6 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 
 namespace content {
@@ -73,7 +74,7 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   void SetPreviousSlideButtonVisibility(bool is_visible) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
 
-  const absl::optional<PlaybackState>& playback_state() const {
+  const std::optional<PlaybackState>& playback_state() const {
     return playback_state_;
   }
 
@@ -83,11 +84,11 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
     playback_state_changed_callback_ = std::move(callback);
   }
 
-  const absl::optional<bool>& play_pause_button_visible() const {
+  const std::optional<bool>& play_pause_button_visible() const {
     return play_pause_button_visible_;
   }
 
-  const absl::optional<bool>& next_track_button_visible() const {
+  const std::optional<bool>& next_track_button_visible() const {
     return next_track_button_visible_;
   }
 
@@ -98,13 +99,13 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   bool visible_ = false;
 
   gfx::Size size_;
-  absl::optional<PlaybackState> playback_state_;
+  std::optional<PlaybackState> playback_state_;
 
-  absl::optional<PlaybackState> expected_playback_state_;
+  std::optional<PlaybackState> expected_playback_state_;
   base::OnceClosure playback_state_changed_callback_;
 
-  absl::optional<bool> play_pause_button_visible_;
-  absl::optional<bool> next_track_button_visible_;
+  std::optional<bool> play_pause_button_visible_;
+  std::optional<bool> next_track_button_visible_;
 };
 
 class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
@@ -113,7 +114,6 @@ class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       VideoPictureInPictureWindowController* controller) override {
     return std::make_unique<TestVideoOverlayWindow>();
   }
-  bool CanEnterFullscreenWithoutUserActivation() override { return true; }
 };
 
 class TestWebContentsDelegate : public WebContentsDelegate {

@@ -86,7 +86,7 @@ public class AddToHomescreenDialogViewTest {
                         installPair,
                         new AddToHomescreenViewDelegate() {
                             @Override
-                            public void onAddToHomescreen(String title) {
+                            public void onAddToHomescreen(String title, @AppType int type) {
                                 mAddCallback.notifyCalled();
                             }
 

@@ -116,7 +116,7 @@ bool PromptForScanningModalDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-BEGIN_METADATA(PromptForScanningModalDialog, views::DialogDelegateView)
+BEGIN_METADATA(PromptForScanningModalDialog)
 END_METADATA
 
 }  // namespace safe_browsing

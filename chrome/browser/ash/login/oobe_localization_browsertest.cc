@@ -79,7 +79,7 @@ class LanguageListWaiter : public WelcomeScreen::Observer {
       loop_.Quit();
   }
 
-  raw_ptr<WelcomeScreen, ExperimentalAsh> welcome_screen_;
+  raw_ptr<WelcomeScreen> welcome_screen_;
   base::RunLoop loop_;
 };
 

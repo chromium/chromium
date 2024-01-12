@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "crypto/secure_hash.h"
 #include "net/http/http_cache.h"
@@ -102,7 +102,7 @@ class WritersTest : public TestWithTaskEnvironment {
 
   void CreateWriters() {
     cache_.CreateBackendEntry(GenerateCacheKey(kSimpleGET_Transaction.url),
-                              &disk_entry_, nullptr);
+                              &disk_entry_.AsEphemeralRawAddr(), nullptr);
     entry_ =
         new HttpCache::ActiveEntry(cache_.GetWeakPtr(), disk_entry_, false);
     (static_cast<MockDiskEntry*>(disk_entry_))->AddRef();
@@ -509,9 +509,7 @@ class WritersTest : public TestWithTaskEnvironment {
   ScopedMockTransaction scoped_transaction_;
   MockHttpCache cache_;
   std::unique_ptr<HttpCache::Writers> writers_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION disk_cache::Entry* disk_entry_ = nullptr;
+  raw_ptr<disk_cache::Entry> disk_entry_ = nullptr;
   raw_ptr<HttpCache::ActiveEntry> entry_ = nullptr;
   TestHttpCache test_cache_;
 

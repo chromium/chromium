@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -26,11 +27,11 @@
 
 namespace autofill {
 
-typedef std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>
-    FieldTypeValidityStatesMap;
+using FieldTypeValidityStatesMap =
+    std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>;
 
-typedef std::map<FieldType, AutofillDataModel::ValidityState>
-    FieldTypeValidityStateMap;
+using FieldTypeValidityStateMap =
+    std::map<FieldType, AutofillDataModel::ValidityState>;
 
 // Specifies if the Username First Flow vote has intermediate values.
 enum class IsMostRecentSingleUsernameCandidate {
@@ -116,8 +117,8 @@ class AutofillField : public FormFieldData {
     possible_types_ = possible_types;
   }
   void set_possible_types_validities(
-      const FieldTypeValidityStatesMap& possible_types_validities) {
-    possible_types_validities_ = possible_types_validities;
+      FieldTypeValidityStatesMap possible_types_validities) {
+    possible_types_validities_ = std::move(possible_types_validities);
   }
   std::vector<AutofillDataModel::ValidityState>
       get_validities_for_possible_type(FieldType);
@@ -127,11 +128,11 @@ class AutofillField : public FormFieldData {
   void set_previously_autofilled(bool previously_autofilled) {
     previously_autofilled_ = previously_autofilled;
   }
-  void set_parseable_name(const std::u16string& parseable_name) {
-    parseable_name_ = parseable_name;
+  void set_parseable_name(std::u16string parseable_name) {
+    parseable_name_ = std::move(parseable_name);
   }
-  void set_parseable_label(const std::u16string& parseable_label) {
-    parseable_label_ = parseable_label;
+  void set_parseable_label(std::u16string parseable_label) {
+    parseable_label_ = std::move(parseable_label);
   }
 
   void set_only_fill_when_focused(bool fill_when_focused) {
@@ -266,9 +267,7 @@ class AutofillField : public FormFieldData {
   void set_state_is_a_matching_type(bool value = true) {
     state_is_a_matching_type_ = value;
   }
-  const bool& state_is_a_matching_type() const {
-    return state_is_a_matching_type_;
-  }
+  bool state_is_a_matching_type() const { return state_is_a_matching_type_; }
 
   void set_single_username_vote_type(
       AutofillUploadContents::Field::SingleUsernameVoteType vote_type) {
@@ -289,17 +288,6 @@ class AutofillField : public FormFieldData {
   IsMostRecentSingleUsernameCandidate is_most_recent_single_username_candidate()
       const {
     return is_most_recent_single_username_candidate_;
-  }
-
-  // Getter and Setter methods for
-  // |value_not_autofilled_over_existing_value_hash_|.
-  void set_value_not_autofilled_over_existing_value_hash(
-      std::optional<size_t> value_not_autofilled_over_existing_value_hash) {
-    value_not_autofilled_over_existing_value_hash_ =
-        value_not_autofilled_over_existing_value_hash;
-  }
-  std::optional<size_t> value_not_autofilled_over_existing_value_hash() const {
-    return value_not_autofilled_over_existing_value_hash_;
   }
 
   // For each type in |possible_types_| that's missing from
@@ -324,6 +312,15 @@ class AutofillField : public FormFieldData {
     return field_log_events_;
   }
 
+  // Avoid holding references to the return value. It is invalidated by
+  // AppendLogEventIfNotRepeated().
+  base::optional_ref<FieldLogEventType> last_field_log_event() {
+    if (!field_log_events_.empty()) {
+      return field_log_events_.back();
+    }
+    return std::nullopt;
+  }
+
   // Add the field log events into the vector |field_log_events_| when it is
   // not the same as the last log event in the vector.
   void AppendLogEventIfNotRepeated(const FieldLogEventType& log_event);
@@ -335,7 +332,7 @@ class AutofillField : public FormFieldData {
       std::optional<std::string> autofill_profile_guid) {
     autofill_source_profile_guid_ = std::move(autofill_profile_guid);
   }
-  std::optional<std::string> autofill_source_profile_guid() const {
+  const std::optional<std::string>& autofill_source_profile_guid() const {
     return autofill_source_profile_guid_;
   }
 
@@ -469,10 +466,6 @@ class AutofillField : public FormFieldData {
   IsMostRecentSingleUsernameCandidate
       is_most_recent_single_username_candidate_ =
           IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
-
-  // Stores the hash of the value which is supposed to be autofilled in the
-  // field but was not due to a prefilled value.
-  std::optional<size_t> value_not_autofilled_over_existing_value_hash_;
 
   // Set to true if the context menu was triggered and shown on the field.
   bool was_context_menu_shown_ = false;

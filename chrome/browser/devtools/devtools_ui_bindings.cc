@@ -681,6 +681,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
   // Register on-load actions.
   embedder_message_dispatcher_ =
       DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(this);
+  ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile())
+      ->AddObserver(this);
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
@@ -688,7 +690,7 @@ DevToolsUIBindings::~DevToolsUIBindings() {
       !session_id_for_logging_.is_empty()) {
     metrics::structured::events::v2::dev_tools::SessionEnd()
         .SetTrigger(delegate_->GetClosedByForLogging())
-        .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
@@ -1418,7 +1420,7 @@ bool DevToolsUIBindings::MaybeStartLogging() {
   }
   if (session_id_for_logging_.is_empty()) {
     session_id_for_logging_ = base::UnguessableToken::Create();
-    last_action_time_ = base::TimeTicks::Now();
+    session_start_time_ = base::TimeTicks::Now();
     metrics::structured::events::v2::dev_tools::SessionStart()
         .SetTrigger(delegate_->GetOpenedByForLogging())
         .SetDockSide(delegate_->GetDockStateForLogging())
@@ -1428,11 +1430,8 @@ bool DevToolsUIBindings::MaybeStartLogging() {
   return true;
 }
 
-base::TimeDelta DevToolsUIBindings::GetTimeSinceLastAction() {
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta time_since_last_action = (now - last_action_time_);
-  last_action_time_ = now;
-  return time_since_last_action;
+base::TimeDelta DevToolsUIBindings::GetTimeSinceSessionStart() {
+  return base::TimeTicks::Now() - session_start_time_;
 }
 
 void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
@@ -1445,7 +1444,7 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
         .SetVeType(ve.type)
         .SetVeParent(ve.parent)
         .SetVeContext(ve.context)
-        .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
@@ -1459,7 +1458,7 @@ void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
       .SetVeId(event.veid)
       .SetMouseButton(event.mouse_button)
       .SetContext(event.context)
-      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 }
@@ -1472,7 +1471,7 @@ void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
       .SetVeId(event.veid)
       .SetTime(event.time)
       .SetContext(event.context)
-      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 }
@@ -1485,7 +1484,7 @@ void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
       .SetVeId(event.veid)
       .SetDistance(event.distance)
       .SetContext(event.context)
-      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 }
@@ -1497,7 +1496,7 @@ void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
   metrics::structured::events::v2::dev_tools::Change()
       .SetVeId(event.veid)
       .SetContext(event.context)
-      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 }
@@ -1509,7 +1508,7 @@ void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
   metrics::structured::events::v2::dev_tools::KeyDown()
       .SetVeId(event.veid)
       .SetContext(event.context)
-      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
 }
@@ -1840,6 +1839,10 @@ bool DevToolsUIBindings::IsAttachedTo(content::DevToolsAgentHost* agent_host) {
   // TODO(caseq): find better way to track attached targets.
   return initial_target_id_.empty() ? agent_host_.get() == agent_host
                                     : initial_target_id_ == agent_host->GetId();
+}
+
+void DevToolsUIBindings::OnThemeChanged() {
+  CallClientMethod("DevToolsAPI", "colorThemeChanged");
 }
 
 void DevToolsUIBindings::CallClientMethod(

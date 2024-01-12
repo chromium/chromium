@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tab_resumption.TabResumptionModuleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_resumption_module_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:paddingTop="@dimen/tab_resumption_module_padding_top"
+    android:paddingBottom="@dimen/tab_resumption_module_padding_bottom"
+    android:paddingStart="@dimen/tab_resumption_module_padding_lateral"
+    android:paddingEnd="@dimen/tab_resumption_module_padding_lateral"
+    android:background="@drawable/home_surface_ui_background">
+
+    <TextView
+        android:id="@+id/tab_resumption_title_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:singleLine="true"
+        android:text="@string/tab_resumption_module_title"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
+</org.chromium.chrome.browser.tab_resumption.TabResumptionModuleView>

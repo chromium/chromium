@@ -22,8 +22,9 @@ using OnCloseBubbleCallback = base::OnceCallback<void(views::View*)>;
 
 class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
                                      public LocationBarBubbleDelegateView {
+  METADATA_HEADER(CookieControlsBubbleViewImpl, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(CookieControlsBubbleViewImpl);
   CookieControlsBubbleViewImpl(views::View* anchor_view,
                                content::WebContents* web_contents,
                                OnCloseBubbleCallback callback);

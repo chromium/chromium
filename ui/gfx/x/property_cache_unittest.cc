@@ -88,16 +88,23 @@ TEST_F(PropertyCacheTest, Event) {
 
   // Change the property and sync to ensure the PropertyNotify event is ready to
   // be dispatched.
-  connection()->SetProperty(window(), atom, Atom::CARDINAL, 5678);
-  connection()->Sync();
-  connection()->ReadResponses();
+  bool have_response = false;
+  connection()
+      ->SetProperty(window(), atom, Atom::CARDINAL, 5678)
+      .OnResponse(
+          base::BindOnce([](bool* have_response,
+                            Response<void> response) { *have_response = true; },
+                         &have_response));
 
   // Dispatch the PropertyNotify event, which will cause the PropertyCache to
   // send another GetPropertyRequest.  Calling DispatchAll() would introduce a
   // race condition where we could get the GetPropertyResponse early if the 2
-  // round trips are completed fast enough.  To avoid this, we use Dispatch(),
-  // which doesn't read or write on the socket.
-  while (connection()->Dispatch()) {
+  // round trips are completed fast enough.  To avoid this, only dispatch until
+  // the property request is finished.
+  while (!have_response) {
+    connection()->Flush();
+    connection()->ReadResponses();
+    connection()->Dispatch();
   }
 
   // We don't have the new GetPropertyResponse yet, so the old value should

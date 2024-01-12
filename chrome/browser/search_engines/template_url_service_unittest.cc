@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -48,6 +49,8 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
+using SiteSearchPolicyConflictType =
+    TemplateURLService::SiteSearchPolicyConflictType;
 using testing::NotNull;
 
 namespace {
@@ -173,6 +176,24 @@ TemplateURLData CreateTestSearchEngineWithSafeForAutoreplace(
               ".com/q={searchTerms}");
   data.safe_for_autoreplace = safe_for_autoreplace;
   return data;
+}
+
+void VerifySiteSearchPolicyConflictHistograms(
+    const base::HistogramTester& histogram_tester,
+    const base::flat_map<SiteSearchPolicyConflictType, int>& expected_counts) {
+  for (auto [type, count] : expected_counts) {
+    histogram_tester.ExpectBucketCount(
+        TemplateURLService::kSiteSearchPolicyConflictCountHistogramName, type,
+        count);
+  }
+  histogram_tester.ExpectBucketCount(
+      TemplateURLService::kSiteSearchPolicyHasConflictWithFeaturedHistogramName,
+      expected_counts.at(SiteSearchPolicyConflictType::kWithFeatured) > 0, 1);
+  histogram_tester.ExpectBucketCount(
+      TemplateURLService::
+          kSiteSearchPolicyHasConflictWithNonFeaturedHistogramName,
+      expected_counts.at(SiteSearchPolicyConflictType::kWithNonFeatured) > 0,
+      1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2712,6 +2733,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -2753,6 +2775,13 @@ TEST_P(TemplateURLServiceTest,
     ExpectSimilar(engine, &actual_turl->data());
   }
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 1},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -2777,6 +2806,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -2830,6 +2860,13 @@ TEST_P(TemplateURLServiceTest,
     ExpectSimilar(engine, &actual_turl->data());
   }
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 2},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 1},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -2848,6 +2885,7 @@ TEST_P(TemplateURLServiceTest,
 TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -2874,6 +2912,13 @@ TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
   ExpectSimilar(site_search_engines[0].get(),
                 &model()->GetTemplateURLForKeyword(dse->keyword())->data());
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 1},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -2891,6 +2936,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -2918,6 +2964,13 @@ TEST_P(TemplateURLServiceTest,
   // false.
   AssertEquals(*user_dse, *model()->GetTemplateURLForKeyword(kKeywordU16));
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 0},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -2935,6 +2988,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -2959,6 +3013,13 @@ TEST_P(TemplateURLServiceTest,
   // false.
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 0},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -2976,6 +3037,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -3004,6 +3066,13 @@ TEST_P(TemplateURLServiceTest,
   ExpectSimilar(site_search_engines[0].get(),
                 &model()->GetTemplateURLForKeyword(kKeywordU16)->data());
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 0},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 1},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -3021,6 +3090,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -3046,6 +3116,13 @@ TEST_P(TemplateURLServiceTest,
   ExpectSimilar(site_search_engines[0].get(),
                 &model()->GetTemplateURLForKeyword(kKeywordU16)->data());
 
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 0},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 1},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                        });
+
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
@@ -3063,6 +3140,7 @@ TEST_P(TemplateURLServiceTest,
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+  base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
   // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
@@ -3087,6 +3165,13 @@ TEST_P(TemplateURLServiceTest,
   ExpectSimilar(
       site_search_engines[0].get(),
       &model()->GetTemplateURLForKeyword(kBookmarksKeywordU16)->data());
+
+  VerifySiteSearchPolicyConflictHistograms(
+      histogram_tester, {
+                            {SiteSearchPolicyConflictType::kNone, 1},
+                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
+                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                        });
 
   // Reset the policy.
   SetManagedSiteSearchSettingsPreference(

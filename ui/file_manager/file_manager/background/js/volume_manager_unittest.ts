@@ -9,11 +9,10 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {assertRejected, waitUntil} from '../../common/js/test_error_reporting.js';
 import {FileSystemType, RootType, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
-import {VolumeInfoImpl} from './volume_info_impl.js';
+import {VolumeInfo} from './volume_info.js';
+import {createVolumeInfo, VolumeManager} from './volume_manager.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
-import {createVolumeInfo, VolumeManagerImpl} from './volume_manager_impl.js';
 
 let mockChrome: {
   fileManagerPrivate: Partial<typeof chrome.fileManagerPrivate>,
@@ -522,7 +521,7 @@ export async function testGetLocationInfo(done: VoidCallback) {
 export async function testWhenReady(done: VoidCallback) {
   const volumeManager = await volumeManagerFactory.getInstance();
   const promiseBeforeAdd = volumeManager.whenVolumeInfoReady('volumeId');
-  const volumeInfo = new VolumeInfoImpl(
+  const volumeInfo = new VolumeInfo(
       /* volumeType */ VolumeType.MY_FILES,
       /* volumeId */ 'volumeId',
       /* fileSystem */ null,
@@ -534,7 +533,6 @@ export async function testWhenReady(done: VoidCallback) {
       /* profile */ {displayName: '', isCurrentProfile: true},
       /* label */ 'testLabel',
       /* extensionid */ undefined,
-      /* hasMedia */ false,
       /* configurable */ false,
       /* watchable */ true,
       /* source */ Source.FILE,
@@ -625,7 +623,7 @@ export async function testErrorInitializingVolume(done: VoidCallback) {
   };
 
   // Wait for initialization to populate volumeInfoList.
-  const volumeManager = new VolumeManagerImpl(createVolumeInfoFake);
+  const volumeManager = new VolumeManager(createVolumeInfoFake);
   await volumeManager.initialize();
 
   // VolumeInfoList should contain only Android and MyFiles.
@@ -642,7 +640,7 @@ export async function testErrorInitializingVolume(done: VoidCallback) {
 }
 
 /**
- * Tests VolumeInfoImpl doesn't raise exception if null is passed for
+ * Tests VolumeInfo doesn't raise exception if null is passed for
  * filesystem. crbug.com/1041340
  */
 export async function testDriveWithNullFilesystem(done: VoidCallback) {
@@ -658,7 +656,7 @@ export async function testDriveWithNullFilesystem(done: VoidCallback) {
 
   // Create a VolumeInfo with null filesystem, in the same way that happens on
   // createVolumeInfo().
-  const volumeInfo = new VolumeInfoImpl(
+  const volumeInfo = new VolumeInfo(
       driveVolumeMetadata.volumeType as VolumeType,
       driveVolumeMetadata.volumeId,
       null,  // File system is not found.
@@ -666,9 +664,8 @@ export async function testDriveWithNullFilesystem(done: VoidCallback) {
       driveVolumeMetadata.devicePath, driveVolumeMetadata.isReadOnly,
       driveVolumeMetadata.isReadOnlyRemovableDevice,
       driveVolumeMetadata.profile, localizedLabel,
-      driveVolumeMetadata.providerId, driveVolumeMetadata.hasMedia,
-      driveVolumeMetadata.configurable, driveVolumeMetadata.watchable,
-      driveVolumeMetadata.source as Source,
+      driveVolumeMetadata.providerId, driveVolumeMetadata.configurable,
+      driveVolumeMetadata.watchable, driveVolumeMetadata.source as Source,
       driveVolumeMetadata.diskFileSystemType as FileSystemType,
       driveVolumeMetadata.iconSet, driveVolumeMetadata.driveLabel,
       driveVolumeMetadata.remoteMountPath, driveVolumeMetadata.vmType);

@@ -59,6 +59,12 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/test/with_feature_override.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -783,14 +789,38 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToEmptyUrls) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_empty_urls")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToPdf) {
+#if BUILDFLAG(ENABLE_PDF)
+class DebuggerExtensionApiPdfTest : public base::test::WithFeatureOverride,
+                                    public DebuggerExtensionApiTest {
+ public:
+  DebuggerExtensionApiPdfTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+};
+
+IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (IsParamFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_pdf")) << message_;
 }
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DebuggerExtensionApiPdfTest);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.
 // This is a regression test for https://crbug.com/1188889.
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, NavigateToForbiddenUrl) {
+// TODO(crbug.com/1517512): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NavigateToForbiddenUrl DISABLED_NavigateToForbiddenUrl
+#else
+#define MAYBE_NavigateToForbiddenUrl NavigateToForbiddenUrl
+#endif
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, MAYBE_NavigateToForbiddenUrl) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   ASSERT_TRUE(RunExtensionTest("debugger_navigate_to_forbidden_url"))
       << message_;

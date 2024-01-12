@@ -192,15 +192,13 @@ class NearbyShareCertificateManagerImpl
       size_t certificate_count);
 
   base::OneShotTimer timer_;
-  raw_ptr<NearbyShareLocalDeviceDataManager, ExperimentalAsh>
-      local_device_data_manager_ = nullptr;
-  raw_ptr<NearbyShareContactManager, ExperimentalAsh> contact_manager_ =
+  raw_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_ =
       nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
-      profile_info_provider_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<NearbyShareContactManager> contact_manager_ = nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NearbyShareClientFactory> client_factory_ = nullptr;
+  raw_ptr<const base::Clock> clock_;
   std::unique_ptr<NearbyShareCertificateStorage> certificate_storage_;
   std::unique_ptr<ash::nearby::NearbyScheduler>
       private_certificate_expiration_scheduler_;

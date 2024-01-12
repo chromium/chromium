@@ -1,6 +1,6 @@
 NEWS file for libxml2
 
-v2.12.0: not released yet
+v2.12.0: Nov 16 2023
 
 ### Major changes
 
@@ -37,11 +37,6 @@ of files that would otherwise trigger the billion laughs protection.
 Several bugs in the regex determinism checks were fixed. Invalid XML
 Schemas which previous versions erroneously accepted will now be
 rejected.
-
-### Regressions
-
-- threads: Fix --with-thread-alloc
-- xinclude: Fix 'last' pointer in xmlXIncludeCopyNode
 
 ### Deprecations
 
@@ -116,7 +111,6 @@ rejected.
 - parser: Always create UTF-8 in xmlParseReference
 - html: Remove some debugging code in htmlParseTryOrFinish
 - malloc-fail: Fix memory leak in xmlCompileAttributeTest
-- parser: Fix potential use-after-free in xmlParseCharDataInternal
 - parser: Recover more input from encoding errors
 - malloc-fail: Handle malloc failures in xmlAddEncodingAlias
 - malloc-fail: Fix null-deref with xmllint --copy
@@ -196,6 +190,18 @@ rejected.
 - doc: Don't document internal macros in xmlversion.h
 - doc: Allow 'unsigned' without 'int'
 - doc: Improve documentation of configuration options
+
+
+v2.11.6: Nov 16 2023
+
+### Regressions
+
+- threads: Fix --with-thread-alloc
+- xinclude: Fix 'last' pointer in xmlXIncludeCopyNode
+
+### Bug fixes
+
+- parser: Fix potential use-after-free in xmlParseCharDataInternal
 
 
 v2.11.5: Aug 9 2023

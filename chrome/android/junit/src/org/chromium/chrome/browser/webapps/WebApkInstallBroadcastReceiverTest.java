@@ -38,10 +38,7 @@ import org.chromium.components.webapps.WebApkInstallResult;
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class})
-@EnableFeatures({
-    ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
-    ChromeFeatureList.WEB_APK_INSTALL_RETRY
-})
+@EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION})
 public class WebApkInstallBroadcastReceiverTest {
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "net/base/proxy_chain.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -75,8 +75,7 @@ class CONTENT_EXPORT PrefetchProxyConfigurator
  private:
   // Called when an error is detected by the CustomProxyConnectionObserver
   // implementation so that we can throttle requests to the proxy.
-  void OnTunnelProxyConnectionError(
-      absl::optional<base::TimeDelta> retry_after);
+  void OnTunnelProxyConnectionError(std::optional<base::TimeDelta> retry_after);
 
   // The headers used to setup the connect tunnel.
   net::HttpRequestHeaders connect_tunnel_headers_;
@@ -88,7 +87,7 @@ class CONTENT_EXPORT PrefetchProxyConfigurator
   raw_ptr<const base::Clock> clock_;
 
   // If set, the prefetch proxy should not be used until this time.
-  absl::optional<base::Time> prefetch_proxy_not_available_until_;
+  std::optional<base::Time> prefetch_proxy_not_available_until_;
 
   // The set of clients that will get updates about changes to the proxy config.
   mojo::RemoteSet<network::mojom::CustomProxyConfigClient>

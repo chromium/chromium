@@ -77,7 +77,7 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
 
   const base::FilePath filepath_;
   const Type type_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   std::optional<std::string> drive_id_;
 

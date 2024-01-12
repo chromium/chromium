@@ -105,7 +105,7 @@ class NetworkConnectImpl : public NetworkConnect {
   void ConfigureSetProfileSucceeded(const std::string& network_id,
                                     base::Value::Dict properties_to_set);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   base::WeakPtrFactory<NetworkConnectImpl> weak_factory_{this};
 };
 

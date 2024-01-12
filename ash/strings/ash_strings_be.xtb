@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Уключыць або выключыць Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Не ўдаецца выканаць уваход на прыладзе Chromebook</translation>
 <translation id="2367972762794486313">Паказаць праграмы</translation>
+<translation id="2368828502825385061">Знайсці</translation>
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
 <translation id="2382875860893882175">Трансляцыя цяпер прыпынена. Вы можаце ўзнавіць або спыніць трансляцыю ў любы час.</translation>
 <translation id="2386292613071805067">Вылучыць усё на старонцы</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="5546397813406633847">Аднавіць доступ для карыстальніка</translation>
 <translation id="554893713779400387">Уключыць або выключыць галасавы ўвод</translation>
+<translation id="5550417424894892620">Перацягніце файлы на працоўны стол, каб дадаць іх у вобласць "<ph name="HOLDING_SPACE_TITLE" />". Вы не можаце дадаць файлы на працоўны стол.</translation>
 <translation id="5551456515017410630">Адкрыць або закрыць каляндар</translation>
 <translation id="5551974246223970793">Пры пошуку на старонцы перайсці да наступнага супадзення</translation>
 <translation id="5555639311269196631">Выключыць хот-спот</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">Падключыце прыладу "<ph name="DEVICE_NAME" />" да тэлефона</translation>
 <translation id="7026338066939101231">Паменшыць</translation>
 <translation id="7029814467594812963">Завяршыць сеанс</translation>
+<translation id="7031303610220416229">Паказаць усе задачы ў Google Задачах</translation>
 <translation id="7032161822340700104">Можна ствараць не больш за 6 шаблонаў. Каб стварыць новы шаблон, выдаліце адзін са старых.</translation>
 <translation id="7034025838182392395">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" />. Каб зрабіць гэта магчымым, уключыце прыладу (<ph name="DEVICE_NAME" />), выкарыстаўшы фізічны пераключальнік.</translation>
 <translation id="703425375924687388">Запыт Памочніка Google "<ph name="QUERY_NAME" />"</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">Стварыць нататку</translation>
 <translation id="8367948981300340152">Выкарыстоўваецца <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Захаваны працоўны стол, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Пошук па запыце "<ph name="TEXT" />"</translation>
 <translation id="8371779926711439835">Уперад на адну літару</translation>
 <translation id="8371991222807690464">Прадукцыйнасць перыферыйных прылад у гасцявым рэжыме можа быць абмежаванай</translation>
 <translation id="8374601332003098278">Каб запісаць частку экрана, націсніце Увод</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сартаванне праграм па назве або колеры</translation>
 <translation id="8609384513243082612">Адкрыць новую ўкладку</translation>
+<translation id="8612216344243590325">Захоўвайце важныя файлы ў вобласці "<ph name="HOLDING_SPACE_TITLE" />" замест працоўнага стала. Проста перацягніце іх сюды: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Апавяшчэнні ад праграм "<ph name="APP_1_TITLE" />" і "<ph name="APP_2_TITLE" />" схаваны, бо ўключаны рэжым абароненага прагляду</translation>
 <translation id="8619138598101195078">Паменшыць гучнасць</translation>
 <translation id="8627191004499078455">Падключана да прылады "<ph name="DEVICE_NAME" />"</translation>
@@ -1909,7 +1914,7 @@
 <translation id="875593634123171288">Паказаць налады VPN</translation>
 <translation id="8759408218731716181">Не ўдалося наладзіць уваход у некалькі ўліковых запісаў</translation>
 <translation id="8763883995157866248">Перавесці прыладу ў рэжым сну</translation>
-<translation id="877404052021108314">90°F у °C</translation>
+<translation id="877404052021108314">90 °F у °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, усталяваная праграма, заблакіравана</translation>
 <translation id="8785070478575117577">Падключыцца да сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

@@ -23,13 +23,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -127,12 +126,6 @@ void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
       command_line->AppendSwitch(::switches::kStartFullscreen);
       break;
   }
-}
-
-void ToggleFullscreenModeSync(Browser* browser) {
-  FullscreenNotificationObserver observer(browser);
-  chrome::ToggleFullscreenMode(browser);
-  observer.Wait();
 }
 
 void HeadlessModeBrowserTestWithWindowSize::SetUpCommandLine(
@@ -383,15 +376,24 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleVisibility) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows and Mac in headless mode we still have actual platform
   // windows which are always hidden, so verify that they are not visible.
-  EXPECT_FALSE(IsPlatformWindowVisible(bubble_widget));
+  EXPECT_FALSE(test::IsPlatformWindowVisible(bubble_widget));
 #elif BUILDFLAG(IS_LINUX)
   // On Linux headless mode uses Ozone/Headless where platform windows are not
   // backed up by any real windows, so verify that their visibility state
   // matches the widget's visibility state.
-  EXPECT_EQ(IsPlatformWindowVisible(bubble_widget), bubble_widget->IsVisible());
+  EXPECT_EQ(test::IsPlatformWindowVisible(bubble_widget),
+            bubble_widget->IsVisible());
 #else
 #error Unsupported platform
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessBubbleSize) {
+  Widget* bubble_widget = ShowTestBubble(browser());
+  ASSERT_TRUE(bubble_widget->is_headless());
+
+  gfx::Rect bounds = test::GetPlatformWindowExpectedBounds(bubble_widget);
+  EXPECT_FALSE(bounds.IsEmpty());
 }
 
 }  // namespace

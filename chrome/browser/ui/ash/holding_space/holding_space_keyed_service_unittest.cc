@@ -41,6 +41,8 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -81,12 +83,20 @@ namespace {
 
 // Aliases ---------------------------------------------------------------------
 
-using holding_space::ScopedTestMountPoint;
+using ::ash::holding_space::ScopedTestMountPoint;
+using ::ash::holding_space_metrics::FilePickerBindingContext;
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::AllOf;
+using ::testing::Conditional;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Value;
 
@@ -205,7 +215,7 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
            holding_space_service->model_for_testing();
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       holding_space_controller_observation_{this};
@@ -253,7 +263,7 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
     }
   }
 
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> wait_item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem> wait_item_ = nullptr;
   std::unique_ptr<base::RunLoop> wait_loop_;
   bool wait_item_updated_ = false;
 
@@ -301,8 +311,7 @@ class ItemRemovedWaiter : public HoldingSpaceModelObserver {
     }
   }
 
-  raw_ptr<const HoldingSpaceItem, DanglingUntriaged | ExperimentalAsh>
-      wait_item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem, DanglingUntriaged> wait_item_ = nullptr;
   std::unique_ptr<base::RunLoop> wait_loop_;
   bool wait_item_removed_ = false;
 
@@ -367,7 +376,7 @@ class ItemsInitializedWaiter : public HoldingSpaceModelObserver {
     return true;
   }
 
-  const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
+  const raw_ptr<HoldingSpaceModel> model_;
   ItemFilter filter_;
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
@@ -619,8 +628,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   std::map<Profile*, testing::NiceMock<MockDownloadManager>*>
       download_managers_;
@@ -3034,6 +3042,126 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(u"File 2.png", item_2->GetText());
 }
 
+// Base class for tests of Photoshop Web integration. Parameterized by:
+// (a) whether to enable Photoshop Web integration, and
+// (b) the binding context to use for the file picker during testing.
+class HoldingSpaceKeyedServicePhotoshopWebIntegrationTest
+    : public HoldingSpaceKeyedServiceTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*enable_photoshop_web_integration=*/bool,
+          /*file_picker_binding_context=*/GURL>> {
+ public:
+  HoldingSpaceKeyedServicePhotoshopWebIntegrationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpacePhotoshopWebIntegration,
+        IsPhotoshopWebIntegrationEnabled());
+  }
+
+  // The binding context to use for the file picker given test parameterization.
+  const GURL& GetFilePickerBindingContext() const {
+    return std::get<1>(GetParam());
+  }
+
+  // Whether Photoshop Web integration is enabled given test parameterization.
+  bool IsPhotoshopWebIntegrationEnabled() const {
+    return std::get<0>(GetParam());
+  }
+
+ private:
+  // Used to enable/disable Photoshop Web integration.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
+    ::testing::Combine(/*enable_photoshop_web_integration=*/::testing::Bool(),
+                       /*file_picker_binding_context=*/::testing::Values(
+                           GURL(),
+                           GURL("https://google.com/"),
+                           GURL("https://photoshop.adobe.com/"))));
+
+// Verifies that a Photoshop Web item will be added to the user's Holding Space
+// under expected circumstances.
+TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
+       AddPhotoshopWebItem) {
+  // Cache `profile`.
+  TestingProfile* const profile = GetProfile();
+
+  // Wait for `model` attachment and verify initial state.
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+  const HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(model);
+  ASSERT_EQ(model->items().size(), 0u);
+
+  // Create `mount_point`.
+  std::unique_ptr<ScopedTestMountPoint> mount_point =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(mount_point->IsValid());
+
+  // Create file and resolve metadata.
+  const base::FilePath file_path =
+      mount_point->CreateFile(/*relative_path=*/base::FilePath("foo"));
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile, file_path);
+  const HoldingSpaceFile::FileSystemType file_system_type =
+      holding_space_util::ResolveFileSystemType(profile, file_system_url);
+
+  // Verify initial histogram state.
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "HoldingSpace.FileCreatedFromShowSaveFilePicker."),
+              IsEmpty());
+
+  // Propagate file creation event from a file picker with the binding context
+  // specified by test parameterization.
+  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
+      ->OnFileCreatedFromShowSaveFilePicker(
+          GetFilePickerBindingContext(),
+          file_manager::util::GetFileManagerFileSystemContext(profile)
+              ->CrackURLInFirstPartyContext(file_system_url));
+
+  // A Photoshop Web item should be added to the user's Holding Space iff:
+  // (a) Photoshop Web integration is enabled, and
+  // (b) the binding context for the file picker is from the domain associated
+  //     with Photoshop Web.
+  const bool is_file_picker_binding_context_photoshop_web =
+      GetFilePickerBindingContext().DomainIs("photoshop.adobe.com");
+  const bool expect_to_add_photoshop_web_item =
+      IsPhotoshopWebIntegrationEnabled() &&
+      is_file_picker_binding_context_photoshop_web;
+
+  // Verify model state.
+  EXPECT_THAT(
+      model->items(),
+      Conditional(
+          expect_to_add_photoshop_web_item,
+          ElementsAre(Pointee(AllOf(
+              Property(&HoldingSpaceItem::type,
+                       HoldingSpaceItem::Type::kPhotoshopWeb),
+              Property(&HoldingSpaceItem::file,
+                       AllOf(Field(&HoldingSpaceFile::file_path, file_path),
+                             Field(&HoldingSpaceFile::file_system_type,
+                                   file_system_type),
+                             Field(&HoldingSpaceFile::file_system_url,
+                                   file_system_url)))))),
+          IsEmpty()));
+
+  // Verify histogram state.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HoldingSpace.FileCreatedFromShowSaveFilePicker.Extension"),
+              BucketsAre(Bucket(
+                  holding_space_metrics::FilePathToExtension(file_path), 1u)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "HoldingSpace.FileCreatedFromShowSaveFilePicker."
+          "FilePickerBindingContext"),
+      Conditional(
+          is_file_picker_binding_context_photoshop_web,
+          BucketsAre(Bucket(FilePickerBindingContext::kPhotoshopWeb, 1u)),
+          BucketsAre(Bucket(FilePickerBindingContext::kUnknown, 1u))));
+}
+
 // Base class for tests of print-to-PDF integration. Parameterized by whether
 // tests should use an incognito browser.
 class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
@@ -3149,8 +3277,7 @@ class HoldingSpaceKeyedServiceIncognitoDownloadsTest
   TestingProfile* incognito_profile() { return incognito_profile_; }
 
  private:
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      incognito_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> incognito_profile_ = nullptr;
 };
 
 TEST_F(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
@@ -3325,12 +3452,16 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
-           /*new_prediction_reason=*/std::nullopt, std::nullopt}});
+           /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
+           /*new_score=*/std::nullopt}});
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
-           /*new_prediction_reason=*/std::nullopt, std::nullopt}});
+           /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
+           /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3358,6 +3489,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3384,6 +3516,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
@@ -3401,9 +3534,11 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       /*suggestions=*/
       std::vector<FileSuggestData>{{FileSuggestionType::kDriveFile, file_path_1,
                                     /*new_prediction_reason=*/std::nullopt,
+                                    /*timestamp=*/std::nullopt,
                                     /*new_score=*/std::nullopt},
                                    {FileSuggestionType::kDriveFile, file_path_3,
                                     /*new_prediction_reason=*/std::nullopt,
+                                    /*timestamp=*/std::nullopt,
                                     /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3451,12 +3586,15 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, downloads_path,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt},
           {FileSuggestionType::kLocalFile, other_folder_path,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt},
           {FileSuggestionType::kLocalFile, file_path,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3484,6 +3622,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3510,6 +3649,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
@@ -3629,6 +3769,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
                               /*suggestions=*/std::vector<FileSuggestData>{
                                   {FileSuggestionType::kLocalFile, local_file,
                                    /*new_prediction_reason=*/std::nullopt,
+                                   /*timestamp=*/std::nullopt,
                                    /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3689,6 +3830,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, UpdateSuggestionsWithDelayedMount) {
                               /*suggestions=*/std::vector<FileSuggestData>{
                                   {FileSuggestionType::kLocalFile, local_file,
                                    /*new_prediction_reason=*/std::nullopt,
+                                   /*timestamp=*/std::nullopt,
                                    /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 

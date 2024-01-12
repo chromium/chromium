@@ -41,7 +41,8 @@ bool MessagePortTlsConnection::OnMessage(
 
   if (client_) {
     if (!task_runner_->IsRunningOnTaskRunner()) {
-      task_runner_->PostTask([ptr = AsWeakPtr(), m = std::move(message)]() {
+      task_runner_->PostTask([ptr = weak_ptr_factory_.GetWeakPtr(),
+                              m = std::move(message)]() {
         if (ptr) {
           ptr->OnMessage(
               std::move(m),
@@ -61,7 +62,7 @@ bool MessagePortTlsConnection::OnMessage(
 void MessagePortTlsConnection::OnPipeError() {
   if (client_) {
     if (!task_runner_->IsRunningOnTaskRunner()) {
-      task_runner_->PostTask([ptr = AsWeakPtr()]() {
+      task_runner_->PostTask([ptr = weak_ptr_factory_.GetWeakPtr()]() {
         if (ptr) {
           ptr->OnPipeError();
         }

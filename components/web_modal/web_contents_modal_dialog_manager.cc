@@ -81,6 +81,16 @@ void WebContentsModalDialogManager::WillClose(gfx::NativeWindow dialog) {
   BlockWebContentsInteraction(!child_dialogs_.empty());
 }
 
+void WebContentsModalDialogManager::OnDialogActivated() {
+  on_dialog_activated_.Notify();
+}
+
+base::CallbackListSubscription
+WebContentsModalDialogManager::AddOnDialogActivatedCallback(
+    base::RepeatingClosure callback) {
+  return on_dialog_activated_.Add(callback);
+}
+
 WebContentsModalDialogManager::WebContentsModalDialogManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),

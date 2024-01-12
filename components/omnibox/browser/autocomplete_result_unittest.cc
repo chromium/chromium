@@ -2695,38 +2695,10 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
       metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   {
-    SCOPED_TRACE("Two-column realbox disabled with query from omnibox");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {omnibox::kGroupingFrameworkForZPS},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup,
-         omnibox::kRealboxSecondaryZeroSuggest});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(omnibox_zps_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 5> expected_data{{
-        // Previous search related suggestion chips are not permitted when the
-        // feature is disabled.
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-
-    // Verify that the secondary zero-prefix suggestions were not triggered.
-    VerifyTriggeredFeatures(triggered_feature_service(), {});
-  }
-  {
-    SCOPED_TRACE("Two-column realbox enabled with query from omnibox");
+    SCOPED_TRACE("Query from omnibox");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kRealboxSecondaryZeroSuggest, {}}},
+        {{omnibox::kGroupingFrameworkForZPS, {}}},
         {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -2749,11 +2721,10 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     VerifyTriggeredFeatures(triggered_feature_service(), {});
   }
   {
-    SCOPED_TRACE("Two-column realbox enabled with query from WebUI omnibox");
+    SCOPED_TRACE("Query from WebUI omnibox");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
         {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kRealboxSecondaryZeroSuggest, {}},
          {omnibox::kWebUIOmniboxPopup, {}}},
         {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
@@ -2788,11 +2759,10 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
       metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   {
-    SCOPED_TRACE("Two-column realbox enabled with query from realbox");
+    SCOPED_TRACE("Query from realbox");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kRealboxSecondaryZeroSuggest, {}}},
+        {{omnibox::kGroupingFrameworkForZPS, {}}},
         {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -2817,74 +2787,10 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
                             {remote_secondary_zps_feature});
   }
   {
-    SCOPED_TRACE(
-        "Two-column realbox enabled with query from realbox - two chips");
+    SCOPED_TRACE("Query from realbox - no secondary matches");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kRealboxSecondaryZeroSuggest,
-          {{OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions.name,
-            "2"}}}},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(realbox_zps_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 7> expected_data{{
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-
-    // Verify that the secondary zero-prefix suggestions were triggered.
-    VerifyTriggeredFeatures(triggered_feature_service(),
-                            {remote_secondary_zps_feature});
-  }
-  {
-    SCOPED_TRACE(
-        "Two-column realbox enabled with query from realbox - counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kRealboxSecondaryZeroSuggest, {}}},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(realbox_zps_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    const std::array<TestData, 8> expected_data{{
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-    }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
-
-    // Verify that the secondary zero-prefix suggestions were triggered.
-    VerifyTriggeredFeatures(triggered_feature_service(),
-                            {remote_secondary_zps_feature});
-  }
-  {
-    SCOPED_TRACE(
-        "Two-column realbox enabled with query from realbox - no secondary "
-        "matches");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kRealboxSecondaryZeroSuggest, {}}},
+        {{omnibox::kGroupingFrameworkForZPS, {}}},
         {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);

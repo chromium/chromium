@@ -268,7 +268,7 @@ export function testSelectAll() {
   const sm = createSelectionModel(10);
 
   let changes: SelectionChangeEvent['detail']['changes']|null = null;
-  sm.addEventListener('change', function(e) {
+  sm.addEventListener('change', (e) => {
     changes = e.detail.changes;
   });
 
@@ -278,17 +278,16 @@ export function testSelectAll() {
   assertArrayEquals(range(0, 9), sm.selectedIndexes);
   assertArrayEquals(
       range(0, 9),
-      (changes as SelectionChangeEvent['detail']['changes'])
-          .map(function(change) {
-            return change.index;
-          }));
+      (changes as SelectionChangeEvent['detail']['changes']).map((change) => {
+        return change.index;
+      }));
 }
 
 export function testSelectAllOnEmptyList() {
   const sm = createSelectionModel(0);
 
   let changes: SelectionChangeEvent['detail']['changes']|null = null;
-  sm.addEventListener('change', function(e) {
+  sm.addEventListener('change', (e) => {
     changes = e.detail.changes;
   });
 

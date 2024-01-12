@@ -134,7 +134,7 @@ class Cache {
   }
 
  private:
-  Cache() {}
+  Cache() = default;
 
   // Synchronizes access to |data_|, ensuring that a given set of rules is
   // only compiled once.

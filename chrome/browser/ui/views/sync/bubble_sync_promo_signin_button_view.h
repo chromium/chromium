@@ -19,8 +19,9 @@
 // account information (avatar image and email) and allows the user to
 // sign in to Chrome or to enable sync.
 class BubbleSyncPromoSigninButtonView : public views::View {
+  METADATA_HEADER(BubbleSyncPromoSigninButtonView, views::View)
+
  public:
-  METADATA_HEADER(BubbleSyncPromoSigninButtonView);
   // Create a non-personalized sign-in button with |button_style|.
   // |callback| is called every time the user interacts with this button.
   explicit BubbleSyncPromoSigninButtonView(

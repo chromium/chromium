@@ -100,7 +100,7 @@ class TestApi {
   static constexpr int kNumOfPurposes =
       static_cast<int>(Purpose::kNumOfPurposes);
 
-  raw_ptr<TestApi, ExperimentalAsh> old_instance_;
+  raw_ptr<TestApi> old_instance_;
   bool overridden_;
   bool pin_purposes_enabled_by_policy_[kNumOfPurposes];
   bool fingerprint_purposes_enabled_by_policy_[kNumOfPurposes];

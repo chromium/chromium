@@ -13,6 +13,8 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
+#include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
@@ -82,23 +85,14 @@ void SearchController::Initialize() {
       profile_, list_controller_, base::DefaultClock::GetInstance());
   app_discovery_metrics_manager_ =
       std::make_unique<AppDiscoveryMetricsManager>(profile_);
+  search_engine_ = std::make_unique<SearchEngine>(profile_);
 }
 
 std::vector<ash::AppListSearchControlCategory>
 SearchController::GetToggleableCategories() const {
-  // Use a set to deduplicate and sort the elements in order.
-  std::set<ash::AppListSearchControlCategory> category_set;
-  for (auto& provider : providers_) {
-    // Cannot toggle is not an actual search category.
-    if (provider->control_category() ==
-        ash::AppListSearchControlCategory::kCannotToggle) {
-      continue;
-    }
-
-    category_set.insert(provider->control_category());
-  }
-  return std::vector<ash::AppListSearchControlCategory>(category_set.begin(),
-                                                        category_set.end());
+  // TODO(b/315709613): Temporary. precompute and store in search_controller.cc.
+  // Ask the search service to search the desired categories only per-query.
+  return search_engine_->GetToggleableCategories();
 }
 
 void SearchController::OnBurnInPeriodElapsed() {
@@ -110,8 +104,8 @@ void SearchController::AddProvider(std::unique_ptr<SearchProvider> provider) {
   if (ash::IsZeroStateResultType(provider->ResultType())) {
     ++total_zero_state_blockers_;
   }
-  provider->set_controller(this);
-  providers_.emplace_back(std::move(provider));
+  // TODO(b/315709613): Temporary. Update the factory.
+  search_engine_->AddProvider(std::move(provider));
 }
 
 void SearchController::StartSearch(const std::u16string& query) {
@@ -138,23 +132,17 @@ void SearchController::StartSearch(const std::u16string& query) {
     Publish();
   }
 
+  // TODO(b/315709613): This should use toggable categories.
   categories_ = CreateAllCategories();
   ranker_manager_->Start(truncated_query, results_, categories_);
 
   session_start_ = base::Time::Now();
   last_query_ = truncated_query;
 
-  // Search all providers.
-  for (const auto& provider : providers_) {
-    // Does not start the search of a provider if its control category is
-    // disabled.
-    if (ash::features::IsLauncherSearchControlEnabled() &&
-        !IsControlCategoryEnabled(profile_, provider->control_category())) {
-      continue;
-    }
-
-    provider->Start(truncated_query);
-  }
+  // TODO(b/315709613): Should ask for desired categories.
+  search_engine_->StartSearch(truncated_query,
+                              base::BindRepeating(&SearchController::SetResults,
+                                                  base::Unretained(this)));
 }
 
 void SearchController::ClearSearch() {
@@ -164,9 +152,7 @@ void SearchController::ClearSearch() {
   ClearNonZeroStateResults(results_);
   last_query_.clear();
 
-  for (const auto& provider : providers_) {
-    provider->StopQuery();
-  }
+  search_engine_->StopQuery();
 
   Publish();
   ranker_manager_->Start(u"", results_, categories_);
@@ -190,9 +176,8 @@ void SearchController::StartZeroState(base::OnceClosure on_done,
   on_zero_state_done_.AddUnsafe(std::move(on_done));
   returned_zero_state_blockers_ = 0;
 
-  for (const auto& provider : providers_) {
-    provider->StartZeroState();
-  }
+  search_engine_->StartZeroState(base::BindRepeating(
+      &SearchController::SetResults, base::Unretained(this)));
 
   zero_state_timeout_.Start(
       FROM_HERE, timeout,
@@ -223,9 +208,7 @@ void SearchController::AppListViewChanging(bool is_visible) {
 
   // On close.
   if (!is_visible) {
-    for (const auto& provider : providers_) {
-      provider->StopZeroState();
-    }
+    search_engine_->StopZeroState();
   }
 }
 
@@ -268,38 +251,37 @@ void SearchController::InvokeResultAction(ChromeSearchResult* result,
   }
 }
 
-void SearchController::SetResults(const SearchProvider* provider,
-                                  Results results) {
+void SearchController::SetResults(ResultType result_type, Results results) {
   // Re-post onto the UI sequence if not called from there.
   auto ui_thread = content::GetUIThreadTaskRunner({});
   if (!ui_thread->RunsTasksInCurrentSequence()) {
     ui_thread->PostTask(
         FROM_HERE,
         base::BindOnce(&SearchController::SetResults, base::Unretained(this),
-                       provider, std::move(results)));
+                       result_type, std::move(results)));
     return;
   }
 
-  results_[provider->ResultType()] = std::move(results);
-  if (ash::IsZeroStateResultType(provider->ResultType())) {
-    SetZeroStateResults(provider);
+  results_[result_type] = std::move(results);
+  if (ash::IsZeroStateResultType(result_type)) {
+    SetZeroStateResults(result_type);
   } else {
-    SetSearchResults(provider);
+    SetSearchResults(result_type);
   }
   if (results_changed_callback_for_test_) {
-    results_changed_callback_for_test_.Run(provider->ResultType());
+    results_changed_callback_for_test_.Run(result_type);
   }
 }
 
-void SearchController::SetSearchResults(const SearchProvider* provider) {
-  Rank(provider->ResultType());
+void SearchController::SetSearchResults(ResultType result_type) {
+  Rank(result_type);
 
-  for (const auto& result : results_[provider->ResultType()]) {
+  for (const auto& result : results_[result_type]) {
     metrics_manager_->OnSearchResultsUpdated(result->scoring());
   }
 
-  bool is_post_burn_in = burn_in_controller_->UpdateResults(
-      results_, categories_, provider->ResultType());
+  bool is_post_burn_in =
+      burn_in_controller_->UpdateResults(results_, categories_, result_type);
   // If the burn-in period has not yet elapsed, don't call Publish here (this
   // case is covered by a call scheduled within the burn-in controller).
   if (!last_query_.empty() && is_post_burn_in) {
@@ -307,10 +289,10 @@ void SearchController::SetSearchResults(const SearchProvider* provider) {
   }
 }
 
-void SearchController::SetZeroStateResults(const SearchProvider* provider) {
-  Rank(provider->ResultType());
+void SearchController::SetZeroStateResults(ResultType result_type) {
+  Rank(result_type);
 
-  if (ash::IsZeroStateResultType(provider->ResultType())) {
+  if (ash::IsZeroStateResultType(result_type)) {
     ++returned_zero_state_blockers_;
   }
 
@@ -460,23 +442,8 @@ base::Time SearchController::session_start() {
 size_t SearchController::ReplaceProvidersForResultTypeForTest(
     ash::AppListSearchResultType result_type,
     std::unique_ptr<SearchProvider> new_provider) {
-  DCHECK_EQ(result_type, new_provider->ResultType());
-
-  size_t removed_providers = base::EraseIf(
-      providers_, [&](const std::unique_ptr<SearchProvider>& provider) {
-        return provider->ResultType() == result_type;
-      });
-  if (!removed_providers) {
-    return 0u;
-  }
-  DCHECK_EQ(1u, removed_providers);
-
-  if (ash::IsZeroStateResultType(result_type)) {
-    total_zero_state_blockers_ -= removed_providers;
-  }
-
-  AddProvider(std::move(new_provider));
-  return removed_providers;
+  return search_engine_->ReplaceProvidersForResultTypeForTest(
+      result_type, std::move(new_provider));
 }
 
 ChromeSearchResult* SearchController::GetResultByTitleForTest(

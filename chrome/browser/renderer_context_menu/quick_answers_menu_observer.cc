@@ -35,23 +35,10 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
       chromeos::ReadWriteCardsManager::Get();
   CHECK(cards_manager);
 
-  read_write_card_controller_ =
-      cards_manager->GetController(params, proxy_->GetBrowserContext());
-  if (!read_write_card_controller_) {
-    return;
-  }
-
-  bounds_in_screen_ = bounds_in_screen;
-  content::RenderFrameHost* focused_frame =
-      proxy_->GetWebContents()->GetFocusedFrame();
-  if (focused_frame) {
-    read_write_card_controller_->OnContextMenuShown(profile_);
-    focused_frame->RequestTextSurroundingSelection(
-        base::BindOnce(
-            &QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable,
-            weak_factory_.GetWeakPtr(), params.selection_text),
-        kMaxSurroundingTextLength);
-  }
+  cards_manager->FetchController(
+      params, proxy_->GetBrowserContext(),
+      base::BindOnce(&QuickAnswersMenuObserver::OnFetchController,
+                     weak_factory_.GetWeakPtr(), params, bounds_in_screen));
 }
 
 void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
@@ -90,4 +77,26 @@ void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
   read_write_card_controller_->OnTextAvailable(
       bounds_in_screen_, base::UTF16ToUTF8(selected_text),
       base::UTF16ToUTF8(surrounding_text));
+}
+
+void QuickAnswersMenuObserver::OnFetchController(
+    const content::ContextMenuParams& params,
+    const gfx::Rect& bounds_in_screen,
+    base::WeakPtr<chromeos::ReadWriteCardController> controller) {
+  read_write_card_controller_ = controller.get();
+  if (read_write_card_controller_ == nullptr) {
+    return;
+  }
+
+  bounds_in_screen_ = bounds_in_screen;
+  content::RenderFrameHost* focused_frame =
+      proxy_->GetWebContents()->GetFocusedFrame();
+  if (focused_frame) {
+    read_write_card_controller_->OnContextMenuShown(profile_);
+    focused_frame->RequestTextSurroundingSelection(
+        base::BindOnce(
+            &QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable,
+            weak_factory_.GetWeakPtr(), params.selection_text),
+        kMaxSurroundingTextLength);
+  }
 }

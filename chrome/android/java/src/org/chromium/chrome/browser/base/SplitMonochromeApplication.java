@@ -8,8 +8,8 @@ import android.content.Context;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.IdentifierNameString;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
 /**

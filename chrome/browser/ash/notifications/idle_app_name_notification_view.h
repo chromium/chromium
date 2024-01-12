@@ -51,7 +51,7 @@ class IdleAppNameNotificationView {
                    const extensions::Extension* extension);
 
   // A reference to an existing message.
-  raw_ptr<IdleAppNameNotificationDelegateView, ExperimentalAsh> view_;
+  raw_ptr<IdleAppNameNotificationDelegateView> view_;
 };
 
 }  // namespace ash

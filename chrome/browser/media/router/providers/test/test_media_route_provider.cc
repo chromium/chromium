@@ -206,11 +206,11 @@ void TestMediaRouteProvider::EnableMdnsDiscovery() {}
 
 void TestMediaRouteProvider::DiscoverSinksNow() {}
 
-void TestMediaRouteProvider::CreateMediaRouteController(
+void TestMediaRouteProvider::BindMediaController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-    CreateMediaRouteControllerCallback callback) {
+    BindMediaControllerCallback callback) {
   std::move(callback).Run(false);
 }
 

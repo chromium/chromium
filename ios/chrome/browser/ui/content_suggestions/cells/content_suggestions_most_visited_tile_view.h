@@ -25,6 +25,9 @@
 // Provider of menu configurations for this tile.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 
+// Tap gesture recognizer for this view.
+@property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;
+
 // Configuration for this view.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMostVisitedItem* config;

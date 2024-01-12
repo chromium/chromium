@@ -9,11 +9,11 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
-#import "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
-#import "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
-#import "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
-#import "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/autocomplete/autocomplete_sync_bridge.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#import "components/autofill/core/browser/webdata/payments/autofill_wallet_metadata_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/browser_sync/sync_api_component_factory_impl.h"
@@ -266,9 +266,15 @@ IOSChromeSyncClient::GetSyncApiComponentFactory() {
 }
 
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
-  // TODO(crbug.com/1502574): Reconsider if this should integrate with
-  // SupervisedUserSettingsServiceFactory, along with corresponding
-  // logic in the UI.
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForBrowserState(
+              browser_state_);
+  if (supervised_user_settings_service) {
+    return supervised_user_settings_service->IsCustomPassphraseAllowed();
+  }
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return true;
 }
 

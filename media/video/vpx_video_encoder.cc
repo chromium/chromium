@@ -560,11 +560,11 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   int temporal_id = 0;
   if (codec_config_.ts_number_layers > 1) {
     if (key_frame)
-      temporal_svc_frame_index = 0;
-    int index_in_temp_cycle =
-        temporal_svc_frame_index % codec_config_.ts_periodicity;
+      temporal_svc_frame_index_ = 0;
+    unsigned int index_in_temp_cycle =
+        temporal_svc_frame_index_ % codec_config_.ts_periodicity;
     temporal_id = codec_config_.ts_layer_id[index_in_temp_cycle];
-    temporal_svc_frame_index++;
+    temporal_svc_frame_index_++;
 
     if (profile_ == VP8PROFILE_ANY) {
       auto* vp8_layers_flags = codec_config_.ts_number_layers == 2
@@ -734,7 +734,7 @@ void VpxVideoEncoder::DrainOutputs(int temporal_id,
       if (result.key_frame) {
         // If we got an unexpected key frame, temporal_svc_frame_index needs to
         // be adjusted, because the next frame should have index 1.
-        temporal_svc_frame_index = 1;
+        temporal_svc_frame_index_ = 1;
         result.temporal_id = 0;
       } else {
         result.temporal_id = temporal_id;

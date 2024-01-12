@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isDirectoryEntry, isNativeEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getType} from '../../common/js/file_type.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, type RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
@@ -271,7 +271,7 @@ export class MetadataBoxController {
             return;
           }
 
-          if (this.quickViewModel_.getSelectedEntry() != entry) {
+          if (this.quickViewModel_.getSelectedEntry() !== entry) {
             return;
           }
 

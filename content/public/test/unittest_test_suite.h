@@ -6,12 +6,12 @@
 #define CONTENT_PUBLIC_TEST_UNITTEST_TEST_SUITE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-forward.h"
 
 namespace base {
@@ -59,8 +59,8 @@ class UnitTestTestSuite {
   UnitTestTestSuite(
       base::TestSuite* test_suite,
       base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients,
-      absl::optional<mojo::core::Configuration> child_mojo_config =
-          absl::nullopt);
+      std::optional<mojo::core::Configuration> child_mojo_config =
+          std::nullopt);
 
   UnitTestTestSuite(const UnitTestTestSuite&) = delete;
   UnitTestTestSuite& operator=(const UnitTestTestSuite&) = delete;

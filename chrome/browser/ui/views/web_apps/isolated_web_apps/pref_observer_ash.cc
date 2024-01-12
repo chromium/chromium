@@ -15,11 +15,17 @@
 class IsolatedWebAppsEnabledPrefObserverAsh
     : public IsolatedWebAppsEnabledPrefObserver {
  public:
-  IsolatedWebAppsEnabledPrefObserverAsh(Profile* profile,
-                                        PrefChangedCallback callback)
-      : profile_(profile), callback_(callback) {
+  explicit IsolatedWebAppsEnabledPrefObserverAsh(Profile* profile)
+      : profile_(profile) {
     CHECK(profile_);
+  }
 
+  ~IsolatedWebAppsEnabledPrefObserverAsh() override = default;
+
+  void Start(IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback)
+      override {
+    CHECK(!callback_);
+    callback_ = callback;
     pref_change_registrar_.Init(pref_service());
     base::RepeatingClosure registrar_closure =
         base::BindRepeating(&IsolatedWebAppsEnabledPrefObserverAsh::RunCallback,
@@ -34,7 +40,10 @@ class IsolatedWebAppsEnabledPrefObserverAsh
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  ~IsolatedWebAppsEnabledPrefObserverAsh() override = default;
+  void Reset() override {
+    pref_change_registrar_.RemoveAll();
+    callback_.Reset();
+  }
 
  private:
   void RunCallback() {
@@ -57,9 +66,6 @@ class IsolatedWebAppsEnabledPrefObserverAsh
 
 // static
 std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
-IsolatedWebAppsEnabledPrefObserver::CreateIsolatedWebAppsEnabledPrefObserver(
-    Profile* profile,
-    IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback) {
-  return std::make_unique<IsolatedWebAppsEnabledPrefObserverAsh>(profile,
-                                                                 callback);
+IsolatedWebAppsEnabledPrefObserver::Create(Profile* profile) {
+  return std::make_unique<IsolatedWebAppsEnabledPrefObserverAsh>(profile);
 }

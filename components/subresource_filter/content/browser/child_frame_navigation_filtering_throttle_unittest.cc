@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -92,7 +93,7 @@ class ChildFrameNavigationFilteringThrottleTest
 
   void InitializeDocumentSubresourceFilterWithSubstringRules(
       const GURL& document_url,
-      std::vector<base::StringPiece> urls_to_block,
+      std::vector<std::string_view> urls_to_block,
       mojom::ActivationLevel parent_level = mojom::ActivationLevel::kEnabled) {
     ASSERT_NO_FATAL_FAILURE(
         test_ruleset_creator_.CreateRulesetToDisallowURLWithSubstrings(

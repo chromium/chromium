@@ -60,7 +60,7 @@ void CastDialogAccessCodeCastButton::OnMouseReleased(
   return HoverButton::OnMouseReleased(event);
 }
 
-BEGIN_METADATA(CastDialogAccessCodeCastButton, HoverButton)
+BEGIN_METADATA(CastDialogAccessCodeCastButton)
 END_METADATA
 
 }  // namespace media_router

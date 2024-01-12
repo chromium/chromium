@@ -21,7 +21,7 @@ package web_app;
 // A mapping between a MIME type and a set of file extensions for a file handler
 // "accept" entry. See chrome/browser/web_applications/web_app.h for details.
 message WebAppFileHandlerAcceptProto {
-  required string mimetype = 1;
+  optional string mimetype = 1;  // Required.
   repeated string file_extensions = 2;
 }
 
@@ -30,7 +30,7 @@ message WebAppFileHandlerAcceptProto {
 // handler can handle. See chrome/browser/web_applications/web_app.h for
 // details.
 message WebAppFileHandlerProto {
-  required string action = 1;
+  optional string action = 1;  // Required.
   repeated WebAppFileHandlerAcceptProto accept = 2;
   repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
   optional string display_name = 4;
@@ -41,22 +41,22 @@ message WebAppFileHandlerProto {
     SINGLE_CLIENT = 1;
     MULTIPLE_CLIENTS = 2;
   }
-  required LaunchType launch_type = 5;
+  optional LaunchType launch_type = 5;  // Required.
 }
 
 message WebAppProtocolHandler {
-  required string protocol = 1;
-  required string url = 2;
+  optional string protocol = 1;  // Required.
+  optional string url = 2;       // Required.
 }
 
 message WebAppUrlHandlerProto {
-  required string origin = 1;
-  required bool has_origin_wildcard = 2;
+  optional string origin = 1;             // Required.
+  optional bool has_origin_wildcard = 2;  // Required.
 }
 
 message WebAppScopeExtensionProto {
-  required string origin = 1;
-  required bool has_origin_wildcard = 2;
+  optional string origin = 1;             // Required.
+  optional bool has_origin_wildcard = 2;  // Required.
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install
@@ -64,11 +64,11 @@ message WebAppScopeExtensionProto {
 // chrome/browser/web_applications/web_app_constants.h
 // and the WebAppManagementProto enum below.
 message SourcesProto {
-  required bool system = 1;
-  required bool policy = 2;
-  required bool web_app_store = 3;
-  required bool sync = 4;
-  required bool default = 5;
+  optional bool system = 1;
+  optional bool policy = 2;
+  optional bool web_app_store = 3;
+  optional bool sync = 4;
+  optional bool default = 5;
   optional bool sub_app = 6;
   optional bool kiosk = 7;
   optional bool command_line = 8;
@@ -79,10 +79,10 @@ message SourcesProto {
 
 // Properties for integrating with Chrome OS.
 message ChromeOSDataProto {
-  required bool show_in_launcher = 1;
-  required bool show_in_search = 2;
-  required bool show_in_management = 3;
-  required bool is_disabled = 4;
+  optional bool show_in_launcher = 1;
+  optional bool show_in_search_and_shelf = 2;
+  optional bool show_in_management = 3;
+  optional bool is_disabled = 4;
   optional bool oem_installed = 5;
   optional bool handles_file_open_intents = 6;
   reserved 7;
@@ -94,8 +94,8 @@ message ClientDataProto {
 
 // Properties for a WebApp's shortcuts menu item.
 message WebAppShortcutsMenuItemInfoProto {
-  required string name = 1;
-  required string url = 2;
+  optional string name = 1;  // Required.
+  optional string url = 2;   // Required.
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons = 3;
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_maskable = 4;
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_monochrome = 5;
@@ -211,16 +211,13 @@ enum GeneratedIconFixSource {
 // Represents the current state of attempts to fix broken icons from sync
 // installed web apps.
 message GeneratedIconFix {
-  // Required.
-  optional GeneratedIconFixSource source = 1;
+  optional GeneratedIconFixSource source = 1;  // Required.
 
-  // Required.
-  optional int64 window_start_time = 2;
+  optional int64 window_start_time = 2;  // Required.
 
   optional int64 last_attempt_time = 3;
 
-  // Required.
-  optional uint32 attempt_count = 4;
+  optional uint32 attempt_count = 4;  // Required.
 }
 
 // Full WebApp object data. See detailed comments in
@@ -234,7 +231,7 @@ message WebAppProto {
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
   // generate a placeholder icon. Any device may write new values to synced
   // |name| and |theme_color|. A random last update wins.
-  required sync_pb.WebAppSpecifics sync_data = 1;
+  optional sync_pb.WebAppSpecifics sync_data = 1;  // Required.
 
   // This enum should be synced with
   // third_party/blink/public/mojom/manifest/display_mode.mojom
@@ -251,13 +248,13 @@ message WebAppProto {
 
   // Local data. May vary across devices. Not to be synced.
   //
-  required string name = 2;
+  optional string name = 2;  // Required.
   optional uint32 theme_color = 3;
   optional string description = 4;
   optional DisplayMode display_mode = 5;
   optional string scope = 6;
-  required SourcesProto sources = 7;
-  required bool is_locally_installed = 8;
+  optional SourcesProto sources = 7;       // Required.
+  optional bool is_locally_installed = 8;  // Required.
 
   // Installation state:
   // Specifies if this web app is from sync and has not completed installation.

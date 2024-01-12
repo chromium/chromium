@@ -253,6 +253,13 @@ void ServiceWorkerContextAdapter::StartServiceWorkerForNavigationHint(
   NOTIMPLEMENTED();
 }
 
+void ServiceWorkerContextAdapter::WarmUpServiceWorker(
+    const GURL& document_url,
+    const blink::StorageKey& key,
+    WarmUpServiceWorkerCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void ServiceWorkerContextAdapter::StopAllServiceWorkersForStorageKey(
     const blink::StorageKey& key) {
   NOTIMPLEMENTED();

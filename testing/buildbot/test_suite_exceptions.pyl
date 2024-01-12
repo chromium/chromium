@@ -26,12 +26,11 @@
   'accessibility_unittests': {
     'modifications': {
       'Linux ASan LSan Tests (1)': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/1442303): Move to Jammy when it's compatible.
-            'os': 'Ubuntu-18.04',
-          },
-        },
+        'args': [
+            # TODO(crbug.com/1442303): Re-enable.
+          '--gtest_filter=-AXPlatformNodeAuraLinuxTest.AtkComponentScrollTo:'
+          'AtkUtilAuraLinuxTest.*',
+        ],
       },
     },
   },
@@ -1274,8 +1273,8 @@
         },
       },
       'win-arm64-rel': {
-        # Surface Pros aren't using 100% scaling, which some browser tests
-        # rely on. They also have touch enabled, which we need to disable.
+        # Some Win Arm64 bots aren't using 100% scaling, which some browser
+        # tests rely on. They also have touch enabled, which we need to disable.
         'args': [
           '--force-device-scale-factor=1',
           '--top-chrome-touch-ui=disabled',
@@ -1765,6 +1764,11 @@
           'shards': 2,
         },
       },
+      'Win10 Tests x64 (dbg)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1192348): Fix the test failure
@@ -1817,11 +1821,6 @@
       'ToTFuchsiaOfficial arm64',
     ],
     'modifications': {
-      'Cast Audio Linux': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
-        ],
-      },
       'Cast Linux': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
@@ -2133,10 +2132,7 @@
         'experiment_percentage': 100,
       },
       'linux-lacros-tester-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
+        'ci_only': True,
       },
       'linux-ubsan-fyi-rel': {
         'swarming': {
@@ -2323,6 +2319,25 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
+  'context_lost_passthrough_tests': {
+    'modifications': {
+      'win-arm64-rel': {
+        'args': [
+          # These devices have issues running these tests in parallel.
+          '--jobs=1',
+        ],
+      },
+    },
+    'replacements': {
+      'win-arm64-rel': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
+    },
+  },
   'context_lost_validating_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
@@ -2331,6 +2346,15 @@
     ],
   },
   'cr23_pixel_browser_tests': {
+    # This target should be removed from any CI only builders. Developers can
+    # intentionally make UI changes. Without running pixel tests on CQ, those
+    # cls will get wrongly reverted by sheriffs.
+    # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
+    # need to update this field.
+    'remove_from': [
+      'Win11 Tests x64',
+      'win-rel-cft',
+    ],
     'modifications': {
       'win-rel-cft': {
         'args': [
@@ -3186,8 +3210,10 @@
         },
       },
       'win-arm64-rel': {
-        # Surface Pros have touch turned on by default, which makes some interactive-ui-tests fail.
+        # Some Win Arm64 bots have touch turned on, which makes some tests fail.
+        # Similarly, some have a non 1.0 device scale factor.
         'args': [
+          '--force-device-scale-factor=1',
           '--top-chrome-touch-ui=disabled',
         ],
       },
@@ -4410,7 +4436,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
       'linux-chromeos-rel': {

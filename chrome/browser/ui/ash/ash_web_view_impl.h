@@ -94,7 +94,7 @@ class AshWebViewImpl : public ash::AshWebView,
   const InitParams params_;
 
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
 
   // Whether or not the embedded |web_contents_| can go back.
   bool can_go_back_ = false;

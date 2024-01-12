@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_CLIPBOARD_COMMANDS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_CLIPBOARD_COMMANDS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -41,6 +42,7 @@ namespace blink {
 class DocumentFragment;
 class Element;
 class Event;
+class ExecutionContext;
 class LocalFrame;
 
 enum class DataTransferAccessPolicy;
@@ -48,7 +50,7 @@ enum class EditorCommandSource;
 enum class PasteMode;
 
 // This class provides static functions about commands related to clipboard.
-class ClipboardCommands {
+class CORE_EXPORT ClipboardCommands {
   STATIC_ONLY(ClipboardCommands);
 
  public:
@@ -86,6 +88,12 @@ class ClipboardCommands {
 
   static bool CanReadClipboard(LocalFrame&, EditorCommandSource);
   static bool CanWriteClipboard(LocalFrame&, EditorCommandSource);
+
+  // Returns true when handling a "cut" or "copy" command that originated from
+  // the user agent.
+  static bool IsExecutingCutOrCopy(ExecutionContext&);
+  // As above, but for the "paste" event.
+  static bool IsExecutingPaste(ExecutionContext&);
 
  private:
   static bool CanSmartReplaceInClipboard(LocalFrame&);

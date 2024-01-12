@@ -76,12 +76,12 @@ std::locale NiceNumLocale() {
 
 template <typename T>
 struct Quoter {
-  const raw_ref<const T, ExperimentalAsh> value;
+  const raw_ref<const T> value;
 };
 
 template <typename T>
 Quoter<T> Quote(const T& value) {
-  return {ToRawRef<ExperimentalAsh>(value)};
+  return {ToRawRef(value)};
 }
 
 template <typename T>

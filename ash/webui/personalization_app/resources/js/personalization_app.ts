@@ -56,9 +56,10 @@ import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
  * `chrome://personalization/js/personalization_app.js`. These exports are
  * necessary so they can be imported in tests.
  */
+export {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 export {AlbumListElement} from './ambient/album_list_element.js';
 export {AlbumsSubpageElement} from './ambient/albums_subpage_element.js';
-export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAmbientThemeAction, setAmbientThemeAction, SetPreviewsAction, setPreviewsAction, SetScreenSaverDurationAction, setScreenSaverDurationAction, SetShouldShowTimeOfDayBannerAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
+export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAmbientThemeAction, setAmbientThemeAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForAmbient, SetPreviewsAction, setPreviewsAction, SetScreenSaverDurationAction, setScreenSaverDurationAction, SetShouldShowTimeOfDayBannerAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
 export {setAmbientProviderForTesting} from './ambient/ambient_interface_provider.js';
 export {AmbientObserver} from './ambient/ambient_observer.js';
 export {AmbientPreviewLargeElement} from './ambient/ambient_preview_large_element.js';
@@ -81,7 +82,6 @@ export {ZoneCustomizationElement} from './keyboard_backlight/zone_customization_
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
 
 export * from '../personalization_app.mojom-webui.js';
-export * from '../sea_pen.mojom-webui.js';
 export {ColorScheme} from '../color_scheme.mojom-webui.js';
 export {PersonalizationBreadcrumbElement} from './personalization_breadcrumb_element.js';
 export {PersonalizationMainElement} from './personalization_main_element.js';
@@ -92,7 +92,7 @@ export {PersonalizationStore} from './personalization_store.js';
 export {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
 export {PersonalizationToastElement} from './personalization_toast_element.js';
 export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';
-export {setDarkModeEnabledAction, SetDarkModeEnabledAction, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
+export {setDarkModeEnabledAction, SetDarkModeEnabledAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForTheme, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';
@@ -117,26 +117,24 @@ export {GooglePhotosSharedAlbumDialogElement, AcceptEvent} from './wallpaper/goo
 export {GooglePhotosZeroStateElement} from './wallpaper/google_photos_zero_state_element.js';
 export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
-export {RecentSeaPenData} from './wallpaper/sea_pen/constants.js';
-export * from './wallpaper/sea_pen/sea_pen_actions.js';
-export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails} from './wallpaper/sea_pen/sea_pen_controller.js';
-export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
-export {SeaPenInputQueryElement} from './wallpaper/sea_pen/sea_pen_input_query_element.js';
-export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
-export {SeaPenRouterElement, SeaPenPaths} from './wallpaper/sea_pen/sea_pen_router_element.js';
-export {SeaPenState} from './wallpaper/sea_pen/sea_pen_state.js';
-export {getSeaPenStore, setSeaPenStore, SeaPenStoreInterface} from './wallpaper/sea_pen/sea_pen_store.js';
-export {SeaPenTemplateQueryElement} from './wallpaper/sea_pen/sea_pen_template_query_element.js';
-export {SeaPenTemplatesElement} from './wallpaper/sea_pen/sea_pen_templates_element.js';
-export {setSeaPenProviderForTesting} from './wallpaper/sea_pen/sea_pen_interface_provider.js';
-export {SparklePlaceholderElement} from './wallpaper/sea_pen/sparkle_placeholder_element.js';
+export {RecentSeaPenData} from 'chrome://resources/ash/common/sea_pen/constants.js';
+export * from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
+export {SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
+export {SeaPenInputQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
+export {SeaPenRecentWallpapersElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
+export {SeaPenRouterElement, SeaPenPaths} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+export {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
+export {getSeaPenStore, setSeaPenStore, SeaPenStoreInterface} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
+export {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
+export {SeaPenTemplatesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_templates_element.js';
+export {setSeaPenProviderForTesting} from 'chrome://resources/ash/common/sea_pen/sea_pen_interface_provider.js';
 export {isDefaultImage, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';
 export {selectGooglePhotosAlbum, cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, initializeBackdropData, fetchGooglePhotosEnabled, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
 export {WallpaperErrorElement} from './wallpaper/wallpaper_error_element.js';
 export {WallpaperFullscreenElement} from './wallpaper/wallpaper_fullscreen_element.js';
-export {WallpaperGridItemElement} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 export {getImageTiles, WallpaperImagesElement} from './wallpaper/wallpaper_images_element.js';
 export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_provider.js';
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';

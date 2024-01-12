@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -329,6 +328,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void set_device_ownership_waiter_for_testing(
       std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
 
+  // Skips device ownership fetch. Use set_device_ownership_waiter_for_testing()
+  // above if possible. Use this method only if your test must set up the
+  // behavior before BrowserManager is initialized.
+  static void SkipDeviceOwnershipWaitForTesting(bool skip);
+
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
   // Disable most of BrowserManager's functionality such that it never tries to
@@ -537,7 +541,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // BrowserManager must outlive this instance.
     ScopedKeepAlive(BrowserManager* manager, Feature feature);
 
-    raw_ptr<BrowserManager, ExperimentalAsh> manager_;
+    raw_ptr<BrowserManager> manager_;
     Feature feature_;
   };
 
@@ -548,7 +552,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     ~ScopedUnsetAllKeepAliveForTesting();
 
    private:
-    raw_ptr<BrowserManager, ExperimentalAsh> manager_;
+    raw_ptr<BrowserManager> manager_;
     std::set<BrowserManager::Feature> previous_keep_alive_features_;
   };
 
@@ -689,10 +693,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void PerformAction(std::unique_ptr<BrowserAction> action);
 
-  crosapi::BrowserLauncher browser_launcher_;
 
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
+
+  crosapi::BrowserLauncher browser_launcher_;
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
@@ -756,9 +761,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Whether a shutdown request was received while Lacros was in prelaunched
   // state.
   bool shutdown_requested_while_prelaunched_ = false;
-
-  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  std::unique_ptr<EnvironmentProvider> environment_provider_;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

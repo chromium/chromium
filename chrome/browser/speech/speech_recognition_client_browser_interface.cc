@@ -91,10 +91,6 @@ void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
   if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_))
     return;
   NotifyObservers(profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
-
-  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    OnSpeechRecognitionLanguageChanged();
-  }
 }
 
 void SpeechRecognitionClientBrowserInterface::

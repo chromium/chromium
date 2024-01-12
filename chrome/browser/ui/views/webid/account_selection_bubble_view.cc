@@ -1007,31 +1007,35 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  views::View* const row =
+  views::View* const content =
       scroll_view->SetContents(std::make_unique<views::View>());
-  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   bool is_multi_idp = idp_display_data_list.size() > 1u;
   size_t num_rows = 0;
   for (const auto& idp_display_data : idp_display_data_list) {
+    if (idp_display_data.has_login_status_mismatch) {
+      content->AddChildView(CreateIdpLoginRow(
+          idp_display_data.idp_etld_plus_one, idp_display_data.idp_metadata));
+      num_rows += 1;
+      continue;
+    }
     if (is_multi_idp) {
-      row->AddChildView(CreateIdpHeaderRowForMultiIdp(
+      content->AddChildView(CreateIdpHeaderRowForMultiIdp(
           idp_display_data.idp_etld_plus_one, idp_display_data.idp_metadata));
       ++num_rows;
     }
     for (const auto& account : idp_display_data.accounts) {
-      row->AddChildView(
+      content->AddChildView(
           CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
     }
+    const content::IdentityProviderMetadata& idp_metadata =
+        idp_display_data.idp_metadata;
+    if (idp_metadata.supports_add_account) {
+      content->AddChildView(std::make_unique<views::Separator>());
+      content->AddChildView(CreateUseOtherAccountButton(idp_metadata));
+    }
     num_rows += idp_display_data.accounts.size();
-  }
-
-  // TODO(crbug.com/1502635): Make "Add Account" work reasonably for multi-IDP
-  const content::IdentityProviderMetadata& idp_metadata =
-      idp_display_data_list[0].idp_metadata;
-  if (idp_metadata.supports_add_account) {
-    row->AddChildView(std::make_unique<views::Separator>());
-    row->AddChildView(CreateUseOtherAccountButton(idp_metadata));
   }
 
   // The maximum height that the multi-account-picker can have. This value was
@@ -1042,7 +1046,7 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   // ok with this estimate. And in this case, we prefer to use 3.5 as there will
   // be at least one IDP row at the beginning.
   float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
-  const int per_account_size = row->GetPreferredSize().height() / num_rows;
+  const int per_account_size = content->GetPreferredSize().height() / num_rows;
   scroll_view->ClipHeightTo(
       0, static_cast<int>(per_account_size * num_visible_rows));
   return scroll_view;
@@ -1118,6 +1122,26 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
+}
+
+std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
+    const std::u16string& idp_for_display,
+    const content::IdentityProviderMetadata& idp_metadata) {
+  auto image_view = std::make_unique<IdpImageView>(this);
+  image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_right(kLeftRightPadding));
+  ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
+
+  auto button = std::make_unique<HoverButton>(
+      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
+                          idp_metadata.idp_login_url),
+      std::move(image_view),
+      l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT,
+                                 idp_for_display));
+  button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+      /*vertical=*/kVerticalSpacing, /*horizontal=*/kLeftRightPadding)));
+  return button;
 }
 
 std::unique_ptr<views::View>

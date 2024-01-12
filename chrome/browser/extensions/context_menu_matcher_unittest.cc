@@ -207,6 +207,9 @@ TEST_F(ContextMenuMatcherTest,
                      kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
                      "parent", /*visible=*/true);
   MenuItem::Id parent_id = parent->id();
+  manager_->SetMenuIconLoader(parent->id().extension_key,
+                              std::make_unique<TestExtensionMenuIconLoader>());
+
   int parent_index = 0;
   std::unique_ptr<MenuItem> child =
       CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,

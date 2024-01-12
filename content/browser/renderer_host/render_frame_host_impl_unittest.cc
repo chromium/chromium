@@ -9,11 +9,11 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
-#include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/common/input/timeout_monitor.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -512,9 +512,6 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
 // Verifies BeforeUnload() is not sent to renderer if there is no before
 // unload handler present.
 TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kAvoidUnnecessaryBeforeUnloadCheckSync});
   FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
@@ -1219,7 +1216,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
@@ -1238,7 +1235,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
@@ -1255,7 +1252,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
@@ -1273,7 +1270,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
@@ -1283,73 +1280,6 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-TEST_F(RenderFrameHostImplTest, NoBeforeUnloadCheckForBrowserInitiated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
-  contents()->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(
-          GURL("https://example.com/navigation.html")));
-  EXPECT_FALSE(contents()
-                   ->GetPrimaryMainFrame()
-                   ->is_waiting_for_beforeunload_completion());
-}
-
-TEST_F(RenderFrameHostImplTest,
-       NoBeforeUnloadCheckForBrowserInitiatedSyncTakesPrecedence) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAvoidUnnecessaryBeforeUnloadCheckSync}, {});
-  contents()->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(
-          GURL("https://example.com/navigation.html")));
-  EXPECT_FALSE(contents()
-                   ->GetPrimaryMainFrame()
-                   ->is_waiting_for_beforeunload_completion());
-}
-
-// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() is
-// android specific.
-#if BUILDFLAG(IS_ANDROID)
-class TestContentBrowserClientImpl : public ContentBrowserClient {
-  bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override {
-    return false;
-  }
-};
-
-TEST_F(RenderFrameHostImplTest,
-       SupportsAvoidUnnecessaryBeforeUnloadCheckSyncReturnsFalse) {
-  TestContentBrowserClientImpl browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&browser_client);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
-  contents()->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(
-          GURL("https://example.com/navigation.html")));
-  // Should be waiting on beforeunload as
-  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes
-  // precedence.
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->is_waiting_for_beforeunload_completion());
-  SetBrowserClientForTesting(old_browser_client);
-}
-#endif
-
-TEST_F(RenderFrameHostImplTest, BeforeUnloadCheckForBrowserInitiated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
-  contents()->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(
-          GURL("https://example.com/navigation.html")));
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->is_waiting_for_beforeunload_completion());
-}
 
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,

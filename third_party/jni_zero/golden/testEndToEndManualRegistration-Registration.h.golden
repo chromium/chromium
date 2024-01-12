@@ -202,14 +202,14 @@ namespace {
 JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
   const int number_of_methods = std::size(kMethods_org_jni_1zero_GEN_1JNI);
 
-  base::android::ScopedJavaLocalRef<jclass> native_clazz =
+  jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       base::android::GetClass(env, "org/jni_zero/GEN_JNI");
   if (env->RegisterNatives(
       native_clazz.obj(),
       kMethods_org_jni_1zero_GEN_1JNI,
       number_of_methods) < 0) {
 
-    jni_generator::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
+    jni_zero::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
 

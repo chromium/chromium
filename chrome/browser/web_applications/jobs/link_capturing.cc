@@ -14,21 +14,21 @@
 
 namespace web_app {
 
-base::Value SetAppCapturesSupportedLinksDisableOverlapping(
+void SetAppCapturesSupportedLinksDisableOverlapping(
     const webapps::AppId& app_id,
     bool set_to_preferred,
-    AllAppsLock& lock) {
-  base::Value::Dict debug_value;
+    AllAppsLock& lock,
+    base::Value::Dict& debug_value) {
   debug_value.Set("app_id", app_id);
   debug_value.Set("set_to_preferred", set_to_preferred);
 
   if (!lock.registrar().IsLocallyInstalled(app_id)) {
     debug_value.Set("result", "App not installed.");
-    return base::Value(std::move(debug_value));
+    return;
   }
   if (lock.registrar().IsShortcutApp(app_id)) {
     debug_value.Set("result", "App is created as a shortcut.");
-    return base::Value(std::move(debug_value));
+    return;
   }
 
   // When disabling, simply disable & exit because this doesn't need to affect
@@ -45,7 +45,7 @@ base::Value SetAppCapturesSupportedLinksDisableOverlapping(
     // committed to the web_app DB (here and below).
     lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
         app_id, set_to_preferred);
-    return base::Value(std::move(debug_value));
+    return;
   }
 
   // Whe enabling, any app with the same scope (overlapping) that is explicitly
@@ -93,7 +93,7 @@ base::Value SetAppCapturesSupportedLinksDisableOverlapping(
     lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
         other_app_id, /*is_preferred=*/false);
   }
-  return base::Value(std::move(debug_value));
+  return;
 }
 
 }  // namespace web_app

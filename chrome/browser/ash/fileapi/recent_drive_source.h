@@ -57,7 +57,7 @@ class RecentDriveSource : public RecentSource {
       drive::FileError error,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::TimeTicks build_start_time_;
 

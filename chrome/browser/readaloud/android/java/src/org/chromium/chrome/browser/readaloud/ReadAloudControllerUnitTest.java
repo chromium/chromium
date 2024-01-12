@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -93,6 +94,7 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final long KNOWN_READABLE_TRIAL_PTR = 12345678L;
 
     private MockTab mTab;
     private ReadAloudController mController;
@@ -103,6 +105,7 @@ public class ReadAloudControllerUnitTest {
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Profile mMockIncognitoProfile;
     @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
@@ -114,6 +117,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
     @Mock private LayoutManager mLayoutManager;
     @Mock private ReadAloudPrefs.Natives mReadAloudPrefsNatives;
+    @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -131,6 +135,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private TemplateUrl mSearchEngine;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
+    private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
 
     @Before
     public void setUp() {
@@ -138,6 +143,8 @@ public class ReadAloudControllerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
 
+        mLayoutManagerSupplier = new ObservableSupplierImpl<>();
+        mLayoutManagerSupplier.set(mLayoutManager);
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -150,6 +157,7 @@ public class ReadAloudControllerUnitTest {
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
         mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mReadAloudPrefsNatives);
+        mJniMocker.mock(ReadAloudFeaturesJni.TEST_HOOKS, mReadAloudFeaturesNatives);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
         when(mPrefService.getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)).thenReturn(true);
@@ -175,6 +183,13 @@ public class ReadAloudControllerUnitTest {
                 .getSearchEngineTypeFromTemplateUrl(anyString());
         doReturn("Google").when(mSearchEngine).getKeyword();
         doReturn(mSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        doReturn(KNOWN_READABLE_TRIAL_PTR)
+                .when(mReadAloudFeaturesNatives)
+                .initSyntheticTrial(eq(ChromeFeatureList.READALOUD), eq("_KnownReadable"));
+
+        mHighlightingEnabledOnStartupHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "ReadAloud.HighlightingEnabled.OnStartup", true);
 
         mController =
                 new ReadAloudController(
@@ -183,7 +198,7 @@ public class ReadAloudControllerUnitTest {
                         mTabModelSelector.getModel(false),
                         mBottomSheetController,
                         mBrowserControlsSizer,
-                        mLayoutManager);
+                        mLayoutManagerSupplier);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mTab = mTabModelSelector.getCurrentTab();
@@ -205,6 +220,7 @@ public class ReadAloudControllerUnitTest {
     @After
     public void tearDown() {
         mUserActionTester.tearDown();
+        ReadAloudFeatures.shutdown();
     }
 
     @Test
@@ -453,9 +469,9 @@ public class ReadAloudControllerUnitTest {
         mFakeTranslateBridge.setCurrentLanguage("en");
         doReturn(
                         List.of(
-                                new PlaybackVoice("en", "voiceA", ""),
-                                new PlaybackVoice("es", "voiceB", ""),
-                                new PlaybackVoice("fr", "voiceC", "")))
+                                new PlaybackVoice("en", "voiceA"),
+                                new PlaybackVoice("es", "voiceB"),
+                                new PlaybackVoice("fr", "voiceC")))
                 .when(mPlaybackHooks)
                 .getPlaybackVoiceList(any());
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
@@ -568,7 +584,9 @@ public class ReadAloudControllerUnitTest {
         onPlaybackSuccess(mPlayback);
         verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
         // Checks that the pref is read to set up highlighter state
-        verify(mPrefService).hasPrefPath(eq(ReadAloudPrefs.HIGHLIGHTING_ENABLED_PATH));
+        // hasPrefPath is called twice, once during ReadAloudPrefs.isHighlightingEnabled and during
+        // ReadAloudPrefs.setHighlightingEnabled
+        verify(mPrefService, times(2)).hasPrefPath(eq(ReadAloudPrefs.HIGHLIGHTING_ENABLED_PATH));
 
         // trigger highlights
         mController.onPhraseChanged(mPhraseTiming);
@@ -663,6 +681,7 @@ public class ReadAloudControllerUnitTest {
         verify(mPlaybackHooks, times(1))
                 .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
         onPlaybackSuccess(mPlayback);
+
         mController.setHighlighterMode(2);
         verify(mHighlighter, times(1)).handleTabReloaded(mTab);
 
@@ -677,7 +696,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testSetVoiceAndRestartPlayback() {
         // Voices setup
-        var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID", "description");
+        var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID");
         doReturn(List.of(oldVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
 
         // First play tab.
@@ -696,7 +715,7 @@ public class ReadAloudControllerUnitTest {
         reset(mPlaybackHooks);
 
         // Set the new voice.
-        var newVoice = new PlaybackVoice("lang", "NEW VOICE ID", "description");
+        var newVoice = new PlaybackVoice("lang", "NEW VOICE ID");
         doReturn(List.of(newVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
         doReturn(List.of(newVoice)).when(mPlaybackHooks).getVoicesFor(anyString());
         var data = Mockito.mock(PlaybackData.class);
@@ -762,11 +781,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPreviewVoice_whilePlaying_success() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         reset(mPlaybackHooks);
 
         // Preview a voice.
@@ -812,11 +828,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPreviewVoice_whilePlaying_failure() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         reset(mPlaybackHooks);
 
         // Preview a voice.
@@ -837,11 +850,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPreviewVoice_previewDuringPreview() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         reset(mPlaybackHooks);
 
         // Preview a voice.
@@ -914,6 +924,28 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testPreviewVoice_metric() {
+        final String histogramName = ReadAloudMetrics.VOICE_PREVIEWED;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName + "abc", true);
+
+        // Play tab.
+        requestAndStartPlayback();
+
+        reset(mPlaybackHooks);
+        // Preview a voice.
+        var voice = new PlaybackVoice("en", "abc", "");
+        doReturn(List.of(voice)).when(mPlaybackHooks).getVoicesFor(anyString());
+        doReturn(List.of(voice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+        mController.previewVoice(voice);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        Playback previewPlayback = Mockito.mock(Playback.class);
+        onPlaybackSuccess(previewPlayback);
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testRestorePlaybackState_whileLoading() {
         // Request playback but don't succeed yet.
         mController.playTab(mTab);
@@ -937,9 +969,7 @@ public class ReadAloudControllerUnitTest {
         // selected.
 
         // Set up playback and restorable state.
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
         reset(mPlaybackHooks);
         doReturn(List.of(new PlaybackVoice("en", "voiceA", "")))
                 .when(mPlaybackHooks)
@@ -978,11 +1008,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testTranslationListenerRegistration() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         assertEquals(1, mFakeTranslateBridge.getObserverCount());
 
         // stopping playback should unregister a listener
@@ -993,11 +1020,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testIsTranslatedChangedStopsPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
 
         // Trigger isTranslated state changed. Playback should stop.
         mController
@@ -1009,11 +1032,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testSuccessfulTranslationStopsPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
 
         // Finish translating (status code 0 means "no error"). Playback should stop.
         mController.getTranslationObserverForTest().onPageTranslated("en", "es", 0);
@@ -1023,11 +1042,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testFailedTranslationDoesNotStopPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
 
         // Fail to translate (status code 1). Playback should not stop.
         mController.getTranslationObserverForTest().onPageTranslated("en", "es", 1);
@@ -1037,11 +1052,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testStoppingAnyPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
         verify(mPlayback).play();
 
         // request to stop any playback
@@ -1148,14 +1159,10 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPlaybackStopsAndStateSavedWhenAppBackgrounded() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
-        verify(mPlayback, times(1)).play();
-        var data = Mockito.mock(PlaybackData.class);
+        requestAndStartPlayback();
         // set progress
+        var data = Mockito.mock(PlaybackData.class);
+
         doReturn(2).when(data).paragraphIndex();
         doReturn(1000000L).when(data).positionInParagraphNanos();
         mController.onPlaybackDataChanged(data);
@@ -1268,6 +1275,45 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testMetricRecorded_highlightingEnabledOnStartup() {
+        mHighlightingEnabledOnStartupHistogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_highlightingSupported_true() {
+        final String histogramName = "ReadAloud.HighlightingSupported";
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        onPlaybackSuccess(mPlayback);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_highlightingSupported_false() {
+        final String histogramName = "ReadAloud.HighlightingSupported";
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), false);
+        onPlaybackSuccess(mPlayback);
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testNavigateToPlayingTab() {
         // Play tab.
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -1292,6 +1338,106 @@ public class ReadAloudControllerUnitTest {
 
         // should switch back to original one
         assertEquals(mTabModelSelector.getCurrentTab(), mTab);
+
+        // navigate
+        mController.navigateToPlayingTab();
+
+        // should still be on the playing tab
+        assertEquals(mTabModelSelector.getCurrentTab(), mTab);
+    }
+
+    @Test
+    public void testInitClearsStaleSyntheticTrialPrefs() {
+        verify(mReadAloudFeaturesNatives, times(1)).clearStaleSyntheticTrialPrefs();
+    }
+
+    @Test
+    public void testKnownReadableTrialInit() {
+        // ReadAloudController creation should init the trial.
+        verify(mReadAloudFeaturesNatives, times(1))
+                .initSyntheticTrial(eq(ChromeFeatureList.READALOUD), eq("_KnownReadable"));
+    }
+
+    @Test
+    public void testKnownReadableTrialActivate() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        // Page is readable so activate the trial.
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        verify(mReadAloudFeaturesNatives, times(1))
+                .activateSyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+
+        // Subsequent readability checks may cause activateSyntheticTrial() to be called again
+        // (though it has no effect after the first call).
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        verify(mReadAloudFeaturesNatives, times(2))
+                .activateSyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+    }
+
+    @Test
+    public void testKnownReadableTrialDoesNotActivateIfNotReadable() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        // Page is not readable so do not activate the trial.
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), false, false);
+        verify(mReadAloudFeaturesNatives, never()).activateSyntheticTrial(anyLong());
+    }
+
+    @Test
+    public void testDestroy() {
+        // Play tab
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+
+        // Destroy should clean up playback, UI, synthetic trials, and more
+        mController.destroy();
+        verify(mPlayback).release();
+        verify(mPlayerCoordinator).destroy();
+        verify(mReadAloudFeaturesNatives).destroySyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+    }
+
+    @Test
+    public void testMaybeShowPlayer() {
+        // no playback, request is a no op
+        mController.maybeShowPlayer();
+
+        verify(mPlayerCoordinator, never()).restoreMiniPlayer();
+
+        requestAndStartPlayback();
+        mController.maybeShowPlayer();
+
+        verify(mPlayerCoordinator).restoreMiniPlayer();
+    }
+
+    @Test
+    public void testMaybeHidePlayer() {
+        // no playback, request is a no op
+        mController.maybeHidePlayer();
+
+        verify(mPlayerCoordinator, never()).hidePlayers();
+
+        requestAndStartPlayback();
+        mController.maybeHidePlayer();
+
+        verify(mPlayerCoordinator).hidePlayers();
+    }
+
+    private void requestAndStartPlayback() {
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
     }
 
     private void onPlaybackSuccess(Playback playback) {

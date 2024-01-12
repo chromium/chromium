@@ -1140,8 +1140,20 @@ class _Generator(object):
     elif underlying_type.property_type == PropertyType.FUNCTION:
       assert not underlying_type.is_serializable_function, \
           'Serializable functions should have been handled above.'
-      if is_ptr: # Non-serializable functions are just represented as dicts.
+      # Non-serializable functions are just represented as empty dicts. If it
+      # was optional we call emplace to construct it in-place, otherwise we just
+      # check we were passed an empty dict.
+      if is_ptr:
         c.Append('%(dst_var)s.emplace();')
+      else:
+        (c.Sblock('if (!%(src_var)s.is_dict() || ' +
+                  '!%(src_var)s.GetDict().empty()) {')
+          .Concat(self._AppendError16(
+            'u"\'%%(key)s\': expected dictionary, got " + ' +
+            self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
+          .Append('return %(failure_value)s;')
+          .Eblock('}')
+        )
     elif underlying_type.property_type == PropertyType.ANY:
       c.Append('%(dst_var)s = %(src_var)s.Clone();')
     elif underlying_type.property_type == PropertyType.ARRAY:
@@ -1269,7 +1281,10 @@ class _Generator(object):
     enum_as_string = '%s_as_string' % type_.unix_name
     cpp_type_namespace = ''
     if type_.namespace != self._namespace:
-      cpp_type_namespace = '%s::' % type_.namespace.unix_name
+      namespace = cpp_util.GetCppNamespace(
+        type_.namespace.environment.namespace_pattern,
+        type_.namespace.unix_name)
+      cpp_type_namespace = '%s::' % namespace
     (c.Append('const std::string* %s = %s.GetIfString();' % (enum_as_string,
                                                             src_var))
       .Sblock('if (!%s) {' % enum_as_string)

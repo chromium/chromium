@@ -631,7 +631,7 @@ input[type="password" i]::-internal-reveal:focus {
 }
 
 input[type="password" i]::-internal-strong {
-  color: rgb(66, 133, 244);
+  color: -internal-light-dark(#0B57D0, #A8C7FA);
   font-family: roboto;
   -webkit-text-security: none;
 }
@@ -1214,11 +1214,6 @@ nobr {
 
 :-internal-selector-fragment-anchor {
     outline: Highlight 3px solid;
-}
-
-:-internal-spatial-navigation-interest {
-    outline: auto 1px -webkit-focus-ring-color !important;
-    box-shadow: none !important
 }
 
 :focus-visible {

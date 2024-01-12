@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/zero_suggest_prefetch_helper.h"
 
 #import "base/feature_list.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
+#import "components/omnibox/browser/omnibox_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -42,14 +42,14 @@ using web::WebStateObserverBridge;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                           editModel:(OmniboxEditModel*)editModel {
+                          controller:(OmniboxController*)controller {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
-    DCHECK(editModel);
+    DCHECK(controller);
 
     _webStateList = webStateList;
-    _editModel = editModel;
+    _controller = controller;
     _webStateObserverBridge = std::make_unique<WebStateObserverBridge>(self);
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
@@ -90,7 +90,7 @@ using web::WebStateObserverBridge;
     return;
   }
 
-  self.editModel->StartPrefetch();
+  self.controller->StartZeroSuggestPrefetch();
 }
 
 @end

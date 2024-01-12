@@ -12,13 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 
 class Profile;
 
 namespace web_app {
 
-class AllAppsLock;
-class AllAppsLockDescription;
 class ExtensionInstallGate;
 
 // Starts a transaction to:
@@ -30,17 +29,14 @@ class ExtensionInstallGate;
 // parameter to delete any Storage Partition domain level paths that is invalid
 // and currently inactive.
 class GarbageCollectStoragePartitionsCommand
-    : public WebAppCommandTemplate<AllAppsLock> {
+    : public WebAppCommand<AllAppsLock> {
  public:
   explicit GarbageCollectStoragePartitionsCommand(Profile* profile,
                                                   base::OnceClosure done);
   ~GarbageCollectStoragePartitionsCommand() override;
 
-  // WebAppCommandTemplate<AllAppsLock>:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
-  void OnShutdown() override;
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
 
  private:
   void ResetStorageGarbageCollectPref();
@@ -51,16 +47,9 @@ class GarbageCollectStoragePartitionsCommand
 
   void OnSuccess();
 
-  std::unique_ptr<AllAppsLockDescription> lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
-
   raw_ptr<Profile> profile_ = nullptr;
-
-  base::OnceClosure done_closure_;
-
   std::unique_ptr<ExtensionInstallGate> install_gate_;
-
-  base::Value::Dict debug_info_;
 
   base::WeakPtrFactory<GarbageCollectStoragePartitionsCommand> weak_factory_{
       this};

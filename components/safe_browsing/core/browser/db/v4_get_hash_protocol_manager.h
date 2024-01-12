@@ -108,9 +108,7 @@ struct FullHashCallbackInfo {
                        const FullHashToStoreAndHashPrefixesMap&
                            full_hash_to_store_and_hash_prefixes,
                        FullHashCallback callback,
-                       const base::Time& network_start_time,
-                       MechanismExperimentHashDatabaseCache
-                           mechanism_experiment_cache_selection);
+                       const base::Time& network_start_time);
   ~FullHashCallbackInfo();
 
   // The FullHashInfo objects retrieved from cache. These are merged with the
@@ -135,10 +133,6 @@ struct FullHashCallbackInfo {
 
   // The prefixes that were requested from the server.
   std::vector<HashPrefixStr> prefixes_requested;
-
-  // Specifies which cache to use. For more context, see the comments above
-  // MechanismExperimentHashDatabaseCache's definition.
-  MechanismExperimentHashDatabaseCache mechanism_experiment_cache_selection;
 };
 
 // ----------------------------------------------------------------
@@ -173,14 +167,11 @@ class V4GetHashProtocolManager {
   // argument when the results are retrieved. The callback may be invoked
   // synchronously. |list_client_states| is needed for reporting the current
   // state of the lists on the client; it does not affect the response from the
-  // server. |mechanism_experiment_cache_selection| is used to specify
-  // which cache(s) to use for reads and writes.
+  // server.
   virtual void GetFullHashes(const FullHashToStoreAndHashPrefixesMap
                                  full_hash_to_matching_hash_prefixes,
                              const std::vector<std::string>& list_client_states,
-                             FullHashCallback callback,
-                             MechanismExperimentHashDatabaseCache
-                                 mechanism_experiment_cache_selection);
+                             FullHashCallback callback);
 
   // Retrieve the full hash and API metadata for the origin of |url|, and invoke
   // the callback argument when the results are retrieved. The callback may be
@@ -196,11 +187,6 @@ class V4GetHashProtocolManager {
 
   // Populates the protobuf with the FullHashCache data.
   void CollectFullHashCacheInfo(FullHashCacheInfo* full_hash_cache_info);
-
-  // Sets |is_lookup_mechanism_experiment_enabled_| to true. See property
-  // comments for more details.
-  // TODO(crbug.com/1410253): Delete once temporary experiment is complete.
-  void SetLookupMechanismExperimentIsEnabled();
 
  protected:
   friend class GetHashProtocolManagerFactoryWithTestUrlLoader;
@@ -236,8 +222,6 @@ class V4GetHashProtocolManager {
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
                            TestGetHashErrorHandlingParallelRequests);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest, GetCachedResults);
-  FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
-                           CacheResults_LookupMechanismExperiment);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest, TestUpdatesAreMerged);
   FRIEND_TEST_ALL_PREFIXES(V4GetHashProtocolManagerTest,
                            TestBackoffErrorHistogramCount);
@@ -255,8 +239,7 @@ class V4GetHashProtocolManager {
   // Looks up the cached results for full hashes in
   // |full_hash_to_store_and_hash_prefixes|. Fills |prefixes_to_request| with
   // the prefixes that need to be requested. Fills |cached_full_hash_infos|
-  // with the cached results. |mechanism_experiment_cache_selection| is used to
-  // specify which cache(s) to use.
+  // with the cached results.
   // Note: It is valid for both |prefixes_to_request| and
   // |cached_full_hash_infos| to be empty after this function finishes.
   void GetFullHashCachedResults(
@@ -264,9 +247,7 @@ class V4GetHashProtocolManager {
           full_hash_to_store_and_hash_prefixes,
       const base::Time& now,
       std::vector<HashPrefixStr>* prefixes_to_request,
-      std::vector<FullHashInfo>* cached_full_hash_infos,
-      MechanismExperimentHashDatabaseCache
-          mechanism_experiment_cache_selection);
+      std::vector<FullHashInfo>* cached_full_hash_infos);
 
   // Fills a FindFullHashesRequest protocol buffer for a request.
   // Returns the serialized and base 64 encoded request as a string.
@@ -321,25 +302,14 @@ class V4GetHashProtocolManager {
   void SetClockForTests(base::Clock* clock);
 
   // Updates the state of the full hash cache upon receiving a valid response
-  // from the server. |mechanism_experiment_cache_selection| is used to specify
-  // which cache(s) to use.
+  // from the server.
   void UpdateCache(const std::vector<HashPrefixStr>& prefixes_requested,
                    const std::vector<FullHashInfo>& full_hash_infos,
-                   const base::Time& negative_cache_expire,
-                   MechanismExperimentHashDatabaseCache
-                       mechanism_experiment_cache_selection);
+                   const base::Time& negative_cache_expire);
 
  protected:
   // A cache of full hash results.
   FullHashCache full_hash_cache_;
-  // Similar |full_hash_cache_|, but for SafeBrowsingLookupMechanismExperiment
-  // for the hash real-time mechanism.
-  // TODO(crbug.com/1410253): Delete once temporary experiment is complete.
-  FullHashCache lookup_mechanism_experiment_hash_realtime_full_hash_cache_;
-  // Similar |full_hash_cache_|, but for SafeBrowsingLookupMechanismExperiment
-  // for the hash database mechanism.
-  // TODO(crbug.com/1410253): Delete once temporary experiment is complete.
-  FullHashCache lookup_mechanism_experiment_hash_database_full_hash_cache_;
 
  private:
   // Map of GetHash requests to parameters which created it.
@@ -386,17 +356,6 @@ class V4GetHashProtocolManager {
   std::vector<PlatformType> platform_types_;
   std::vector<ThreatEntryType> threat_entry_types_;
   std::vector<ThreatType> threat_types_;
-
-  // This value determines whether the class should maintain three local caches,
-  // one for each type of SafeBrowsingLookupMechanism's usage of the hash
-  // database cache. The value is set to true on the first Safe Browsing lookup
-  // that an ESB user makes after startup. Once true, it's never set back to
-  // false, meaning that the secondary caches won't be cleaned up until restart.
-  // Note that the two secondary caches will only ever be read from / written to
-  // from an experiment lookup, which is not run if the user turns off ESB (or
-  // for any non-ESB users on the device).
-  // TODO(crbug.com/1410253): Delete once temporary experiment is complete.
-  bool is_lookup_mechanism_experiment_enabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

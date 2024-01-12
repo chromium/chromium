@@ -158,9 +158,12 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
     // For single video cases, we only try to toggle framerate for perfect
     // cadence when |kSingleVideoFrameRateThrottling| is enabled.
     case ToggleFrameRateCase::kSingleVideoNoPerfectCadence:
+    // If a video's framerate equals to the display framerate, there's no need
+    // to toggle.
+    case ToggleFrameRateCase::kSingleVideoPerfectCadenceMatchesDisplay:
       should_toggle = false;
       break;
-    case ToggleFrameRateCase::kSingleVideoPerfectCadence:
+    case ToggleFrameRateCase::kSingleVideoPerfectCadenceDiffersFromDisplay:
       should_toggle = base::FeatureList::IsEnabled(
           features::kSingleVideoFrameRateThrottling);
       break;
@@ -176,7 +179,8 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
     case ToggleFrameRateCase::kMultipleVideos:
       break;
   }
-  if (toggle_case != ToggleFrameRateCase::kNone) {
+  if (toggle_case != ToggleFrameRateCase::kNone &&
+      metrics_subsampler_.ShouldSample(0.001)) {
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.FrameRateDecider.ToggleFrameRateCase", toggle_case);
   }
@@ -248,7 +252,8 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   if (*min_frame_sink_interval != BeginFrameArgs::MinInterval()) {
     base::TimeDelta min_delta = base::TimeDelta::Max();
     for (auto supported_interval : supported_intervals_) {
-      if (toggle_case == ToggleFrameRateCase::kSingleVideoPerfectCadence) {
+      if (toggle_case ==
+          ToggleFrameRateCase::kSingleVideoPerfectCadenceDiffersFromDisplay) {
         // For single video cases, pick the maximum interval with perfect
         // cadence from supported intervals.
         bool simple_cadence = media::VideoCadenceEstimator::HasSimpleCadence(
@@ -288,12 +293,17 @@ ToggleFrameRateCase FrameRateDecider::GetToggleFrameRateCase(
   // For single video cases, check if it is a perfect cadence one.
   if (num_of_frame_sinks_with_fixed_interval == 1) {
     base::TimeDelta interval = fixed_interval_frame_sink_intervals.back();
+    if (AreAlmostEqual(supported_intervals_.front(), interval)) {
+      return ToggleFrameRateCase::kSingleVideoPerfectCadenceMatchesDisplay;
+    }
     for (auto supported_interval : supported_intervals_) {
       if (media::VideoCadenceEstimator::HasSimpleCadence(
               supported_interval, interval, kMaxTimeUntilNextGlitch)) {
-        return ToggleFrameRateCase::kSingleVideoPerfectCadence;
+        return ToggleFrameRateCase::
+            kSingleVideoPerfectCadenceDiffersFromDisplay;
       }
     }
+
     return ToggleFrameRateCase::kSingleVideoNoPerfectCadence;
   }
 

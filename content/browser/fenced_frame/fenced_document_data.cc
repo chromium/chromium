@@ -14,12 +14,12 @@ FencedDocumentData::~FencedDocumentData() = default;
 FencedDocumentData::FencedDocumentData(RenderFrameHost* rfh)
     : DocumentUserData(rfh) {}
 
-const absl::optional<AutomaticBeaconInfo>
+const std::optional<AutomaticBeaconInfo>
 FencedDocumentData::GetAutomaticBeaconInfo(
     blink::mojom::AutomaticBeaconType event_type) const {
   auto it = automatic_beacon_info_.find(event_type);
   if (it == automatic_beacon_info_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

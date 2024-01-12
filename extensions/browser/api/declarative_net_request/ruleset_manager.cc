@@ -371,7 +371,8 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
     rulesets_to_evaluate.emplace_back(&ruleset, host_permission_access);
   }
 
-  const RequestParams params(request);
+  // TODO(crbug.com/1141166): Add response headers here.
+  const RequestParams params(request, /*response_headers=*/nullptr);
   std::optional<RequestAction> before_request_action =
       GetBeforeRequestAction(rulesets_to_evaluate, request, params);
 

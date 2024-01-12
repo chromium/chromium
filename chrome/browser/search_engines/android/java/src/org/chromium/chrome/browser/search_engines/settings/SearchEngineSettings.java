@@ -10,12 +10,12 @@ import android.widget.ListView;
 
 import androidx.fragment.app.ListFragment;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
  * A preference fragment for selecting a default search engine.
@@ -54,8 +54,10 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
         ListView listView = getListView();
         listView.setDivider(null);
         listView.setItemsCanFocus(true);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
-                && TemplateUrlServiceFactory.getForProfile(mProfile).isEeaChoiceCountry()) {
+
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        if (templateUrlService.shouldShowUpdatedSettings()
+                && templateUrlService.isEeaChoiceCountry()) {
             View headerView =
                     getLayoutInflater()
                             .inflate(R.layout.search_engine_choice_header, listView, false);

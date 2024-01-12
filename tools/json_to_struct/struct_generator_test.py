@@ -17,8 +17,11 @@ class StructGeneratorTest(unittest.TestCase):
         GenerateField({'type': 'string', 'field': 'bar_foo'}))
 
   def testGenerateString16Field(self):
-    self.assertEquals('const wchar_t* const foo_bar',
-        GenerateField({'type': 'string16', 'field': 'foo_bar'}))
+    self.assertEquals('const char16_t* const foo_bar',
+                      GenerateField({
+                          'type': 'string16',
+                          'field': 'foo_bar'
+                      }))
 
   def testGenerateEnumField(self):
     self.assertEquals('const MyEnumType foo_foo',
@@ -35,11 +38,11 @@ class StructGeneratorTest(unittest.TestCase):
 
   def testGenerateClassField(self):
     self.assertEquals(
-        'const absl::optional<bool> bar',
+        'const std::optional<bool> bar',
         GenerateField({
             'type': 'class',
             'field': 'bar',
-            'ctype': 'absl::optional<bool>'
+            'ctype': 'std::optional<bool>'
         }))
 
   def testGenerateStruct(self):

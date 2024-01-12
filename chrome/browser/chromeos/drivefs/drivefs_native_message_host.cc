@@ -122,7 +122,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
   mojo::Receiver<drivefs::mojom::NativeMessagingPort> receiver_{this};
   mojo::Remote<drivefs::mojom::NativeMessagingHost> drivefs_remote_;
 
-  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       base::SingleThreadTaskRunner::GetCurrentDefault();

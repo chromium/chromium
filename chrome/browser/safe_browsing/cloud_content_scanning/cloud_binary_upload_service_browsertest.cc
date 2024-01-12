@@ -98,14 +98,12 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
       std::unique_ptr<BinaryFCMService> binary_fcm_service,
       enterprise_connectors::test::ManagementContext management_context,
       enterprise_connectors::AnalysisConnector connector,
-      bool enable_relaxed_affiliation,
       bool profile_request)
       : CloudBinaryUploadService(url_loader_factory,
                                  profile,
                                  std::move(binary_fcm_service)),
         management_context_(management_context),
         connector_(connector),
-        enable_relaxed_affiliation_(enable_relaxed_affiliation),
         profile_request_(profile_request) {
     SetTokenFetcherForTesting(std::make_unique<TestSafeBrowsingTokenFetcher>());
   }
@@ -139,8 +137,7 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
     // policies),
     // 3. Affiliated profile.
     if (!management_context_.is_cloud_machine_managed ||
-        management_context_.affiliated ||
-        (request->per_profile_request() && enable_relaxed_affiliation())) {
+        management_context_.affiliated || request->per_profile_request()) {
       ASSERT_EQ(request->access_token(), kTestAccessToken);
     } else {
       ASSERT_TRUE(request->access_token().empty());
@@ -150,14 +147,9 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
                   enterprise_connectors::ContentAnalysisResponse());
   }
 
-  bool enable_relaxed_affiliation() const {
-    return enable_relaxed_affiliation_;
-  }
-
  private:
   enterprise_connectors::test::ManagementContext management_context_;
   enterprise_connectors::AnalysisConnector connector_;
-  bool enable_relaxed_affiliation_;
   bool profile_request_;
 };
 
@@ -180,33 +172,20 @@ class TestRequest : public CloudBinaryUploadService::Request {
 
 class CloudBinaryUploadServiceRequestValidationBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<
-          testing::tuple<ManagementContextDeviceRequest, bool>> {
+      public testing::WithParamInterface<ManagementContextDeviceRequest> {
  public:
   CloudBinaryUploadServiceRequestValidationBrowserTest()
       : management_mixin_(
             enterprise_connectors::test::ManagementContextMixin::Create(
                 &mixin_host_,
                 this,
-                management_context())) {
-    if (enable_relaxed_affiliation()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          enterprise_connectors::kEnableRelaxedAffiliationCheck);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          enterprise_connectors::kEnableRelaxedAffiliationCheck);
-    }
-  }
+                management_context())) {}
 
   enterprise_connectors::test::ManagementContext management_context() const {
-    return std::get<0>(GetParam()).context;
+    return GetParam().context;
   }
 
-  bool enable_relaxed_affiliation() { return std::get<1>(GetParam()); }
-
-  bool profile_request() const {
-    return std::get<0>(GetParam()).profile_request;
-  }
+  bool profile_request() const { return GetParam().profile_request; }
 
   void SetUpOnMainThread() override {
     CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
@@ -229,8 +208,7 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
         g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
             profile),
         profile, std::make_unique<TestBinaryFCMService>(valid_fcm_),
-        management_context(), connector_, enable_relaxed_affiliation(),
-        profile_request());
+        management_context(), connector_, profile_request());
   }
 
   CloudBinaryUploadService* service() {
@@ -371,7 +349,6 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CloudBinaryUploadServiceRequestValidationBrowserTest,
-                         testing::Combine(testing::ValuesIn(kTestCases),
-                                          testing::Bool()));
+                         testing::ValuesIn(kTestCases));
 
 }  // namespace safe_browsing

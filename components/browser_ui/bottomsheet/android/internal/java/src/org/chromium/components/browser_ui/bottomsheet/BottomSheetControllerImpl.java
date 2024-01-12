@@ -632,12 +632,24 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     /**
-     * The bottom sheet cannot change content while it is open. If the user has the bottom sheet
-     * open, they are currently engaged in a task and shouldn't be interrupted.
+     * The bottom sheet cannot change content while it is open, unless the current content returns
+     * true from canSuppressInAnyState(). If the user has the bottom sheet open with content that is
+     * not suppressable, they are currently engaged in a task and shouldn't be interrupted.
+     *
      * @return Whether the sheet currently supports switching its content.
      */
     private boolean canBottomSheetSwitchContent() {
-        return !mBottomSheet.isSheetOpen();
+        BottomSheetContent currentContent = mBottomSheet.getCurrentSheetContent();
+        if (!mBottomSheet.isSheetOpen()) {
+            return true;
+        }
+
+        if (currentContent != null && currentContent.canSuppressInAnyState()) {
+            assert currentContent.getPriority() == BottomSheetContent.ContentPriority.LOW;
+            return true;
+        }
+
+        return false;
     }
 
     boolean hasSuppressionTokensForTesting() {

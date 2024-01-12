@@ -115,6 +115,8 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   AuthenticatorState authenticator_state_ = AuthenticatorState::NOT_LOADED;
 
   // For testing only. Forces SAML redirect regardless of email.
+  // TODO(b/318077327): remove, we can fully mock SAML users and their policy
+  // setup in browser tests without this test-only flag.
   bool force_saml_redirect_for_testing_ = false;
 
   // User non-canonicalized email for display
@@ -124,8 +126,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   ::login::StringList scraped_saml_passwords_;
 
-  raw_ptr<InSessionPasswordSyncManager, ExperimentalAsh>
-      password_sync_manager_ = nullptr;
+  raw_ptr<InSessionPasswordSyncManager> password_sync_manager_ = nullptr;
 
   std::unique_ptr<UserContext> user_context_;
 

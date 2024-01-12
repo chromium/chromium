@@ -200,7 +200,7 @@ class IdleAppNameNotificationDelegateView
 
   // The owner of this message which needs to get notified when the message
   // closes.
-  raw_ptr<IdleAppNameNotificationView, ExperimentalAsh> owner_;
+  raw_ptr<IdleAppNameNotificationView> owner_;
 
   // True if the widget got already closed.
   bool widget_closed_;

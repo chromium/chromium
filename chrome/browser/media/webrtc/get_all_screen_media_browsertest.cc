@@ -148,8 +148,7 @@ class GetAllScreensMediaBrowserTest : public WebRtcTestBase {
   }
 
  protected:
-  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh> contents_ =
-      nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents_ = nullptr;
   std::unique_ptr<ContentBrowserClientMock> browser_client_;
 
  private:

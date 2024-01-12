@@ -312,10 +312,14 @@ class GTestTest(TestRunnerTest):
           {0}
           chown -R chronos: ../..
           sudo -E -u chronos -- /bin/bash -c \"{1}\"
+          TEST_RETURN_CODE=$?
           start ui
           """).format(dbus_cmd, core_cmd)
       else:
-        expected_device_script += core_cmd + '\n'
+        expected_device_script += dedent("""\
+          {0}
+          TEST_RETURN_CODE=$?
+          """).format(core_cmd)
 
       if use_test_sudo_helper:
         expected_device_script += dedent("""\
@@ -323,7 +327,9 @@ class GTestTest(TestRunnerTest):
             kill $TEST_SUDO_HELPER_PID
             unlink ${TEST_SUDO_HELPER_PATH}
           """)
-
+      expected_device_script += dedent("""\
+          exit $TEST_RETURN_CODE
+        """)
       self.assertEqual(1, fd_mock().write.call_count)
       # Split the strings to make failure messages easier to read.
       self.assertListEqual(

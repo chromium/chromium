@@ -61,7 +61,7 @@ class UsbPrinterNotificationControllerImpl
   }
 
   std::map<std::string, std::unique_ptr<UsbPrinterNotification>> notifications_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   int next_notification_id_ = 0;
 };
 

@@ -67,13 +67,6 @@ inline constexpr char kDownloadBubblePartialViewEnabled[] =
 inline constexpr char kDownloadBubblePartialViewImpressions[] =
     "download_bubble.partial_view_impressions";
 
-// A boolean specifying whether the download bubble IPH should be suppressed.
-// This will be set to true for users who are using the download bubble prior
-// to the addition of the IPH, so that the IPH will not be shown to users who
-// have already used the download bubble.
-inline constexpr char kDownloadBubbleIphSuppression[] =
-    "suppress_download_bubble_iph";
-
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";
@@ -383,6 +376,12 @@ inline constexpr char kContextualSearchPromoCardShownCount[] =
 inline constexpr char kContextualSearchWasFullyPrivacyEnabled[] =
     "search.contextual_search_fully_opted_in";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Boolean pref recording whether cookie and data would be used only for
+// essential purposes.
+inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 // Boolean that indicates whether the browser should put up a confirmation
@@ -1877,10 +1876,9 @@ inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
     "managed_private_network_access_restrictions_enabled";
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-// Boolean indicating whether or not Compose consent has been given or
-// acknowledged.
-inline constexpr char kPrefHasAcceptedComposeConsent[] =
-    "compose_has_accepted_consent";
+// Boolean indicating whether or not the Compose FRE has been completed.
+inline constexpr char kPrefHasCompletedComposeFRE[] =
+    "compose_has_completed_fre";
 #endif
 
 // *************** LOCAL STATE ***************
@@ -2010,6 +2008,10 @@ inline constexpr char kOpenPdfDownloadInSystemReader[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// A boolean specifying whether pdf files triggered by external apps are
+// auto opened after download completion.
+inline constexpr char kAutoOpenPdfEnabled[] = "download.auto_open_pdf_enabled";
+
 // Int (as defined by DownloadPromptStatus) which specifies whether we should
 // ask the user where they want to download the file (only for Android).
 inline constexpr char kPromptForDownloadAndroid[] =
@@ -3986,6 +3988,11 @@ inline constexpr char kReadAloudHighlightingEnabled[] =
 // not.
 inline constexpr char kListenToThisPageEnabled[] =
     "readaloud.listen_to_this_page_enabled";
+
+// Dictionary storing details about past synthetic trials. Key is (feature name,
+// synthetic trial suffix) and value is a field trial name. sessions.
+inline constexpr char kReadAloudSyntheticTrials[] =
+    "readaloud.synthetic_trials";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)

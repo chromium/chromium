@@ -306,6 +306,18 @@ DialogModelSection::DialogModelSection()
 
 DialogModelSection::~DialogModelSection() = default;
 
+DialogModelSection::Builder::Builder()
+    : section_(std::make_unique<DialogModelSection>()) {}
+
+DialogModelSection::Builder::~Builder() {
+  CHECK(!section_) << "DialogModelSection should've been built.";
+}
+
+std::unique_ptr<DialogModelSection> DialogModelSection::Builder::Build() {
+  CHECK(section_);
+  return std::move(section_);
+}
+
 base::CallbackListSubscription DialogModelSection::AddOnFieldAddedCallback(
     base::RepeatingCallback<void(DialogModelField*)> on_field_added) {
   return on_field_added_.Add(std::move(on_field_added));

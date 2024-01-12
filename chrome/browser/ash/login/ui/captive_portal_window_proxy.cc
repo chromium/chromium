@@ -38,7 +38,7 @@ class CaptivePortalWidget : public views::Widget {
       const override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 CaptivePortalWidget::CaptivePortalWidget(Profile* profile)

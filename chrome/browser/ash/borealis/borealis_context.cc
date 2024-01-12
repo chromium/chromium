@@ -84,7 +84,7 @@ class BorealisLifetimeObserver
   }
 
  private:
-  const raw_ptr<BorealisContext, ExperimentalAsh> context_;
+  const raw_ptr<BorealisContext> context_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       observation_;

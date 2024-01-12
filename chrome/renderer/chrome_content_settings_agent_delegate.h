@@ -38,8 +38,8 @@ class ChromeContentSettingsAgentDelegate
 
   // content_settings::ContentSettingsAgentImpl::Delegate:
   bool IsSchemeAllowlisted(const std::string& scheme) override;
-  absl::optional<bool> AllowReadFromClipboard() override;
-  absl::optional<bool> AllowWriteToClipboard() override;
+  bool AllowReadFromClipboard() override;
+  bool AllowWriteToClipboard() override;
   absl::optional<bool> AllowMutationEvents() override;
 
  private:

@@ -1207,7 +1207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.KeyboardShortcut"
-    enum="PhysicalKeyboardShortcut" expires_after="2024-05-05">
+    enum="PhysicalKeyboardShortcut" expires_after="2024-07-07">
   <owner>wbjacksonjr@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1387,7 +1387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Gesture"
-    enum="StylusHandwritingGesture" expires_after="2024-05-05">
+    enum="StylusHandwritingGesture" expires_after="2024-07-07">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1418,7 +1418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Triggered"
-    enum="StylusHandwritingApi" expires_after="2024-05-05">
+    enum="StylusHandwritingApi" expires_after="2024-07-07">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1644,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed"
-    enum="Boolean" expires_after="2024-04-28">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>alexmitra@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -1820,6 +1820,55 @@ chromium-metrics-reviews@google.com.
     missing. The count of user actions to switch keyboard mode (floating,
     docked). Recorded when the user clicks in the docked/floating keyboard menu
     option.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.CharacterIndex" units="ms"
+    expires_after="2024-04-03">
+  <owner>kouhei@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetCharacterIndexAtPoint on a renderer process. The call is effectively
+    synchronous, blocking all other tasks from running on the browser thread.
+
+    Only recorded on macOS.
+
+    Warning: this histogram was missing its entry until 2024-01; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.FirstRect" units="ms"
+    expires_after="2024-07-07">
+  <owner>kouhei@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetFirstRectForRange on a renderer process. The call is effectively
+    synchronous, blocking all other tasks from running on the browser thread.
+
+    Only recorded on macOS.
+
+    Warning: this histogram was missing its entry until 2024-01; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.LockWait" units="ms"
+    expires_after="2024-04-03">
+  <owner>kouhei@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Time took to acquire TextInputClient mutex lock on the browser process
+    thread, recorded per attempt. The histogram is useful to understand how much
+    of the TextInputClient.FirstRect and TextInputClient.CharacterIndex latency
+    are due to acquring browser-side lock.
+
+    Only recorded on macOS.
+
+    Warning: this histogram was missing its entry until 2024-01; data may be
+    missing.
   </summary>
 </histogram>
 

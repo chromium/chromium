@@ -16,11 +16,11 @@
 
 namespace device {
 
-class XRCompositorCommon;
+class OpenXrRenderLoop;
 
 class D3D11TextureHelper {
  public:
-  explicit D3D11TextureHelper(XRCompositorCommon* compositor);
+  explicit D3D11TextureHelper(OpenXrRenderLoop* render_loop);
   ~D3D11TextureHelper();
 
   void Reset();
@@ -106,7 +106,7 @@ class D3D11TextureHelper {
     LayerData overlay_;
   };
 
-  const raw_ptr<XRCompositorCommon> compositor_;
+  const raw_ptr<OpenXrRenderLoop> render_loop_;
 
   bool overlay_visible_ = true;
   bool source_visible_ = true;

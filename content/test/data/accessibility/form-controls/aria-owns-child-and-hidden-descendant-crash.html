@@ -1,0 +1,13 @@
+<div>
+  <b id='child'>
+    <span hidden>
+      <mark id='hidden-great-grandchild'></mark>
+    </span>
+  </b>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector('div').setAttribute('aria-owns', 'child hidden-great-grandchild');
+});
+</script>

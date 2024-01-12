@@ -17,7 +17,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -28,12 +27,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.favicon.GoogleFaviconServerRequestStatus;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -58,8 +55,6 @@ public class SearchEngineSettingsRenderTest {
     public final @Rule BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    public final @Rule TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-
     public final @Rule ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
@@ -77,7 +72,6 @@ public class SearchEngineSettingsRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
     public void testRenderWithSecFeature() throws Exception {
         testRender("search_engine_settings", true);
     }
@@ -85,12 +79,12 @@ public class SearchEngineSettingsRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
     public void testRenderWithoutSecFeature() throws Exception {
         testRender("search_engine_settings_flag_off", false);
     }
 
-    private void testRender(String screenshotId, boolean needsIcons) throws Exception {
+    private void testRender(String screenshotId, boolean shouldShowUpdatedSettings)
+            throws Exception {
         TemplateUrl engine1 = buildTemplateUrl("Custom Engine", 0);
         GURL engine1Gurl = new GURL("https://gurl1.example.com");
         TemplateUrl engine2 = buildTemplateUrl("Prepopulated Engine", 2);
@@ -100,6 +94,9 @@ public class SearchEngineSettingsRenderTest {
         doReturn(new ArrayList<>(templateUrls)).when(mMockTemplateUrlService).getTemplateUrls();
         doReturn(engine1).when(mMockTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(true).when(mMockTemplateUrlService).isEeaChoiceCountry();
+        doReturn(shouldShowUpdatedSettings)
+                .when(mMockTemplateUrlService)
+                .shouldShowUpdatedSettings();
         doReturn(true).when(mMockTemplateUrlService).isLoaded();
         String engine1Keyword = engine1.getKeyword();
         doReturn(engine1Gurl.getSpec())
@@ -149,7 +146,7 @@ public class SearchEngineSettingsRenderTest {
                             return fragment.getView();
                         });
 
-        if (needsIcons) {
+        if (shouldShowUpdatedSettings) {
             // Wait for icons to be requested.
             CriteriaHelper.pollUiThread(() -> largeIconBridge.getCallbackCount() == 2);
 

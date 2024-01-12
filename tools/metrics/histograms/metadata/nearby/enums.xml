@@ -179,6 +179,116 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Disallowed by policy"/>
 </enum>
 
+<enum name="NearbyShareError">
+  <int value="0" label="kPublicCertificateHasNoBluetoothMacAddress"/>
+  <int value="1" label="kPublicCertificateHasInvalidBluetoothMacAddress"/>
+  <int value="2" label="kRegisterSendSurfaceAlreadyRegistered"/>
+  <int value="3" label="kRegisterSendSurfaceNoAvailableConnectionMedium"/>
+  <int value="4" label="kUnregisterSendSurfaceUnknownTransferUpdateCallback"/>
+  <int value="5" label="kRegisterReceiveSurfaceNoAvailableConnectionMedium"/>
+  <int value="6"
+      label="kRegisterReceiveSurfaceTransferCallbackAlreadyRegisteredDifferentState"/>
+  <int value="7" label="kSendAttachmentsNotScanning"/>
+  <int value="8" label="kSendAttachmentsUnknownShareTarget"/>
+  <int value="9" label="kSendAttachmentsNoAttachments"/>
+  <int value="10" label="kSendAttachmentsCouldNotCreateLocalEndpointInfo"/>
+  <int value="11" label="kAcceptUnknownShareTarget"/>
+  <int value="12" label="kAcceptNotAwaitingLocalConfirmation"/>
+  <int value="13" label="kRejectUnknownShareTarget"/>
+  <int value="14" label="kCancelUnknownShareTarget"/>
+  <int value="15" label="kMaxNearbyProcessRestart"/>
+  <int value="16" label="kBindToNearbyProcessReferenceExistsOrDisabled"/>
+  <int value="17" label="kBindToNearbyProcessFailedToGetReference"/>
+  <int value="18" label="kOnIncomingConnectionAcceptedFailedToGetDecoder"/>
+  <int value="19" label="kGetBluetoothAdapterUnsupported"/>
+  <int value="20" label="kStartFastInitiationAdvertisingFailed"/>
+  <int value="21" label="HandleEndpointDiscoveredFailedToGetDecoder"/>
+  <int value="22" label="kOutgoingAdvertisementDecodedFailedToParse"/>
+  <int value="23"
+      label="kOutgoingDecryptedCertificateFailedToCreateShareTarget"/>
+  <int value="24" label="kSendPayloadsMissingConnection"/>
+  <int value="25" label="kSendPayloadsMissingTransferUpdateCallback"/>
+  <int value="26" label="kSendPayloadsMissingEndpointId"/>
+  <int value="27" label="kPayloadPathsRegisteredFailed"/>
+  <int value="28" label="kPayloadPathsRegisteredUnknownShareTarget"/>
+  <int value="29" label="kPayloadPathsRegisteredMissingTransferUpdateCallback"/>
+  <int value="30" label="kPayloadPathsRegisteredMissingEndpointId"/>
+  <int value="31" label="kOutgoingConnectionFailedtoInitiateConnection"/>
+  <int value="32" label="kSendIntroductionFailedToGetShareTarget"/>
+  <int value="33" label="kSendIntroductionMissingTransferUpdateCallback"/>
+  <int value="34" label="kSendIntroductionNoSendTransferCallbacks"/>
+  <int value="35" label="kSendIntroductionNoPayloads"/>
+  <int value="36" label="kCreatePayloadsNoAttachments"/>
+  <int value="37" label="kCreatePayloadsNoFileOrTextPayloads"/>
+  <int value="38" label="kCreatePayloadsFilePayloadWithoutPath"/>
+  <int value="39" label="kOnCreatePayloadsFailed"/>
+  <int value="40" label="kOnOpenFilesFailed"/>
+  <int value="41" label="kFailUnknownShareTarget"/>
+  <int value="42" label="kIncomingAdvertisementDecodedInvalidConnection"/>
+  <int value="43" label="kIncomingAdvertisementDecodedFailedToParse"/>
+  <int value="44" label="kCloseConnectionInvalidConnection"/>
+  <int value="45" label="kIncomingDecryptedCertificateInvalidConnection"/>
+  <int value="46"
+      label="kIncomingDecryptedCertificateFailedToCreateShareTarget"/>
+  <int value="47"
+      label="kRunPairedKeyVerificationFailedToReadAuthenticationToken"/>
+  <int value="48"
+      label="kIncomingConnectionKeyVerificationInvalidConnectionOrEndpointId"/>
+  <int value="49" label="kIncomingConnectionKeyVerificationFailed"/>
+  <int value="50" label="kIncomingConnectionKeyVerificationUnknownResult"/>
+  <int value="51" label="kOutgoingConnectionKeyVerificationMissingConnection"/>
+  <int value="52"
+      label="kOutgoingConnectionKeyVerificationMissingTransferUpdateCallback"/>
+  <int value="53" label="kOutgoingConnectionKeyVerificationFailed"/>
+  <int value="54" label="kOutgoingConnectionKeyVerificationUnknownResult"/>
+  <int value="55" label="kReceivedIntroductionMissingConnection"/>
+  <int value="56" label="kReceivedIntroductionInvalidFrame"/>
+  <int value="57" label="kReceivedIntroductionInvalidAttachmentSize"/>
+  <int value="58" label="kReceivedIntroductionTotalFileSizeOverflow"/>
+  <int value="59" label="kReceivedIntroductionInvalidTextAttachmentSize"/>
+  <int value="60" label="kReceivedIntroductionInvalidWifiSSID"/>
+  <int value="61" label="kReceivedIntroductionShareTargetNoAttachment"/>
+  <int value="62" label="kReceiveConnectionResponseMissingConnection"/>
+  <int value="63"
+      label="kReceiveConnectionResponseMissingTransferUpdateCallback"/>
+  <int value="64" label="kReceiveConnectionResponseInvalidFrame"/>
+  <int value="65" label="kReceiveConnectionResponseNotEnoughSpace"/>
+  <int value="66" label="kReceiveConnectionResponseUnsupportedAttachmentType"/>
+  <int value="67" label="kReceiveConnectionResponseTimedOut"/>
+  <int value="68" label="kReceiveConnectionResponseConnectionFailed"/>
+  <int value="69" label="kStorageCheckCompletedNotEnoughSpace"/>
+  <int value="70" label="kStorageCheckCompletedMissingConnection"/>
+  <int value="71" label="kStorageCheckCompletedMissingTransferUpdateCallback"/>
+  <int value="72" label="kStorageCheckCompletedNoIncomingShareTarget"/>
+  <int value="73" label="kStorageCheckCompletedNoFramesReader"/>
+  <int value="74" label="kFrameReadNoFrameReader"/>
+  <int value="75" label="kIncomingMutualAcceptanceTimeout"/>
+  <int value="76" label="kOutgoingMutualAcceptanceTimeout"/>
+  <int value="77" label="kCreateShareTargetFailedToRetreivePublicCertificate"/>
+  <int value="78" label="kCreateShareTargetFailedToRetreiveDeviceName"/>
+  <int value="79" label="kIncomingPayloadsCompleteMissingConnection"/>
+  <int value="80" label="kIncomingPayloadsCompleteMissingPayloadId"/>
+  <int value="81" label="kIncomingPayloadsCompleteMissingPayload"/>
+  <int value="82" label="kIncomingPayloadsCompleteMissingTextPayloadId"/>
+  <int value="83" label="kIncomingPayloadsCompleteMissingTextPayload"/>
+  <int value="84" label="kIncomingPayloadsCompleteTextPayloadEmptyBytes"/>
+  <int value="85" label="kIncomingPayloadsCompleteMissingWifiPayloadId"/>
+  <int value="86" label="kIncomingPayloadsCompleteMissingWifiPayload"/>
+  <int value="87" label="kIncomingPayloadsCompleteWifiPayloadEmptyBytes"/>
+  <int value="88" label="kIncomingPayloadsCompleteWifiFailedToParse"/>
+  <int value="89" label="kIncomingPayloadsCompleteWifiNoPassword"/>
+  <int value="90" label="kIncomingPayloadsCompleteWifiHiddenNetwork"/>
+  <int value="91" label="kDisconnectFailedToGetShareTargetInfo"/>
+  <int value="92" label="kDisconnectMissingEndpointId"/>
+  <int value="93"
+      label="kGetBluetoothMacAddressForShareTargetNoShareTargetInfo"/>
+  <int value="94"
+      label="kGetBluetoothMacAddressForShareTargetNoDecryptedPublicCertificate"/>
+  <int value="95" label="kStartAdvertisingFailed"/>
+  <int value="96" label="kStopAdvertisingFailed"/>
+  <int value="97" label="kStartDiscoveryFailed"/>
+</enum>
+
 <enum name="NearbyShareFinalStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

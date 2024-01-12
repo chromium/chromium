@@ -116,7 +116,7 @@ public class TabGridDialogMediator
     private final TabModelObserver mTabModelObserver;
     private final TabCreatorManager mTabCreatorManager;
     private final DialogController mDialogController;
-    private final TabSwitcherMediator.ResetHandler mTabSwitcherResetHandler;
+    private final TabSwitcherResetHandler mTabSwitcherResetHandler;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
@@ -140,7 +140,7 @@ public class TabGridDialogMediator
             PropertyModel model,
             ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             TabCreatorManager tabCreatorManager,
-            TabSwitcherMediator.ResetHandler tabSwitcherResetHandler,
+            TabSwitcherResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
             SnackbarManager snackbarManager,

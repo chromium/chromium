@@ -236,7 +236,7 @@ class BorealisInstallerImpl::Installation
     Succeed(std::move(install_info_));
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   base::TimeTicks installation_start_tick_;
   InstallingState installing_state_;
   base::RepeatingCallback<void(double)> update_progress_callback_;
@@ -329,7 +329,7 @@ class BorealisInstallerImpl::Uninstallation
     Succeed(std::move(uninstall_info_));
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<BorealisInstallerImpl::InstallInfo> uninstall_info_;
   base::WeakPtrFactory<Uninstallation> weak_factory_;
 };

@@ -32,9 +32,6 @@ void ConfigureInkDropForToolbar(views::Button* host,
                                 std::unique_ptr<views::HighlightPathGenerator>
                                     highlight_generator = nullptr);
 
-// // Configures the inkdrop for `host` in tooolbar.
-// void UpdateInkdropForToolbar(views::Button* host);
-
 // Sets the highlight color callback and ripple color callback for inkdrop when
 // the chrome refresh flag is on.
 void ConfigureToolbarInkdropForRefresh2023(views::View* host,

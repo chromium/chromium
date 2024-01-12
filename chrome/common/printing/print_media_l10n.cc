@@ -37,7 +37,6 @@ MediaSizeInfo InfoForStandardSize(const gfx::Size& size) {
 
   static constexpr auto kMediaMap = base::MakeFixedFlatMap<gfx::Size,
                                                            RegisteredMediaInfo>(
-      base::sorted_unique,
       {
           {{2600, 3700},
            {"iso_a10_26x37mm", PRINT_PREVIEW_MEDIA_ISO_A10_26X37MM,

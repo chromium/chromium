@@ -11,7 +11,7 @@ namespace content {
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 absl::optional<media::CdmCapability> capability,
+                 std::optional<media::CdmCapability> capability,
                  bool supports_sub_key_systems,
                  const std::string& name,
                  const media::CdmType& type,
@@ -33,7 +33,7 @@ CdmInfo::CdmInfo(const std::string& key_system,
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 absl::optional<media::CdmCapability> capability,
+                 std::optional<media::CdmCapability> capability,
                  const media::CdmType& type)
     : CdmInfo(key_system,
               robustness,

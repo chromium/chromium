@@ -224,7 +224,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool force_enable_zoom;
   GURL default_video_poster_url;
   bool support_deprecated_target_density_dpi;
-  bool use_legacy_background_size_shorthand_behavior;
   bool wide_viewport_quirk;
   bool use_wide_viewport;
   bool force_zero_layout_height;

@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.components.prefs.PrefService;
@@ -81,6 +82,19 @@ public class ReadAloudPrefsUnitTest {
     }
 
     @Test
+    public void testSetVoice_metric() {
+        final String histogramName = ReadAloudMetrics.VOICE_CHANGED;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName + "abc", true);
+        ReadAloudPrefs.setVoice(mPrefService, "en", "abc");
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName + "def", true);
+        ReadAloudPrefs.setVoice(mPrefService, "es", "def");
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testDefaultSpeed() {
         assertEquals(1f, ReadAloudPrefs.getSpeed(mPrefService), /* delta= */ 0f);
     }
@@ -112,5 +126,40 @@ public class ReadAloudPrefsUnitTest {
     public void testSetIsHighlightingEnabled() {
         ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
         verify(mPrefService).setBoolean(eq("readaloud.highlighting_enabled"), eq(false));
+    }
+
+    @Test
+    public void testSpeedChanged_Metric() {
+        ReadAloudPrefs.setSpeed(mPrefService, 1.0f);
+
+        final String histogramName = "ReadAloud.SpeedChange";
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 3);
+        ReadAloudPrefs.setSpeed(mPrefService, 1.2f);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 6);
+        ReadAloudPrefs.setSpeed(mPrefService, 3.0f);
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testIsHighlightingEnabled_Metric() {
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
+
+        final String histogramName = "ReadAloud.HighlightingEnabled";
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, true);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
+        histogram.assertExpected();
+
+        // test a duplicate isn't recorded
+        histogram = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
+        histogram.assertExpected();
     }
 }

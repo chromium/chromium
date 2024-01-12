@@ -58,7 +58,7 @@ AddressNormalizationManager::AddressNormalizationManager(
   DCHECK(address_normalizer_);
 }
 
-AddressNormalizationManager::~AddressNormalizationManager() {}
+AddressNormalizationManager::~AddressNormalizationManager() = default;
 
 void AddressNormalizationManager::NormalizeAddressUntilFinalized(
     AutofillProfile* profile) {

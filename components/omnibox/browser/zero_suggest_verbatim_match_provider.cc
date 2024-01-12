@@ -51,8 +51,9 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
 
   // Only offer verbatim match after the user just focused the Omnibox on NTP,
   // SRP, or existing website view, or if the input field is empty.
-  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (!input.IsZeroSuggest()) {
     return;
+  }
 
   // For consistency with other zero-prefix providers.
   const auto& page_url = input.current_url();

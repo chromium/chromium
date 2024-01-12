@@ -157,7 +157,8 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
 
         // Denying the prompt should cause subscribe() to fail.
         PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
-        PermissionTestRule.replyToDialog(false, mNotificationTestRule.getActivity());
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.DENY, mNotificationTestRule.getActivity());
         waitForTitle(
                 mNotificationTestRule.getActivity().getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
@@ -198,7 +199,8 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
 
         // Accepting the prompt should cause subscribe() to succeed.
         PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
-        PermissionTestRule.replyToDialog(true, mNotificationTestRule.getActivity());
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.ALLOW, mNotificationTestRule.getActivity());
         waitForTitle(mNotificationTestRule.getActivity().getActivityTab(), "subscribe ok");
 
         // This should have caused notifications permission to become granted.

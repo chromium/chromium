@@ -301,11 +301,6 @@ void WebTestContentBrowserClient::ResetMockClipboardHosts() {
     mock_clipboard_host_->Reset();
 }
 
-void WebTestContentBrowserClient::SetScreenOrientationChanged(
-    bool screen_orientation_changed) {
-  screen_orientation_changed_ = screen_orientation_changed;
-}
-
 std::unique_ptr<FakeBluetoothChooser>
 WebTestContentBrowserClient::GetNextFakeBluetoothChooser() {
   if (!fake_bluetooth_chooser_factory_)
@@ -364,16 +359,21 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
           base::Unretained(this)),
       ui_task_runner);
 
-  associated_registry->AddInterface<mojom::WebTestControlHost>(
-      base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
-                          base::Unretained(this),
-                          render_process_host->GetID()));
-
   registry->AddInterface(
       base::BindRepeating(
           &WebTestContentBrowserClient::BindNonAssociatedWebTestControlHost,
           base::Unretained(this)),
       ui_task_runner);
+}
+
+void WebTestContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<mojom::WebTestControlHost>(
+      base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
+                          base::Unretained(this),
+                          render_frame_host.GetProcess()->GetID()));
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(
@@ -571,10 +571,6 @@ content::TtsPlatform* WebTestContentBrowserClient::GetTtsPlatform() {
   return WebTestTtsPlatform::GetInstance();
 }
 
-bool WebTestContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {
-  return screen_orientation_changed_;
-}
-
 void WebTestContentBrowserClient::BindClipboardHost(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
@@ -625,6 +621,7 @@ void WebTestContentBrowserClient::BindWebSensorProviderAutomation(
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
     const GURL& url,
@@ -727,6 +724,19 @@ void WebTestContentBrowserClient::GetHyphenationDictionary(
     std::move(callback).Run(dir);
   }
   // No need to callback if there were no dictionaries.
+}
+
+void WebTestContentBrowserClient::
+    RegisterMojoBinderPoliciesForSameOriginPrerendering(
+        MojoBinderPolicyMap& policy_map) {
+  policy_map.SetAssociatedPolicy<mojom::WebTestControlHost>(
+      content::MojoBinderAssociatedPolicy::kGrant);
+}
+
+void WebTestContentBrowserClient::RegisterMojoBinderPoliciesForPreview(
+    MojoBinderPolicyMap& policy_map) {
+  policy_map.SetAssociatedPolicy<mojom::WebTestControlHost>(
+      content::MojoBinderAssociatedPolicy::kGrant);
 }
 
 }  // namespace content

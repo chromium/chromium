@@ -5,6 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_SWIFT_BRIDGE_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_SWIFT_BRIDGE_H_
 
+// Bridging header between Swift and Obj-C. These types/imports need to be pure
+// Obj-C and have no C++ in them.
+
+#import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_SWIFT_BRIDGE_H_

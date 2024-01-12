@@ -42,7 +42,7 @@ class PrimaryProfileCreationWaiter : public ProfileManagerObserver {
   PrimaryProfileCreationWaiter(ProfileManager* profile_manager,
                                base::OnceClosure callback);
 
-  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
   base::OnceClosure callback_;

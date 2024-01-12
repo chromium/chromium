@@ -64,8 +64,8 @@ storage::FileSystemURL CreateFileSystemURL(
 
 class FileSystemProviderMountPathUtilTest : public testing::Test {
  protected:
-  FileSystemProviderMountPathUtilTest() {}
-  ~FileSystemProviderMountPathUtilTest() override {}
+  FileSystemProviderMountPathUtilTest() = default;
+  ~FileSystemProviderMountPathUtilTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -84,12 +84,10 @@ class FileSystemProviderMountPathUtilTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh>
-      profile_;  // Owned by TestingProfileManager.
+  raw_ptr<TestingProfile> profile_;  // Owned by TestingProfileManager.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
-  raw_ptr<Service, ExperimentalAsh>
-      file_system_provider_service_;  // Owned by its factory.
+  raw_ptr<FakeChromeUserManager> user_manager_;
+  raw_ptr<Service> file_system_provider_service_;  // Owned by its factory.
 };
 
 TEST_F(FileSystemProviderMountPathUtilTest, GetMountPath) {

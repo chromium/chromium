@@ -15,12 +15,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
-#include "components/sync_device_info/device_info.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -73,12 +72,16 @@ class ClickToCallContextMenuObserverTest : public testing::Test {
         phone_number);
   }
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> CreateFakeDevices(
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> CreateFakeDevices(
       int count) {
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
     for (int i = 0; i < count; i++) {
-      devices.emplace_back(CreateFakeDeviceInfo(
-          base::StrCat({"guid", base::NumberToString(i)}), "name"));
+      devices.emplace_back(std::make_unique<SharingTargetDeviceInfo>(
+          base::StrCat({"guid", base::NumberToString(i)}), "name",
+          SharingDevicePlatform::kUnknown,
+          /*pulse_interval=*/base::TimeDelta(),
+          syncer::DeviceInfo::FormFactor::kUnknown,
+          /*last_updated_timestamp=*/base::Time()));
     }
     return devices;
   }
@@ -134,9 +137,9 @@ TEST_F(ClickToCallContextMenuObserverTest, SingleDevice_ShowMenu) {
 
   // Emulate click on the device.
   EXPECT_CALL(*service(),
-              SendMessageToDevice(Property(&syncer::DeviceInfo::guid, guid),
-                                  Eq(kSharingMessageTTL),
-                                  ProtoEquals(sharing_message), _))
+              SendMessageToDevice(
+                  Property(&SharingTargetDeviceInfo::guid, guid),
+                  Eq(kSharingMessageTTL), ProtoEquals(sharing_message), _))
       .Times(1);
   menu_.ExecuteCommand(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
                        0);
@@ -172,7 +175,7 @@ TEST_F(ClickToCallContextMenuObserverTest, MultipleDevices_ShowMenu) {
     if (i < device_count) {
       EXPECT_CALL(*service(),
                   SendMessageToDevice(
-                      Property(&syncer::DeviceInfo::guid, guids[i]),
+                      Property(&SharingTargetDeviceInfo::guid, guids[i]),
                       Eq(kSharingMessageTTL), ProtoEquals(sharing_message), _))
           .Times(1);
     } else {
@@ -214,7 +217,7 @@ TEST_F(ClickToCallContextMenuObserverTest,
     if (i < kMaxDevicesShown) {
       EXPECT_CALL(*service(),
                   SendMessageToDevice(
-                      Property(&syncer::DeviceInfo::guid, guids[i]),
+                      Property(&SharingTargetDeviceInfo::guid, guids[i]),
                       Eq(kSharingMessageTTL), ProtoEquals(sharing_message), _))
           .Times(1);
     } else {

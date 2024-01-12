@@ -31,8 +31,9 @@ class TabStrip;
 // strongly discouraged outside of that context, as the interface will likely go
 // away after that project is completed.
 class TabContainer : public views::View, public BrowserRootView::DropTarget {
+  METADATA_HEADER(TabContainer, views::View)
+
  public:
-  METADATA_HEADER(TabContainer);
   // This callback is used when calculating animation targets that may increase
   // the width of the tabstrip.
   virtual void SetAvailableWidthCallback(

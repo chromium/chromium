@@ -73,8 +73,8 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
 
   std::unique_ptr<AppServiceAppIconLoader> badge_icon_loader_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Owned by ProfileInfo.
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;  // Owned by ProfileInfo.
+  const raw_ptr<AppListControllerDelegate>
       list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcAppShortcutSearchResult> weak_ptr_factory_{this};

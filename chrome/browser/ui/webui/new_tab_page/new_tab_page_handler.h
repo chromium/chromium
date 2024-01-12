@@ -76,7 +76,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       std::unique_ptr<NewTabPageFeaturePromoHelper>
           customize_chrome_feature_promo_helper,
       const base::Time& ntp_navigation_start_time,
-      const std::vector<std::pair<const std::string, int>> module_id_names);
+      const std::vector<std::pair<const std::string, int>>* module_id_names);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
   NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
@@ -233,7 +233,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
   base::Time ntp_navigation_start_time_;
-  const std::vector<std::pair<const std::string, int>> module_id_names_;
+  raw_ptr<const std::vector<std::pair<const std::string, int>>>
+      module_id_names_;
   NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>

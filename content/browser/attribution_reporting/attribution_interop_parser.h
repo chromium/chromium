@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_PARSER_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -25,7 +25,7 @@ struct AttributionSimulationEvent {
   attribution_reporting::SuitableOrigin reporting_origin;
   attribution_reporting::SuitableOrigin context_origin;
   // If null, the event represents a trigger. Otherwise, represents a source.
-  absl::optional<attribution_reporting::mojom::SourceType> source_type;
+  std::optional<attribution_reporting::mojom::SourceType> source_type;
   base::Value registration;
   base::Time time;
   bool debug_permission = false;

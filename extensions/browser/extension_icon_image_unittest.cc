@@ -78,8 +78,10 @@ class ExtensionIconImageTest : public ExtensionsTest,
   ~ExtensionIconImageTest() override {}
 
   void WaitForImageLoad() {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitWhenIdleClosure();
     quit_in_image_loaded_ = true;
-    base::RunLoop().Run();
+    loop.Run();
     quit_in_image_loaded_ = false;
   }
 
@@ -125,7 +127,7 @@ class ExtensionIconImageTest : public ExtensionsTest,
   void OnExtensionIconImageChanged(IconImage* image) override {
     image_loaded_count_++;
     if (quit_in_image_loaded_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      std::move(quit_closure_).Run();
   }
 
   gfx::ImageSkia GetDefaultIcon() {
@@ -135,6 +137,7 @@ class ExtensionIconImageTest : public ExtensionsTest,
  private:
   int image_loaded_count_;
   bool quit_in_image_loaded_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace

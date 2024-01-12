@@ -687,7 +687,7 @@ TEST_F(URLRequestJobTest, SlowBrotliRead) {
   req->set_method("GET");
   req->Start();
 
-  base::RunLoop().RunUntilIdle();
+  d.RunUntilComplete();
 
   EXPECT_FALSE(d.request_failed());
   EXPECT_EQ(200, req->GetResponseCode());

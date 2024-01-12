@@ -65,10 +65,9 @@ class ArcAppSingleRestoreHandler
   void SendAppLaunchRequestToARC();
 
   // For test usage.
-  raw_ptr<full_restore::ArcGhostWindowHandler, ExperimentalAsh>
-      ghost_window_handler_ = nullptr;
+  raw_ptr<full_restore::ArcGhostWindowHandler> ghost_window_handler_ = nullptr;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::optional<std::string> app_id_;
   bool is_cancelled_ = false;
 

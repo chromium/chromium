@@ -94,7 +94,7 @@ class DlpFilesController {
 
     void Completed(base::File::Error result);
 
-    const raw_ref<const storage::FileSystemURL, ExperimentalAsh> root_;
+    const raw_ref<const storage::FileSystemURL> root_;
     FileURLsCallback callback_;
     std::vector<storage::FileSystemURL> files_urls_;
 
@@ -125,7 +125,7 @@ class DlpFilesController {
    private:
     // Counts the number of |roots| processed.
     uint counter_ = 0;
-    raw_ptr<storage::FileSystemContext, DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<storage::FileSystemContext, DanglingUntriaged>
         file_system_context_ = nullptr;
     const std::vector<storage::FileSystemURL> roots_;
     FolderRecursionDelegate::FileURLsCallback callback_;
@@ -196,8 +196,7 @@ class DlpFilesController {
   // TODO(b/284122497): Remove testing friend.
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerComponentsTest, TestConvert);
 
-  const raw_ref<const DlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      rules_manager_;
+  const raw_ref<const DlpRulesManager, DanglingUntriaged> rules_manager_;
 
   base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};
 };

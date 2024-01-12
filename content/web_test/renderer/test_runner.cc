@@ -922,49 +922,49 @@ void TestRunnerBindings::NotifyDone() {
   if (!frame_) {
     return;
   }
-  runner_->NotifyDone();
+  runner_->NotifyDone(*frame_);
 }
 
 void TestRunnerBindings::WaitUntilDone() {
   if (!frame_) {
     return;
   }
-  runner_->WaitUntilDone();
+  runner_->WaitUntilDone(*frame_);
 }
 
 void TestRunnerBindings::QueueBackNavigation(int how_far_back) {
   if (!frame_) {
     return;
   }
-  runner_->QueueBackNavigation(how_far_back);
+  runner_->QueueBackNavigation(how_far_back, *frame_);
 }
 
 void TestRunnerBindings::QueueForwardNavigation(int how_far_forward) {
   if (!frame_) {
     return;
   }
-  runner_->QueueForwardNavigation(how_far_forward);
+  runner_->QueueForwardNavigation(how_far_forward, *frame_);
 }
 
 void TestRunnerBindings::QueueReload() {
   if (!frame_) {
     return;
   }
-  runner_->QueueReload();
+  runner_->QueueReload(*frame_);
 }
 
 void TestRunnerBindings::QueueLoadingScript(const std::string& script) {
   if (!frame_) {
     return;
   }
-  runner_->QueueLoadingScript(script);
+  runner_->QueueLoadingScript(script, *frame_);
 }
 
 void TestRunnerBindings::QueueNonLoadingScript(const std::string& script) {
   if (!frame_) {
     return;
   }
-  runner_->QueueNonLoadingScript(script);
+  runner_->QueueNonLoadingScript(script, *frame_);
 }
 
 void TestRunnerBindings::QueueLoad(gin::Arguments* args) {
@@ -975,21 +975,22 @@ void TestRunnerBindings::QueueLoad(gin::Arguments* args) {
   std::string target;
   args->GetNext(&url);
   args->GetNext(&target);
-  runner_->QueueLoad(GURL(GetWebFrame()->GetDocument().Url()), url, target);
+  runner_->QueueLoad(GURL(GetWebFrame()->GetDocument().Url()), url, target,
+                     *frame_);
 }
 
 void TestRunnerBindings::SetCustomPolicyDelegate(gin::Arguments* args) {
   if (!frame_) {
     return;
   }
-  runner_->SetCustomPolicyDelegate(args);
+  runner_->SetCustomPolicyDelegate(args, *frame_);
 }
 
 void TestRunnerBindings::WaitForPolicyDelegate() {
   if (!frame_) {
     return;
   }
-  runner_->WaitForPolicyDelegate();
+  runner_->WaitForPolicyDelegate(*frame_);
 }
 
 int TestRunnerBindings::WindowCount() {
@@ -1058,14 +1059,14 @@ void TestRunnerBindings::SetDumpConsoleMessages(bool enabled) {
   if (!frame_) {
     return;
   }
-  runner_->SetDumpConsoleMessages(enabled);
+  runner_->SetDumpConsoleMessages(enabled, *frame_);
 }
 
 void TestRunnerBindings::SetDumpJavaScriptDialogs(bool enabled) {
   if (!frame_) {
     return;
   }
-  runner_->SetDumpJavaScriptDialogs(enabled);
+  runner_->SetDumpJavaScriptDialogs(enabled, *frame_);
 }
 
 void TestRunnerBindings::SetEffectiveConnectionType(
@@ -1100,7 +1101,7 @@ std::string TestRunnerBindings::GetWritableDirectory() {
     return {};
   }
   base::FilePath result;
-  runner_->GetWebTestControlHostRemote()->GetWritableDirectory(&result);
+  frame_->GetWebTestControlHostRemote()->GetWritableDirectory(&result);
   return result.AsUTF8Unsafe();
 }
 
@@ -1108,7 +1109,7 @@ void TestRunnerBindings::SetFilePathForMockFileDialog(const std::string& path) {
   if (frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetFilePathForMockFileDialog(
+  frame_->GetWebTestControlHostRemote()->SetFilePathForMockFileDialog(
       base::FilePath::FromUTF8Unsafe(path));
 }
 
@@ -1317,7 +1318,7 @@ void TestRunnerBindings::SetTrustTokenKeyCommitments(
     return;
   }
 
-  runner_->GetWebTestControlHostRemote()->SetTrustTokenKeyCommitments(
+  frame_->GetWebTestControlHostRemote()->SetTrustTokenKeyCommitments(
       raw_commitments, WrapV8Closure(std::move(v8_callback)));
 }
 
@@ -1325,7 +1326,7 @@ void TestRunnerBindings::SetMainWindowHidden(bool hidden) {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetMainWindowHidden(hidden);
+  frame_->GetWebTestControlHostRemote()->SetMainWindowHidden(hidden);
 }
 
 void TestRunnerBindings::SetTextDirection(const std::string& direction_name) {
@@ -1365,7 +1366,7 @@ void TestRunnerBindings::EnableAutoResizeMode(int min_width,
 
   gfx::Size min_size(min_width, min_height);
   gfx::Size max_size(max_width, max_height);
-  runner_->GetWebTestControlHostRemote()->EnableAutoResize(min_size, max_size);
+  frame_->GetWebTestControlHostRemote()->EnableAutoResize(min_size, max_size);
 }
 
 void TestRunnerBindings::DisableAutoResizeMode(int new_width, int new_height) {
@@ -1381,7 +1382,7 @@ void TestRunnerBindings::DisableAutoResizeMode(int new_width, int new_height) {
   }
 
   gfx::Size new_size(new_width, new_height);
-  runner_->GetWebTestControlHostRemote()->DisableAutoResize(new_size);
+  frame_->GetWebTestControlHostRemote()->DisableAutoResize(new_size);
 }
 
 void TestRunnerBindings::SetMockScreenOrientation(
@@ -1389,7 +1390,7 @@ void TestRunnerBindings::SetMockScreenOrientation(
   if (!frame_) {
     return;
   }
-  runner_->SetMockScreenOrientation(GetWebFrame()->View(), orientation);
+  runner_->SetMockScreenOrientation(orientation, *frame_);
 }
 
 void TestRunnerBindings::DisableMockScreenOrientation() {
@@ -1413,7 +1414,7 @@ void TestRunnerBindings::SetPopupBlockingEnabled(bool block_popups) {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetPopupBlockingEnabled(block_popups);
+  frame_->GetWebTestControlHostRemote()->SetPopupBlockingEnabled(block_popups);
 }
 
 void TestRunnerBindings::SetJavaScriptCanAccessClipboard(bool can_access) {
@@ -1429,7 +1430,7 @@ void TestRunnerBindings::SetJavaScriptCanAccessClipboard(bool can_access) {
   }
 
   prefs_.java_script_can_access_clipboard = can_access;
-  runner_->OnTestPreferencesChanged(prefs_, frame_);
+  runner_->OnTestPreferencesChanged(prefs_, *frame_);
 }
 
 void TestRunnerBindings::SetAllowFileAccessFromFileURLs(bool allow) {
@@ -1445,7 +1446,7 @@ void TestRunnerBindings::SetAllowFileAccessFromFileURLs(bool allow) {
   }
 
   prefs_.allow_file_access_from_file_urls = allow;
-  runner_->OnTestPreferencesChanged(prefs_, frame_);
+  runner_->OnTestPreferencesChanged(prefs_, *frame_);
 }
 
 void TestRunnerBindings::OverridePreference(gin::Arguments* args) {
@@ -1502,7 +1503,7 @@ void TestRunnerBindings::OverridePreference(gin::Arguments* args) {
     args->ThrowTypeError("Invalid name for preference: " + key);
   }
 
-  runner_->OnTestPreferencesChanged(prefs_, frame_);
+  runner_->OnTestPreferencesChanged(prefs_, *frame_);
 }
 
 void TestRunnerBindings::SetAcceptLanguages(
@@ -1510,7 +1511,7 @@ void TestRunnerBindings::SetAcceptLanguages(
   if (!frame_) {
     return;
   }
-  runner_->SetAcceptLanguages(accept_languages);
+  frame_->GetWebTestControlHostRemote()->SetAcceptLanguages(accept_languages);
 }
 
 void TestRunnerBindings::SetPluginsEnabled(bool enabled) {
@@ -1526,63 +1527,63 @@ void TestRunnerBindings::SetPluginsEnabled(bool enabled) {
   }
 
   prefs_.plugins_enabled = enabled;
-  runner_->OnTestPreferencesChanged(prefs_, frame_);
+  runner_->OnTestPreferencesChanged(prefs_, *frame_);
 }
 
 void TestRunnerBindings::DumpEditingCallbacks() {
   if (!frame_) {
     return;
   }
-  runner_->DumpEditingCallbacks();
+  runner_->DumpEditingCallbacks(*frame_);
 }
 
 void TestRunnerBindings::DumpAsMarkup() {
   if (!frame_) {
     return;
   }
-  runner_->DumpAsMarkup();
+  runner_->DumpAsMarkup(*frame_);
 }
 
 void TestRunnerBindings::DumpAsText() {
   if (!frame_) {
     return;
   }
-  runner_->DumpAsText();
+  runner_->DumpAsText(*frame_);
 }
 
 void TestRunnerBindings::DumpAsTextWithPixelResults() {
   if (!frame_) {
     return;
   }
-  runner_->DumpAsTextWithPixelResults();
+  runner_->DumpAsTextWithPixelResults(*frame_);
 }
 
 void TestRunnerBindings::DumpAsLayout() {
   if (!frame_) {
     return;
   }
-  runner_->DumpAsLayout();
+  runner_->DumpAsLayout(*frame_);
 }
 
 void TestRunnerBindings::DumpAsLayoutWithPixelResults() {
   if (!frame_) {
     return;
   }
-  runner_->DumpAsLayoutWithPixelResults();
+  runner_->DumpAsLayoutWithPixelResults(*frame_);
 }
 
 void TestRunnerBindings::DumpChildFrames() {
   if (!frame_) {
     return;
   }
-  runner_->DumpChildFrames();
+  runner_->DumpChildFrames(*frame_);
 }
 
 void TestRunnerBindings::DumpIconChanges() {
   if (!frame_) {
     return;
   }
-  runner_->DumpIconChanges();
+  runner_->DumpIconChanges(*frame_);
 }
 
 void TestRunnerBindings::SetAudioData(const gin::ArrayBufferView& view) {
@@ -1596,28 +1597,28 @@ void TestRunnerBindings::DumpFrameLoadCallbacks() {
   if (!frame_) {
     return;
   }
-  runner_->DumpFrameLoadCallbacks();
+  runner_->DumpFrameLoadCallbacks(*frame_);
 }
 
 void TestRunnerBindings::DumpPingLoaderCallbacks() {
   if (!frame_) {
     return;
   }
-  runner_->DumpPingLoaderCallbacks();
+  runner_->DumpPingLoaderCallbacks(*frame_);
 }
 
 void TestRunnerBindings::DumpUserGestureInFrameLoadCallbacks() {
   if (!frame_) {
     return;
   }
-  runner_->DumpUserGestureInFrameLoadCallbacks();
+  runner_->DumpUserGestureInFrameLoadCallbacks(*frame_);
 }
 
 void TestRunnerBindings::DumpTitleChanges() {
   if (!frame_) {
     return;
   }
-  runner_->DumpTitleChanges();
+  runner_->DumpTitleChanges(*frame_);
 }
 
 void TestRunnerBindings::SetCaretBrowsingEnabled() {
@@ -1632,14 +1633,14 @@ void TestRunnerBindings::SetImagesAllowed(bool allowed) {
   if (!frame_) {
     return;
   }
-  runner_->SetImagesAllowed(allowed);
+  runner_->SetImagesAllowed(allowed, *frame_);
 }
 
 void TestRunnerBindings::SetStorageAllowed(bool allowed) {
   if (!frame_) {
     return;
   }
-  runner_->SetStorageAllowed(allowed);
+  runner_->SetStorageAllowed(allowed, *frame_);
 }
 
 void TestRunnerBindings::SetPluginsAllowed(bool allowed) {
@@ -1656,14 +1657,14 @@ void TestRunnerBindings::SetAllowRunningOfInsecureContent(bool allowed) {
   if (!frame_) {
     return;
   }
-  runner_->SetAllowRunningOfInsecureContent(allowed);
+  runner_->SetAllowRunningOfInsecureContent(allowed, *frame_);
 }
 
 void TestRunnerBindings::DumpPermissionClientCallbacks() {
   if (!frame_) {
     return;
   }
-  runner_->DumpPermissionClientCallbacks();
+  runner_->DumpPermissionClientCallbacks(*frame_);
 }
 
 void TestRunnerBindings::DumpBackForwardList() {
@@ -1677,28 +1678,28 @@ void TestRunnerBindings::DumpSelectionRect() {
   if (!frame_) {
     return;
   }
-  runner_->DumpSelectionRect();
+  runner_->DumpSelectionRect(*frame_);
 }
 
 void TestRunnerBindings::SetPrinting() {
   if (!frame_) {
     return;
   }
-  runner_->SetPrinting();
+  runner_->SetPrinting(*frame_);
 }
 
 void TestRunnerBindings::SetPrintingForFrame(const std::string& frame_name) {
   if (!frame_) {
     return;
   }
-  runner_->SetPrintingForFrame(frame_name);
+  runner_->SetPrintingForFrame(frame_name, *frame_);
 }
 
 void TestRunnerBindings::SetPrintingSize(int width, int height) {
   if (!frame_) {
     return;
   }
-  runner_->SetPrintingSize(width, height);
+  runner_->SetPrintingSize(width, height, *frame_);
 }
 
 void TestRunnerBindings::ClearTrustTokenState(
@@ -1706,7 +1707,7 @@ void TestRunnerBindings::ClearTrustTokenState(
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->ClearTrustTokenState(
+  frame_->GetWebTestControlHostRemote()->ClearTrustTokenState(
       WrapV8Closure(std::move(v8_callback)));
 }
 
@@ -1714,7 +1715,7 @@ void TestRunnerBindings::SetShouldGeneratePixelResults(bool value) {
   if (!frame_) {
     return;
   }
-  runner_->SetShouldGeneratePixelResults(value);
+  runner_->SetShouldGeneratePixelResults(value, *frame_);
 }
 
 void TestRunnerBindings::SetShouldStayOnPageAfterHandlingBeforeUnload(
@@ -1722,7 +1723,7 @@ void TestRunnerBindings::SetShouldStayOnPageAfterHandlingBeforeUnload(
   if (!frame_) {
     return;
   }
-  runner_->SetShouldStayOnPageAfterHandlingBeforeUnload(value);
+  runner_->SetShouldStayOnPageAfterHandlingBeforeUnload(value, *frame_);
 }
 
 void TestRunnerBindings::SetWillSendRequestClearHeader(
@@ -1744,42 +1745,42 @@ void TestRunnerBindings::WaitUntilExternalURLLoad() {
   if (!frame_) {
     return;
   }
-  runner_->WaitUntilExternalURLLoad();
+  runner_->WaitUntilExternalURLLoad(*frame_);
 }
 
 void TestRunnerBindings::DumpDragImage() {
   if (!frame_) {
     return;
   }
-  runner_->DumpDragImage();
+  runner_->DumpDragImage(*frame_);
 }
 
 void TestRunnerBindings::DumpNavigationPolicy() {
   if (!frame_) {
     return;
   }
-  runner_->DumpNavigationPolicy();
+  runner_->DumpNavigationPolicy(*frame_);
 }
 
 void TestRunnerBindings::ClearAllDatabases() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->ClearAllDatabases();
+  frame_->GetWebTestControlHostRemote()->ClearAllDatabases();
 }
 
 void TestRunnerBindings::SetDatabaseQuota(int quota) {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetDatabaseQuota(quota);
+  frame_->GetWebTestControlHostRemote()->SetDatabaseQuota(quota);
 }
 
 void TestRunnerBindings::SetBlockThirdPartyCookies(bool block) {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->BlockThirdPartyCookies(block);
+  frame_->GetWebTestControlHostRemote()->BlockThirdPartyCookies(block);
 }
 
 void TestRunnerBindings::SimulateBrowserWindowFocus(bool value) {
@@ -1870,7 +1871,7 @@ void TestRunnerBindings::SetBluetoothManualChooser(bool enable) {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetBluetoothManualChooser(enable);
+  frame_->GetWebTestControlHostRemote()->SetBluetoothManualChooser(enable);
 }
 
 static void GetBluetoothManualChooserEventsReply(
@@ -1903,7 +1904,7 @@ void TestRunnerBindings::GetBluetoothManualChooserEvents(
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->GetBluetoothManualChooserEvents(
+  frame_->GetWebTestControlHostRemote()->GetBluetoothManualChooserEvents(
       base::BindOnce(&GetBluetoothManualChooserEventsReply,
                      weak_ptr_factory_.GetWeakPtr(), GetWebFrame(),
                      WrapV8Callback(std::move(callback))));
@@ -1922,7 +1923,7 @@ void TestRunnerBindings::SendBluetoothManualChooserEvent(
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SendBluetoothManualChooserEvent(
+  frame_->GetWebTestControlHostRemote()->SendBluetoothManualChooserEvent(
       event, argument);
 }
 
@@ -1945,7 +1946,7 @@ void TestRunnerBindings::SimulateWebNotificationClick(gin::Arguments* args) {
 
   std::string title;
   int action_index = std::numeric_limits<int32_t>::min();
-  absl::optional<std::u16string> reply;
+  std::optional<std::u16string> reply;
 
   if (!args->GetNext(&title)) {
     args->ThrowError();
@@ -1971,7 +1972,7 @@ void TestRunnerBindings::SimulateWebNotificationClick(gin::Arguments* args) {
     reply = base::UTF8ToUTF16(reply_string);
   }
 
-  runner_->GetWebTestControlHostRemote()->SimulateWebNotificationClick(
+  frame_->GetWebTestControlHostRemote()->SimulateWebNotificationClick(
       title, action_index, reply);
 }
 
@@ -1980,15 +1981,15 @@ void TestRunnerBindings::SimulateWebNotificationClose(const std::string& title,
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SimulateWebNotificationClose(title,
-                                                                       by_user);
+  frame_->GetWebTestControlHostRemote()->SimulateWebNotificationClose(title,
+                                                                      by_user);
 }
 
 void TestRunnerBindings::SimulateWebContentIndexDelete(const std::string& id) {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SimulateWebContentIndexDelete(id);
+  frame_->GetWebTestControlHostRemote()->SimulateWebContentIndexDelete(id);
 }
 
 void TestRunnerBindings::SetHighlightAds() {
@@ -2089,7 +2090,7 @@ void TestRunnerBindings::CheckForLeakedWindows() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->CheckForLeakedWindows();
+  frame_->GetWebTestControlHostRemote()->CheckForLeakedWindows();
 }
 
 void TestRunnerBindings::CopyImageThen(int x,
@@ -2135,21 +2136,21 @@ void TestRunnerBindings::DropPointerLock() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->DropPointerLock();
+  frame_->GetWebTestControlHostRemote()->DropPointerLock();
 }
 
 void TestRunnerBindings::SetPointerLockWillFail() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetPointerLockWillFail();
+  frame_->GetWebTestControlHostRemote()->SetPointerLockWillFail();
 }
 
 void TestRunnerBindings::SetPointerLockWillRespondAsynchronously() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()
+  frame_->GetWebTestControlHostRemote()
       ->SetPointerLockWillRespondAsynchronously();
 }
 
@@ -2157,14 +2158,14 @@ void TestRunnerBindings::AllowPointerLock() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->AllowPointerLock();
+  frame_->GetWebTestControlHostRemote()->AllowPointerLock();
 }
 
 void TestRunnerBindings::SetCustomTextOutput(const std::string& output) {
   if (!frame_) {
     return;
   }
-  runner_->SetCustomTextOutput(output);
+  runner_->SetCustomTextOutput(output, *frame_);
 }
 
 void TestRunnerBindings::SetPermission(const std::string& name,
@@ -2174,7 +2175,7 @@ void TestRunnerBindings::SetPermission(const std::string& name,
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->SetPermission(
+  frame_->GetWebTestControlHostRemote()->SetPermission(
       name, blink::ToPermissionStatus(value), GURL(origin),
       GURL(embedding_origin));
 }
@@ -2359,7 +2360,7 @@ void TestRunnerBindings::FocusDevtoolsSecondaryWindow() {
   if (!frame_) {
     return;
   }
-  runner_->GetWebTestControlHostRemote()->FocusDevtoolsSecondaryWindow();
+  frame_->GetWebTestControlHostRemote()->FocusDevtoolsSecondaryWindow();
 }
 
 void TestRunnerBindings::ForceNextDrawingBufferCreationToFail() {
@@ -2373,14 +2374,14 @@ void TestRunnerBindings::DisableAutomaticDragDrop() {
   if (!frame_) {
     return;
   }
-  runner_->DisableAutomaticDragDrop();
+  runner_->DisableAutomaticDragDrop(*frame_);
 }
 
 void TestRunnerBindings::GoToOffset(int offset) {
   if (!frame_) {
     return;
   }
-  runner_->GoToOffset(offset);
+  frame_->GetWebTestControlHostRemote()->GoToOffset(offset);
 }
 
 void TestRunnerBindings::NotImplemented(const gin::Arguments& args) {}
@@ -2412,23 +2413,24 @@ void TestRunner::WorkQueue::Reset() {
   set_loading(true);
 }
 
-void TestRunner::WorkQueue::AddWork(mojom::WorkItemPtr work_item) {
+void TestRunner::WorkQueue::AddWork(mojom::WorkItemPtr work_item,
+                                    WebFrameTestProxy& source) {
   if (is_frozen())
     return;
-  controller_->GetWebTestControlHostRemote()->WorkItemAdded(
-      std::move(work_item));
+  source.GetWebTestControlHostRemote()->WorkItemAdded(std::move(work_item));
   set_has_items(true);
-  OnStatesChanged();
+  OnStatesChanged(source);
 }
 
-void TestRunner::WorkQueue::RequestWork() {
-  controller_->GetWebTestControlHostRemote()->RequestWorkItem();
+void TestRunner::WorkQueue::RequestWork(WebFrameTestProxy& source) {
+  source.GetWebTestControlHostRemote()->RequestWorkItem();
 }
 
-void TestRunner::WorkQueue::ProcessWorkItem(mojom::WorkItemPtr work_item) {
+void TestRunner::WorkQueue::ProcessWorkItem(mojom::WorkItemPtr work_item,
+                                            WebFrameTestProxy& source) {
   // Watch for loading finishing inside ProcessWorkItemInternal().
   set_loading(true);
-  bool started_load = ProcessWorkItemInternal(std::move(work_item));
+  bool started_load = ProcessWorkItemInternal(std::move(work_item), source);
   if (started_load) {
     // If a load started, and didn't complete inside of
     // ProcessWorkItemInternal(), then mark the load as running.
@@ -2438,16 +2440,18 @@ void TestRunner::WorkQueue::ProcessWorkItem(mojom::WorkItemPtr work_item) {
     // Wait for an ongoing load to complete before requesting the next WorkItem.
     return;
   }
-  RequestWork();
+  RequestWork(source);
 }
 
 bool TestRunner::WorkQueue::ProcessWorkItemInternal(
-    mojom::WorkItemPtr work_item) {
+    mojom::WorkItemPtr work_item,
+    WebFrameTestProxy& source) {
   switch (work_item->which()) {
     case mojom::WorkItem::Tag::kBackForward: {
       mojom::WorkItemBackForwardPtr& item_back_forward =
           work_item->get_back_forward();
-      controller_->GoToOffset(item_back_forward->distance);
+      source.GetWebTestControlHostRemote()->GoToOffset(
+          item_back_forward->distance);
       return true;  // TODO(danakj): Did it really start a navigation?
     }
     case mojom::WorkItem::Tag::kLoadingScript: {
@@ -2472,35 +2476,35 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
     }
     case mojom::WorkItem::Tag::kLoad: {
       mojom::WorkItemLoadPtr& item_load = work_item->get_load();
-      controller_->LoadURLForFrame(GURL(item_load->url), item_load->target);
+      source.GetWebTestControlHostRemote()->LoadURLForFrame(
+          GURL(item_load->url), item_load->target);
       return true;  // TODO(danakj): Did it really start a navigation?
     }
     case mojom::WorkItem::Tag::kReload:
-      controller_->Reload();
+      source.GetWebTestControlHostRemote()->Reload();
       return true;
   }
   NOTREACHED();
   return false;
 }
 
-void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values) {
+void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values,
+                                            WebFrameTestProxy& source) {
   states_.ApplyUntrackedChanges(values);
   if (!has_items())
-    controller_->FinishTestIfReady();
+    controller_->FinishTestIfReady(source);
 }
 
-void TestRunner::WorkQueue::OnStatesChanged() {
+void TestRunner::WorkQueue::OnStatesChanged(WebFrameTestProxy& source) {
   if (states_.changed_values().empty())
     return;
 
-  controller_->GetWebTestControlHostRemote()->WorkQueueStatesChanged(
+  source.GetWebTestControlHostRemote()->WorkQueueStatesChanged(
       states_.changed_values().Clone());
   states_.ResetChangeTracking();
 }
 
-TestRunner::TestRunner()
-    : work_queue_(this),
-      test_content_settings_client_(this, &web_test_runtime_flags_) {
+TestRunner::TestRunner() : work_queue_(this) {
   // NOTE: please don't put feature specific enable flags here,
   // instead add them to runtime_enabled_features.json5.
   //
@@ -2595,9 +2599,9 @@ bool TestRunner::ShouldDumpEditingCallbacks() const {
   return web_test_runtime_flags_.dump_editting_callbacks();
 }
 
-void TestRunner::SetShouldDumpAsLayout(bool value) {
+void TestRunner::SetShouldDumpAsLayout(bool value, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_as_layout(value);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 bool TestRunner::ShouldDumpAsCustomText() const {
@@ -2608,10 +2612,11 @@ std::string TestRunner::CustomDumpText() const {
   return web_test_runtime_flags_.custom_text_output();
 }
 
-void TestRunner::SetCustomTextOutput(const std::string& text) {
+void TestRunner::SetCustomTextOutput(const std::string& text,
+                                     WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_custom_text_output(text);
   web_test_runtime_flags_.set_has_custom_text_output(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 bool TestRunner::ShouldGeneratePixelResults() {
@@ -2636,9 +2641,10 @@ bool TestRunner::ShouldStayOnPageAfterHandlingBeforeUnload() const {
   return web_test_runtime_flags_.stay_on_page_after_handling_before_unload();
 }
 
-void TestRunner::SetShouldGeneratePixelResults(bool value) {
+void TestRunner::SetShouldGeneratePixelResults(bool value,
+                                               WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_generate_pixel_results(value);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 bool TestRunner::ShouldDumpAsAudio() const {
@@ -2810,9 +2816,10 @@ bool TestRunner::ShouldDumpFrameLoadCallbacks() const {
          web_test_runtime_flags_.dump_frame_load_callbacks();
 }
 
-void TestRunner::SetShouldDumpFrameLoadCallbacks(bool value) {
+void TestRunner::SetShouldDumpFrameLoadCallbacks(bool value,
+                                                 WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_frame_load_callbacks(value);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 bool TestRunner::ShouldDumpPingLoaderCallbacks() const {
@@ -2833,10 +2840,6 @@ bool TestRunner::ShouldDumpIconChanges() const {
   return web_test_runtime_flags_.dump_icon_changes();
 }
 
-blink::WebContentSettingsClient* TestRunner::GetWebContentSettings() {
-  return &test_content_settings_client_;
-}
-
 bool TestRunner::ShouldDumpBackForwardList() const {
   return dump_back_forward_list_;
 }
@@ -2853,7 +2856,7 @@ bool TestRunner::ClearReferrer() const {
   return clear_referrer_;
 }
 
-void TestRunner::AddLoadingFrame(blink::WebFrame* frame) {
+void TestRunner::AddLoadingFrame(blink::WebLocalFrame* frame) {
   // Don't track loading the about:blank between tests
   if (!test_is_running_)
     return;
@@ -2864,14 +2867,17 @@ void TestRunner::AddLoadingFrame(blink::WebFrame* frame) {
     if (web_test_runtime_flags_.have_loading_frame())
       return;
     web_test_runtime_flags_.set_have_loading_frame(true);
-    OnWebTestRuntimeFlagsChanged();
+
+    auto* frame_proxy =
+        static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(frame));
+    OnWebTestRuntimeFlagsChanged(*frame_proxy);
   }
 
   loading_frames_.push_back(frame);
   frame_will_start_load_ = false;
 }
 
-void TestRunner::RemoveLoadingFrame(blink::WebFrame* frame) {
+void TestRunner::RemoveLoadingFrame(blink::WebLocalFrame* frame) {
   // We don't track frames that were started between tests.
   if (!base::Contains(loading_frames_, frame))
     return;
@@ -2885,6 +2891,9 @@ void TestRunner::RemoveLoadingFrame(blink::WebFrame* frame) {
   if (!loading_frames_.empty())
     return;
 
+  auto* frame_proxy =
+      static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(frame));
+
   web_test_runtime_flags_.set_have_loading_frame(false);
 
   // Loads in between tests should not propel us into thinking that we're now
@@ -2894,11 +2903,11 @@ void TestRunner::RemoveLoadingFrame(blink::WebFrame* frame) {
     return;
 
   main_frame_loaded_ = true;
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(*frame_proxy);
 
   // No more new work after the first complete load.
   work_queue_.set_frozen(true);
-  work_queue_.OnStatesChanged();
+  work_queue_.OnStatesChanged(*frame_proxy);
 
   // Inform the work queue that any load it started is done, in case it is
   // still inside ProcessWorkItem().
@@ -2908,28 +2917,29 @@ void TestRunner::RemoveLoadingFrame(blink::WebFrame* frame) {
   // the test, until testRunner.notifyDone() is called. However this can only be
   // done once.
   if (!web_test_runtime_flags_.wait_until_done() || did_notify_done_)
-    work_queue_.RequestWork();
+    work_queue_.RequestWork(*frame_proxy);
 }
 
-void TestRunner::OnFrameDeactivated(WebFrameTestProxy* frame) {
+void TestRunner::OnFrameDeactivated(WebFrameTestProxy& frame) {
   if (!test_is_running_)
     return;
 
-  DCHECK(frame->IsMainFrame());
+  DCHECK(frame.IsMainFrame());
   RemoveMainFrame(frame);
 
-  if (frame->GetWebFrame()->IsLoading())
-    RemoveLoadingFrame(frame->GetWebFrame());
+  if (frame.GetWebFrame()->IsLoading()) {
+    RemoveLoadingFrame(frame.GetWebFrame());
+  }
 }
 
-void TestRunner::OnFrameReactivated(WebFrameTestProxy* frame) {
+void TestRunner::OnFrameReactivated(WebFrameTestProxy& frame) {
   if (!test_is_running_)
     return;
 
-  DCHECK(frame->IsMainFrame());
+  DCHECK(frame.IsMainFrame());
 
-  if (frame->GetWebFrame()->IsLoading()) {
-    AddLoadingFrame(frame->GetWebFrame());
+  if (frame.GetWebFrame()->IsLoading()) {
+    AddLoadingFrame(frame.GetWebFrame());
   }
 
   // A WorkQueueItem that navigates reports that it will start a load, but when
@@ -2942,12 +2952,17 @@ void TestRunner::OnFrameReactivated(WebFrameTestProxy* frame) {
   frame_will_start_load_ = false;
 
   AddMainFrame(frame);
-  if (IsFrameInMainWindow(frame->GetWebFrame())) {
-    work_queue_.RequestWork();
+  if (IsFrameInMainWindow(frame.GetWebFrame())) {
+    work_queue_.RequestWork(frame);
   }
 }
 
-void TestRunner::FinishTestIfReady() {
+void TestRunner::FinishTestIfReady(blink::WebLocalFrame& source) {
+  FinishTestIfReady(
+      *static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(&source)));
+}
+
+void TestRunner::FinishTestIfReady(WebFrameTestProxy& source) {
   if (!test_is_running_) {
     return;
   }
@@ -2980,11 +2995,11 @@ void TestRunner::FinishTestIfReady() {
     return;
   }
 
-  FinishTest();
+  FinishTest(source);
 }
 
-void TestRunner::TestFinishedFromSecondaryRenderer() {
-  NotifyDone();
+void TestRunner::TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source) {
+  NotifyDone(source);
 }
 
 void TestRunner::ResetRendererAfterWebTest() {
@@ -2997,17 +3012,17 @@ void TestRunner::ResetRendererAfterWebTest() {
   Reset();
 }
 
-void TestRunner::AddMainFrame(WebFrameTestProxy* frame) {
-  main_frames_.insert(frame);
+void TestRunner::AddMainFrame(WebFrameTestProxy& frame) {
+  main_frames_.insert(&frame);
 }
 
-void TestRunner::RemoveMainFrame(WebFrameTestProxy* frame) {
-  main_frames_.erase(frame);
+void TestRunner::RemoveMainFrame(WebFrameTestProxy& frame) {
+  main_frames_.erase(&frame);
 }
 
-void TestRunner::PolicyDelegateDone() {
+void TestRunner::PolicyDelegateDone(WebFrameTestProxy& source) {
   DCHECK(web_test_runtime_flags_.wait_until_done());
-  FinishTest();
+  FinishTest(source);
 }
 
 bool TestRunner::PolicyDelegateEnabled() const {
@@ -3041,63 +3056,78 @@ WebFrameTestProxy* TestRunner::FindInProcessMainWindowMainFrame() {
   return nullptr;
 }
 
-void TestRunner::WaitUntilDone() {
+void TestRunner::WaitUntilDone(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_wait_until_done(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::NotifyDone() {
-  if (!web_test_runtime_flags_.wait_until_done())
+void TestRunner::NotifyDone(WebFrameTestProxy& source) {
+  if (!web_test_runtime_flags_.wait_until_done()) {
     return;
-  if (did_notify_done_)
+  }
+  if (did_notify_done_) {
     return;
+  }
 
   // Mark that the test has asked the test to end when the rest of our stopping
   // conditions are met. Then check if we can end the test.
   did_notify_done_ = true;
-  FinishTestIfReady();
+  FinishTestIfReady(source);
 }
 
-void TestRunner::QueueBackNavigation(int how_far_back) {
+void TestRunner::QueueBackNavigation(int how_far_back,
+                                     WebFrameTestProxy& source) {
   work_queue_.AddWork(mojom::WorkItem::NewBackForward(
-      mojom::WorkItemBackForward::New(-how_far_back)));
+                          mojom::WorkItemBackForward::New(-how_far_back)),
+                      source);
 }
 
-void TestRunner::QueueForwardNavigation(int how_far_forward) {
+void TestRunner::QueueForwardNavigation(int how_far_forward,
+                                        WebFrameTestProxy& source) {
   work_queue_.AddWork(mojom::WorkItem::NewBackForward(
-      mojom::WorkItemBackForward::New(how_far_forward)));
+                          mojom::WorkItemBackForward::New(how_far_forward)),
+                      source);
 }
 
-void TestRunner::QueueReload() {
-  work_queue_.AddWork(mojom::WorkItem::NewReload(mojom::WorkItemReload::New()));
+void TestRunner::QueueReload(WebFrameTestProxy& source) {
+  work_queue_.AddWork(mojom::WorkItem::NewReload(mojom::WorkItemReload::New()),
+                      source);
 }
 
-void TestRunner::QueueLoadingScript(const std::string& script) {
+void TestRunner::QueueLoadingScript(const std::string& script,
+                                    WebFrameTestProxy& source) {
   work_queue_.AddWork(mojom::WorkItem::NewLoadingScript(
-      mojom::WorkItemLoadingScript::New(script)));
+                          mojom::WorkItemLoadingScript::New(script)),
+                      source);
 }
 
-void TestRunner::QueueNonLoadingScript(const std::string& script) {
+void TestRunner::QueueNonLoadingScript(const std::string& script,
+                                       WebFrameTestProxy& source) {
   work_queue_.AddWork(mojom::WorkItem::NewNonLoadingScript(
-      mojom::WorkItemNonLoadingScript::New(script)));
+                          mojom::WorkItemNonLoadingScript::New(script)),
+                      source);
 }
 
 void TestRunner::QueueLoad(const GURL& current_url,
                            const std::string& relative_url,
-                           const std::string& target) {
+                           const std::string& target,
+                           WebFrameTestProxy& source) {
   GURL full_url = current_url.Resolve(relative_url);
   work_queue_.AddWork(mojom::WorkItem::NewLoad(
-      mojom::WorkItemLoad::New(full_url.spec(), target)));
+                          mojom::WorkItemLoad::New(full_url.spec(), target)),
+                      source);
 }
 
-void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item) {
-  work_queue_.ProcessWorkItem(std::move(work_item));
+void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item,
+                                 WebFrameTestProxy& source) {
+  work_queue_.ProcessWorkItem(std::move(work_item), source);
 }
 
-void TestRunner::ReplicateWorkQueueStates(const base::Value::Dict& values) {
+void TestRunner::ReplicateWorkQueueStates(const base::Value::Dict& values,
+                                          WebFrameTestProxy& source) {
   if (!test_is_running_)
     return;
-  work_queue_.ReplicateStates(values);
+  work_queue_.ReplicateStates(values, source);
 }
 
 bool TestRunner::IsFrameInMainWindow(blink::WebLocalFrame* frame) {
@@ -3135,8 +3165,10 @@ void TestRunner::SetMainWindowAndTestConfiguration(
       spec.find("/devtools/") != std::string::npos ||
       spec.find("/inspector-protocol/") != std::string::npos;
 
+  auto* source =
+      static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(frame));
   if (is_devtools_test)
-    SetDumpConsoleMessages(false);
+    SetDumpConsoleMessages(false, *source);
 
   // In protocol mode (see TestInfo::protocol_mode), we dump layout only when
   // requested by the test. In non-protocol mode, we dump layout by default
@@ -3146,16 +3178,16 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   // execute the same code regardless of the protocol mode, e.g. for ease of
   // debugging a web test issue.
   if (!test_config_.protocol_mode)
-    SetShouldDumpAsLayout(true);
+    SetShouldDumpAsLayout(true, *source);
 
   bool wpt_printing_test = test_config_.wpt_print_mode;
 
   // For http/tests/loading/, which is served via httpd and becomes /loading/.
   if (spec.find("/loading/") != std::string::npos)
-    SetShouldDumpFrameLoadCallbacks(true);
+    SetShouldDumpFrameLoadCallbacks(true, *source);
 
   if (IsWebPlatformTest(spec)) {
-    SetIsWebPlatformTestsMode();
+    SetIsWebPlatformTestsMode(*source);
 
     if (spec.find("/print/") != std::string::npos ||
         spec.find("-print.html") != std::string::npos) {
@@ -3164,10 +3196,10 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   }
 
   if (wpt_printing_test) {
-    SetPrinting();
+    SetPrinting(*source);
     view->GetSettings()->SetShouldPrintBackgrounds(true);
-    SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
-    SetPrintingMargin(kWPTPrintMargins);
+    SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight, *source);
+    SetPrintingMargin(kWPTPrintMargins, *source);
   }
 
   view->GetSettings()->SetV8CacheOptions(
@@ -3194,8 +3226,8 @@ const mojom::WebTestRunTestConfiguration& TestRunner::TestConfig() const {
 }
 
 void TestRunner::OnTestPreferencesChanged(const TestPreferences& test_prefs,
-                                          RenderFrame* frame) {
-  blink::WebView* web_view = frame->GetWebFrame()->View();
+                                          WebFrameTestProxy& frame) {
+  blink::WebView* web_view = frame.GetWebFrame()->View();
   blink::web_pref::WebPreferences web_prefs = web_view->GetWebPreferences();
 
   // Turns the TestPreferences into WebPreferences.
@@ -3203,10 +3235,11 @@ void TestRunner::OnTestPreferencesChanged(const TestPreferences& test_prefs,
 
   web_view->SetWebPreferences(web_prefs);
 
-  GetWebTestControlHostRemote()->OverridePreferences(web_prefs);
+  frame.GetWebTestControlHostRemote()->OverridePreferences(web_prefs);
 }
 
-void TestRunner::SetCustomPolicyDelegate(gin::Arguments* args) {
+void TestRunner::SetCustomPolicyDelegate(gin::Arguments* args,
+                                         WebFrameTestProxy& source) {
   bool value;
   args->GetNext(&value);
   web_test_runtime_flags_.set_policy_delegate_enabled(value);
@@ -3216,14 +3249,14 @@ void TestRunner::SetCustomPolicyDelegate(gin::Arguments* args) {
     web_test_runtime_flags_.set_policy_delegate_is_permissive(value);
   }
 
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::WaitForPolicyDelegate() {
+void TestRunner::WaitForPolicyDelegate(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_policy_delegate_enabled(true);
   web_test_runtime_flags_.set_policy_delegate_should_notify_done(true);
   web_test_runtime_flags_.set_wait_until_done(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 int TestRunner::InProcessWindowCount() {
@@ -3257,8 +3290,8 @@ void TestRunner::SetTextSubpixelPositioning(bool value) {
 #endif
 }
 
-void TestRunner::SetMockScreenOrientation(blink::WebView* view,
-                                          const std::string& orientation_str) {
+void TestRunner::SetMockScreenOrientation(const std::string& orientation_str,
+                                          WebFrameTestProxy& frame) {
   display::mojom::ScreenOrientation orientation;
 
   if (orientation_str == "portrait-primary") {
@@ -3272,63 +3305,60 @@ void TestRunner::SetMockScreenOrientation(blink::WebView* view,
     orientation = display::mojom::ScreenOrientation::kLandscapeSecondary;
   }
 
-  bool changed =
-      fake_screen_orientation_impl_.UpdateDeviceOrientation(view, orientation);
-  if (changed)
-    GetWebTestControlHostRemote()->SetScreenOrientationChanged();
+  bool changed = fake_screen_orientation_impl_.UpdateDeviceOrientation(
+      frame.GetWebView(), orientation);
+  if (changed) {
+    frame.GetWebTestControlHostRemote()->SimulateScreenOrientationChanged();
+  }
 }
 
 void TestRunner::DisableMockScreenOrientation(blink::WebView* view) {
   fake_screen_orientation_impl_.SetDisabled(view, true);
 }
 
-void TestRunner::SetAcceptLanguages(const std::string& accept_languages) {
-  GetWebTestControlHostRemote()->SetAcceptLanguages(accept_languages);
-}
-
-void TestRunner::DumpEditingCallbacks() {
+void TestRunner::DumpEditingCallbacks(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_editting_callbacks(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpAsMarkup() {
+void TestRunner::DumpAsMarkup(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_as_markup(true);
   web_test_runtime_flags_.set_generate_pixel_results(false);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpAsText() {
+void TestRunner::DumpAsText(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_as_text(true);
   web_test_runtime_flags_.set_generate_pixel_results(false);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpAsTextWithPixelResults() {
+void TestRunner::DumpAsTextWithPixelResults(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_as_text(true);
   web_test_runtime_flags_.set_generate_pixel_results(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpAsLayout() {
+void TestRunner::DumpAsLayout(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_as_layout(true);
   web_test_runtime_flags_.set_generate_pixel_results(false);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpAsLayoutWithPixelResults() {
+void TestRunner::DumpAsLayoutWithPixelResults(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_as_layout(true);
   web_test_runtime_flags_.set_generate_pixel_results(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpChildFrames() {
+void TestRunner::DumpChildFrames(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_child_frames(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpIconChanges() {
+void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_icon_changes(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
@@ -3338,79 +3368,86 @@ void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
   dump_as_audio_ = true;
 }
 
-void TestRunner::DumpFrameLoadCallbacks() {
+void TestRunner::DumpFrameLoadCallbacks(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_frame_load_callbacks(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpPingLoaderCallbacks() {
+void TestRunner::DumpPingLoaderCallbacks(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_ping_loader_callbacks(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpUserGestureInFrameLoadCallbacks() {
+void TestRunner::DumpUserGestureInFrameLoadCallbacks(
+    WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_user_gesture_in_frame_load_callbacks(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpTitleChanges() {
+void TestRunner::DumpTitleChanges(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_title_changes(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetImagesAllowed(bool allowed) {
+void TestRunner::SetImagesAllowed(bool allowed, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_images_allowed(allowed);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetStorageAllowed(bool allowed) {
+void TestRunner::SetStorageAllowed(bool allowed, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_storage_allowed(allowed);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetAllowRunningOfInsecureContent(bool allowed) {
+void TestRunner::SetAllowRunningOfInsecureContent(bool allowed,
+                                                  WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_running_insecure_content_allowed(allowed);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpPermissionClientCallbacks() {
+void TestRunner::DumpPermissionClientCallbacks(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_web_content_settings_client_callbacks(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 void TestRunner::DumpBackForwardList() {
   dump_back_forward_list_ = true;
 }
 
-void TestRunner::DumpSelectionRect() {
+void TestRunner::DumpSelectionRect(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_selection_rect(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetPrinting() {
-  SetPrintingForFrame("");
+void TestRunner::SetPrinting(WebFrameTestProxy& source) {
+  SetPrintingForFrame("", source);
 }
 
-void TestRunner::SetPrintingForFrame(const std::string& frame_name) {
+void TestRunner::SetPrintingForFrame(const std::string& frame_name,
+                                     WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_printing_frame(frame_name);
   web_test_runtime_flags_.set_is_printing(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetPrintingSize(int width, int height) {
+void TestRunner::SetPrintingSize(int width,
+                                 int height,
+                                 WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_printing_width(width);
   web_test_runtime_flags_.set_printing_height(height);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetPrintingMargin(int size) {
+void TestRunner::SetPrintingMargin(int size, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_printing_margin(size);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetShouldStayOnPageAfterHandlingBeforeUnload(bool value) {
+void TestRunner::SetShouldStayOnPageAfterHandlingBeforeUnload(
+    bool value,
+    WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_stay_on_page_after_handling_before_unload(value);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 void TestRunner::SetWillSendRequestClearHeader(const std::string& header) {
@@ -3422,40 +3459,41 @@ void TestRunner::SetWillSendRequestClearReferrer() {
   clear_referrer_ = true;
 }
 
-void TestRunner::WaitUntilExternalURLLoad() {
+void TestRunner::WaitUntilExternalURLLoad(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_wait_until_external_url_load(true);
   web_test_runtime_flags_.set_wait_until_done(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpDragImage() {
+void TestRunner::DumpDragImage(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_drag_image(true);
-  DumpAsTextWithPixelResults();
-  OnWebTestRuntimeFlagsChanged();
+  DumpAsTextWithPixelResults(source);
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::DumpNavigationPolicy() {
+void TestRunner::DumpNavigationPolicy(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_navigation_policy(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetDumpConsoleMessages(bool value) {
+void TestRunner::SetDumpConsoleMessages(bool value, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_console_messages(value);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
-void TestRunner::SetIsWebPlatformTestsMode() {
+void TestRunner::SetIsWebPlatformTestsMode(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_is_web_platform_tests_mode(true);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 bool TestRunner::IsWebPlatformTestsMode() const {
   return web_test_runtime_flags_.is_web_platform_tests_mode();
 }
 
-void TestRunner::SetDumpJavaScriptDialogs(bool value) {
+void TestRunner::SetDumpJavaScriptDialogs(bool value,
+                                          WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_javascript_dialogs(value);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 void TestRunner::SetEffectiveConnectionType(
@@ -3470,32 +3508,17 @@ bool TestRunner::ShouldDumpConsoleMessages() const {
   return test_is_running_ && web_test_runtime_flags_.dump_console_messages();
 }
 
-void TestRunner::GoToOffset(int offset) {
-  GetWebTestControlHostRemote()->GoToOffset(offset);
-}
-
-void TestRunner::Reload() {
-  GetWebTestControlHostRemote()->Reload();
-}
-
-void TestRunner::LoadURLForFrame(const GURL& url,
-                                 const std::string& frame_name) {
-  GetWebTestControlHostRemote()->LoadURLForFrame(url, frame_name);
-}
-
-void TestRunner::PrintMessage(const std::string& message) {
-  GetWebTestControlHostRemote()->PrintMessage(message);
-}
-
-void TestRunner::PrintMessageToStderr(const std::string& message) {
-  GetWebTestControlHostRemote()->PrintMessageToStderr(message);
+void TestRunner::PrintMessage(const std::string& message,
+                              WebFrameTestProxy& source) {
+  source.GetWebTestControlHostRemote()->PrintMessage(message);
 }
 
 blink::WebString TestRunner::RegisterIsolatedFileSystem(
-    const std::vector<base::FilePath>& file_paths) {
+    const std::vector<base::FilePath>& file_paths,
+    WebFrameTestProxy& source) {
   std::string filesystem_id;
-  GetWebTestControlHostRemote()->RegisterIsolatedFileSystem(file_paths,
-                                                            &filesystem_id);
+  source.GetWebTestControlHostRemote()->RegisterIsolatedFileSystem(
+      file_paths, &filesystem_id);
   return blink::WebString::FromUTF8(filesystem_id);
 }
 
@@ -3551,7 +3574,7 @@ void TestRunner::SetAnimationRequiresRaster(bool do_raster) {
   animation_requires_raster_ = do_raster;
 }
 
-void TestRunner::OnWebTestRuntimeFlagsChanged() {
+void TestRunner::OnWebTestRuntimeFlagsChanged(WebFrameTestProxy& source) {
   // Ignore changes that happen before we got the initial, accumulated
   // web flag changes in SetTestConfiguration().
   if (!test_is_running_)
@@ -3559,13 +3582,13 @@ void TestRunner::OnWebTestRuntimeFlagsChanged() {
   if (web_test_runtime_flags_.tracked_dictionary().changed_values().empty())
     return;
 
-  GetWebTestControlHostRemote()->WebTestRuntimeFlagsChanged(
+  source.GetWebTestControlHostRemote()->WebTestRuntimeFlagsChanged(
       web_test_runtime_flags_.tracked_dictionary().changed_values().Clone());
 
   web_test_runtime_flags_.tracked_dictionary().ResetChangeTracking();
 }
 
-void TestRunner::FinishTest() {
+void TestRunner::FinishTest(WebFrameTestProxy& source) {
   WebFrameTestProxy* main_frame = FindInProcessMainWindowMainFrame();
 
   // When there are no more frames loading, and the test hasn't asked to wait
@@ -3586,8 +3609,9 @@ void TestRunner::FinishTest() {
   // main window's main frame. There it will come back to this method, but hit
   // the other path.
   if (!main_frame) {
-    if (did_notify_done_)
-      GetWebTestControlHostRemote()->TestFinishedInSecondaryRenderer();
+    if (did_notify_done_) {
+      source.GetWebTestControlHostRemote()->TestFinishedInSecondaryRenderer();
+    }
     return;
   }
 
@@ -3680,25 +3704,9 @@ void TestRunner::FinishTest() {
   // Informs the browser that the test is done, passing along any test results
   // that have been generated locally. The browser may collect further results
   // from this and other renderer processes before moving on to the next test.
-  GetWebTestControlHostRemote()->InitiateCaptureDump(
+  source.GetWebTestControlHostRemote()->InitiateCaptureDump(
       std::move(dump_result), browser_should_dump_back_forward_list,
       browser_should_dump_pixels);
-}
-
-mojo::AssociatedRemote<mojom::WebTestControlHost>&
-TestRunner::GetWebTestControlHostRemote() {
-  if (!web_test_control_host_remote_) {
-    RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        &web_test_control_host_remote_);
-    web_test_control_host_remote_.set_disconnect_handler(
-        base::BindOnce(&TestRunner::HandleWebTestControlHostDisconnected,
-                       base::Unretained(this)));
-  }
-  return web_test_control_host_remote_;
-}
-
-void TestRunner::HandleWebTestControlHostDisconnected() {
-  web_test_control_host_remote_.reset();
 }
 
 mojom::WebTestBluetoothFakeAdapterSetter&
@@ -3717,12 +3725,17 @@ void TestRunner::HandleBluetoothFakeAdapterSetterDisconnected() {
   bluetooth_fake_adapter_setter_.reset();
 }
 
-void TestRunner::DisableAutomaticDragDrop() {
+void TestRunner::DisableAutomaticDragDrop(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_auto_drag_drop_enabled(false);
-  OnWebTestRuntimeFlagsChanged();
+  OnWebTestRuntimeFlagsChanged(source);
 }
 
 bool TestRunner::AutomaticDragDropEnabled() {
   return web_test_runtime_flags_.auto_drag_drop_enabled();
 }
+
+const WebTestRuntimeFlags& TestRunner::GetFlags() {
+  return web_test_runtime_flags_;
+}
+
 }  // namespace content

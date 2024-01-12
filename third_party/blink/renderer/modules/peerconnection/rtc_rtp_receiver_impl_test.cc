@@ -85,7 +85,8 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
         mock_webrtc_receiver_.get(), std::move(track_ref), {});
     state.Initialize();
     return std::make_unique<RTCRtpReceiverImpl>(
-        peer_connection_, std::move(state), require_encoded_insertable_streams);
+        peer_connection_, std::move(state), require_encoded_insertable_streams,
+        /*decode_metronome=*/nullptr);
   }
 
   scoped_refptr<blink::TestWebRTCStatsReportObtainer> GetStats() {

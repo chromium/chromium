@@ -182,10 +182,16 @@ export class TabSearchItem extends TabSearchItemBase {
 
   private ariaLabelForButton_(title: string): string {
     if (this.inSuggestedGroup) {
-      return loadTimeData.getStringF('tabOrganizationCloseTab', title);
-    } else {
-      return `${loadTimeData.getString('closeTab')} ${title}`;
+      return loadTimeData.getStringF('tabOrganizationCloseTabAriaLabel', title);
     }
+    return `${loadTimeData.getString('closeTab')} ${title}`;
+  }
+
+  private tooltipForButton_(): string {
+    if (this.inSuggestedGroup) {
+      return loadTimeData.getString('tabOrganizationCloseTabTooltip');
+    }
+    return loadTimeData.getString('closeTab');
   }
 }
 

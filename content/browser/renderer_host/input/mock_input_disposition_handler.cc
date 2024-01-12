@@ -5,7 +5,7 @@
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 
 #include "base/functional/bind.h"
-#include "content/browser/renderer_host/input/input_router.h"
+#include "content/common/input/input_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::WebInputEvent;

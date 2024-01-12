@@ -1083,22 +1083,22 @@ class ChoobeScreenTester extends ScreenElementApi {
   }
 
   isTouchpadScrollScreenVisible() {
-    return this.touchpadScrollScreenButton.element() &&
+    return this.touchpadScrollScreenButton.element() != null &&
         this.touchpadScrollScreenButton.isVisible();
   }
 
   isDrivePinningScreenVisible() {
-    return this.drivePinningScreenButton.element() &&
+    return this.drivePinningScreenButton.element() != null &&
         this.drivePinningScreenButton.isVisible();
   }
 
   isDisplaySizeScreenVisible() {
-    return this.displaySizeScreenButton.element() &&
+    return this.displaySizeScreenButton.element() != null &&
         this.displaySizeScreenButton.isVisible();
   }
 
   isThemeSelectionScreenVisible() {
-    return this.themeSelectionScreenButton.element() &&
+    return this.themeSelectionScreenButton.element() != null &&
         this.themeSelectionScreenButton.isVisible();
   }
 

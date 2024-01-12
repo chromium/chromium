@@ -12,8 +12,9 @@
 // Class responsible for the top toolbar shown during the GAIA sign-in within
 // profile creation flow.
 class ProfilePickerDiceSignInToolbar : public views::View {
+  METADATA_HEADER(ProfilePickerDiceSignInToolbar, views::View)
+
  public:
-  METADATA_HEADER(ProfilePickerDiceSignInToolbar);
   ProfilePickerDiceSignInToolbar();
   ~ProfilePickerDiceSignInToolbar() override;
   ProfilePickerDiceSignInToolbar(const ProfilePickerDiceSignInToolbar&) =

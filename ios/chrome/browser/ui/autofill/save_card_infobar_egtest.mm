@@ -92,7 +92,7 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
       grey_accessibilityLabel(bannerLabel), nil);
 }
 
-}  // namepsace
+}  // namespace
 
 @interface SaveCardInfobarEGTest : WebHttpServerChromeTestCase
 

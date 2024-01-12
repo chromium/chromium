@@ -8,8 +8,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BaseFeatureMap;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
@@ -59,10 +57,7 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         ThreadUtils.assertOnUiThread();
         if (mStarted) return;
         mStarted = true;
-        if (!BaseFeatureMap.isEnabled(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE)) return;
-
         ApplicationStatus.registerApplicationStateListener(this);
-
         // We may already be in background, capture the initial state.
         onApplicationStateChange(getApplicationState());
     }

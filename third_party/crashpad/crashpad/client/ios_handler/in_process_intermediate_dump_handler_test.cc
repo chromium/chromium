@@ -61,8 +61,8 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
       InProcessIntermediateDumpHandler::WriteHeader(writer_.get());
       InProcessIntermediateDumpHandler::WriteProcessInfo(
           writer_.get(), {{"before_dump", "pre"}});
-      InProcessIntermediateDumpHandler::WriteSystemInfo(writer_.get(),
-                                                        system_data_);
+      InProcessIntermediateDumpHandler::WriteSystemInfo(
+          writer_.get(), system_data_, ClockMonotonicNanoseconds());
       InProcessIntermediateDumpHandler::WriteThreadInfo(writer_.get(), 0, 0);
       InProcessIntermediateDumpHandler::WriteModuleInfo(writer_.get());
     }
@@ -161,9 +161,10 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
       path(), {{"after_dump", "post"}}));
 
   auto process_map = process_snapshot.AnnotationsSimpleMap();
-  EXPECT_EQ(process_map.size(), 2u);
+  EXPECT_EQ(process_map.size(), 3u);
   EXPECT_EQ(process_map["before_dump"], "pre");
   EXPECT_EQ(process_map["after_dump"], "post");
+  EXPECT_TRUE(process_map.find("crashpad_uptime_ns") != process_map.end());
 
   std::map<std::string, std::string> all_annotations_simple_map;
   std::vector<AnnotationSnapshot> all_annotations;

@@ -5,6 +5,8 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_FILE_UTILS_H_
 #define ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_FILE_UTILS_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 
@@ -26,7 +28,10 @@ constexpr char kOriginalWallpaperSubDir[] = "original";
 // Saves the wallpaper |image| to disc at the given file |path|. Returns true
 // if successfully saved and false otherwise. This function is not specific to
 // any one WallpaperType.
-//
+// `image_metadata` is optional. Sets the value if it is required to store the
+// XMP metadata for the image. `image_metadata`, if not empty, should be
+// constructed as XMP format (like XML standard format). Otherwise,
+// `image_metadata` is empty by default, and no metadata is saved for the image.
 // The |image| might get resized first according to the |preferred_width| and
 // |preferred_height| depending on the |layout| specified. Afterwards, it gets
 // encoded and written to disc.
@@ -37,7 +42,8 @@ ASH_EXPORT bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
                                        const base::FilePath& path,
                                        WallpaperLayout layout,
                                        int preferred_width,
-                                       int preferred_height);
+                                       int preferred_height,
+                                       const std::string& image_metadata = "");
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_FILE_UTILS_H_

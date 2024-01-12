@@ -68,7 +68,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHKeyboardAccessoryPaymentOfferFeature,
     &kIPHLowUserEngagementDetectorFeature,
     &kIPHMicToolbarFeature,
-    &kIPHNewTabPageHomeButtonFeature,
     &kIPHPageInfoFeature,
     &kIPHPageInfoStoreInfoFeature,
     &kIPHPageZoomFeature,
@@ -150,6 +149,9 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
     &kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
     &kIPHiOSInlinePromoEnhancedSafeBrowsingFeature,
+    &kIPHiOSTabGridSwipeLeftForIncognito,
+    &kIPHiOSDockingPromoFeature,
+    &kIPHiOSDockingPromoRemindMeLaterFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -157,13 +159,14 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHCompanionSidePanelFeature,
     &kIPHCompanionSidePanelRegionSearchFeature,
     &kIPHComposeMenuNewBadgeFeature,
+    &kIPHComposeMSBBSettingsFeature,
     &kIPHComposeNewBadgeFeature,
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDesktopNewTabPageModulesCustomizeFeature,
     &kIPHDownloadEsbPromoFeature,
-    &kIPHDownloadToolbarButtonFeature,
+    &kIPHExperimentalAIPromoFeature,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     &kIPHExtensionsMenuFeature,
     &kIPHExtensionsRequestAccessButtonFeature,

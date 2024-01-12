@@ -180,7 +180,7 @@ class ArcProcessService : public KeyedService,
   void ContinueAppMemoryInfoRequest(RequestMemoryInfoCallback callback);
   void ContinueSystemMemoryInfoRequest(RequestMemoryInfoCallback callback);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // The most recent process snapshot received from the ProcessSnapshotServer.

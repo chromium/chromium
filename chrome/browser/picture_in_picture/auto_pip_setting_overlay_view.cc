@@ -77,6 +77,9 @@ void AutoPipSettingOverlayView::OnHideView() {
   // Hide the semi-opaque background layer.
   SetVisible(false);
 
+  // No longer block input events, if we were doing that.
+  scoped_ignore_input_events_.reset();
+
   NotifyAutoPipSettingOverlayViewHidden();
 }
 
@@ -140,6 +143,11 @@ void AutoPipSettingOverlayView::NotifyAutoPipSettingOverlayViewHidden() {
   for (AutoPipSettingOverlayViewObserver& obs : observers_) {
     obs.OnAutoPipSettingOverlayViewHidden();
   }
+}
+
+void AutoPipSettingOverlayView::IgnoreInputEvents(
+    content::WebContents* web_contents) {
+  scoped_ignore_input_events_ = web_contents->IgnoreInputEvents();
 }
 
 BEGIN_METADATA(AutoPipSettingOverlayView, views::View)

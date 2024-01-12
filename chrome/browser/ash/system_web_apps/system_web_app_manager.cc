@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/eche_app_info.h"
-#include "chrome/browser/ash/system_web_apps/apps/face_ml_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/file_manager_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/firmware_update_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_web_app_info.h"
@@ -139,7 +138,6 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
-  info_vec.push_back(std::make_unique<FaceMLSystemAppDelegate>(profile));
   info_vec.push_back(
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
@@ -186,7 +184,7 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.add_to_applications_menu = delegate.ShouldShowInLauncher();
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
-  install_options.add_to_search = delegate.ShouldShowInSearch();
+  install_options.add_to_search = delegate.ShouldShowInSearchAndShelf();
   install_options.add_to_management = false;
   install_options.is_disabled = is_disabled;
   install_options.force_reinstall = force_update;

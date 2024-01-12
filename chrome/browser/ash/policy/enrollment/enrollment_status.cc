@@ -38,8 +38,6 @@ std::string_view ToStringView(EnrollmentStatus::Code enrollment_code) {
       return "RegistrationCertFetchFailed";
     case EnrollmentStatus::Code::kNoMachineIdentification:
       return "NoMachineIdentification";
-    case EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
-      return "ActiveDirectoryPolicyFetchFailed";
     case EnrollmentStatus::Code::kDmTokenStoreFailed:
       return "DmTokenStoreFailed";
     case EnrollmentStatus::Code::kMayNotBlockDevMode:

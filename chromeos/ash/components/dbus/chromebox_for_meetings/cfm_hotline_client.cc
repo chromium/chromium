@@ -108,7 +108,7 @@ class CfmHotlineClientImpl : public CfmHotlineClient {
     std::move(result_callback).Run(response != nullptr);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> dbus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
   cfm::CfmObserverList observer_list_;
 
   // Note: This should remain the last member so it'll be destroyed and

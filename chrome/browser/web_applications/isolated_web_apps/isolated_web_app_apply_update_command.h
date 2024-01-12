@@ -41,9 +41,6 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class AppLock;
-class AppLockDescription;
-class LockDescription;
 class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
@@ -59,7 +56,10 @@ std::ostream& operator<<(std::ostream& os,
 // about the pending update is read from
 // `WebApp::IsolationData::pending_update_info`. Both on success, and on
 // failure, the pending update info is removed from the Web App database.
-class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
+class IsolatedWebAppApplyUpdateCommand
+    : public WebAppCommand<
+          AppLock,
+          base::expected<void, IsolatedWebAppApplyUpdateCommandError>> {
  public:
   // This command is safe to run even if the IWA is not installed or already
   // updated, in which case it will gracefully fail.
@@ -84,14 +84,12 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
 
   ~IsolatedWebAppApplyUpdateCommand() override;
 
-  // WebAppCommandTemplate<AppLock>:
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnShutdown() override;
 
  private:
-  void ReportFailure(base::StringPiece message, bool due_to_shutdown = false);
+  void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 
   template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>
@@ -153,9 +151,7 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
-  base::Value::Dict debug_log_;
 
   IsolatedWebAppUrlInfo url_info_;
 
@@ -166,10 +162,6 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
   raw_ptr<const WebApp> installed_app_ = nullptr;
-
-  base::OnceCallback<void(
-      base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
-      callback_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
   absl::optional<IsolatedWebAppLocation> update_location_;

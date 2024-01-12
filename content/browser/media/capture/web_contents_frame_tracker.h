@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_WEB_CONTENTS_FRAME_TRACKER_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_WEB_CONTENTS_FRAME_TRACKER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -47,7 +47,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
     virtual ~Context() = default;
 
     // Get bounds of the attached screen, if any.
-    virtual absl::optional<gfx::Rect> GetScreenBounds() = 0;
+    virtual std::optional<gfx::Rect> GetScreenBounds() = 0;
 
     // Get the capture target that we should use. This may be different from the
     // frame sink target associated with the DOM.
@@ -205,7 +205,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
     media::mojom::SubCaptureTargetType type;
     base::Token token;
   };
-  absl::optional<SubCaptureTargetInfo> sub_capture_target_;
+  std::optional<SubCaptureTargetInfo> sub_capture_target_;
 
   // Indicates whether the WebContents's capturer count needs to be
   // decremented.
@@ -244,10 +244,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   float max_capture_scale_override_ = kMaxCaptureScaleOverride;
 
   // The last reported content size, if any.
-  absl::optional<gfx::Size> content_size_;
+  std::optional<gfx::Size> content_size_;
 
   // The last received video capture feedback, if any.
-  absl::optional<media::VideoCaptureFeedback> capture_feedback_;
+  std::optional<media::VideoCaptureFeedback> capture_feedback_;
 
   // The consumer-requested capture size, set in |WillStartCapturingWebContents|
   // to indicate the preferred frame size from the video frame consumer. Note

@@ -37,7 +37,7 @@ bool RenderFrameHostDelegate::DidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const absl::optional<std::u16string>& untrusted_stack_trace) {
+    const std::optional<std::u16string>& untrusted_stack_trace) {
   return false;
 }
 
@@ -135,20 +135,17 @@ std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
   return {};
 }
 
-void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
-    const GURL& url,
-    const ui::ClipboardFormatType& data_type,
+void RenderFrameHostDelegate::IsClipboardPasteAllowedByPolicy(
+    const ClipboardEndpoint& source,
+    const ClipboardEndpoint& destination,
+    const ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
-    IsClipboardPasteContentAllowedCallback callback) {
+    IsClipboardPasteAllowedCallback callback) {
   std::move(callback).Run(std::move(clipboard_paste_data));
 }
 
-bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {
-  return false;
-}
-
-bool RenderFrameHostDelegate::IsTransientAllowFullscreenActive() const {
-  return false;
+bool RenderFrameHostDelegate::IsTransientActivationRequiredForHtmlFullscreen() {
+  return true;
 }
 
 bool RenderFrameHostDelegate::IsBackForwardCacheSupported() {

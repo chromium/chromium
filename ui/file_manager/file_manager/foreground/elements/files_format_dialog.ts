@@ -15,12 +15,11 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EntryList} from '../../common/js/files_app_entry_types.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import {EntryList, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {FileSystemType} from '../../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import {validateExternalDriveName} from '../js/file_rename.js';
 
 import {getTemplate} from './files_format_dialog.html.js';

@@ -39,6 +39,7 @@
 #import "ios/chrome/app/application_storage_metrics.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/docking_promo_app_agent.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
 #import "ios/chrome/app/features.h"
@@ -147,6 +148,10 @@
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1504753): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 namespace {
 
@@ -530,6 +535,20 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                         chromeBrowserState)
                          localState:GetApplicationContext()->GetLocalState()]];
 
+  if (IsDockingPromoEnabled()) {
+    switch (DockingPromoExperimentTypeEnabled()) {
+      case DockingPromoDisplayTriggerArm::kDuringFRE:
+        break;
+      case DockingPromoDisplayTriggerArm::kAfterFRE:
+      case DockingPromoDisplayTriggerArm::kAppLaunch:
+        [self.appState
+            addAgent:[[DockingPromoAppAgent alloc]
+                         initWithPromosManager:PromosManagerFactory::
+                                                   GetForBrowserState(
+                                                       chromeBrowserState)]];
+    }
+  }
+
   // Perform any background initialisation that is required and then
   // migrate to the next stage.
   __weak __typeof(self) weakSelf = self;
@@ -539,9 +558,18 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
-  // For the moment there are no background initialisation, call `completion`
-  // immediately.
-  completion();
+  // Migrate the session storage based on the feature.
+  const SessionRestorationServiceFactory::StorageFormat requested_format =
+      web::features::UseSessionSerializationOptimizations()
+          ? SessionRestorationServiceFactory::kOptimized
+          : SessionRestorationServiceFactory::kLegacy;
+
+  // MigrateSessionStorageFormat is synchronous if the storage is already in
+  // the requested format, so this is safe to call and won't block the app
+  // startup.
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      self.appState.mainBrowserState, requested_format,
+      base::BindOnce(completion));
 }
 
 // This initialization must happen before any windows are created.
@@ -576,12 +604,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                     ->GetChromeBrowserStateManager()
                                     ->GetLastUsedBrowserState());
 
-  if (!base::ios::IsMultipleScenesSupported()) {
-    NSSet<NSString*>* previousSessions =
-        [PreviousSessionInfo sharedInstance].connectedSceneSessionsIDs;
-    DCHECK(previousSessions.count <= 1);
-    self.appState.previousSingleWindowSessionID = [previousSessions anyObject];
-  }
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
   feature_engagement::Tracker* tracker =

@@ -5,6 +5,7 @@
 #include "extensions/renderer/bindings/api_binding.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -305,7 +306,7 @@ APIBinding::APIBinding(const std::string& api_name,
           DCHECK(supports_listeners);
           DCHECK(!*supports_listeners)
               << "Events cannot support rules and listeners.";
-          auto get_values = [options](base::StringPiece name,
+          auto get_values = [options](std::string_view name,
                                       std::vector<std::string>* out_value) {
             const base::Value::List* list = options->FindList(name);
             CHECK(list);

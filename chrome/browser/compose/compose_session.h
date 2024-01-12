@@ -102,13 +102,13 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // is clicked in the FRE dialog.
   void OpenComposeLearnMorePage() override;
 
+  // Opens the Compose-related Chrome settings page in a new tab when the
+  // "Go to Settings" link is clicked in the MSBB dialog.
+  void OpenComposeSettings() override;
+
   // Opens the Compose feedback survey page in a new tab. This implementation is
   // designed for Dogfood only.
   void OpenFeedbackSurveyLink() override;
-
-  // Opens the Compose-related Chrome settings page in a new tab when the
-  // "settings" link is clicked in the consent dialog.
-  void OpenComposeSettings() override;
 
   // Saves the user feedback supplied form the UI to include in quality logs.
   void SetUserFeedback(compose::mojom::UserFeedback feedback) override;
@@ -138,34 +138,21 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
     skip_inner_text_ = skip_inner_text;
   }
 
-  void set_current_consent_state(compose::mojom::ConsentState consent_state) {
-    current_consent_state_ = consent_state;
-  }
-
   bool get_current_msbb_state() { return current_msbb_state_; }
 
   void set_current_msbb_state(bool current_msbb_state);
 
-  compose::mojom::ConsentState get_current_consent_state() {
-    return current_consent_state_;
-  }
+  void set_fre_complete(bool fre_complete) { fre_complete_ = fre_complete; }
 
-  // Set the first time the user progresses through the consent/disclaimer
-  // dialog to the main dialog. This can only be set one way as it corresponds
-  // to completion of the user's FRE.
-  void set_consent_given_or_acknowledged() {
-    consent_given_or_acknowledged_ = true;
-  }
+  bool get_fre_complete() { return fre_complete_; }
+
+  void SetFirstRunCompleted();
 
   // Refresh the inner text on session resumption.
   void RefreshInnerText();
 
-  // Manages actions needed when a session ends at the consent/disclaimer dialog
-  // or progresses to the main dialog.
-  void HandleEndOfConsentSession();
-
-  void SetConsentCloseReason(
-      compose::ComposeConsentSessionCloseReason close_reason);
+  void SetFirstRunCloseReason(
+      compose::ComposeFirstRunSessionCloseReason close_reason);
 
   void SetMSBBCloseReason(compose::ComposeMSBBSessionCloseReason close_reason);
 
@@ -179,6 +166,15 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+  void ModelExecutionProgress(
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
+  void ModelExecutionComplete(
+      base::TimeDelta request_delta,
+      bool was_input_edited,
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
   // Adds page content to the session context.
   void AddPageContentToSession(std::string inner_text);
 
@@ -228,21 +224,22 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // True if the user selected text when the dialog is opened.
   bool text_selected_;
 
-  // The state of consent-related prefs when the session is first created.
-  compose::mojom::ConsentState current_consent_state_ =
-      compose::mojom::ConsentState::kUnset;
-  // True if the user either gave consent or acknowledged given consent in this
-  // session.
-  bool consent_given_or_acknowledged_ = false;
-
   // The state of the MSBB preference
   bool current_msbb_state_;
-  bool msbb_intilially_off_;
+  bool msbb_initially_off_;
   bool msbb_enabled_during_session_;
-  // Reason that a compose consent session was exited, used for metrics.
-  compose::ComposeConsentSessionCloseReason consent_close_reason_;
+
   // Reason that a compose msbb session was exited, used for metrics.
   compose::ComposeMSBBSessionCloseReason msbb_close_reason_;
+  // State tracking whether the FRE has been completed
+  bool fre_complete_ = false;
+
+  // True if the user completed the FRE in this session.
+  bool fre_completed_in_session_ = false;
+
+  // Reason that a FRE session was exited, used for metrics.
+  compose::ComposeFirstRunSessionCloseReason fre_close_reason_;
+
   // Reason that a compose session was exited, used for metrics.
   compose::ComposeSessionCloseReason close_reason_;
   // Reason that a compose session was exited, used for quality logging.
@@ -270,11 +267,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Logging counters.
   int compose_count_ = 0;
   int dialog_shown_count_ = 0;
+  int fre_dialog_shown_count_ = 0;
   int msbb_dialog_shown_count_ = 0;
   int undo_count_ = 0;
   int update_input_count_ = 0;
-
-  bool consent_given_in_session_ = false;
 
   // If true, the inner-text was received.
   bool got_inner_text_ = false;

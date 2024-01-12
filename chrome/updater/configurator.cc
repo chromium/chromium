@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -64,7 +65,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
         return base::IsManagedOrEnterpriseDevice();
 #else
         return std::nullopt;
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       }()) {
 #if BUILDFLAG(IS_LINUX)
   // On Linux creating the NetworkFetcherFactory requires performing blocking IO
@@ -76,70 +77,86 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
 Configurator::~Configurator() = default;
 
 base::TimeDelta Configurator::InitialDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::RandDouble() * external_constants_->InitialDelay();
 }
 
 base::TimeDelta Configurator::ServerKeepAliveTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::clamp(external_constants_->ServerKeepAliveTime(),
-                     base::Seconds(1), kServerKeepAliveTime);
+                    base::Seconds(1), kServerKeepAliveTime);
 }
 
 base::TimeDelta Configurator::NextCheckDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyStatus<base::TimeDelta> delay = policy_service_->GetLastCheckPeriod();
   CHECK(delay);
   return delay.policy();
 }
 
 base::TimeDelta Configurator::OnDemandDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Seconds(0);
 }
 
 base::TimeDelta Configurator::UpdateDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Seconds(0);
 }
 
 std::vector<GURL> Configurator::UpdateUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->UpdateURL();
 }
 
 std::vector<GURL> Configurator::PingUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return UpdateUrl();
 }
 
 GURL Configurator::CrashUploadURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->CrashUploadURL();
 }
 
 GURL Configurator::DeviceManagementURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->DeviceManagementURL();
 }
 
 std::string Configurator::GetProdId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return "updater";
 }
 
 base::Version Configurator::GetBrowserVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return version_info::GetVersion();
 }
 
 std::string Configurator::GetChannel() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {};
 }
 
 std::string Configurator::GetLang() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return "";
 }
 
 std::string Configurator::GetOSLongName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::string(version_info::GetOSType());
 }
 
 base::flat_map<std::string, std::string> Configurator::ExtraRequestParams()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {};
 }
 
 std::string Configurator::GetDownloadPreference() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyStatus<std::string> preference =
       policy_service_->GetDownloadPreference();
   return preference ? preference.policy() : std::string();
@@ -147,6 +164,7 @@ std::string Configurator::GetDownloadPreference() const {
 
 scoped_refptr<update_client::NetworkFetcherFactory>
 Configurator::GetNetworkFetcherFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>(
         PolicyServiceProxyConfiguration::Get(policy_service_));
@@ -156,6 +174,7 @@ Configurator::GetNetworkFetcherFactory() {
 
 scoped_refptr<update_client::CrxDownloaderFactory>
 Configurator::GetCrxDownloaderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!crx_downloader_factory_) {
     crx_downloader_factory_ =
         updater::MakeCrxDownloaderFactory(GetNetworkFetcherFactory());
@@ -165,47 +184,58 @@ Configurator::GetCrxDownloaderFactory() {
 
 scoped_refptr<update_client::UnzipperFactory>
 Configurator::GetUnzipperFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return unzip_factory_;
 }
 
 scoped_refptr<update_client::PatcherFactory> Configurator::GetPatcherFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return patch_factory_;
 }
 
 bool Configurator::EnabledDeltas() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->EnableDiffUpdates();
 }
 
 bool Configurator::EnabledBackgroundDownloader() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;
 }
 
 bool Configurator::EnabledCupSigning() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->UseCUP();
 }
 
 PrefService* Configurator::GetPrefService() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return prefs_->GetPrefService();
 }
 
 update_client::PersistedData* Configurator::GetPersistedData() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return persisted_data_.get();
 }
 
 scoped_refptr<PersistedData> Configurator::GetUpdaterPersistedData() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return persisted_data_;
 }
 
 bool Configurator::IsPerUserInstall() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !IsSystemInstall();
 }
 
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 Configurator::GetProtocolHandlerFactory() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
 }
 
 std::optional<bool> Configurator::IsMachineExternallyManaged() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::optional<bool> is_managed_overridden =
       external_constants_->IsMachineManaged();
   return is_managed_overridden.has_value() ? is_managed_overridden
@@ -213,22 +243,32 @@ std::optional<bool> Configurator::IsMachineExternallyManaged() const {
 }
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
+  // The policy service is accessed by RPC on a different sequence and this
+  // function can't enforce the sequence check for now: crbug.com/1517079.
   return policy_service_;
 }
 
 crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return external_constants_->CrxVerifierFormat();
 }
 
 update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::BindRepeating([](bool /*is_machine*/) {
     return update_client::UpdaterStateAttributes();
   });
 }
 
 std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return updater::GetCrxDiffCacheDirectory(GetUpdaterScope());
+}
+
+bool Configurator::IsConnectionMetered() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return false;
 }
 
 }  // namespace updater

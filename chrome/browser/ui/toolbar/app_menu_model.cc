@@ -491,8 +491,8 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
       IDC_SHOW_PASSWORD_MANAGER, IDS_VIEW_PASSWORDS,
-      ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
                          AppMenuModel::kPasswordManagerMenuItem);
   AddItemWithStringIdAndIcon(
@@ -862,31 +862,17 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   chrome::ExecuteCommand(browser_, command_id);
 }
 
+// static
 void AppMenuModel::LogSafetyHubInteractionMetrics(
-    std::optional<safety_hub::SafetyHubModuleType> expected_module) {
-  // TODO(crbug.com/1443466): Remove when the service is only created when the
-  // feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return;
-  }
-  auto* const safety_hub_menu_notification_service =
-      SafetyHubMenuNotificationServiceFactory::GetForProfile(
-          browser_->profile());
-  if (!safety_hub_menu_notification_service) {
-    return;
-  }
-  std::optional<safety_hub::SafetyHubModuleType> sh_module =
-      safety_hub_menu_notification_service->GetModuleOfActiveNotification();
-  if (sh_module.has_value() && (!expected_module.has_value() ||
-                                expected_module.value() == sh_module.value())) {
-    base::UmaHistogramEnumeration("Settings.SafetyHub.Interaction",
-                                  safety_hub::SafetyHubSurfaces::kThreeDotMenu);
-    base::UmaHistogramEnumeration(
-        "Settings.SafetyHub.EntryPointInteraction",
-        safety_hub::SafetyHubEntryPoint::kMenuNotifications);
-    base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
-                                  sh_module.value());
-  }
+    safety_hub::SafetyHubModuleType sh_module,
+    int event_flags) {
+  base::UmaHistogramEnumeration("Settings.SafetyHub.Interaction",
+                                safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+  base::UmaHistogramEnumeration(
+      "Settings.SafetyHub.EntryPointInteraction",
+      safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+  base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
+                                sh_module);
 }
 
 void AppMenuModel::LogMenuMetrics(int command_id) {
@@ -897,17 +883,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
       break;
     case IDC_SHOW_PASSWORD_CHECKUP:
-      if (!uma_action_recorded_) {
-        LogSafetyHubInteractionMetrics(
-            safety_hub::SafetyHubModuleType::PASSWORDS);
-      }
       LogMenuAction(MENU_ACTION_SHOW_PASSWORD_CHECKUP);
       break;
     case IDC_OPEN_SAFETY_HUB:
-      if (!uma_action_recorded_) {
-        // Multiple Safety Hub module types can result in opening Safety Hub UI.
-        LogSafetyHubInteractionMetrics();
-      }
       LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1140,17 +1118,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Tools menu.
     case IDC_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {
-        // TODO(crbug.com/1443466): Use a callback instead to log the metrics to
-        // reduce coupling with Safety Hub notification service.
-        // See crrev.com/c/5012653/comments/4f038126_bb7cb0fe for more details.
-        if (features::IsExtensionMenuInRootAppMenu()) {
-          LogSafetyHubInteractionMetrics();
-        } else {
-          // The command can originate from either Safety Hub notification or
-          // extension menu.
-          LogSafetyHubInteractionMetrics(
-              safety_hub::SafetyHubModuleType::EXTENSIONS);
-        }
         base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ManageExtensions", delta);
       }
@@ -1935,7 +1902,7 @@ bool AppMenuModel::AddSafetyHubMenuItem() {
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
     return false;
   }
-  auto* const safety_hub_menu_notification_service =
+  auto* safety_hub_menu_notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(
           browser_->profile());
   if (!safety_hub_menu_notification_service) {
@@ -1951,15 +1918,15 @@ bool AppMenuModel::AddSafetyHubMenuItem() {
   base::UmaHistogramEnumeration(
       "Settings.SafetyHub.EntryPointImpression",
       safety_hub::SafetyHubEntryPoint::kMenuNotifications);
-  std::optional<safety_hub::SafetyHubModuleType> sh_module =
-      safety_hub_menu_notification_service->GetModuleOfActiveNotification();
-  if (sh_module.has_value()) {
-    base::UmaHistogramEnumeration(
-        "Settings.SafetyHub.MenuNotificationImpression", sh_module.value());
-  }
+  base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationImpression",
+                                notification->module);
   const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
       kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
   AddItemWithIcon(notification->command, notification->label, safety_hub_icon);
+  SetExecuteCallbackAt(
+      GetIndexOfCommandId(notification->command).value(),
+      base::BindRepeating(&AppMenuModel::LogSafetyHubInteractionMetrics,
+                          notification->module));
   return true;
 }
 

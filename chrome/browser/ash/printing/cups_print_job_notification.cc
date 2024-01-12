@@ -33,10 +33,10 @@ namespace {
 
 using ::chromeos::PrinterErrorCode;
 
-const char kCupsPrintJobNotificationId[] =
+constexpr char kCupsPrintJobNotificationId[] =
     "chrome://settings/printing/cups-print-job-notification";
 
-const int64_t kSuccessTimeoutSeconds = 8;
+constexpr int64_t kSuccessTimeoutSeconds = 8;
 
 std::u16string GetNotificationTitleForFailure(
     const base::WeakPtr<CupsPrintJob>& print_job) {
@@ -106,9 +106,8 @@ CupsPrintJobNotification::CupsPrintJobNotification(
   // notification will be updated in UpdateNotification().
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-      std::u16string(),  // title
-      std::u16string(),  // body
-      ui::ImageModel(),  // icon
+      /*title=*/std::u16string(), /*body=*/std::u16string(),
+      /*icon=*/ui::ImageModel(),
       l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
       GURL(kCupsPrintJobNotificationId),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -170,19 +169,17 @@ void CupsPrintJobNotification::UpdateNotification() {
   UpdateNotificationTitle();
   UpdateNotificationIcon();
   UpdateNotificationBodyMessage();
-  UpdateNotificationTimeout();
 
   // |STATE_STARTED| and |STATE_PAGE_DONE| are special since if the user closes
   // the notification in the middle, which means they're not interested in the
   // printing progress, we should prevent showing the following printing
   // progress to the user.
-  NotificationDisplayService* display_service =
-      NotificationDisplayService::GetForProfile(profile_);
   if ((print_job_->state() != CupsPrintJob::State::STATE_STARTED &&
        print_job_->state() != CupsPrintJob::State::STATE_PAGE_DONE) ||
       !closed_in_middle_) {
-    display_service->Display(NotificationHandler::Type::TRANSIENT,
-                             *notification_, /*metadata=*/nullptr);
+    NotificationDisplayService::GetForProfile(profile_)->Display(
+        NotificationHandler::Type::TRANSIENT, *notification_,
+        /*metadata=*/nullptr);
     if (print_job_->state() == CupsPrintJob::State::STATE_DOCUMENT_DONE) {
       success_timer_->Start(
           FROM_HERE, base::Seconds(kSuccessTimeoutSeconds),
@@ -293,27 +290,6 @@ void CupsPrintJobNotification::UpdateNotificationBodyMessage() {
   }
   DCHECK(!message.empty());
   notification_->set_message(message);
-}
-
-void CupsPrintJobNotification::UpdateNotificationTimeout() {
-  if (!print_job_)
-    return;
-
-  switch (print_job_->state()) {
-    case CupsPrintJob::State::STATE_WAITING:
-    case CupsPrintJob::State::STATE_STARTED:
-    case CupsPrintJob::State::STATE_PAGE_DONE:
-    case CupsPrintJob::State::STATE_SUSPENDED:
-    case CupsPrintJob::State::STATE_RESUMED:
-    case CupsPrintJob::State::STATE_ERROR:
-      break;
-    case CupsPrintJob::State::STATE_NONE:
-    case CupsPrintJob::State::STATE_DOCUMENT_DONE:
-    case CupsPrintJob::State::STATE_FAILED:
-    case CupsPrintJob::State::STATE_CANCELLED:
-      notification_->set_never_timeout(/*never_timeout=*/false);
-      break;
-  }
 }
 
 }  // namespace ash

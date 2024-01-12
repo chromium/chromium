@@ -35,10 +35,6 @@ void FakeLocalFrameHost::FullscreenStateChanged(
     bool is_fullscreen,
     mojom::blink::FullscreenOptionsPtr options) {}
 
-void FakeLocalFrameHost::Maximize() {}
-void FakeLocalFrameHost::Minimize() {}
-void FakeLocalFrameHost::Restore() {}
-
 void FakeLocalFrameHost::RegisterProtocolHandler(const WTF::String& scheme,
                                                  const ::blink::KURL& url,
                                                  bool user_gesture) {}
@@ -115,6 +111,8 @@ void FakeLocalFrameHost::GoToEntryAtOffset(
 void FakeLocalFrameHost::UpdateTitle(
     const WTF::String& title,
     base::i18n::TextDirection title_direction) {}
+
+void FakeLocalFrameHost::UpdateAppTitle(const WTF::String& app_title) {}
 
 void FakeLocalFrameHost::UpdateUserActivationState(
     mojom::blink::UserActivationUpdateType update_type,

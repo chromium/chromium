@@ -109,6 +109,14 @@ PermissionPromptChipModel::PermissionPromptChipModel(
   }
   accessibility_chip_text_ = l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT);
+
+  if (delegate->Requests().size() > 1) {
+    // Multiple requests allowed for `MEDIASTREAM_CAMERA` and `MEDIASTREAM_MIC`.
+    // In that case we show only a camera indicator.
+    content_settings_type_ = ContentSettingsType::MEDIASTREAM_CAMERA;
+  } else {
+    content_settings_type_ = delegate->Requests()[0]->GetContentSettingsType();
+  }
 }
 
 PermissionPromptChipModel::~PermissionPromptChipModel() = default;

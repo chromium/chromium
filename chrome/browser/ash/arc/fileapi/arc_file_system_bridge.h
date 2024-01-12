@@ -196,8 +196,8 @@ class ArcFileSystemBridge
                               const std::string& file_system_id,
                               bool result);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ArcBridgeService>
       bridge_service_;  // Owned by ArcServiceManager
   base::ObserverList<Observer>::Unchecked observer_list_;
 

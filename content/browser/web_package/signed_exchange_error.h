@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_ERROR_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_ERROR_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -74,11 +74,11 @@ struct SignedExchangeError {
   // a signed exchange header to indicate which signature is causing the error.
   using FieldIndexPair = std::pair<int /* signature_index */, Field>;
 
-  static absl::optional<Field> GetFieldFromSignatureVerifierResult(
+  static std::optional<Field> GetFieldFromSignatureVerifierResult(
       SignedExchangeSignatureVerifier::Result verify_result);
 
   SignedExchangeError(const std::string& message,
-                      absl::optional<FieldIndexPair> field);
+                      std::optional<FieldIndexPair> field);
 
   // Copy constructor.
   SignedExchangeError(const SignedExchangeError& other);
@@ -88,7 +88,7 @@ struct SignedExchangeError {
   ~SignedExchangeError();
 
   std::string message;
-  absl::optional<FieldIndexPair> field;
+  std::optional<FieldIndexPair> field;
 };
 
 }  // namespace content

@@ -178,6 +178,11 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
       password_field_detected, reused_password_hash, domain);
 }
 
+base::WeakPtr<password_manager::PasswordReuseDetectorConsumer>
+PasswordReuseDetectionManager::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PasswordReuseDetectionManager::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }

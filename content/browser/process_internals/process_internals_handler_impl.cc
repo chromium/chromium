@@ -44,8 +44,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->process_id = frame->GetProcess()->GetID();
   frame_info->last_committed_url =
       frame->GetLastCommittedURL().is_valid()
-          ? absl::make_optional(frame->GetLastCommittedURL())
-          : absl::nullopt;
+          ? std::make_optional(frame->GetLastCommittedURL())
+          : std::nullopt;
   frame_info->type = type;
 
   SiteInstanceImpl* site_instance =
@@ -56,8 +56,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       site_instance->GetProcess()->GetProcessLock().is_locked_to_site();
   frame_info->site_instance->site_url =
       site_instance->HasSite()
-          ? absl::make_optional(site_instance->GetSiteInfo().site_url())
-          : absl::nullopt;
+          ? std::make_optional(site_instance->GetSiteInfo().site_url())
+          : std::nullopt;
   frame_info->site_instance->is_guest = site_instance->IsGuest();
   frame_info->site_instance->is_pdf = site_instance->IsPdf();
   frame_info->site_instance->is_sandbox_for_iframes =
@@ -79,7 +79,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
                       partition.partition_name().c_str(),
                       partition.in_memory() ? "" : "?persist"});
     frame_info->site_instance->storage_partition =
-        absl::make_optional(partition_description);
+        std::make_optional(partition_description);
   }
 
   // Only send a process lock URL if it's different from the site URL.  In the
@@ -90,8 +90,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
                                   site_instance->GetSiteInfo().site_url();
   frame_info->site_instance->process_lock_url =
       should_show_lock_url
-          ? absl::make_optional(site_instance->GetSiteInfo().process_lock_url())
-          : absl::nullopt;
+          ? std::make_optional(site_instance->GetSiteInfo().process_lock_url())
+          : std::nullopt;
 
   frame_info->site_instance->requires_origin_keyed_process =
       site_instance->GetSiteInfo().requires_origin_keyed_process();

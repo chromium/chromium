@@ -81,9 +81,20 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
                                            InstallIsolatedWebAppCommandError>)>
         callback,
     std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper)
-    : WebAppCommandTemplate<AppLock>("InstallIsolatedWebAppCommand"),
-      lock_description_(
-          std::make_unique<AppLockDescription>(url_info.app_id())),
+    : WebAppCommand<AppLock,
+                    base::expected<InstallIsolatedWebAppCommandSuccess,
+                                   InstallIsolatedWebAppCommandError>>(
+          "InstallIsolatedWebAppCommand",
+          AppLockDescription(url_info.app_id()),
+          base::BindOnce([](base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           InstallIsolatedWebAppCommandError>
+                                result) {
+            webapps::InstallableMetrics::TrackInstallResult(result.has_value());
+            return result;
+          }).Then(std::move(callback)),
+          /*args_for_shutdown=*/
+          base::unexpected(InstallIsolatedWebAppCommandError{
+              .message = std::string("System shutting down.")})),
       command_helper_(std::move(command_helper)),
       url_info_(url_info),
       source_location_(location),
@@ -92,42 +103,29 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-
   CHECK(web_contents_ != nullptr);
-  CHECK(!callback.is_null());
   CHECK(optional_profile_keep_alive_ == nullptr ||
         &profile() == optional_profile_keep_alive_->profile());
 
-  callback_ =
-      base::BindOnce(
-          [](base::expected<InstallIsolatedWebAppCommandSuccess,
-                            InstallIsolatedWebAppCommandError> result) {
-            webapps::InstallableMetrics::TrackInstallResult(result.has_value());
-            return result;
-          })
-          .Then(std::move(callback));
-
-  debug_log_ = base::Value::Dict()
-                   .Set("app_id", url_info_.app_id())
-                   .Set("origin", url_info_.origin().Serialize())
-                   .Set("bundle_id", url_info_.web_bundle_id().id())
-                   .Set("bundle_type",
-                        static_cast<int>(url_info_.web_bundle_id().type()))
-                   .Set("source_location",
-                        IsolatedWebAppLocationAsDebugValue(source_location_))
-                   .Set("expected_version", expected_version_.has_value()
-                                                ? expected_version_->GetString()
-                                                : "unknown");
+  GetMutableDebugValue().Set("app_id", url_info_.app_id());
+  GetMutableDebugValue().Set("origin", url_info_.origin().Serialize());
+  GetMutableDebugValue().Set("bundle_id", url_info_.web_bundle_id().id());
+  GetMutableDebugValue().Set(
+      "bundle_type", static_cast<int>(url_info_.web_bundle_id().type()));
+  GetMutableDebugValue().Set(
+      "source_location", IsolatedWebAppLocationAsDebugValue(source_location_));
+  GetMutableDebugValue().Set("expected_version",
+                             expected_version_.has_value()
+                                 ? expected_version_->GetString()
+                                 : "unknown");
 }
 
-InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() = default;
-
-const LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
-  return base::Value(debug_log_.Clone());
+InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() {
+  if (lazy_destination_location_.has_value()) {
+    CleanupLocationIfOwned(profile().GetPath(),
+                           lazy_destination_location_.value(),
+                           base::DoNothing());
+  }
 }
 
 void InstallIsolatedWebAppCommand::StartWithLock(
@@ -171,7 +169,7 @@ void InstallIsolatedWebAppCommand::UpdateLocation(
   ASSIGN_OR_RETURN(lazy_destination_location_, new_location,
                    &InstallIsolatedWebAppCommand::ReportFailure, this);
 
-  debug_log_.Set(
+  GetMutableDebugValue().Set(
       "lazy_destination_location",
       IsolatedWebAppLocationAsDebugValue(lazy_destination_location_.value()));
   std::move(next_step_callback).Run();
@@ -229,7 +227,7 @@ void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
   CHECK(!expected_version_ ||
         *expected_version_ == install_info.isolated_web_app_version);
   actual_version_ = install_info.isolated_web_app_version;
-  debug_log_.Set("actual_version", actual_version_.GetString());
+  GetMutableDebugValue().Set("actual_version", actual_version_.GetString());
 
   command_helper_->RetrieveIconsAndPopulateInstallInfo(
       std::move(install_info), *web_contents_.get(),
@@ -264,43 +262,25 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
   }
 }
 
-void InstallIsolatedWebAppCommand::OnShutdown() {
-  // Stop any potential ongoing operations by destroying the `command_helper_`.
-  command_helper_.reset();
-
-  // TODO(cmfcmf): Test cancellation of pending installation during system
-  // shutdown.
-  ReportFailure("System is shutting down.");
-}
-
 void InstallIsolatedWebAppCommand::ReportFailure(base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_.is_null());
 
-  if (lazy_destination_location_.has_value()) {
-    CleanupLocationIfOwned(profile().GetPath(),
-                           lazy_destination_location_.value(),
-                           base::DoNothing());
-  }
-
-  debug_log_.Set("result", base::StrCat({"error: ", message}));
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kFailure,
-      base::BindOnce(std::move(callback_),
-                     base::unexpected(InstallIsolatedWebAppCommandError{
-                         .message = std::string(message)})));
+  GetMutableDebugValue().Set("result", base::StrCat({"error: ", message}));
+  CompleteAndSelfDestruct(CommandResult::kFailure,
+                          base::unexpected(InstallIsolatedWebAppCommandError{
+                              .message = std::string(message)}));
 }
 
 void InstallIsolatedWebAppCommand::ReportSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_.is_null());
 
-  debug_log_.Set("result", "success");
-  SignalCompletionAndSelfDestruct(
+  GetMutableDebugValue().Set("result", "success");
+  // Move the location so that it isn't cleaned up in the destructor.
+  IsolatedWebAppLocation location = lazy_destination_location_.value();
+  lazy_destination_location_ = absl::nullopt;
+  CompleteAndSelfDestruct(
       CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_),
-                     InstallIsolatedWebAppCommandSuccess(
-                         actual_version_, lazy_destination_location_.value())));
+      InstallIsolatedWebAppCommandSuccess(actual_version_, location));
 }
 
 Profile& InstallIsolatedWebAppCommand::profile() {

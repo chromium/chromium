@@ -191,6 +191,7 @@ cc_binary(
     deps = [
         ":synchronization",
         ":thread_pool",
+        "//absl/base:no_destructor",
         "@com_github_google_benchmark//:benchmark_main",
     ],
 )
@@ -291,6 +292,7 @@ cc_library(
         ":thread_pool",
         "//absl/base",
         "//absl/base:config",
+        "//absl/base:no_destructor",
         "@com_github_google_benchmark//:benchmark_main",
     ],
     alwayslink = 1,

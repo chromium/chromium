@@ -48,31 +48,26 @@ _default_specs = {
     ),
 }
 
-_blank_thresholds = {
-    "Unhealthy": struct(
-        score = 5,
-        period_days = 7,
-        infra_fail_rate = struct(
-            average = None,
-        ),
-        fail_rate = struct(
-            average = None,
-        ),
-        build_time = struct(
-            p50_mins = None,
-        ),
-        pending_time = struct(
-            p50_mins = None,
-        ),
+_blank_unhealthy_thresholds = struct(
+    infra_fail_rate = struct(
+        average = None,
     ),
-    "Low Value": struct(
-        score = 1,
-        period_days = 90,
-        fail_rate = struct(
-            average = None,
-        ),
+    fail_rate = struct(
+        average = None,
     ),
-}
+    build_time = struct(
+        p50_mins = None,
+    ),
+    pending_time = struct(
+        p50_mins = None,
+    ),
+)
+
+_blank_low_value_thresholds = struct(
+    fail_rate = struct(
+        average = None,
+    ),
+)
 
 DEFAULT = {
     "Unhealthy": struct(
@@ -91,8 +86,27 @@ DEFAULT = {
 # So all user-exposed functions expect a dictionary.
 # We then convert that into a list of [problem_specs] so the object encapsulates
 # its own name, for ease of processing
-def thresholds(modifications):
-    return _merge_mods(_blank_thresholds, modifications)
+def unhealthy_thresholds(
+        fail_rate = struct(),
+        infra_fail_rate = struct(),
+        build_time = struct(),
+        pending_time = struct()):
+    thresholds = {"fail_rate": fail_rate, "infra_fail_rate": infra_fail_rate, "build_time": build_time, "pending_time": pending_time}
+    fail_if_any_none_val(thresholds)
+
+    return structs.evolve(_blank_unhealthy_thresholds, **thresholds)
+
+def low_value_thresholds(
+        fail_rate = struct()):
+    thresholds = {"fail_rate": fail_rate}
+    fail_if_any_none_val(thresholds)
+
+    return structs.evolve(_blank_low_value_thresholds, **thresholds)
+
+def fail_if_any_none_val(vals):
+    for k, v in vals.items():
+        if v == None:
+            fail(k + " threshold was None. Thresholds can't be None. Use an empty struct() instead")
 
 def modified_default(modifications):
     return _merge_mods(_default_specs, modifications)
@@ -100,11 +114,15 @@ def modified_default(modifications):
 def _merge_mods(base, modifications):
     spec = dict(base)
 
-    for mod_name in modifications:
+    for mod_name, mod in modifications.items():
+        mods_proto = structs.to_proto_properties(mod)
+        if len(mods_proto) == 0:
+            fail("Modifications for health spec \"{}\" were empty.".format(mod_name))
+
         if mod_name not in spec:
-            spec[mod_name] = modifications[mod_name]
+            spec[mod_name] = mod
         else:
-            spec[mod_name] = structs.evolve(spec[mod_name], **structs.to_proto_properties(modifications[mod_name]))
+            spec[mod_name] = structs.evolve(spec[mod_name], **mods_proto)
 
     return spec
 
@@ -180,7 +198,6 @@ _exempted_from_contact_builders = {
         "ASan Release (32-bit x86 with V8-ARM)",
         "ASan Release Media (32-bit x86 with V8-ARM)",
         "Blink Unexpected Pass Finder",
-        "Cast Audio Linux",
         "Cast Linux ARM64",
         "Cast Linux Debug",
         "Cast Linux",
@@ -848,6 +865,7 @@ _exempted_from_contact_builders = {
         "mac13-tests",
         "mac13-wpt-content-shell-fyi-rel",
         "mac13.arm64-blink-rel",
+        "mac13.arm64-skia-alt-blink-rel",
         "mac_chromium_10.15_rel_ng",
         "mac_chromium_11.0_rel_ng",
         "mac_chromium_asan_rel_ng",
@@ -1031,7 +1049,8 @@ _exempted_from_contact_builders = {
 
 health_spec = struct(
     DEFAULT = DEFAULT,
-    thresholds = thresholds,
+    unhealthy_thresholds = unhealthy_thresholds,
+    low_value_thresholds = low_value_thresholds,
     modified_default = modified_default,
 )
 

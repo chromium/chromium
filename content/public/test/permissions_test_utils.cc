@@ -11,7 +11,7 @@ namespace content {
 
 void SetPermissionControllerOverrideForDevTools(
     PermissionController* permission_controller,
-    const absl::optional<url::Origin>& origin,
+    const std::optional<url::Origin>& origin,
     blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
   PermissionControllerImpl* permission_controller_impl =

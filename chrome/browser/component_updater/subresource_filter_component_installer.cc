@@ -125,8 +125,9 @@ std::string SubresourceFilterComponentInstallerPolicy::GetInstallerTag() {
           ->lexicographically_greatest_ruleset_flavor());
 
   // Allow the empty, and 4 non-empty ruleset flavor identifiers: a, b, c, d.
-  if (ruleset_flavor.empty())
+  if (ruleset_flavor.empty()) {
     return ruleset_flavor;
+  }
 
   if (ruleset_flavor.size() == 1 && ruleset_flavor.at(0) >= 'a' &&
       ruleset_flavor.at(0) <= 'd') {
@@ -143,8 +144,9 @@ update_client::InstallerAttributes
 SubresourceFilterComponentInstallerPolicy::GetInstallerAttributes() const {
   update_client::InstallerAttributes attributes;
   std::string installer_tag = GetInstallerTag();
-  if (!installer_tag.empty())
+  if (!installer_tag.empty()) {
     attributes["tag"] = installer_tag;
+  }
   return attributes;
 }
 

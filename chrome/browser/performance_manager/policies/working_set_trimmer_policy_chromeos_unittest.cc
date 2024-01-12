@@ -110,7 +110,7 @@ class ScopedTestArcVmDelegate
   }
 
  private:
-  const raw_ptr<WorkingSetTrimmerPolicyChromeOS, ExperimentalAsh> policy_;
+  const raw_ptr<WorkingSetTrimmerPolicyChromeOS> policy_;
   mechanism::ArcVmReclaimType eligibility_;
   bool is_first_trim_post_boot_;
 };
@@ -359,7 +359,7 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   raw_ptr<MockWorkingSetTrimmerPolicyChromeOS,
-          DanglingUntriaged | ExperimentalAsh>
+          DanglingUntriaged>
       policy_ = nullptr;  // Not owned.
   std::unique_ptr<mechanism::MockWorkingSetTrimmerChromeOS> trimmer_;
 };

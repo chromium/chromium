@@ -3719,4 +3719,23 @@ TEST_F(InputMethodControllerTest, SetCompositionTamil) {
             GetSelectionTextFromBody());
 }
 
+TEST_F(InputMethodControllerTest, EditContextCanvasHasEditableType) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* noneditable_canvas = InsertHTMLElement(
+      "<canvas id='noneditable-canvas'></canvas>", "noneditable-canvas");
+  Element* editable_canvas = InsertHTMLElement(
+      "<canvas id='editable-canvas'></canvas>", "editable-canvas");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      "document.getElementById('editable-canvas').editContext = new "
+      "EditContext()");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  noneditable_canvas->Focus();
+  EXPECT_EQ(kWebTextInputTypeNone, Controller().TextInputType());
+
+  editable_canvas->Focus();
+  EXPECT_EQ(kWebTextInputTypeContentEditable, Controller().TextInputType());
+}
 }  // namespace blink

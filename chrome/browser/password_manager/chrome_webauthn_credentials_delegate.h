@@ -20,7 +20,7 @@ class WebContents;
 }
 
 // Chrome implementation of WebAuthnCredentialsDelegate.
-class ChromeWebAuthnCredentialsDelegate
+class ChromeWebAuthnCredentialsDelegate final
     : public password_manager::WebAuthnCredentialsDelegate {
  public:
   using AndroidHybridAvailable =
@@ -41,6 +41,7 @@ class ChromeWebAuthnCredentialsDelegate
   GetPasskeys() const override;
   bool OfferPasskeysFromAnotherDeviceOption() const override;
   void RetrievePasskeys(base::OnceClosure callback) override;
+  base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 
   // Method for providing a list of WebAuthn user entities that can be provided
   // as autofill suggestions. This is called when a WebAuthn Conditional UI
@@ -82,6 +83,9 @@ class ChromeWebAuthnCredentialsDelegate
   AndroidHybridAvailable android_hybrid_available_ =
       AndroidHybridAvailable(false);
 #endif
+
+  base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_

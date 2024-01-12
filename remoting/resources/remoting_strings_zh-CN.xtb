@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">检测到不兼容的协议版本。请确保两台计算机上都已安装该软件的最新版本，然后重试。</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="1201402288615127009">下一步</translation>
-<translation id="1296511125400541222">版权所有 2023 The Chromium Authors。保留所有权利。</translation>
 <translation id="1297009705180977556">连接到“<ph name="HOSTNAME" />”时出错</translation>
 <translation id="1450760146488584666">请求的对象不存在。</translation>
 <translation id="1480046233931937785">鸣谢</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972">请输入您用于“<ph name="HOSTNAME" />”的 PIN。</translation>
 <translation id="4812684235631257312">主机</translation>
 <translation id="4867841927763172006">发送PrtScn</translation>
-<translation id="4960795469833295568">版权所有 2023 Google LLC。保留所有权利。</translation>
 <translation id="4974476491460646149">与“<ph name="HOSTNAME" />”的连接已关闭</translation>
 <translation id="4985296110227979402">您需要先设置计算机，然后才能进行远程访问</translation>
 <translation id="4987330545941822761">Chrome 远程桌面无法确定应使用哪款浏览器在本地打开网址。请从下面的列表中选择。</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">刷新主机列表</translation>
 <translation id="7714222945760997814">报告此问题</translation>
 <translation id="7868137160098754906">请为远程计算机输入PIN码。</translation>
+<translation id="7881455334687220899">版权所有 2024 The Chromium Authors。保留所有权利。</translation>
 <translation id="7895403300744144251">这台远程计算机的安全政策不允许从您的账号进行连接。</translation>
 <translation id="7936528439960309876">固定到右侧</translation>
 <translation id="7970576581263377361">身份验证失败。请重新登录 Chromium。</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">会话已崩溃或未能顺利启动。如果远程计算机上存在 ~/.chrome-remote-desktop-session，请确保它会启动一个能长时间运行的前台进程（例如桌面环境或窗口管理器）。</translation>
 <translation id="8804164990146287819">隐私权政策</translation>
 <translation id="8906511416443321782">必须具备麦克风使用权限，才能捕获音频并将其流式传输到 Chrome 远程桌面客户端。</translation>
+<translation id="9042277333359847053">版权所有 2024 Google LLC。保留所有权利。</translation>
 <translation id="9111855907838866522">您已连接到远程设备。要打开菜单，请用四根手指点按屏幕。</translation>
 <translation id="9126115402994542723">从这台设备连接到此主机时不再要求输入PIN码。</translation>
 <translation id="916856682307586697">启动默认的 XSession</translation>

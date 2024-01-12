@@ -4,12 +4,13 @@
 
 #include "content/public/common/drop_data.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -61,7 +62,7 @@ TEST(DropDataTest, GetSafeFilenameForImageFileContents) {
         GURL(base::StringPrintf("https://example.com/testresource"));
     drop_data.file_contents_filename_extension =
         CONVERT_IF_NEEDED(test_case.extension);
-    absl::optional<base::FilePath> generated_name =
+    std::optional<base::FilePath> generated_name =
         drop_data.GetSafeFilenameForImageFileContents();
     ASSERT_EQ(test_case.should_generate_filename, generated_name.has_value());
 

@@ -1441,7 +1441,7 @@ absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
   if (auto* gmb = frame.GetGpuMemoryBuffer()) {
     id = gmb->GetId();
   } else if (frame.HasDmaBufs()) {
-    id = gfx::GenericSharedMemoryId(frame.DmabufFds()[0].get());
+    id = gfx::GenericSharedMemoryId(frame.GetDmabufFd(0).get());
   } else {
     DVLOGF(1) << "Unsupported frame provided";
     return absl::nullopt;

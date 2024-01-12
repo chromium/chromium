@@ -44,31 +44,6 @@ using device::mojom::PressureUpdate;
 
 namespace {
 
-// Synchronous proxy to a device::mojom::PressureManager.
-class PressureManagerSync {
- public:
-  explicit PressureManagerSync(device::mojom::PressureManager* manager)
-      : manager_(raw_ref<device::mojom::PressureManager>::from_ptr(manager)) {}
-  ~PressureManagerSync() = default;
-
-  PressureManagerSync(const PressureManagerSync&) = delete;
-  PressureManagerSync& operator=(const PressureManagerSync&) = delete;
-
-  PressureStatus AddClient(
-      mojo::PendingRemote<device::mojom::PressureClient> client,
-      PressureSource source) {
-    base::test::TestFuture<PressureStatus> future;
-    manager_->AddClient(std::move(client), source, future.GetCallback());
-    return future.Get();
-  }
-
- private:
-  // The reference is immutable, so accessing it is thread-safe. The referenced
-  // device::mojom::PressureManager implementation is called synchronously,
-  // so it's acceptable to rely on its own thread-safety checks.
-  const raw_ref<device::mojom::PressureManager> manager_;
-};
-
 // Test double for PressureClient that records all updates.
 class FakePressureClient : public device::mojom::PressureClient {
  public:
@@ -154,7 +129,6 @@ class PressureServiceForDedicatedWorkerTest
       const PressureServiceForDedicatedWorkerTest&) = delete;
 
   void TearDown() override {
-    pressure_manager_sync_.reset();
     pressure_manager_overrider_.reset();
     worker_host_.reset();
     task_environment()->RunUntilIdle();
@@ -178,8 +152,6 @@ class PressureServiceForDedicatedWorkerTest
         worker_host_->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
     broker->GetInterface(pressure_manager_.BindNewPipeAndPassReceiver());
-    pressure_manager_sync_ =
-        std::make_unique<PressureManagerSync>(pressure_manager_.get());
 
     // Focus on the page and frame to make HasImplicitFocus() return true
     // by default.
@@ -192,7 +164,6 @@ class PressureServiceForDedicatedWorkerTest
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
 
   mojo::Remote<device::mojom::PressureManager> pressure_manager_;
-  std::unique_ptr<PressureManagerSync> pressure_manager_sync_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
       pressure_manager_overrider_;
   DedicatedWorkerServiceImpl worker_service_;
@@ -204,9 +175,10 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
   SetPressureServiceForDedicatedWorker();
 
   FakePressureClient client;
-  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                              PressureSource::kCpu),
-            PressureStatus::kOk);
+  base::test::TestFuture<PressureStatus> future;
+  pressure_manager_->AddClient(client.BindNewPipeAndPassRemote(),
+                               PressureSource::kCpu, future.GetCallback());
+  ASSERT_EQ(future.Get(), PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
@@ -243,7 +215,6 @@ class PressureServiceForSharedWorkerTest
       const PressureServiceForSharedWorkerTest&) = delete;
 
   void TearDown() override {
-    pressure_manager_sync_.reset();
     pressure_manager_overrider_.reset();
     worker_host_.reset();
     worker_service_.reset();
@@ -276,8 +247,6 @@ class PressureServiceForSharedWorkerTest
         worker_host_->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
     broker->GetInterface(pressure_manager_.BindNewPipeAndPassReceiver());
-    pressure_manager_sync_ =
-        std::make_unique<PressureManagerSync>(pressure_manager_.get());
 
     // Focus on the page and frame to make HasImplicitFocus() return true
     // by default.
@@ -301,7 +270,6 @@ class PressureServiceForSharedWorkerTest
 
   mojo::Remote<device::mojom::PressureManager> pressure_manager_;
   mojo::PendingReceiver<blink::mojom::SharedWorkerClient> receiver_;
-  std::unique_ptr<PressureManagerSync> pressure_manager_sync_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
       pressure_manager_overrider_;
   blink::MessagePortDescriptorPair port_pair_;
@@ -314,9 +282,10 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
   SetPressureServiceForSharedWorker();
 
   FakePressureClient client;
-  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                              PressureSource::kCpu),
-            PressureStatus::kOk);
+  base::test::TestFuture<PressureStatus> future;
+  pressure_manager_->AddClient(client.BindNewPipeAndPassRemote(),
+                               PressureSource::kCpu, future.GetCallback());
+  ASSERT_EQ(future.Get(), PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);

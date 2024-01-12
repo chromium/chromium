@@ -123,9 +123,9 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
     std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
-    mismatched_headers_expected.emplace_back("name2", "value2", absl::nullopt);
+    mismatched_headers_expected.emplace_back("name2", "value2", std::nullopt);
     mismatched_headers_expected.emplace_back("name3", "value3", "value2");
-    mismatched_headers_expected.emplace_back("name4", absl::nullopt, "value4");
+    mismatched_headers_expected.emplace_back("name4", std::nullopt, "value4");
 
     EXPECT_TRUE(std::equal(reason.GetPrerenderMismatchedHeaders()->begin(),
                            reason.GetPrerenderMismatchedHeaders()->end(),
@@ -143,10 +143,10 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
     std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
-    mismatched_headers_expected.emplace_back("name2", absl::nullopt, "value1");
-    mismatched_headers_expected.emplace_back("name5", "value1", absl::nullopt);
-    mismatched_headers_expected.emplace_back("name6", "value2", absl::nullopt);
-    mismatched_headers_expected.emplace_back("name7", "value3", absl::nullopt);
+    mismatched_headers_expected.emplace_back("name2", std::nullopt, "value1");
+    mismatched_headers_expected.emplace_back("name5", "value1", std::nullopt);
+    mismatched_headers_expected.emplace_back("name6", "value2", std::nullopt);
+    mismatched_headers_expected.emplace_back("name7", "value3", std::nullopt);
 
     EXPECT_TRUE(std::equal(reason.GetPrerenderMismatchedHeaders()->begin(),
                            reason.GetPrerenderMismatchedHeaders()->end(),
@@ -165,10 +165,10 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
     std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
-    mismatched_headers_expected.emplace_back("name2", absl::nullopt, "value1");
-    mismatched_headers_expected.emplace_back("name5", "value1", absl::nullopt);
-    mismatched_headers_expected.emplace_back("name7", absl::nullopt, "value3");
-    mismatched_headers_expected.emplace_back("name8", absl::nullopt, "value3");
+    mismatched_headers_expected.emplace_back("name2", std::nullopt, "value1");
+    mismatched_headers_expected.emplace_back("name5", "value1", std::nullopt);
+    mismatched_headers_expected.emplace_back("name7", std::nullopt, "value3");
+    mismatched_headers_expected.emplace_back("name8", std::nullopt, "value3");
 
     EXPECT_TRUE(std::equal(reason.GetPrerenderMismatchedHeaders()->begin(),
                            reason.GetPrerenderMismatchedHeaders()->end(),
@@ -186,9 +186,9 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
     std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
-    mismatched_headers_expected.emplace_back("name1", absl::nullopt, "value1");
-    mismatched_headers_expected.emplace_back("name2", absl::nullopt, "value2");
-    mismatched_headers_expected.emplace_back("name3", absl::nullopt, "value3");
+    mismatched_headers_expected.emplace_back("name1", std::nullopt, "value1");
+    mismatched_headers_expected.emplace_back("name2", std::nullopt, "value2");
+    mismatched_headers_expected.emplace_back("name3", std::nullopt, "value3");
 
     EXPECT_TRUE(std::equal(reason.GetPrerenderMismatchedHeaders()->begin(),
                            reason.GetPrerenderMismatchedHeaders()->end(),
@@ -206,9 +206,9 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
     std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
-    mismatched_headers_expected.emplace_back("name1", "value1", absl::nullopt);
-    mismatched_headers_expected.emplace_back("name2", "value2", absl::nullopt);
-    mismatched_headers_expected.emplace_back("name3", "value3", absl::nullopt);
+    mismatched_headers_expected.emplace_back("name1", "value1", std::nullopt);
+    mismatched_headers_expected.emplace_back("name2", "value2", std::nullopt);
+    mismatched_headers_expected.emplace_back("name3", "value3", std::nullopt);
 
     EXPECT_TRUE(std::equal(reason.GetPrerenderMismatchedHeaders()->begin(),
                            reason.GetPrerenderMismatchedHeaders()->end(),
@@ -267,12 +267,12 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 
   PrerenderAttributes GeneratePrerenderAttributes(const GURL& url) {
     return GeneratePrerenderAttributesWithPredicate(
-        url, /*url_match_predicate=*/absl::nullopt);
+        url, /*url_match_predicate=*/std::nullopt);
   }
 
   PrerenderAttributes GeneratePrerenderAttributesWithPredicate(
       const GURL& url,
-      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
+      std::optional<base::RepeatingCallback<bool(const GURL&)>>
           url_match_predicate) {
     RenderFrameHostImpl* rfh = contents()->GetPrimaryMainFrame();
     return PrerenderAttributes(
@@ -284,7 +284,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         contents()->GetWeakPtr(), rfh->GetFrameToken(),
         rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
         ui::PAGE_TRANSITION_LINK, std::move(url_match_predicate),
-        /*prerender_navigation_handle_callback=*/absl::nullopt);
+        /*prerender_navigation_handle_callback=*/std::nullopt);
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {

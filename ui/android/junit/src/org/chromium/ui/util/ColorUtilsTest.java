@@ -4,6 +4,7 @@
 
 package org.chromium.ui.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Color;
@@ -53,39 +54,81 @@ public class ColorUtilsTest {
         }
     }
 
+    @Test
+    public void testGetOpaqueColor() {
+        for (@ColorInt int input : COLORS) {
+            @ColorInt int opaqueColor = ColorUtils.getOpaqueColor(input);
+            assertRbgExactlyEqual("", opaqueColor, input);
+            assertEquals(255, Color.alpha(opaqueColor));
+        }
+    }
+
+    @Test
+    public void testOverlayTransparentColor() {
+        // Hard coded solved expected color to avoid just duplicating impl in the test.
+        @ColorInt int expected = Color.parseColor("#FF143658");
+        @ColorInt int base = Color.parseColor("#FF123456");
+        @ColorInt int overlay = Color.parseColor("#12345678");
+        @ColorInt int actual = ColorUtils.overlayColor(base, overlay);
+        assertColorsExactlyEqual("", expected, actual);
+    }
+
+    @Test
+    public void testOverlayTransparentColorWithFraction() {
+        // Hard coded solved expected color to avoid just duplicating impl in the test.
+        @ColorInt int expected = Color.parseColor("#FF143658");
+        @ColorInt int base = Color.parseColor("#FF123456");
+        @ColorInt int overlay = Color.parseColor("#12345678");
+        @ColorInt int actual = ColorUtils.overlayColor(base, overlay, .63f);
+        assertColorsExactlyEqual("", expected, actual);
+    }
+
     private void testBlendColorsMultiplyHelper(
             @ColorInt int background, @ColorInt int from, @ColorInt int to) {
         String sharedMessage = formatColors("background:%s from:%s to:%s", background, from, to);
         // Calculates an expected color by pre-flattening everything onto the background and an
         // actual value by using the pre multiply blend mechanism that combines two colors with
         // alpha values. These two approaches should return the same color.
-        @ColorInt int fromFlat = flatten(background, from);
-        @ColorInt int toFlat = flatten(background, to);
+        @ColorInt int fromFlat = ColorUtils.overlayColor(background, from);
+        @ColorInt int toFlat = ColorUtils.overlayColor(background, to);
         for (@FloatRange(from = 0f, to = 1f) float fraction : FRACTIONS) {
             @ColorInt int flatBlend = ColorUtils.getColorWithOverlay(fromFlat, toFlat, fraction);
             @ColorInt int blend = ColorUtils.blendColorsMultiply(from, to, fraction);
-            @ColorInt int blendOnBackground = flatten(background, blend);
+            @ColorInt int blendOnBackground = ColorUtils.overlayColor(background, blend);
             String fractionMessage = String.format("%s fraction:%s", sharedMessage, fraction);
-            assertColorsEqual(fractionMessage, flatBlend, blendOnBackground);
+            // Use a delta to allow rounding errors where things are off by 1.
+            assertColorsNearlyEqual(fractionMessage, flatBlend, blendOnBackground, /* delta= */ 1);
         }
     }
 
-    private @ColorInt int flatten(@ColorInt int background, @ColorInt int overlay) {
-        assert Color.alpha(background) == 255;
-        return ColorUtils.getColorWithOverlay(background, overlay, Color.alpha(overlay) / 255f);
-    }
-
-    private void assertColorsEqual(
+    private void assertRbgExactlyEqual(
             String testMessage, @ColorInt int expected, @ColorInt int actual) {
         String compareMessage =
                 String.format(
                         "%s expected:%s actual:%s",
                         testMessage, printColor(expected), printColor(actual));
-        // Allow for rounding errors where things are off by 1.
-        assertTrue(compareMessage, Math.abs(Color.red(expected) - Color.red(actual)) <= 1);
-        assertTrue(compareMessage, Math.abs(Color.green(expected) - Color.green(actual)) <= 1);
-        assertTrue(compareMessage, Math.abs(Color.blue(expected) - Color.blue(actual)) <= 1);
-        assertTrue(compareMessage, Math.abs(Color.alpha(expected) - Color.alpha(actual)) <= 1);
+
+        assertEquals(compareMessage, Color.red(expected), Color.red(actual));
+        assertEquals(compareMessage, Color.green(expected), Color.green(actual));
+        assertEquals(compareMessage, Color.blue(expected), Color.blue(actual));
+    }
+
+    private void assertColorsExactlyEqual(
+            String testMessage, @ColorInt int expected, @ColorInt int actual) {
+        assertColorsNearlyEqual(testMessage, expected, actual, /* delta= */ 0);
+    }
+
+    private void assertColorsNearlyEqual(
+            String testMessage, @ColorInt int expected, @ColorInt int actual, int delta) {
+        String compareMessage =
+                String.format(
+                        "%s expected:%s actual:%s",
+                        testMessage, printColor(expected), printColor(actual));
+
+        assertTrue(compareMessage, Math.abs(Color.red(expected) - Color.red(actual)) <= delta);
+        assertTrue(compareMessage, Math.abs(Color.green(expected) - Color.green(actual)) <= delta);
+        assertTrue(compareMessage, Math.abs(Color.blue(expected) - Color.blue(actual)) <= delta);
+        assertTrue(compareMessage, Math.abs(Color.alpha(expected) - Color.alpha(actual)) <= delta);
     }
 
     private String printColor(@ColorInt int color) {

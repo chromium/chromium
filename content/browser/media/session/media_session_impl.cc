@@ -177,6 +177,11 @@ MediaSession* MediaSession::Get(WebContents* web_contents) {
 }
 
 // static
+MediaSession* MediaSession::GetIfExists(WebContents* contents) {
+  return MediaSessionImpl::FromWebContents(contents);
+}
+
+// static
 const base::UnguessableToken& MediaSession::GetSourceId(
     BrowserContext* browser_context) {
   return MediaSessionData::GetOrCreate(browser_context)->source_id();
@@ -231,6 +236,7 @@ MediaSessionImpl* MediaSessionImpl::Get(WebContents* web_contents) {
     CreateForWebContents(web_contents);
     session = FromWebContents(web_contents);
     session->Initialize();
+    static_cast<WebContentsImpl*>(web_contents)->MediaSessionCreated(session);
   }
   return session;
 }
@@ -433,7 +439,7 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
   // also transient, there is also nothing to do. Otherwise, the session needs
   // to request audio focus again.
   if (audio_focus_state_ == State::ACTIVE) {
-    absl::optional<AudioFocusType> current_focus_type =
+    std::optional<AudioFocusType> current_focus_type =
         delegate_->GetCurrentFocusType();
     if (current_focus_type == AudioFocusType::kGain ||
         current_focus_type == required_audio_focus_type) {
@@ -567,7 +573,7 @@ void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
 }
 
 void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
-  absl::optional<media_session::MediaPosition> position;
+  std::optional<media_session::MediaPosition> position;
 
   // If there was a position specified from Blink then we should use that.
   if (routed_service_ && routed_service_->position()) {
@@ -1242,7 +1248,7 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
       MediaSessionUmaHelper::EnterPictureInPictureType::kRegisteredAutomatic);
 }
 
-void MediaSessionImpl::SetAudioSinkId(const absl::optional<std::string>& id) {
+void MediaSessionImpl::SetAudioSinkId(const std::optional<std::string>& id) {
   audio_device_id_for_origin_ = id;
 
   for (const auto& it : normal_players_) {
@@ -1907,9 +1913,9 @@ void MediaSessionImpl::ForAllPlayers(
     callback.Run(player);
 }
 
-absl::optional<media_session::MediaPosition>
+std::optional<media_session::MediaPosition>
 MediaSessionImpl::MaybeGuardDurationUpdate(
-    absl::optional<media_session::MediaPosition> position) {
+    std::optional<media_session::MediaPosition> position) {
   if (!position) {
     // |position| should never go back to unset state once it's
     // set. Therefore it's safe to return it here when it's unset.

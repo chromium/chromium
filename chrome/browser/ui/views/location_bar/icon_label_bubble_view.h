@@ -63,8 +63,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // A view that draws the separator.
   class SeparatorView : public views::View {
+    METADATA_HEADER(SeparatorView, views::View)
+
    public:
-    METADATA_HEADER(SeparatorView);
     explicit SeparatorView(IconLabelBubbleView* owner);
     SeparatorView(const SeparatorView&) = delete;
     SeparatorView& operator=(const SeparatorView&) = delete;

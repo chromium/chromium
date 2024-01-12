@@ -69,7 +69,7 @@ namespace {
 class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
  public:
   explicit TestNavigationLoaderInterceptor(
-      absl::optional<network::ResourceRequest>* most_recent_resource_request)
+      std::optional<network::ResourceRequest>* most_recent_resource_request)
       : most_recent_resource_request_(most_recent_resource_request) {
     net::URLRequestContextBuilder url_request_context_builder;
     url_request_context_builder.set_proxy_resolution_service(
@@ -93,6 +93,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   ~TestNavigationLoaderInterceptor() override {
     url_loader_ = nullptr;
     resource_scheduler_client_ = nullptr;
+    url_loader_context_.Detach();
   }
 
   void MaybeCreateLoader(const network::ResourceRequest& resource_request,
@@ -149,7 +150,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
     url_loader_.reset();
   }
 
-  raw_ptr<absl::optional<network::ResourceRequest>>
+  raw_ptr<std::optional<network::ResourceRequest>>
       most_recent_resource_request_;  // NOT OWNED.
   network::ResourceScheduler resource_scheduler_;
   network::URLLoaderContextForTests url_loader_context_;
@@ -225,8 +226,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
 
     blink::mojom::BeginNavigationParamsPtr begin_params =
         blink::mojom::BeginNavigationParams::New(
-            absl::nullopt /* initiator_frame_token */, headers,
-            net::LOAD_NORMAL, false /* skip_service_worker */,
+            std::nullopt /* initiator_frame_token */, headers, net::LOAD_NORMAL,
+            false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,
             blink::mojom::MixedContentContextType::kBlockable,
             false /* is_form_submission */,
@@ -235,8 +236,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             GURL() /* searchable_form_url */,
             std::string() /* searchable_form_encoding */,
             GURL() /* client_side_redirect_url */,
-            absl::nullopt /* devtools_initiator_info */,
-            nullptr /* trust_token_params */, absl::nullopt /* impression */,
+            std::nullopt /* devtools_initiator_info */,
+            nullptr /* trust_token_params */, std::nullopt /* impression */,
             base::TimeTicks() /* renderer_before_unload_start */,
             base::TimeTicks() /* renderer_before_unload_end */,
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
@@ -276,17 +277,17 @@ class NavigationURLLoaderImplTest : public testing::Test {
             base::UnguessableToken::Create() /* devtools_frame_token */,
             net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
-            absl::nullopt /* devtools_accepted_stream_types */,
+            std::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-            absl::nullopt /* initiator_document_token */,
+            std::nullopt /* initiator_document_token */,
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
             false /* shared_storage_writable */,
             is_ad_tagged /* is_ad_tagged */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
-    most_recent_resource_request_ = absl::nullopt;
+    most_recent_resource_request_ = std::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(
         &most_recent_resource_request_));
 
@@ -379,7 +380,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
       network_change_notifier_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   net::EmbeddedTestServer http_test_server_;
-  absl::optional<network::ResourceRequest> most_recent_resource_request_;
+  std::optional<network::ResourceRequest> most_recent_resource_request_;
   std::unique_ptr<RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<TestWebContents> web_contents_;
   // NavigationURLLoaderImpl relies on the existence of the

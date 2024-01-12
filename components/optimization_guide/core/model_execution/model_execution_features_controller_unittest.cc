@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
@@ -39,8 +40,22 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   }
 
   void EnableSignIn() {
-    identity_test_env()->MakePrimaryAccountAvailable(
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
         "test_email", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    signin::UpdateAccountInfoForAccount(identity_test_env_.identity_manager(),
+                                        account_info);
+    RunUntilIdle();
+  }
+
+  void EnableSignInWithoutCapability() {
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        "test_email", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(false);
+    signin::UpdateAccountInfoForAccount(identity_test_env_.identity_manager(),
+                                        account_info);
     RunUntilIdle();
   }
 
@@ -139,6 +154,37 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       FeatureSettingDisabledWhenCapabilityDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility}, {});
+  CreateModelExecutionFeaturesController();
+  EnableSignInWithoutCapability();
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       FeatureSettingAllowedWhenCapabilityCheckDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility,
+       features::internal::kModelExecutionCapabilityDisable},
+      {});
+  CreateModelExecutionFeaturesController();
+  EnableSignInWithoutCapability();
+
+  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 }
 
 }  // namespace optimization_guide

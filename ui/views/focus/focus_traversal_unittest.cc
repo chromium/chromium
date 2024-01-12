@@ -165,12 +165,11 @@ class BorderView : public NativeViewHost {
 
     if (details.child == this && details.is_add) {
       if (!widget_) {
-        auto widget = std::make_unique<Widget>();
-        widget_ = widget.get();
+        widget_ = std::make_unique<Widget>();
         Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
+        params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
         params.parent = details.parent->GetWidget()->GetNativeView();
         widget_->Init(std::move(params));
-        widget.release();  // Widget now owned by widget hierarchy.
         widget_->SetFocusTraversableParentView(this);
         widget_->SetContentsView(std::move(child_));
       }
@@ -185,7 +184,7 @@ class BorderView : public NativeViewHost {
 
  private:
   std::unique_ptr<View> child_;
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
 };
 
 BEGIN_METADATA(BorderView)
@@ -200,6 +199,14 @@ class FocusTraversalTest : public FocusManagerTest {
   ~FocusTraversalTest() override;
 
   void InitContentView() override;
+
+  void TearDown() override {
+    style_tab_ = nullptr;
+    search_border_view_ = nullptr;
+    left_container_ = nullptr;
+    right_container_ = nullptr;
+    FocusManagerTest::TearDown();
+  }
 
  protected:
   FocusTraversalTest();
@@ -243,12 +250,11 @@ class FocusTraversalTest : public FocusManagerTest {
     ReverseChildrenFocusOrderImpl(parent);
   }
 
-  raw_ptr<TabbedPane, AcrossTasksDanglingUntriaged> style_tab_ = nullptr;
-  raw_ptr<BorderView, AcrossTasksDanglingUntriaged> search_border_view_ =
-      nullptr;
+  raw_ptr<TabbedPane> style_tab_ = nullptr;
+  raw_ptr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
-  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> left_container_;
-  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> right_container_;
+  raw_ptr<PaneView> left_container_ = nullptr;
+  raw_ptr<PaneView> right_container_ = nullptr;
 
  private:
   // Implementation of `ReverseChildrenFocusOrder`. |seen_views| should not be

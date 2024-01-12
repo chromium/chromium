@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -29,7 +30,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -46,7 +46,7 @@ const char kTestOrigin[] = "http://www.test.com";
 
 // Helper functions to manipulate RenderFrameHosts.
 
-void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {
+void SimulateNavigation(raw_ptr<RenderFrameHost>* rfh, const GURL& url) {
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(url, *rfh);
   navigation_simulator->Commit();
@@ -174,9 +174,7 @@ class CdmStorageTest
     return cdm_storage_manager;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RenderFrameHost* rfh_ = nullptr;
+  raw_ptr<RenderFrameHost> rfh_ = nullptr;
   mojo::Remote<CdmStorage> cdm_storage_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -367,7 +365,7 @@ TEST_P(CdmStorageTest, VerifyMigrationWorks) {
   // the CdmStorageDatabase. Else, we should check that CdmStorageManager is a
   // nullptr since it would not have been created.
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>> read_future;
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>> read_future;
     cdm_storage_manager()->ReadFile(
         blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
         kTestCdmType, kFileName, read_future.GetCallback());
@@ -386,7 +384,7 @@ TEST_P(CdmStorageTest, VerifyMigrationWorks) {
   EXPECT_THAT(data_read, testing::IsEmpty());
 
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>>
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>>
         read_empty_file_future;
     cdm_storage_manager()->ReadFile(
         blink::StorageKey::CreateFromStringForTesting(kTestOrigin),

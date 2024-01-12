@@ -26,8 +26,8 @@ class SharesheetExpandButton : public views::Button {
   void SetToExpandedState();
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 }  // namespace sharesheet

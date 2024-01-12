@@ -6,11 +6,11 @@
 #define GOOGLE_APIS_GAIA_GAIA_AUTH_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class GURL;
@@ -38,34 +38,34 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) ListedAccount {
 // If |email_address| is not a valid, returns it in lower case without
 // additional canonicalization.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string CanonicalizeEmail(base::StringPiece email_address);
+std::string CanonicalizeEmail(std::string_view email_address);
 
 // Returns the canonical form of the given domain.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string CanonicalizeDomain(base::StringPiece domain);
+std::string CanonicalizeDomain(std::string_view domain);
 
 // Sanitize emails. Currently, it only ensures all emails have a domain by
 // adding gmail.com if no domain is present.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string SanitizeEmail(base::StringPiece email_address);
+std::string SanitizeEmail(std::string_view email_address);
 
 // Returns true if the two specified email addresses are the same.  Both
 // addresses are first sanitized and then canonicalized before comparing.
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool AreEmailsSame(base::StringPiece email1, base::StringPiece email2);
+bool AreEmailsSame(std::string_view email1, std::string_view email2);
 
 // Extract the domain part from the canonical form of the given email.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string ExtractDomainName(base::StringPiece email);
+std::string ExtractDomainName(std::string_view email);
 
 // Returns whether the user's email is Google internal. This check is meant
 // to be used sparingly since it ship Googler-only code to all users.
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool IsGoogleInternalAccountEmail(base::StringPiece email);
+bool IsGoogleInternalAccountEmail(std::string_view email);
 
 // Returns true if |email| correspnds to the email of a robot account.
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool IsGoogleRobotAccountEmail(base::StringPiece email);
+bool IsGoogleRobotAccountEmail(std::string_view email);
 
 // Mechanically compares the scheme, host, and port of the |url| against the
 // GAIA url in GaiaUrls. This means that this function will *not* work for
@@ -80,7 +80,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasGaiaSchemeHostPort(const GURL& url);
 // If either |accounts| or |signed_out_accounts| is null, the corresponding
 // accounts returned from /ListAccounts will be ignored.
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool ParseListAccountsData(base::StringPiece data,
+bool ParseListAccountsData(std::string_view data,
                            std::vector<ListedAccount>* accounts,
                            std::vector<ListedAccount>* signed_out_accounts);
 
@@ -90,7 +90,7 @@ bool ParseListAccountsData(base::StringPiece data,
 // Returns false if the method failed to decode the protobuf.
 // |approved| and |gaia_id| must not be null.
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool ParseOAuth2MintTokenConsentResult(base::StringPiece consent_result,
+bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
                                        bool* approved,
                                        std::string* gaia_id);
 

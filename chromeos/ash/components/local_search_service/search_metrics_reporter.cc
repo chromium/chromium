@@ -76,7 +76,7 @@ class SearchMetricsReporter::DailyEventObserver
   }
 
  private:
-  raw_ptr<SearchMetricsReporter, ExperimentalAsh> reporter_;  // Not owned.
+  raw_ptr<SearchMetricsReporter> reporter_;  // Not owned.
 };
 
 // static:

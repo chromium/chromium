@@ -55,7 +55,7 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
                             const std::u16string& device_identifier,
                             PairPromptCallback callback,
                             PairingKind pairing_kind,
-                            const absl::optional<std::u16string>& pin) override;
+                            const std::optional<std::u16string>& pin) override;
 
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,

@@ -6,11 +6,8 @@
 
 #include <optional>
 
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
@@ -33,30 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
-
-namespace {
-
-policy::EnrollmentConfig GetZeroTouchEnrollmentConfig() {
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED;
-  config.auth_mechanism = policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
-  return config;
-}
-
-policy::EnrollmentConfig GetZeroTouchEnrollmentConfigForFallback() {
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
-  config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-  return config;
-}
-
-void ConfigureZeroTouchEnrollment() {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-}
-
-}  // namespace
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -90,8 +63,6 @@ class EnrollmentScreenUnitTest : public testing::Test {
   void FastForwardTime(base::TimeDelta time) {
     task_environment_.FastForwardBy(time);
   }
-
-  MockEnrollmentScreenView* GetMockScreenView() { return &mock_view_; }
 
   // testing::Test:
   void SetUp() override {
@@ -195,14 +166,6 @@ class EnrollmentScreenUnitTest : public testing::Test {
     enrollment_screen_->Show(&wizard_context_);
   }
 
-  void ScheduleUserRetry(base::TimeDelta delay) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&EnrollmentScreen::OnRetry,
-                       enrollment_screen_->weak_ptr_factory_.GetWeakPtr()),
-        delay);
-  }
-
   int GetEnrollmentScreenRetries() { return enrollment_screen_->num_retries_; }
 
   void TestEnrollmentFlowShouldComplete(
@@ -222,45 +185,6 @@ class EnrollmentScreenUnitTest : public testing::Test {
     // additional user input required.
     ASSERT_TRUE(last_screen_result_.has_value());
     EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, last_screen_result_.value());
-  }
-
-  void TestEnrollmentFlowRetriesOnFailure(
-      const policy::EnrollmentConfig& config) {
-    // Define behavior of MockEnrollmentLauncher to always fail enrollment.
-    SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::DMSERVER_ERROR);
-
-    ScopedEnrollmentLauncherFactoryOverrideForTesting
-        enrollment_launcher_factory_override(base::BindRepeating(
-            FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
-
-    SetUpEnrollmentScreen(config);
-
-    ShowEnrollmentScreen(/*suppress_jitter=*/true);
-
-    // Fast forward time by 1 minute.
-    FastForwardTime(base::Minutes(1));
-
-    // Check that we have retried 4 times.
-    EXPECT_EQ(GetEnrollmentScreenRetries(), 4);
-  }
-
-  void TestEnrollmentFlowShouldUseFallback(
-      const policy::EnrollmentConfig& config) {
-    // Define behavior of MockEnrollmentLauncher to fail attestation-based
-    // enrollment.
-    SetupMockEnrollmentLauncher(
-        AttestationEnrollmentStatus::DEVICE_NOT_SETUP_FOR_ZERO_TOUCH);
-    ScopedEnrollmentLauncherFactoryOverrideForTesting
-        enrollment_launcher_factory_override(base::BindRepeating(
-            FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
-
-    SetUpEnrollmentScreen(config);
-
-    // Once we fallback we show a sign in screen for manual enrollment.
-    EXPECT_CALL(*GetMockScreenView(), Show()).Times(2);
-
-    // Start enrollment.
-    ShowEnrollmentScreen();
   }
 
  private:
@@ -336,120 +260,5 @@ TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldNotRetryEnrollment) {
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
 }
-
-TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldFinishEnrollmentScreen) {
-  ConfigureZeroTouchEnrollment();
-
-  TestEnrollmentFlowShouldComplete(GetZeroTouchEnrollmentConfig());
-}
-
-TEST_F(EnrollmentScreenUnitTest,
-       ZeroTouchFlowShouldFallbackToManualEnrollment) {
-  ConfigureZeroTouchEnrollment();
-
-  TestEnrollmentFlowShouldUseFallback(
-      GetZeroTouchEnrollmentConfigForFallback());
-}
-
-TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldRetryEnrollment) {
-  ConfigureZeroTouchEnrollment();
-
-  TestEnrollmentFlowRetriesOnFailure(GetZeroTouchEnrollmentConfig());
-}
-
-TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldNotRetryOnTopOfUser) {
-  ConfigureZeroTouchEnrollment();
-
-  // Define behavior of MockEnrollmentLauncher to always fail enrollment.
-  SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::DMSERVER_ERROR);
-  ScopedEnrollmentLauncherFactoryOverrideForTesting
-      enrollment_launcher_factory_override(base::BindRepeating(
-          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
-
-  SetUpEnrollmentScreen(GetZeroTouchEnrollmentConfig());
-
-  // Start zero-touch enrollment.
-  ShowEnrollmentScreen(/*suppress_jitter=*/true);
-
-  // Schedule user retry button click after 30 sec.
-  ScheduleUserRetry(base::Seconds(30));
-
-  // Fast forward time by 1 minute.
-  FastForwardTime(base::Minutes(1));
-
-  // Check that the number of retries is still 4.
-  EXPECT_EQ(GetEnrollmentScreenRetries(), 4);
-}
-
-TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldNotRetryAfterSuccess) {
-  ConfigureZeroTouchEnrollment();
-
-  // Define behavior of MockEnrollmentLauncher to successfully enroll.
-  SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::SUCCESS);
-  ScopedEnrollmentLauncherFactoryOverrideForTesting
-      enrollment_launcher_factory_override(base::BindRepeating(
-          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
-
-  SetUpEnrollmentScreen(GetZeroTouchEnrollmentConfig());
-
-  // Start zero-touch enrollment.
-  ShowEnrollmentScreen();
-
-  // Fast forward time by 1 minute.
-  FastForwardTime(base::Minutes(1));
-
-  // Check that we do not retry.
-  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
-}
-
-class AutomaticEnrollmentScreenUnitTest
-    : public EnrollmentScreenUnitTest,
-      public ::testing::WithParamInterface<policy::EnrollmentConfig::Mode> {
- public:
-  AutomaticEnrollmentScreenUnitTest() = default;
-
-  AutomaticEnrollmentScreenUnitTest(const AutomaticEnrollmentScreenUnitTest&) =
-      delete;
-  AutomaticEnrollmentScreenUnitTest& operator=(
-      const AutomaticEnrollmentScreenUnitTest&) = delete;
-
-  void SetUp() override {
-    EnrollmentScreenUnitTest::SetUp();
-
-    // Configure the browser to use Hands-Off Enrollment. This is required here
-    // to test for proper completion of the enrollment process.
-    ConfigureZeroTouchEnrollment();
-  }
-
-  policy::EnrollmentConfig GetEnrollmentConfig() {
-    policy::EnrollmentConfig config;
-    config.mode = GetParam();
-    config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-    return config;
-  }
-};
-
-TEST_P(AutomaticEnrollmentScreenUnitTest, ShowErrorPanel) {
-  // We use Zero-Touch's test for retries as a way to know that there was
-  // an error pane with a Retry button displayed to the user when we encounter
-  // a DMServer error that is not that the device isn't setup for Auto RE.
-  TestEnrollmentFlowRetriesOnFailure(GetEnrollmentConfig());
-}
-
-TEST_P(AutomaticEnrollmentScreenUnitTest, FinishEnrollmentFlow) {
-  TestEnrollmentFlowShouldComplete(GetEnrollmentConfig());
-}
-
-TEST_P(AutomaticEnrollmentScreenUnitTest, Fallback) {
-  TestEnrollmentFlowShouldUseFallback(GetEnrollmentConfig());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    P,
-    AutomaticEnrollmentScreenUnitTest,
-    ::testing::Values(
-        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
-        policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED));
 
 }  // namespace ash

@@ -12,4 +12,9 @@ MockKeyboardReplacingSurfaceVisibilityController::
 MockKeyboardReplacingSurfaceVisibilityController::
     ~MockKeyboardReplacingSurfaceVisibilityController() = default;
 
+base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
+MockKeyboardReplacingSurfaceVisibilityController::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace password_manager

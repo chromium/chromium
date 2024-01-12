@@ -86,7 +86,6 @@ void TabletModeMultitaskMenuController::ShowMultitaskMenu(
 }
 
 void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
-  multitask_cue_controller_->ResetPosition();
   multitask_menu_.reset();
 }
 
@@ -94,7 +93,7 @@ void TabletModeMultitaskMenuController::OnTouchEvent(ui::TouchEvent* event) {
   if (is_drag_active_) {
     if (!reserved_for_gesture_sent_) {
       reserved_for_gesture_sent_ = true;
-      event->set_flags(event->flags() | ui::EF_RESERVED_FOR_GESTURE);
+      event->SetFlags(event->flags() | ui::EF_RESERVED_FOR_GESTURE);
       return;
     }
     event->StopPropagation();

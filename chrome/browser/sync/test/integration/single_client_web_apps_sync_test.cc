@@ -7,7 +7,6 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -88,23 +87,12 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
       const std::string& app_id,
       const GURL& url,
       absl::optional<std::string> relative_manifest_id = absl::nullopt) {
-    WebApp app(app_id);
-    app.SetName(app_id);
-    app.SetStartUrl(url);
-    app.SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-
-    WebApp::SyncFallbackData sync_fallback_data;
-    sync_fallback_data.name = app_id;
-    app.SetSyncFallbackData(std::move(sync_fallback_data));
-
     sync_pb::EntitySpecifics entity_specifics;
-
-    *(entity_specifics.mutable_web_app()) = WebAppToSyncProto(app);
+    entity_specifics.mutable_web_app()->set_name(app_id);
+    entity_specifics.mutable_web_app()->set_start_url(url.spec());
     if (relative_manifest_id) {
       entity_specifics.mutable_web_app()->set_relative_manifest_id(
           relative_manifest_id.value());
-    } else {
-      entity_specifics.mutable_web_app()->clear_relative_manifest_id();
     }
 
     fake_server_->InjectEntity(
@@ -239,6 +227,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   const std::string expected_app_id = GenerateAppId(
       /*manifest_id=*/absl::nullopt, GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
+  GURL url("https://example.com/start");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/absl::nullopt, url);
+
+  InjectWebAppEntityToFakeServer(app_id, GURL());
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto& web_app_registrar =
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+
+  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       NoDisplayModeMeansStandalone) {
+  GURL url("https://example.com/start");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/absl::nullopt, url);
+
+  InjectWebAppEntityToFakeServer(app_id, url);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto& web_app_registrar =
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+
+  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_EQ(web_app_registrar.GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kStandalone);
 }
 
 }  // namespace

@@ -50,7 +50,7 @@ class ConnectionManagerImpl : public ConnectionManager,
 
   // ConnectionManager:
   ConnectionManager::Status GetStatus() const override;
-  void AttemptNearbyConnection() override;
+  bool AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
@@ -89,10 +89,9 @@ class ConnectionManagerImpl : public ConnectionManager,
   void OnStatusChanged();
   void RecordMetrics();
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<SecureChannelClient, ExperimentalAsh> secure_channel_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<SecureChannelClient> secure_channel_client_;
   std::unique_ptr<ConnectionAttempt> connection_attempt_;
   std::unique_ptr<ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;
@@ -100,7 +99,7 @@ class ConnectionManagerImpl : public ConnectionManager,
   std::unique_ptr<NearbyMetricsRecorder> metrics_recorder_;
   Status last_status_;
   base::Time status_change_timestamp_;
-  raw_ptr<base::Clock, DanglingUntriaged | ExperimentalAsh> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged> clock_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 

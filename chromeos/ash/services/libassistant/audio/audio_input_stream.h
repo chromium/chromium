@@ -49,9 +49,8 @@ class AudioInputStream {
   std::string device_id_;
   bool detect_dead_stream_;
   assistant_client::BufferFormat buffer_format_;
-  const raw_ptr<mojom::PlatformDelegate, ExperimentalAsh> delegate_;
-  const raw_ptr<media::AudioCapturerSource::CaptureCallback, ExperimentalAsh>
-      capture_callback_;
+  const raw_ptr<mojom::PlatformDelegate> delegate_;
+  const raw_ptr<media::AudioCapturerSource::CaptureCallback> capture_callback_;
   scoped_refptr<media::AudioCapturerSource> source_;
 };
 

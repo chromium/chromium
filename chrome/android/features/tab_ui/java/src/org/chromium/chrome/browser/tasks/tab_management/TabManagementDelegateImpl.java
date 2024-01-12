@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Pair;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -20,12 +23,15 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -134,5 +140,66 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabCreatorManager,
                 layoutStateProviderSupplier,
                 snackbarManager);
+    }
+
+    @Override
+    public Pair<TabSwitcher, Pane> createTabSwitcherPane(
+            @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @NonNull OnClickListener newTabButtonOnClickListener,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            boolean isIncognito) {
+        // TODO(crbug/1505772): Consider making this an activity scoped singleton and possibly
+        // hosting it in CTA/HubProvider.
+        TabSwitcherPaneCoordinatorFactory factory =
+                new TabSwitcherPaneCoordinatorFactory(
+                        activity,
+                        lifecycleDispatcher,
+                        profileProviderSupplier,
+                        tabModelSelector,
+                        tabContentManager,
+                        tabCreatorManager,
+                        browserControlsStateProvider,
+                        multiWindowModeStateDispatcher,
+                        rootUiScrimCoordinator,
+                        snackbarManager,
+                        modalDialogManager);
+        TabSwitcherPaneBase pane;
+        if (isIncognito) {
+            Supplier<TabModelFilter> incongitorTabModelFilterSupplier =
+                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(true);
+            pane =
+                    new IncognitoTabSwitcherPane(
+                            activity,
+                            factory,
+                            incongitorTabModelFilterSupplier,
+                            newTabButtonOnClickListener,
+                            menuOrKeyboardActionController,
+                            incognitoReauthControllerSupplier);
+        } else {
+            Supplier<TabModelFilter> tabModelFilterSupplier =
+                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+            pane =
+                    new TabSwitcherPane(
+                            activity,
+                            ContextUtils.getAppSharedPreferences(),
+                            profileProviderSupplier,
+                            factory,
+                            tabModelFilterSupplier,
+                            newTabButtonOnClickListener,
+                            menuOrKeyboardActionController,
+                            new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector));
+        }
+        return Pair.create(new TabSwitcherPaneAdapter(pane), pane);
     }
 }

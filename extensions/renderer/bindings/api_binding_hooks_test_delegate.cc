@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_hooks_test_delegate.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace extensions {
 
@@ -22,7 +22,7 @@ bool APIBindingHooksTestDelegate::CreateCustomEvent(
   return false;
 }
 
-void APIBindingHooksTestDelegate::AddHandler(base::StringPiece name,
+void APIBindingHooksTestDelegate::AddHandler(std::string_view name,
                                              RequestHandler handler) {
   request_handlers_[std::string(name)] = std::move(handler);
 }

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_UTILITY_PROCESS_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(USE_ZYGOTE)
@@ -116,7 +116,7 @@ class CONTENT_EXPORT UtilityProcessHost
   // Instructs the utility process to run an instance of the named service,
   // bound to |service_pipe|. This is DEPRECATED and should never be used.
   using RunServiceDeprecatedCallback =
-      base::OnceCallback<void(absl::optional<base::ProcessId>)>;
+      base::OnceCallback<void(std::optional<base::ProcessId>)>;
   void RunServiceDeprecated(const std::string& service_name,
                             mojo::ScopedMessagePipeHandle service_pipe,
                             RunServiceDeprecatedCallback callback);
@@ -165,7 +165,7 @@ class CONTENT_EXPORT UtilityProcessHost
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
   void OnProcessCrashed(int exit_code) override;
-  absl::optional<std::string> GetServiceName() override;
+  std::optional<std::string> GetServiceName() override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
   // Launch the child process with switches that will setup this sandbox type.
@@ -206,7 +206,7 @@ class CONTENT_EXPORT UtilityProcessHost
   std::unique_ptr<ChildProcessLauncherFileData> file_data_;
 
 #if BUILDFLAG(USE_ZYGOTE)
-  absl::optional<raw_ptr<ZygoteCommunication>> zygote_for_testing_;
+  std::optional<raw_ptr<ZygoteCommunication>> zygote_for_testing_;
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
   // Indicates whether the process has been successfully launched yet, or if

@@ -129,9 +129,9 @@ void BubbleView::AddedToWidget() {
   AddChildView(std::make_unique<ReturnToAppPanel>(*media_apps_));
 
   const bool has_toggle_effects =
-      controller_->effects_manager().HasToggleEffects();
+      controller_->GetEffectsManager().HasToggleEffects();
   const bool has_set_value_effects =
-      controller_->effects_manager().HasSetValueEffects();
+      controller_->GetEffectsManager().HasSetValueEffects();
 
   if (HasLinuxApps(*media_apps_) &&
       (has_toggle_effects || has_set_value_effects)) {
@@ -175,7 +175,7 @@ void BubbleView::AddedToWidget() {
 
   if (features::IsVcBackgroundReplaceEnabled()) {
     set_camera_background_view_ = scroll_contents_view->AddChildView(
-        std::make_unique<SetCameraBackgroundView>(this));
+        std::make_unique<SetCameraBackgroundView>(this, controller_.get()));
     set_camera_background_view_->SetVisible(
         GetCameraEffectsController()->GetCameraEffects()->replace_enabled);
   }

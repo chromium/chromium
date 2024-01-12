@@ -144,6 +144,9 @@ GURL GetDocumentUrlWithoutAuth(const blink::WebDocument& document);
 // Returns true if |element| is a month input element.
 bool IsMonthInput(const blink::WebInputElement& element);
 
+// Returns true if |element| is a month input element.
+bool IsMonthInput(const blink::WebFormControlElement& element);
+
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
 
@@ -352,8 +355,9 @@ std::optional<FormData> FindFormForContentEditable(
 
 // Fills or previews the fields represented by `fields`.
 // `initiating_element` is the element that initiated the autofill process.
-// Returns the filled elements.
-std::vector<FieldRef> ApplyFormAction(
+// Returns a list of pairs of the filled elements and their autofill state
+// prior to the filling.
+std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
     base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
@@ -366,9 +370,9 @@ std::vector<FieldRef> ApplyFormAction(
 // preview.
 void ClearPreviewedElements(
     mojom::ActionType action_type,
-    std::vector<blink::WebFormControlElement>& previewed_elements,
-    const blink::WebFormControlElement& initiating_element,
-    blink::WebAutofillState old_autofill_state);
+    base::span<std::pair<blink::WebFormControlElement, blink::WebAutofillState>>
+        previewed_elements,
+    const blink::WebFormControlElement& initiating_element);
 
 // Indicates if |node| is owned by |frame| in the sense of
 // https://dom.spec.whatwg.org/#concept-node-document. Note that being owned by

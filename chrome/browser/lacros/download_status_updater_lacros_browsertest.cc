@@ -17,6 +17,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/lacros/browser_test_util.h"
@@ -531,6 +532,15 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
                 ->security_view_for_testing()
                 ->content_id(),
             OfflineItemUtils::GetContentIdForDownload(item));
+
+  std::vector<DownloadItemWarningData::WarningActionEvent> events =
+      DownloadItemWarningData::GetWarningActionEvents(item);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(events[0].surface,
+            DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION);
+  EXPECT_EQ(events[0].action,
+            DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
+  EXPECT_FALSE(events[0].is_terminal_action);
 }
 
 IN_PROC_BROWSER_TEST_F(

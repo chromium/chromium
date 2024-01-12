@@ -108,7 +108,7 @@ const GpuFeatureData GetGpuFeatureData(
       {"canvas_oop_rasterization",
        SafeGetFeatureStatus(gpu_feature_info,
                             gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION),
-       !base::FeatureList::IsEnabled(features::kCanvasOopRasterization) ||
+       !features::IsCanvasOopRasterizationEnabled() ||
            command_line.HasSwitch(switches::kDisableAccelerated2dCanvas),
 #if 0
      // TODO(crbug.com/1240756): Remove the "#if 0" once OOPR-Canvas is fully

@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_BROWSING_DATA_FILTER_BUILDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -16,7 +17,6 @@
 #include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 class GURL;
@@ -108,7 +108,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // exactly will be deleted. Without the key, all storage that matches the
   // other criteria is deleted.
   virtual void SetStorageKey(
-      const absl::optional<blink::StorageKey>& storage_key) = 0;
+      const std::optional<blink::StorageKey>& storage_key) = 0;
 
   // Returns whether the StorageKey is set (e.g. using the method above).
   virtual bool HasStorageKey() const = 0;
@@ -135,8 +135,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   virtual void SetStoragePartitionConfig(
       const StoragePartitionConfig& storage_partition_config) = 0;
 
-  virtual absl::optional<StoragePartitionConfig>
-  GetStoragePartitionConfig() = 0;
+  virtual std::optional<StoragePartitionConfig> GetStoragePartitionConfig() = 0;
 
   // Deprecated: Prefer `BuildStorageKeyFilter()` instead.
   // Builds a filter that matches URLs that are in the list to delete, or aren't

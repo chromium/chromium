@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 #include "components/android_autofill/browser/form_data_android.h"
-#include "components/android_autofill/browser/form_field_data_android.h"
 
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
+#include "components/android_autofill/browser/form_field_data_android.h"
 #include "components/android_autofill/browser/mock_form_data_android_bridge.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -181,6 +183,66 @@ TEST(FormDataAndroidTest, SimilarFormAs_Fields) {
   f = af.form();
   f.fields.front().name += u"x";
   EXPECT_FALSE(af.SimilarFormAs(f));
+}
+
+// Tests that `SimilarFormAsWithDiagnosis` returns the correct reason why two
+// forms are not considered similar.
+TEST(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
+  using SimilarityCheckComponent = FormDataAndroid::SimilarityCheckComponent;
+  using SimilarityCheckResult = FormDataAndroid::SimilarityCheckResult;
+
+  // Returns the bitwise or of the underlying types of the passed enums.
+  auto to_check_result = [](auto... components) {
+    return SimilarityCheckResult((base::to_underlying(components) | ...));
+  };
+
+  FormDataAndroid af(CreateTestForm(), kSampleSessionId);
+  FormData f = CreateTestForm();
+
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            FormDataAndroid::kFormsAreSimilar);
+
+  f = af.form();
+  f.unique_renderer_id = FormRendererId(f.unique_renderer_id.value() + 1);
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kGlobalId));
+
+  f = af.form();
+  f.name = af.form().name + u"x";
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kName));
+
+  f = af.form();
+  f.name_attribute = af.form().name_attribute + u"x";
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kNameAttribute));
+
+  f = af.form();
+  f.id_attribute = af.form().id_attribute + u"x";
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kIdAttribute));
+
+  f = af.form();
+  f.url = GURL("https://other.com");
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kUrl));
+
+  f = af.form();
+  f.action = GURL("https://other.com");
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kAction));
+
+  f = af.form();
+  f.is_form_tag = !f.is_form_tag;
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kIsFormTag));
+
+  f = af.form();
+  f.name_attribute = af.form().name_attribute + u"x";
+  f.id_attribute = af.form().id_attribute + u"x";
+  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
+            to_check_result(SimilarityCheckComponent::kIdAttribute,
+                            SimilarityCheckComponent::kNameAttribute));
 }
 
 TEST(FormDataAndroidTest, GetFieldIndex) {

@@ -434,11 +434,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns the SSLInfo for a request that succeeded or failed due to a
   // certificate error. In the case of other request failures or of a non-secure
   // scheme, returns an empty object.
-  virtual const absl::optional<net::SSLInfo>& GetSSLInfo() = 0;
+  virtual const std::optional<net::SSLInfo>& GetSSLInfo() = 0;
 
   // Returns the AuthChallengeInfo for the request, if the response contained an
   // authentication challenge.
-  virtual const absl::optional<net::AuthChallengeInfo>&
+  virtual const std::optional<net::AuthChallengeInfo>&
   GetAuthChallengeInfo() = 0;
 
   // Returns host resolution error info associated with the request.
@@ -487,14 +487,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns, if available, the impression associated with the link clicked to
   // initiate this navigation. The impression is available for the entire
   // lifetime of the navigation.
-  virtual const absl::optional<blink::Impression>& GetImpression() = 0;
+  virtual const std::optional<blink::Impression>& GetImpression() = 0;
 
   // Returns the frame token associated with the frame that initiated the
   // navigation. This can be nullptr if the navigation was not associated with a
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
   // defined if and only if GetInitiatorProcessId below is.
-  virtual const absl::optional<blink::LocalFrameToken>&
+  virtual const std::optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the
@@ -510,12 +510,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // original navigation, but the history navigation was initiated by
   // javascript, the initiator origin will be null even though
   // IsRendererInitiated() returns true.
-  virtual const absl::optional<url::Origin>& GetInitiatorOrigin() = 0;
+  virtual const std::optional<url::Origin>& GetInitiatorOrigin() = 0;
 
   // Returns, for renderer-initiated about:blank and about:srcdoc navigations,
   // the base url of the document that has initiated the navigation for this
   // NavigationHandle. The same caveats apply here as for GetInitiatorOrigin().
-  virtual const absl::optional<GURL>& GetInitiatorBaseUrl() = 0;
+  virtual const std::optional<GURL>& GetInitiatorBaseUrl() = 0;
 
   // Retrieves any DNS aliases for the requested URL. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for

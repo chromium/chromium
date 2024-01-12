@@ -24,18 +24,20 @@ SeaPenWallpaperManager::~SeaPenWallpaperManager() = default;
 void SeaPenWallpaperManager::DecodeAndSaveSeaPenImage(
     const SeaPenImage& sea_pen_image,
     const base::FilePath& wallpaper_dir,
+    const std::string& query_info,
     DecodeAndSaveSeaPenImageCallback callback) {
   // TODO(b/307591556) also save metadata to a file.
   image_util::DecodeImageData(
       base::BindOnce(base::BindOnce(
           &SeaPenWallpaperManager::SaveSeaPenImage, weak_factory_.GetWeakPtr(),
-          sea_pen_image.id, wallpaper_dir, std::move(callback))),
+          sea_pen_image.id, wallpaper_dir, query_info, std::move(callback))),
       data_decoder::mojom::ImageCodec::kDefault, sea_pen_image.jpg_bytes);
 }
 
 void SeaPenWallpaperManager::SaveSeaPenImage(
     uint32_t sea_pen_image_id,
     const base::FilePath& wallpaper_dir,
+    const std::string& query_info,
     DecodeAndSaveSeaPenImageCallback callback,
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
@@ -49,7 +51,7 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
                                  std::move(callback));
   wallpaper_file_manager_->SaveWallpaperToDisk(
       WallpaperType::kSeaPen, wallpaper_dir, file_name,
-      WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, image_skia,
+      WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, image_skia, query_info,
       std::move(on_saved));
 }
 

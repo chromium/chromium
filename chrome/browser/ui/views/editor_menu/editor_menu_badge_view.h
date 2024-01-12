@@ -12,9 +12,9 @@ namespace chromeos::editor_menu {
 
 // A badge shown in the editor menu to indicate it is an experimental feature.
 class EditorMenuBadgeView : public views::View {
- public:
-  METADATA_HEADER(EditorMenuBadgeView);
+  METADATA_HEADER(EditorMenuBadgeView, views::View)
 
+ public:
   EditorMenuBadgeView();
   EditorMenuBadgeView(const EditorMenuBadgeView&) = delete;
   EditorMenuBadgeView& operator=(const EditorMenuBadgeView&) = delete;

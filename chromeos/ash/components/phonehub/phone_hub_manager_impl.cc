@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/phonehub/notification_processor.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/ash/components/phonehub/phone_hub_metrics_recorder.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_status_processor.h"
@@ -68,6 +69,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     std::unique_ptr<AttestationCertificateGenerator>
         attestation_certificate_generator)
     : icon_decoder_(std::make_unique<IconDecoderImpl>()),
+      phone_hub_structured_metrics_logger_(
+          std::make_unique<PhoneHubStructuredMetricsLogger>()),
       connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -104,7 +107,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           user_action_recorder_.get())),
       connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
           connection_manager_.get(),
-          feature_status_provider_.get())),
+          feature_status_provider_.get(),
+          phone_hub_structured_metrics_logger_.get())),
       find_my_device_controller_(std::make_unique<FindMyDeviceControllerImpl>(
           message_sender_.get(),
           user_action_recorder_.get())),
@@ -314,6 +318,11 @@ eche_app::SystemInfoProvider* PhoneHubManagerImpl::GetSystemInfoProvider() {
   return system_info_provider_;
 }
 
+PhoneHubStructuredMetricsLogger*
+PhoneHubManagerImpl::GetPhoneHubStructuredMetricsLogger() {
+  return phone_hub_structured_metrics_logger_.get();
+}
+
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
@@ -344,6 +353,7 @@ void PhoneHubManagerImpl::Shutdown() {
   user_action_recorder_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
+  phone_hub_structured_metrics_logger_.reset();
 }
 
 }  // namespace phonehub

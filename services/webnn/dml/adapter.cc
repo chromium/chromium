@@ -13,6 +13,7 @@
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/platform_functions.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {

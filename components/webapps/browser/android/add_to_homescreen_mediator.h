@@ -29,6 +29,8 @@ namespace webapps {
 struct ShortcutInfo;
 class AddToHomescreenInstaller;
 
+using AppType = AddToHomescreenParams::AppType;
+
 // AddToHomescreenMediator is the C++ counterpart of
 // org.chromium.components.webapps.addtohomescreen.AddToHomescreenMediator
 // in Java. It uses AddToHomescreenInstaller for installing the current app.
@@ -55,9 +57,9 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
-  void AddToHomescreen(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_user_title);
+  void AddToHomescreen(JNIEnv* env,
+                       const base::android::JavaParamRef<jstring>& j_user_title,
+                       jint j_app_type);
 
   // Called from the Java side when the installation UI is dismissed.
   void OnUiDismissed(JNIEnv* env);

@@ -467,7 +467,7 @@ NewTabPageHandler::NewTabPageHandler(
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
-    const std::vector<std::pair<const std::string, int>> module_id_names)
+    const std::vector<std::pair<const std::string, int>>* module_id_names)
     : ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
@@ -816,7 +816,7 @@ void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
 
 void NewTabPageHandler::GetModulesIdNames(GetModulesIdNamesCallback callback) {
   std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;
-  for (const auto& id_name_pair : module_id_names_) {
+  for (const auto& id_name_pair : *module_id_names_) {
     auto module_id_name = new_tab_page::mojom::ModuleIdName::New();
     module_id_name->id = id_name_pair.first;
     module_id_name->name = l10n_util::GetStringUTF8(id_name_pair.second);
@@ -1510,8 +1510,9 @@ void NewTabPageHandler::MaybeLaunchInteractionSurvey(
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
   CHECK(hats_service);
   hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerNtpModules, web_contents_, delay_time_ms, {}, {}, false,
-      base::DoNothing(), base::DoNothing(), module_trigger_id);
+      kHatsSurveyTriggerNtpModules, web_contents_, delay_time_ms, {}, {},
+      HatsService::NavigationBehaviour::ALLOW_ANY, base::DoNothing(),
+      base::DoNothing(), module_trigger_id);
 }
 
 void NewTabPageHandler::MaybeShowWebstoreToast() {
@@ -1541,7 +1542,10 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   const base::Value::Dict* module_id_trigger_dict =
       interaction_module_id_trigger_dict_.FindDict(interaction);
   if (module_id_trigger_dict) {
-    return *module_id_trigger_dict->FindString(module_id);
+    auto* trigger_id = module_id_trigger_dict->FindString(module_id);
+    if (trigger_id) {
+      return *trigger_id;
+    }
   }
 
   return kNoTriggerId;

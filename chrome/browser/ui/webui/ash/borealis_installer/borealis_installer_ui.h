@@ -68,7 +68,7 @@ class BorealisInstallerUI
   mojo::Receiver<ash::borealis_installer::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
   bool page_closed_;
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
+  raw_ptr<content::WebUI> web_ui_;
   base::WeakPtrFactory<BorealisInstallerUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();

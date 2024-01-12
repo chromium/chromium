@@ -31,6 +31,7 @@ namespace predictors {
 
 class ResourcePrefetchPredictor;
 class LoadingStatsCollector;
+class PrewarmHttpDiskCacheManager;
 
 // Entry point for the Loading predictor.
 // From a high-level request (GURL and motivation) and a database of historical
@@ -122,6 +123,8 @@ class LoadingPredictor : public KeyedService,
       bool allow_credentials,
       const net::NetworkAnonymizationKey& network_anonymization_key);
 
+  void MaybePrewarmResources(const GURL& top_frame_main_resource_url);
+
  private:
   // Stores the information necessary to keep track of the active navigations.
   struct NavigationInfo {
@@ -178,6 +181,7 @@ class LoadingPredictor : public KeyedService,
   std::unique_ptr<LoadingDataCollector> loading_data_collector_;
   std::unique_ptr<PreconnectManager> preconnect_manager_;
   std::unique_ptr<PrefetchManager> prefetch_manager_;
+  std::unique_ptr<PrewarmHttpDiskCacheManager> prewarm_http_disk_cache_manager_;
   std::map<GURL, base::TimeTicks> active_hints_;
   std::map<NavigationId, NavigationInfo> active_navigations_;
   std::map<GURL, std::set<NavigationId>> active_urls_to_navigations_;

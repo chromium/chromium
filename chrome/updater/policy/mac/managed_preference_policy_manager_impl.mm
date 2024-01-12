@@ -11,28 +11,27 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
 
+namespace {
 // Constants for managed preference policy keys.
-static NSString* kGlobalPolicyKey = @"global";
-static NSString* kUpdateDefaultKey = @"UpdateDefault";
-static NSString* kDownloadPreferenceKey = @"DownloadPreference";
-static NSString* kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
-static NSString* kUpdatesSuppressedStartMinuteKey =
-    @"UpdatesSuppressedStartMin";
-static NSString* kUpdatesSuppressedDurationMinuteKey =
-    @"UpdatesSuppressedDurationMin";
-static NSString* kTargetChannelKey = @"TargetChannel";
-static NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
-static NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+NSString* kGlobalPolicyKey = @"global";
+NSString* kUpdateDefaultKey = @"UpdateDefault";
+NSString* kDownloadPreferenceKey = @"DownloadPreference";
+NSString* kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
+NSString* kUpdatesSuppressedStartMinuteKey = @"UpdatesSuppressedStartMin";
+NSString* kUpdatesSuppressedDurationMinuteKey = @"UpdatesSuppressedDurationMin";
+NSString* kTargetChannelKey = @"TargetChannel";
+NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
+NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+}  // namespace
 
 namespace updater {
-
-namespace {
 
 // Extracts an integer value from a NSString or NSNumber. Returns kPolicyNotSet
 // for all unexpected cases.
 int ReadPolicyInteger(id value) {
-  if (!value)
+  if (!value) {
     return kPolicyNotSet;
+  }
 
   NSInteger result = kPolicyNotSet;
   if ([value isKindOfClass:[NSString class]]) {
@@ -79,8 +78,6 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
       return kPolicyNotSet;
   }
 }
-
-}  // namespace
 
 }  // namespace updater
 
@@ -217,8 +214,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
     _appPolicies = [[NSMutableDictionary alloc] init];
     for (NSString* __strong appid in policies.allKeys) {
-      if (![policies[appid] isKindOfClass:[CRUAppPolicyDictionary class]])
+      if (![policies[appid] isKindOfClass:[CRUAppPolicyDictionary class]]) {
         continue;
+      }
 
       CRUAppPolicyDictionary* policyDict = policies[appid];
       appid = appid.lowercaseString;
@@ -271,8 +269,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 - (int)appUpdatePolicy:(NSString*)appid {
   appid = appid.lowercaseString;
-  if (![_appPolicies objectForKey:appid])
+  if (![_appPolicies objectForKey:appid]) {
     return updater::kPolicyNotSet;
+  }
   return [_appPolicies objectForKey:appid].updatePolicy;
 }
 
@@ -288,8 +287,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 - (int)rollbackToTargetVersion:(NSString*)appid {
   appid = appid.lowercaseString;
-  if (![_appPolicies objectForKey:appid])
+  if (![_appPolicies objectForKey:appid]) {
     return updater::kPolicyNotSet;
+  }
   return [_appPolicies objectForKey:appid].rollbackToTargetVersion;
 }
 

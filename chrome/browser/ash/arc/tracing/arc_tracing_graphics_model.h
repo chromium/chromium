@@ -56,13 +56,15 @@ class ArcTracingGraphicsModel {
     kBufferFillJank,                 // 106,
 
     // Wayland exo events
-    kExoSurfaceAttach   = 200,  // Obsolete
-    kExoProduceResource = 201,  // Obsolete
-    kExoBound           = 202,  // Obsolete
-    kExoPendingQuery    = 203,  // Obsolete
-    kExoReleased        = 204,  // Obsolete
-    kExoJank            = 205,
-    kExoSurfaceCommit   = 206,
+    kExoSurfaceAttach     = 200,  // Obsolete
+    kExoProduceResource   = 201,  // Obsolete
+    kExoBound             = 202,  // Obsolete
+    kExoPendingQuery      = 203,  // Obsolete
+    kExoReleased          = 204,  // Obsolete
+    kExoJank              = 205,
+    kExoSurfaceCommit     = 206,
+    kExoSurfaceCommitJank = 207,
+    kExoLastEvent         = kExoSurfaceCommitJank,
 
     // Chrome events
     kChromeBarrierOrder = 300,  // Obsolete
@@ -84,9 +86,12 @@ class ArcTracingGraphicsModel {
     kChromeOSPresentationDone = 503,
     kChromeOSSwapDone         = 504,
     kChromeOSJank             = 505,  // Obsolete
+    kChromeOSPerceivedJank    = 506,
+    kChromeOSSwapJank         = 507,
+    kChromeOSLastEvent        = kChromeOSSwapJank,
 
     // Custom event.
-    kCustomEvent = 600,
+    kCustomEvent = 600,  // Obsolete
 
     // Input events
     kInputEventCreated           = 700,  // Obsolete

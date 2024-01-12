@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_class_properties.h"
 
@@ -19,6 +20,19 @@ TopContainerView::TopContainerView(BrowserView* browser_view)
 }
 
 TopContainerView::~TopContainerView() = default;
+
+void TopContainerView::OnImmersiveRevealUpdated() {
+  SchedulePaint();
+
+  // TODO(crbug.com/1516979): Remove this once the View::SchedulePaint() API has
+  // been updated to correctly invalidate layer-backed child views.
+  for (auto& child : children()) {
+    if (child->layer()) {
+      child->layer()->SchedulePaint(
+          ConvertRectToTarget(this, child, GetLocalBounds()));
+    }
+  }
+}
 
 void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
 // For ChromeOS, we don't need to manually call
@@ -53,5 +67,5 @@ void TopContainerView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(TopContainerView, views::View)
+BEGIN_METADATA(TopContainerView)
 END_METADATA

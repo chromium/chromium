@@ -77,6 +77,10 @@ blink::WebPluginContainer* PdfViewWebPluginClient::PluginContainer() {
   return plugin_container_;
 }
 
+v8::Isolate* PdfViewWebPluginClient::GetIsolate() {
+  return GetFrame()->GetAgentGroupScheduler()->Isolate();
+}
+
 net::SiteForCookies PdfViewWebPluginClient::SiteForCookies() const {
   return plugin_container_->GetDocument().SiteForCookies();
 }

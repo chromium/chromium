@@ -138,7 +138,7 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
         CreatePatternString(rule->primary_pattern, rule->secondary_pattern),
-        GetTagFromDummyContentSetting(rule->value().GetDict()));
+        GetTagFromDummyContentSetting(rule->value.GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_memory,
@@ -205,7 +205,7 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
         CreatePatternString(rule->primary_pattern, rule->secondary_pattern),
-        GetTagFromDummyContentSetting(rule->value().GetDict()));
+        GetTagFromDummyContentSetting(rule->value.GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_memory,

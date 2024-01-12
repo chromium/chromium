@@ -8,11 +8,14 @@
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
-#include "base/logging.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/thread_pool.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wallpaper_handlers {
 
@@ -35,9 +38,10 @@ MockSeaPenFetcher::MockSeaPenFetcher() {
       .WillByDefault(
           [](const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchThumbnailsComplete callback) {
-            base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, base::BindOnce(&MakeFakeImageResults),
-                std::move(callback));
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), MakeFakeImageResults(),
+                               manta::MantaStatusCode::kOk));
           });
 
   ON_CALL(*this, FetchWallpaper)

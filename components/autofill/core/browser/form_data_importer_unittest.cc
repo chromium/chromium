@@ -561,7 +561,6 @@ class FormDataImporterTest : public testing::Test {
     autofill_client_->set_test_form_data_importer(
         std::make_unique<FormDataImporter>(
             autofill_client_.get(),
-            /*payments_network_interface=*/nullptr,
             personal_data_manager_.get(), kLocale));
 
     auto virtual_card_enrollment_manager =

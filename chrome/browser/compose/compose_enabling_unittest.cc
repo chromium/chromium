@@ -39,6 +39,7 @@ using testing::Return;
 namespace {
 constexpr char kEmail[] = "example@gmail.com";
 constexpr char kExampleURL[] = "https://example.com";
+constexpr char kExampleBadURL[] = "chrome://version";
 using translate::testing::MockTranslateClient;
 
 class MockTranslateLanguageProvider : public TranslateLanguageProvider {
@@ -137,6 +138,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     // Note that AddTab makes its own ComposeEnabling as part of
     // ChromeComposeClient. This can cause confusion when debugging tests.
     // Don't confuse the two ComposeEnabling objects when debugging.
+    AddTab(browser(), GURL(kExampleBadURL));
     AddTab(browser(), GURL(kExampleURL));
     context_menu_params_.is_content_editable_for_autofill = true;
     context_menu_params_.frame_origin = GetOrigin();
@@ -167,6 +169,9 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     compose::ResetConfigForTesting();
     BrowserWithTestWindowTest::TearDown();
     MockOptimizationGuideKeyedService::ResetForTesting();
+
+    ComposeEnabling::SetEnabledForTesting(false);
+    ComposeEnabling::SkipUserEnabledCheckForTesting(false);
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
@@ -403,6 +408,18 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
       context_menu_params_));
 }
 
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIncorrectSchemeTest) {
+  // Enable everything.
+  ComposeEnabling::SetEnabledForTesting(true);
+
+  // Get the rfh for the tab with the incorrect Scheme.
+  auto* rfh =
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
+
+  EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
+      GetProfile(), mock_translate_manager_.get(), rfh, context_menu_params_));
+}
+
 TEST_F(ComposeEnablingTest,
        ShouldTriggerContextMenuAllEnabledContentEditableTest) {
   // Enable everything.
@@ -571,6 +588,18 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
         /*has_saved_state=*/false, GetOrigin(), GetOrigin(),
         GURL(kExampleURL)));
   }
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
+  // Enable everything.
+  ComposeEnabling::SetEnabledForTesting(true);
+  std::string autocomplete_attribute;
+  bool has_saved_state = true;
+
+  // Use URL with incorrect scheme.
+  EXPECT_FALSE(compose_enabling_->ShouldTriggerPopup(
+      autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+      has_saved_state, GetOrigin(), url::Origin(), GURL(kExampleBadURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {

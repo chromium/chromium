@@ -19,8 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -32,7 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.KeyUtils;
@@ -40,8 +38,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests system and application interaction with Contextual Search using instrumentation tests. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -110,10 +107,8 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky and disabled in 2018.  See https://crbug.com/832539.
-    public void testContextualSearchDismissedOnForegroundTabCrash(
-            @EnabledFeature int enabledFeature) throws Exception {
+    public void testContextualSearchDismissedOnForegroundTabCrash() throws Exception {
         triggerResolve(SEARCH_NODE);
         Assert.assertEquals(SEARCH_NODE_TERM, getSelectedText());
         waitForPanelToPeek();
@@ -138,11 +133,9 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Revived 6/2022 based on reviver: https://crbug.com/1333277
     // Previously disabled: https://crbug.com/1192285, https://crbug.com/1192561
-    public void testContextualSearchNotDismissedOnBackgroundTabCrash(
-            @EnabledFeature int enabledFeature) throws Exception {
+    public void testContextualSearchNotDismissedOnBackgroundTabCrash() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         final Tab tab2 =
@@ -176,9 +169,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testAppMenuSuppressedWhenExpanded(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testAppMenuSuppressedWhenExpanded() throws Exception {
         triggerPanelPeek();
         expandPanelAndAssert();
 
@@ -197,9 +188,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testAppMenuSuppressedWhenMaximized(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testAppMenuSuppressedWhenMaximized() throws Exception {
         triggerPanelPeek();
         maximizePanel();
         waitForPanelToMaximize();

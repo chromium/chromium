@@ -14,7 +14,7 @@ found in the LICENSE file.
     style="@style/ListMenuItemStyle"
     android:minHeight="?android:attr/listPreferredItemHeightSmall" >
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/menu_item_icon"
         style="@style/ListMenuItemIconStyle.Start"
         android:visibility="gone"
@@ -26,9 +26,10 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:singleLine="false" />
+        android:singleLine="false"
+        android:textAppearance="@style/TextAppearance.ListMenuItem" />
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
         android:id="@+id/menu_item_end_icon"
         style="@style/ListMenuItemIconStyle"
         android:visibility="gone"

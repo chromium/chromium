@@ -141,13 +141,11 @@ class OverlayProposedCandidateTest
 
     TextureDrawQuad* texture_quad =
         render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-    constexpr float kVertexOpacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-
     texture_quad->SetNew(
         quad_state, quad_rect, quad_rect,
         /*needs_blending=*/true, CreateResource(is_overlay_candidate),
         /*premultiplied=*/true, gfx::PointF(), gfx::PointF(),
-        /*background=*/SkColors::kTransparent, kVertexOpacity,
+        /*background=*/SkColors::kTransparent,
         /*flipped=*/false,
         /*nearest=*/false,
         /*secure_output=*/false, gfx::ProtectedVideoType::kClear);

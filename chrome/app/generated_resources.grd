@@ -2245,6 +2245,15 @@ are declared in tools/grit/grit_rule.gni.
         Scan failed. This file might be a virus or malware.
       </message>
 
+      <message name="IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE"
+               desc="On the chrome://downloads page, the text for the toast shown when the user removes a download from the download history. This is for normal files, which remain on the user's device.">
+        Deleted <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> from download history, but it's still on your device
+      </message>
+      <message name="IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY"
+               desc="On the chrome://downloads page, the text for the toast shown when the user removes a download from the download history. This is for blocked or deleted files, which do not remain on the user's device.">
+        Deleted <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> from download history
+      </message>
+
       <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
@@ -2874,18 +2883,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Title for the in-product-help bubble shown for the esb promo download bubble.">
         Improve download protection
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_PROMO"
-               desc="Text for the in-product-help bubble shown for the download bubble.">
-        Manage files as they download, and open them when they're done
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_PROMO_SCREENREADER"
-               desc="Text read by the screenreader when the in-product-help bubble is shown for the download bubble.">
-        Downloads are now in the toolbar
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_PROMO_TITLE"
-               desc="Title for the in-product-help bubble shown for the download bubble.">
-        Find your downloads here
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR"
                desc="The download status and message are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
         <ph name="STATUS">$1<ex>100/120 MB</ex></ph> • <ph name="MESSAGE">$2<ex>Opening in 10 seconds...</ex></ph>
@@ -3399,6 +3396,11 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_LOCAL_DECRYPTING"
                desc="Status text for a download item that is being checked for malware.">
         Checking for malware...
+      </message>
+
+      <!-- Web App Window Title string -->
+      <message name="IDS_WEB_APP_WITH_APP_TITLE" desc="Title of the web app window with app_title.">
+        <ph name="APP_NAME">$1<ex>Sample App</ex></ph> - <ph name="APP_TITLE">$2<ex>News</ex></ph>
       </message>
 
       <!-- Desktop omnibox PWA install icon -->
@@ -6398,7 +6400,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Extensions allowed on this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP" desc="Tooltip text for the site setting toggle button when is off.'">
-        Extensions not allowed on this site
+        Extensions are not allowed on this site
       </message>
        <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button.">
         Allow extensions on this site
@@ -6413,7 +6415,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         No extensions need access to this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT" desc="Text of the message section when the user blocked access to this site to all extensions.">
-        Extensions are blocked on this site
+        Extensions are not allowed on this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT" desc="Text of the info tooltip icon in the message section when the user blocked access to this site to all extensions but extensions installed by admin still have access.">
         Extensions installed by your administrator can still read and change sites
@@ -6524,12 +6526,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- Settings API bubble -->
       <message name="IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their home page setting">
         Is this the home page you were expecting?
-      </message>
-      <message name="IDS_EXTENSIONS_NTP_CONTROLLED_TITLE_HOME_PAGE_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their new tab page setting">
-        Is this the new tab page you were expecting?
-      </message>
-      <message name="IDS_EXTENSIONS_PROXY_CONTROLLED_TITLE_HOME_PAGE_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their proxy setting">
-        Your Internet connection is being controlled
       </message>
 
       <message name="IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE_SPECIFIC" desc="Text displayed in the Settings API bubble as first line when an extension has changed the home page, and we are pointing to its icon.">
@@ -7248,6 +7244,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ABOUT_SYS_PARSE_ERROR" desc="error message displayed if parsing of custom uploaded log fails">
           Unable to parse file: <ph name="FILE_NAME">$1<ex>Log.txt</ex></ph>
         </message>
+
+        <if expr="chromeos_ash">
+          <message name="IDS_ABOUT_SYS_OS_LINK_CONTAINER" desc="Text and link on the Ash side os://system page which directs a user to the Lacros side system page">
+          Looking for browser system page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="osLinkHref" class="os-link-href"&gt;</ph><ph name="CHROME_ABOUT_SYS_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+          </message>
+        </if>
+        <if expr="chromeos_lacros">
+          <message name="IDS_ABOUT_SYS_OS_LINK_CONTAINER" desc="Text and link on the Lacros side chrome://system page which directs a user to the Ash side system page">
+          Looking for OS system page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="osLinkHref" class="os-link-href"&gt;</ph><ph name="CHROME_ABOUT_SYS_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+          </message>
+        </if>
       </if>
 
       <!-- chrome://browser-switch strings -->
@@ -7731,6 +7738,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE" desc="The label for the hue slider in the customization menu on the New Tab Page that allows a user to pick a color for their theme">
         Color picker
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_TITLE" desc="The tooltip for the delete button in the hue slider that unselects the currently selected hue.">
+        Unselect
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_A11Y_LABEL" desc="The accessibility label for the delete button in the hue slider that unselects the currently selected hue.">
+        Unselect color
+      </message>
       <message name="IDS_NTP_THEME_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that their theme is managed when they try selecting a theme on the New Tab Page.">
         Theme is set by your Organization
       </message>
@@ -7887,9 +7900,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" desc="Header for the wallpaper search section for showing past themes." >
         Your recent AI themes
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE" desc="Title for each tile button in the wallpaper search section for showing past themes.">
-        Recent AI theme <ph name="TILE_INDEX">$1<ex>2</ex></ph>
-      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION" desc="The description of the message displayed by wallpaper search when the browser is offline.">
         Check your internet and try again.
       </message>
@@ -7929,26 +7939,50 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA" desc="Call to action displayed when wallpaper search fails that asks user to try again.">
         Try again
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_NO_DESCRIPTOR" desc="Accessibility label for a wallpaper search history result, with only the index.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph>
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL" desc="Accessibility label for a wallpaper search history result, with only descriptor A.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_B" desc="Accessibility label for a wallpaper search history result, with descriptors A and B.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_C" desc="Accessibility label for a wallpaper search history result, with descriptors A and C.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, with <ph name="MOOD">$3</ph> mood.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search history result, with descriptors A, B, and C.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style, with <ph name="MOOD">$4</ph> mood.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL" desc="Accessibility label for a wallpaper search result, with only descriptor A.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B" desc="Accessibility label for a wallpaper search result, with descriptors A and B.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, in <ph name="B">$3</ph> style
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_C" desc="Accessibility label for a wallpaper search result, with descriptors A and C.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, with <ph name="C">$3</ph> mood.
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, with <ph name="MOOD">$3</ph> mood.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search result, with descriptors A, B, and C.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, in <ph name="B">$3</ph> style, with <ph name="C">$4</ph> mood.
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style, with <ph name="MOOD">$4</ph> mood.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL" desc="Label for the Create theme with AI dropdown for selecting subject of the image.">
         Subject
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected subject. Also serves as a heading and label for the whole dropdown.">
+        Choose a subject
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_LABEL" desc="Label for the Create theme with AI dropdown for selecting mood of the image.">
         Mood
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected mood. Also serves as a heading and label for the whole dropdown.">
+        Choose a mood
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_LABEL" desc="Label for the Create theme with AI dropdown for selecting style of the image.">
         Style
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected style. Also serves as a heading and label for the whole dropdown.">
+        Choose a style
       </message>
       <message name="IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about creating themes with AI.">
         Learn more about creating themes with AI.
@@ -7961,6 +7995,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER"  desc="Header for the wallpaper search section for showing example results.">
         Inspiration
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_LOADING_A11Y_MESSAGE"  desc="Accessibility string read to screen reader users that images are being created.">
+        Generating...
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUCCESS_A11Y_MESSAGE"  desc="Accessibility string read to screen reader users that images are being created.">
+        Generated <ph name="COUNT">$1<ex>2</ex></ph> images
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_DISCLAIMER" desc="Disclaimer text used for the Create theme with AI feature.">
+        This is an experimental AI feature and won't always get it right.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MEADOW_INSPIRATION_TITLE"  desc="Title for the wallpaper search's Meadow inspiration.">
+        Meadow, Oil Painting, Intellectual, Yellow
       </message>
 
       <!-- NTP Modules -->
@@ -9133,6 +9179,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_IPH_SCREENREADER" desc="The screen reader text of the IPH describing how to interact with a tab group resulting from tab organization." is_accessibility_with_no_ui="true">
         Select the tab group and activate the context menu to edit
+      </message>
+
+      <!-- Strings for experimental AI promo -->
+      <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO" desc="The title text of the IPH promo for experimental AI." translateable="false">
+        Try out experimental AI features
+      </message>
+      <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO_BODY" desc="The body text of the IPH promo for experimental AI." translateable="false">
+        Get help organizing tabs and creating custom themes
+      </message>
+      <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO_BUTTON_CONTINUE" desc="The text of the continue button for the experimental AI IPH promo." translateable="false">
+        Continue
       </message>
 
       <!-- Strings for intent picker -->
@@ -10686,6 +10743,21 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED" desc="The label for the button in the not started state of the tab organization UI, when sync is paused">
         Sign in
       </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when synced" is_accessibility_with_no_ui="true">
+        Check now if tabs can be organized
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE_ARIA_LABEL" desc="The first run experience a11y label for the button in the not started state of the tab organization UI, when synced" is_accessibility_with_no_ui="true">
+        Let's go and organize your tabs
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when not signed in or signed in but unsynced" is_accessibility_with_no_ui="true">
+        Turn on sync to let Chrome suggest tab groups
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when history sync is disabled" is_accessibility_with_no_ui="true">
+        Open settings to let Chrome suggest tab groups
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when sync is paused" is_accessibility_with_no_ui="true">
+        Sign in to let Chrome suggest tab groups
+      </message>
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI">
         Organizing into a tab group…
       </message>
@@ -10705,7 +10777,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         refresh now
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_POST_LINK" desc="The post-link body text for the generic failure state in the tab organization UI. This should form a sentence when preceded by IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_LINK.">
-        or try again later.
+        or try again later
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK" desc="The pre-link body text for the grouping failure state in the tab organization UI. This should form a sentence when followed by IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK.">
         You can
@@ -10714,7 +10786,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
          refresh now
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK" desc="The post-link body text for the grouping failure state in the tab organization UI. This should form a sentence when preceded by IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_LINK.">
-         or try again later after you open new similar tabs.
+         or try again later after you open new similar tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_TITLE" desc="The bolded text at the start of the tip in the tab organization UI">
         Tip:
@@ -10725,7 +10797,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_TIP_ACTION" desc="The actionable text of the tip in the tab organization UI">
         Show me how
       </message>
-      <message name="IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION" desc="The a11y description of the tip in the tab organization UI" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION" desc="The a11y label of the tip in the tab organization UI" is_accessibility_with_no_ui="true">
         Launch tab group tutorial
       </message>
       <message name="IDS_TAB_ORGANIZATION_DISCLAIMER" desc="The disclaimer text in the tab organization UI results state for getting more information">
@@ -10734,14 +10806,29 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information">
         Learn more
       </message>
-      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB" desc="The accessible label in the tab organization UI results state for removing a tab" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_LEARN_MORE_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for getting more information" is_accessibility_with_no_ui="true">
+        Learn more about using AI tools
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for removing a tab" is_accessibility_with_no_ui="true">
         Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph> from tab group
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_TOOLTIP" desc="Tooltip on the button in the tab organization UI results state for removing a tab">
+        Exclude tab from suggested group
       </message>
       <message name="IDS_TAB_ORGANIZATION_REJECT_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current suggestion">
         Refresh
       </message>
       <message name="IDS_TAB_ORGANIZATION_REJECT_FINAL_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current (and final) suggestion">
         Clear
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_INPUT_ARIA_LABEL" desc="The a11y label of the tab group name input in the tab organization UI" is_accessibility_with_no_ui="true">
+        Tab group name: <ph name="NAME">$1<ex>My tab group</ex></ph>
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_THUMBS_DOWN" desc="Accessibility label for the thumbs down icon that a user can click to provide negative feedback about a tab organization." is_accessibility_with_no_ui="true">
+        Thumbs down submits feedback that you dislike this tab group suggestion
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_THUMBS_UP" desc="Accessibility label for the thumbs up icon that a user can click to provide positive feedback about a tab organization." is_accessibility_with_no_ui="true">
+        Thumbs up submits feedback that you like this tab group suggestion
       </message>
 
       <!-- Strings for Window Titles in Menus -->
@@ -13646,6 +13733,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Change this setting in the address bar.
       </message>
 
+      <!-- Media Left-Hand Side indicators -->
+      <message name="IDS_MICROPHONE_CAMERA_IN_USE" desc="Title for the media activity indicator when a page is using the camera and microphone.">
+        Camera &amp; microphone in use
+      </message>
+      <message name="IDS_MICROPHONE_CAMERA_NOT_ALLOWED" desc="Title for the media activity indicator when a page is not allowed to use the camera and microphone.">
+        Camera &amp; microphone not allowed
+      </message>
+      <message name="IDS_MICROPHONE_IN_USE" desc="Title for the media activity indicator when a page is using the microphone.">
+        Microphone in use
+      </message>
+      <message name="IDS_CAMERA_IN_USE" desc="Title for the media activity indicator when a page is using the camera.">
+        Camera in use
+      </message>
+      <message name="IDS_MICROPHONE_NOT_ALLOWED" desc="Title for the media activity indicator when a page is not allowed to use the microphone.">
+        Microphone not allowed
+      </message>
+      <message name="IDS_CAMERA_NOT_ALLOWED" desc="Title for the media activity indicator when a page is not allowed to use the camera.">
+        Camera not allowed
+      </message>
+
       <!-- Protected media identifier permission infobar -->
       <message name="IDS_MANAGE_PASSWORDS_CONFIRM_GENERATED_TEXT" desc="A message that the browser shows after saving a password it has autogenerated for the user. This message appears in a bubble and contains a link to all the user's saved autogenerated passwords. The link text is a separate string in the translation console and appears here as placeholder text.">
         View and manage saved passwords in your <ph name="SAVED_PASSWORDS_STORE">$1<ex>Google Account</ex></ph>
@@ -15715,6 +15822,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <ph name="ACTUAL_CHAR_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHAR_COUNT">$2<ex>280</ex></ph>
     </message>
 
+    <!-- Data Controls dialog strings -->
+    <message name="IDS_DATA_CONTROLS_CLIPBOARD_PASTE_BLOCK_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard paste (ctrl-v) has been blocked by their admin.">
+      Pasting this content to this site is not allowed
+    </message>
+    <message name="IDS_DATA_CONTROLS_CLIPBOARD_COPY_BLOCK_TITLE" desc="Text displayed at the top of a dialog telling the user their clipboard copy (ctrl-c) has been blocked by their admin.">
+      Copying from this site is not allowed
+    </message>
+    <message name="IDS_DATA_CONTROLS_BLOCKED_LABEL" desc="Generic text displayed in a dialog telling the user their action has been blocked by their administrator.">
+      Your administrator has blocked this action
+    </message>
+
 
     <!-- Deep scanning open now dialog strings -->
     <message name="IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE" desc="Title shown in tab modal dialog when the user attempts to open a download while deep scanning is in progress">
@@ -16113,14 +16231,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT" desc="Title of the button that lets the user log in to a different account" translateable="false">
       Use a different account
     </message>
-    <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_TITLE" desc="Header for mismatch dialog which is shown to the user when their sign in status is signed in but they are not signed in to any account." translateable="false">
-      Failed signing in to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$2<ex>idp.example</ex></ph>
-    </message>
     <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider.">
       Continue
     </message>
     <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider.">
       You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>.
+    </message>
+    <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT" desc="Text for the button to sign in to an IDP for which there was a mismatch, in the multiple account chooser case." translateable="false">
+      Sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>
     </message>
     <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY" desc="Summary of generic error upon user failing to sign in with an account from an identity provider.">
       Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>
@@ -16640,6 +16758,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE" desc="Subtitle of an error popup during the verification step of the Isolated Web App installer">
       This bundle might be broken or compromised. Please close this window and download it again
     </message>
+    <if expr="is_chromeos">
+        <message name="IDS_IWA_INSTALLER_SHELF_ITEM_TITLE" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
+          Application Installer
+        </message>
+    </if>
 
     <!-- Common WebUI elements. -->
     <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">

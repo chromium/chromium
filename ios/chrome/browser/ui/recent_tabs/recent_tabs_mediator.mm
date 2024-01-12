@@ -115,6 +115,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   BOOL _isDisabled;
   // Last active page.
   TabGridPage _lastActivePage;
+  // Whether this screen is selected in the TabGrid.
+  BOOL _selectedGrid;
+  // The mode of the TabGrid.
+  TabGridMode _currentMode;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -334,12 +338,17 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 // Creates and send a tab grid toolbar configuration with button that should be
 // displayed when recent grid is selected.
 - (void)configureToolbarsButtons {
+  if (!_selectedGrid) {
+    return;
+  }
   // Start to configure the delegate, so configured buttons will depend on the
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
   if (_isDisabled) {
-    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
-                                                      disabledConfiguration]];
+    [self.toolbarsMutator
+        setToolbarConfiguration:
+            [TabGridToolbarsConfiguration
+                disabledConfigurationForPage:TabGridPageRemoteTabs]];
     return;
   }
 
@@ -360,7 +369,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   }
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] init];
+      [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageRemoteTabs];
+  toolbarsConfiguration.mode = _currentMode;
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
@@ -381,6 +391,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
+  _selectedGrid = selected;
+
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
@@ -394,6 +406,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 - (void)switchToMode:(TabGridMode)mode {
   CHECK(mode == TabGridModeNormal || mode == TabGridModeSearch)
       << "remote tabs should only support normal and search modes.";
+  _currentMode = mode;
+  [self configureToolbarsButtons];
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
@@ -415,7 +429,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.toolbarsMutator setToolbarsMode:TabGridModeSearch];
   [self.gridConsumer setPageMode:TabGridModeSearch];
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
 }
@@ -423,7 +436,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
   [self.gridConsumer setPageMode:TabGridModeNormal];
-  [self.toolbarsMutator setToolbarsMode:TabGridModeNormal];
 }
 
 - (void)closeSelectedTabs:(id)sender {

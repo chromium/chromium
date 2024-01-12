@@ -19,8 +19,7 @@ Abort::Abort(RequestDispatcher* dispatcher,
       operation_request_id_(operation_request_id),
       callback_(std::move(callback)) {}
 
-Abort::~Abort() {
-}
+Abort::~Abort() = default;
 
 bool Abort::Execute(int request_id) {
   using extensions::api::file_system_provider::AbortRequestedOptions;

@@ -10,7 +10,8 @@
 namespace base {
 
 // Helper for converting an `absl::optional<T>` to a pointer suitable for
-// passing as a function argument:
+// passing as a function argument (alternatively, consider using
+// `base::optional_ref`):
 //
 // void MaybeProcessData(const std::string* optional_data);
 //
@@ -34,7 +35,9 @@ namespace base {
 // // function argument.
 // void BadMaybeProcessData(const absl::optional<std::string>& optional_data);
 //
-// For more background, see https://abseil.io/tips/163.
+// For more background, see https://abseil.io/tips/163. Also see
+// `base/types/optional_ref.h` for an alternative approach to
+// `const absl::optional<T>&` that does not require the use of raw pointers.
 template <class T>
 const T* OptionalToPtr(const absl::optional<T>& optional) {
   return optional.has_value() ? &optional.value() : nullptr;
@@ -46,6 +49,12 @@ T* OptionalToPtr(absl::optional<T>& optional) {
 }
 
 // Helper for creating an `absl::optional<T>` from a `T*` which may be null.
+//
+// This copies `T` into the `absl::optional`. When you have control over the
+// function that accepts the optional, and it currently expects a
+// `absl::optional<T>&` or `const absl::optional<T>&`, consider changing it to
+// accept a `base::optional_ref<T>` / `base::optional_ref<const T>` instead,
+// which can be constructed from `T*` without copying.
 template <class T>
 absl::optional<T> OptionalFromPtr(const T* value) {
   return value ? absl::optional<T>(*value) : absl::nullopt;

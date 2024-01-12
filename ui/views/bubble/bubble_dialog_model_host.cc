@@ -183,13 +183,13 @@ struct DialogModelHostField {
   raw_ptr<ui::DialogModelField> dialog_model_field = nullptr;
 
   // View representing the entire field.
-  raw_ptr<View, DanglingUntriaged> field_view = nullptr;
+  raw_ptr<View> field_view = nullptr;
 
   // Child view to |field_view|, if any, that's used for focus. For instance,
   // a textfield row would be a container that contains both a
   // views::Textfield and a descriptive label. In this case |focusable_view|
   // would refer to the views::Textfield which is also what would gain focus.
-  raw_ptr<View, DanglingUntriaged> focusable_view = nullptr;
+  raw_ptr<View> focusable_view = nullptr;
 };
 
 View* GetTargetView(const DialogModelHostField& field_view_info) {
@@ -293,10 +293,8 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
   return std::move(view_);
 }
 
-class BubbleDialogModelHostContentsView final
-    : public BoxLayoutView,
-      public ui::DialogModelFieldHost {
-  METADATA_HEADER(BubbleDialogModelHostContentsView, BoxLayoutView)
+class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
+  METADATA_HEADER(BubbleDialogModelHostContentsView, DialogModelSectionHost)
 
  public:
   // TODO(pbos): Break this dependency on BubbleDialogModelHost once most of
@@ -707,7 +705,17 @@ class BubbleDialogModelHostContentsView final
   LayoutConsensusGroup textfield_second_column_group_;
 };
 
-BEGIN_METADATA(BubbleDialogModelHostContentsView, BoxLayoutView)
+BEGIN_METADATA(BubbleDialogModelHostContentsView, DialogModelSectionHost)
+END_METADATA
+
+std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
+    ui::DialogModelSection* section,
+    ui::ElementIdentifier initially_focused_field_id) {
+  return std::make_unique<BubbleDialogModelHostContentsView>(
+      section, initially_focused_field_id);
+}
+
+BEGIN_METADATA(DialogModelSectionHost, BoxLayoutView)
 END_METADATA
 
 BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(

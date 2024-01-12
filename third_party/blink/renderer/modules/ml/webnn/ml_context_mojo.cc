@@ -86,9 +86,9 @@ MLContext* MLContextMojo::CreateSyncImpl(ScriptState* script_state,
   }
   if (result->is_error()) {
     const auto& create_context_error = result->get_error();
-    exception_state.ThrowDOMException(ConvertWebNNErrorCodeToDOMExceptionCode(
-                                          create_context_error->error_code),
-                                      create_context_error->error_message);
+    exception_state.ThrowDOMException(
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_context_error->code),
+        create_context_error->message);
     return nullptr;
   }
   auto* execution_context = ExecutionContext::From(script_state);
@@ -148,9 +148,8 @@ void MLContextMojo::OnCreateWebNNContext(
   if (result->is_error()) {
     const auto& create_context_error = result->get_error();
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        ConvertWebNNErrorCodeToDOMExceptionCode(
-            create_context_error->error_code),
-        create_context_error->error_message));
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_context_error->code),
+        create_context_error->message));
     return;
   }
 

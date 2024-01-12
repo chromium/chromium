@@ -69,8 +69,7 @@ class CrosActionModuleHelper {
     return action_module_->GetActionObserversForTesting();
   }
 
-  const raw_ref<const chromeos::assistant::action::CrosActionModule,
-                ExperimentalAsh>
+  const raw_ref<const chromeos::assistant::action::CrosActionModule>
       action_module_;
 };
 

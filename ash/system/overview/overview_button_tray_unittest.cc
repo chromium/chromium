@@ -584,7 +584,7 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
 // button visibility while in tablet mode shows the overview button.
 TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
        AccessibilityFeatureEnabledWhileInTabletMode) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
@@ -600,7 +600,7 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
 
 TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
        AccessibilityFeaturesChangeWhileInOverview) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 

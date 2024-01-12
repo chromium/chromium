@@ -149,6 +149,8 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // puffin patches.
   virtual absl::optional<base::FilePath> GetCrxCachePath() const = 0;
 
+  virtual bool IsConnectionMetered() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<Configurator>;
 

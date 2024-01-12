@@ -1,0 +1,14 @@
+include_rules = [
+# DO NOT ADD `include_rules`, only add `specific_include_rules` instead.
+]
+
+specific_include_rules = {
+  '.*interactive_uitest\.cc': [
+    '+ash/ash_element_identifiers.h',
+  ],
+  'shortcut_customization_test_base\.h': [
+    '+ash/accelerators/accelerator_lookup.h',
+    '+ash/public/cpp/accelerator_actions.h',
+    '+ash/shell.h',
+  ],
+}

@@ -4,9 +4,8 @@
 
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 
+#include <string_view>
 #include <utility>
-
-#include "base/strings/string_piece.h"
 
 namespace subresource_filter {
 namespace testing {
@@ -15,7 +14,7 @@ namespace proto = url_pattern_index::proto;
 
 namespace {
 
-proto::UrlRule CreateRuleImpl(base::StringPiece substring,
+proto::UrlRule CreateRuleImpl(std::string_view substring,
                               bool is_allowlist_rule,
                               bool is_suffix_rule) {
   proto::UrlRule rule;
@@ -34,7 +33,7 @@ proto::UrlRule CreateRuleImpl(base::StringPiece substring,
 }
 
 proto::UrlRule CreateRuleForDocumentImpl(
-    base::StringPiece substring,
+    std::string_view substring,
     int32_t activation_types,
     std::vector<std::string> initiator_domains,
     bool is_allowlist_rule,
@@ -50,28 +49,28 @@ proto::UrlRule CreateRuleForDocumentImpl(
 
 }  // namespace
 
-proto::UrlRule CreateSubstringRule(base::StringPiece substring) {
+proto::UrlRule CreateSubstringRule(std::string_view substring) {
   return CreateRuleImpl(substring, /*is_allowlist_rule=*/false,
                         /*is_suffix_rule=*/false);
 }
 
-proto::UrlRule CreateAllowlistSubstringRule(base::StringPiece substring) {
+proto::UrlRule CreateAllowlistSubstringRule(std::string_view substring) {
   return CreateRuleImpl(substring, /*is_allowlist_rule=*/true,
                         /*is_suffix_rule=*/false);
 }
 
-proto::UrlRule CreateSuffixRule(base::StringPiece suffix) {
+proto::UrlRule CreateSuffixRule(std::string_view suffix) {
   return CreateRuleImpl(suffix, /*is_allowlist_rule=*/false,
                         /*is_suffix_rule=*/true);
 }
 
-proto::UrlRule CreateAllowlistSuffixRule(base::StringPiece suffix) {
+proto::UrlRule CreateAllowlistSuffixRule(std::string_view suffix) {
   return CreateRuleImpl(suffix, /*is_allowlist_rule=*/true,
                         /*is_suffix_rule=*/true);
 }
 
 proto::UrlRule CreateRuleForDocument(
-    base::StringPiece pattern,
+    std::string_view pattern,
     int32_t activation_types,
     std::vector<std::string> initiator_domains) {
   return CreateRuleForDocumentImpl(pattern, activation_types, initiator_domains,
@@ -80,7 +79,7 @@ proto::UrlRule CreateRuleForDocument(
 }
 
 proto::UrlRule CreateAllowlistRuleForDocument(
-    base::StringPiece pattern,
+    std::string_view pattern,
     int32_t activation_types,
     std::vector<std::string> initiator_domains) {
   return CreateRuleForDocumentImpl(pattern, activation_types, initiator_domains,

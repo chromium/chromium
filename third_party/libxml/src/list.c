@@ -729,7 +729,7 @@ xmlListMerge(xmlListPtr l1, xmlListPtr l2)
  * Returns a new copy of the list or NULL in case of error
  */
 xmlListPtr
-xmlListDup(const xmlListPtr old)
+xmlListDup(xmlListPtr old)
 {
     xmlListPtr cur;
 
@@ -758,7 +758,7 @@ xmlListDup(const xmlListPtr old)
  * Returns 0 in case of success 1 in case of error
  */
 int
-xmlListCopy(xmlListPtr cur, const xmlListPtr old)
+xmlListCopy(xmlListPtr cur, xmlListPtr old)
 {
     /* Walk the old tree and insert the data into the new one */
     xmlLinkPtr lk;

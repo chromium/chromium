@@ -4,6 +4,8 @@
 
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,7 +31,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
@@ -101,7 +102,7 @@ class MockURLLoader final : public network::mojom::URLLoader {
                void(const std::vector<std::string>&,
                     const net::HttpRequestHeaders&,
                     const net::HttpRequestHeaders&,
-                    const absl::optional<GURL>&));
+                    const std::optional<GURL>&));
   MOCK_METHOD2(SetPriority,
                void(net::RequestPriority priority,
                     int32_t intra_priority_value));
@@ -147,14 +148,14 @@ class URLLoaderFactoryForMockLoader final
   }
   void CloseClientPipe() { client_remote_.reset(); }
 
-  absl::optional<network::ResourceRequest> url_request() const {
+  std::optional<network::ResourceRequest> url_request() const {
     return url_request_;
   }
 
  private:
   std::unique_ptr<MockURLLoader> loader_;
   mojo::Remote<network::mojom::URLLoaderClient> client_remote_;
-  absl::optional<network::ResourceRequest> url_request_;
+  std::optional<network::ResourceRequest> url_request_;
 };
 
 void ForwardCertificateCallback(
@@ -198,7 +199,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
     cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));
     cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
-    absl::optional<std::vector<uint8_t>> serialized =
+    std::optional<std::vector<uint8_t>> serialized =
         cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
     if (!serialized)
       return std::string();
@@ -244,7 +245,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &mock_loader_factory_),
         std::move(throttles_), url, force_fetch, std::move(callback),
-        nullptr /* devtools_proxy */, absl::nullopt /* throttling_profile_id */,
+        nullptr /* devtools_proxy */, std::nullopt /* throttling_profile_id */,
         net::IsolationInfo());
   }
 
@@ -257,7 +258,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
                                       "application/cert-chain+cbor");
     response_head->mime_type = "application/cert-chain+cbor";
     mock_loader_factory_.client_remote()->OnReceiveResponse(
-        std::move(response_head), std::move(consumer_handle), absl::nullopt);
+        std::move(response_head), std::move(consumer_handle), std::nullopt);
   }
 
   DeferringURLLoaderThrottle* InitializeDeferringURLLoaderThrottle() {
@@ -463,7 +464,7 @@ TEST_F(SignedExchangeCertFetcherTest, MaxCertSize_ContentLengthCheck) {
   CHECK(mojo::BlockingCopyFromString(message, producer_handle));
   producer_handle.reset();
   mock_loader_factory_.client_remote()->OnReceiveResponse(
-      std::move(response_head), std::move(consumer_handle), absl::nullopt);
+      std::move(response_head), std::move(consumer_handle), std::nullopt);
   mock_loader_factory_.client_remote()->OnComplete(
       network::URLLoaderCompletionStatus(net::OK));
   RunUntilIdle();
@@ -494,7 +495,7 @@ TEST_F(SignedExchangeCertFetcherTest, Abort_404) {
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 404 Not Found");
   mock_loader_factory_.client_remote()->OnReceiveResponse(
       std::move(response_head), mojo::ScopedDataPipeConsumerHandle(),
-      absl::nullopt);
+      std::nullopt);
   RunUntilIdle();
 
   EXPECT_TRUE(callback_called_);
@@ -512,7 +513,7 @@ TEST_F(SignedExchangeCertFetcherTest, WrongMimeType) {
   response_head->mime_type = "application/octet-stream";
   mock_loader_factory_.client_remote()->OnReceiveResponse(
       std::move(response_head), mojo::ScopedDataPipeConsumerHandle(),
-      absl::nullopt);
+      std::nullopt);
   RunUntilIdle();
 
   EXPECT_TRUE(callback_called_);

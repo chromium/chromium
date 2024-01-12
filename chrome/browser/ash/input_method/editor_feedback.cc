@@ -18,8 +18,6 @@
 namespace ash::input_method {
 namespace {
 
-constexpr int kOrcaFeedbackProductId = 5314436;
-
 base::WeakPtr<feedback::FeedbackUploader> GetFeedbackUploaderFromContext(
     content::BrowserContext* context) {
   feedback::FeedbackUploader* uploader =

@@ -148,7 +148,8 @@
 
 // Observes the frame property of the view of the `webState` using KVO.
 - (void)observeWebStateViewFrame:(web::WebState*)webState {
-  if (_installedObserver || !webState->GetView()) {
+  if (base::FeatureList::IsEnabled(kFullscreenImprovement) ||
+      _installedObserver || !webState->GetView()) {
     return;
   }
 
@@ -168,8 +169,10 @@
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  if (![keyPath isEqualToString:@"frame"] || object != _webState->GetView())
+  if (base::FeatureList::IsEnabled(kFullscreenImprovement) ||
+      ![keyPath isEqualToString:@"frame"] || object != _webState->GetView()) {
     return;
+  }
 
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     NSValue* oldValue =

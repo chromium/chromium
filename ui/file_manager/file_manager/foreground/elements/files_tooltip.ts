@@ -208,7 +208,7 @@ export class FilesTooltip extends PolymerElement {
       // Push left to the body's left when tooltip is longer than viewport.
       if (this.offsetWidth > document.body.offsetWidth) {
         left = 0;
-      } else if (document.dir == 'rtl') {
+      } else if (document.dir === 'rtl') {
         // Calculate position for rtl mode to align to the right of target.
         const width = this.getBoundingClientRect().width;
         const minLeft = rect.right - width;

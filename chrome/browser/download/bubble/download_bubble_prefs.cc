@@ -52,10 +52,6 @@ bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
          enterprise_connectors::BlockUntilVerdict::kBlock;
 }
 
-bool ShouldSuppressDownloadBubbleIph(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kDownloadBubbleIphSuppression);
-}
-
 bool IsDownloadBubblePartialViewControlledByPref() {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;

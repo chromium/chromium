@@ -246,8 +246,8 @@ void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
   DCHECK(!trace_data_.trace_id);
   trace_data_.trace_id = adopt_from->trace_data_.trace_id;
   trace_data_v3_.trace_id = adopt_from->trace_data_v3_.trace_id;
-  adopt_from->trace_data_.trace_id = nullptr;
-  adopt_from->trace_data_v3_.trace_id = nullptr;
+  adopt_from->trace_data_.trace_id = 0u;
+  adopt_from->trace_data_v3_.trace_id = 0u;
 }
 
 void FrameSequenceMetrics::AdvanceTrace(base::TimeTicks timestamp,
@@ -279,7 +279,7 @@ void FrameSequenceMetrics::ReportMetrics() {
 
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
   trace_data_.Terminate();
-  trace_data_v3_.TerminateV3(v3_);
+  trace_data_v3_.TerminateV3(v3_, GetEffectiveThread());
 
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
@@ -480,10 +480,12 @@ void FrameSequenceMetrics::TraceData::Terminate() {
       ThroughputData::ToTracedValue(metrics->impl_throughput(),
                                     metrics->main_throughput(),
                                     metrics->GetEffectiveThread()));
-  trace_id = nullptr;
+  trace_id = 0u;
 }
 
-void FrameSequenceMetrics::TraceData::TerminateV3(const V3& v3) {
+void FrameSequenceMetrics::TraceData::TerminateV3(
+    const V3& v3,
+    FrameInfo::SmoothEffectDrivingThread effective_thread) {
   if (!enabled || !trace_id) {
     return;
   }
@@ -493,10 +495,11 @@ void FrameSequenceMetrics::TraceData::TerminateV3(const V3& v3) {
   dict->SetInteger("dropped", v3.frames_dropped);
   dict->SetInteger("missing_content", v3.frames_missing_content);
   dict->EndDictionary();
-  TRACE_EVENT_NESTABLE_ASYNC_END1("cc,benchmark", "FrameSequenceTrackerV3",
-                                  TRACE_ID_LOCAL(trace_id), "args",
-                                  std::move(dict));
-  trace_id = nullptr;
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
+      "cc,benchmark", "FrameSequenceTrackerV3", TRACE_ID_LOCAL(trace_id),
+      v3.last_presented_frame.GetTerminationTimeForThread(effective_thread),
+      "args", std::move(dict));
+  trace_id = 0u;
 }
 
 void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
@@ -508,7 +511,15 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   if (!enabled)
     return;
   if (!trace_id) {
-    trace_id = this;
+    // The underlying usage of TRACE_ID_LOCAL is mapping the raw uint64_t from
+    // the point into either `trace_event_internal::TraceID::LocalId` or
+    // `perfetto::internal::LegacyTraceId`. However the trace macros don't
+    // support just providing that object directly. Here we do the cast
+    // ourselves ahead, and save the resulting value. This value will be used to
+    // nest other traces, as well as close the async trace at a later time. The
+    // value can also be merged into future sequences. This avoids holding
+    // dangling ptrs.
+    trace_id = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "cc,benchmark", histogram_name, TRACE_ID_LOCAL(trace_id),
         start_timestamp, "name",

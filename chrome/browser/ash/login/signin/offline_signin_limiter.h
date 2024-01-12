@@ -95,8 +95,8 @@ class OfflineSigninLimiter : public KeyedService,
   // Helper function to get user for the given profile_.
   const user_manager::User& GetUser();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<const base::Clock> clock_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -564,14 +564,14 @@ TEST_F(WindowsSystemProxyResolverImplTest,
 TEST_F(WindowsSystemProxyResolverImplTest, GetProxyForUrlDirect) {
   winhttp_api_wrapper()->AddDirectToProxyResults();
   net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
+  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
 TEST_F(WindowsSystemProxyResolverImplTest, GetProxyForUrlBypass) {
   winhttp_api_wrapper()->AddBypassToProxyResults();
   net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
+  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
@@ -622,7 +622,7 @@ TEST_F(WindowsSystemProxyResolverImplTest,
 
   winhttp_api_wrapper()->AddDirectToProxyResults();
   net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
+  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
@@ -634,7 +634,7 @@ TEST_F(WindowsSystemProxyResolverImplTest, GetProxyForUrlMultipleResults) {
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("HTTPS foopy:8443"));
-  expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
+  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
 
   DoGetProxyForUrlTest(expected_proxy_list);
 }

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugués con teclado internacional de EE.UU.</translation>
 <translation id="1629521517399325891">El certificado del usuario no está disponible para realizar la autenticación de la red.</translation>
 <translation id="1641780993263690097">Chino (Pinyin)</translation>
-<translation id="1646019627374511909">Habilitando el acceso sin conexión a <ph name="NUMBER_OF_ITEMS" /> archivos</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Usaste todo tu almacenamiento de la unidad compartida de Google Workspace.</translation>
 <translation id="1661867754829461514">Falta el número de PIN </translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Hoja de cálculo de Google</translation>
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errores</translation>
 <translation id="3509680540198371098">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, detalles</translation>
 <translation id="3511705761158917664">Preparando la sincronización de <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="3522708245912499433">Portugués</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">La política del administrador no permite copiar <ph name="COUNT" /> archivos</translation>
 <translation id="6509122719576673235">Noruego</translation>
 <translation id="6528513914570774834">Permitir que otros usuarios de este dispositivo usen esta red</translation>
-<translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Recientes</translation>
 <translation id="6558280019477628686">Se produjo un error. Es posible que no se hayan borrado algunos elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Permitir que las apps de Linux accedan a los archivos de la carpeta <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Actualmente, no tienes conexión. La sincronización de archivos se reanudará cuando te conectes a Internet.</translation>
 <translation id="7589661784326793847">Espera un momento.</translation>
-<translation id="7592775719802218421">Permitiendo que <ph name="FILE_NAME" /> esté disponible sin conexión</translation>
 <translation id="7600126690270271294">Serbio</translation>
 <translation id="7603724359189955920">Cuadrículas</translation>
 <translation id="7627790789328695202">El archivo <ph name="FILE_NAME" /> ya existe. Cambia el nombre y vuelve a intentarlo.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8147028810663464959">El ancho del carácter es el ancho completo</translation>
 <translation id="8151638057146502721">Configurar</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 error.}other{# errores.}}</translation>
 <translation id="8154842056504218462">Se seleccionaron todas las entradas.</translation>
 <translation id="8157684860301034423">No se pudo recuperar la información de la app.</translation>
 <translation id="8175731104491895765">Francés (Bélgica)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Otorga permiso a <ph name="VM_NAME" /> para que acceda a los archivos de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Clave de WEP no válida</translation>
 <translation id="8372852072747894550">Griego</translation>
+<translation id="8377269993083688872">Diseños de correos electrónicos</translation>
 <translation id="8386903983509584791">Finalizó la búsqueda</translation>
 <translation id="8387733224523483503">Se extrajo <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensiones</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Seleccionar un archivo para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>
-<translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos…</translation>
 <translation id="8600173386174225982">La lista de archivos cambió a la vista de miniaturas.</translation>
 <translation id="8601932370724196034">Archivo de imagen de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Permitir proxies para redes compartidas</translation>
 <translation id="8790981080411996443">Persona regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advertencia.}other{# advertencias.}}</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Se produjo un error al comprimir: ya existe el elemento "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Español (España)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Ya existe un archivo con el nombre "<ph name="FILE_NAME" />". Elige otro.</translation>
 <translation id="9046895021617826162">No se pudo conectar</translation>
 <translation id="9065512565307033593">Si no puedes verificar tu identidad, se inhabilitará tu acceso a la red.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advertencia.}other{<ph name="COUNT" /> advertencias.}}</translation>
 <translation id="908378762078012445">Ruso con teclado fonético AATSEEL</translation>
 <translation id="9086302186042011942">Sincronización</translation>
 <translation id="9099674669267916096">Cantidad de páginas</translation>

@@ -89,9 +89,8 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo token_info);
 
-  raw_ptr<UserCloudPolicyManagerAsh, ExperimentalAsh> manager_;
-  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
-      identity_manager_;
+  raw_ptr<UserCloudPolicyManagerAsh> manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
@@ -106,7 +105,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   std::unique_ptr<net::BackoffEntry> retry_backoff_;
 
   // Points to the base::DefaultClock by default.
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   base::WeakPtrFactory<UserCloudPolicyTokenForwarder> weak_ptr_factory_{this};
 };

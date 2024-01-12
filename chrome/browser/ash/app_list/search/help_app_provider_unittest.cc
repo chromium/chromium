@@ -70,8 +70,7 @@ class MockSearchHandler : public ash::help_app::SearchHandler {
     results_ = std::move(results);
   }
 
-  raw_ptr<ash::help_app::SearchTagRegistry, ExperimentalAsh>
-      search_tag_registry_;
+  raw_ptr<ash::help_app::SearchTagRegistry> search_tag_registry_;
   std::vector<SearchResultPtr> results_;
 };
 }  // namespace
@@ -110,7 +109,7 @@ class HelpAppProviderTest : public AppListTestBase {
 
   // Starts a search and waits for the query to be sent.
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_.StartSearch(query);
     task_environment()->RunUntilIdle();
   }
 
@@ -125,8 +124,8 @@ class HelpAppProviderTest : public AppListTestBase {
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   ash::help_app::SearchTagRegistry search_tag_registry_;
-  raw_ptr<HelpAppProvider, ExperimentalAsh> provider_ = nullptr;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
+  raw_ptr<HelpAppProvider> provider_ = nullptr;
+  raw_ptr<apps::AppServiceProxy> proxy_;
   base::test::ScopedFeatureList scoped_feature_list_;
   MockSearchHandler mock_handler_;
 };

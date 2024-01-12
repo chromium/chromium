@@ -5,11 +5,14 @@
 #include "content/browser/renderer_host/media/captured_surface_controller.h"
 
 #include "base/task/bind_post_task.h"
+#include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
@@ -20,6 +23,9 @@ using ::blink::mojom::CapturedSurfaceControlResult;
 using PermissionManager = ::content::CapturedSurfaceControlPermissionManager;
 using PermissionResult =
     ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
+using GetZoomLevelReplyCallback =
+    base::OnceCallback<void(std::optional<int> zoom_level,
+                            blink::mojom::CapturedSurfaceControlResult result)>;
 
 // Deliver a synthetic MouseWheel action on the tab whose ID is
 // `wc_id`, with the parameters described by the values in `action`.
@@ -63,12 +69,42 @@ CapturedSurfaceControlResult DoSetZoomLevel(WebContentsMediaCaptureId wc_id,
 
   RenderFrameHost* const rfh = RenderFrameHost::FromID(
       wc_id.render_process_id, wc_id.main_render_frame_id);
-  if (!rfh) {
+  WebContents* const captured_wc = WebContents::FromRenderFrameHost(rfh);
+  if (!captured_wc) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
-
-  // TODO(crbug.com/1466247): Implement.
+  content::HostZoomMap::SetZoomLevel(
+      captured_wc,
+      blink::PageZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
   return CapturedSurfaceControlResult::kSuccess;
+}
+
+// Get the zoom level of the tab indicated by `wc_id`.
+//
+// Return the zoom_level if successful or nullopt otherwise.
+//
+// This function must be invoked on the UI thread with a non-null
+// `WebContentsMediaCaptureId`. Note however that the WebContents in question
+// might have been asynchronously destroyed in the intervening time, which is
+// one possible reason for failure.
+std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
+    WebContentsMediaCaptureId wc_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!wc_id.is_null());
+
+  WebContents* const captured_wc =
+      WebContents::FromRenderFrameHost(RenderFrameHost::FromID(
+          wc_id.render_process_id, wc_id.main_render_frame_id));
+  if (!captured_wc) {
+    return std::make_pair(
+        std::nullopt,
+        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+  }
+
+  double zoom_level = blink::PageZoomLevelToZoomFactor(
+      content::HostZoomMap::GetZoomLevel(captured_wc));
+  return std::make_pair(std::round(100 * zoom_level),
+                        CapturedSurfaceControlResult::kSuccess);
 }
 
 void OnPermissionCheckResult(
@@ -159,6 +195,28 @@ void CapturedSurfaceController::SendWheel(
 
   permission_manager_->CheckPermission(
       ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
+}
+
+void CapturedSurfaceController::GetZoomLevel(
+    GetZoomLevelReplyCallback reply_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (captured_wc_id_.is_null()) {
+    std::move(reply_callback)
+        .Run(std::nullopt,
+             CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+    return;
+  }
+
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoGetZoomLevel, captured_wc_id_),
+      base::BindOnce(
+          [](GetZoomLevelReplyCallback reply_callback,
+             std::pair<std::optional<int>, CapturedSurfaceControlResult>
+                 result) {
+            std::move(reply_callback).Run(result.first, result.second);
+          },
+          std::move(reply_callback)));
 }
 
 void CapturedSurfaceController::SetZoomLevel(

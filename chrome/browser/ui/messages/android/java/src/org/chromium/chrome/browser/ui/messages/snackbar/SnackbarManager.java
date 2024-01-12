@@ -83,8 +83,6 @@ public class SnackbarManager
     private boolean mIsDisabledForTesting;
     private ViewGroup mSnackbarParentView;
     private ViewGroup mSnackbarTemporaryParentView;
-    // Keyboard inset handling is independent of the EdgeToEdge handling.
-    private int mKeyboardInset;
     private final WindowAndroid mWindowAndroid;
     private @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
     private final Runnable mHideRunnable =
@@ -153,10 +151,7 @@ public class SnackbarManager
         return mActivityInForeground && !mIsDisabledForTesting;
     }
 
-    /**
-     * Shows a snackbar at the bottom of the screen, or above the keyboard if the keyboard is
-     * visible.
-     */
+    /** Shows a snackbar at the bottom of the screen. */
     public void showSnackbar(Snackbar snackbar) {
         if (!mActivityInForeground || mIsDisabledForTesting) return;
         RecordHistogram.recordSparseHistogram("Snackbar.Shown", snackbar.getIdentifier());
@@ -266,12 +261,6 @@ public class SnackbarManager
         mEdgeToEdgeSupplier = supplier;
     }
 
-    @Override
-    public void onKeyboardInsetChanged(int inset) {
-        mKeyboardInset = inset;
-        updateView();
-    }
-
     /**
      * Updates the {@link SnackbarView} to reflect the value of mSnackbars.currentSnackbar(), which
      * may be null. This might show, change, or hide the view.
@@ -296,7 +285,6 @@ public class SnackbarManager
                                 mSnackbarParentView,
                                 mWindowAndroid,
                                 mEdgeToEdgeSupplier);
-                mView.updateKeyboardInset(mKeyboardInset);
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
@@ -306,7 +294,6 @@ public class SnackbarManager
                     mView.overrideParent(mSnackbarTemporaryParentView);
                 }
             } else {
-                mView.updateKeyboardInset(mKeyboardInset);
                 viewChanged = mView.update(currentSnackbar);
             }
 

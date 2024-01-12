@@ -116,8 +116,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
       test_pref_service_;
   std::unique_ptr<FakeRemoteDeviceProviderFactory>
       fake_remote_device_provider_factory_;
-  raw_ptr<FakeDisconnectTetheringRequestSender,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeDisconnectTetheringRequestSender, DanglingUntriaged>
       fake_disconnect_tethering_request_sender_;
 
   bool was_shutdown_callback_invoked_;

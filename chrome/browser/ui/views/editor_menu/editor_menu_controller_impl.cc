@@ -42,27 +42,6 @@ using crosapi::mojom::EditorPanelMode;
 using crosapi::mojom::EditorPanelPresetTextQuery;
 using crosapi::mojom::EditorPanelPresetTextQueryPtr;
 
-crosapi::mojom::EditorPanelManager* GetEditorPanelManager(
-    content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* const lacros_service =
-      chromeos::LacrosService::Get();
-  CHECK(lacros_service->IsAvailable<crosapi::mojom::EditorPanelManager>());
-  return (lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>()
-              .is_bound() &&
-          lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>()
-              .is_connected())
-             ? lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>()
-                   .get()
-             : nullptr;
-#else
-  ash::input_method::EditorMediator* editor_mediator =
-      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  return editor_mediator ? editor_mediator->panel_manager() : nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
 PresetQueryCategory GetPresetQueryCategory(
     const crosapi::mojom::EditorPanelPresetQueryCategory category) {
   switch (category) {
@@ -262,6 +241,30 @@ void EditorMenuControllerImpl::DisableEditorMenu() {
   if (views::IsViewClass<EditorMenuView>(editor_menu_view)) {
     views::AsViewClass<EditorMenuView>(editor_menu_view)->DisableMenu();
   }
+}
+
+crosapi::mojom::EditorPanelManager*
+EditorMenuControllerImpl::GetEditorPanelManager(
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* const lacros_service =
+      chromeos::LacrosService::Get();
+  CHECK(lacros_service->IsAvailable<crosapi::mojom::EditorPanelManager>());
+  auto& panel_manager =
+      lacros_service->GetRemote<crosapi::mojom::EditorPanelManager>();
+  return (panel_manager.is_bound() && panel_manager.is_connected())
+             ? panel_manager.get()
+             : nullptr;
+#else
+  ash::input_method::EditorMediator* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  return editor_mediator ? editor_mediator->panel_manager() : nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+base::WeakPtr<EditorMenuControllerImpl> EditorMenuControllerImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace chromeos::editor_menu

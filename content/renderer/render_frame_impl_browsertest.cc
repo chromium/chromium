@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/renderer/render_frame_impl.h"
+
 #include <stdint.h>
 
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -34,7 +37,6 @@
 #include "content/renderer/document_state.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/navigation_state.h"
-#include "content/renderer/render_frame_impl.h"
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -43,7 +45,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -165,10 +166,10 @@ class RenderFrameImplTest : public RenderViewTest {
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
         /*web_view=*/nullptr,
-        /*previous_frame_token=*/absl::nullopt,
-        /*opener_frame_token=*/absl::nullopt,
+        /*previous_frame_token=*/std::nullopt,
+        /*opener_frame_token=*/std::nullopt,
         /*parent_frame_token=*/remote_child_token,
-        /*previous_sibling_frame_token=*/absl::nullopt,
+        /*previous_sibling_frame_token=*/std::nullopt,
         base::UnguessableToken::Create(),
         blink::mojom::TreeScopeType::kDocument,
         std::move(frame_replication_state), std::move(widget_params),
@@ -601,7 +602,7 @@ class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
     receiver_.WaitForIncomingCall();
   }
 
-  const absl::optional<SourceAnnotation>& ping_source() const {
+  const std::optional<SourceAnnotation>& ping_source() const {
     return ping_source_;
   }
 
@@ -612,7 +613,7 @@ class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
 
  private:
   mojo::Receiver<mojom::FrameHostTestInterface> receiver_{this};
-  absl::optional<SourceAnnotation> ping_source_;
+  std::optional<SourceAnnotation> ping_source_;
 };
 
 // RenderFrameObserver that issues FrameHostTestInterface interface requests
@@ -732,8 +733,8 @@ class ScopedNewFrameInterfaceProviderExerciser {
  public:
   explicit ScopedNewFrameInterfaceProviderExerciser(
       FrameCreationObservingRendererClient* frame_creation_observer,
-      const absl::optional<std::string>& html_override_for_first_load =
-          absl::nullopt)
+      const std::optional<std::string>& html_override_for_first_load =
+          std::nullopt)
       : frame_creation_observer_(frame_creation_observer),
         html_override_for_first_load_(html_override_for_first_load) {
     frame_creation_observer_->set_callback(base::BindRepeating(
@@ -800,11 +801,11 @@ class ScopedNewFrameInterfaceProviderExerciser {
   raw_ptr<FrameCreationObservingRendererClient, ExperimentalRenderer>
       frame_creation_observer_;
   raw_ptr<TestRenderFrame, ExperimentalRenderer> frame_ = nullptr;
-  absl::optional<std::string> html_override_for_first_load_;
+  std::optional<std::string> html_override_for_first_load_;
   GURL first_committed_url_;
 
-  absl::optional<FrameCommitWaiter> frame_commit_waiter_;
-  absl::optional<FrameHostTestInterfaceRequestIssuer> test_request_issuer_;
+  std::optional<FrameCommitWaiter> frame_commit_waiter_;
+  std::optional<FrameHostTestInterfaceRequestIssuer> test_request_issuer_;
 
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_for_initial_empty_document_;

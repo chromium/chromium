@@ -46,6 +46,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/bookmark_entity_builder.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "components/sync/test/fake_server.h"
@@ -97,6 +98,7 @@ using BookmarkGeneration =
 using testing::Contains;
 using testing::ElementsAre;
 using testing::Eq;
+using testing::IsNull;
 using testing::Not;
 using testing::NotNull;
 using testing::Pointee;
@@ -2237,5 +2239,84 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
               0);
   }
 }
+
+// On ChromeOS, Sync-the-feature gets started automatically once a primary
+// account is signed in and the transport mode is not a thing.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class SingleClientBookmarksWithAccountStorageSyncTest
+    : public SingleClientBookmarksSyncTest {
+ public:
+  SingleClientBookmarksWithAccountStorageSyncTest() {}
+
+  SingleClientBookmarksWithAccountStorageSyncTest(
+      const SingleClientBookmarksWithAccountStorageSyncTest&) = delete;
+  SingleClientBookmarksWithAccountStorageSyncTest& operator=(
+      const SingleClientBookmarksWithAccountStorageSyncTest&) = delete;
+
+  ~SingleClientBookmarksWithAccountStorageSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_override_{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
+                       ShouldDownloadDataUponSigninAndClearUponSignout) {
+  const std::string kLocalOnlyTitle = "Local Only";
+  const std::string kAccountOnlyTitle = "Account Only";
+
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(kAccountOnlyTitle);
+  fake_server_->InjectEntity(bookmark_builder.BuildFolder());
+
+  ASSERT_TRUE(SetupClients());
+
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+
+  // Create a local bookmark folder while the user is signed out.
+  model->AddFolder(/*parent=*/model->bookmark_bar_node(), /*index=*/0,
+                   base::UTF8ToUTF16(kLocalOnlyTitle));
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kLocalOnlyTitle)));
+  ASSERT_THAT(model->account_bookmark_bar_node(), IsNull());
+
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  // Note: Depending on the state of feature flags (specifically
+  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
+  // selected by default.
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetActiveDataTypes()
+                  .Has(syncer::BOOKMARKS));
+
+  EXPECT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kLocalOnlyTitle)));
+
+  EXPECT_THAT(model->account_bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kAccountOnlyTitle)));
+
+  // Sign out again.
+  GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
+  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)
+                   ->GetActiveDataTypes()
+                   .Has(syncer::BOOKMARKS));
+
+  EXPECT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kLocalOnlyTitle)));
+  EXPECT_THAT(model->account_bookmark_bar_node(), IsNull());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

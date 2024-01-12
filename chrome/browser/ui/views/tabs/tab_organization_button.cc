@@ -21,11 +21,11 @@
 
 namespace {
 constexpr int kTabOrganizeCornerRadius = 10;
-constexpr int kTabOrganizeFlatCornerRadius = 2;
+constexpr int kTabOrganizeFlatCornerRadius = 4;
 constexpr int kTabOrganizeLabelMargin = 10;
 constexpr int kTabOrganizeCloseButtonMargin = 8;
 constexpr int kTabOrganizeCloseButtonSize = 16;
-}
+}  // namespace
 
 TabOrganizationButton::TabOrganizationButton(
     TabStripController* tab_strip_controller,
@@ -52,8 +52,9 @@ TabOrganizationButton::TabOrganizationButton(
       gfx::Insets().set_left(kTabOrganizeLabelMargin);
   label()->SetProperty(views::kMarginsKey, label_margin);
 
-  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
+  SetForegroundFrameActiveColorId(kColorTabSearchButtonCRForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(
+      kColorTabSearchButtonCRForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
@@ -97,7 +98,8 @@ void TabOrganizationButton::SetCloseButton(
 
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       vector_icons::kCloseChromeRefreshIcon,
-      kColorNewTabButtonForegroundFrameActive, kTabOrganizeCloseButtonSize);
+      kColorTabSearchButtonCRForegroundFrameActive,
+      kTabOrganizeCloseButtonSize);
 
   close_button->SetImageModel(views::Button::STATE_NORMAL, icon_image_model);
   close_button->SetImageModel(views::Button::STATE_HOVERED, icon_image_model);
@@ -111,7 +113,7 @@ void TabOrganizationButton::SetCloseButton(
   views::InkDrop::Get(close_button.get())->SetHighlightOpacity(0.16f);
   views::InkDrop::Get(close_button.get())->SetVisibleOpacity(0.14f);
   views::InkDrop::Get(close_button.get())
-      ->SetBaseColorId(kColorNewTabButtonForegroundFrameActive);
+      ->SetBaseColorId(kColorTabSearchButtonCRForegroundFrameActive);
 
   auto ink_drop_highlight_path =
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets());
@@ -129,5 +131,5 @@ void TabOrganizationButton::SetCloseButton(
   close_button_ = AddChildView(std::move(close_button));
 }
 
-BEGIN_METADATA(TabOrganizationButton, TabStripControlButton)
+BEGIN_METADATA(TabOrganizationButton)
 END_METADATA

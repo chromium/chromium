@@ -106,7 +106,7 @@ class CryptAuthGroupPrivateKeySharerImpl
 
   bool did_non_fatal_error_occur_ = false;
   State state_ = State::kNotStarted;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

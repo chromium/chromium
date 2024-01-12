@@ -6,13 +6,15 @@
 #define COMPONENTS_VARIATIONS_LIMITED_ENTROPY_MODE_GATE_H_
 
 #include "base/component_export.h"
+#include "components/version_info/channel.h"
 
 namespace variations {
 
-// Returns true iff this client is eligible to randomize field trials within a
-// layer with LIMITED entropy mode, or if the client has called
+// Returns true iff the given |channel| is eligible to randomize field trials
+// within a layer with LIMITED entropy mode, or if the client has called
 // EnableLimitedEntropyModeForTesting().
-COMPONENT_EXPORT(VARIATIONS) bool IsLimitedEntropyModeEnabled();
+COMPONENT_EXPORT(VARIATIONS)
+bool IsLimitedEntropyModeEnabled(version_info::Channel channel);
 
 // Enables the client to randomize field trials within a layer with LIMITED
 // entropy mode. For testing purposes only.

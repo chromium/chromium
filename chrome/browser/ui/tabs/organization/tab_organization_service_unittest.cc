@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -27,11 +30,21 @@ namespace {
 constexpr char kValidURL[] = "http://zombo.com";
 constexpr char kInvalidURL[] = "chrome://page";
 
+std::unique_ptr<KeyedService> CreateSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
 }  // anonymous namespace
 
 class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
  public:
-  TabOrganizationServiceTest() = default;
+  TabOrganizationServiceTest()
+      : dependency_manager_subscription_(
+            BrowserContextDependencyManager::GetInstance()
+                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                    &TabOrganizationServiceTest::SetTestingFactories,
+                    base::Unretained(this)))) {}
   TabOrganizationServiceTest(const TabOrganizationServiceTest&) = delete;
   TabOrganizationServiceTest& operator=(const TabOrganizationServiceTest&) =
       delete;
@@ -73,12 +86,15 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
 
   TestingProfile* profile() { return profile_.get(); }
   TabOrganizationService* service() { return service_.get(); }
+  syncer::TestSyncService* sync_service() { return sync_service_; }
 
  private:
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kTabOrganization}, {});
     profile_ = std::make_unique<TestingProfile>();
     service_ = std::make_unique<TabOrganizationService>(profile_.get());
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetInstance()->GetForProfile(profile_.get()));
   }
   void TearDown() override {
     for (auto& browser : browsers_) {
@@ -86,11 +102,19 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     }
   }
 
+  void SetTestingFactories(content::BrowserContext* context) {
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateSyncService));
+  }
+
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TabOrganizationService> service_;
   std::vector<std::unique_ptr<Browser>> browsers_;
   base::test::ScopedFeatureList feature_list_;
+
+  raw_ptr<syncer::TestSyncService> sync_service_;
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 class MockTabOrganizationObserver : public TabOrganizationObserver {
@@ -271,6 +295,40 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
   EXPECT_NE(session->request()->base_tab_id(), absl::nullopt);
 }
 
+TEST_F(TabOrganizationServiceTest, CanStartRequest) {
+  // // Not Synced
+  sync_service()->SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  EXPECT_FALSE(service()->CanStartRequest());
+  sync_service()->SetDisableReasons({});
+
+  // Sync Paused
+  sync_service()->SetPersistentAuthError();
+  EXPECT_FALSE(service()->CanStartRequest());
+  sync_service()->ClearAuthError();
+
+  // Sync History not enabled
+  ASSERT_TRUE(sync_service()->GetActiveDataTypes().HasAll({syncer::HISTORY}));
+  sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
+  ASSERT_FALSE(sync_service()->GetActiveDataTypes().HasAll({syncer::HISTORY}));
+  EXPECT_FALSE(service()->CanStartRequest());
+
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kHistory});
+  EXPECT_TRUE(service()->CanStartRequest());
+
+  // Should return true if everything is enabled.
+  sync_service()->GetUserSettings()->SetSelectedTypes(true, {});
+  EXPECT_TRUE(service()->CanStartRequest());
+}
+
+TEST_F(TabOrganizationServiceTest, EnterpriseDisabledPolicy) {
+  EXPECT_TRUE(service()->CanStartRequest());
+  sync_service()->SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  EXPECT_FALSE(service()->CanStartRequest());
+}
+
 TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
   Browser* browser1 = AddBrowser();
   for (int i = 0; i < 4; i++) {
@@ -286,4 +344,81 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
       browser1->tab_strip_model()->GetIndexOfWebContents(contents),
       TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
+}
+
+TEST_F(TabOrganizationServiceTest,
+       RemoveAllTabsWhileMultiplePendingOrganizationsDoesntCrash) {
+  // b/319272034
+
+  // This is a regression test for a crash when:
+  // - there are at least two pending organizations in the current session
+  // - the UI is open (and so TabSearchPageHandler is observing the session)
+  // - the browser is closed using TabStripModel::CloseAllTabs
+  // - probably some other requirements on observer registration order
+
+  // Then the page handler calls IsValidForOrganizing() on one of the
+  // organizations, which crashed because the tabs in the organization no longer
+  // existed BUT it had not yet been notified of this.
+
+  // This observer simulates the role of the TabSearchPageHandler
+  class TestOrganizationObserver : public TabOrganization::Observer {
+   public:
+    explicit TestOrganizationObserver(TabOrganization* org_1,
+                                      TabOrganization* org_2)
+        : org_1_(org_1), org_2_(org_2) {}
+    void OnTabOrganizationUpdated(const TabOrganization* org) override {
+      // Without the fix, one of these two lines will crash, because only one of
+      // the orgs has been notified of the removed tabs, and the other assumes
+      // its tabs are still alive.
+      org_1_->IsValidForOrganizing();
+      org_2_->IsValidForOrganizing();
+    }
+
+   private:
+    raw_ptr<TabOrganization> org_1_;
+    raw_ptr<TabOrganization> org_2_;
+  };
+
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  TabStripModel* model = browser1->tab_strip_model();
+  std::vector<std::u16string> names;
+
+  // Create two organizations. This must be done manually instead of through the
+  // service and session because the test scaffold using the service doesn't let
+  // us match the observer registration order that actually triggers the crash.
+  // The contents of the organizations doesn't matter.
+  std::vector<std::unique_ptr<TabData>> tab_datas_1;
+  tab_datas_1.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
+  tab_datas_1.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  TabOrganization org_1 =
+      TabOrganization(std::move(tab_datas_1), names, 0u,
+                      TabOrganization::UserChoice::kNoChoice);
+
+  std::vector<std::unique_ptr<TabData>> tab_datas_2;
+  tab_datas_2.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
+  tab_datas_2.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  TabOrganization org_2 =
+      TabOrganization(std::move(tab_datas_2), names, 0u,
+                      TabOrganization::UserChoice::kNoChoice);
+
+  TestOrganizationObserver observer(&org_1, &org_2);
+  org_1.AddObserver(&observer);
+  org_2.AddObserver(&observer);
+
+  // This triggers the test observer, and without the fix crashes when only one
+  // of the organizations has been updated with the closed tabs but
+  // IsValidForOrganizing is called on the other one.
+  browser1->tab_strip_model()->CloseAllTabs();
+
+  // Remove the observer so it is memory-safe to destroy it first.
+  org_1.RemoveObserver(&observer);
+  org_2.RemoveObserver(&observer);
 }

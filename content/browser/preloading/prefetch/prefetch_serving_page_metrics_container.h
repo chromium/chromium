@@ -29,7 +29,7 @@ class CONTENT_EXPORT PrefetchServingPageMetricsContainer
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   void SetRequiredPrivatePrefetchProxy(bool required_private_prefetch_proxy);
   void SetPrefetchHeaderLatency(
-      const absl::optional<base::TimeDelta>& prefetch_header_latency);
+      const std::optional<base::TimeDelta>& prefetch_header_latency);
   void SetProbeLatency(const base::TimeDelta& probe_latency);
 
   PrefetchServingPageMetrics& GetServingPageMetrics() {

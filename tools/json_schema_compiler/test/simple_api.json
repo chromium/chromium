@@ -160,6 +160,22 @@
         ]
       },
       {
+        "name": "requiredFunctionParameter",
+        "type": "function",
+        "description": "Takes a required function parameter which is not a trailing callback.",
+        "parameters": [
+          {
+            "name": "functionParameter",
+            "type": "function",
+            "parameters": []
+          },
+          {
+            "name": "second",
+            "type": "string"
+          }
+        ]
+      },
+      {
         "name": "optionalCallbackParams",
         "type": "function",
         "description": "Gives back a string. Or not.",

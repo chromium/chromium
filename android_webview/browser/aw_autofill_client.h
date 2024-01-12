@@ -88,7 +88,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(autofill::PopupType popup_type) override;
+  void ShowAutofillSettings(
+      autofill::FillingProduct main_filling_product) override;
   void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
                                    base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(
@@ -119,7 +120,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
       autofill::AutofillSuggestionTriggerSource trigger_source) const override;
   void UpdatePopup(
       const std::vector<autofill::Suggestion>& suggestions,
-      autofill::PopupType popup_type,
+      autofill::FillingProduct main_filling_product,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(autofill::PopupHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
@@ -132,10 +133,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
-
-  // RiskDataLoader:
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override;
 
   void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   void SuggestionSelected(JNIEnv* env,

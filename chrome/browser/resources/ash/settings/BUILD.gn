@@ -35,26 +35,6 @@ build_webui("build") {
     "images/notification_access_finished.svg",
     "images/notification_access_setup.svg",
     "images/notification_access_setup_dark.svg",
-    "images/smart_privacy.svg",
-    "images/smart_privacy_dark.svg",
-    "images/switch_access_setup_guide_assign_next.svg",
-    "images/switch_access_setup_guide_assign_next_dark.svg",
-    "images/switch_access_setup_guide_assign_previous.svg",
-    "images/switch_access_setup_guide_assign_previous_dark.svg",
-    "images/switch_access_setup_guide_assign_select.svg",
-    "images/switch_access_setup_guide_assign_select_dark.svg",
-    "images/switch_access_setup_guide_auto_scan_enabled.svg",
-    "images/switch_access_setup_guide_auto_scan_enabled_dark.svg",
-    "images/switch_access_setup_guide_choose_one_switch.svg",
-    "images/switch_access_setup_guide_choose_one_switch_dark.svg",
-    "images/switch_access_setup_guide_choose_three_switches.svg",
-    "images/switch_access_setup_guide_choose_three_switches_dark.svg",
-    "images/switch_access_setup_guide_choose_two_switches.svg",
-    "images/switch_access_setup_guide_choose_two_switches_dark.svg",
-    "images/switch_access_setup_guide_closing.svg",
-    "images/switch_access_setup_guide_closing_dark.svg",
-    "images/switch_access_setup_guide_start_pairing.svg",
-    "images/switch_access_setup_guide_start_pairing_dark.svg",
 
     "os_settings.html",
   ]
@@ -63,6 +43,7 @@ build_webui("build") {
     "common/app_language_selection_dialog/app_language_selection_dialog.ts",
     "common/app_language_selection_dialog/app_language_selection_item.ts",
     "common/lacros_extension_controlled_indicator.ts",
+    "common/password_prompt_dialog/password_prompt_dialog.ts",
     "crostini_page/bruschetta_subpage.ts",
     "crostini_page/crostini_arc_adb.ts",
     "crostini_page/crostini_arc_adb_confirmation_dialog.ts",
@@ -313,7 +294,6 @@ build_webui("build") {
     "os_reset_page/reset_settings_card.ts",
     "os_search_page/google_assistant_subpage.ts",
     "os_search_page/os_search_page.ts",
-    "os_search_page/os_search_selection_dialog.ts",
     "os_search_page/search_and_assistant_settings_card.ts",
     "os_search_page/search_engine.ts",
     "os_search_page/search_subpage.ts",
@@ -605,12 +585,4 @@ copy("rename_personalization_search_mojom") {
     "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-webui.ts",
   ]
   outputs = [ "$target_gen_dir/personalization_search.mojom-webui.ts" ]
-}
-
-# grdp for OS Settings files that are needed by OOBE.
-generate_grd("build_oobe_grdp") {
-  grd_prefix = "os_settings_oobe"
-  out_grd = "$target_gen_dir/os_settings_oobe_resources.grdp"
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = [ "images/smart_privacy.svg" ]
 }

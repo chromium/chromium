@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -94,7 +95,7 @@ class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
   WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(data, size) {}
+      : net::WrappedIOBuffer(base::make_span(data, size)) {}
 
  private:
   ~WrappedIOBuffer() override = default;
@@ -192,7 +193,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
           resource_request, browser_context, std::move(web_contents_getter),
-          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId);
+          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_id=*/absl::nullopt);
 
   network_client_remote_.Bind(
       network_client_receiver_.BindNewPipeAndPassRemote());
@@ -219,7 +221,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveEarlyHints(
 void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle consumer,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse", this,
@@ -651,7 +653,7 @@ void ServiceWorkerSingleScriptUpdateChecker::Fail(
          /*paused_state=*/nullptr,
          std::make_unique<FailureInfo>(status, error_message,
                                        std::move(network_status)),
-         /*sha256_checksum=*/absl::nullopt);
+         /*sha256_checksum=*/std::nullopt);
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::Succeed(
@@ -670,7 +672,7 @@ void ServiceWorkerSingleScriptUpdateChecker::Succeed(
   // and it can be pausing. In this case, the finalized checksum is still not
   // available here, and that will be handled in
   // ServiceWorkerUpdatedScriptLoader.
-  absl::optional<std::string> sha256_checksum;
+  std::optional<std::string> sha256_checksum;
   if (script_checksum_update_option_ ==
           ScriptChecksumUpdateOption::kForceUpdate &&
       result == Result::kIdentical) {
@@ -688,7 +690,7 @@ void ServiceWorkerSingleScriptUpdateChecker::Finish(
     Result result,
     std::unique_ptr<PausedState> paused_state,
     std::unique_ptr<FailureInfo> failure_info,
-    const absl::optional<std::string>& sha256_checksum) {
+    const std::optional<std::string>& sha256_checksum) {
   network_watcher_.Cancel();
   if (Result::kDifferent == result) {
     DCHECK(paused_state);
@@ -696,7 +698,7 @@ void ServiceWorkerSingleScriptUpdateChecker::Finish(
     // ServiceWorkerUpdatedScriptLoader.
     std::move(callback_).Run(script_url_, result, nullptr,
                              std::move(paused_state),
-                             /*sha256_checksum=*/absl::nullopt);
+                             /*sha256_checksum=*/std::nullopt);
     return;
   }
 

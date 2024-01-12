@@ -659,19 +659,6 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 }
 
 TEST_F(PictureInPictureControllerTestWithWidget,
-       DocumentPiPDoesNotOpenWithBlankUrl) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(GetDocument().GetFrame());
-  ScriptState::Scope entered_context_scope(script_state);
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pip =
-      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(), BlankURL());
-  EXPECT_FALSE(pip);
-}
-
-TEST_F(PictureInPictureControllerTestWithWidget,
        DocumentPiPDoesOpenWithFileUrl) {
   V8TestingScope v8_scope;
   ScriptState* script_state =

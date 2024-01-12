@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -111,13 +111,13 @@ class UserScript {
 
     // If external_content_ is set returns it as content otherwise it returns
     // content_
-    const base::StringPiece GetContent() const {
+    const std::string_view GetContent() const {
       if (external_content_.data())
         return external_content_;
       else
         return content_;
     }
-    void set_external_content(base::StringPiece content) {
+    void set_external_content(std::string_view content) {
       external_content_ = content;
     }
     void set_content(std::string content) { content_ = std::move(content); }
@@ -146,7 +146,7 @@ class UserScript {
 
     // The script content. It can be set to either loaded_content_ or
     // externally allocated string.
-    base::StringPiece external_content_;
+    std::string_view external_content_;
 
     // Set when the content is loaded by LoadContent
     std::string content_;

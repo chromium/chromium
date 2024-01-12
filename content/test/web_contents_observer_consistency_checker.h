@@ -124,11 +124,11 @@ class WebContentsObserverConsistencyChecker
     bool IsRunningInSameTask();
 
    private:
-    absl::optional<int> GetSequenceNumberOfCurrentTask();
+    std::optional<int> GetSequenceNumberOfCurrentTask();
 
     // In some tests, the current task is not set. In that case, `sequence_num`
-    // is absl::nullopt.
-    absl::optional<int> sequence_num_;
+    // is std::nullopt.
+    std::optional<int> sequence_num_;
   };
   TaskChecker task_checker_for_prerendered_page_activation_;
 

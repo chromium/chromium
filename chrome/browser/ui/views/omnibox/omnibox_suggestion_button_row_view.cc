@@ -57,8 +57,9 @@ bool Cr2023ExpandedStateColorsEnabled() {
 }  // namespace
 
 class OmniboxSuggestionRowButton : public views::MdTextButton {
+  METADATA_HEADER(OmniboxSuggestionRowButton, views::MdTextButton)
+
  public:
-  METADATA_HEADER(OmniboxSuggestionRowButton);
   OmniboxSuggestionRowButton(PressedCallback callback,
                              const std::u16string& text,
                              const gfx::VectorIcon& icon,
@@ -189,7 +190,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   OmniboxPopupSelection selection_;
 };
 
-BEGIN_METADATA(OmniboxSuggestionRowButton, views::MdTextButton)
+BEGIN_METADATA(OmniboxSuggestionRowButton)
 END_METADATA
 
 OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
@@ -405,11 +406,15 @@ views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
 }
 
 bool OmniboxSuggestionButtonRowView::HasMatch() const {
-  return popup_view_->controller()->result().size() > model_index_;
+  return popup_view_->controller()->autocomplete_controller()->result().size() >
+         model_index_;
 }
 
 const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
-  return popup_view_->controller()->result().match_at(model_index_);
+  return popup_view_->controller()
+      ->autocomplete_controller()
+      ->result()
+      .match_at(model_index_);
 }
 
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
@@ -442,5 +447,5 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
   }
 }
 
-BEGIN_METADATA(OmniboxSuggestionButtonRowView, views::View)
+BEGIN_METADATA(OmniboxSuggestionButtonRowView)
 END_METADATA

@@ -106,6 +106,17 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
         case 2:
           return gfx::BufferPlane::A;
       }
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V_A:
+      switch (plane_index) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::U;
+        case 2:
+          return gfx::BufferPlane::V;
+        case 3:
+          return gfx::BufferPlane::A;
+      }
   }
   NOTREACHED();
   return gfx::BufferPlane::DEFAULT;

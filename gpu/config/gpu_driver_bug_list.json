@@ -3323,6 +3323,42 @@
       "features": [
         "avoid_one_component_egl_images"
       ]
+    },
+    {
+      "id": 426,
+      "cr_bugs": [1508379],
+      "description": "Disable VP9 k-SVC video decoding on non-Intel GPUs",
+      "os": {
+        "type": "win"
+      },
+      "exceptions": [
+        {
+          "multi_gpu_category": "active",
+          "vendor_id": "0x8086"
+        }
+      ],
+      "features": [
+        "disable_d3d11_vp9_ksvc_decoding"
+      ]
+    },
+    {
+      "id": 427,
+      "comment": "GPU process may crash when updating frame size on Intel NUC 8 (hades canyon) with old graphics drivers.",
+      "description": "Disable encoding frame size change on Intel Kaby Lake G devices with old Radeon Pro WX Vega M GL graphics drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": [
+        "0x694c"
+      ],
+      "driver_version": {
+        "op": "<",
+        "value": "30.0.13025.1000"
+      },
+      "features": [
+        "disable_media_foundation_frame_size_change"
+      ]
     }
   ]
 }

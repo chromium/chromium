@@ -172,7 +172,7 @@ void RenderFrameHostImplPpapiSupport::DidDeleteOutOfProcessPepperInstance(
 void RenderFrameHostImplPpapiSupport::OpenChannelToPepperPlugin(
     const url::Origin& embedder_origin,
     const base::FilePath& path,
-    const absl::optional<url::Origin>& origin_lock,
+    const std::optional<url::Origin>& origin_lock,
     OpenChannelToPepperPluginCallback callback) {
   GetProcess()->pepper_renderer_connection()->OpenChannelToPepperPlugin(
       embedder_origin, path, origin_lock, std::move(callback));

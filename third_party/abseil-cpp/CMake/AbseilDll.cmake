@@ -310,6 +310,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/string_constant.h"
   "strings/internal/stringify_sink.h"
   "strings/internal/stringify_sink.cc"
+  "strings/internal/has_absl_stringify.h"
   "strings/has_absl_stringify.h"
   "strings/has_ostream_operator.h"
   "strings/match.cc"

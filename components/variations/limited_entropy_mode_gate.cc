@@ -10,12 +10,13 @@ namespace {
 bool g_is_limited_entropy_mode_enabled_for_testing = false;
 }
 
-bool IsLimitedEntropyModeEnabled() {
+bool IsLimitedEntropyModeEnabled(version_info::Channel channel) {
   if (g_is_limited_entropy_mode_enabled_for_testing) {
     return true;
   }
-  // TODO(crbug.com/1511779): Enable limited entropy mode by channel.
-  return false;
+  // TODO(crbug.com/1511779): Enable limited entropy mode in more channels.
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::UNKNOWN;
 }
 
 void EnableLimitedEntropyModeForTesting() {

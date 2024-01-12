@@ -11,13 +11,14 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -33,14 +34,6 @@ namespace {
 // Limit on the number of suggestions to appear in the pop-up menu under an
 // text input element in a form.
 const int kMaxAutocompleteMenuItems = 6;
-
-bool IsTextField(const FormFieldData& field) {
-  return field.form_control_type == FormControlType::kInputText ||
-         field.form_control_type == FormControlType::kInputSearch ||
-         field.form_control_type == FormControlType::kInputTelephone ||
-         field.form_control_type == FormControlType::kInputUrl ||
-         field.form_control_type == FormControlType::kInputEmail;
-}
 
 // Returns true if the field has a meaningful name.
 // An input field name 'field_2' bears no semantic meaning and there is a chance
@@ -292,7 +285,7 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
 
 // We put the following restriction on stored FormFields:
 //  - non-empty name
-//  - non-empty nor whitespace only value
+//  - neither empty nor whitespace-only value
 //  - text field
 //  - autocomplete is not disabled
 //  - value is not a credit card number
@@ -302,17 +295,13 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
 bool AutocompleteHistoryManager::IsFieldValueSaveable(
     const FormFieldData& field) {
   // We don't want to save a trimmed string, but we want to make sure that the
-  // value is non-empty nor only whitespaces.
-  bool is_value_valid = false;
-  for (const std::u16string::value_type& c : field.value) {
-    if (c != ' ') {
-      is_value_valid = true;
-      break;
-    }
-  }
-
-  return IsMeaningfulFieldName(field.name) && is_value_valid &&
-         !field.name.empty() && IsTextField(field) &&
+  // value is neither empty nor only whitespaces.
+  bool is_value_valid = base::ranges::any_of(
+      field.value, std::not_fn(base::IsUnicodeWhitespace<char16_t>));
+  return is_value_valid && IsMeaningfulFieldName(field.name) &&
+         !field.name.empty() && field.IsTextInputElement() &&
+         !field.IsPasswordInputElement() &&
+         field.form_control_type != FormControlType::kInputNumber &&
          field.should_autocomplete && !IsValidCreditCardNumber(field.value) &&
          !IsSSN(field.value) &&
          (field.properties_mask & kUserTyped || field.is_focusable) &&

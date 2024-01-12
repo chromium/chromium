@@ -314,7 +314,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   IdpTestServer* idp_server() { return idp_server_.get(); }
 
   void SetTestIdentityRequestDialogController(
-      absl::optional<std::string> dialog_selected_account) {
+      std::optional<std::string> dialog_selected_account) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
         dialog_selected_account);
     test_browser_client_->SetIdentityRequestDialogController(
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(WebIdExemptIdpBrowserTest,
   // Does not manually select any account. If auto re-authn is not triggered,
   // the test will time out.
   SetTestIdentityRequestDialogController(
-      /*dialog_selected_account=*/absl::nullopt);
+      /*dialog_selected_account=*/std::nullopt);
 
   // The client id `client_id_1` is on the `approved_clients` list defined in
   // content/test/data/fedcm/accounts_endpoint.json so by exempting the IdP from

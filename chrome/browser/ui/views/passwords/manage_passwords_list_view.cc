@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/separator.h"
@@ -34,7 +35,14 @@ ManagePasswordsListView::ManagePasswordsListView(
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
     std::optional<ui::ImageModel> store_icon = std::nullopt;
-    if (password_form->IsUsingAccountStore()) {
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kButterOnDesktopFollowup)) {
+      if (!password_form->IsUsingAccountStore()) {
+        store_icon = ui::ImageModel::FromVectorIcon(
+            vector_icons::kNotUploadedIcon, gfx::kPlaceholderColor,
+            gfx::kFaviconSize);
+      }
+    } else if (password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           vector_icons::kGoogleGLogoIcon,
@@ -43,6 +51,7 @@ ManagePasswordsListView::ManagePasswordsListView(
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
           gfx::kPlaceholderColor, gfx::kFaviconSize);
     }
+
     // TODO(crbug.com/1382017): Add a tooltip if needed.
     AddChildView(std::make_unique<RichHoverButton>(
         base::BindRepeating(
@@ -106,3 +115,6 @@ ManagePasswordsListView::ManagePasswordsListView(
 ManagePasswordsListView::~ManagePasswordsListView() = default;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsListView, kTopView);
+
+BEGIN_METADATA(ManagePasswordsListView)
+END_METADATA

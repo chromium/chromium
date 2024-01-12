@@ -9,9 +9,8 @@
 #include <vector>
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
 #include <initguid.h>
+#include <windows.h>
 
 #include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -115,8 +114,9 @@ std::optional<base::FilePath> GetVersionedInstallDirectory(
     UpdaterScope scope,
     const base::Version& version) {
   const std::optional<base::FilePath> path = GetInstallDirectory(scope);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->AppendASCII(version.GetString());
 }
 
@@ -180,8 +180,9 @@ TagParsingResult GetTagArgsForCommandLine(
   std::string tag = command_line.HasSwitch(kTagSwitch)
                         ? command_line.GetSwitchValueASCII(kTagSwitch)
                         : command_line.GetSwitchValueASCII(kHandoffSwitch);
-  if (tag.empty())
+  if (tag.empty()) {
     return {};
+  }
 
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(
@@ -287,8 +288,9 @@ GURL AppendQueryParameter(const GURL& url,
                           const std::string& value) {
   std::string query(url.query());
 
-  if (!query.empty())
+  if (!query.empty()) {
     query += "&";
+  }
 
   query += (EscapeQueryParamValue(name, true) + "=" +
             EscapeQueryParamValue(value, true));
@@ -324,16 +326,19 @@ std::optional<base::FilePath> WriteInstallerDataToTempFile(
     const std::string& installer_data) {
   VLOG(2) << __func__ << ": " << directory << ": " << installer_data;
 
-  if (!base::DirectoryExists(directory))
+  if (!base::DirectoryExists(directory)) {
     return std::nullopt;
+  }
 
-  if (installer_data.empty())
+  if (installer_data.empty()) {
     return std::nullopt;
+  }
 
   base::FilePath path;
   base::File file = base::CreateAndOpenTemporaryFileInDir(directory, &path);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return std::nullopt;
+  }
 
   const std::string installer_data_utf8_bom =
       base::StrCat({kUTF8BOM, installer_data});

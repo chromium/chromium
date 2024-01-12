@@ -105,16 +105,18 @@ TEST(UpdateClientUtils, IsValidInstallerAttributeName) {
 
   const char* const valid_names[] = {"A", "Z", "a", "a-b", "A_B",
                                      "z", "0", "9", "-_"};
-  for (const char* name : valid_names)
+  for (const char* name : valid_names) {
     EXPECT_TRUE(IsValidInstallerAttribute(
         make_pair(std::string(name), std::string("value"))));
+  }
 
   const char* const invalid_names[] = {
       "",   "a=1", " name", "name ", "na me", "<name", "name>",
       "\"", "\\",  "\xaa",  ".",     ",",     ";",     "+"};
-  for (const char* name : invalid_names)
+  for (const char* name : invalid_names) {
     EXPECT_FALSE(IsValidInstallerAttribute(
         make_pair(std::string(name), std::string("value"))));
+  }
 }
 
 // Tests that the value of an InstallerAttribute matches
@@ -130,15 +132,17 @@ TEST(UpdateClientUtils, IsValidInstallerAttributeValue) {
 
   const char* const valid_values[] = {"",  "a=1", "A", "Z",       "a",
                                       "z", "0",   "9", "-.,;+_=$"};
-  for (const char* value : valid_values)
+  for (const char* value : valid_values) {
     EXPECT_TRUE(IsValidInstallerAttribute(
         make_pair(std::string("name"), std::string(value))));
+  }
 
   const char* const invalid_values[] = {" ap", "ap ", "a p", "<ap",
                                         "ap>", "\"",  "\\",  "\xaa"};
-  for (const char* value : invalid_values)
+  for (const char* value : invalid_values) {
     EXPECT_FALSE(IsValidInstallerAttribute(
         make_pair(std::string("name"), std::string(value))));
+  }
 }
 
 TEST(UpdateClientUtils, RemoveUnsecureUrls) {

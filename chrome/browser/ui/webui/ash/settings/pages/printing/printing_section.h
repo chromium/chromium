@@ -46,7 +46,7 @@ class PrintingSection : public OsSettingsSection,
 
   void UpdateSavedPrintersSearchTags();
 
-  raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
+  raw_ptr<CupsPrintersManager> printers_manager_;
 };
 
 }  // namespace ash::settings

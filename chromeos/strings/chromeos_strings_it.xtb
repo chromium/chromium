@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">Dai un'occhiata alla nuova rivista digitale di Chromebook per gli artisti</translation>
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
+<translation id="1300115153046603471">APN è di tipo predefinito e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aggiornamento in corso (percentuale di completamento: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuti</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">home page del browser</translation>
 <translation id="1526389707933164996">Animazione del salvaschermo</translation>
 <translation id="152892567002884378">Alza il volume</translation>
-<translation id="1539242642795599947">L'APN è predefinito e di collegamento</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">colore retroilluminato</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selezionato</translation>
 <translation id="2652403576514495859">attivare o attivare la dettatura</translation>
+<translation id="2656001153562991489">Solo per Chromebook Plus</translation>
 <translation id="267442004702508783">aggiorna</translation>
 <translation id="268270014981824665">Attenuazione tastiera</translation>
 <translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">La descrizione è obbligatoria</translation>
+<translation id="386280020966669610">Dammi l'ispirazione</translation>
 <translation id="3865289341173661845">Contenuti della guida non disponibili.</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="3866249974567520381">Descrizione</translation>
@@ -405,6 +407,7 @@
 <translation id="4060260348856573701">Nuovo APN</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="409427325554347132">Salva dettagli del test</translation>
+<translation id="409469431304488632">Sperimentale</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Seleziona l'album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
@@ -440,10 +443,12 @@
 <translation id="4289849978083912975">Presentazione</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
+<translation id="4310735698903592804">Sfondi recenti IA di Google integrata</translation>
 <translation id="4333390807948134856">Tasto <ph name="KEY_NAME" /> premuto</translation>
 <translation id="4354430579665871434">chiave</translation>
 <translation id="4361257691546579041">L'APN è predefinito</translation>
 <translation id="437294888293595148">Reimposta tutte le scorciatoie</translation>
+<translation id="4376423484621194274">L'amministratore non consente la chiusura di <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Non eseguito</translation>
 <translation id="4378551569595875038">Connessione...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -552,6 +557,7 @@
 <translation id="5088172560898466307">Nome host del server</translation>
 <translation id="5089810972385038852">Stato</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Sinonimi:</translation>
 <translation id="5137451382116112100">Schermo intero</translation>
 <translation id="5142961317498132443">Autenticazione</translation>
 <translation id="5145081769226915336">Vuoi attivare automaticamente la modalità Buio?</translation>
@@ -613,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scansiona di nuovo</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN di collegamento abilitati siano disattivati o rimossi.</translation>
 <translation id="5600027863942488546">Tasto <ph name="KEY_NAME" /> testato</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5649768706273821470">Ascolta</translation>
@@ -644,6 +649,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">APN rilevato automaticamente.</translation>
 <translation id="5849570051105887917">Codice del provider principale</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Album di Galleria d'arte</translation>
 <translation id="5859969039821714932">Scorciatoia non disponibile. Premi una nuova scorciatoia senza <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -659,12 +665,12 @@
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File non trovato</translation>
+<translation id="593880865674747800">Crea altri sfondi in questo stile</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
 <translation id="5946538341867151940">La connessione non è stata ancora stabilita. Se il tuo operatore di telefonia mobile consiglia un APN personalizzato, inserisci le relative informazioni selezionando "+ Nuovo APN"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Sfondo predefinito</translation>
-<translation id="6001235009374883388">L'APN è di collegamento.</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Scorciatoie da tastiera</translation>
 <translation id="6034694447310538551">Attiva la reimpostazione mensile automatica</translation>
@@ -682,6 +688,7 @@
 <translation id="6104112872696127344">La scansione è stata annullata</translation>
 <translation id="6106186594183574873">Per terminare, inserisci la vecchia password</translation>
 <translation id="6108689792487843350">gateway non raggiungibile</translation>
+<translation id="6108952804512516814">Crea con l'IA</translation>
 <translation id="6112878310391905610">Questa impostazione è gestita dagli amministratori</translation>
 <translation id="6113701710518389813">Freccia su</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> + altri <ph name="NUMBER" /> album</translation>
@@ -750,6 +757,7 @@
 <translation id="6526200165918397681">Seleziona colore estratto dallo sfondo</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
 <translation id="6535178685492749208">Sei offline. Il feedback verrà inviato in un secondo momento.</translation>
+<translation id="6557784757915238407">L'APN è di tipo <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Vivace</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
@@ -809,6 +817,7 @@
 <translation id="7059230779847288458">In carica, <ph name="TIME_VALUE" /> al completamento della ricarica</translation>
 <translation id="7066538517128343186">la chiave <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepara il dispositivo</translation>
+<translation id="7076851914315147928">Scegli uno sfondo</translation>
 <translation id="708426984172631313">INTERROTTO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Stampa non riuscita - Autorizzazione negata</translation>
@@ -862,6 +871,7 @@
 <translation id="741244894080940828">conversione</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN <ph name="ATTACH" /> abilitati siano disattivati o rimossi.</translation>
 <translation id="7458970041932198923">Connettiti a una rete e ricarica la pagina per visualizzare e impostare gli avatar.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7481312909269577407">Avanti</translation>
@@ -913,9 +923,11 @@
 <translation id="7799817062559422778">Modalità Luce</translation>
 <translation id="780301667611848630">No, grazie</translation>
 <translation id="7805768142964895445">Stato</translation>
+<translation id="7819831665603418705">Usa un modello</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7841134249932030522">Abilita la modalità Buio</translation>
 <translation id="7846634333498149051">Tastiera</translation>
+<translation id="7850847810298646851">Sfondo IA di Google integrata</translation>
 <translation id="7856267634822906833">Touchscreen Bluetooth</translation>
 <translation id="7869143217755017858">Disabilita la modalità Buio</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -958,7 +970,6 @@
 <translation id="8151185429379586178">Strumenti per sviluppatori</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Invio</translation>
-<translation id="8183974620058026102">Allega</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
@@ -976,6 +987,7 @@
 <translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8329018942023753850">app calcolatrice</translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
+<translation id="8339024191194156249">Scopri di più sull'avvio automatico</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8349826889576450703">Avvio applicazioni</translation>

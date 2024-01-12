@@ -451,6 +451,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                     LaunchCallback callback,
                                     bool is_allowed);
 
+  // Launches apps saved in `launch_requests_` for `app_type`.
+  void LaunchFromPendingRequests(AppType app_type);
+
   bool ShouldReadIcons(AppType app_type) override;
 
   // Reads icon image files from the local app_service icon directory on disk.
@@ -550,7 +553,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   std::unique_ptr<apps::AppStorage> app_storage_;
 
-  raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
+  raw_ptr<SubscriberCrosapi> crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
 

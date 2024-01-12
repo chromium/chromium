@@ -616,7 +616,11 @@ TEST_P(VersionArcInputOverlayManagerTest, TestO4CGame) {
                                      window_bounds, kRandomGamePackageName);
   task_environment()->FastForwardBy(kIORead);
   auto* injector = GetTouchInjector(game_window->GetNativeWindow());
-  EXPECT_FALSE(injector);
+  if (IsBetaVersion()) {
+    EXPECT_TRUE(injector);
+  } else {
+    EXPECT_FALSE(injector);
+  }
   game_window.reset();
   task_environment()->RunUntilIdle();
 
@@ -628,11 +632,6 @@ TEST_P(VersionArcInputOverlayManagerTest, TestO4CGame) {
   injector = GetTouchInjector(game_window->GetNativeWindow());
   EXPECT_TRUE(injector);
   EXPECT_EQ(3u, injector->actions().size());
-  if (IsBetaVersion()) {
-    EXPECT_FALSE(injector->touch_injector_enable());
-  } else {
-    EXPECT_TRUE(injector->touch_injector_enable());
-  }
   game_window.reset();
 }
 

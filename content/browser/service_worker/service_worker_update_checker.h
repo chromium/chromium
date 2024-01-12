@@ -93,7 +93,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
           scripts_to_compare,
       const GURL& main_script_url,
       int64_t main_script_resource_id,
-      const absl::optional<std::string>& main_script_sha256_checksum,
+      const std::optional<std::string>& main_script_sha256_checksum,
       scoped_refptr<ServiceWorkerVersion> version_to_update,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       bool force_bypass_cache,
@@ -124,7 +124,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
           failure_info,
       std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
           paused_state,
-      const absl::optional<std::string>& sha256_checksum);
+      const std::optional<std::string>& sha256_checksum);
 
   const GURL& updated_script_url() const { return updated_script_url_; }
   bool network_accessed() const { return network_accessed_; }
@@ -140,7 +140,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
 
   const GURL main_script_url_;
   const int64_t main_script_resource_id_;
-  const absl::optional<std::string> main_script_sha256_checksum_;
+  const std::optional<std::string> main_script_sha256_checksum_;
 
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
       scripts_to_compare_;

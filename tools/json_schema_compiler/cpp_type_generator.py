@@ -58,11 +58,8 @@ class CppTypeGenerator(object):
     """Gets the representation for an enum default initialised, which is the
     typename with a default initialiser. e.g. MyEnum().
     """
-    namespace = ('%s::' % type_.namespace.unix_name
-      if current_namespace and current_namespace != type_.namespace else '')
-
-    return '{namespace}{typename}()'.format(
-      namespace=namespace,typename=cpp_util.Classname(type_.name))
+    cpp_type = self.GetCppType(type_)
+    return '{cpp_type}()'.format(cpp_type=cpp_type)
 
   def FormatStringForEnumValue(self, name):
     """Formats a string enum entry to the common constant format favoured by the

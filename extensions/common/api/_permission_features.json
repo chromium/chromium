@@ -504,7 +504,7 @@
     ]
   },
   "odfsConfigPrivate": {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
     "platforms": ["chromeos", "lacros"],
     "allowlist": [

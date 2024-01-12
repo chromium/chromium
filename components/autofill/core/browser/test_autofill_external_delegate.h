@@ -43,8 +43,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   void WaitForPopupHidden();
 
   void CheckSuggestions(FieldGlobalId field_id,
-                        size_t expected_num_suggestions,
-                        const Suggestion expected_suggestions[]);
+                        const std::vector<Suggestion>& expected_sugestions);
 
   // Check that the autofill suggestions were not sent at all.
   void CheckSuggestionsNotReturned(FieldGlobalId field_id);

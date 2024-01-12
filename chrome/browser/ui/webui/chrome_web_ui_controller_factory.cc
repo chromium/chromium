@@ -1176,6 +1176,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUISetTimeURL),
     GURL(chrome::kChromeUISlowURL),
     GURL(chrome::kChromeUISmbShareURL),
+    GURL(chrome::kChromeUISupportToolURL),
     GURL(chrome::kChromeUISysInternalsUrl),
     GURL(chrome::kChromeUIUntrustedCroshURL),
     GURL(chrome::kChromeUIUntrustedTerminalURL),

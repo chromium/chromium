@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // on destroy.
   std::vector<std::unique_ptr<SimpleGeolocationRequest>> requests_;
 
-  raw_ptr<GeolocationHandler, ExperimentalAsh> geolocation_handler_ = nullptr;
+  raw_ptr<GeolocationHandler> geolocation_handler_ = nullptr;
 
   std::string url_for_testing_;
 

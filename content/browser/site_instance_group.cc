@@ -128,7 +128,7 @@ SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
                            /*is_fenced=*/false,
                            /*is_fixed_storage_partition=*/false,
                            /*coop_related_group=*/nullptr,
-                           /*common_coop_origin=*/absl::nullopt),
+                           /*common_coop_origin=*/std::nullopt),
       process);
 }
 

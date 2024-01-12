@@ -176,7 +176,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuInfoUpdate) {
   EXPECT_FALSE(observer.gpu_info_updated());
 
   gpu::GPUInfo gpu_info;
-  manager->UpdateGpuInfo(gpu_info, absl::nullopt);
+  manager->UpdateGpuInfo(gpu_info, std::nullopt);
   {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
@@ -540,7 +540,7 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   // Simulate GPU process initialization completing with Vulkan unavailable.
   gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
       gpu::GpuFeatureType::GPU_FEATURE_TYPE_VULKAN);
-  manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
 
   // GpuDataManager should update its mode to be GL.
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
@@ -564,7 +564,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   // Simulate GPU process initialization completing with GL unavailable.
   gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
       gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
-  manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
 
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());

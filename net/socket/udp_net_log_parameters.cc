@@ -19,8 +19,7 @@ base::Value::Dict NetLogUDPDataTransferParams(int byte_count,
                                               const char* bytes,
                                               const IPEndPoint* address,
                                               NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("byte_count", byte_count);
+  auto dict = base::Value::Dict().Set("byte_count", byte_count);
   if (NetLogCaptureIncludesSocketBytes(capture_mode))
     dict.Set("bytes", NetLogBinaryValue(bytes, byte_count));
   if (address)
@@ -30,8 +29,7 @@ base::Value::Dict NetLogUDPDataTransferParams(int byte_count,
 
 base::Value::Dict NetLogUDPConnectParams(const IPEndPoint& address,
                                          handles::NetworkHandle network) {
-  base::Value::Dict dict;
-  dict.Set("address", address.ToString());
+  auto dict = base::Value::Dict().Set("address", address.ToString());
   if (network != handles::kInvalidNetworkHandle)
     dict.Set("bound_to_network", static_cast<int>(network));
   return dict;

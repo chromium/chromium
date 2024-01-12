@@ -199,12 +199,12 @@ class RemoteAppsManager
 
   void OnIconDownloaded(const std::string& id, const gfx::ImageSkia& icon);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   bool is_initialized_ = false;
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
-      app_list_syncable_service_ = nullptr;
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
-  raw_ptr<extensions::EventRouter, ExperimentalAsh> event_router_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService> app_list_syncable_service_ =
+      nullptr;
+  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
+  raw_ptr<extensions::EventRouter> event_router_ = nullptr;
   std::unique_ptr<apps::RemoteApps> remote_apps_;
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;

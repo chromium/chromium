@@ -31,8 +31,7 @@ bool ExceedsMaximumPathComponentLength(const std::string& component) {
 }  // namespace
 
 std::string GetUniqueSubDirectoryForAccountID(const std::string& account_id) {
-  std::string sub_directory =
-      base::HexEncode(base::as_bytes(base::make_span(account_id)));
+  std::string sub_directory = base::HexEncode(base::as_byte_span(account_id));
   if (ExceedsMaximumPathComponentLength(sub_directory)) {
     // Originally the hex encoded account id was used as sub-directory name,
     // so we must keep on using that to guarantee backwards compatibility.

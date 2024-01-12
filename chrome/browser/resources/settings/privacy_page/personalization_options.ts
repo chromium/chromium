@@ -30,6 +30,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {StatusAction, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
@@ -48,11 +49,16 @@ export interface SettingsPersonalizationOptionsElement {
     signinAllowedToggle: SettingsToggleButtonElement,
     metricsReportingControl: SettingsToggleButtonElement,
     metricsReportingLink: CrLinkRowElement,
+    urlCollectionToggle: SettingsToggleButtonElement,
   };
 }
 
-const SettingsPersonalizationOptionsElementBase =
-    RelaunchMixin(WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
+const SettingsPersonalizationOptionsElementBase = HelpBubbleMixin(
+    RelaunchMixin(WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
+
+// browser_element_identifiers constants
+const ANONYMIZED_URL_COLLECTION_ID =
+    'kAnonymizedUrlCollectionPersonalizationSettingId';
 
 export class SettingsPersonalizationOptionsElement extends
     SettingsPersonalizationOptionsElementBase {
@@ -179,6 +185,10 @@ export class SettingsPersonalizationOptionsElement extends
     this.addWebUiListener('metrics-reporting-change', setMetricsReportingPref);
     this.browserProxy_.getMetricsReporting().then(setMetricsReportingPref);
     // </if>
+
+    this.registerHelpBubble(
+        ANONYMIZED_URL_COLLECTION_ID,
+        this.$.urlCollectionToggle.getBubbleAnchor(), {anchorPaddingTop: 10});
   }
 
   // <if expr="chromeos_ash">

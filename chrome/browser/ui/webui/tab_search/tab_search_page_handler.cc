@@ -196,6 +196,11 @@ TabSearchPageHandler::TabSearchPageHandler(
         TabOrganizationServiceFactory::GetForProfile(profile);
     if (organization_service_) {
       organization_service_->AddObserver(this);
+      pref_change_registrar_.Init(profile->GetPrefs());
+      pref_change_registrar_.Add(
+          tab_search_prefs::kTabSearchTabIndex,
+          base::BindRepeating(&TabSearchPageHandler::NotifyTabIndexPrefChanged,
+                              base::Unretained(this), profile));
     }
   }
 }
@@ -991,6 +996,12 @@ void TabSearchPageHandler::NotifyTabsChanged() {
   debounce_timer_->Stop();
 }
 
+void TabSearchPageHandler::NotifyTabIndexPrefChanged(const Profile* profile) {
+  const int32_t index =
+      profile->GetPrefs()->GetInteger(tab_search_prefs::kTabSearchTabIndex);
+  page_->TabSearchTabIndexChanged(index);
+}
+
 bool TabSearchPageHandler::IsWebContentsVisible() {
   auto visibility = web_ui_->GetWebContents()->GetVisibility();
   return visibility == content::Visibility::VISIBLE ||
@@ -1054,7 +1065,8 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
         for (const std::unique_ptr<TabOrganization>& organization :
              session->tab_organizations()) {
           if (!organization->IsValidForOrganizing() ||
-              organization->choice().has_value()) {
+              organization->choice() !=
+                  TabOrganization::UserChoice::kNoChoice) {
             continue;
           }
           organizations.emplace_back(

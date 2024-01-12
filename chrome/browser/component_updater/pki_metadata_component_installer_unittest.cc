@@ -4,8 +4,6 @@
 
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 
-#include "services/network/public/cpp/network_service_buildflags.h"
-
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,6 +23,7 @@
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "testing/gmock/include/gmock/gmock.h"

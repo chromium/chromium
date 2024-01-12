@@ -343,7 +343,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoRelativeAnchor,
     kPseudoSlotted,
     kPseudoSpatialNavigationFocus,
-    kPseudoSpatialNavigationInterest,
     kPseudoSpellingError,
     kPseudoTargetText,
     // Always matches. See SetTrue().

@@ -15,10 +15,10 @@
 namespace growth {
 namespace {
 
-inline constexpr char kReactiveCampaigns[] = "reactiveCampaigns";
-inline constexpr char kProactiveCampaigns[] = "proactiveCampaigns";
-
 inline constexpr char kTargetings[] = "targetings";
+
+inline constexpr char kId[] = "id";
+inline constexpr char kStudyId[] = "studyId";
 
 // Targetings.
 // Demo Mode targeting paths.
@@ -52,16 +52,6 @@ inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
 
 }  // namespace
 
-const CampaignsPerSlot* GetProactiveCampaigns(
-    const CampaignsStore* campaigns_store) {
-  return campaigns_store->FindDict(kProactiveCampaigns);
-}
-
-const CampaignsPerSlot* GetReactiveCampaigns(
-    const CampaignsStore* campaigns_store) {
-  return campaigns_store->FindDict(kReactiveCampaigns);
-}
-
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot) {
   if (!campaigns_per_slot) {
@@ -83,6 +73,14 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
   }
 
   return nullptr;
+}
+
+std::optional<int> GetCampaignId(const Campaign* campaign) {
+  return campaign->FindInt(kId);
+}
+
+std::optional<int> GetStudyId(const Campaign* campaign) {
+  return campaign->FindInt(kStudyId);
 }
 
 // Targeting Base.

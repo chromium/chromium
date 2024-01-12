@@ -30,9 +30,9 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     kInterpolablePalette = 4,
   };
 
-  // Data layout should match SkFontarguments::PaletteOverride::ColorOverride.
+  // Data layout should match SkFontArguments::PaletteOverride::ColorOverride.
   struct FontPaletteOverride {
-    int index;
+    uint16_t index;
     Color color;
 
     bool operator==(const FontPaletteOverride& other) const {

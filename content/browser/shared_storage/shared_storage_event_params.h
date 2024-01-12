@@ -6,9 +6,9 @@
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_EVENT_PARAMS_H_
 
 #include <map>
+#include <optional>
 
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "url/gurl.h"
 
@@ -56,26 +56,26 @@ class CONTENT_EXPORT SharedStorageEventParams {
   ~SharedStorageEventParams();
   SharedStorageEventParams& operator=(const SharedStorageEventParams&);
 
-  absl::optional<std::string> script_source_url;
-  absl::optional<std::string> operation_name;
-  absl::optional<std::string> serialized_data;
-  absl::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+  std::optional<std::string> script_source_url;
+  std::optional<std::string> operation_name;
+  std::optional<std::string> serialized_data;
+  std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
       urls_with_metadata;
-  absl::optional<std::string> key;
-  absl::optional<std::string> value;
-  absl::optional<bool> ignore_if_present;
+  std::optional<std::string> key;
+  std::optional<std::string> value;
+  std::optional<bool> ignore_if_present;
 
  private:
   SharedStorageEventParams();
   SharedStorageEventParams(
-      absl::optional<std::string> script_source_url,
-      absl::optional<std::string> operation_name,
-      absl::optional<std::string> serialized_data,
-      absl::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+      std::optional<std::string> script_source_url,
+      std::optional<std::string> operation_name,
+      std::optional<std::string> serialized_data,
+      std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
           urls_with_metadata,
-      absl::optional<std::string> key,
-      absl::optional<std::string> value,
-      absl::optional<bool> ignore_if_present);
+      std::optional<std::string> key,
+      std::optional<std::string> value,
+      std::optional<bool> ignore_if_present);
 };
 
 }  // namespace content

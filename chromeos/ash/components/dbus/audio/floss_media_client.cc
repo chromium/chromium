@@ -111,7 +111,7 @@ class FlossMediaClientImpl : public FlossMediaClient {
   }
 
  private:
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> floss_media_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> floss_media_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

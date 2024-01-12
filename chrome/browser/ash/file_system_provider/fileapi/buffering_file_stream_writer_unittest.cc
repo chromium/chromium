@@ -56,7 +56,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
   FakeFileStreamWriter(const FakeFileStreamWriter&) = delete;
   FakeFileStreamWriter& operator=(const FakeFileStreamWriter&) = delete;
 
-  ~FakeFileStreamWriter() override {}
+  ~FakeFileStreamWriter() override = default;
 
   // storage::FileStreamWriter overrides.
   int Write(net::IOBuffer* buf,
@@ -93,9 +93,9 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
 
  private:
   int pending_bytes_;
-  raw_ptr<std::vector<std::string>, ExperimentalAsh> write_log_;  // Not owned.
-  raw_ptr<std::vector<int>, ExperimentalAsh> flush_log_;          // Not owned.
-  raw_ptr<int, ExperimentalAsh> cancel_counter_;                  // Not owned.
+  raw_ptr<std::vector<std::string>> write_log_;  // Not owned.
+  raw_ptr<std::vector<int>> flush_log_;          // Not owned.
+  raw_ptr<int> cancel_counter_;                  // Not owned.
   net::Error write_error_;
 };
 
@@ -103,7 +103,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
 
 class FileSystemProviderBufferingFileStreamWriterTest : public testing::Test {
  protected:
-  FileSystemProviderBufferingFileStreamWriterTest() {}
+  FileSystemProviderBufferingFileStreamWriterTest() = default;
 
   void SetUp() override {
     short_text_buffer_ =
@@ -113,7 +113,7 @@ class FileSystemProviderBufferingFileStreamWriterTest : public testing::Test {
     ASSERT_LT(short_text_buffer_->size(), long_text_buffer_->size());
   }
 
-  ~FileSystemProviderBufferingFileStreamWriterTest() override {}
+  ~FileSystemProviderBufferingFileStreamWriterTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<net::StringIOBuffer> short_text_buffer_;

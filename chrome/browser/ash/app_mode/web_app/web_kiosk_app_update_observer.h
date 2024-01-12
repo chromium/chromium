@@ -45,8 +45,8 @@ class WebKioskAppUpdateObserver : public apps::AppRegistryCache::Observer {
 
   AccountId account_id_;
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_;
-  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> web_app_provider_;
+  raw_ptr<apps::AppServiceProxy> app_service_;
+  raw_ptr<web_app::WebAppProvider> web_app_provider_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async Clipboard - verfiying API accessible in relevant event handler</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Foo</body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+
+'use strict';
+
+function writeToClipboard() {
+  const html_text = "<p style='color: red; font-style: oblique;'>Test</p>";
+  return navigator.clipboard.write([
+    new ClipboardItem({
+          'text/html': Promise.resolve(new Blob([html_text], {type: 'text/html'}))
+        }),
+    ]);
+}
+
+async_test(t => {
+  assert_implements(window.internals, 'window.internals is required');
+  document.addEventListener('paste', t.step_func_done(async () => {
+    const result = await navigator.clipboard.read();
+    assert_true(result instanceof Object);
+    assert_true(result[0] instanceof ClipboardItem);
+  }));
+  internals.executeCommand(document, 'paste', '');
+}, 'navigator.clipboard.read() succeeds in paste event');
+
+async_test(t => {
+  assert_implements(window.internals, 'window.internals is required');
+  document.addEventListener('cut', t.step_func_done(async () => {
+    const result = await writeToClipboard();
+  }));
+  internals.executeCommand(document, 'cut', '');
+}, 'navigator.clipboard.write() succeeds in cut event');
+
+async_test(t => {
+  assert_implements(window.internals, 'window.internals is required');
+  document.addEventListener('copy', t.step_func_done(async () => {
+    const result = await writeToClipboard();
+  }));
+  internals.executeCommand(document, 'copy', '');
+}, 'navigator.clipboard.write() succeeds in copy event');
+
+</script>

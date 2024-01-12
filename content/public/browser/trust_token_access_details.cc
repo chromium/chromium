@@ -14,7 +14,7 @@ TrustTokenAccessDetails::~TrustTokenAccessDetails() = default;
 TrustTokenAccessDetails::TrustTokenAccessDetails(
     const url::Origin& origin,
     network::mojom::TrustTokenOperationType type,
-    const absl::optional<url::Origin>& issuer,
+    const std::optional<url::Origin>& issuer,
     bool blocked)
     : origin(origin), issuer(issuer), blocked(blocked) {}
 

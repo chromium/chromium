@@ -109,13 +109,13 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     const gfx::Size& max_size,
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
-  void ChangeTarget(const absl::optional<viz::VideoCaptureTarget>& target,
+  void ChangeTarget(const std::optional<viz::VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
     MockChangeTarget(target, sub_capture_target_version);
   }
   MOCK_METHOD2(MockChangeTarget,
-               void(const absl::optional<viz::VideoCaptureTarget>& target,
+               void(const std::optional<viz::VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version));
   void Start(
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer,
@@ -353,7 +353,7 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     const viz::VideoCaptureTarget target(viz::FrameSinkId{1, 1});
     EXPECT_CALL(
         capturer_,
-        MockChangeTarget(absl::optional<viz::VideoCaptureTarget>(target), 0));
+        MockChangeTarget(std::optional<viz::VideoCaptureTarget>(target), 0));
     EXPECT_CALL(
         capturer_,
         MockStart(NotNull(),
@@ -606,7 +606,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   // and destroy the VideoFrameReceiver.
   {
     EXPECT_CALL(capturer_,
-                MockChangeTarget(absl::optional<viz::VideoCaptureTarget>(),
+                MockChangeTarget(std::optional<viz::VideoCaptureTarget>(),
                                  /*sub_capture_target_version=*/0));
     EXPECT_CALL(capturer_, MockStop());
     POST_DEVICE_METHOD_CALL0(OnTargetPermanentlyLost);

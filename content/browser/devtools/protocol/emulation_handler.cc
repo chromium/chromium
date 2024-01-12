@@ -58,13 +58,13 @@ display::mojom::ScreenOrientation WebScreenOrientationTypeFromString(
   return display::mojom::ScreenOrientation::kUndefined;
 }
 
-absl::optional<content::DisplayFeature::Orientation>
+std::optional<content::DisplayFeature::Orientation>
 DisplayFeatureOrientationTypeFromString(const std::string& type) {
   if (type == Emulation::DisplayFeature::OrientationEnum::Vertical)
     return content::DisplayFeature::Orientation::kVertical;
   if (type == Emulation::DisplayFeature::OrientationEnum::Horizontal)
     return content::DisplayFeature::Orientation::kHorizontal;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::expected<device::mojom::DevicePostureType, protocol::Response>
@@ -553,12 +553,11 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     }
   }
 
-  absl::optional<content::DisplayFeature> content_display_feature =
-      absl::nullopt;
+  std::optional<content::DisplayFeature> content_display_feature = std::nullopt;
   if (display_feature.has_value()) {
     protocol::Emulation::DisplayFeature& emu_display_feature =
         display_feature.value();
-    absl::optional<content::DisplayFeature::Orientation> disp_orientation =
+    std::optional<content::DisplayFeature::Orientation> disp_orientation =
         DisplayFeatureOrientationTypeFromString(
             emu_display_feature.GetOrientation());
     if (!disp_orientation) {
@@ -705,7 +704,7 @@ Response EmulationHandler::SetUserAgentOverride(
   user_agent_ = user_agent;
   accept_language_ = accept_lang;
 
-  user_agent_metadata_ = absl::nullopt;
+  user_agent_metadata_ = std::nullopt;
   if (!ua_metadata_override.has_value()) {
     return Response::FallThrough();
   }
@@ -979,7 +978,7 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
 }
 
 bool EmulationHandler::ApplyUserAgentMetadataOverrides(
-    absl::optional<blink::UserAgentMetadata>* override_out) {
+    std::optional<blink::UserAgentMetadata>* override_out) {
   // This is conditional on basic user agent override being on; this helps us
   // emulate a device not sending any UA client hints.
   if (user_agent_.empty())

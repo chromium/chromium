@@ -78,12 +78,15 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   struct PdfOcrRequest {
     PdfOcrRequest(const ui::AXNodeID& image_node_id,
                   const chrome_pdf::AccessibilityImageInfo& image,
+                  const ui::AXNodeID& root_node_id,
                   const ui::AXNodeID& parent_node_id,
                   const ui::AXNodeID& page_node_id,
                   uint32_t page_index);
+    PdfOcrRequest(const PdfOcrRequest& other);
 
     const ui::AXNodeID image_node_id;
     const chrome_pdf::AccessibilityImageInfo image;
+    const ui::AXNodeID root_node_id;
     const ui::AXNodeID parent_node_id;
     const ui::AXNodeID page_node_id;
     const uint32_t page_index;
@@ -105,6 +108,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
     PdfOcrService(chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
                   content::RenderFrame& render_frame,
+                  ui::AXNodeID root_node_id,
                   uint32_t page_count,
                   OnOcrDataReceivedCallback callback);
 
@@ -115,20 +119,18 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
     // If the OCR Service is created before the PDF is loaded or reloaded, i.e.
     // before `PdfAccessibilityTree::SetAccessibilityDocInfo` is called,
-    // `PdfAccessibilityTree::remaining_page_count_` would be wrong, hence
-    // PdfAccessibilityTree must call this method to keep it up to date.
-    void SetPageCount(uint32_t page_count);
+    // previous requests are removed and page count and root node are re-set.
+    void ResetService(ui::AXNodeID root_node_id, uint32_t page_count);
     void OcrPage(base::queue<PdfOcrRequest> page_requests);
     bool AreAllPagesOcred() const;
     bool AreAllPagesInBatchOcred() const;
-    void CancelPendingRequests();
     void SetScreenAIAnnotatorForTesting(
         mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
             screen_ai_annotator);
     void ResetRemainingPageCountForTesting();
     uint32_t pages_per_batch_for_testing() const { return pages_per_batch_; }
 
-    bool IsOnceCanceled() const { return canceled_once_; }
+    uint32_t GetOcrCancelCount() const { return ocr_cancel_count_; }
 
    private:
     static uint32_t ComputePagesPerBatch(uint32_t page_count);
@@ -143,6 +145,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
     uint32_t pages_per_batch_;
     uint32_t remaining_page_count_;
+    ui::AXNodeID root_node_id_;
 
     // True if there are pending OCR requests. Used to determine if `OcrPage`
     // should call `OcrNextImage` or if the next call to
@@ -150,13 +153,9 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     // possibility of processing requests in the wrong order.
     bool is_ocr_in_progress_ = false;
 
-    // True if a pending ocr request should be canceled and not sent to update
-    // the tree.
-    bool cancel_next_ocr_result_ = false;
-
     // TODO(crbug.com/1508404): Remove after crash root cause is ensured. Only
     // used for debug dump.
-    bool canceled_once_ = false;
+    uint32_t ocr_cancel_count_ = 0;
 
     // A PDF is made up of a number of pages, and each page might have one or
     // more inaccessible images that need to be OCRed. This queue could contain

@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/button.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -224,3 +225,6 @@ void PasswordBubbleViewBase::Init() {
   SetTitle(controller->GetTitle());
   SetShowTitle(!controller->GetTitle().empty());
 }
+
+BEGIN_METADATA(PasswordBubbleViewBase)
+END_METADATA

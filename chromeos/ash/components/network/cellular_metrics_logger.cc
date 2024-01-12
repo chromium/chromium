@@ -377,15 +377,56 @@ CellularMetricsLogger::ShillErrorToConnectResult(
   return CellularMetricsLogger::ShillConnectResult::kUnknown;
 }
 
+class ESimFeatureUsageMetricsBase {
+ public:
+  ESimFeatureUsageMetricsBase(NetworkStateHandler* network_state_handler)
+      : network_state_handler_(network_state_handler) {}
+
+  virtual ~ESimFeatureUsageMetricsBase() = default;
+
+  // Returns whether there are any known EUICCs.
+  bool HasAvailableEuiccs() const {
+    return HermesManagerClient::Get() &&
+           HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
+  }
+
+  // Returns whether there is a network state, i.e., a Shill service, for an
+  // eSIM profile. When |expect_managed| is |true| this function will require
+  // that the network is managed.
+  bool HasESimNetwork(bool expect_managed) const {
+    NetworkStateHandler::NetworkStateList network_list;
+    network_state_handler_->GetNetworkListByType(
+        ash::NetworkTypePattern::Cellular(), /*configured_only=*/false,
+        /*visible_only=*/true, /*default_limit=*/-1, &network_list);
+
+    for (const NetworkState* network : network_list) {
+      // Skip all pSIM networks.
+      if (network->eid().empty()) {
+        continue;
+      }
+      if (expect_managed && !network->IsManagedByPolicy()) {
+        continue;
+      }
+      return true;
+    }
+    return false;
+  }
+
+ protected:
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+};
+
 // Reports daily eSIM Standard Feature Usage Logging metrics. Note that if an
 // object of this type is destroyed and created in the same day, metrics
 // eligibility and enablement will only be reported once. Registers to local
 // state prefs instead of profile prefs as cellular network is available to
 // anyone using the device, as opposed to per profile basis.
 class ESimFeatureUsageMetrics
-    : public feature_usage::FeatureUsageMetrics::Delegate {
+    : public feature_usage::FeatureUsageMetrics::Delegate,
+      public ESimFeatureUsageMetricsBase {
  public:
-  ESimFeatureUsageMetrics() {
+  ESimFeatureUsageMetrics(NetworkStateHandler* network_state_handler)
+      : ESimFeatureUsageMetricsBase(network_state_handler) {
     feature_usage_metrics_ =
         std::make_unique<feature_usage::FeatureUsageMetrics>(
             kESimUMAFeatureName, this);
@@ -395,13 +436,21 @@ class ESimFeatureUsageMetrics
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const final {
-    // If the device is eligible to use ESim.
-    return HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
+    return HasAvailableEuiccs() || HasESimNetwork(/*expect_managed=*/false);
   }
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEnabled() const final {
-    // If there are installed eSIM profiles.
+    if (!IsEligible()) {
+      return false;
+    }
+
+    // Check for eSIM profiles known to Shill.
+    if (HasESimNetwork(/*expect_managed=*/false)) {
+      return true;
+    }
+
+    // Check for eSIM profiles known to Hermes.
     for (const dbus::ObjectPath& euicc_path :
          HermesManagerClient::Get()->GetAvailableEuiccs()) {
       HermesEuiccClient::Properties* euicc_properties =
@@ -430,6 +479,7 @@ class ESimFeatureUsageMetrics
 
   // Should be called after an attempt to connect to an eSIM profile.
   void RecordUsage(bool success) const {
+    DCHECK(IsEnabled());
     feature_usage_metrics_->RecordUsage(success);
   }
 
@@ -446,12 +496,13 @@ class ESimFeatureUsageMetrics
 // local state prefs instead of profile prefs as cellular network is available
 // to anyone using the device, as opposed to per profile basis.
 class EnterpriseESimFeatureUsageMetrics
-    : public feature_usage::FeatureUsageMetrics::Delegate {
+    : public feature_usage::FeatureUsageMetrics::Delegate,
+      public ESimFeatureUsageMetricsBase {
  public:
   EnterpriseESimFeatureUsageMetrics(
       NetworkStateHandler* network_state_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler)
-      : network_state_handler_(network_state_handler),
+      : ESimFeatureUsageMetricsBase(network_state_handler),
         managed_network_configuration_handler_(
             managed_network_configuration_handler) {
     feature_usage_metrics_ =
@@ -465,8 +516,7 @@ class EnterpriseESimFeatureUsageMetrics
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const final {
-    return HermesManagerClient::Get() &&
-           HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
+    return HasAvailableEuiccs() || HasESimNetwork(/*expect_managed=*/false);
   }
 
   // feature_usage::FeatureUsageMetrics::Delegate:
@@ -474,6 +524,12 @@ class EnterpriseESimFeatureUsageMetrics
     if (!IsEligible()) {
       return false;
     }
+
+    // Check if there is already a managed eSIM network known.
+    if (HasESimNetwork(/*expect_managed=*/true)) {
+      return true;
+    }
+
     const base::Value::Dict* policy =
         managed_network_configuration_handler_->GetGlobalConfigFromPolicy(
             /*userhash=*/std::string());
@@ -500,22 +556,12 @@ class EnterpriseESimFeatureUsageMetrics
     if (!IsAccessible().value_or(false)) {
       return false;
     }
-
-    NetworkStateHandler::NetworkStateList network_list;
-    network_state_handler_->GetNetworkListByType(
-        ash::NetworkTypePattern::Cellular(), /*configured_only=*/false,
-        /*visible_only=*/true, /*default_limit=*/-1, &network_list);
-
-    for (const NetworkState* network : network_list) {
-      if (network->IsManagedByPolicy()) {
-        return true;
-      }
-    }
-    return false;
+    return HasESimNetwork(/*expect_managed=*/true);
   }
 
   // Should be called after an attempt to connect to an eSIM profile.
   void RecordUsage(bool success) const {
+    DCHECK(IsEnabled());
     feature_usage_metrics_->RecordUsage(success);
   }
 
@@ -523,9 +569,7 @@ class EnterpriseESimFeatureUsageMetrics
   void StopUsage() { feature_usage_metrics_->StopSuccessfulUsage(); }
 
  private:
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_ = nullptr;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
@@ -602,7 +646,8 @@ void CellularMetricsLogger::Init(
     network_connection_handler_->AddObserver(this);
   }
 
-  esim_feature_usage_metrics_ = std::make_unique<ESimFeatureUsageMetrics>();
+  esim_feature_usage_metrics_ =
+      std::make_unique<ESimFeatureUsageMetrics>(network_state_handler_);
   if (ash::features::IsSmdsSupportEnabled() &&
       InstallAttributes::IsInitialized() &&
       InstallAttributes::Get()->IsEnterpriseManaged()) {

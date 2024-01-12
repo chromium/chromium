@@ -60,31 +60,6 @@ XMLPUBFUN void xmlCheckVersion(int version);
  */
 #define LIBXML_TEST_VERSION xmlCheckVersion(@LIBXML_VERSION_NUMBER@);
 
-#ifndef VMS
-#if @WITH_TRIO@
-/**
- * WITH_TRIO:
- *
- * defined if the trio support need to be configured in
- */
-#define WITH_TRIO
-#else
-/**
- * WITHOUT_TRIO:
- *
- * defined if the trio support should not be configured in
- */
-#define WITHOUT_TRIO
-#endif
-#else /* VMS */
-/**
- * WITH_TRIO:
- *
- * defined if the trio support need to be configured in
- */
-#define WITH_TRIO 1
-#endif /* VMS */
-
 /**
  * LIBXML_THREAD_ENABLED:
  *
@@ -448,7 +423,11 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #  endif
 #endif
 
-#if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
+#if defined(__LCC__)
+  #define XML_IGNORE_FPTR_CAST_WARNINGS
+  #define XML_POP_WARNINGS \
+    _Pragma("diag_default 1215")
+#elif defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
   #if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 800)
     #define XML_IGNORE_FPTR_CAST_WARNINGS \
       _Pragma("GCC diagnostic push") \
@@ -492,7 +471,7 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #endif
 #endif /* __GNUC__ */
 
-#define XML_EMPTY
+#define XML_NO_ATTR
 
 #ifdef LIBXML_THREAD_ENABLED
   #define XML_DECLARE_GLOBAL(name, type, attrs) \

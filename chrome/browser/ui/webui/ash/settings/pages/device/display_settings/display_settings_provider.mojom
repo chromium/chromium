@@ -17,7 +17,8 @@ enum DisplaySettingsType {
   kNightLightSchedule,
   kDisplayPage,
   kMirrorMode,
-  // TODO(zhangwenyu): handle more display settings.
+  kUnifiedMode,
+  kPrimaryDisplay,
 };
 
 // Value of the display settings.

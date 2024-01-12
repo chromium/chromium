@@ -54,9 +54,7 @@ void ReturnQueryResults(
 
 struct FileTasksNotifier::PendingFileAvailabilityTask {
   storage::FileSystemURL url;
-  raw_ptr<FileTasksNotifier::FileAvailability,
-          DanglingUntriaged | ExperimentalAsh>
-      output;
+  raw_ptr<FileTasksNotifier::FileAvailability, DanglingUntriaged> output;
   base::OnceClosure done;
 };
 

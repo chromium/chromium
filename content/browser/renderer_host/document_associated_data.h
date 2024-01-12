@@ -119,7 +119,7 @@ class DocumentAssociatedData : public base::SupportsUserData {
 
   // See comments for |RenderFrameHostImpl::GetDevToolsNavigationToken()| for
   // more details.
-  const absl::optional<base::UnguessableToken>& devtools_navigation_token()
+  const std::optional<base::UnguessableToken>& devtools_navigation_token()
       const {
     return devtools_navigation_token_;
   }

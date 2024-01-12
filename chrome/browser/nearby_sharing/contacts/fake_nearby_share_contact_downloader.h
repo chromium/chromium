@@ -54,7 +54,7 @@ class FakeNearbyShareContactDownloader : public NearbyShareContactDownloader {
     std::vector<raw_ptr<FakeNearbyShareContactDownloader, VectorExperimental>>
         instances_;
     base::TimeDelta latest_timeout_;
-    raw_ptr<NearbyShareClientFactory, ExperimentalAsh> latest_client_factory_;
+    raw_ptr<NearbyShareClientFactory> latest_client_factory_;
   };
 
   FakeNearbyShareContactDownloader(const std::string& device_id,

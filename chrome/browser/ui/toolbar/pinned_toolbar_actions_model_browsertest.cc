@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
 
 // Verify that the search companion updates the model and prefs object
 // appropriately.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
                        MigratingSearchCompanionUpdatesModel) {
   // Verify nothing happens if the migration already happened.
@@ -398,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
     EXPECT_EQ(search_companion_string, list_1[0].GetString());
   }
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(dljames): Write tests for guest and incognito mode profile that check
 // that we cannot modify the model at all.

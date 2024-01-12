@@ -10,14 +10,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/common/origin_util.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -90,6 +95,46 @@ bool IsPreconnectExpensive() {
 #endif
 }
 
+void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp) ||
+      !blink::features::kSpeculativeServiceWorkerWarmUpFromLoadingPredictor
+           .Get()) {
+    return;
+  }
+
+  if (!profile) {
+    return;
+  }
+
+  content::StoragePartition* storage_partition =
+      profile->GetDefaultStoragePartition();
+
+  if (!storage_partition) {
+    return;
+  }
+
+  content::ServiceWorkerContext* service_worker_context =
+      storage_partition->GetServiceWorkerContext();
+
+  if (!service_worker_context) {
+    return;
+  }
+
+  if (!content::OriginCanAccessServiceWorkers(url)) {
+    return;
+  }
+
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
+
+  if (!service_worker_context->MaybeHasRegistrationForStorageKey(key)) {
+    return;
+  }
+
+  service_worker_context->WarmUpServiceWorker(url, key, base::DoNothing());
+}
+
 }  // namespace
 
 LoadingPredictor::LoadingPredictor(const LoadingPredictorConfig& config,
@@ -117,6 +162,11 @@ bool LoadingPredictor::PrepareForPageLoad(
     absl::optional<PreconnectPrediction> preconnect_prediction) {
   if (shutdown_)
     return true;
+
+  // Prewarm disk cache before preconnecting network.
+  MaybePrewarmResources(url);
+
+  MaybeWarmUpServiceWorker(url, profile_);
 
   if (origin == HintOrigin::OMNIBOX) {
     // Omnibox hints are lightweight and need a special treatment.
@@ -212,10 +262,7 @@ ResourcePrefetchPredictor* LoadingPredictor::resource_prefetch_predictor() {
 }
 
 PreconnectManager* LoadingPredictor::preconnect_manager() {
-  if (shutdown_) {
-    return nullptr;
-  }
-
+  CHECK(!shutdown_);
   if (!preconnect_manager_) {
     preconnect_manager_ =
         std::make_unique<PreconnectManager>(GetWeakPtr(), profile_);
@@ -225,12 +272,8 @@ PreconnectManager* LoadingPredictor::preconnect_manager() {
 }
 
 PrefetchManager* LoadingPredictor::prefetch_manager() {
-  if (!base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch))
-    return nullptr;
-
-  if (shutdown_) {
-    return nullptr;
-  }
+  CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  CHECK(!shutdown_);
 
   if (!prefetch_manager_) {
     prefetch_manager_ =
@@ -325,9 +368,9 @@ void LoadingPredictor::CleanupAbandonedHintsAndNavigations(
 
 void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
                                           PreconnectPrediction prediction) {
-  DCHECK(!shutdown_);
+  CHECK(!shutdown_);
   if (!prediction.prefetch_requests.empty()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+    CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }
 
@@ -469,6 +512,40 @@ void LoadingPredictor::PreconnectURLIfAllowed(
 
   preconnect_manager()->StartPreconnectUrl(url, allow_credentials,
                                            network_anonymization_key);
+}
+
+void LoadingPredictor::MaybePrewarmResources(
+    const GURL& top_frame_main_resource_url) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kHttpDiskCachePrewarming)) {
+    return;
+  }
+
+  if (shutdown_) {
+    return;
+  }
+
+  if (!top_frame_main_resource_url.is_valid() ||
+      !top_frame_main_resource_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  absl::optional<LcppData> lcpp_data =
+      resource_prefetch_predictor()->GetLcppData(top_frame_main_resource_url);
+
+  if (!lcpp_data || !IsValidLcppStat(lcpp_data->lcpp_stat())) {
+    return;
+  }
+
+  if (!prewarm_http_disk_cache_manager_) {
+    prewarm_http_disk_cache_manager_ =
+        std::make_unique<PrewarmHttpDiskCacheManager>(
+            profile_->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess());
+  }
+
+  prewarm_http_disk_cache_manager_->MaybePrewarmResources(
+      top_frame_main_resource_url, PredictFetchedSubresourceUrls(*lcpp_data));
 }
 
 }  // namespace predictors

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,7 +45,6 @@
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -150,16 +150,16 @@ url::Origin DeserializeOrigin(const std::string& serialized_origin) {
   return url::Origin::Create(GURL(serialized_origin));
 }
 
-std::string Serialize(const absl::optional<GURL>& url) {
+std::string Serialize(const std::optional<GURL>& url) {
   if (!url) {
     return std::string();
   }
   return url->spec();
 }
-absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
+std::optional<GURL> DeserializeURL(const std::string& serialized_url) {
   GURL result(serialized_url);
   if (result.is_empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
@@ -215,7 +215,7 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(const PassKey& passkey,
 }
 
 std::string Serialize(
-    const absl::optional<base::flat_map<std::string, double>>& flat_map) {
+    const std::optional<base::flat_map<std::string, double>>& flat_map) {
   if (!flat_map) {
     return std::string();
   }
@@ -225,12 +225,12 @@ std::string Serialize(
   }
   return Serialize(base::Value(std::move(dict)));
 }
-absl::optional<base::flat_map<std::string, double>> DeserializeStringDoubleMap(
+std::optional<base::flat_map<std::string, double>> DeserializeStringDoubleMap(
     const std::string& serialized_flat_map) {
   std::unique_ptr<base::Value> flat_map_value =
       DeserializeValue(serialized_flat_map);
   if (!flat_map_value || !flat_map_value->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Extract all key/values pairs to a vector before writing to a flat_map,
@@ -238,7 +238,7 @@ absl::optional<base::flat_map<std::string, double>> DeserializeStringDoubleMap(
   std::vector<std::pair<std::string, double>> pairs;
   for (const auto pair : flat_map_value->GetDict()) {
     if (!pair.second.is_double()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     pairs.emplace_back(pair.first, pair.second.GetDouble());
   }
@@ -277,7 +277,7 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
 }
 
 std::string Serialize(
-    const absl::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
+    const std::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
   std::string serialized_ads;
   AdProtos ad_protos =
       ads.has_value() ? GetAdProtosFromAds(ads.value()) : AdProtos();
@@ -286,13 +286,13 @@ std::string Serialize(
   return serialized_ads;
 }
 
-absl::optional<std::vector<blink::InterestGroup::Ad>>
+std::optional<std::vector<blink::InterestGroup::Ad>>
 DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
                                      const std::string& serialized_ads,
                                      bool for_components) {
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value || !ads_value->is_list()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<blink::InterestGroup::Ad> result;
   for (const auto& ad_value : ads_value->GetList()) {
@@ -305,7 +305,7 @@ DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
   return result;
 }
 
-absl::optional<std::vector<blink::InterestGroup::Ad>>
+std::optional<std::vector<blink::InterestGroup::Ad>>
 DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
                                       const std::string& serialized_ads) {
   AdProtos ad_protos;
@@ -313,11 +313,13 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
   bool success = ad_protos.ParseFromString(serialized_ads);
 
   if (not success || ad_protos.ads().empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<blink::InterestGroup::Ad> out;
+  out.reserve(ad_protos.ads_size());
   for (const auto& ad_proto : ad_protos.ads()) {
-    blink::InterestGroup::Ad ad(passkey, ad_proto.render_url());
+    blink::InterestGroup::Ad& ad =
+        out.emplace_back(passkey, ad_proto.render_url());
     if (ad_proto.has_size_group()) {
       ad.size_group = ad_proto.size_group();
     }
@@ -336,7 +338,9 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
     }
     if (!ad_proto.allowed_reporting_origins().empty()) {
       std::vector<url::Origin> allowed_reporting_origins_vector;
-      for (std::string allowed_reporting_origin :
+      allowed_reporting_origins_vector.reserve(
+          ad_proto.allowed_reporting_origins_size());
+      for (const std::string& allowed_reporting_origin :
            ad_proto.allowed_reporting_origins()) {
         allowed_reporting_origins_vector.emplace_back(
             DeserializeOrigin(allowed_reporting_origin));
@@ -344,14 +348,12 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
       ad.allowed_reporting_origins =
           std::move(allowed_reporting_origins_vector);
     }
-    out.push_back(ad);
   }
   return out;
 }
 
 std::string Serialize(
-    const absl::optional<base::flat_map<std::string, blink::AdSize>>&
-        ad_sizes) {
+    const std::optional<base::flat_map<std::string, blink::AdSize>>& ad_sizes) {
   if (!ad_sizes) {
     return std::string();
   }
@@ -369,11 +371,11 @@ std::string Serialize(
   }
   return Serialize(base::Value(std::move(dict)));
 }
-absl::optional<base::flat_map<std::string, blink::AdSize>>
+std::optional<base::flat_map<std::string, blink::AdSize>>
 DeserializeStringSizeMap(const std::string& serialized_sizes) {
   std::unique_ptr<base::Value> dict = DeserializeValue(serialized_sizes);
   if (!dict || !dict->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<std::pair<std::string, blink::AdSize>> result;
   for (std::pair<const std::string&, base::Value&> entry : dict->GetDict()) {
@@ -386,7 +388,7 @@ DeserializeStringSizeMap(const std::string& serialized_sizes) {
     const base::Value* height_val = size_dict->Find("height");
     const base::Value* height_units_val = size_dict->Find("height_units");
     if (!width_val || !width_units_val || !height_val || !height_units_val) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     result.emplace_back(entry.first,
                         blink::AdSize(width_val->GetDouble(),
@@ -400,7 +402,7 @@ DeserializeStringSizeMap(const std::string& serialized_sizes) {
 }
 
 std::string Serialize(
-    const absl::optional<base::flat_map<std::string, std::vector<std::string>>>&
+    const std::optional<base::flat_map<std::string, std::vector<std::string>>>&
         size_groups) {
   if (!size_groups) {
     return std::string();
@@ -415,11 +417,11 @@ std::string Serialize(
   }
   return Serialize(base::Value(std::move(dict)));
 }
-absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+std::optional<base::flat_map<std::string, std::vector<std::string>>>
 DeserializeStringStringVectorMap(const std::string& serialized_groups) {
   std::unique_ptr<base::Value> dict = DeserializeValue(serialized_groups);
   if (!dict || !dict->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<std::pair<std::string, std::vector<std::string>>> result;
   for (std::pair<const std::string&, base::Value&> entry : dict->GetDict()) {
@@ -435,7 +437,7 @@ DeserializeStringStringVectorMap(const std::string& serialized_groups) {
   return result;
 }
 
-std::string Serialize(const absl::optional<std::vector<std::string>>& strings) {
+std::string Serialize(const std::optional<std::vector<std::string>>& strings) {
   if (!strings) {
     return std::string();
   }
@@ -446,11 +448,11 @@ std::string Serialize(const absl::optional<std::vector<std::string>>& strings) {
   return Serialize(list);
 }
 
-absl::optional<std::vector<std::string>> DeserializeStringVector(
+std::optional<std::vector<std::string>> DeserializeStringVector(
     const std::string& serialized_vector) {
   std::unique_ptr<base::Value> list = DeserializeValue(serialized_vector);
   if (!list || !list->is_list()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<std::string> result;
   for (const auto& value : list->GetList()) {
@@ -472,7 +474,7 @@ SellerCapabilitiesType DeserializeSellerCapabilities(int64_t serialized) {
 }
 
 std::string Serialize(
-    const absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>&
+    const std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>&
         flat_map) {
   if (!flat_map) {
     return std::string();
@@ -484,21 +486,21 @@ std::string Serialize(
   }
   return Serialize(base::Value(std::move(dict)));
 }
-absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
 DeserializeSellerCapabilitiesMap(const std::string& serialized) {
   std::unique_ptr<base::Value> dict = DeserializeValue(serialized);
   if (!dict || !dict->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<std::pair<url::Origin, SellerCapabilitiesType>> result;
   for (std::pair<const std::string&, base::Value&> entry : dict->GetDict()) {
     std::string* value_string = entry.second.GetIfString();
     if (!value_string) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     int64_t value_bitmask;
     if (!base::StringToInt64(*value_string, &value_bitmask)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     result.emplace_back(DeserializeOrigin(entry.first),
                         DeserializeSellerCapabilities(value_bitmask));
@@ -518,16 +520,16 @@ blink::AuctionServerRequestFlags DeserializeAuctionServerRequestFlags(
 }
 
 std::vector<uint8_t> Serialize(
-    absl::optional<blink::InterestGroup::AdditionalBidKey> key) {
+    std::optional<blink::InterestGroup::AdditionalBidKey> key) {
   if (!key || key->empty()) {
     return std::vector<uint8_t>();
   }
   return std::vector<uint8_t>(key->begin(), key->end());
 }
-absl::optional<blink::InterestGroup::AdditionalBidKey>
+std::optional<blink::InterestGroup::AdditionalBidKey>
 DeserializeAdditionalBidKey(const base::span<const uint8_t>& serialized) {
   if (serialized.size() != ED25519_PUBLIC_KEY_LEN) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   blink::InterestGroup::AdditionalBidKey deserialized;
   std::copy(serialized.begin(), serialized.end(), deserialized.begin());
@@ -538,8 +540,8 @@ DeserializeAdditionalBidKey(const base::span<const uint8_t>& serialized) {
 // existing set of overrides store with an interest group. Populates `overrides`
 // if it was previously null.
 void MergePrioritySignalsOverrides(
-    const base::flat_map<std::string, absl::optional<double>>& update_data,
-    absl::optional<base::flat_map<std::string, double>>&
+    const base::flat_map<std::string, std::optional<double>>& update_data,
+    std::optional<base::flat_map<std::string, double>>&
         priority_signals_overrides) {
   if (!priority_signals_overrides) {
     priority_signals_overrides.emplace();
@@ -554,14 +556,14 @@ void MergePrioritySignalsOverrides(
 }
 
 // Same as above, but takes a map with PrioritySignalsDoublePtrs instead of
-// absl::optional<double>s. This isn't much more code than it takes to convert
+// std::optional<double>s. This isn't much more code than it takes to convert
 // the flat_map of PrioritySignalsDoublePtr to one of optionals, so just
 // duplicate the logic.
 void MergePrioritySignalsOverrides(
     const base::flat_map<std::string,
                          auction_worklet::mojom::PrioritySignalsDoublePtr>&
         update_data,
-    absl::optional<base::flat_map<std::string, double>>&
+    std::optional<base::flat_map<std::string, double>>&
         priority_signals_overrides) {
   if (!priority_signals_overrides) {
     priority_signals_overrides.emplace();
@@ -1380,11 +1382,11 @@ bool UpgradeV15SchemaToV16(sql::Database& db,
   while (kSelectIGsWithAds.Step()) {
     std::string owner = kSelectIGsWithAds.ColumnString(0);
     std::string name = kSelectIGsWithAds.ColumnString(1);
-    absl::optional<std::vector<blink::InterestGroup::Ad>> ads =
+    std::optional<std::vector<blink::InterestGroup::Ad>> ads =
         DeserializeInterestGroupAdVectorJson(passkey,
                                              kSelectIGsWithAds.ColumnString(2),
                                              /*for_components=*/false);
-    absl::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
+    std::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
         DeserializeInterestGroupAdVectorJson(passkey,
                                              kSelectIGsWithAds.ColumnString(3),
                                              /*for_components=*/true);
@@ -2140,16 +2142,16 @@ bool DoClearClusteredBiddingGroups(sql::Database& db,
 }
 
 // Leaves all the interest groups joined on `joining_origin` except
-// `interest_groups_to_keep`. Returns absl::nullopt on error, and a (possibly
+// `interest_groups_to_keep`. Returns std::nullopt on error, and a (possibly
 // empty) list of left interest groups on success.
-absl::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
+std::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
     sql::Database& db,
     const url::Origin owner,
     const std::set<std::string>& interest_groups_to_keep,
     const url::Origin joining_origin) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Have to select interest groups and then use DoRemoveInterestGroup() in
@@ -2165,7 +2167,7 @@ absl::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
   // clang-format on
 
   if (!same_cluster_groups.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   same_cluster_groups.Reset(true);
@@ -2180,12 +2182,12 @@ absl::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
       continue;
     }
     if (!DoRemoveInterestGroup(db, blink::InterestGroupKey(owner, name))) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     cleared_interest_groups.emplace_back(std::move(name));
   }
   if (!transaction.Commit()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return cleared_interest_groups;
 }
@@ -2844,7 +2846,7 @@ bool DoRecordDebugReportCooldown(sql::Database& db,
   debug_cooldown.BindInt64(1, cooldown_start.ToDeltaSinceWindowsEpoch()
                                   .CeilToMultiple(base::Hours(1))
                                   .InMicroseconds());
-  debug_cooldown.BindInt(2, cooldown_type);
+  debug_cooldown.BindInt(2, static_cast<int>(cooldown_type));
 
   return debug_cooldown.Run();
 }
@@ -2882,8 +2884,8 @@ bool DoUpdateKAnonymity(sql::Database& db,
   return transaction.Commit();
 }
 
-absl::optional<base::Time> DoGetLastKAnonymityReported(sql::Database& db,
-                                                       const std::string& key) {
+std::optional<base::Time> DoGetLastKAnonymityReported(sql::Database& db,
+                                                      const std::string& key) {
   const base::Time distant_past = base::Time::Min();
 
   sql::Statement get_reported(
@@ -2893,7 +2895,7 @@ absl::optional<base::Time> DoGetLastKAnonymityReported(sql::Database& db,
   if (!get_reported.is_valid()) {
     DLOG(ERROR) << "GetLastKAnonymityReported SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return absl::nullopt;
+    return std::nullopt;
   }
   get_reported.Reset(true);
   get_reported.BindString(0, key);
@@ -2901,7 +2903,7 @@ absl::optional<base::Time> DoGetLastKAnonymityReported(sql::Database& db,
     return distant_past;
   }
   if (!get_reported.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return get_reported.ColumnTime(0);
 }
@@ -2980,7 +2982,7 @@ void DoUpdateLastKAnonymityReported(sql::Database& db,
   transaction.Commit();
 }
 
-absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
+std::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     sql::Database& db,
     base::Time expiring_after) {
   std::vector<url::Origin> result;
@@ -2992,7 +2994,7 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
   if (!load.is_valid()) {
     DLOG(ERROR) << "LoadAllInterestGroups SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return absl::nullopt;
+    return std::nullopt;
   }
   load.Reset(true);
   load.BindTime(0, expiring_after);
@@ -3000,12 +3002,12 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     result.push_back(DeserializeOrigin(load.ColumnString(0)));
   }
   if (!load.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
 
-absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
+std::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
     sql::Database& db,
     base::Time expiring_after) {
   std::vector<url::Origin> result;
@@ -3017,7 +3019,7 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
     DLOG(ERROR) << "LoadAllInterestGroupJoiningOrigins SQL statement did not "
                    "compile: "
                 << db.GetErrorMessage();
-    return absl::nullopt;
+    return std::nullopt;
   }
   load.Reset(true);
   load.BindTime(0, expiring_after);
@@ -3025,7 +3027,7 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
     result.push_back(DeserializeOrigin(load.ColumnString(0)));
   }
   if (!load.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
@@ -3068,7 +3070,7 @@ bool DoRemoveInterestGroupsMatchingOwnerAndJoiner(sql::Database& db,
   return transaction.Commit();
 }
 
-absl::optional<std::vector<std::pair<url::Origin, url::Origin>>>
+std::optional<std::vector<std::pair<url::Origin, url::Origin>>>
 DoGetAllInterestGroupOwnerJoinerPairs(sql::Database& db,
                                       base::Time expiring_after) {
   std::vector<std::pair<url::Origin, url::Origin>> result;
@@ -3081,7 +3083,7 @@ DoGetAllInterestGroupOwnerJoinerPairs(sql::Database& db,
     DLOG(ERROR) << "LoadAllInterestGroupOwnerJoinerPairs SQL statement did not "
                    "compile: "
                 << db.GetErrorMessage();
-    return absl::nullopt;
+    return std::nullopt;
   }
   load.Reset(true);
   load.BindTime(0, expiring_after);
@@ -3090,7 +3092,7 @@ DoGetAllInterestGroupOwnerJoinerPairs(sql::Database& db,
                         DeserializeOrigin(load.ColumnString(1)));
   }
   if (!load.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
@@ -3196,7 +3198,7 @@ void DoGetDebugReportLockout(
   }
 }
 
-absl::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
+std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
     sql::Database& db,
     const url::Origin& origin) {
   sql::Statement cooldown_debugging_only_report(
@@ -3207,12 +3209,12 @@ absl::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
   if (!cooldown_debugging_only_report.is_valid()) {
     DLOG(ERROR) << "GetDebugReportCooldown SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return absl::nullopt;
+    return std::nullopt;
   }
   cooldown_debugging_only_report.BindString(0, Serialize(origin));
   if (!cooldown_debugging_only_report.Step() ||
       !cooldown_debugging_only_report.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return DebugReportCooldown(cooldown_debugging_only_report.ColumnTime(0),
@@ -3225,7 +3227,7 @@ void DoGetDebugReportCooldowns(
     const base::flat_set<url::Origin>& origins,
     DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
   for (const url::Origin& origin : origins) {
-    absl::optional<DebugReportCooldown> cooldown =
+    std::optional<DebugReportCooldown> cooldown =
         DoGetDebugReportCooldownForOrigin(db, origin);
     if (cooldown.has_value()) {
       debug_report_lockout_and_cooldowns.debug_report_cooldown_map[origin] =
@@ -3234,7 +3236,7 @@ void DoGetDebugReportCooldowns(
   }
 }
 
-absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
+std::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
     sql::Database& db,
     const url::Origin& owner,
     base::Time now) {
@@ -3248,7 +3250,7 @@ absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
   // clang-format on
 
   if (!get_names.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   get_names.Reset(true);
@@ -3260,13 +3262,13 @@ absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
     result.push_back(get_names.ColumnString(0));
   }
   if (!get_names.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result;
 }
 
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 DoGetAllRegularInterestGroupNamesForOwner(sql::Database& db,
                                           const url::Origin& owner) {
   // clang-format off
@@ -3279,7 +3281,7 @@ DoGetAllRegularInterestGroupNamesForOwner(sql::Database& db,
   // clang-format on
 
   if (!get_names.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   get_names.Reset(true);
@@ -3290,13 +3292,13 @@ DoGetAllRegularInterestGroupNamesForOwner(sql::Database& db,
     result.push_back(get_names.ColumnString(0));
   }
   if (!get_names.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result;
 }
 
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 DoGetAllNegativeInterestGroupNamesForOwner(sql::Database& db,
                                            const url::Origin& owner) {
   // clang-format off
@@ -3309,7 +3311,7 @@ DoGetAllNegativeInterestGroupNamesForOwner(sql::Database& db,
   // clang-format on
 
   if (!get_names.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   get_names.Reset(true);
@@ -3320,13 +3322,13 @@ DoGetAllNegativeInterestGroupNamesForOwner(sql::Database& db,
     result.push_back(get_names.ColumnString(0));
   }
   if (!get_names.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result;
 }
 
-absl::optional<std::vector<StorageInterestGroup::KAnonymityData>>
+std::optional<std::vector<StorageInterestGroup::KAnonymityData>>
 DoGetKAnonymityData(sql::Database& db,
                     const blink::InterestGroupKey& group_key) {
   sql::Statement interest_group_kanon_query(
@@ -3336,7 +3338,7 @@ DoGetKAnonymityData(sql::Database& db,
                             "WHERE owner = ? AND name = ?"));
 
   if (!interest_group_kanon_query.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   interest_group_kanon_query.BindString(0, Serialize(group_key.owner));
@@ -3350,22 +3352,21 @@ DoGetKAnonymityData(sql::Database& db,
         /*last_updated=*/interest_group_kanon_query.ColumnTime(2));
   }
   if (!interest_group_kanon_query.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return k_anon_data;
 }
 
-absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
-    sql::Database& db,
-    const PassKey& passkey,
-    const blink::InterestGroupKey& group_key,
-    base::Time now) {
-  StorageInterestGroup db_interest_group;
+bool DoGetStoredInterestGroup(sql::Database& db,
+                              StorageInterestGroup& db_interest_group,
+                              const PassKey& passkey,
+                              const blink::InterestGroupKey& group_key,
+                              base::Time now) {
   if (!DoLoadInterestGroup(
           db, passkey, group_key, db_interest_group.interest_group,
           &db_interest_group.joining_origin, &db_interest_group.join_time,
           &db_interest_group.last_updated)) {
-    return absl::nullopt;
+    return false;
   }
 
   sql::Statement interest_group_kanon_query(
@@ -3396,21 +3397,18 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
       auction_worklet::mojom::BiddingBrowserSignals::New();
   if (!GetJoinCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
                     db_interest_group.bidding_browser_signals)) {
-    return absl::nullopt;
+    return false;
   }
   if (!GetBidCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
                    db_interest_group.bidding_browser_signals)) {
-    return absl::nullopt;
+    return false;
   }
-  if (!GetPreviousWins(db, group_key,
-                       now - InterestGroupStorage::kHistoryLength,
-                       db_interest_group.bidding_browser_signals)) {
-    return absl::nullopt;
-  }
-  return db_interest_group;
+  return GetPreviousWins(db, group_key,
+                         now - InterestGroupStorage::kHistoryLength,
+                         db_interest_group.bidding_browser_signals);
 }
 
-absl::optional<std::vector<InterestGroupUpdateParameter>>
+std::optional<std::vector<InterestGroupUpdateParameter>>
 DoGetInterestGroupsForUpdate(sql::Database& db,
                              const url::Origin& owner,
                              base::Time now,
@@ -3432,7 +3430,7 @@ DoGetInterestGroupsForUpdate(sql::Database& db,
       "LIMIT ?"));
 
   if (!get_interest_group_update_parameters.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   get_interest_group_update_parameters.Reset(true);
@@ -3442,7 +3440,7 @@ DoGetInterestGroupsForUpdate(sql::Database& db,
   get_interest_group_update_parameters.BindInt64(3, groups_limit);
 
   while (get_interest_group_update_parameters.Step()) {
-    absl::optional<GURL> update_url =
+    std::optional<GURL> update_url =
         DeserializeURL(get_interest_group_update_parameters.ColumnString(1));
     if (!update_url.has_value()) {
       continue;
@@ -3456,12 +3454,12 @@ DoGetInterestGroupsForUpdate(sql::Database& db,
             get_interest_group_update_parameters.ColumnString(2)));
   }
   if (!get_interest_group_update_parameters.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
 
-absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
+std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     sql::Database& db,
     const PassKey& passkey,
     const url::Origin& owner,
@@ -3469,35 +3467,36 @@ absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::vector<std::string>> group_names =
+  std::optional<std::vector<std::string>> group_names =
       DoGetInterestGroupNamesForOwner(db, owner, now);
 
   if (!group_names) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<StorageInterestGroup> result;
+  result.reserve(group_names->size());
   for (const std::string& name : *group_names) {
-    absl::optional<StorageInterestGroup> db_interest_group =
-        DoGetStoredInterestGroup(db, passkey,
+    StorageInterestGroup& db_interest_group = result.emplace_back();
+    bool success =
+        DoGetStoredInterestGroup(db, db_interest_group, passkey,
                                  blink::InterestGroupKey(owner, name), now);
-    if (!db_interest_group) {
-      return absl::nullopt;
+    if (!success) {
+      return std::nullopt;
     }
-    result.push_back(std::move(db_interest_group).value());
   }
 
   if (!transaction.Commit()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result;
 }
 
-absl::optional<std::vector<blink::InterestGroupKey>>
+std::optional<std::vector<blink::InterestGroupKey>>
 DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
                                         const url::Origin& joining_origin,
                                         base::Time now) {
@@ -3515,7 +3514,7 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
     DLOG(ERROR) << "GetInterestGroupNamesForJoiningOrigin SQL statement did "
                    "not compile: "
                 << db.GetErrorMessage();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   load.Reset(true);
@@ -3527,7 +3526,7 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
                         load.ColumnString(1));
   }
   if (!load.Succeeded()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
@@ -3543,7 +3542,7 @@ bool DoDeleteInterestGroupData(
   }
 
   std::vector<url::Origin> affected_origins;
-  absl::optional<std::vector<url::Origin>> maybe_all_origins =
+  std::optional<std::vector<url::Origin>> maybe_all_origins =
       DoGetAllInterestGroupOwners(db, distant_past);
 
   if (!maybe_all_origins) {
@@ -3557,7 +3556,7 @@ bool DoDeleteInterestGroupData(
   }
 
   for (const auto& affected_origin : affected_origins) {
-    absl::optional<std::vector<std::string>> maybe_group_names =
+    std::optional<std::vector<std::string>> maybe_group_names =
         DoGetInterestGroupNamesForOwner(db, affected_origin, distant_past);
     if (!maybe_group_names) {
       return false;
@@ -3582,7 +3581,7 @@ bool DoDeleteInterestGroupData(
     }
   }
   for (const auto& affected_origin : affected_origins) {
-    absl::optional<std::vector<blink::InterestGroupKey>> maybe_group_names =
+    std::optional<std::vector<blink::InterestGroupKey>> maybe_group_names =
         DoGetInterestGroupNamesForJoiningOrigin(db, affected_origin,
                                                 distant_past);
     if (!maybe_group_names) {
@@ -3622,7 +3621,7 @@ bool DoSetInterestGroupPriority(sql::Database& db,
 bool DoSetInterestGroupPrioritySignalsOverrides(
     sql::Database& db,
     const blink::InterestGroupKey& group_key,
-    const absl::optional<base::flat_map<std::string, double>>&
+    const std::optional<base::flat_map<std::string, double>>&
         priority_signals_overrides) {
   // clang-format off
   sql::Statement update_priority_signals_overrides_sql(
@@ -3695,7 +3694,7 @@ bool DeleteOldWins(sql::Database& db, base::Time cutoff) {
 bool DoClearExcessInterestGroups(
     sql::Database& db,
     const url::Origin& affected_origin,
-    const absl::optional<std::vector<std::string>> maybe_interest_groups,
+    const std::optional<std::vector<std::string>> maybe_interest_groups,
     size_t max_owner_interest_groups) {
   if (!maybe_interest_groups) {
     return false;
@@ -3717,7 +3716,7 @@ bool ClearExcessInterestGroups(sql::Database& db,
                                size_t max_owner_regular_interest_groups,
                                size_t max_owner_negative_interest_groups) {
   const base::Time distant_past = base::Time::Min();
-  const absl::optional<std::vector<url::Origin>> maybe_all_origins =
+  const std::optional<std::vector<url::Origin>> maybe_all_origins =
       DoGetAllInterestGroupOwners(db, distant_past);
   if (!maybe_all_origins) {
     return false;
@@ -3807,7 +3806,7 @@ bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
 
   excessive_storage_groups.Reset(true);
   std::vector<blink::InterestGroupKey> groups_to_remove;
-  absl::optional<url::Origin> previous;
+  std::optional<url::Origin> previous;
   size_t cum_size;
   while (excessive_storage_groups.Step()) {
     url::Origin group_owner =
@@ -3878,12 +3877,12 @@ bool DeleteExpiredDebugReportCooldown(sql::Database& db, base::Time now) {
   }
 
   delete_cooldown.Reset(true);
-  absl::optional<base::TimeDelta> short_duration =
+  std::optional<base::TimeDelta> short_duration =
       ConvertDebugReportCooldownTypeToDuration(
-          static_cast<int>(DebugReportCooldownType::kShortCooldown));
-  absl::optional<base::TimeDelta> restricted_duration =
+          DebugReportCooldownType::kShortCooldown);
+  std::optional<base::TimeDelta> restricted_duration =
       ConvertDebugReportCooldownTypeToDuration(
-          static_cast<int>(DebugReportCooldownType::kRestrictedCooldown));
+          DebugReportCooldownType::kRestrictedCooldown);
   CHECK(short_duration.has_value());
   CHECK(restricted_duration.has_value());
 
@@ -4242,7 +4241,7 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
     return std::vector<std::string>();
   }
 
-  absl::optional<std::vector<std::string>> left_interest_groups =
+  std::optional<std::vector<std::string>> left_interest_groups =
       DoClearOriginJoinedInterestGroups(*db_, owner, interest_groups_to_keep,
                                         main_frame_origin);
   if (!left_interest_groups) {
@@ -4252,12 +4251,12 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
   return std::move(left_interest_groups.value());
 }
 
-absl::optional<DebugReportLockoutAndCooldowns>
+std::optional<DebugReportLockoutAndCooldowns>
 InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DebugReportLockoutAndCooldowns debug_report_lockout_and_cooldowns;
   DoGetDebugReportLockout(*db_, debug_report_lockout_and_cooldowns);
@@ -4366,7 +4365,7 @@ void InterestGroupStorage::UpdateKAnonymity(
   }
 }
 
-absl::optional<base::Time> InterestGroupStorage::GetLastKAnonymityReported(
+std::optional<base::Time> InterestGroupStorage::GetLastKAnonymityReported(
     const std::string& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
@@ -4386,15 +4385,19 @@ void InterestGroupStorage::UpdateLastKAnonymityReported(
   DoUpdateLastKAnonymityReported(*db_, key, base::Time::Now());
 }
 
-absl::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
+std::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
     const blink::InterestGroupKey& group_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return DoGetStoredInterestGroup(*db_, PassKey(), group_key,
-                                  base::Time::Now());
+  StorageInterestGroup db_interest_group;
+  if (DoGetStoredInterestGroup(*db_, db_interest_group, PassKey(), group_key,
+                               base::Time::Now())) {
+    return db_interest_group;
+  }
+  return std::nullopt;
 }
 
 std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
@@ -4403,7 +4406,7 @@ std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
     return {};
   }
 
-  absl::optional<std::vector<url::Origin>> maybe_result =
+  std::optional<std::vector<url::Origin>> maybe_result =
       DoGetAllInterestGroupOwners(*db_, base::Time::Now());
   if (!maybe_result) {
     return {};
@@ -4418,7 +4421,7 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
     return {};
   }
 
-  absl::optional<std::vector<StorageInterestGroup>> maybe_result =
+  std::optional<std::vector<StorageInterestGroup>> maybe_result =
       DoGetInterestGroupsForOwner(*db_, PassKey(), owner, base::Time::Now());
   if (!maybe_result) {
     return {};
@@ -4436,7 +4439,7 @@ InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner,
     return {};
   }
 
-  absl::optional<std::vector<InterestGroupUpdateParameter>> maybe_result =
+  std::optional<std::vector<InterestGroupUpdateParameter>> maybe_result =
       DoGetInterestGroupsForUpdate(*db_, owner, base::Time::Now(),
                                    groups_limit);
   if (!maybe_result) {
@@ -4453,7 +4456,7 @@ InterestGroupStorage::GetKAnonymityDataForUpdate(
     return {};
   }
 
-  absl::optional<std::vector<StorageInterestGroup::KAnonymityData>>
+  std::optional<std::vector<StorageInterestGroup::KAnonymityData>>
       maybe_result = DoGetKAnonymityData(*db_, interest_group_key);
   if (!maybe_result) {
     return {};
@@ -4467,7 +4470,7 @@ InterestGroupStorage::GetAllInterestGroupJoiningOrigins() {
   if (!EnsureDBInitialized()) {
     return {};
   }
-  absl::optional<std::vector<url::Origin>> maybe_result =
+  std::optional<std::vector<url::Origin>> maybe_result =
       DoGetAllInterestGroupJoiningOrigins(*db_, base::Time::Now());
   if (!maybe_result) {
     return {};
@@ -4481,9 +4484,8 @@ InterestGroupStorage::GetAllInterestGroupOwnerJoinerPairs() {
   if (!EnsureDBInitialized()) {
     return {};
   }
-  absl::optional<std::vector<std::pair<url::Origin, url::Origin>>>
-      maybe_result =
-          DoGetAllInterestGroupOwnerJoinerPairs(*db_, base::Time::Now());
+  std::optional<std::vector<std::pair<url::Origin, url::Origin>>> maybe_result =
+      DoGetAllInterestGroupOwnerJoinerPairs(*db_, base::Time::Now());
   if (!maybe_result) {
     return {};
   }
@@ -4601,13 +4603,13 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
   }
   const base::Time distant_past = base::Time::Min();
   std::vector<StorageInterestGroup> result;
-  absl::optional<std::vector<url::Origin>> maybe_owners =
+  std::optional<std::vector<url::Origin>> maybe_owners =
       DoGetAllInterestGroupOwners(*db_, distant_past);
   if (!maybe_owners) {
     return {};
   }
   for (const auto& owner : *maybe_owners) {
-    absl::optional<std::vector<StorageInterestGroup>> maybe_owner_results =
+    std::optional<std::vector<StorageInterestGroup>> maybe_owner_results =
         DoGetInterestGroupsForOwner(*db_, PassKey(), owner, distant_past);
     DCHECK(maybe_owner_results) << owner;
     std::move(maybe_owner_results->begin(), maybe_owner_results->end(),

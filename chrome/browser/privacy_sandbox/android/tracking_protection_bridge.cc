@@ -20,6 +20,13 @@ static jint JNI_TrackingProtectionBridge_GetRequiredNotice(JNIEnv* env) {
       GetTrackingProtectionOnboardingService()->GetRequiredNotice());
 }
 
+static void JNI_TrackingProtectionBridge_NoticeRequested(JNIEnv* env,
+                                                         jint noticeType) {
+  return GetTrackingProtectionOnboardingService()->NoticeRequested(
+      static_cast<privacy_sandbox::TrackingProtectionOnboarding::NoticeType>(
+          noticeType));
+}
+
 static void JNI_TrackingProtectionBridge_NoticeShown(JNIEnv* env,
                                                      jint noticeType) {
   return GetTrackingProtectionOnboardingService()->NoticeShown(

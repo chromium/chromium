@@ -438,6 +438,10 @@ double CSSToLengthConversionData::ContainerHeight() const {
 }
 
 WritingMode CSSToLengthConversionData::GetWritingMode() const {
+  // This method is called by CSSLengthResolver only when resolving
+  // logical direction relative units, so we can set the flag
+  // indicating the presence of such units.
+  SetFlag(Flag::kLogicalDirectionRelative);
   return writing_mode_;
 }
 

@@ -51,12 +51,12 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 // anything else than just an error.
 class EventLogger {
  public:
-  EventLogger() {}
+  EventLogger() = default;
 
   EventLogger(const EventLogger&) = delete;
   EventLogger& operator=(const EventLogger&) = delete;
 
-  virtual ~EventLogger() {}
+  virtual ~EventLogger() = default;
 
   void OnStatus(base::File::Error error) {
     result_ = std::make_unique<base::File::Error>(error);
@@ -156,8 +156,8 @@ class FileSystemProviderFileSystemBackend
 // is FILE_ERROR_INVALID_OPERATION.
 class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
  protected:
-  FileSystemProviderProviderAsyncFileUtilTest() {}
-  ~FileSystemProviderProviderAsyncFileUtilTest() override {}
+  FileSystemProviderProviderAsyncFileUtilTest() = default;
+  ~FileSystemProviderProviderAsyncFileUtilTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -211,8 +211,7 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh>
-      profile_;  // Owned by TestingProfileManager.
+  raw_ptr<TestingProfile> profile_;  // Owned by TestingProfileManager.
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   std::string mount_point_name_;

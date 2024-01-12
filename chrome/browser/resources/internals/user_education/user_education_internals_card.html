@@ -33,6 +33,16 @@ ol {
 li {
   margin-block: 1ex;
 }
+
+#instructions,
+#data {
+  margin-inline: var(--cr-section-padding);
+}
+
+#data cr-button {
+  margin-block-start: 0;
+}
+
 </style>
 <div class="card-content">
   <h3>[[promo.displayTitle]]
@@ -43,19 +53,34 @@ li {
   </p>
   <p><b>Type:</b> [[promo.type]]</p>
   <p><b>Platforms: </b>[[formatPlatforms_()]]</p>
-  <div hidden$="[[!showInstructions_()]]">
-    <p><b>Instructions:</b></p>
-    <ol>
+  <p hidden$="[[!showRequiredFeatures_()]]">
+    <b>Required features: </b>[[formatRequiredFeatures_()]]
+  </p>
+  <cr-expand-button hidden$="[[!showInstructions_()]]"
+      expanded="{{instructionsExpanded_}}">
+    <div id="label"><b>Full Details</b></div>
+  </cr-expand-button>
+  <ol id="instructions" hidden="[[!instructionsExpanded_]]">
     <template is="dom-repeat" items="[[promo.instructions]]">
       <li>[[item]]</li>
     </template>
-      <li hidden$="[[!showFollowedBy_()]]">
-        Followed by
-        <a href="#[[getFollowedByAnchor_()]]" on-click="scrollToFollowedBy_">
-          [[promo.followedByInternalName]]
-        </a>
-      </li>
-    </ol>
+    <li hidden$="[[!showFollowedBy_()]]">
+      Followed by
+      <a href="#[[getFollowedByAnchor_()]]" on-click="scrollToFollowedBy_">
+        [[promo.followedByInternalName]]
+      </a>
+    </li>
+  </ol>
+  <cr-expand-button hidden$="[[!showData_()]]" expanded="{{dataExpanded_}}">
+    <div id="label"><b>Stored Data</b></div>
+  </cr-expand-button>
+  <div id="data" hidden="[[!dataExpanded_]]">
+    <template is="dom-repeat" items="[[promo.data]]">
+      <p><b>[[item.name]]</b> [[item.value]]</p>
+    </template>
+    <cr-button id="clear" on-click="clearData_">
+      Clear Data
+    </cr-button>
   </div>
 </div>
 <cr-button class="action-button" id="launch" on-click="launchPromo_">

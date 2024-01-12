@@ -209,6 +209,12 @@
       default_value: "false",
       custom_compare: true,
     },
+    {
+      name: "HasLogicalDirectionRelativeUnits",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
     // that uses font metrics in its calculation.
     {
@@ -254,6 +260,17 @@
     // needs to be restored *non-monotonically* in ApplyMatchedCache.
     {
       name: "HasNonUaHighlightPseudoStyles",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      reset_on_new_style: true,
+      custom_compare: true,
+    },
+    // Whether any highlight pseudo selectors were found within container
+    // query blocks.
+    {
+      name: "HighlightsDependOnSizeContainerQueries",
       field_template: "primitive",
       field_group: "*",
       default_value: "false",

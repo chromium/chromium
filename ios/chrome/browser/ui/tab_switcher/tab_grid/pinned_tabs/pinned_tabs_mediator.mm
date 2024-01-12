@@ -354,18 +354,18 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
 #pragma mark - TabCollectionDragDropHandler
 
-- (UIDragItem*)dragItemForItemWithID:(web::WebStateID)itemID {
+- (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item {
   web::WebState* webState =
       GetWebState(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = itemID,
+                                         .identifier = item.identifier,
                                          .pinned_state = PinnedState::kPinned,
                                      });
 
   return CreateTabDragItem(webState);
 }
 
-- (void)dragWillBeginForItemWithID:(web::WebStateID)itemID {
-  _dragItemID = itemID;
+- (void)dragWillBeginForItem:(TabSwitcherItem*)item {
+  _dragItemID = item.identifier;
 }
 
 - (void)dragSessionDidEnd {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_WEB_APP_PROFILE_SWITCHER_H_
 
 #include "base/scoped_multi_source_observation.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/webapps/common/web_app_id.h"
@@ -44,7 +45,8 @@ class WebAppProfileSwitcher : public ProfileObserver {
 
   // Checks if the app is installed using the obtained |lock| and
   // starts launch or installation.
-  void InstallOrOpenWebAppWindowForProfile(web_app::AppLock& lock);
+  void InstallOrOpenWebAppWindowForProfile(web_app::AppLock& lock,
+                                           base::Value::Dict& debug_value);
 
   // Installs web app defined by |app_id_| for a |new_profile| and launches
   // it once installed.

@@ -9,6 +9,23 @@
 
 namespace partition_alloc::internal {
 
+namespace {
+constexpr PartitionOptions kLightweightQuarantineMetadataAllocatorConfig =
+    []() {
+      // Disable features using LightweightQuarantine to avoid reentrancy issue.
+      PartitionOptions opts;
+      opts.scheduler_loop_quarantine = PartitionOptions::kDisabled;
+      return opts;
+    }();
+}  // namespace
+
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PartitionRoot& LightweightQuarantineMetadataAllocator() {
+  static internal::base::NoDestructor<PartitionRoot> allocator(
+      kLightweightQuarantineMetadataAllocatorConfig);
+  return *allocator;
+}
+
 LightweightQuarantineBranch LightweightQuarantineRoot::CreateBranch(
     size_t quarantine_capacity_count,
     bool lock_required) {
@@ -23,7 +40,9 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
     : root_(root),
       quarantine_capacity_count_(quarantine_capacity_count),
       lock_required_(lock_required),
-      slots_(new QuarantineSlot[quarantine_capacity_count]) {
+      slots_(static_cast<QuarantineSlot*>(
+          LightweightQuarantineMetadataAllocator().Alloc<AllocFlags::kNoHooks>(
+              sizeof(QuarantineSlot) * quarantine_capacity_count))) {
   // `QuarantineCapacityCount` must be a positive number.
   PA_CHECK(0 < quarantine_capacity_count);
 }
@@ -33,12 +52,18 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
     : root_(b.root_),
       quarantine_capacity_count_(b.quarantine_capacity_count_),
       lock_required_(b.lock_required_),
-      slots_(std::move(b.slots_)),
+      slots_(b.slots_),
       branch_count_(b.branch_count_),
-      branch_size_in_bytes_(b.branch_size_in_bytes_) {}
+      branch_size_in_bytes_(b.branch_size_in_bytes_) {
+  b.slots_ = nullptr;
+  b.branch_count_ = 0;
+  b.branch_size_in_bytes_ = 0;
+}
 
 LightweightQuarantineBranch::~LightweightQuarantineBranch() {
   Purge();
+  LightweightQuarantineMetadataAllocator().Free<FreeFlags::kNoHooks>(slots_);
+  slots_ = nullptr;
 }
 
 bool LightweightQuarantineBranch::Quarantine(void* object,

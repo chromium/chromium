@@ -21,6 +21,7 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/tracing/tracing_service_controller.h"
+#include "content/common/buildflags.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
@@ -109,8 +110,10 @@ class BrowserChildProcessHostImpl
   // Removes this host from the host list. Calls ChildProcessHost::ForceShutdown
   void ForceShutdown();
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Adds an IPC message filter.
   void AddFilter(BrowserMessageFilter* filter);
+#endif
 
   // Same as Launch(), but the process is launched with preloaded files and file
   // descriptors containing in `file_data`.

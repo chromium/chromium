@@ -56,7 +56,7 @@ import java.util.Map;
 
 /**
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
- * availability and triggering playback.
+ * availability and triggering playback. Only instantiate after native is initialized.
  */
 public class ReadAloudController
         implements Player.Observer,
@@ -75,7 +75,7 @@ public class ReadAloudController
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
     @Nullable private Player mPlayerCoordinator;
-    private final LayoutManager mLayoutManager;
+    private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
 
     private TabModelTabObserver mTabObserver;
 
@@ -223,8 +223,13 @@ public class ReadAloudController
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
+
                     // isPlaybackEnabled() should only be checked if isReadable == true.
                     isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
+                    if (isReadable) {
+                        ReadAloudFeatures.activateKnownReadableTrial();
+                    }
+
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
@@ -255,7 +260,8 @@ public class ReadAloudController
             TabModel tabModel,
             BottomSheetController bottomSheetController,
             BrowserControlsSizer browserControlsSizer,
-            LayoutManager layoutManager) {
+            ObservableSupplier<LayoutManager> layoutManagerSupplier) {
+        ReadAloudFeatures.init();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
@@ -264,7 +270,7 @@ public class ReadAloudController
         mCurrentLanguageVoices = new ObservableSupplierImpl<>();
         mSelectedVoiceId = new ObservableSupplierImpl<>();
         mBrowserControlsSizer = browserControlsSizer;
-        mLayoutManager = layoutManager;
+        mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
     }
@@ -279,6 +285,10 @@ public class ReadAloudController
                         ? sReadabilityHooksForTesting
                         : new ReadAloudReadabilityHooksImpl(mActivity, profile);
         if (mReadabilityHooks.isEnabled()) {
+            mHighlightingEnabled.addObserver(
+                    ReadAloudController.this::onHighlightingEnabledChanged);
+            mHighlightingEnabled.set(ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
+            ReadAloudMetrics.recordHighlightingEnabledOnStartup(mHighlightingEnabled.get());
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
                         @Override
@@ -297,12 +307,14 @@ public class ReadAloudController
 
                         @Override
                         protected void onTabSelected(Tab tab) {
-                            Log.d(
-                                    TAG,
-                                    "onTabSelected called for "
-                                            + tab.getUrl().getPossiblyInvalidSpec());
                             super.onTabSelected(tab);
-                            maybeCheckReadability(tab.getUrl());
+                            if (tab != null && tab.getUrl() != null) {
+                                Log.d(
+                                        TAG,
+                                        "onTabSelected called for "
+                                                + tab.getUrl().getPossiblyInvalidSpec());
+                                maybeCheckReadability(tab.getUrl());
+                            }
                         }
 
                         @Override
@@ -445,10 +457,6 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     maybeSetUpHighlighter(playback.getMetadata());
 
-                    mHighlightingEnabled.addObserver(
-                            ReadAloudController.this::onHighlightingEnabledChanged);
-                    mHighlightingEnabled.set(
-                            ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
                 },
@@ -514,10 +522,13 @@ public class ReadAloudController
         ApplicationStatus.unregisterApplicationStateListener(this);
         resetCurrentPlayback();
         mStateToRestoreOnBringingToForeground = null;
+        ReadAloudFeatures.shutdown();
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
-        if (isHighlightingSupported()) {
+        boolean highlightingSupported = isHighlightingSupported();
+        ReadAloudMetrics.recordHighlightingSupported(highlightingSupported);
+        if (highlightingSupported) {
             if (mHighlighter == null) {
                 mHighlighter = mPlaybackHooks.createHighlighter();
             }
@@ -723,6 +734,7 @@ public class ReadAloudController
         promise.then(
                 playback -> {
                     Log.d(TAG, "Voice preview playback created.");
+                    ReadAloudMetrics.recordVoicePreviewed(voice.getVoiceId());
                     mVoicePreviewPlayback = playback;
                     playback.addListener(mVoicePreviewPlaybackListener);
                     mVoicePreviewPlayback.play();
@@ -762,10 +774,6 @@ public class ReadAloudController
         if (mCurrentlyPlayingTab == null) {
             return;
         }
-        // Already on playing tab
-        if (mCurrentlyPlayingTab.getId() == mTabModel.getTabAt(mTabModel.index()).getId()) {
-            return;
-        }
         if (mTabModel.indexOf(mCurrentlyPlayingTab) != TabModel.INVALID_TAB_INDEX) {
             mTabModel.setIndex(
                     mTabModel.indexOf(mCurrentlyPlayingTab), TabSelectionType.FROM_USER, false);
@@ -788,8 +796,9 @@ public class ReadAloudController
     }
 
     @Override
+    @Nullable
     public LayoutManager getLayoutManager() {
-        return mLayoutManager;
+        return mLayoutManagerSupplier.get();
     }
 
     // Player.Observer
@@ -807,6 +816,24 @@ public class ReadAloudController
         if (mStateToRestoreOnVoiceMenuClose != null) {
             mStateToRestoreOnVoiceMenuClose.restore();
             mStateToRestoreOnVoiceMenuClose = null;
+        }
+    }
+
+    /** Show mini player if there is an active playback. */
+    public void maybeShowPlayer() {
+        if (mPlayback != null) {
+            mPlayerCoordinator.restoreMiniPlayer();
+        }
+    }
+
+    /**
+     * If there's an active playback, this method will hide the player (either the mini player or
+     * the expanded player - whichever is showing) without stopping audio. To bring back the player
+     * UI, call {@link #maybeShowPlayer() maybeShowPlayer}
+     */
+    public void maybeHidePlayer() {
+        if (mPlayback != null) {
+            mPlayerCoordinator.hidePlayers();
         }
     }
 

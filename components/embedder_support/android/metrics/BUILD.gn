@@ -99,6 +99,6 @@ java_group("test_support_java") {
   testonly = true
   deps = [
     ":java",
-    "//components/version_info/android:version_constants_java",
+    "//base/version_info/android:version_constants_java",
   ]
 }

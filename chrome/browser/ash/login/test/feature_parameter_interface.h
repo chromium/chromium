@@ -20,7 +20,7 @@ namespace {
 
 // Desired state of a feature in a test instantiation.
 struct FeatureState {
-  raw_ptr<const base::Feature, ExperimentalAsh> feature;
+  raw_ptr<const base::Feature> feature;
   bool is_enabled;
 };
 

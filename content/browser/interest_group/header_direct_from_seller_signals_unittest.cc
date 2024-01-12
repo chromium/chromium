@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -91,8 +91,8 @@ class HeaderDirectFromSellerSignalsTest : public ::testing::Test {
 TEST_F(HeaderDirectFromSellerSignalsTest, DefaultConstruct) {
   auto signals = base::MakeRefCounted<HeaderDirectFromSellerSignals::Result>();
 
-  EXPECT_EQ(signals->seller_signals(), absl::nullopt);
-  EXPECT_EQ(signals->auction_signals(), absl::nullopt);
+  EXPECT_EQ(signals->seller_signals(), std::nullopt);
+  EXPECT_EQ(signals->auction_signals(), std::nullopt);
   EXPECT_THAT(signals->per_buyer_signals(), IsEmpty());
 }
 
@@ -134,13 +134,13 @@ TEST_F(HeaderDirectFromSellerSignalsTest, Valid) {
       ParseAndFind(kOriginA, "slot2");
   ASSERT_NE(parsed2, nullptr);
   EXPECT_EQ(parsed2->seller_signals(), "[\"signals2\",\"for\",\"seller\"]");
-  EXPECT_EQ(parsed2->auction_signals(), absl::nullopt);
+  EXPECT_EQ(parsed2->auction_signals(), std::nullopt);
   EXPECT_THAT(parsed2->per_buyer_signals(), IsEmpty());
 
   scoped_refptr<HeaderDirectFromSellerSignals::Result> parsed3 =
       ParseAndFind(kOriginA, "slot3");
   ASSERT_NE(parsed3, nullptr);
-  EXPECT_EQ(parsed3->seller_signals(), absl::nullopt);
+  EXPECT_EQ(parsed3->seller_signals(), std::nullopt);
   EXPECT_EQ(parsed3->auction_signals(), "null");
   EXPECT_THAT(parsed3->per_buyer_signals(), IsEmpty());
 }
@@ -284,7 +284,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest, ContinueOnInvalid) {
       ParseAndFind(kOriginA, "slot1");
   ASSERT_NE(parsed, nullptr);
   EXPECT_EQ(parsed->seller_signals(), R"("signals")");
-  EXPECT_EQ(parsed->auction_signals(), absl::nullopt);
+  EXPECT_EQ(parsed->auction_signals(), std::nullopt);
   EXPECT_THAT(parsed->per_buyer_signals(),
               UnorderedElementsAre(
                   Pair(url::Origin::Create(GURL("https://valid.com")), "2")));
@@ -522,7 +522,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
     "adSlot": "slot1",
     "sellerSignals": "abc"
   }])";
-  absl::optional<data_decoder::DataDecoder> data_decoder;
+  std::optional<data_decoder::DataDecoder> data_decoder;
   data_decoder.emplace();
 
   header_direct_from_seller_signals_.AddWitnessForOrigin(

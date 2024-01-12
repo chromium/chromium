@@ -150,4 +150,17 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
   }
 }
 
+TEST_F(HoldingSpaceWallpaperNudgePrefsTest, UserEligibility) {
+  // Case: Initialized to default values.
+  EXPECT_EQ(GetUserEligibility(pref_service()), std::nullopt);
+
+  // Case: Set the first time.
+  EXPECT_TRUE(SetUserEligibility(pref_service(), false));
+  EXPECT_EQ(GetUserEligibility(pref_service()), false);
+
+  // Case: Set again, which should fail.
+  EXPECT_FALSE(SetUserEligibility(pref_service(), true));
+  EXPECT_EQ(GetUserEligibility(pref_service()), false);
+}
+
 }  // namespace ash::holding_space_wallpaper_nudge_prefs

@@ -4,8 +4,8 @@
 
 // This module implements chrome-specific <controlledframe> Element.
 
+var ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
 var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
-var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var registerElement = require('guestViewContainerElement').registerElement;
 var WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
 var WebViewElement = require('webViewElement').WebViewElement;
@@ -19,7 +19,7 @@ class ControlledFrameElement extends WebViewElement {
 
   constructor() {
     super();
-    privates(this).internal = new ChromeWebViewImpl(this);
+    privates(this).internal = new ControlledFrameImpl(this);
     privates(this).originalGo = originalGo;
   }
 }
@@ -27,7 +27,7 @@ class ControlledFrameElement extends WebViewElement {
 // Forward remaining ControlledFrameElement.foo* method calls to
 // ChromeWebViewImpl.foo* or WebViewInternal.foo*.
 forwardApiMethods(
-    ControlledFrameElement, ChromeWebViewImpl, WebViewInternal,
+    ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
     WEB_VIEW_API_METHODS);
 
 // Since |back| and |forward| are implemented in terms of |go|, we need to

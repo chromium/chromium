@@ -13,6 +13,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +43,6 @@
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -306,6 +306,16 @@ class CONTENT_EXPORT MediaStreamManager
   blink::MediaStreamDevices GetDevicesOpenedByRequest(
       const std::string& label) const;
 
+  using GetRawDeviceIdsOpenedForFrameCallback =
+      base::OnceCallback<void(std::vector<std::string> active_device_ids)>;
+  // Returns all device IDs currently opened for `render_frame_host_id` and its
+  // descendants with `type`. If no request exists that matches the constraints,
+  // an empty array is returned.
+  void GetRawDeviceIdsOpenedForFrame(
+      RenderFrameHost* render_frame_host,
+      blink::mojom::MediaStreamType type,
+      GetRawDeviceIdsOpenedForFrameCallback) const;
+
   // This object gets deleted on the UI thread after the IO thread has been
   // destroyed. So we need to know when IO thread is being destroyed so that
   // we can delete VideoCaptureManager and AudioInputDeviceManager.
@@ -325,8 +335,7 @@ class CONTENT_EXPORT MediaStreamManager
       base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
           fake_ui_factory,
       bool use_for_gum_desktop_capture = true,
-      absl::optional<WebContentsMediaCaptureId> captured_tab_id =
-          absl::nullopt);
+      std::optional<WebContentsMediaCaptureId> captured_tab_id = std::nullopt);
 
   // Register and unregister a new callback for receiving native log entries.
   // Called on the IO thread.
@@ -389,7 +398,7 @@ class CONTENT_EXPORT MediaStreamManager
 
   void OnRegionCaptureRectChanged(
       const base::UnguessableToken& session_id,
-      const absl::optional<gfx::Rect>& region_capture_rect);
+      const std::optional<gfx::Rect>& region_capture_rect);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Determines whether the captured surface (tab/window) should be focused.
@@ -414,6 +423,21 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
+
+  void GetZoomLevel(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      base::OnceCallback<
+          void(std::optional<int> zoom_level,
+               blink::mojom::CapturedSurfaceControlResult result)> callback);
+
+  void SetZoomLevel(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      int zoom_level,
+      base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+          callback);
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void RegisterDispatcherHost(
@@ -517,18 +541,23 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label) const;
   DeviceRequest* FindRequest(const std::string& label) const;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Find a request by the session-ID of its video device.
   // (In case of multiple video devices - any of them would fit.)
   // TOOD(crbug.com/1466247): Remove this after making the Captured Surface
   // Control APIs pass the label instead.
   DeviceRequest* FindRequestByVideoSessionId(
       const base::UnguessableToken& session_id) const;
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+  CapturedSurfaceController* GetCapturedSurfaceController(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      blink::mojom::CapturedSurfaceControlResult& result);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Clones an existing device identified by |existing_device_session_id| and
-  // returns it. If no such device is found, it returns absl::nullopt.
-  absl::optional<blink::MediaStreamDevice> CloneExistingOpenDevice(
+  // returns it. If no such device is found, it returns std::nullopt.
+  std::optional<blink::MediaStreamDevice> CloneExistingOpenDevice(
       const base::UnguessableToken& existing_device_session_id,
       const base::UnguessableToken& transfer_id,
       const std::string& new_label);
@@ -591,7 +620,7 @@ class CONTENT_EXPORT MediaStreamManager
   void PostRequestToUI(
       const std::string& label,
       const MediaDeviceEnumeration& enumeration,
-      const absl::optional<media::AudioParameters>& output_parameters);
+      const std::optional<media::AudioParameters>& output_parameters);
 
   // Returns true if a device with |device_id| has already been requested with
   // a render_frame_host_id and type equal to the the values
@@ -608,7 +637,7 @@ class CONTENT_EXPORT MediaStreamManager
   void FinalizeGetOpenDevice(const std::string& label, DeviceRequest* request);
   void PanTiltZoomPermissionChecked(
       const std::string& label,
-      const absl::optional<blink::MediaStreamDevice>& video_device,
+      const std::optional<blink::MediaStreamDevice>& video_device,
       bool pan_tilt_zoom_allowed);
   void FinalizeRequestFailed(DeviceRequests::const_iterator request_it,
                              blink::mojom::MediaStreamRequestResult result);
@@ -737,6 +766,11 @@ class CONTENT_EXPORT MediaStreamManager
       const MediaDeviceEnumeration& enumeration,
       DeviceRequest* request);
 
+  void GetRawDeviceIdsOpenedForFrameIds(
+      blink::mojom::MediaStreamType type,
+      GetRawDeviceIdsOpenedForFrameCallback callback,
+      base::flat_set<GlobalRenderFrameHostId> render_frame_host_ids) const;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Defines a window of opportunity for the Web-application to decide
   // whether a display-surface which it's capturing should be focused.
@@ -754,7 +788,7 @@ class CONTENT_EXPORT MediaStreamManager
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
 
-  absl::optional<base::Thread> video_capture_thread_;
+  std::optional<base::Thread> video_capture_thread_;
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
 
@@ -785,7 +819,7 @@ class CONTENT_EXPORT MediaStreamManager
   // * If `fake_ui_factory_captured_tab_id_` is also set, it determines the ID
   //   of the tab that will be captured.
   // * Otherwise, the capturing tab will capture itself.
-  absl::optional<WebContentsMediaCaptureId> fake_ui_factory_captured_tab_id_;
+  std::optional<WebContentsMediaCaptureId> fake_ui_factory_captured_tab_id_;
 
   // Observes changes of captured tabs' CaptureHandleConfig and reports
   // this changes back to their capturers. This object lives on the UI thread

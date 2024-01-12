@@ -25,8 +25,20 @@
 // Whether the associated tab is loading.
 @property(nonatomic, assign) BOOL loading;
 
-// Whether the cell separator is hidden.
-@property(nonatomic, assign) BOOL separatorHidden;
+// Whether the cell leading separator is hidden.
+@property(nonatomic, assign) BOOL leadingSeparatorHidden;
+
+// Whether the cell trailing separator is hidden.
+@property(nonatomic, assign) BOOL trailingSeparatorHidden;
+
+// Whether the cell leading separator gradient view is hidden.
+@property(nonatomic, assign) BOOL leadingSeparatorGradientViewHidden;
+
+// Whether the cell trailing separator gradient view is hidden.
+@property(nonatomic, assign) BOOL trailingSeparatorGradientViewHidden;
+
+// Preview parameters of the cell when dragged.
+@property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;

@@ -230,8 +230,8 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
       const base::Value& value = list_request[i];
       ASSERT_TRUE(value.is_dict());
       const base::Value::Dict& dict = value.GetDict();
-      absl::optional<int> rid = dict.FindInt("rid");
-      absl::optional<int> pid = dict.FindInt("pid");
+      std::optional<int> rid = dict.FindInt("rid");
+      std::optional<int> pid = dict.FindInt("pid");
       ASSERT_TRUE(rid);
       ASSERT_TRUE(pid);
       const std::string* origin = dict.FindString("origin");

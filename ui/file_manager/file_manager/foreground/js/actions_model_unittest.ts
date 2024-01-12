@@ -7,10 +7,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';

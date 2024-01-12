@@ -11,10 +11,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
-#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabAccelerator) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   ASSERT_TRUE(chrome::PressCloseTabAccelerator(browser()));
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
-  settings_browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
 }
 
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseWindowAccelerator) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   ASSERT_TRUE(chrome::PressCloseWindowAccelerator(browser()));
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
-  settings_browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
 }
 
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, SignOutAccelerator) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   ASSERT_TRUE(ash::PressSignOutAccelerator());
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
-  settings_browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
 }
 

@@ -240,6 +240,7 @@ try_.builder(
             "official_optimize",
             "stable_channel",
             "v8_release_branch",
+            "android_low_end",
         ],
     ),
     builderless = not settings.is_main,
@@ -249,13 +250,11 @@ try_.builder(
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
-                "//chrome/android:monochrome_public_minimal_apks",
                 "//chrome/android:trichrome_32_minimal_apks",
                 "//chrome/android:validate_expectations",
                 "//tools/binary_size:binary_size_trybot_py",
             ],
             "compile_targets": [
-                "monochrome_public_minimal_apks",
                 "monochrome_static_initializers",
                 "trichrome_32_minimal_apks",
                 "validate_expectations",
@@ -573,12 +572,27 @@ try_.builder(
 try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
     name = "android-deterministic-rel",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "release_try_builder",
+            "reclient",
+            "strip_debug_info",
+        ],
+    ),
     execution_timeout = 6 * time.hour,
 )
 
@@ -771,6 +785,27 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-webview-13-x64-dbg-hostside",
+    description_html = (
+        "This try builder mirrors android-webview-13-x64-dbg-hostside" +
+        "builder/tester to trial run WebView host-driven CTS.<br/>" +
+        "This builder should be removed after adding the test suite to" +
+        "android-12-x64-rel required CQ builder. b/267730567."
+    ),
+    mirrors = [
+        "ci/android-webview-13-x64-dbg-hostside",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-webview-13-x64-dbg-hostside",
+            "debug_try_builder",
+        ],
+    ),
+    contact_team_email = "woa-engprod@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
     gn_args = "ci/android-webview-pie-x86-wpt-fyi-rel",
@@ -912,6 +947,15 @@ try_.builder(
         android_config = builder_config.android_config(
             config = "main_builder",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "reclient",
+            "strip_debug_info",
+            "x64",
+        ],
     ),
 )
 
@@ -1095,6 +1139,17 @@ try_.gpu.optional_tests_builder(
     ),
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "static_angle",
+        ],
     ),
     main_list_view = "try",
     tryjob = try_.job(

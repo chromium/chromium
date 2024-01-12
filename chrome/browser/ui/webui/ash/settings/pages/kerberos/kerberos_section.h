@@ -48,8 +48,7 @@ class KerberosSection : public OsSettingsSection,
 
   void UpdateKerberosSearchConcepts();
 
-  raw_ptr<KerberosCredentialsManager, ExperimentalAsh>
-      kerberos_credentials_manager_;
+  raw_ptr<KerberosCredentialsManager> kerberos_credentials_manager_;
 };
 
 }  // namespace ash::settings

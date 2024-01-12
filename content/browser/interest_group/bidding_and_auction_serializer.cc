@@ -220,7 +220,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
       names.push_back(group->interest_group.name);
     }
     cbor::Value groups_obj(std::move(groups));
-    absl::optional<std::vector<uint8_t>> maybe_sub_message =
+    std::optional<std::vector<uint8_t>> maybe_sub_message =
         cbor::Writer::Write(groups_obj);
     DCHECK(maybe_sub_message);
     std::string compressed_groups;
@@ -252,7 +252,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   }
 
   cbor::Value message(std::move(message_obj));
-  absl::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
+  std::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
   DCHECK(maybe_msg);
 
   size_t size_before_padding = kFramingHeaderSize + maybe_msg->size();

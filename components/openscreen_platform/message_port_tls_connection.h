@@ -28,8 +28,7 @@ namespace openscreen_platform {
 // to the MessagePort.
 class MessagePortTlsConnection final
     : public openscreen::TlsConnection,
-      public cast_api_bindings::MessagePort::Receiver,
-      public base::SupportsWeakPtr<MessagePortTlsConnection> {
+      public cast_api_bindings::MessagePort::Receiver {
  public:
   MessagePortTlsConnection(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
@@ -53,6 +52,8 @@ class MessagePortTlsConnection final
   const raw_ref<openscreen::TaskRunner> task_runner_;
 
   raw_ptr<TlsConnection::Client> client_ = nullptr;
+
+  base::WeakPtrFactory<MessagePortTlsConnection> weak_ptr_factory_{this};
 };
 
 }  // namespace openscreen_platform

@@ -335,9 +335,8 @@ void PasswordProtectionRequest::SendRequest() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (password_protection_service_->CanGetAccessToken() &&
       password_protection_service_->token_fetcher()) {
-    password_protection_service_->token_fetcher()->Start(
-        base::BindOnce(&PasswordProtectionRequest::SendRequestWithToken,
-                       weak_factory_.GetWeakPtr()));
+    password_protection_service_->token_fetcher()->Start(base::BindOnce(
+        &PasswordProtectionRequest::SendRequestWithToken, AsWeakPtr()));
     return;
   }
   std::string empty_access_token;

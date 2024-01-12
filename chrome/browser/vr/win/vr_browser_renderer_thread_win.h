@@ -22,10 +22,8 @@
 
 namespace vr {
 
-class InputDelegateWin;
+class BrowserUiInterface;
 class GraphicsDelegateWin;
-class SchedulerDelegateWin;
-class VRUiBrowserInterface;
 class SchedulerUiInterface;
 
 class VR_EXPORT VRBrowserRendererThreadWin {
@@ -86,14 +84,10 @@ class VR_EXPORT VRBrowserRendererThreadWin {
 
   void UpdateOverlayState();
 
-  std::unique_ptr<VRUiBrowserInterface> ui_browser_interface_;
   std::unique_ptr<BrowserRenderer> browser_renderer_;
-  std::unique_ptr<SchedulerDelegateWin> scheduler_delegate_win_;
 
   // Raw pointers to objects owned by browser_renderer_:
-  raw_ptr<InputDelegateWin, DanglingUntriaged> input_ = nullptr;
   raw_ptr<GraphicsDelegateWin, DanglingUntriaged> graphics_ = nullptr;
-  raw_ptr<SchedulerDelegateWin, DanglingUntriaged> scheduler_ = nullptr;
   raw_ptr<BrowserUiInterface, DanglingUntriaged> ui_ = nullptr;
   raw_ptr<SchedulerUiInterface, DanglingUntriaged> scheduler_ui_ = nullptr;
 

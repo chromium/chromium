@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">想關閉舊分頁嗎？</translation>
 <translation id="1215127405478249895">檢視分頁</translation>
 <translation id="125153950246128346">輕按即可查看另一個分頁</translation>
+<translation id="1326271443836399892">睇下目前嘅整理設定。</translation>
 <translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
 <translation id="1657719826150349398">下移分頁</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{你有 <ph name="TABS_COUNT_ONE" /> 個已封存的分頁}other{你有 <ph name="TABS_COUNT_MANY" /> 個已封存的分頁}}</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3291470810748040983">當開啟的分頁中有產品降價，您就會收到通知</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關嘅分頁。要唔要將佢哋分組？</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9150694013019234766">喺接近畫面底部附近嘅分頁群組入面切換分頁</translation>
 <translation id="9169594135889675189">喺群組入面加新嘅分頁</translation>
+<translation id="955558140275419384">你可以用呢個編輯器睇下同整理所有封存咗嘅分頁。</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
 </translationbundle>

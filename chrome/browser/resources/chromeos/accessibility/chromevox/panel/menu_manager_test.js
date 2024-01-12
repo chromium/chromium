@@ -21,7 +21,7 @@ ChromeVoxMenuManagerTest = class extends ChromeVoxPanelTestBase {
   }
 
   getMenuManager() {
-    return this.getPanel().instance.menuManager_;
+    return this.getPanel().instance.getMenuManagerForTesting();
   }
 };
 

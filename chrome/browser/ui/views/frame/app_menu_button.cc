@@ -90,5 +90,5 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
     observer.AppMenuShown();
 }
 
-BEGIN_METADATA(AppMenuButton, ToolbarButton)
+BEGIN_METADATA(AppMenuButton)
 END_METADATA

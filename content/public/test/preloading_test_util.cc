@@ -51,8 +51,8 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     PreloadingTriggeringOutcome triggering_outcome,
     PreloadingFailureReason failure_reason,
     bool accurate,
-    absl::optional<base::TimeDelta> ready_time,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness) const {
+    std::optional<base::TimeDelta> ready_time,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness) const {
   std::map<std::string, int64_t> metrics = {
       {Preloading_Attempt::kPreloadingTypeName,
        static_cast<int64_t>(preloading_type)},

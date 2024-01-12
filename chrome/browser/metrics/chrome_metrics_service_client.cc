@@ -59,7 +59,6 @@
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/safe_browsing/certificate_reporting_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -993,11 +992,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<HttpsEngagementMetricsProvider>());
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<CertificateReportingMetricsProvider>());
-#endif
 
 #if BUILDFLAG(IS_MAC)
   metrics_service_->RegisterMetricsProvider(

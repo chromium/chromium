@@ -4,9 +4,9 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';

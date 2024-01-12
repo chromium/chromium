@@ -14,8 +14,9 @@
 namespace payments {
 
 class ValidatingTextfield : public views::Textfield {
+  METADATA_HEADER(ValidatingTextfield, views::Textfield)
+
  public:
-  METADATA_HEADER(ValidatingTextfield);
   explicit ValidatingTextfield(std::unique_ptr<ValidationDelegate> delegate);
   ValidatingTextfield(const ValidatingTextfield&) = delete;
   ValidatingTextfield& operator=(const ValidatingTextfield&) = delete;

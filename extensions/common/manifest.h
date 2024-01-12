@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/values.h"
@@ -167,13 +168,13 @@ class Manifest final {
 
   // These access the wrapped manifest value, returning nullptr/nullopt when the
   // property does not exist or if the manifest type can't access it.
-  const base::Value* FindKey(base::StringPiece path) const;
-  const base::Value* FindPath(base::StringPiece path) const;
-  std::optional<bool> FindBoolPath(base::StringPiece path) const;
-  std::optional<int> FindIntPath(base::StringPiece path) const;
-  const std::string* FindStringPath(base::StringPiece path) const;
+  const base::Value* FindKey(std::string_view path) const;
+  const base::Value* FindPath(std::string_view path) const;
+  std::optional<bool> FindBoolPath(std::string_view path) const;
+  std::optional<int> FindIntPath(std::string_view path) const;
+  const std::string* FindStringPath(std::string_view path) const;
 
-  const base::Value::Dict* FindDictPath(base::StringPiece path) const;
+  const base::Value::Dict* FindDictPath(std::string_view path) const;
 
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetList(const std::string& path, const base::Value** out_value) const;

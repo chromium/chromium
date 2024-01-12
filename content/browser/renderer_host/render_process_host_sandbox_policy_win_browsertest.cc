@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(SandboxDiagnosticsBrowserTest, Navigate) {
   for (const base::Value& process_value : *process_list) {
     const base::Value::Dict* process = process_value.GetIfDict();
     ASSERT_TRUE(process);
-    absl::optional<double> pid = process->FindDouble("processId");
+    std::optional<double> pid = process->FindDouble("processId");
     ASSERT_TRUE(pid.has_value());
     if (base::checked_cast<base::ProcessId>(pid.value()) != renderer_process_id)
       continue;

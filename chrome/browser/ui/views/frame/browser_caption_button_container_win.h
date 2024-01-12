@@ -24,8 +24,9 @@ class WindowsTabSearchCaptionButton;
 // grab bar for moving the window.
 class BrowserCaptionButtonContainer : public views::View,
                                       public views::WidgetObserver {
+  METADATA_HEADER(BrowserCaptionButtonContainer, views::View)
+
  public:
-  METADATA_HEADER(BrowserCaptionButtonContainer);
   explicit BrowserCaptionButtonContainer(BrowserFrameViewWin* frame_view);
   ~BrowserCaptionButtonContainer() override;
 

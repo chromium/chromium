@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/formats/hls/multivariant_playlist_test_builder.h"
 #include "media/formats/hls/parse_status.h"
@@ -34,6 +35,47 @@ RenditionManager::CodecSupportType GetCodecSupportType(
       has_video = true;
     } else if (codec == "av.codec") {
       return RenditionManager::CodecSupportType::kSupportedAudioVideo;
+    }
+  }
+  if (has_audio && has_video) {
+    return RenditionManager::CodecSupportType::kSupportedAudioVideo;
+  } else if (has_audio) {
+    return RenditionManager::CodecSupportType::kSupportedAudioOnly;
+  } else if (has_video) {
+    return RenditionManager::CodecSupportType::kSupportedVideoOnly;
+  }
+  return RenditionManager::CodecSupportType::kUnsupported;
+}
+
+RenditionManager::CodecSupportType GetCodecSupportForSoftwareOnlyLinux(
+    base::StringPiece container,
+    base::span<const std::string> codecs) {
+  bool has_audio = false;
+  bool has_video = false;
+  for (const auto& codec : codecs) {
+    if (codec == "avc1.640020") {
+      // h264
+      has_video = true;
+    } else if (codec == "avc1.64002a") {
+      // Nope!
+      has_video = true;
+    } else if (codec == "mp4a.40.2") {
+      // AAC-LC
+      has_audio = true;
+    } else if (codec == "avc1.64001f") {
+      // h264
+      has_video = true;
+    } else if (codec == "ac-3") {
+      // Nope!
+      return RenditionManager::CodecSupportType::kUnsupported;
+    } else if (codec == "hvc1.2.4.L123.B0") {
+      // Nope!
+      return RenditionManager::CodecSupportType::kUnsupported;
+    } else if (codec == "ec-3") {
+      // Nope!
+      return RenditionManager::CodecSupportType::kUnsupported;
+    } else {
+      LOG(ERROR) << "UNHANDLED CODEC: " << codec;
     }
   }
   if (has_audio && has_video) {
@@ -80,6 +122,20 @@ class HlsRenditionManagerTest : public testing::Test {
     return RenditionManager(builder.Parse(),
                             base::BindRepeating(GetVariantCb()),
                             base::BindRepeating(&GetCodecSupportType));
+  }
+
+  template <typename... Strings>
+  RenditionManager GetCustomSupportRenditionManager(
+      base::RepeatingCallback<RenditionManager::CodecSupportType(
+          base::StringPiece,
+          base::span<const std::string>)> support_cb,
+      Strings... strings) {
+    MultivariantPlaylistTestBuilder builder;
+    builder.AppendLine("#EXTM3U");
+    ([&] { builder.AppendLine(strings); }(), ...);
+    return RenditionManager(builder.Parse(),
+                            base::BindRepeating(GetVariantCb()),
+                            std::move(support_cb));
   }
 };
 
@@ -144,6 +200,284 @@ TEST_F(HlsRenditionManagerTest, MultipleVariantResolutions) {
 
   EXPECT_CALL(*this, VariantSelected("/video/8kuhd.m3u8", "NONE"));
   rm.UpdatePlayerResolution({8192, 8192});
+}
+
+TEST_F(HlsRenditionManagerTest, MP4SplitCodecs) {
+  auto rm = GetCustomSupportRenditionManager(
+      base::BindRepeating(&GetCodecSupportForSoftwareOnlyLinux),
+      "#EXT-X-INDEPENDENT-SEGMENTS",
+
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"a1\",NAME=\"English\",LANGUAGE=\"en-"
+      "US\",AUTOSELECT=YES,DEFAULT=YES,CHANNELS=\"2\",URI=\"a1/"
+      "prog_index.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"a2\",NAME=\"English\",LANGUAGE=\"en-"
+      "US\",AUTOSELECT=YES,DEFAULT=YES,CHANNELS=\"6\",URI=\"a2/"
+      "prog_index.m3u8\"",
+      "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"a3\",NAME=\"English\",LANGUAGE=\"en-"
+      "US\",AUTOSELECT=YES,DEFAULT=YES,CHANNELS=\"6\",URI=\"a3/"
+      "prog_index.m3u8\"",
+
+      "#EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID=\"cc\",LANGUAGE=\"en\",NAME="
+      "\"English\",DEFAULT=YES,AUTOSELECT=YES,INSTREAM-ID=\"CC1\"",
+
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"sub1\",LANGUAGE=\"en\",NAME="
+      "\"English\",AUTOSELECT=YES,DEFAULT=YES,FORCED=NO,URI=\"s1/en/"
+      "prog_index.m3u8\"",
+
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=928091,BANDWIDTH=1015727,"
+      "CODECS=\"avc1.640028\",RESOLUTION=1920x1080,URI=\"tp5/"
+      "iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=731514,BANDWIDTH=760174,"
+      "CODECS=\"avc1.64001f\",RESOLUTION=1280x720,URI=\"tp4/"
+      "iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=509153,BANDWIDTH=520162,"
+      "CODECS=\"avc1.64001f\",RESOLUTION=960x540,URI=\"tp3/iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=176942,BANDWIDTH=186651,"
+      "CODECS=\"avc1.64001f\",RESOLUTION=640x360,URI=\"tp2/iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=90796,BANDWIDTH=95410,"
+      "CODECS=\"avc1.64001f\",RESOLUTION=480x270,URI=\"tp1/iframe_index.m3u8\"",
+
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2190673,BANDWIDTH=2523597,CODECS="
+      "\"avc1.640020,mp4a.40.2\",RESOLUTION=960x540,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v5/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=8052613,BANDWIDTH=9873268,CODECS="
+      "\"avc1.64002a,mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v9/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=6133114,BANDWIDTH=7318337,CODECS="
+      "\"avc1.64002a,mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v8/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=4681537,BANDWIDTH=5421720,CODECS="
+      "\"avc1.64002a,mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v7/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=3183969,BANDWIDTH=3611257,CODECS="
+      "\"avc1.640020,mp4a.40.2\",RESOLUTION=1280x720,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v6/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1277747,BANDWIDTH=1475903,CODECS="
+      "\"avc1.64001f,mp4a.40.2\",RESOLUTION=768x432,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v4/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=890848,BANDWIDTH=1017705,CODECS="
+      "\"avc1.64001f,mp4a.40.2\",RESOLUTION=640x360,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v3/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=533420,BANDWIDTH=582820,CODECS="
+      "\"avc1.64001f,mp4a.40.2\",RESOLUTION=480x270,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v2/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=303898,BANDWIDTH=339404,CODECS="
+      "\"avc1.64001f,mp4a.40.2\",RESOLUTION=416x234,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v1/prog_index.m3u8",
+
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2413172,BANDWIDTH=2746096,CODECS="
+      "\"avc1.640020,ac-3\",RESOLUTION=960x540,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v5/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=8275112,BANDWIDTH=10095767,CODECS="
+      "\"avc1.64002a,ac-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v9/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=6355613,BANDWIDTH=7540836,CODECS="
+      "\"avc1.64002a,ac-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v8/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=4904036,BANDWIDTH=5644219,CODECS="
+      "\"avc1.64002a,ac-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v7/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=3406468,BANDWIDTH=3833756,CODECS="
+      "\"avc1.640020,ac-3\",RESOLUTION=1280x720,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v6/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1500246,BANDWIDTH=1698402,CODECS="
+      "\"avc1.64001f,ac-3\",RESOLUTION=768x432,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v4/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1113347,BANDWIDTH=1240204,CODECS="
+      "\"avc1.64001f,ac-3\",RESOLUTION=640x360,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v3/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=755919,BANDWIDTH=805319,CODECS="
+      "\"avc1.64001f,ac-3\",RESOLUTION=480x270,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v2/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=526397,BANDWIDTH=561903,CODECS="
+      "\"avc1.64001f,ac-3\",RESOLUTION=416x234,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v1/prog_index.m3u8",
+
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2221172,BANDWIDTH=2554096,CODECS="
+      "\"avc1.640020,ec-3\",RESOLUTION=960x540,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v5/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=8083112,BANDWIDTH=9903767,CODECS="
+      "\"avc1.64002a,ec-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v9/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=6163613,BANDWIDTH=7348836,CODECS="
+      "\"avc1.64002a,ec-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v8/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=4712036,BANDWIDTH=5452219,CODECS="
+      "\"avc1.64002a,ec-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v7/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=3214468,BANDWIDTH=3641756,CODECS="
+      "\"avc1.640020,ec-3\",RESOLUTION=1280x720,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v6/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1308246,BANDWIDTH=1506402,CODECS="
+      "\"avc1.64001f,ec-3\",RESOLUTION=768x432,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v4/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=921347,BANDWIDTH=1048204,CODECS="
+      "\"avc1.64001f,ec-3\",RESOLUTION=640x360,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v3/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=563919,BANDWIDTH=613319,CODECS="
+      "\"avc1.64001f,ec-3\",RESOLUTION=480x270,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v2/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=334397,BANDWIDTH=369903,CODECS="
+      "\"avc1.64001f,ec-3\",RESOLUTION=416x234,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v1/prog_index.m3u8",
+
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=287207,BANDWIDTH=328352,"
+      "CODECS=\"hvc1.2.4.L123.B0\",RESOLUTION=1920x1080,URI=\"tp10/"
+      "iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=216605,BANDWIDTH=226274,"
+      "CODECS=\"hvc1.2.4.L123.B0\",RESOLUTION=1280x720,URI=\"tp9/"
+      "iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=154000,BANDWIDTH=159037,"
+      "CODECS=\"hvc1.2.4.L123.B0\",RESOLUTION=960x540,URI=\"tp8/"
+      "iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=90882,BANDWIDTH=92800,"
+      "CODECS=\"hvc1.2.4.L123.B0\",RESOLUTION=640x360,URI=\"tp7/"
+      "iframe_index.m3u8\"",
+      "#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=50569,BANDWIDTH=51760,"
+      "CODECS=\"hvc1.2.4.L123.B0\",RESOLUTION=480x270,URI=\"tp6/"
+      "iframe_index.m3u8\"",
+
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1966314,BANDWIDTH=2164328,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=960x540,FRAME-RATE=60.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v14/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=6105163,BANDWIDTH=6664228,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=60.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v18/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=4801073,BANDWIDTH=5427899,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=60.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v17/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=3441312,BANDWIDTH=4079770,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=60.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v16/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2635933,BANDWIDTH=2764701,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=1280x720,FRAME-RATE=60.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v15/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1138612,BANDWIDTH=1226255,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=768x432,FRAME-RATE=30.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v13/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=829339,BANDWIDTH=901770,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=640x360,FRAME-RATE=30.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v12/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=522229,BANDWIDTH=548927,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=480x270,FRAME-RATE=30.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v11/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=314941,BANDWIDTH=340713,CODECS="
+      "\"hvc1.2.4.L123.B0,mp4a.40.2\",RESOLUTION=416x234,FRAME-RATE=30.000,"
+      "CLOSED-CAPTIONS=\"cc\",AUDIO=\"a1\",SUBTITLES=\"sub1\"",
+      "v10/prog_index.m3u8",
+
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2188813,BANDWIDTH=2386827,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=960x540,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v14/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=6327662,BANDWIDTH=6886727,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v18/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=5023572,BANDWIDTH=5650398,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v17/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=3663811,BANDWIDTH=4302269,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v16/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2858432,BANDWIDTH=2987200,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=1280x720,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v15/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1361111,BANDWIDTH=1448754,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=768x432,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v13/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1051838,BANDWIDTH=1124269,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=640x360,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v12/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=744728,BANDWIDTH=771426,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=480x270,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v11/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=537440,BANDWIDTH=563212,CODECS="
+      "\"hvc1.2.4.L123.B0,ac-3\",RESOLUTION=416x234,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a2\",SUBTITLES=\"sub1\"",
+      "v10/prog_index.m3u8",
+
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1996813,BANDWIDTH=2194827,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=960x540,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v14/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=6135662,BANDWIDTH=6694727,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v18/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=4831572,BANDWIDTH=5458398,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v17/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=3471811,BANDWIDTH=4110269,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=1920x1080,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v16/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=2666432,BANDWIDTH=2795200,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=1280x720,FRAME-RATE=60.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v15/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1169111,BANDWIDTH=1256754,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=768x432,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v13/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=859838,BANDWIDTH=932269,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=640x360,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v12/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=552728,BANDWIDTH=579426,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=480x270,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v11/prog_index.m3u8",
+      "#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=345440,BANDWIDTH=371212,CODECS="
+      "\"hvc1.2.4.L123.B0,ec-3\",RESOLUTION=416x234,FRAME-RATE=30.000,CLOSED-"
+      "CAPTIONS=\"cc\",AUDIO=\"a3\",SUBTITLES=\"sub1\"",
+      "v10/prog_index.m3u8");
+
+  EXPECT_CALL(*this,
+              VariantSelected("/v9/prog_index.m3u8", "/a1/prog_index.m3u8"));
+  rm.Reselect(GetVariantCb());
 }
 
 TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {

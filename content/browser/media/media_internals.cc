@@ -402,7 +402,7 @@ static bool ConvertEventToUpdate(int render_process_id,
       break;
     case media::MediaLogRecord::Type::kMediaEventTriggered: {
       // Delete the "event" param so that it won't spam the log.
-      absl::optional<base::Value> exists = cloned_params.Extract("event");
+      std::optional<base::Value> exists = cloned_params.Extract("event");
       DCHECK(exists.has_value());
       dict.Set("type", std::move(exists.value()));
       break;
@@ -697,7 +697,7 @@ void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
       DCHECK_EQ(type, CREATE);
       audio_streams_cached_data_.Set(cache_key, value.Clone());
     } else if (type == UPDATE_AND_DELETE) {
-      absl::optional<base::Value> out_value =
+      std::optional<base::Value> out_value =
           audio_streams_cached_data_.Extract(cache_key);
       CHECK(out_value.has_value());
     } else {

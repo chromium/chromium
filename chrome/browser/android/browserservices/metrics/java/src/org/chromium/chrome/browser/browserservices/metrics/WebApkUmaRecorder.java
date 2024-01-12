@@ -240,18 +240,6 @@ public class WebApkUmaRecorder {
         RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
     }
 
-    /** Records whether the user was using a light or dark theme when installing a WebAPK */
-    public static void recordUserThemeWhenInstall(@WebApkUserTheme int themeSetting) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "WebApk.Install.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
-    }
-
-    /** Records whether the user was using a light or dark theme when launching a WebAPK */
-    public static void recordUserThemeWhenLaunch(@WebApkUserTheme int themeSetting) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "WebApk.Launch.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
-    }
-
     private static int roundByteToMb(long bytes) {
         int mbs = (int) (bytes / (long) ConversionUtils.BYTES_PER_MEGABYTE / 10L * 10L);
         return Math.min(1000, Math.max(-1000, mbs));

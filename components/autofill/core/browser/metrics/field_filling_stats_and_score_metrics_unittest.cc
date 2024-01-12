@@ -22,9 +22,10 @@ FillFieldLogEvent GetFillFieldLogEventWithFillingMethod(
       .fill_event_id = GetNextFillEventId(),
       .had_value_before_filling = ToOptionalBoolean(false),
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-      .was_autofilled = ToOptionalBoolean(true),
+      .was_autofilled_before_security_policy = ToOptionalBoolean(true),
       .had_value_after_filling = ToOptionalBoolean(true),
-      .filling_method = filling_method};
+      .filling_method = filling_method,
+      .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse};
 }
 
 std::vector<test::FieldDescription> GetTestFormDataFields(

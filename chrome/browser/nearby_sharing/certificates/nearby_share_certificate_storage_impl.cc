@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
+
 #include <algorithm>
 #include <utility>
 #include <vector>
-
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 
 #include "base/base64url.h"
 #include "base/json/values_util.h"
@@ -314,15 +314,10 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificatesCallback(
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Expired public certificates successfully removed.";
 
-  auto should_remove =
-      [&](const std::pair<std::string, base::Time>& pair) -> bool {
-    return ids_to_remove->contains(pair.first);
-  };
-
-  public_certificate_expirations_.erase(
-      std::remove_if(public_certificate_expirations_.begin(),
-                     public_certificate_expirations_.end(), should_remove),
-      public_certificate_expirations_.end());
+  std::erase_if(public_certificate_expirations_,
+                [&](const ExpirationList::value_type& expiration) {
+                  return ids_to_remove->contains(expiration.first);
+                });
   SavePublicCertificateExpirations();
   std::move(callback).Run(true);
 }

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,12 +39,12 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -278,7 +279,7 @@ class WebContents : public PageNavigator,
     bool enable_wake_locks = true;
 
     // Options specific to WebContents created for picture-in-picture windows.
-    absl::optional<blink::mojom::PictureInPictureWindowOptions>
+    std::optional<blink::mojom::PictureInPictureWindowOptions>
         picture_in_picture_options;
 
     // WebContentsDelegate given for the case early initialization code depends
@@ -372,6 +373,8 @@ class WebContents : public PageNavigator,
   // nullptr will be returned instead.
   // The callback should only run on the UI thread and it should always be
   // non-null.
+  // Most uses of Getter and OnceGetter can likely be safety replaced with
+  // base::WeakPtr<WebContents>.
   using Getter = base::RepeatingCallback<WebContents*(void)>;
   // Use this variant for instances that will only run the callback a single
   // time.
@@ -527,11 +530,11 @@ class WebContents : public PageNavigator,
 
   // Returns the theme color for the underlying content as set by the
   // theme-color meta tag if any.
-  virtual absl::optional<SkColor> GetThemeColor() = 0;
+  virtual std::optional<SkColor> GetThemeColor() = 0;
 
   // Returns the background color for the underlying content as set by CSS if
   // any.
-  virtual absl::optional<SkColor> GetBackgroundColor() = 0;
+  virtual std::optional<SkColor> GetBackgroundColor() = 0;
 
   // Sets the renderer-side default background color of the page. This is used
   // when the page has not loaded enough to know a background color or if the
@@ -544,7 +547,7 @@ class WebContents : public PageNavigator,
   // refactor to remove `RenderWidgetHostView::SetBackgroundColor` and merge its
   // functionality here, which will be more consistent and simpler to
   // understand.
-  virtual void SetPageBaseBackgroundColor(absl::optional<SkColor> color) = 0;
+  virtual void SetPageBaseBackgroundColor(std::optional<SkColor> color) = 0;
 
   // Sets the ColorProviderSource for the WebContents. The WebContents will
   // maintain an observation of `source` until a new source is set or the
@@ -623,7 +626,7 @@ class WebContents : public PageNavigator,
   // |start_recording| is false, it is expected that |callback| does not.
   virtual void RecordAccessibilityEvents(
       bool start_recording,
-      absl::optional<AccessibilityEventCallback> callback) = 0;
+      std::optional<AccessibilityEventCallback> callback) = 0;
 
   // Tab navigation state ------------------------------------------------------
 
@@ -637,6 +640,12 @@ class WebContents : public PageNavigator,
   // titles for file URLs that have none. Thus |entry| must have a URL set.
   virtual void UpdateTitleForEntry(NavigationEntry* entry,
                                    const std::u16string& title) = 0;
+
+  // Returns app title of the current navigation entry. The apptitle is
+  // an alternative title text that can be used by app windows.
+  // See
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  virtual const std::u16string& GetAppTitle() = 0;
 
   // Returns the SiteInstance associated with the current page.
   virtual SiteInstance* GetSiteInstance() = 0;
@@ -1040,12 +1049,15 @@ class WebContents : public PageNavigator,
   // Format of |headers| is a new line separated list of key value pairs:
   // "<key1>: <value1>\r\n<key2>: <value2>". The saving is performed in the
   // context of `rfh`. For example, the associated navigation isolation info
-  // will be used for making the network request.
+  // will be used for making the network request. If `is_subresource` is true,
+  // the URL is assumed to correspond to a subresource loaded in the frame,
+  // as opposed to the main (generally, document) resource.
   virtual void SaveFrameWithHeaders(const GURL& url,
                                     const Referrer& referrer,
                                     const std::string& headers,
                                     const std::u16string& suggested_filename,
-                                    RenderFrameHost* rfh) = 0;
+                                    RenderFrameHost* rfh,
+                                    bool is_subresource) = 0;
 
   // Generate an MHTML representation of the current page conforming to the
   // settings provided by |params| and returning final status information via
@@ -1306,7 +1318,7 @@ class WebContents : public PageNavigator,
 
   virtual int GetCurrentlyPlayingVideoCount() = 0;
 
-  virtual absl::optional<gfx::Size> GetFullscreenVideoSize() = 0;
+  virtual std::optional<gfx::Size> GetFullscreenVideoSize() = 0;
 
   // Tells the renderer to clear the focused element (if any).
   virtual void ClearFocusedElement() = 0;
@@ -1397,7 +1409,7 @@ class WebContents : public PageNavigator,
   virtual const base::Location& GetCreatorLocation() = 0;
 
   // Returns the parameters associated with PictureInPicture WebContents
-  virtual const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  virtual const std::optional<blink::mojom::PictureInPictureWindowOptions>&
   GetPictureInPictureOptions() const = 0;
 
   // Hide or show the browser controls for the given WebContents, based on
@@ -1452,10 +1464,10 @@ class WebContents : public PageNavigator,
       ui::PageTransition page_transition,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
-      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
-          url_match_predicate = absl::nullopt,
-      absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
-          prerender_navigation_handle_callback = absl::nullopt) = 0;
+      std::optional<base::RepeatingCallback<bool(const GURL&)>>
+          url_match_predicate = std::nullopt,
+      std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+          prerender_navigation_handle_callback = std::nullopt) = 0;
 
   // May be called when the embedder believes that it is likely that the user
   // will perform a back navigation due to the trigger indicated by `predictor`
@@ -1479,11 +1491,16 @@ class WebContents : public PageNavigator,
   // does not need to be exhaustive or perfectly correct.
   // TODO(crbug.com/1407197): Remove after bug is fixed.
   virtual void SetOwnerLocationForDebug(
-      absl::optional<base::Location> owner_location) = 0;
+      std::optional<base::Location> owner_location) = 0;
 
   // Sends the attribution support state to all renderer processes for the
   // current page.
   virtual void UpdateAttributionSupportRenderer() = 0;
+
+  // Return all currently streaming devices of `type` via `callback`.
+  virtual void GetMediaCaptureRawDeviceIdsOpened(
+      blink::mojom::MediaStreamType type,
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
  private:
   // This interface should only be implemented inside content.

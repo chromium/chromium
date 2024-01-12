@@ -21,6 +21,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
@@ -78,34 +79,41 @@ const char* PointState(blink::WebTouchPoint::State state) {
 }
 
 void PrintTouchList(TestRunner* test_runner,
+                    WebFrameTestProxy& frame_proxy,
                     const blink::WebTouchPoint* points,
                     int length) {
   for (int i = 0; i < length; ++i) {
-    test_runner->PrintMessage(base::StringPrintf(
-        "* %.2f, %.2f: %s\n", points[i].PositionInWidget().x(),
-        points[i].PositionInWidget().y(), PointState(points[i].state)));
+    test_runner->PrintMessage(
+        base::StringPrintf(
+            "* %.2f, %.2f: %s\n", points[i].PositionInWidget().x(),
+            points[i].PositionInWidget().y(), PointState(points[i].state)),
+        frame_proxy);
   }
 }
 
 void PrintEventDetails(TestRunner* test_runner,
+                       WebFrameTestProxy& frame_proxy,
                        const blink::WebInputEvent& event) {
   if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
     const blink::WebTouchEvent& touch =
         static_cast<const blink::WebTouchEvent&>(event);
-    PrintTouchList(test_runner, touch.touches, touch.touches_length);
+    PrintTouchList(test_runner, frame_proxy, touch.touches,
+                   touch.touches_length);
   } else if (blink::WebInputEvent::IsMouseEventType(event.GetType()) ||
              event.GetType() == blink::WebInputEvent::Type::kMouseWheel) {
     const blink::WebMouseEvent& mouse =
         static_cast<const blink::WebMouseEvent&>(event);
-    test_runner->PrintMessage(base::StringPrintf("* %.2f, %.2f\n",
-                                                 mouse.PositionInWidget().x(),
-                                                 mouse.PositionInWidget().y()));
+    test_runner->PrintMessage(
+        base::StringPrintf("* %.2f, %.2f\n", mouse.PositionInWidget().x(),
+                           mouse.PositionInWidget().y()),
+        frame_proxy);
   } else if (blink::WebInputEvent::IsGestureEventType(event.GetType())) {
     const blink::WebGestureEvent& gesture =
         static_cast<const blink::WebGestureEvent&>(event);
     test_runner->PrintMessage(
         base::StringPrintf("* %.2f, %.2f\n", gesture.PositionInWidget().x(),
-                           gesture.PositionInWidget().y()));
+                           gesture.PositionInWidget().y()),
+        frame_proxy);
   }
 }
 
@@ -282,10 +290,11 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   } else if (gl_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
+    // We will draw to the SI via GL directly below and then send it off to the
+    // display compositor later.
     shared_image_ = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
             gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         "TestLabel", gpu::kNullSurfaceHandle);
@@ -623,24 +632,28 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
   if (blink::WebInputEvent::IsGestureEventType(event.GetType()))
     return blink::WebInputEventResult::kNotHandled;
 
+  auto* frame_proxy = static_cast<WebFrameTestProxy*>(
+      RenderFrame::FromWebFrame(web_local_frame_));
   const char* event_name = blink::WebInputEvent::GetName(event.GetType());
   if (!strcmp(event_name, "") || !strcmp(event_name, "Undefined"))
     event_name = "unknown";
-  test_runner_->PrintMessage(std::string("Plugin received event: ") +
-                             event_name + "\n");
+  test_runner_->PrintMessage(
+      std::string("Plugin received event: ") + event_name + "\n", *frame_proxy);
   if (print_event_details_)
-    PrintEventDetails(test_runner_, event);
+    PrintEventDetails(test_runner_, *frame_proxy, event);
 
   if (print_user_gesture_status_) {
     bool has_transient_user_activation =
         web_local_frame_->HasTransientUserActivation();
-    test_runner_->PrintMessage(std::string("* ") +
-                               (has_transient_user_activation ? "" : "not ") +
-                               "handling user gesture\n");
+    test_runner_->PrintMessage(
+        std::string("* ") + (has_transient_user_activation ? "" : "not ") +
+            "handling user gesture\n",
+        *frame_proxy);
   }
 
   if (is_persistent_)
-    test_runner_->PrintMessage(std::string("TestPlugin: isPersistent\n"));
+    test_runner_->PrintMessage(std::string("TestPlugin: isPersistent\n"),
+                               *frame_proxy);
   return blink::WebInputEventResult::kNotHandled;
 }
 
@@ -649,6 +662,8 @@ bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
                                         blink::DragOperationsMask mask,
                                         const gfx::PointF& position,
                                         const gfx::PointF& screen_position) {
+  auto* frame_proxy = static_cast<WebFrameTestProxy*>(
+      RenderFrame::FromWebFrame(web_local_frame_));
   const char* drag_status_name = nullptr;
   switch (drag_status) {
     case blink::kWebDragStatusEnter:
@@ -666,8 +681,9 @@ bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
     case blink::kWebDragStatusUnknown:
       NOTREACHED();
   }
-  test_runner_->PrintMessage(std::string("Plugin received event: ") +
-                             drag_status_name + "\n");
+  test_runner_->PrintMessage(
+      std::string("Plugin received event: ") + drag_status_name + "\n",
+      *frame_proxy);
   return false;
 }
 

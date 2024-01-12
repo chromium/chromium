@@ -314,6 +314,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 // Feature to enable consideration of 3PCD Support settings.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
 
+// Feature to enable consideration of top-level 3PCD Support settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdSupportSettings);
+
 // Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
 // component updater.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);
@@ -432,6 +435,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseProxyChains;
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyIncludeOAuthTokenInGetProxyConfig;
 
+// Controls whether a header ("IP-Protection: 1") should be added to proxied
+// network requests.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyAddHeaderToProxiedRequests;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).
@@ -461,6 +469,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTimeLimitedInsecureCookies);
 
 // Enables enabling third-party cookie blocking from the command line.
 NET_EXPORT BASE_DECLARE_FEATURE(kForceThirdPartyCookieBlocking);
+
+// Enables an exception for third-party cookie blocking when the request is
+// same-site with the top-level document, opted into CORS, but embedded in a
+// cross-site context.
+NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyCookieTopLevelSiteCorsException);
 
 // Enables Early Hints on HTTP/1.1.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);

@@ -228,9 +228,6 @@ SupervisedUserURLFilter::SupervisedUserURLFilter(
     std::unique_ptr<Delegate> service_delegate)
     : default_behavior_(FilteringBehavior::kAllow),
       service_delegate_(std::move(service_delegate)),
-      blocking_task_runner_(base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
@@ -713,11 +710,6 @@ void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SupervisedUserURLFilter::SetBlockingTaskRunnerForTesting(
-    const scoped_refptr<base::TaskRunner>& task_runner) {
-  blocking_task_runner_ = task_runner;
-}
-
 SupervisedUserURLFilter::WebFilterType
 SupervisedUserURLFilter::GetWebFilterType() const {
   // If the default filtering behavior is not block, it means the web filter
@@ -731,20 +723,24 @@ SupervisedUserURLFilter::GetWebFilterType() const {
                             : WebFilterType::kAllowAllSites;
 }
 
-void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
+bool SupervisedUserURLFilter::EmitURLFilterMetrics() const {
+  // Do not record metrics if the parent web filter configuration is not
+  // applied to the user.
   if (!is_filter_initialized_) {
-    return;
+    return false;
   }
 
+  ReportWebFilterTypeMetrics();
+  ReportManagedSiteListMetrics();
+  return true;
+}
+
+void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
   base::UmaHistogramEnumeration(kWebFilterTypeHistogramName,
                                 GetWebFilterType());
 }
 
 void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
-  if (!is_filter_initialized_) {
-    return;
-  }
-
   if (url_map_.empty() && allowed_host_list_.empty() &&
       blocked_host_list_.empty()) {
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,

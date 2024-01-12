@@ -367,7 +367,7 @@ void DecodeAnimation(LoadedCallback loaded_cb,
     return;
   }
 
-  auto bytes = base::as_bytes(base::make_span(*data));
+  auto bytes = base::as_byte_span(*data);
   data_decoder::DecodeAnimationIsolated(
       bytes, /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
       base::BindOnce(&OnAnimationDecoded, std::move(loaded_cb), require_encode,

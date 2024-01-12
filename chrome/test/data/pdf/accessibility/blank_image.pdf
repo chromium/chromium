@@ -1,0 +1,91 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /StructTreeRoot 8 0 R
+  /Lang (en-US)
+  /MarkInfo <<
+    /Marked true
+  >>
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 4 0 R
+  /MediaBox [0 0 612 792]
+  /Group <<
+    /CS /DeviceRGB
+    /I true
+    /S /Transparency
+  >>
+  /Resources <<
+    /ProcSet [/PDF /ImageC /ImageI /ImageB]
+    /XObject <<
+      /Im7 5 0 R
+    >>
+  >>
+  /StructParents 0
+>>
+endobj
+4 0 obj <<
+  /Length 142
+>>
+stream
+0.1 w
+/Artifact
+BMC
+q
+0 0 612 792 re
+W* n
+EMC
+/Figure<</MCID 0>>
+BDC
+Q
+q
+281 685.3 50 50 re
+W* n
+q
+49.9 0 0 50 281.1 685.4 cm
+/Im7 Do
+Q
+EMC
+Q
+endstream
+endobj
+5 0 obj <<
+  /Type /XObject
+  /Subtype /Image
+  /Width 100
+  /Height 100
+  /BitsPerComponent 8
+  /ColorSpace /DeviceRGB
+  /Filter [/ASCIIHexDecode /FlateDecode]
+  /Length 61
+>>
+stream
+789cedc13101000000c2a0f54fed6f06a00000000000000078031d4c0001
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000145 00000 n 
+0000000208 00000 n 
+0000000496 00000 n 
+0000000690 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 6
+>>
+startxref
+952
+%%EOF

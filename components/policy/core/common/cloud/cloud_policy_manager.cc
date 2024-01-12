@@ -32,12 +32,13 @@ namespace policy {
 CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,
     const std::string& settings_entity_id,
-    CloudPolicyStore* cloud_policy_store,
+    std::unique_ptr<CloudPolicyStore> cloud_policy_store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : core_(policy_type,
+    : store_(std::move(cloud_policy_store)),
+      core_(policy_type,
             settings_entity_id,
-            cloud_policy_store,
+            store_.get(),
             task_runner,
             std::move(network_connection_tracker_getter)),
       waiting_for_policy_refresh_(false) {}

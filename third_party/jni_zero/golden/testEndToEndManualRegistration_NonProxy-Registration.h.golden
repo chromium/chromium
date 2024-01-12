@@ -168,7 +168,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_samples_Sample
       org_jni_1zero_samples_SampleNonProxy_clazz(env),
       kMethods_org_jni_1zero_samples_SampleNonProxy,
       kMethods_org_jni_1zero_samples_SampleNonProxySize) < 0) {
-    jni_generator::HandleRegistrationError(env,
+    jni_zero::HandleRegistrationError(env,
         org_jni_1zero_samples_SampleNonProxy_clazz(env),
         __FILE__);
     return false;

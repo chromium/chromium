@@ -29,8 +29,7 @@ class FakeHotspotOperationDelegate
       base::OnceCallback<void(bool prepare_success)> callback) override;
 
  private:
-  raw_ptr<TechnologyStateController, ExperimentalAsh>
-      technology_state_controller_ = nullptr;
+  raw_ptr<TechnologyStateController> technology_state_controller_ = nullptr;
 };
 
 // Helper class for tests that use NetworkStateHandler and/or

@@ -26,7 +26,8 @@ class TestBubbleContentsWrapper
                               profile,
                               /*task_manager_string_id=*/0,
                               /*webui_resizes_host=*/true,
-                              /*esc_closes_ui=*/false) {}
+                              /*esc_closes_ui=*/false,
+                              /*webui_name=*/"Test") {}
   TestBubbleContentsWrapper(const TestBubbleContentsWrapper&) = delete;
   TestBubbleContentsWrapper& operator=(const TestBubbleContentsWrapper&) =
       delete;

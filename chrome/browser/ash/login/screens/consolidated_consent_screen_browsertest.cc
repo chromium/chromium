@@ -283,6 +283,11 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, GoogleEula) {
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
                   static_cast<int>(UserAction::kGoogleEulaLinkClicked), 1)));
+
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, CrosEula) {
@@ -304,6 +309,11 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, CrosEula) {
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
                   static_cast<int>(UserAction::kCrosEulaLinkClicked), 1)));
+
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
@@ -336,13 +346,6 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
       1);
 
   histogram_tester_.ExpectTotalCount(kRecoveryOptInResultHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
-  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
-
-  // ARC is not available, ARC ToS and privacy policy will not be loaded.
-  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
-  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
-
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
                   static_cast<int>(UserAction::kAcceptButtonClicked), 1)));
@@ -445,6 +448,10 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, ArcToS) {
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
                   static_cast<int>(UserAction::kArcTosLinkClicked), 1)));
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, PrivacyPolicy) {
@@ -465,6 +472,10 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, PrivacyPolicy) {
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
                   static_cast<int>(UserAction::kPrivacyPolicyLinkClicked), 1)));
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
@@ -561,6 +572,11 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
   OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
 
+  // Click ARC ToS link to get the ARC ToS loaded and recroded.
+  test::OobeJS().ClickOnPath(kArcTosLink);
+  test::OobeJS().CreateVisibilityWaiter(true, kArcTosDialog)->Wait();
+  test::OobeJS().ClickOnPath(kArcTosOkButton);
+
   ArcPlayTermsOfServiceConsent play_consent =
       BuildArcPlayTermsOfServiceConsent(fake_arc_tos_.GetArcTosContent());
   ArcBackupAndRestoreConsent backup_and_restore_consent =
@@ -574,12 +590,11 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
   EXPECT_EQ(WaitForScreenExitResult(),
             ConsolidatedConsentScreen::Result::ACCEPTED);
 
-  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
-  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
-
-  // ARC is available, ARC ToS and privacy policy will be loaded.
+  // Only ARC ToS is loaded.
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 0);
   histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 1);
-  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

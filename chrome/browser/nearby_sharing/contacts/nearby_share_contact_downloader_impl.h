@@ -75,7 +75,7 @@ class NearbyShareContactDownloaderImpl : public NearbyShareContactDownloader {
   size_t current_page_number_ = 0;
   std::vector<nearby::sharing::proto::ContactRecord> contacts_;
   base::TimeDelta timeout_;
-  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<NearbyShareClientFactory> client_factory_ = nullptr;
   base::TimeTicks start_timestamp_;
   std::unique_ptr<NearbyShareClient> client_;
   base::OneShotTimer timer_;

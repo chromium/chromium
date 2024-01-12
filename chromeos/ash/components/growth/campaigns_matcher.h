@@ -23,8 +23,7 @@ class CampaignsMatcher {
   // explicitly to set user prefs.
   void SetPrefs(PrefService* prefs);
 
-  void SetCampaigns(const CampaignsPerSlot* proactiveCampaigns,
-                    const CampaignsPerSlot* reactiveCampaigns);
+  void SetCampaigns(const CampaignsPerSlot* campaigns);
 
   // Select the targeted campaign for the given `slot`. Returns nullptr if no
   // campaign found for the given `slot`.
@@ -40,13 +39,10 @@ class CampaignsMatcher {
   bool Matched(const Targetings* targetings) const;
 
   // Owned by CampaignsManager.
-  raw_ptr<const CampaignsPerSlot, ExperimentalAsh> proactive_campaigns_ =
-      nullptr;
-  raw_ptr<const CampaignsPerSlot, ExperimentalAsh> reactive_campaigns_ =
-      nullptr;
-  raw_ptr<CampaignsManagerClient, ExperimentalAsh> client_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<const CampaignsPerSlot> campaigns_ = nullptr;
+  raw_ptr<CampaignsManagerClient> client_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 };
 
 }  // namespace growth

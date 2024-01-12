@@ -84,6 +84,7 @@ using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailPassword;
+using password_manager_test_utils::PasswordDetailsTableViewMatcher;
 using password_manager_test_utils::PasswordSettingsTableView;
 using password_manager_test_utils::PasswordTextfieldForUsernameAndSites;
 using password_manager_test_utils::ReauthenticationController;
@@ -136,7 +137,7 @@ GREYElementInteraction* GetInteractionForPasswordDetailItem(
   return [[EarlGrey
       selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
          usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeTop)
-      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewID)];
+      onElementWithMatcher:PasswordDetailsTableViewMatcher()];
 }
 
 // Returns the GREYElementInteraction* for the item on the deletion alert
@@ -714,16 +715,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
             (testOpenPasswordSettingsSubmenuWithFailedAuth)] ||
       [self isRunningTest:@selector(testAddNewPasswordWithFailedAuth)]) {
     config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntry);
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-  }
-
-  if ([self isRunningTest:@selector
-            (testPasswordManagerVisitMetricWithoutAuthRequired)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntry);
-    config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
@@ -754,8 +745,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.features_enabled.push_back(
         password_manager::features::
             kIOSPasswordSettingsBulkUploadLocalPasswords);
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntry);
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
@@ -1255,8 +1244,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 
   // Check that the current view is still the detail view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion did not happen.
@@ -1735,7 +1723,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                                kRemoteIndex]]]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewID)]
+      onElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2418,7 +2406,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
 // TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
-- (void)DISABLED_testAutoScroll {
+- (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
     NSString* password = [NSString stringWithFormat:@"password %d", i];
@@ -2432,9 +2420,12 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
       performAction:grey_tap()];
 
+  NSString* const kAddedDomain = @"zexample.com";
+
   // Fill form.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
-      performAction:grey_replaceText(@"https://zexample.com")];
+      performAction:grey_replaceText([NSString
+                        stringWithFormat:@"https://%@", kAddedDomain])];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"zconcrete username")];
@@ -2445,12 +2436,17 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  // The newly created credential exists.
-  [[self interactionForSinglePasswordEntryWithDomain:@"zexample.com"]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  // Verify that the added credential was automatically scrolled at and visible.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityID(kAddedDomain)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"Didn't scroll to the added credential item");
 }
 
 // Tests that adding new password credential where the username and website
@@ -2878,8 +2874,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // still one more password left on the view.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kPasswordDetailsTableViewID)]
+    [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;
@@ -3209,7 +3204,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result = @"You can save your password for example1.com in your "
-                     @"Google Account, foo1@gmail.com";
+                     @"Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3241,7 +3236,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result = @"You can save your passwords for example1.com and "
-                     @"example2.com in your Google Account, foo1@gmail.com";
+                     @"example2.com in your Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3276,7 +3271,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result = @"You can save your passwords for example1.com, "
                      @"example2.com, and 1 other "
-                     @"in your Google Account, foo1@gmail.com";
+                     @"in your Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3313,7 +3308,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result =
       @"You can save your passwords for example1.com, example2.com, and 2 "
-      @"others in your Google Account, foo1@gmail.com";
+      @"others in your Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3360,9 +3355,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 - (void)testSavePasswordsInAccountFlowAuthFailed {
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kFailure];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -3377,6 +3369,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
               kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
 
   // Tap on "Save in Account" (accept) button.
   [SaveInAccountConfirmationDialogButton() performAction:grey_tap()];
@@ -3391,8 +3386,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 - (void)testSavePasswordsInAccountFlowNoAuthSetOnDevice {
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -3407,6 +3400,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
               kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
 
   // Tap on "Save in Account" (accept) button.
   [SaveInAccountConfirmationDialogButton() performAction:grey_tap()];
@@ -3565,16 +3560,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Check password manager visit metric.
   CheckPasswordManagerVisitMetricCount(0);
-}
-
-// Tests that password manager visit histogram is recorded after opening
-// password manager without authentication required.
-- (void)testPasswordManagerVisitMetricWithoutAuthRequired {
-  OpenPasswordManager();
-
-  CheckPasswordManagerVisitMetricCount(1);
-
-  CheckReauthenticationUIEventMetricTotalCount(0);
 }
 
 // Tests that the Password Manager is opened is search mode when opened from the

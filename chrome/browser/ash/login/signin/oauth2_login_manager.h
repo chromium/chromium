@@ -161,7 +161,7 @@ class OAuth2LoginManager : public KeyedService,
   void RecordSessionRestoreOutcome(SessionRestoreOutcome outcome,
                                    SessionRestoreState state);
 
-  raw_ptr<Profile, ExperimentalAsh> user_profile_;
+  raw_ptr<Profile> user_profile_;
   SessionRestoreState state_;
 
   // Whether there is pending TokenService::LoadCredentials call.

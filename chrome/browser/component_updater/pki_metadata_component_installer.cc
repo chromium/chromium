@@ -85,8 +85,9 @@ const base::FilePath::CharType kCRSProtoFileName[] =
 
 std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
   std::string result;
-  if (pb_path.empty())
+  if (pb_path.empty()) {
     return result;
+  }
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
@@ -493,8 +494,9 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
   should_install = true;
 #endif
 
-  if (!should_install)
+  if (!should_install) {
     return;
+  }
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<PKIMetadataComponentInstallerPolicy>());

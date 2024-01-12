@@ -50,6 +50,51 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
+ULONGLONG CaptureModeToExtendedPlatformFlags(
+    mojom::EyeGazeCorrectionMode mode) {
+  switch (mode) {
+    case mojom::EyeGazeCorrectionMode::OFF:
+      return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF;
+    case mojom::EyeGazeCorrectionMode::ON:
+      return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON;
+    case mojom::EyeGazeCorrectionMode::STARE:
+      return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+             KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE;
+  }
+  NOTREACHED_NORETURN();
+}
+
+mojom::EyeGazeCorrectionMode ExtendedPlatformFlagsToCaptureMode(
+    ULONGLONG flags,
+    mojom::EyeGazeCorrectionMode default_mode) {
+  switch (flags & (KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF |
+                   KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+                   KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE)) {
+    case KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF:
+      return mojom::EyeGazeCorrectionMode::OFF;
+    case KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON:
+      return mojom::EyeGazeCorrectionMode::ON;
+    case (KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+          KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE):
+      return mojom::EyeGazeCorrectionMode::STARE;
+    default:
+      return default_mode;
+  }
+}
+
+std::vector<mojom::EyeGazeCorrectionMode> ExtendedPlatformFlagsToCaptureModes(
+    ULONGLONG flags) {
+  std::vector<mojom::EyeGazeCorrectionMode> modes = {
+      mojom::EyeGazeCorrectionMode::OFF};
+  if (flags & KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON) {
+    modes.push_back(mojom::EyeGazeCorrectionMode::ON);
+    if (flags & KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE) {
+      modes.push_back(mojom::EyeGazeCorrectionMode::STARE);
+    }
+  }
+  return modes;
+}
+
 #if DCHECK_IS_ON()
 #define DLOG_IF_FAILED_WITH_HRESULT(message, hr)                      \
   {                                                                   \
@@ -1759,6 +1804,27 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
               ? mojom::MeteringMode::CONTINUOUS
               : mojom::MeteringMode::NONE;
     }
+
+    hr = extended_camera_controller_->GetExtendedCameraControl(
+        MF_CAPTURE_ENGINE_MEDIASOURCE,
+        KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION,
+        &extended_camera_control);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraControl for eye gaze correction",
+        hr);
+    if (SUCCEEDED(hr)) {
+      std::vector<mojom::EyeGazeCorrectionMode> capture_modes =
+          ExtendedPlatformFlagsToCaptureModes(
+              extended_camera_control->GetCapabilities());
+      if (!capture_modes.empty()) {
+        photo_capabilities->current_eye_gaze_correction_mode =
+            ExtendedPlatformFlagsToCaptureMode(
+                extended_camera_control->GetFlags(),
+                mojom::EyeGazeCorrectionMode::OFF);
+        photo_capabilities->supported_eye_gaze_correction_modes =
+            std::move(capture_modes);
+      }
+    }
   }
 
   std::move(callback).Run(std::move(photo_capabilities));
@@ -1946,6 +2012,16 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
       hr = SetAndCommitExtendedCameraControlFlags(
           KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION, flag);
       DLOG_IF_FAILED_WITH_HRESULT("Background blur mode config failed", hr);
+      if (FAILED(hr)) {
+        return;
+      }
+    }
+    if (settings->eye_gaze_correction_mode.has_value()) {
+      const ULONGLONG flags = CaptureModeToExtendedPlatformFlags(
+          settings->eye_gaze_correction_mode.value());
+      hr = SetAndCommitExtendedCameraControlFlags(
+          KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION, flags);
+      DLOG_IF_FAILED_WITH_HRESULT("Eye gaze correction config failed", hr);
       if (FAILED(hr)) {
         return;
       }

@@ -46,7 +46,6 @@ std::string ToString(PasswordForm::Scheme scheme) {
       return "UsernameOnly";
   }
 
-  NOTREACHED();
   return std::string();
 }
 

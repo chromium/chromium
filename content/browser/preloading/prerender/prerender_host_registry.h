@@ -296,7 +296,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Currently, this is only used under kPrerender2NewLimitAndScheduler.
   PrerenderLimitGroup GetPrerenderLimitGroup(
       PreloadingTriggerType trigger_type,
-      absl::optional<blink::mojom::SpeculationEagerness> eagerness);
+      std::optional<blink::mojom::SpeculationEagerness> eagerness);
 
   // Returns the number of hosts that prerender_host_by_frame_tree_node_id_
   // holds by trigger type / limit group.
@@ -311,7 +311,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // PrerenderLimitGroup.
   bool IsAllowedToStartPrerenderingForTrigger(
       PreloadingTriggerType trigger_type,
-      absl::optional<blink::mojom::SpeculationEagerness> eagerness);
+      std::optional<blink::mojom::SpeculationEagerness> eagerness);
 
   // Destroys a host when the current memory usage is higher than a certain
   // threshold.

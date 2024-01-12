@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_VIEW_CONTROLLER_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -12,9 +14,11 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 
-class IsolatedWebAppsEnabledPrefObserver;
 class Profile;
 
 namespace views {
@@ -31,9 +35,11 @@ class WebAppProvider;
 class IsolatedWebAppInstallerViewController
     : public IsolatedWebAppInstallerView::Delegate {
  public:
-  IsolatedWebAppInstallerViewController(Profile* profile,
-                                        WebAppProvider* web_app_provider,
-                                        IsolatedWebAppInstallerModel* model);
+  IsolatedWebAppInstallerViewController(
+      Profile* profile,
+      WebAppProvider* web_app_provider,
+      IsolatedWebAppInstallerModel* model,
+      std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
   virtual ~IsolatedWebAppInstallerViewController();
 
   // Starts the installer state transition. |initialized_callback| will be
@@ -45,9 +51,17 @@ class IsolatedWebAppInstallerViewController
   // Present the installer when it is initialized.
   void Show();
 
+  void FocusWindow();
+
+  // Adds or updates the Isolated Web App Installer window to ChromeOS Shelf.
+  void AddOrUpdateWindowToShelf();
+
+  void SetIcon(gfx::ImageSkia icon);
+
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
  private:
+  friend class IsolatedWebAppInstallerViewUiPixelTest;
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
                            InstallButtonLaunchesConfirmationDialog);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
@@ -94,6 +108,10 @@ class IsolatedWebAppInstallerViewController
   std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
       std::unique_ptr<views::View> contents_view);
 
+  std::string instance_id_;
+  gfx::NativeWindow window_ = nullptr;
+  gfx::ImageSkia icon_ = gfx::ImageSkia();
+
   raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> web_app_provider_;
   raw_ptr<IsolatedWebAppInstallerModel> model_;
@@ -107,6 +125,7 @@ class IsolatedWebAppInstallerViewController
 
   base::OnceClosure initialized_callback_;
   base::OnceClosure completion_callback_;
+
   base::WeakPtrFactory<IsolatedWebAppInstallerViewController> weak_ptr_factory_{
       this};
 };

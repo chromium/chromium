@@ -5,6 +5,7 @@
 #include "media/base/media.h"
 
 #include <stdint.h>
+
 #include <limits>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -12,6 +13,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/libaom_thread_wrapper.h"
 #include "media/base/libvpx_thread_wrapper.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -33,6 +35,11 @@ BASE_FEATURE(kLibvpxUseChromeThreads,
              "LibvpxUseChromeThreads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(ENABLE_LIBAOM)
+BASE_FEATURE(kLibaomUseChromeThreads,
+             "LibaomUseChromeThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
 
 // Media must only be initialized once; use a thread-safe static to do this.
 class MediaInitializer {
@@ -61,6 +68,11 @@ class MediaInitializer {
       InitLibVpxThreadWrapper();
     }
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(ENABLE_LIBAOM)
+    if (base::FeatureList::IsEnabled(kLibaomUseChromeThreads)) {
+      InitLibAomThreadWrapper();
+    }
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
   }
 
   MediaInitializer(const MediaInitializer&) = delete;

@@ -87,8 +87,7 @@ class WorkingSetTrimmerPolicyArcVm
   void StartObservingUserInteractions();
   void OnConnectionReadyInternal();
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_for_testing_ =
-      nullptr;
+  raw_ptr<content::BrowserContext> context_for_testing_ = nullptr;
 
   // True if ARCVM has already been fully booted and app.mojom connection is
   // established.

@@ -23,7 +23,7 @@ export enum ExifMark {
 /**
  * Exif align.
  */
-export enum ExifAlign  {
+export enum ExifAlign {
   // Indicates little endian exif data.
   LITTLE = 0x4949,
   // Indicates big endian exif data.
@@ -33,7 +33,7 @@ export enum ExifAlign  {
 /**
  * Exif tag.
  */
-export enum ExifTag  {
+export enum ExifTag {
   // First directory containing TIFF data.
   TIFF = 0x002a,
   // Pointer from TIFF to the GPS directory.
@@ -54,4 +54,15 @@ export enum ExifTag  {
   X_DIMENSION = 0xA002,
   Y_DIMENSION = 0xA003,
   SOFTWARE = 0x0131,
+}
+
+
+/**
+ * Type definition of exif entry.
+ */
+export interface ExifEntry {
+  id: ExifTag;
+  format: number;
+  componentCount: number;
+  value?: any;
 }

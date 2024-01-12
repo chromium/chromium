@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -176,6 +177,7 @@ void ExpectTimestampIsNow(const File& file) {
 }  // namespace
 
 TEST(FileTest, NativeFileWithoutTimestamp) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   auto* const file = MakeGarbageCollected<File>(&context.GetExecutionContext(),
                                                 "/native/path");
@@ -188,6 +190,7 @@ TEST(FileTest, NativeFileWithoutTimestamp) {
 }
 
 TEST(FileTest, NativeFileWithUnixEpochTimestamp) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   auto* const file = MakeGarbageCollected<File>(&context.GetExecutionContext(),
                                                 "/native/path");
@@ -199,6 +202,7 @@ TEST(FileTest, NativeFileWithUnixEpochTimestamp) {
 }
 
 TEST(FileTest, NativeFileWithApocalypseTimestamp) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   auto* const file = MakeGarbageCollected<File>(&context.GetExecutionContext(),
                                                 "/native/path");
@@ -212,6 +216,7 @@ TEST(FileTest, NativeFileWithApocalypseTimestamp) {
 }
 
 TEST(FileTest, BlobBackingFileWithoutTimestamp) {
+  test::TaskEnvironment task_environment;
   auto* const file = MakeGarbageCollected<File>("name", absl::nullopt,
                                                 BlobDataHandle::Create());
   EXPECT_FALSE(file->HasBackingFile());
@@ -221,6 +226,7 @@ TEST(FileTest, BlobBackingFileWithoutTimestamp) {
 }
 
 TEST(FileTest, BlobBackingFileWithWindowsEpochTimestamp) {
+  test::TaskEnvironment task_environment;
   auto* const file = MakeGarbageCollected<File>("name", base::Time(),
                                                 BlobDataHandle::Create());
   EXPECT_FALSE(file->HasBackingFile());
@@ -232,6 +238,7 @@ TEST(FileTest, BlobBackingFileWithWindowsEpochTimestamp) {
 }
 
 TEST(FileTest, BlobBackingFileWithUnixEpochTimestamp) {
+  test::TaskEnvironment task_environment;
   const scoped_refptr<BlobDataHandle> blob_data_handle =
       BlobDataHandle::Create();
   auto* const file = MakeGarbageCollected<File>("name", base::Time::UnixEpoch(),
@@ -244,6 +251,7 @@ TEST(FileTest, BlobBackingFileWithUnixEpochTimestamp) {
 }
 
 TEST(FileTest, BlobBackingFileWithApocalypseTimestamp) {
+  test::TaskEnvironment task_environment;
   constexpr base::Time kMaxTime = base::Time::Max();
   auto* const file =
       MakeGarbageCollected<File>("name", kMaxTime, BlobDataHandle::Create());
@@ -256,6 +264,7 @@ TEST(FileTest, BlobBackingFileWithApocalypseTimestamp) {
 }
 
 TEST(FileTest, fileSystemFileWithNativeSnapshot) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.platform_path = "/native/snapshot";
@@ -267,6 +276,7 @@ TEST(FileTest, fileSystemFileWithNativeSnapshot) {
 }
 
 TEST(FileTest, fileSystemFileWithNativeSnapshotAndSize) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.length = 1024ll;
@@ -279,6 +289,7 @@ TEST(FileTest, fileSystemFileWithNativeSnapshotAndSize) {
 }
 
 TEST(FileTest, FileSystemFileWithWindowsEpochTimestamp) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.length = INT64_C(1025);
@@ -296,6 +307,7 @@ TEST(FileTest, FileSystemFileWithWindowsEpochTimestamp) {
 }
 
 TEST(FileTest, FileSystemFileWithUnixEpochTimestamp) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   FileMetadata metadata;
   metadata.length = INT64_C(1025);
@@ -312,6 +324,7 @@ TEST(FileTest, FileSystemFileWithUnixEpochTimestamp) {
 }
 
 TEST(FileTest, FileSystemFileWithApocalypseTimestamp) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   constexpr base::Time kMaxTime = base::Time::Max();
   FileMetadata metadata;
@@ -330,6 +343,7 @@ TEST(FileTest, FileSystemFileWithApocalypseTimestamp) {
 }
 
 TEST(FileTest, fileSystemFileWithoutNativeSnapshot) {
+  test::TaskEnvironment task_environment;
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   FileMetadata metadata;
   metadata.length = 0;
@@ -341,6 +355,7 @@ TEST(FileTest, fileSystemFileWithoutNativeSnapshot) {
 }
 
 TEST(FileTest, hsaSameSource) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   auto* const native_file_a1 = MakeGarbageCollected<File>(
       &context.GetExecutionContext(), "/native/pathA");
@@ -388,6 +403,7 @@ TEST(FileTest, hsaSameSource) {
 }
 
 TEST(FileTest, createForFileSystem) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("http://example.com"));
   Document& document = scope.GetDocument();
   base::RunLoop run_loop;

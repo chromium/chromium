@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_CROS_NETWORK_CONFIG_H_
 #define CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_CROS_NETWORK_CONFIG_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -210,26 +212,25 @@ class CrosNetworkConfig
 
   const std::string& GetServicePathFromGuid(const std::string& guid);
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh>
-      network_state_handler_;  // Unowned
+  raw_ptr<NetworkStateHandler> network_state_handler_;  // Unowned
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<NetworkDeviceHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkDeviceHandler, LeakedDanglingUntriaged>
       network_device_handler_;  // Unowned
-  raw_ptr<CellularInhibitor, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CellularInhibitor, LeakedDanglingUntriaged>
       cellular_inhibitor_;  // Unowned
-  raw_ptr<CellularESimProfileHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CellularESimProfileHandler, LeakedDanglingUntriaged>
       cellular_esim_profile_handler_;  // Unowned
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler>
       network_configuration_handler_;  // Unowned
-  raw_ptr<NetworkConnectionHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkConnectionHandler, LeakedDanglingUntriaged>
       network_connection_handler_;  // Unowned
-  raw_ptr<NetworkCertificateHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkCertificateHandler, LeakedDanglingUntriaged>
       network_certificate_handler_;  // Unowned
-  raw_ptr<NetworkProfileHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkProfileHandler, LeakedDanglingUntriaged>
       network_profile_handler_;  // Unowned
-  raw_ptr<TechnologyStateController, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TechnologyStateController, LeakedDanglingUntriaged>
       technology_state_controller_;  // Unowned
 
   mojo::RemoteSet<chromeos::network_config::mojom::CrosNetworkConfigObserver>
@@ -237,7 +238,7 @@ class CrosNetworkConfig
   mojo::ReceiverSet<chromeos::network_config::mojom::CrosNetworkConfig>
       receivers_;
 
-  std::optional<base::StringPiece> serial_number_;
+  std::optional<std::string> serial_number_;
 
   int callback_id_ = 1;
   base::flat_map<int, SetPropertiesCallback> set_properties_callbacks_;

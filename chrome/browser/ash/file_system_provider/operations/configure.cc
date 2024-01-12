@@ -14,8 +14,7 @@ Configure::Configure(RequestDispatcher* dispatcher,
                      storage::AsyncFileUtil::StatusCallback callback)
     : Operation(dispatcher, file_system_info), callback_(std::move(callback)) {}
 
-Configure::~Configure() {
-}
+Configure::~Configure() = default;
 
 bool Configure::Execute(int request_id) {
   using extensions::api::file_system_provider::ConfigureRequestedOptions;

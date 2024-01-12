@@ -7,6 +7,16 @@ module screen_ai.mojom;
 import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This enum should be kept in sync with the one in
+// `components/services/screen_ai/proto/chrome_screen_ai.proto`
+enum Direction {
+  DIRECTION_UNSPECIFIED,
+  DIRECTION_LEFT_TO_RIGHT,
+  DIRECTION_RIGHT_TO_LEFT,
+  DIRECTION_TOP_TO_BOTTOM,
+};
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
 struct VisualAnnotation {
@@ -31,6 +41,17 @@ struct LineBox {
 
   // Index within the block that this line belongs to.
   int32 order_within_block;
+
+  // Line bounding box relative to the original image.
+  gfx.mojom.Rect bounding_box;
+
+  // Line bounding box relative to the original image with bottom edge
+  // representing estimated baseline of text.
+  gfx.mojom.Rect baseline_box;
+
+  // Angle of rotation of (in degrees, clockwise is positive) of the box about
+  // the top-left corner.
+  float angle;
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
@@ -45,6 +66,15 @@ struct WordBox {
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
   string language;
+
+  // This word is separated from next word by space.
+  bool has_space_after;
+
+  // Word bounding box relative to the original image.
+  gfx.mojom.Rect bounding_box;
+
+  // The direction of the script contained in the word.
+  Direction direction;
 };
 
 // Main interface a client uses for visual annotation functions of the Screen AI

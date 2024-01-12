@@ -121,10 +121,9 @@ class SmbServiceBaseTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+  raw_ptr<disks::FakeDiskMountManager, DanglingUntriaged> disk_mount_manager_ =
       nullptr;
-  raw_ptr<disks::FakeDiskMountManager, DanglingUntriaged | ExperimentalAsh>
-      disk_mount_manager_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };

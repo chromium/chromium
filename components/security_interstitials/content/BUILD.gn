@@ -13,10 +13,6 @@ static_library("security_interstitial_page") {
     "captive_portal_blocking_page.cc",
     "captive_portal_blocking_page.h",
     "captive_portal_helper.h",
-    "cert_report_helper.cc",
-    "cert_report_helper.h",
-    "certificate_error_report.cc",
-    "certificate_error_report.h",
     "common_name_mismatch_handler.cc",
     "common_name_mismatch_handler.h",
     "connection_help_ui.cc",
@@ -142,7 +138,6 @@ proto_library("proto") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "certificate_error_report_unittest.cc",
     "security_interstitial_tab_helper_unittest.cc",
     "ssl_error_assistant_unittest.cc",
     "ssl_error_handler_unittest.cc",

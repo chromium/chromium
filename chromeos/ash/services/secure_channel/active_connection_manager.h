@@ -76,7 +76,7 @@ class ActiveConnectionManager {
   void OnChannelDisconnected(const ConnectionDetails& connection_details);
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 std::ostream& operator<<(

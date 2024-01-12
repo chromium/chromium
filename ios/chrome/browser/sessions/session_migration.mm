@@ -15,9 +15,6 @@
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/stringprintf.h"
-#import "components/sessions/core/session_id.h"
-#import "components/sessions/core/tab_restore_service.h"
-#import "components/sessions/ios/ios_restore_live_tab.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
@@ -26,6 +23,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/proto/storage.pb.h"
+#import "ios/web/public/web_state_id.h"
 
 // This file provides utilities to migrate storage for sessions from the
 // legacy to the optimized format (or reciprocally).
@@ -318,129 +316,48 @@ void OptimizedSession::AddItem(CRWSessionStorage* legacy_item) {
             metadata_storage_.items_size());
 }
 
-// Name of the web session file for `identifier` relative to `path`.
-base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
-                                        web::WebStateID identifier) {
-  return path.Append(base::StringPrintf("%08u", identifier.identifier()));
-}
-
-// Deletes data for a legacy session. Ignores errors. Used for cleanup.
-void DeleteLegacySession(const base::FilePath& path,
-                         const base::FilePath& web_sessions,
-                         NSArray<CRWSessionStorage*>* sessions) {
-  // Delete the session file, and if empty the session directory.
-  std::ignore = DeleteRecursively(path.Append(kLegacySessionFilename));
-  if (DirectoryEmpty(path)) {
-    std::ignore = DeleteRecursively(path);
-  }
-
-  // Delete web sessions file (if possible), and then the directory if empty.
-  for (CRWSessionStorage* session in sessions) {
-    const base::FilePath web_session_path =
-        LegacyWebSessionFilename(web_sessions, session.uniqueIdentifier);
-
-    std::ignore = DeleteRecursively(web_session_path);
-  }
-  if (DirectoryEmpty(web_sessions)) {
-    std::ignore = DeleteRecursively(web_sessions);
-  }
-}
-
-// Delete data for an optimized session. Ignores errors.
-void DeleteOptimizedSession(const base::FilePath& path,
-                            const base::FilePath& web_sessions,
-                            NSArray<CRWSessionStorage*>* sessions) {
-  // Delete the session directory, everything is contained inside.
-  std::ignore = DeleteRecursively(path);
-}
-
-// Records tabs in `sessions` as recently closed if possible.
-void RecordTabsAsRecentlyClosed(::sessions::TabRestoreService* restore_service,
-                                NSArray<CRWSessionStorage*>* sessions) {
-  if (!restore_service || sessions.count == 0) {
-    return;
-  }
-
-  int index = 0;
-  for (CRWSessionStorage* session in sessions) {
-    web::proto::WebStateStorage storage;
-    [session serializeToProto:storage];
-
-    ::sessions::RestoreIOSLiveTab live_tab(storage.navigation());
-    restore_service->CreateHistoricalTab(&live_tab, index++);
-  }
-}
-
-// Result of a migration. In case of failure, contains the list of sessions
-// that will be discarded (so that they can be reported as recently closed
-// tabs, allowing the user to maybe restore them).
-struct [[nodiscard]] MigrationResult {
-  enum class Status {
-    kSkipped,
-    kSuccess,
-    kFailure,
-  };
-
-  const Status status;
-  NSArray<CRWSessionStorage*>* const sessions;
-
-  static MigrationResult Skipped() {
-    return MigrationResult{.status = Status::kSkipped};
-  }
-
-  static MigrationResult Success(NSArray<CRWSessionStorage*>* sessions) {
-    return MigrationResult{.status = Status::kSuccess, .sessions = sessions};
-  }
-
-  static MigrationResult Failure(NSArray<CRWSessionStorage*>* sessions) {
-    return MigrationResult{.status = Status::kFailure, .sessions = sessions};
-  }
-};
-
 // Migrates session stored in `from` in legacy format to `dest` in optimized
 // format. The web sessions files (if present) are stored in `web_sessions`.
 // Returns whether the migration status.
-MigrationResult MigrateSessionToOptimizedInternal(
+MigrationStatus MigrateSessionToOptimizedInternal(
     const base::FilePath& from,
     const base::FilePath& dest,
     const base::FilePath& web_sessions) {
   const base::FilePath legacy_path = from.Append(kLegacySessionFilename);
   if (!FileExists(legacy_path)) {
-    return MigrationResult::Skipped();
+    return MigrationStatus::kSuccess;
   }
 
   SessionWindowIOS* legacy = ReadSessionWindow(legacy_path);
   if (!legacy) {
-    // Can't load session. Can't migrate it, nor record the tabs as closed.
-    // Delete the session, so that we don't try to convert it anymore.
-    return MigrationResult::Failure(nil);
+    return MigrationStatus::kFailure;
   }
 
   std::optional<OptimizedSession> optimized =
       OptimizedSession::FromLegacy(legacy);
 
   if (!optimized || !optimized->SaveTo(dest, web_sessions)) {
-    return MigrationResult::Failure(legacy.sessions);
+    return MigrationStatus::kFailure;
   }
 
-  return MigrationResult::Success(legacy.sessions);
+  return MigrationStatus::kSuccess;
 }
 
 // Migrates session stored in `from` in optimized format to `dest` in legacy
 // format. The web sessions files (if present) are stored in `web_sessions`.
 // Returns whether the migration status.
-MigrationResult MigrateSessionToLegacyInternal(
+MigrationStatus MigrateSessionToLegacyInternal(
     const base::FilePath& from,
     const base::FilePath& dest,
     const base::FilePath& web_sessions) {
   const base::FilePath metadata_path = from.Append(kSessionMetadataFilename);
   if (!FileExists(metadata_path)) {
-    return MigrationResult::Skipped();
+    return MigrationStatus::kSuccess;
   }
 
   std::optional<OptimizedSession> optimized = OptimizedSession::FromPath(from);
   if (!optimized) {
-    return MigrationResult::Failure(nil);
+    return MigrationStatus::kFailure;
   }
 
   SessionWindowIOS* legacy = optimized->ToLegacy();
@@ -448,7 +365,7 @@ MigrationResult MigrateSessionToLegacyInternal(
 
   // Write the legacy session to destination.
   if (!WriteSessionWindow(dest.Append(kLegacySessionFilename), legacy)) {
-    return MigrationResult::Failure(legacy.sessions);
+    return MigrationStatus::kFailure;
   }
 
   // Migrate the web session files if possible.
@@ -469,95 +386,7 @@ MigrationResult MigrateSessionToLegacyInternal(
     }
   }
 
-  return MigrationResult::Success(legacy.sessions);
-}
-
-// Migrates session stored in `from` in legacy format to `dest` in optimized
-// format and performs cleanup.
-void MigrateSessionToOptimizedWithCleanup(
-    const base::FilePath& from,
-    const base::FilePath& dest,
-    const base::FilePath& web_sessions,
-    ::sessions::TabRestoreService* restore_service) {
-  const MigrationResult result =
-      MigrateSessionToOptimizedInternal(from, dest, web_sessions);
-
-  switch (result.status) {
-    case MigrationResult::Status::kSkipped:
-      if (DirectoryEmpty(from)) {
-        std::ignore = DeleteRecursively(from);
-      }
-      if (DirectoryEmpty(web_sessions)) {
-        std::ignore = DeleteRecursively(web_sessions);
-      }
-      break;
-
-    case MigrationResult::Status::kFailure:
-      // In case of failure, the code will fall back to an empty session.
-      // If any tabs were loaded, then record them as recently closed.
-      RecordTabsAsRecentlyClosed(restore_service, result.sessions);
-
-      // Delete any content that may have been written in the optimized session.
-      DeleteOptimizedSession(dest, web_sessions, result.sessions);
-
-      // Fall through to the cleanup of the legacy sessions.
-      [[fallthrough]];
-
-    case MigrationResult::Status::kSuccess:
-      // Delete the legacy sessions files (note that the legacy sessions
-      // directory is used by other features, so int must be kept if not
-      // empty) and the web sessions cache (if empty, since it is shared
-      // by all sessions).
-      DeleteLegacySession(from, web_sessions, result.sessions);
-      break;
-  }
-
-  const base::FilePath parent_dir = from.DirName();
-  if (DirectoryEmpty(parent_dir)) {
-    std::ignore = DeleteRecursively(parent_dir);
-  }
-}
-
-// Migrates session stored in `from` in optimized format to `dest` in legacy
-// format and performs cleanup.
-void MigrateSessionToLegacyWithCleanup(
-    const base::FilePath& from,
-    const base::FilePath& dest,
-    const base::FilePath& web_sessions,
-    ::sessions::TabRestoreService* restore_service) {
-  const MigrationResult result =
-      MigrateSessionToLegacyInternal(from, dest, web_sessions);
-
-  switch (result.status) {
-    case MigrationResult::Status::kSkipped:
-      if (DirectoryEmpty(from)) {
-        std::ignore = DeleteRecursively(from);
-      }
-      break;
-
-    case MigrationResult::Status::kFailure:
-      // In case of failure, the code will fall back to an empty session.
-      // If any tabs were loaded, then record them as recently closed.
-      RecordTabsAsRecentlyClosed(restore_service, result.sessions);
-
-      // Delete any content that may have been written in the optimized session.
-      DeleteLegacySession(dest, web_sessions, result.sessions);
-
-      // Fall through to the cleanup of the optimized sessions.
-      [[fallthrough]];
-
-    case MigrationResult::Status::kSuccess:
-      // Delete the optimized session storage. Everything is stored in a
-      // single directory, and it is not reused by other features, so it
-      // can be deleted.
-      DeleteOptimizedSession(from, web_sessions, result.sessions);
-      break;
-  }
-
-  const base::FilePath parent_dir = from.DirName();
-  if (DirectoryEmpty(parent_dir)) {
-    std::ignore = DeleteRecursively(parent_dir);
-  }
+  return MigrationStatus::kSuccess;
 }
 
 // Helper for MigrateSessionsInPathsToOptimized(...) that migrate the data
@@ -573,16 +402,11 @@ MigrationStatus MigrateSessionsInPathsToOptimizedNoCleanup(
     base::FileEnumerator iter(from_dir, false, file_types);
     for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
       const base::FilePath basename = name.BaseName();
-      const MigrationResult result = MigrateSessionToOptimizedInternal(
+      const MigrationStatus result = MigrateSessionToOptimizedInternal(
           from_dir.Append(basename), dest_dir.Append(basename), sessions);
 
-      switch (result.status) {
-        case MigrationResult::Status::kSkipped:
-        case MigrationResult::Status::kSuccess:
-          break;
-
-        case MigrationResult::Status::kFailure:
-          return MigrationStatus::kFailure;
+      if (result != MigrationStatus::kSuccess) {
+        return MigrationStatus::kFailure;
       }
     }
   }
@@ -603,16 +427,11 @@ MigrationStatus MigrateSessionsInPathsToLegacyNoCleanup(
     base::FileEnumerator iter(from_dir, false, file_types);
     for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
       const base::FilePath basename = name.BaseName();
-      const MigrationResult result = MigrateSessionToLegacyInternal(
+      const MigrationStatus result = MigrateSessionToLegacyInternal(
           from_dir.Append(basename), dest_dir.Append(basename), sessions);
 
-      switch (result.status) {
-        case MigrationResult::Status::kSkipped:
-        case MigrationResult::Status::kSuccess:
-          break;
-
-        case MigrationResult::Status::kFailure:
-          return MigrationStatus::kFailure;
+      if (result != MigrationStatus::kSuccess) {
+        return MigrationStatus::kFailure;
       }
     }
   }
@@ -649,26 +468,6 @@ void DeleteLegacySessions(const std::vector<base::FilePath>& paths) {
 }
 
 }  // namespace
-
-void MigrateNamedSessionToOptimized(
-    const base::FilePath& path,
-    const std::string& name,
-    ::sessions::TabRestoreService* restore_service) {
-  MigrateSessionToOptimizedWithCleanup(
-      path.Append(kLegacySessionsDirname).Append(name),
-      path.Append(kSessionRestorationDirname).Append(name),
-      path.Append(kLegacyWebSessionsDirname), restore_service);
-}
-
-void MigrateNamedSessionToLegacy(
-    const base::FilePath& path,
-    const std::string& name,
-    ::sessions::TabRestoreService* restore_service) {
-  MigrateSessionToLegacyWithCleanup(
-      path.Append(kSessionRestorationDirname).Append(name),
-      path.Append(kLegacySessionsDirname).Append(name),
-      path.Append(kLegacyWebSessionsDirname), restore_service);
-}
 
 MigrationStatus MigrateSessionsInPathsToOptimized(
     const std::vector<base::FilePath>& paths) {

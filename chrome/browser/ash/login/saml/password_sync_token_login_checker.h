@@ -73,7 +73,7 @@ class PasswordSyncTokenLoginChecker
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
   const AccountId account_id_;
   const std::string sync_token_;
-  raw_ptr<net::BackoffEntry, ExperimentalAsh> retry_backoff_ = nullptr;
+  raw_ptr<net::BackoffEntry> retry_backoff_ = nullptr;
   base::OneShotTimer recheck_timer_;
 
   base::WeakPtrFactory<PasswordSyncTokenLoginChecker> weak_ptr_factory_{this};

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -60,6 +61,7 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     @Mock private Profile mProfile;
+    @Mock private Profile.Natives mProfileJniMock;
 
     @Mock private PrefService mPrefService;
 
@@ -76,8 +78,11 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
 
+        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        when(mProfileJniMock.fromWebContents(mWebContents)).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
         mJniMocker.mock(ImageDescriptionsControllerJni.TEST_HOOKS, mControllerJniMock);

@@ -59,8 +59,7 @@ ReadFile::ReadFile(
       current_offset_(0),
       callback_(std::move(callback)) {}
 
-ReadFile::~ReadFile() {
-}
+ReadFile::~ReadFile() = default;
 
 bool ReadFile::Execute(int request_id) {
   using extensions::api::file_system_provider::ReadFileRequestedOptions;

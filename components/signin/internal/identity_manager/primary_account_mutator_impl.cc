@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -43,7 +44,8 @@ PrimaryAccountMutator::PrimaryAccountError
 PrimaryAccountMutatorImpl::SetPrimaryAccount(
     const CoreAccountId& account_id,
     ConsentLevel consent_level,
-    signin_metrics::AccessPoint access_point) {
+    signin_metrics::AccessPoint access_point,
+    base::OnceClosure prefs_committed_callback) {
   DCHECK(!account_id.empty());
   AccountInfo account_info = account_tracker_->GetAccountInfo(account_id);
   if (account_info.IsEmpty())
@@ -96,8 +98,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
     return PrimaryAccountError::kPrimaryAccountChangeNotAllowed;
   }
 
-  primary_account_manager_->SetPrimaryAccountInfo(account_info, consent_level,
-                                                  access_point);
+  primary_account_manager_->SetPrimaryAccountInfo(
+      account_info, consent_level, access_point,
+      std::move(prefs_committed_callback));
   return PrimaryAccountError::kNoError;
 }
 

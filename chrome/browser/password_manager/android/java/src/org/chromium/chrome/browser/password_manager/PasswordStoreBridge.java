@@ -146,7 +146,7 @@ public class PasswordStoreBridge {
 
     /** C++ method signatures. */
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(PasswordStoreBridge passwordStoreBridge);
 
         void insertPasswordCredentialForTesting(

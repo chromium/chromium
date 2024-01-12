@@ -31,7 +31,7 @@ class BookmarkModelViewTest : public testing::Test {
     model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
 
-    model_->CreateAccountPermanentFoldersForTest();
+    model_->CreateAccountPermanentFolders();
 
     EXPECT_THAT(model_->bookmark_bar_node(), NotNull());
     EXPECT_THAT(model_->other_node(), NotNull());

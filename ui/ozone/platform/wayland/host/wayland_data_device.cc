@@ -69,39 +69,11 @@ void WaylandDataDevice::ResetDragDelegateIfNotDragSource() {
   }
 }
 
-void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
-                                    const std::string& mime_type,
-                                    RequestDataCallback callback) {
-  DCHECK(offer);
-  DCHECK(IsMimeTypeSupported(mime_type));
-
-  base::ScopedFD fd = offer->Receive(mime_type);
-  if (!fd.is_valid()) {
-    LOG(ERROR) << "Failed to open file descriptor.";
-    return;
-  }
-
-  // Ensure there is not pending operation to be performed by the compositor,
-  // otherwise read(..) can block awaiting data to be sent to pipe.
-  RegisterDeferredReadClosure(base::BindOnce(
-      &WaylandDataDevice::ReadDragDataFromFD, base::Unretained(this),
-      std::move(fd), std::move(callback)));
-  RegisterDeferredReadCallback();
-}
-
 void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source,
                                            uint32_t serial) {
   auto* data_source = source ? source->data_source() : nullptr;
   wl_data_device_set_selection(data_device_.get(), data_source, serial);
   connection()->Flush();
-}
-
-void WaylandDataDevice::ReadDragDataFromFD(base::ScopedFD fd,
-                                           RequestDataCallback callback) {
-  std::vector<uint8_t> contents;
-  wl::ReadDataFromFD(std::move(fd), &contents);
-  std::move(callback).Run(scoped_refptr<base::RefCountedBytes>(
-      base::RefCountedBytes::TakeVector(&contents)));
 }
 
 // static

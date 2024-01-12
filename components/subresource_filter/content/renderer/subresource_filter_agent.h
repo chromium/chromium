@@ -34,8 +34,7 @@ class WebDocumentSubresourceFilterImpl;
 class SubresourceFilterAgent
     : public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<SubresourceFilterAgent>,
-      public mojom::SubresourceFilterAgent,
-      public base::SupportsWeakPtr<SubresourceFilterAgent> {
+      public mojom::SubresourceFilterAgent {
  public:
   // The |ruleset_dealer| must not be null and must outlive this instance. The
   // |render_frame| may be null in unittests.
@@ -157,6 +156,7 @@ class SubresourceFilterAgent
 
   base::WeakPtr<WebDocumentSubresourceFilterImpl>
       filter_for_last_created_document_;
+  base::WeakPtrFactory<SubresourceFilterAgent> weak_ptr_factory_{this};
 };
 
 }  // namespace subresource_filter

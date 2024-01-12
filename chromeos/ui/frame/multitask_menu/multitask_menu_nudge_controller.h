@@ -35,12 +35,18 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
       public display::DisplayObserver {
  public:
   // `tablet_mode` refers to the tablet state when the prefs are fetched. If
-  // the state changes while fetching prefs, we do not show the nudge.
+  // the state changes while fetching prefs, we do not show the nudge. The
+  // callback may fail on lacros; in this case `values` will be null.
   // `shown_count` and `last_shown_time` are the values fetched from the pref
   // service regarding how many times the nudge has been shown, and when it was
   // last shown.
-  using GetPreferencesCallback = base::OnceCallback<
-      void(bool tablet_mode, int shown_count, base::Time last_shown_time)>;
+  struct PrefValues {
+    int show_count;
+    base::Time last_shown_time;
+  };
+  using GetPreferencesCallback =
+      base::OnceCallback<void(bool tablet_mode,
+                              std::optional<PrefValues> values)>;
 
   // A delegate to provide platform specific implementation (ash, lacros).
   class Delegate {
@@ -114,12 +120,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // shown in the last 24 hours. `window` and `anchor_view` are the associated
   // window and the anchor for the nudge. `anchor_view` will be null in tablet
   // mode as the nudge shows in the top center of the window and is not anchored
-  // to anything.
+  // to anything. `values` will return `std::nullopt` if fetching the pref
+  // failed in lacros, it will return a value in ash.
   void OnGetPreferences(aura::Window* window,
                         views::View* anchor_view,
                         bool tablet_mode,
-                        int shown_count,
-                        base::Time last_shown_time);
+                        std::optional<PrefValues> values);
 
   // Runs when the nudge dismiss timer expires. Dismisses the nudge if it is
   // being shown.
@@ -146,11 +152,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   base::Time nudge_shown_time_;
 
   // The app window that the nudge is associated with.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // The view that the nudge will be anchored to. It is the maximize or resize
   // button on `window_`'s frame. Null in tablet mode.
-  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
+  raw_ptr<views::View> anchor_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

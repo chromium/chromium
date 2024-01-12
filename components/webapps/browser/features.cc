@@ -18,22 +18,6 @@ BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
              "AmbientBadgeSuppressFirstVisit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-extern const base::FeatureParam<base::TimeDelta>
-    kAmbientBadgeSuppressFirstVisit_Period{&kAmbientBadgeSuppressFirstVisit,
-                                           "period", base::Days(30)};
-
-// Enables or disables the installable ambient badge message.
-BASE_FEATURE(kInstallableAmbientBadgeMessage,
-             "InstallableAmbientBadgeMessage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The capacity of cached domains which do not show message again if
-// users do not accept the message.
-extern const base::FeatureParam<int>
-    kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity{
-        &kInstallableAmbientBadgeMessage,
-        "installable_ambient_badge_message_throttle_domains_capacity", 100};
-
 // Enables or disables the installable ambient badge message.
 BASE_FEATURE(kInstallPromptGlobalGuardrails,
              "InstallPromptGlobalGuardrails",
@@ -53,21 +37,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allow user to retry install WebAPK with the failure notification if the
-// initial install failed. This needs to be used with
-// |kWebApkInstallFailureNotification| Enabled.
-BASE_FEATURE(kWebApkInstallFailureRetry,
-             "WebApkInstallFailureRetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, the web app install prompt will be block on the site if
-// user ignored the prompt recently. The number of days the prompt will be
-// blocked is controlled by feature |kAppBannerTriggering| with params
-// |days_after_ignore|.
-BASE_FEATURE(kBlockInstallPromptIfIgnoreRecently,
-             "BlockInstallPromptIfIgnoreRecently",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)

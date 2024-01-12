@@ -8,15 +8,12 @@
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink::scheduler {
 
 class TaskAttributionInfo final : public GarbageCollected<TaskAttributionInfo> {
-  USING_PRE_FINALIZER(TaskAttributionInfo, Dispose);
-
  public:
   TaskAttributionInfo(TaskAttributionId task_id, TaskAttributionInfo* parent)
       : task_id_(task_id),
@@ -25,7 +22,6 @@ class TaskAttributionInfo final : public GarbageCollected<TaskAttributionInfo> {
 
   ~TaskAttributionInfo() = default;
 
-  PLATFORM_EXPORT void Dispose();
   TaskAttributionId Id() const { return task_id_; }
   TaskAttributionInfo* Parent() const { return parent_.Get(); }
   bool MaxChainLengthReached() const {

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -35,6 +36,13 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#endif
 
 class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
  public:
@@ -97,20 +105,6 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
   IntentPickerBubbleView* intent_picker_bubble() {
     return IntentPickerBubbleView::intent_picker_bubble();
   }
-
-  size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
-    return bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
-        ->children()
-        .size();
-  }
-
-  void VerifyBubbleWithTestWebApp() {
-    EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
-    auto& app_info = intent_picker_bubble()->app_info_for_testing();
-    ASSERT_EQ(1U, app_info.size());
-    EXPECT_EQ(test_web_app_id(), app_info[0].launch_name);
-    EXPECT_EQ(GetAppName(), app_info[0].display_name);
-  }
 };
 
 // Tests to do with the behavior of the intent picker icon in the omnibox. Does
@@ -165,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Tests that clicking a link from a tabbed browser to within the scope of an
 // installed app shows the intent picker icon in Omnibox.
-// TODO(crbug.com/1427908): Flaky on Mac.
+// TODO(crbug.com/1515480): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_NavigationToInScopeLinkShowsIntentPicker \
   DISABLED_NavigationToInScopeLinkShowsIntentPicker
@@ -195,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
 
-// TODO(crbug.com/1395393): This test is flaky on Mac.
+// TODO(crbug.com/1515480): This test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_IconVisibilityAfterTabSwitching \
   DISABLED_IconVisibilityAfterTabSwitching
@@ -254,9 +248,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
 
-// TODO(crbug.com/1399441): This test is flaky. Re-enable this test.
 // Tests that the intent picker icon is not visible if the navigation redirects
 // to a URL that doesn't have an installed PWA.
+// TODO(crbug.com/1515480): This test is flaky. Re-enable this test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope \
   DISABLED_DoesNotShowIntentPickerWhenRedirectedOutOfScope
@@ -288,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Test that navigating to service pages (chrome://) will hide the intent picker
 // icon.
-// TODO(crbug.com/1478654): Re-enable this test
+// TODO(crbug.com/1515480): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DoNotShowIconAndBubbleOnServicePages \
   DISABLED_DoNotShowIconAndBubbleOnServicePages
@@ -324,8 +318,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 }
 
 // Test that error pages do not show the intent picker icon.
+// TODO(https://crbug.com/1515480): Fix the test.
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1478654): Fix the test.
 #define MAYBE_DoNotShowIconOnErrorPages DISABLED_DoNotShowIconOnErrorPages
 #else
 #define MAYBE_DoNotShowIconOnErrorPages DoNotShowIconOnErrorPages
@@ -361,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Test that loading a page with pushState() call that changes URL updates the
 // intent picker view.
-// TODO(crbug.com/1484208): Re-enable this test
+// TODO(crbug.com/1515480): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PushStateURLChangeTest DISABLED_PushStateURLChangeTest
 #else
@@ -423,6 +417,12 @@ class IntentPickerIconBrowserBubbleTest
   }
   bool LinkCapturingEnabledByDefault() const { return GetParam(); }
 
+  size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
+    return bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+        ->children()
+        .size();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -439,17 +439,66 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
   OpenNewTab(in_scope_url);
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
+  ASSERT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
 
-  views::test::ButtonTestApi test_api(intent_picker_icon);
-  test_api.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(intent_picker_bubble());
-  VerifyBubbleWithTestWebApp();
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
+  auto& app_info = intent_picker_bubble()->app_info_for_testing();
+  ASSERT_EQ(1U, app_info.size());
+  EXPECT_EQ(test_web_app_id(), app_info[0].launch_name);
+  EXPECT_EQ(GetAppName(), app_info[0].display_name);
 }
+
+// Test that the "Remember this choice" checkbox works.
+IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest, RememberOpenWebApp) {
+  base::HistogramTester histogram_tester;
+
+  InstallTestWebApp();
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+
+  OpenNewTab(in_scope_url);
+  ASSERT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
+
+  // Check "Remember my choice" and accept the bubble.
+  views::Checkbox* remember_selection_checkbox =
+      static_cast<views::Checkbox*>(intent_picker_bubble()->GetViewByID(
+          IntentPickerBubbleView::ViewId::kRememberCheckbox));
+  ASSERT_TRUE(remember_selection_checkbox);
+  ASSERT_TRUE(remember_selection_checkbox->GetEnabled());
+  remember_selection_checkbox->SetChecked(true);
+
+  apps::PreferredAppsListHandle& preferred_apps =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->PreferredAppsList();
+  apps_util::PreferredAppUpdateWaiter preference_update_waiter(
+      preferred_apps, test_web_app_id());
+
+  ui_test_utils::BrowserChangeObserver added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  intent_picker_bubble()->AcceptDialog();
+
+  // Accepting the bubble should open the app.
+  Browser* app_browser = added_observer.Wait();
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
+                                                         test_web_app_id()));
+
+  // The link capturing preference should be updated.
+  preference_update_waiter.Wait();
+  ASSERT_TRUE(
+      preferred_apps.IsPreferredAppForSupportedLinks(test_web_app_id()));
+
+  // Check that we recorded that settings were changed.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.LinkCapturingEvent2",
+      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
+}
+
 #else
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
                        IntentChipLaunchesAppDirectly) {

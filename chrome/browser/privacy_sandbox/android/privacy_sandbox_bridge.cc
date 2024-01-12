@@ -52,14 +52,6 @@ ScopedJavaLocalRef<jobjectArray> ToJavaTopicsArray(
 }
 }  // namespace
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxEnabled(JNIEnv* env) {
-  return GetPrivacySandboxService()->IsPrivacySandboxEnabled();
-}
-
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxManaged(JNIEnv* env) {
-  return GetPrivacySandboxService()->IsPrivacySandboxManaged();
-}
-
 static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
     JNIEnv* env) {
   return GetPrivacySandboxService()->IsPrivacySandboxRestricted();
@@ -68,12 +60,6 @@ static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
 static jboolean JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
     JNIEnv* env) {
   return GetPrivacySandboxService()->IsRestrictedNoticeEnabled();
-}
-
-static void JNI_PrivacySandboxBridge_SetPrivacySandboxEnabled(
-    JNIEnv* env,
-    jboolean enabled) {
-  GetPrivacySandboxService()->SetPrivacySandboxEnabled(enabled);
 }
 
 static ScopedJavaLocalRef<jobjectArray>

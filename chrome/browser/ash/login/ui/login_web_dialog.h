@@ -37,9 +37,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
   void Show();
 
-  // Overrides dialog title.
-  void SetDialogTitle(const std::u16string& title);
-
   static content::WebContents* GetCurrentWebContents();
 
   // Returns `dialog_window_` instance for test, can be NULL if dialog is not
@@ -50,34 +47,22 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
  protected:
   // ui::WebDialogDelegate implementation.
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
   void GetDialogSize(gfx::Size* size) const override;
-  void GetMinimumDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
   void OnDialogShown(content::WebUI* webui) override;
-  // NOTE: This function deletes this object at the end.
-  void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
   bool HandleOpenURLFromTab(content::WebContents* source,
                             const content::OpenURLParams& params,
                             content::WebContents** out_new_contents) override;
-  bool HandleShouldOverrideWebContentsCreation() override;
-  std::vector<ui::Accelerator> GetAccelerators() override;
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  private:
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  bool MaybeCloseWindow(ui::WebDialogDelegate& delegate,
+                        const ui::Accelerator& accelerator);
+  void OnDialogClosing(const std::string& json_retval);
+
+  const raw_ptr<content::BrowserContext> browser_context_;
   gfx::NativeWindow parent_window_;
   gfx::NativeWindow dialog_window_;
-
-  std::u16string title_;
-  const GURL url_;
 };
 
 }  // namespace ash

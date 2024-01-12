@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -55,7 +56,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   virtual ~SoftNavigationHeuristics() = default;
   static SoftNavigationHeuristics* From(LocalDOMWindow&);
 
-  enum class EventScopeType { Keyboard, Click, Navigate };
+  enum class EventScopeType { kKeyboard, kClick, kNavigate };
 
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
@@ -73,7 +74,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(scheduler::TaskAttributionInfo&,
                          ScriptState*) override;
-  void OnTaskDisposal(const scheduler::TaskAttributionInfo&) override;
   ExecutionContext* GetExecutionContext() override;
 
   void RecordPaint(LocalFrame*,
@@ -87,8 +87,17 @@ class CORE_EXPORT SoftNavigationHeuristics
   // current_event_parameters_ and return true. Otherwise, return false.
   bool PopNestedEventParametersIfNeeded();
 
+  // This method is called during the weakness processing stage of garbage
+  // collection, and it's used to detect `potential_soft_navigation_tasks_`
+  // becoming empty.
+  void ProcessCustomWeakness(const LivenessBroker& info);
+
   bool GetInitialInteractionEncounteredForTest() {
     return initial_interaction_encountered_;
+  }
+
+  scheduler::TaskAttributionIdType GetLastInteractionTaskIdForTest() const {
+    return last_interaction_task_id_;
   }
 
  private:
@@ -124,9 +133,8 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   PerInteractionData* GetCurrentInteractionData(scheduler::TaskAttributionId);
 
-  WTF::HashSet<scheduler::TaskAttributionIdType>
-      potential_soft_navigation_task_ids_;
-  size_t disposed_soft_navigation_tasks_ = 0;
+  HeapHashSet<WeakMember<const scheduler::TaskAttributionInfo>>
+      potential_soft_navigation_tasks_;
   WTF::HashMap<scheduler::TaskAttributionIdType,
                absl::optional<scheduler::TaskAttributionId>>
       soft_navigation_descendant_cache_;
@@ -154,17 +162,20 @@ class CORE_EXPORT SoftNavigationHeuristics
         : is_new_interaction(is_new_interaction), type(type) {}
 
     bool is_new_interaction = false;
-    EventScopeType type = EventScopeType::Click;
+    EventScopeType type = EventScopeType::kClick;
   };
   EventParameters top_event_parameters_;
   WTF::Deque<EventParameters> nested_event_parameters_;
   EventParameters* current_event_parameters_ = nullptr;
+  // Used to synchronize resetting the heuristic when
+  // `potential_soft_navigation_tasks_` becomes empty during GC.
+  bool has_potential_soft_navigation_task_ = false;
 };
 
 // This class defines a scope that would cover click or navigation related
 // events, in order for the SoftNavigationHeuristics class to be able to keep
 // track of them and their descendant tasks.
-class SoftNavigationEventScope {
+class CORE_EXPORT SoftNavigationEventScope {
  public:
   SoftNavigationEventScope(SoftNavigationHeuristics* heuristics,
                            SoftNavigationHeuristics::EventScopeType type,

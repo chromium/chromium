@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_H_
 
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::personalization_app {

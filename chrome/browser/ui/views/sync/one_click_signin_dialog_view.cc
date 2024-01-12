@@ -124,5 +124,5 @@ OneClickSigninDialogView::~OneClickSigninDialogView() {
     std::move(confirmed_callback_).Run(false);
 }
 
-BEGIN_METADATA(OneClickSigninDialogView, views::DialogDelegateView)
+BEGIN_METADATA(OneClickSigninDialogView)
 END_METADATA

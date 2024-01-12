@@ -34,6 +34,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -146,6 +147,7 @@ void LocalWindowProxy::Initialize() {
                GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
   CHECK(!GetFrame()->IsProvisional());
+  base::ElapsedTimer timer;
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
   v8::HandleScope handle_scope(GetIsolate());
@@ -207,12 +209,15 @@ void LocalWindowProxy::Initialize() {
     probe::DidCreateMainWorldContext(GetFrame());
     GetFrame()->Loader().DispatchDidClearWindowObjectInMainWorld();
   }
+  base::UmaHistogramTimes("V8.LocalWindowProxy.InitializeTime",
+                          timer.Elapsed());
 }
 
 void LocalWindowProxy::CreateContext() {
   TRACE_EVENT2("v8", "LocalWindowProxy::CreateContext", "IsMainFrame",
                GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
+  base::ElapsedTimer timer;
 
   v8::ExtensionConfiguration extension_configuration =
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
@@ -258,6 +263,8 @@ void LocalWindowProxy::CreateContext() {
          lifecycle_ == Lifecycle::kGlobalObjectIsDetached);
   lifecycle_ = Lifecycle::kContextIsInitialized;
   DCHECK(script_state_->ContextIsValid());
+  base::UmaHistogramTimes("V8.LocalWindowProxy.CreateContextTime",
+                          timer.Elapsed());
 }
 
 void LocalWindowProxy::InstallConditionalFeatures() {

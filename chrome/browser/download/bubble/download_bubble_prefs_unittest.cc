@@ -99,15 +99,6 @@ TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
   EXPECT_TRUE(DoesDownloadConnectorBlock(profile_, GURL()));
 }
 
-TEST_F(DownloadBubblePrefsTest, ShouldSuppressIph) {
-  // Test default value.
-  EXPECT_FALSE(ShouldSuppressDownloadBubbleIph(profile_));
-
-  // Test when user has previous interaction with the bubble.
-  profile_->GetPrefs()->SetBoolean(prefs::kDownloadBubbleIphSuppression, true);
-  EXPECT_TRUE(ShouldSuppressDownloadBubbleIph(profile_));
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled) {
   // Test default value.

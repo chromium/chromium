@@ -35,7 +35,8 @@ FakeAckHandler::~FakeAckHandler() = default;
 void FakeAckHandler::RegisterInvalidation(Invalidation* invalidation) {
   unacked_invalidations_.push_back(*invalidation);
   invalidation->SetAckHandler(
-      AsWeakPtr(), base::SingleThreadTaskRunner::GetCurrentDefault());
+      weak_ptr_factory_.GetWeakPtr(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void FakeAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {

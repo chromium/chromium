@@ -21,7 +21,7 @@ void FeatureGuardedAddressComponent::SetValue(std::u16string value,
   if (!base::FeatureList::IsEnabled(*feature_)) {
     return;
   }
-  AddressComponent::SetValue(value, status);
+  AddressComponent::SetValue(std::move(value), status);
 }
 
 void FeatureGuardedAddressComponent::GetTypes(

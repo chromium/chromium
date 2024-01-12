@@ -153,7 +153,7 @@ class SpeakerIdEnrollmentController::EnrollmentSession
 
  private:
   ::mojo::Remote<mojom::SpeakerIdEnrollmentClient> client_;
-  const raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_;
+  const raw_ptr<AssistantClient> assistant_client_;
   bool done_ = false;
   base::ScopedObservation<
       AssistantClient,

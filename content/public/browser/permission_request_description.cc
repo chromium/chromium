@@ -11,7 +11,7 @@ PermissionRequestDescription::PermissionRequestDescription(
     bool user_gesture,
     const GURL& requesting_origin,
     bool embedded_permission_element_initiated,
-    const absl::optional<gfx::Rect>& anchor_element_position)
+    const std::optional<gfx::Rect>& anchor_element_position)
     : permissions(permissions),
       user_gesture(user_gesture),
       requesting_origin(requesting_origin),
@@ -24,7 +24,7 @@ PermissionRequestDescription::PermissionRequestDescription(
     bool user_gesture,
     const GURL& requesting_origin,
     bool embedded_permission_element_initiated,
-    const absl::optional<gfx::Rect>& anchor_element_position)
+    const std::optional<gfx::Rect>& anchor_element_position)
     : PermissionRequestDescription(
           std::vector<blink::PermissionType>{permission},
           user_gesture,

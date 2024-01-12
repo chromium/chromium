@@ -77,7 +77,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void set_swap_file_cloning_will_fail_for_testing() {
     swap_file_cloning_will_fail_for_testing_ = true;
   }
-  const absl::optional<base::File::Error>&
+  const std::optional<base::File::Error>&
   get_swap_file_clone_result_for_testing() const {
     return swap_file_clone_result_for_testing_;
   }
@@ -198,8 +198,8 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   // Used to test that swap file creation attempts to use file cloning in some
   // circumstances, and gracefully handles file cloning errors.
   bool swap_file_cloning_will_fail_for_testing_ = false;
-  absl::optional<base::File::Error> swap_file_clone_result_for_testing_ =
-      absl::nullopt;
+  std::optional<base::File::Error> swap_file_clone_result_for_testing_ =
+      std::nullopt;
 #endif  // BUILDFLAG(IS_MAC)
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;

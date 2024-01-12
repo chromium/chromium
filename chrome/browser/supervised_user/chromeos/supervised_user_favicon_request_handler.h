@@ -82,8 +82,7 @@ class SupervisedUserFaviconRequestHandler {
   // via a network request.
   base::OnceClosure on_fetched_callback_;
 
-  raw_ptr<favicon::LargeIconService, ExperimentalAsh> large_icon_service_ =
-      nullptr;
+  raw_ptr<favicon::LargeIconService> large_icon_service_ = nullptr;
   base::CancelableTaskTracker favicon_task_tracker_;
 
   base::WeakPtrFactory<SupervisedUserFaviconRequestHandler> weak_ptr_factory_{

@@ -117,8 +117,8 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   // expires.
   void OnFirstPoliciesLoadedOrTimeout();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ArcSupportHost, ExperimentalAsh> support_host_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ArcSupportHost> support_host_;
   const AndroidManagementCheckerFactory android_management_checker_factory_;
 
   State state_ = State::kStopped;

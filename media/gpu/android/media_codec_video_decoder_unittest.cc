@@ -465,7 +465,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecFailuresAreAnError) {
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);
   EXPECT_CALL(*codec, DequeueInputBuffer(_, _))
-      .WillOnce(Return(MEDIA_CODEC_ERROR));
+      .WillOnce(Return(MediaCodecResult::Codes::kError));
   EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus()));
   PumpCodec();
 }
@@ -486,7 +486,7 @@ TEST_P(MediaCodecVideoDecoderTest, AfterInitCompletesTheCodecIsPolled) {
   EXPECT_CALL(*codec, DequeueInputBuffer(_, _))
       .WillOnce(InvokeWithoutArgs([&loop]() {
         loop.Quit();
-        return MEDIA_CODEC_TRY_AGAIN_LATER;
+        return MediaCodecResult::Codes::kTryAgainLater;
       }));
   loop.Run();
 }

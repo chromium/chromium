@@ -126,4 +126,8 @@ void FakeModelTypeControllerDelegate::ClearMetadataIfStopped() {
   ++clear_metadata_count_;
 }
 
+void FakeModelTypeControllerDelegate::ReportBridgeErrorForTest() {
+  SimulateModelError(ModelError(FROM_HERE, "Report error for test"));
+}
+
 }  // namespace syncer

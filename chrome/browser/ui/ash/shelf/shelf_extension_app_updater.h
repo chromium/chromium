@@ -50,8 +50,7 @@ class ShelfExtensionAppUpdater : public ShelfAppUpdater,
 
   bool ShouldHandleExtension(const extensions::Extension* extension) const;
 
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
 
   // Handles life-cycle events for extensions only if true, otherwise handles
   // life-cycle events for both Chrome apps and extensions.

@@ -33,7 +33,7 @@ BrowsingInstance::BrowsingInstance(
     bool is_fenced,
     bool is_fixed_storage_partition,
     const scoped_refptr<CoopRelatedGroup>& coop_related_group,
-    absl::optional<url::Origin> common_coop_origin)
+    std::optional<url::Origin> common_coop_origin)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context),

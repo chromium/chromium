@@ -54,13 +54,8 @@ template <typename T>
 class Flag;
 }  // namespace flags_internal
 
-#if defined(_MSC_VER) && !defined(__clang__)
-template <typename T>
-class Flag;
-#else
 template <typename T>
 using Flag = flags_internal::Flag<T>;
-#endif
 
 template <typename T>
 ABSL_MUST_USE_RESULT T GetFlag(const absl::Flag<T>& flag);

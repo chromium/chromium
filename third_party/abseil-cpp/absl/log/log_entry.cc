@@ -25,5 +25,17 @@ constexpr int LogEntry::kNoVerbosityLevel;
 constexpr int LogEntry::kNoVerboseLevel;
 #endif
 
+// https://github.com/abseil/abseil-cpp/issues/1465
+// CMake builds on Apple platforms error when libraries are empty.
+// Our CMake configuration can avoid this error on header-only libraries,
+// but since this library is conditionally empty, including a single
+// variable is an easy workaround.
+#ifdef __APPLE__
+namespace log_internal {
+extern const char kAvoidEmptyLogEntryLibraryWarning;
+const char kAvoidEmptyLogEntryLibraryWarning = 0;
+}  // namespace log_internal
+#endif  // __APPLE__
+
 ABSL_NAMESPACE_END
 }  // namespace absl

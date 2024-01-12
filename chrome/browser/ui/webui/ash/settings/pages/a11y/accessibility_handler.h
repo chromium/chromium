@@ -60,7 +60,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   speech::LanguageCode GetDictationLocale();
   std::u16string GetDictationLocaleDisplayName();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Weak pointer.
+  raw_ptr<Profile> profile_;  // Weak pointer.
 
   // Timer to record user changed value for the accessibility setting to turn
   // shelf navigation buttons on in tablet mode. The metric is recorded with 10

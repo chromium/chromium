@@ -208,12 +208,13 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "ShortcutsProvider::Start");
   matches_.clear();
 
-  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
-      input.type() != metrics::OmniboxInputType::EMPTY &&
-      !input.text().empty() && initialized_) {
-    DoAutocomplete(input,
-                   OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
+  if (input.IsZeroSuggest() ||
+      input.type() == metrics::OmniboxInputType::EMPTY ||
+      input.text().empty() || !initialized_) {
+    return;
   }
+  DoAutocomplete(input,
+                 OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
 }
 
 void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {

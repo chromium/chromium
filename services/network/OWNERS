@@ -32,9 +32,6 @@ per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 per-file network_sandbox_hook_linux.*=set noparent
 per-file network_sandbox_hook_linux.*=file://sandbox/linux/OWNERS
 
-per-file network_quality*=file://net/nqe/OWNERS
-
-per-file BUILD.gn=file://net/nqe/OWNERS
 per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
 per-file BUILD.gn=file://services/network/sct_auditing/OWNERS
 
@@ -51,6 +48,3 @@ per-file private_network_access*=lyf@chromium.org
 
 # WebTransport
 per-file web_transport*=file://net/OWNERS
-
-# IP Protection
-per-file ip_protection*=file://chrome/browser/ip_protection/OWNERS

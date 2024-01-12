@@ -354,7 +354,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
           }
           break;
         case InlineItem::kNotCollapsible: {
-          const String& source_text = layout_text->GetText();
+          const String& source_text = layout_text->TransformedText();
           if (source_text.length() &&
               Character::IsCollapsibleSpace(source_text[0])) {
             // If the start of the original string was collapsed, it may be
@@ -407,14 +407,15 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     // must go through the full pipeline to ensure that we exit and enter the
     // correct bidi contexts the re-layout.
     if (bidi_context_.size() || layout_text->HasBidiControlInlineItems()) {
-      if (layout_text->GetText().Contains(kNewlineCharacter))
+      if (layout_text->TransformedText().Contains(kNewlineCharacter)) {
         return false;
+      }
     }
   }
 
   if (UNLIKELY(old_item0.StartOffset() > 0 &&
                ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
-                   layout_text->GetText(), new_style))) {
+                   layout_text->TransformedText(), new_style))) {
     // e.g. <p>abc xyz</p> => <p> xyz</p> where "abc" and " xyz" are different
     // Text node. |text_| is " \u200Bxyz".
     return false;
@@ -522,20 +523,17 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
 
   if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() ||
       !layout_text->HasVariableLengthTransform()) {
-    AppendText(TransformedString(layout_text->GetText()), *layout_text);
+    AppendText(TransformedString(layout_text->TransformedText()), *layout_text);
     return;
   }
   String original = layout_text->OriginalText();
   TextOffsetMap offset_map;
-  // TODO(crbug.com/486880): -webkit-text-security never changes the length by
-  // accident. It's ok to apply only text-transform for now.
-  String transformed = layout_text->StyleRef().ApplyTextTransform(
-      original, text_.length() ? text_[text_.length() - 1] : kSpaceCharacter,
-      &offset_map);
-  DCHECK_EQ(layout_text->GetText().length(), transformed.length());
+  String transformed =
+      layout_text->TransformAndSecureText(original, offset_map);
+  DCHECK_EQ(layout_text->TransformedText(), transformed);
   const Vector<uint8_t> length_map = TransformedString::CreateLengthMap(
       original.length(), transformed.length(), offset_map);
-  AppendText(TransformedString(layout_text->GetText(),
+  AppendText(TransformedString(layout_text->TransformedText(),
                                {length_map.data(), length_map.size()}),
              *layout_text);
 }

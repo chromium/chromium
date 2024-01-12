@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <iterator>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -47,7 +47,7 @@ std::vector<AttributionStorageDelegate::NullAggregatableReport>
 GetNullAggregatableReportsForLookback(
     const AttributionTrigger& trigger,
     base::Time trigger_time,
-    absl::optional<base::Time> attributed_source_time,
+    std::optional<base::Time> attributed_source_time,
     int days_lookback,
     double rate) {
   std::vector<AttributionStorageDelegate::NullAggregatableReport> reports;
@@ -150,7 +150,7 @@ base::Uuid AttributionStorageDelegateImpl::NewReportID() const {
   return base::Uuid::GenerateRandomV4();
 }
 
-absl::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
+std::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
 AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -168,7 +168,7 @@ AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
     };
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AttributionStorageDelegateImpl::ShuffleReports(
@@ -226,7 +226,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
       return response;
     case AttributionNoiseMode::kNone:
       return RandomizedResponseData(response.rate(),
-                                    response.channel_capacity(), absl::nullopt);
+                                    response.channel_capacity(), std::nullopt);
   }
 }
 
@@ -234,7 +234,7 @@ std::vector<AttributionStorageDelegate::NullAggregatableReport>
 AttributionStorageDelegateImpl::GetNullAggregatableReports(
     const AttributionTrigger& trigger,
     base::Time trigger_time,
-    absl::optional<base::Time> attributed_source_time) const {
+    std::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (noise_mode_) {
@@ -250,7 +250,7 @@ std::vector<AttributionStorageDelegate::NullAggregatableReport>
 AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
     const AttributionTrigger& trigger,
     base::Time trigger_time,
-    absl::optional<base::Time> attributed_source_time) const {
+    std::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // See spec
@@ -264,7 +264,7 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
   switch (trigger.registration()
               .aggregatable_trigger_config.source_registration_time_config()) {
     case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude: {
-      absl::optional<base::Time> rounded_attributed_source_time;
+      std::optional<base::Time> rounded_attributed_source_time;
       if (attributed_source_time) {
         rounded_attributed_source_time =
             RoundDownToWholeDaySinceUnixEpoch(*attributed_source_time);

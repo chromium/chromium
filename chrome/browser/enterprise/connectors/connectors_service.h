@@ -34,9 +34,6 @@ namespace enterprise_connectors {
 // ConnectorsManager in Managed Guest Sessions.
 BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
 
-// Enable relaxed affiliation checks
-BASE_DECLARE_FEATURE(kEnableRelaxedAffiliationCheck);
-
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public KeyedService {
  public:
@@ -133,10 +130,6 @@ class ConnectorsService : public KeyedService {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<DmToken> GetProfileDmToken() const;
 
-  // Returns true if the browser isn't managed by CBCM, otherwise this checks if
-  // the affiliations IDs from the profile and browser policy fetching responses
-  // indicate that the same customer manages both.
-  bool CanUseProfileDmToken() const;
 #endif
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.

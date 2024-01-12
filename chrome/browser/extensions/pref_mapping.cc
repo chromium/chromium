@@ -218,8 +218,10 @@ PrefTransformerInterface* PrefMapping::FindTransformerForBrowserPref(
 // the pref in ash, or nullptr if no pref exists.
 crosapi::mojom::PrefPath PrefMapping::GetPrefPathForPrefName(
     const std::string& pref_name) const {
-  static const auto name_to_extension_prefpath = base::MakeFixedFlatMap<
-      base::StringPiece, crosapi::mojom::PrefPath>(
+  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
+  static const auto name_to_extension_prefpath =
+      base::MakeFixedFlatMapNonConsteval<base::StringPiece,
+                                         crosapi::mojom::PrefPath>(
       {{chromeos::prefs::kDockedMagnifierEnabled,
         crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
        {chromeos::prefs::kAccessibilityAutoclickEnabled,

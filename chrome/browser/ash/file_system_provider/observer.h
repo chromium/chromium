@@ -18,7 +18,7 @@ enum MountContext { MOUNT_CONTEXT_USER, MOUNT_CONTEXT_RESTORE };
 // Observes file_system_provider::Service for mounting and unmounting events.
 class Observer {
  public:
-  virtual ~Observer() {}
+  virtual ~Observer() = default;
 
   // Called when a file system mounting has been invoked. For success, the
   // |error| argument is set to FILE_OK. Otherwise, |error| contains a specific

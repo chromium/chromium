@@ -170,7 +170,7 @@ class NearbyConnectionBrokerImpl
       const std::string& endpoint_id,
       ::nearby::connections::mojom::PayloadTransferUpdatePtr update) override;
 
-  raw_ptr<NearbyEndpointFinder, ExperimentalAsh> endpoint_finder_;
+  raw_ptr<NearbyEndpointFinder> endpoint_finder_;
   mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       nearby_connections_;
   std::unique_ptr<base::OneShotTimer> timer_;

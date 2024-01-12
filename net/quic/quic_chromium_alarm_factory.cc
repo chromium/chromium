@@ -21,7 +21,7 @@ namespace {
 class QuicChromeAlarm : public quic::QuicAlarm, public base::TickClock {
  public:
   QuicChromeAlarm(const quic::QuicClock* clock,
-                  base::SequencedTaskRunner* task_runner,
+                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                   quic::QuicArenaScopedPtr<quic::QuicAlarm::Delegate> delegate)
       : quic::QuicAlarm(std::move(delegate)),
         clock_(clock),
@@ -30,7 +30,7 @@ class QuicChromeAlarm : public quic::QuicAlarm, public base::TickClock {
         on_alarm_callback_(base::BindRepeating(&QuicChromeAlarm::OnAlarm,
                                                base::Unretained(this))),
         timer_(std::make_unique<base::OneShotTimer>(this)) {
-    timer_->SetTaskRunner(task_runner);
+    timer_->SetTaskRunner(std::move(task_runner));
   }
 
  protected:

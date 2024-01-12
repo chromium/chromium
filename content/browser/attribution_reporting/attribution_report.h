@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
@@ -66,9 +66,9 @@ class CONTENT_EXPORT AttributionReport {
   };
 
   struct CONTENT_EXPORT CommonAggregatableData {
-    CommonAggregatableData(absl::optional<attribution_reporting::SuitableOrigin>
+    CommonAggregatableData(std::optional<attribution_reporting::SuitableOrigin>
                                aggregation_coordinator_origin,
-                           absl::optional<std::string> verification_token,
+                           std::optional<std::string> verification_token,
                            attribution_reporting::AggregatableTriggerConfig);
     CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
@@ -86,14 +86,14 @@ class CONTENT_EXPORT AttributionReport {
 
     // The report assembled by the aggregation service. If null, the report has
     // not been assembled yet.
-    absl::optional<AggregatableReport> assembled_report;
+    std::optional<AggregatableReport> assembled_report;
 
-    absl::optional<attribution_reporting::SuitableOrigin>
+    std::optional<attribution_reporting::SuitableOrigin>
         aggregation_coordinator_origin;
 
     // A token that can be sent alongside the report to complete its
     // verification.
-    absl::optional<std::string> verification_token;
+    std::optional<std::string> verification_token;
 
     attribution_reporting::AggregatableTriggerConfig
         aggregatable_trigger_config;
@@ -150,10 +150,10 @@ class CONTENT_EXPORT AttributionReport {
                              AggregatableAttributionData,
                              NullAggregatableData>;
 
-  // Returns the minimum non-null time of `a` and `b`, or `absl::nullopt` if
+  // Returns the minimum non-null time of `a` and `b`, or `std::nullopt` if
   // both are null.
-  static absl::optional<base::Time> MinReportTime(absl::optional<base::Time> a,
-                                                  absl::optional<base::Time> b);
+  static std::optional<base::Time> MinReportTime(std::optional<base::Time> a,
+                                                 std::optional<base::Time> b);
 
   AttributionReport(AttributionInfo attribution_info,
                     Id id,

@@ -124,7 +124,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -233,18 +233,18 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   mojo::ScopedDataPipeConsumerHandle body_;
 
   network::mojom::URLResponseHeadPtr head_;
-  absl::optional<mojo_base::BigBuffer> cached_metadata_;
+  std::optional<mojo_base::BigBuffer> cached_metadata_;
 
   DataPipeInfo data_pipe_for_race_network_request_;
   DataPipeInfo data_pipe_for_fetch_handler_;
   uint32_t data_pipe_buffer_size_;
-  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
+  std::optional<network::URLLoaderCompletionStatus> completion_status_;
   bool redirected_ = false;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
   DataConsumePolicy data_consume_policy_ = DataConsumePolicy::kTeeResponse;
-  absl::optional<base::TimeTicks> response_received_time_;
-  absl::optional<base::TimeTicks> fetch_handler_end_time_;
-  absl::optional<bool> is_fetch_handler_fallback_;
+  std::optional<base::TimeTicks> response_received_time_;
+  std::optional<base::TimeTicks> fetch_handler_end_time_;
+  std::optional<bool> is_fetch_handler_fallback_;
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">ポルトガル語（US インターナショナル）キーボード</translation>
 <translation id="1629521517399325891">ユーザー証明書はネットワーク認証に使用できません。</translation>
 <translation id="1641780993263690097">中国語（ピンイン）</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
 <translation id="1661207570040737402">共有ドライブの Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="1661867754829461514">PIN がありません</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google スプレッドシート</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムの同期を準備しています...</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> 個のファイルのコピーは管理者が設定したポリシーによってブロックされています</translation>
 <translation id="6509122719576673235">ノルウェー語</translation>
 <translation id="6528513914570774834">このデバイスの他のユーザーにこのネットワークの使用を許可する</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> を同期しています...</translation>
 <translation id="6549689063733911810">最近使用したアイテム</translation>
 <translation id="6558280019477628686">エラーが発生しました。一部の項目が削除されていない可能性があります。</translation>
 <translation id="656398493051028875">「<ph name="FILENAME" />」を削除しています...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux アプリに対して、<ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="7555339735447658365">現在オフラインです。インターネットに接続すると、ファイルの同期が再開されます</translation>
 <translation id="7589661784326793847">少々お待ちください</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> をオフラインで使用できるようにしています</translation>
 <translation id="7600126690270271294">セルビア語</translation>
 <translation id="7603724359189955920">グリッド</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> は既に存在しています。名前を変更してもう一度お試しください。</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8147028810663464959">文字幅は全角です</translation>
 <translation id="8151638057146502721">設定</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 件のエラーがあります。}other{# 件のエラーがあります。}}</translation>
 <translation id="8154842056504218462">すべての項目を選択しました。</translation>
 <translation id="8157684860301034423">アプリ情報を取得できませんでした。</translation>
 <translation id="8175731104491895765">フランス語（ベルギー）</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
+<translation id="8377269993083688872">メール レイアウト</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> を抽出しました。</translation>
 <translation id="8395901698320285466">サイズ</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">ファイルを選択して開く</translation>
 <translation id="8577897833047451336">クロアチア語</translation>
 <translation id="8578308463707544055">インドネシア語</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> 個のアイテムを同期しています...</translation>
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini イメージ ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">共有ネットワークのプロキシを許可する</translation>
 <translation id="8790981080411996443">植物に水をやっている人</translation>
 <translation id="8798099450830957504">既定</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 件の警告があります。}other{# 件の警告があります。}}</translation>
 <translation id="8808686172382650546">ネコ</translation>
 <translation id="8810671769985673465">圧縮できませんでした。アイテム「<ph name="FILE_NAME" />」が存在します。</translation>
 <translation id="8813284582615685103">スペイン語（スペイン）</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>
-<translation id="9083722265619106011">{0,plural, =1{警告 1 件。}other{警告 <ph name="COUNT" /> 件。}}</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9099674669267916096">ページ数</translation>

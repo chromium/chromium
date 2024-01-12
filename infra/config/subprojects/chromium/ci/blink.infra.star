@@ -102,16 +102,19 @@ ci.builder(
                     "--project",
                     "chrome-unexpected-pass-data",
                     "--no-prompt-for-user-input",
-                    # Only suppress tests that in the past 10 days, causes
-                    # build failures in 3 consecutive days and at least 10
-                    # times.
+                    # Only suppress tests that in the past 7 days, causes
+                    # build failures in 2 consecutive days, at least 10
+                    # times total and in recent 2 days still causes build
+                    # failures.
                     "--sample-period",
-                    "10",
+                    "7",
                     "--non-hidden-failures-only",
                     "--build-fail-consecutive-days-threshold",
-                    "3",
+                    "2",
                     "--build-fail-total-number-threshold",
                     "10",
+                    "--build-fail-recent-days-threshold",
+                    "2",
                 ],
             },
         ],
@@ -120,8 +123,8 @@ ci.builder(
 )
 
 ci.builder(
-    name = "blink-fuzzy-diff-analyzer",
-    description_html = "Runs Fuzzy Diff Analyzer on flaky image web tests bugs.",
+    name = "blink-web-test-analyzer",
+    description_html = "Runs all web test analyzers on web tests bugs.",
     executable = "recipe:chromium/generic_script_runner",
     # Run every 6 hours.
     schedule = "0 */6 * * *",
@@ -136,6 +139,18 @@ ci.builder(
             {
                 "step_name": "analyze_flaky_image_web_tests",
                 "script": "third_party/blink/tools/run_fuzzy_diff_analyzer.py",
+                "args": [
+                    "--project",
+                    "chrome-unexpected-pass-data",
+                    "--sample-period",
+                    "3",
+                    "--check-bugs-only",
+                    "--attach-analysis-result",
+                ],
+            },
+            {
+                "step_name": "analyze_slow_web_tests",
+                "script": "third_party/blink/tools/run_slow_test_analyzer.py",
                 "args": [
                     "--project",
                     "chrome-unexpected-pass-data",

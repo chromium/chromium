@@ -2968,6 +2968,9 @@ TEST_F(FormParserTest, ContradictingPasswordPredictionAndAutocomplete) {
 }
 
 TEST_F(FormParserTest, SingleUsernamePrediction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kUseServerPredictionsOnSaveParsing);
   CheckTestData({
       {
           .description_for_logging = "1 field",
@@ -2988,6 +2991,30 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
                   {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
               },
+      },
+  });
+}
+
+// Password predictions should have priority over single username predictions
+// when the form is parsed for saving to avoid losing the password.
+TEST_F(FormParserTest, BothSingleUsernameAndPasswordPredictions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kUseServerPredictionsOnSaveParsing);
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Form with both SINGLE_USERNAME and PASSWORD predictions.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::SINGLE_USERNAME}},
+                  {.role_saving = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword,
+                   .prediction = {.type = autofill::PASSWORD}},
+              },
+          .fallback_only = false,
       },
   });
 }

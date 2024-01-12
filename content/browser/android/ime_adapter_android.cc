@@ -479,7 +479,7 @@ void ImeAdapterAndroid::SetEditableSelectionOffsets(
 void ImeAdapterAndroid::SetBounds(
     const std::vector<gfx::Rect>& character_bounds,
     const bool character_bounds_changed,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (!character_bounds_changed && !line_bounds.has_value()) {
     return;
   }

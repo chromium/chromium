@@ -55,7 +55,7 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
       payments::GetBillingCustomerId(client_->GetPersonalDataManager());
   request_details.instrument_id =
       suggestion.GetBackendId<Suggestion::InstrumentId>().value();
-  base::TimeTicks unmask_request_timestamp = AutofillTickClock::NowTicks();
+  base::TimeTicks unmask_request_timestamp = base::TimeTicks::Now();
   client_->GetPaymentsNetworkInterface()->UnmaskIban(
       request_details,
       base::BindOnce(&IbanAccessManager::OnUnmaskResponseReceived,
@@ -72,7 +72,8 @@ void IbanAccessManager::OnUnmaskResponseReceived(
       /*show_confirmation_before_closing=*/false);
   bool is_successful = result == AutofillClient::PaymentsRpcResult::kSuccess;
   autofill_metrics::LogServerIbanUnmaskLatency(
-      AutofillTickClock::NowTicks() - unmask_request_timestamp, is_successful);
+      base::TimeTicks::Now() - unmask_request_timestamp, is_successful);
+  autofill_metrics::LogServerIbanUnmaskStatus(is_successful);
   if (is_successful) {
     std::move(on_iban_fetched).Run(value);
     return;

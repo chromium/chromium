@@ -81,17 +81,15 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Requests an update from the ItemSuggestCache, but only if the call is long
   // enough after the provider was constructed. This helps ease resource
   // contention at login, and prevents the call from failing because Google auth
-  // tokens haven't been set up yet. If the productivity launcher is disabled,
-  // this does nothing.
+  // tokens haven't been set up yet.
   void MaybeUpdateCache();
 
   // FileSuggestKeyedService::Observer:
   void OnFileSuggestionUpdated(ash::FileSuggestionType type) override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> drive_service_;
-  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
-      session_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<drive::DriveIntegrationService> drive_service_;
+  const raw_ptr<session_manager::SessionManager> session_manager_;
 
   const raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
 

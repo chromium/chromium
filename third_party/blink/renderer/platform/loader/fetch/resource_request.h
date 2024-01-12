@@ -627,7 +627,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
     shared_dictionary_writer_enabled_ = shared_dictionary_writer_enabled;
   }
 
-  absl::optional<base::UnguessableToken>
+  const absl::optional<base::UnguessableToken>&
   GetServiceWorkerRaceNetworkRequestToken() const {
     return service_worker_race_network_request_token_;
   }

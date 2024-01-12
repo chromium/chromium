@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "base/types/expected.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_metrics.h"
@@ -50,13 +51,13 @@ NSAttributedString* DescriptionMessage() {
   return AttributedStringFromStringWithLink(message, text_attributes,
                                             link_attributes);
 }
+
 }  // namespace
 
 @interface PlusAddressBottomSheetViewController () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate,
     UITextViewDelegate>
-
 @end
 
 @implementation PlusAddressBottomSheetViewController {
@@ -69,6 +70,8 @@ NSAttributedString* DescriptionMessage() {
   UILabel* _reservedPlusAddressLabel;
   // A loading spinner to indicate to the user that an action is in progress.
   UIActivityIndicatorView* _activityIndicator;
+  // Record of the time the bottom sheet is shown.
+  base::Time _bottomSheetShownTime;
 }
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
@@ -130,6 +133,7 @@ NSAttributedString* DescriptionMessage() {
   [_delegate reservePlusAddress];
   plus_addresses::PlusAddressMetrics::RecordModalEvent(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
+  _bottomSheetShownTime = base::Time::Now();
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -142,6 +146,10 @@ NSAttributedString* DescriptionMessage() {
   plus_addresses::PlusAddressMetrics::RecordModalEvent(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
           kModalConfirmed);
+  plus_addresses::PlusAddressMetrics::RecordModalShownDuration(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          kModalConfirmed,
+      base::Time::Now() - _bottomSheetShownTime);
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -150,6 +158,10 @@ NSAttributedString* DescriptionMessage() {
   plus_addresses::PlusAddressMetrics::RecordModalEvent(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
           kModalCanceled);
+  plus_addresses::PlusAddressMetrics::RecordModalShownDuration(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          kModalCanceled,
+      base::Time::Now() - _bottomSheetShownTime);
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -200,6 +212,10 @@ NSAttributedString* DescriptionMessage() {
   plus_addresses::PlusAddressMetrics::RecordModalEvent(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
           kModalCanceled);
+  plus_addresses::PlusAddressMetrics::RecordModalShownDuration(
+      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          kModalCanceled,
+      base::Time::Now() - _bottomSheetShownTime);
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 

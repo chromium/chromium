@@ -4,11 +4,10 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import type {Crostini} from '../background/js/crostini.js';
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
-import {Crostini} from '../externs/background/crostini.js';
-import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
-import {DialogType, FileKey, PropStatus, State} from '../externs/ts/state.js';
-import type {VolumeInfo} from '../externs/volume_info.js';
+import type {VolumeInfo} from '../background/js/volume_info.js';
+import {FilesAppDirEntry} from '../common/js/files_app_entry_types.js';
 import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.js';
 import {FakeFileSelectionHandler} from '../foreground/js/fake_file_selection_handler.js';
 import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
@@ -19,6 +18,7 @@ import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 import {type EntryMetadata, updateMetadata} from './ducks/all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateSelection} from './ducks/current_directory.js';
+import {DialogType, type FileKey, PropStatus, type State} from './state.js';
 import {getEmptyState, getStore, type StateSelector, type Store, waitForState} from './store.js';
 
 /**
@@ -188,7 +188,7 @@ export function createFakeVolumeMetadata(
     isParentDevice: undefined,
     isReadOnly: volumeInfo.isReadOnly,
     isReadOnlyRemovableDevice: volumeInfo.isReadOnlyRemovableDevice,
-    hasMedia: volumeInfo.hasMedia,
+    hasMedia: false,
     mountCondition: undefined,
     mountContext: undefined,
     diskFileSystemType: volumeInfo.diskFileSystemType,

@@ -90,7 +90,7 @@ class FileSystemProviderServiceTest : public testing::Test {
  protected:
   FileSystemProviderServiceTest() : profile_(nullptr) {}
 
-  ~FileSystemProviderServiceTest() override {}
+  ~FileSystemProviderServiceTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -121,13 +121,12 @@ class FileSystemProviderServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<Service> service_;
-  raw_ptr<FakeRegistry, ExperimentalAsh> registry_;  // Owned by Service.
+  raw_ptr<FakeRegistry> registry_;  // Owned by Service.
   Watcher fake_watcher_;
 };
 

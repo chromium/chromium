@@ -279,6 +279,14 @@ void ModelTypeController::RecordMemoryUsageAndCountsHistograms() {
   }
 }
 
+void ModelTypeController::ReportBridgeErrorForTest() {
+  DCHECK(CalledOnValidThread());
+
+  // Tests are supposed to call this method when `delegate_` exists.
+  CHECK(delegate_);
+  delegate_->ReportBridgeErrorForTest();  // IN-TEST
+}
+
 ModelTypeControllerDelegate* ModelTypeController::GetDelegateForTesting(
     SyncMode sync_mode) {
   auto it = delegate_map_.find(sync_mode);

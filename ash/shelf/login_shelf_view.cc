@@ -207,8 +207,10 @@ void LoginShelfView::RequestShutdown() {
     // cleaned up.
     // And ShelfShutdownConfirmationBubble would be destroyed when it's
     // dismissed or its buttons were presses.
+    shutdown_confirmation_button_->SetIsActive(true);
+
     test_shutdown_confirmation_bubble_ = new ShelfShutdownConfirmationBubble(
-        GetViewByID(kShutdown), shelf->alignment(),
+        shutdown_confirmation_button_, shelf->alignment(),
         base::BindOnce(&LoginShelfView::OnRequestShutdownConfirmed,
                        weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&LoginShelfView::OnRequestShutdownCancelled,
@@ -252,6 +254,8 @@ LoginShelfView::LoginShelfView(
       base::BindRepeating(&LoginShelfView::CallIfDisplayIsOn,
                           weak_ptr_factory_.GetWeakPtr(), shutdown_callback),
       IDS_ASH_SHELF_SHUTDOWN_BUTTON, kShelfShutdownButtonIcon);
+  shutdown_confirmation_button_ =
+      static_cast<LoginShelfButton*>(login_shelf_buttons_.back());
   const auto restart_callback = base::BindRepeating(
       &LockStateController::RequestShutdown,
       base::Unretained(Shell::Get()->lock_state_controller()),
@@ -435,7 +439,7 @@ void LoginShelfView::OnKioskMenuShown(
   if (kiosk_instruction_bubble_) {
     kiosk_instruction_bubble_->GetWidget()->Hide();
   }
-
+  kiosk_apps_button_->SetIsActive(true);
   on_kiosk_menu_shown.Run();
 }
 
@@ -443,6 +447,7 @@ void LoginShelfView::OnKioskMenuclosed() {
   if (kiosk_instruction_bubble_) {
     kiosk_instruction_bubble_->GetWidget()->Show();
   }
+  kiosk_apps_button_->SetIsActive(false);
 }
 
 void LoginShelfView::SetKioskApps(
@@ -491,7 +496,7 @@ void LoginShelfView::SetAddUserButtonEnabled(bool enable_add_user) {
 }
 
 void LoginShelfView::SetShutdownButtonEnabled(bool enable_shutdown_button) {
-  GetViewByID(kShutdown)->SetEnabled(enable_shutdown_button);
+  shutdown_confirmation_button_->SetEnabled(enable_shutdown_button);
 }
 
 void LoginShelfView::SetButtonEnabled(bool enabled) {

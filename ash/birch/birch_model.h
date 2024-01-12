@@ -5,24 +5,12 @@
 #ifndef ASH_BIRCH_BIRCH_MODEL_H_
 #define ASH_BIRCH_BIRCH_MODEL_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
-// The base item which is stored by the birch model.
-struct ASH_EXPORT BirchItem {
-  explicit BirchItem(const std::string& title);
-  BirchItem(BirchItem&&);
-  BirchItem(const BirchItem&);
-  BirchItem& operator=(const BirchItem&);
-  ~BirchItem();
-
-  std::string title_;
-};
+struct BirchFileItem;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers.
@@ -47,10 +35,11 @@ class ASH_EXPORT BirchModel {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void AddItem(std::unique_ptr<BirchItem> item);
+  void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
 
  private:
-  std::vector<std::unique_ptr<BirchItem>> items_;
+  // A type-specific list of items for all file suggestion items.
+  std::vector<BirchFileItem> file_suggest_items_;
 
   base::ObserverList<Observer> observers_;
 };

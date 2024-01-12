@@ -117,6 +117,8 @@ const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
+const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
+const char kIOSSwipeLeftForIncognitoUsed[] = "swipe_left_for_incognito_used";
 const char kEnhancedSafeBrowsingPromoCriterionMet[] =
     "enhanced_safe_browsing_promo_criterion_met";
 const char kEnhancedSafeBrowsingInlinePromoClosed[] =

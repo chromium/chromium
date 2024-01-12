@@ -39,4 +39,7 @@ interface RendererHost {
   // getProcessMemoryInfo.
   [EnableIf=is_android]
   SetPrivateMemoryFootprint(uint64 private_memory_footprint_bytes);
+
+  // A renderer sends this when it wants to know whether a gpu process exists.
+  [Sync] HasGpuProcess() => (bool has_gpu_process);
 };

@@ -15,10 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/scoped_egl_image.h"
 
 namespace gl {
@@ -89,13 +91,21 @@ struct WebXrSharedBuffer {
   WebXrSharedBuffer();
   ~WebXrSharedBuffer();
 
+  gpu::MailboxHolder mailbox_holder() const {
+    return gpu::MailboxHolder(shared_image->mailbox(), sync_token,
+                              texture_target());
+  }
+
+  uint32_t texture_target() const { return GL_TEXTURE_2D; }
+
   gfx::Size size = {0, 0};
 
   // This owns a single reference to an AHardwareBuffer object.
   base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
 
   // Resources in the remote GPU process command buffer context
-  gpu::MailboxHolder mailbox_holder;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
 
   // Resources in the local GL context
   uint32_t local_texture = 0;

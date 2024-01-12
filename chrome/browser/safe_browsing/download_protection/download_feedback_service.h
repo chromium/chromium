@@ -79,12 +79,14 @@ class DownloadFeedbackService {
       Profile* profile,
       const std::string& ping_request,
       const std::string& ping_response,
+      uint64_t file_size,
       const base::FilePath& path);
   void StartPendingFeedback();
   void BeginFeedback(Profile* profile,
                      const std::string& ping_request,
                      const std::string& ping_response,
-                     const base::FilePath& path);
+                     const base::FilePath& path,
+                     uint64_t file_size);
   void FeedbackComplete();
 
   // Safe because the DownloadProtectionService owns this.

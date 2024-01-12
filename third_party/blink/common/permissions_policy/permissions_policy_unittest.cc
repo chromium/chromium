@@ -61,6 +61,10 @@ class PermissionsPolicyTest : public testing::Test {
              {mojom::PermissionsPolicyFeature::kAttributionReporting,
               PermissionsPolicyFeatureDefault::EnableForSelf},
              {mojom::PermissionsPolicyFeature::kSharedStorage,
+              PermissionsPolicyFeatureDefault::EnableForSelf},
+             {mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+              PermissionsPolicyFeatureDefault::EnableForSelf},
+             {mojom::PermissionsPolicyFeature::kPrivateAggregation,
               PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
 
   ~PermissionsPolicyTest() override = default;
@@ -87,11 +91,20 @@ class PermissionsPolicyTest : public testing::Test {
     return PermissionsPolicy::CreateFromParentPolicy(parent, frame_policy,
                                                      origin, feature_list_);
   }
-  std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+
+  std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
+      const PermissionsPolicy* parent,
+      const url::Origin& origin) {
+    ParsedPermissionsPolicy empty_container_policy;
+    return PermissionsPolicy::CreateFlexibleForFencedFrame(
+        parent, empty_container_policy, origin, feature_list_);
+  }
+
+  std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
       base::span<const blink::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions) {
-    return PermissionsPolicy::CreateForFencedFrame(
+    return PermissionsPolicy::CreateFixedForFencedFrame(
         origin, feature_list_, effective_enabled_permissions);
   }
 
@@ -2818,15 +2831,25 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
+TEST_F(PermissionsPolicyTest, CreateFlexibleForFencedFrame) {
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOnFeature, /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, {});
+      CreateFlexibleForFencedFrame(policy1.get(), origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(
       mojom::PermissionsPolicyFeature::kAttributionReporting));
-  EXPECT_FALSE(policy->IsFeatureEnabled(
+  EXPECT_TRUE(policy->IsFeatureEnabled(
       mojom::PermissionsPolicyFeature::kSharedStorage));
+  EXPECT_TRUE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl));
+  EXPECT_TRUE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kPrivateAggregation));
 }
 
 TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
@@ -2838,7 +2861,7 @@ TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
       std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
 
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, effective_enabled_permissions);
+      CreateFixedForFencedFrame(origin_a_, effective_enabled_permissions);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(
@@ -2856,7 +2879,7 @@ TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
       std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
 
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, effective_enabled_permissions);
+      CreateFixedForFencedFrame(origin_a_, effective_enabled_permissions);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(

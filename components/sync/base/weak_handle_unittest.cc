@@ -37,7 +37,13 @@ class Base {
   base::WeakPtrFactory<Base> weak_ptr_factory_{this};
 };
 
-class Derived : public Base, public base::SupportsWeakPtr<Derived> {};
+class Derived : public Base {
+ public:
+  base::WeakPtr<Derived> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
+ private:
+  base::WeakPtrFactory<Derived> weak_ptr_factory_{this};
+};
 
 class WeakHandleTest : public ::testing::Test {
  protected:

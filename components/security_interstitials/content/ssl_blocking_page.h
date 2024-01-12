@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
-#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
@@ -61,7 +60,6 @@ class SSLBlockingPage : public SSLBlockingPageBase {
       int options_mask,
       const base::Time& time_triggered,
       const GURL& support_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool overrideable,
       bool can_show_enhanced_protection_message,
       std::unique_ptr<

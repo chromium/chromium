@@ -78,10 +78,10 @@ std::string CryptographerImpl::EmplaceKey(
       Nigori::CreateByDerivation(derivation_params, passphrase));
 }
 
-void CryptographerImpl::EmplaceKeyPair(
+void CryptographerImpl::SetKeyPair(
     CrossUserSharingPublicPrivateKeyPair private_key,
     uint32_t version) {
-  cross_user_sharing_keys_.AddKeyPair(std::move(private_key), version);
+  cross_user_sharing_keys_.SetKeyPair(std::move(private_key), version);
 }
 
 void CryptographerImpl::EmplaceKeysFrom(const NigoriKeyBag& key_bag) {
@@ -119,7 +119,7 @@ bool CryptographerImpl::HasKey(const std::string& key_name) const {
   return key_bag_.HasKey(key_name);
 }
 
-bool CryptographerImpl::HasKeyPair(const uint32_t key_pair_version) const {
+bool CryptographerImpl::HasKeyPair(uint32_t key_pair_version) const {
   return cross_user_sharing_keys_.HasKeyPair(key_pair_version);
 }
 

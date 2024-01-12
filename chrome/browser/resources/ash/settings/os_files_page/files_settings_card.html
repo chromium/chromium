@@ -9,6 +9,15 @@
     fill: var(--cros-sys-primary);
     margin-inline-end: 16px;
   }
+
+  #smbSharesTextContainer {
+    /*
+    The Add SMB Shares button changes size based on its text translation. Flex
+    here is used for resizing the SMB shares text div based on the size of the
+    button.
+    */
+    flex: 1;
+  }
 </style>
 
 <settings-card header-text="$i18n{filesPageTitle}">
@@ -46,7 +55,7 @@
       <div id="addSmbSharesRow" class="settings-box two-line">
         <iron-icon id="smbSharesIcon" icon="[[rowIcons_.smbShares]]">
         </iron-icon>
-        <div class="start">
+        <div id="smbSharesTextContainer" class="start">
           <div class="settings-box-text">
             <div>
               $i18n{smbSharesTitle}

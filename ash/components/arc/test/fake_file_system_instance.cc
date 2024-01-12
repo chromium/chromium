@@ -337,8 +337,7 @@ std::string FakeFileSystemInstance::GetFileContent(const std::string& url,
       }
       std::string result;
       result.resize(bytes);
-      bool success =
-          base::ReadFromFD(pipe_read_ends_it->second.get(), &result[0], bytes);
+      bool success = base::ReadFromFD(pipe_read_ends_it->second.get(), result);
       DCHECK(success);
       return result;
     }

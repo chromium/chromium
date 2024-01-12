@@ -28,7 +28,7 @@ URLLoaderFactory::URLLoaderFactory() = default;
 URLLoaderFactory::~URLLoaderFactory() = default;
 
 std::unique_ptr<URLLoader> URLLoaderFactory::CreateURLLoader(
-    const WebURLRequest& request,
+    const network::ResourceRequest& request,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,

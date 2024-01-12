@@ -173,8 +173,9 @@ void RegisterAntiFingerprintingBlockedDomainListComponent(
       AntiFingerprintingBlockedDomainListComponentInstallerPolicy>(
       /*on_list_ready=*/base::DoNothing());
 
-  base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus, base::OnceClosure(), GetTaskPriority());
+  base::MakeRefCounted<ComponentInstaller>(
+      std::move(policy), /*action_handler=*/nullptr, GetTaskPriority())
+      ->Register(cus, base::OnceClosure());
 }
 
 // Deletes the install directory for the Anti-Fingerprinting Blocklist. Used to

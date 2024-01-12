@@ -117,9 +117,9 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewHybridUI) &&
-      device_committed_) {
+  if (device_committed_) {
     // A device has already been accepted. Ignore other adverts.
+    return;
   }
 
   if (base::Contains(observed_adverts_, advert_array)) {

@@ -55,7 +55,7 @@ LayoutSVGInlineText::LayoutSVGInlineText(Node* n, String string)
 
 void LayoutSVGInlineText::TextDidChange() {
   NOT_DESTROYED();
-  SetTextInternal(NormalizeWhitespace(GetText()));
+  SetTextInternal(NormalizeWhitespace(TransformedText()));
   LayoutText::TextDidChange();
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
@@ -115,7 +115,7 @@ gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
   cursor.MoveTo(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const FragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() == FragmentItem::kSvgText) {
+    if (item.IsSvgText()) {
       bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
     }
   }

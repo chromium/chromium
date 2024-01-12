@@ -10,6 +10,10 @@ import "components/content_settings/core/common/content_settings.mojom";
 
 // Renderer -> Browser
 interface PageHandler {
+  // Reads a named pref and returns its value.  If the pref name is not
+  // registered will return a null Value.
+  ReadPref(string pref_name) => (mojo_base.mojom.Value s);
+
   // Return a list of COOKIES ContentSettings for the current profile.
   GetCookieSettings() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
@@ -19,9 +23,24 @@ interface PageHandler {
   GetTpcdMetadataGrants() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
-  // Convert PatternParts into a string representation.
+  // Return a list of TPCD_HEURISTICS_GRANTS ContentSettings for the current
+  // profile.
+  GetTpcdHeuristicsGrants() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Return a list of TPCD_SUPPORT ContentSettings for the current
+  // profile.
+  GetTpcdSupport() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Convert ContentSettingsPattern into a string representation.
   ContentSettingsPatternToString(
     content_settings.mojom.ContentSettingsPattern pattern) => (string s);
+
+  // Converts a string into a ContentSettingsPattern.
+  StringToContentSettingsPattern(string s) => (
+    content_settings.mojom.ContentSettingsPattern pattern);
+
 };
 
 

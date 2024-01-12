@@ -42,8 +42,7 @@ namespace {
 
 class FakeDownloadFeedback : public DownloadFeedback {
  public:
-  FakeDownloadFeedback(base::TaskRunner* file_task_runner,
-                       const std::string& ping_request,
+  FakeDownloadFeedback(const std::string& ping_request,
                        const std::string& ping_response,
                        base::OnceClosure deletion_callback)
       : ping_request_(ping_request),
@@ -86,12 +85,12 @@ class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
 
   std::unique_ptr<DownloadFeedback> CreateDownloadFeedback(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TaskRunner* file_task_runner,
       const base::FilePath& file_path,
+      uint64_t file_size,
       const std::string& ping_request,
       const std::string& ping_response) override {
     FakeDownloadFeedback* feedback = new FakeDownloadFeedback(
-        file_task_runner, ping_request, ping_response,
+        ping_request, ping_response,
         base::BindOnce(&FakeDownloadFeedbackFactory::DownloadFeedbackSent,
                        base::Unretained(this), feedbacks_.size()));
     feedbacks_.push_back(feedback);

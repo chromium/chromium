@@ -149,9 +149,8 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // `session_id`.
   void OnSessionDestroyed(int32_t session_id);
 
-  const raw_ptr<Profile, ExperimentalAsh> observed_profile_;
-  const raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh>
-      app_service_controller_;
+  const raw_ptr<Profile> observed_profile_;
+  const raw_ptr<AppServiceAppWindowShelfController> app_service_controller_;
 
   TaskIdToArcAppWindowInfo task_id_to_arc_app_window_info_;
   SessionIdToArcAppWindowInfo session_id_to_arc_app_window_info_;

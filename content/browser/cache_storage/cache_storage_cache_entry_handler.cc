@@ -4,6 +4,8 @@
 
 #include "content/browser/cache_storage/cache_storage_cache_entry_handler.h"
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -17,7 +19,6 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace content {
@@ -140,8 +141,7 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     // to the BigBuffer without a copy.
     int length = blob_entry_->GetSize(side_data_disk_cache_index_);
     mojo_base::BigBuffer output_buf(static_cast<size_t>(length));
-    auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-        reinterpret_cast<char*>(output_buf.data()), output_buf.size());
+    auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(output_buf);
 
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
         [](mojo_base::BigBuffer output_buf, ReadSideDataCallback callback,
@@ -216,7 +216,7 @@ int CacheStorageCacheEntryHandler::DiskCacheBlobEntry::GetSize(
 
 void CacheStorageCacheEntryHandler::DiskCacheBlobEntry::Invalidate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_handle_ = absl::nullopt;
+  cache_handle_ = std::nullopt;
   entry_handler_ = nullptr;
   disk_cache_entry_ = nullptr;
 }

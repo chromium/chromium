@@ -87,15 +87,6 @@ a[href] {
   color: inherit !important;
 }
 
-.primary-toggle {
-  color: var(--cr-secondary-text-color);
-  font-weight: 500;
-}
-
-.primary-toggle[checked] {
-  color: var(--google-blue-500);
-}
-
 collapse-radio-button,
 controlled-radio-button,
 cr-radio-button {

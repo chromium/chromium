@@ -108,7 +108,7 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
 void BitstreamFileWriter::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
-  if (bitstream->metadata.payload_size_bytes == 0) {
+  if (bitstream->metadata.dropped_frame()) {
     // Drop frame. Do nothing for this.
     return;
   }

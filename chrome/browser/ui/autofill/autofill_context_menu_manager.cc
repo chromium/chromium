@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -222,27 +223,31 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
 void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
     AutofillManager& manager) {
   auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
-  if (!ShouldAddAddressManualFallbackForAutocompleteUnrecognized(driver)) {
-    // Do nothing if the target field is not on address form field with
-    // unrecognized autocomplete attribute fillable with available data.
-    // TODO(crbug.com/1493361): Render suggestions for unclassified fields.
-    return;
-  }
   AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
-  if (!field) {
+  if (!field && !base::FeatureList::IsEnabled(
+                    features::kAutofillForUnclassifiedFieldsAvailable)) {
     // The field should generally exist, since the fallback option is only shown
     // when the field can be retrieved. But if the website removed the field
     // before the entry was select, it might not be available anymore.
+    //
+    // Note that, when `features::kAutofillForUnclassifiedFieldsAvailable` is
+    // enabled Autofill is always available, regardless of whether
+    // `AutofillField` exists or not.
     return;
   }
   driver.browser_events().RendererShouldTriggerSuggestions(
-      field->global_id(),
+      /*field_id=*/{driver.GetFrameToken(),
+                    FieldRendererId(params_.field_renderer_id)},
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  static_cast<BrowserAutofillManager&>(manager)
-      .GetAutocompleteUnrecognizedFallbackEventLogger()
-      .ContextMenuEntryAccepted(
-          /*address_field_has_ac_unrecognized=*/field
-              ->ShouldSuppressSuggestionsAndFillingByDefault());
+  const bool is_address_field =
+      field && IsAddressType(field->Type().GetStorableType());
+  if (is_address_field) {
+    static_cast<BrowserAutofillManager&>(manager)
+        .GetAutocompleteUnrecognizedFallbackEventLogger()
+        .ContextMenuEntryAccepted(
+            /*address_field_has_ac_unrecognized=*/field
+                ->ShouldSuppressSuggestionsAndFillingByDefault());
+  }
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(

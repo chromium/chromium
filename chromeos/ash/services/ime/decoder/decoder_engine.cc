@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "chromeos/ash/services/ime/constants.h"
 
 namespace ash {
@@ -29,7 +30,7 @@ class ClientDelegate : public ImeClientDelegate {
 
   ~ClientDelegate() override {}
 
-  const char* ImeSpec() override { return ime_spec_.c_str(); }
+  void Unused1() override { NOTIMPLEMENTED(); }
 
   void Process(const uint8_t* data, size_t size) override {
     if (client_remote_ && client_remote_.is_bound()) {

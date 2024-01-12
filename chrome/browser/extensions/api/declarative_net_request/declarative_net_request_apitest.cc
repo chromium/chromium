@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_apitest.h"
-
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -98,6 +98,15 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, DynamicRules) {
   ASSERT_TRUE(RunExtensionTest("dynamic_rules")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, RegexRuleMessage) {
+  // Ensure the error message for large RegEx rules is updated with the
+  // correct value for the memory limit.
+  std::string expected_amount = base::StringPrintf(
+      "%dKB", extensions::declarative_net_request::kRegexMaxMemKb);
+  EXPECT_THAT(extensions::declarative_net_request::kErrorRegexTooLarge,
+              testing::HasSubstr(expected_amount));
 }
 
 class DeclarativeNetRequestSafeRulesLazyApiTest

@@ -306,8 +306,9 @@ void KeywordProvider::Start(const AutocompleteInput& input,
       extensions_delegate_->IncrementInputId();
   }
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (input.IsZeroSuggest()) {
     return;
+  }
 
   GetTemplateURLService();
   DCHECK(model_);

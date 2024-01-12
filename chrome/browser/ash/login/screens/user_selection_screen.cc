@@ -365,7 +365,7 @@ class UserSelectionScreen::DircryptoMigrationChecker {
         needs_migration);
   }
 
-  const raw_ptr<UserSelectionScreen, ExperimentalAsh> owner_;
+  const raw_ptr<UserSelectionScreen> owner_;
   AccountId focused_user_ = EmptyAccountId();
 
   // Cached result of NeedsDircryptoMigration cryptohome check. Key is the
@@ -466,7 +466,7 @@ class UserSelectionScreen::TpmLockedChecker {
     wake_lock_->RequestWakeLock();
   }
 
-  const raw_ptr<UserSelectionScreen, ExperimentalAsh> owner_;
+  const raw_ptr<UserSelectionScreen> owner_;
 
   base::TimeTicks check_finised_;
   base::TimeDelta dictionary_attack_lockout_time_remaining_;

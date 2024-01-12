@@ -5,6 +5,7 @@
 #include "extensions/renderer/api/messaging/messaging_util.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
@@ -200,7 +201,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromExtensionContext) {
   std::string other_id(32, 'a');
   struct {
     v8::Local<v8::Value> passed_id;
-    base::StringPiece expected_id;
+    std::string_view expected_id;
     bool should_pass;
   } test_cases[] = {
       // If the extension ID is not provided, the bindings use the calling
@@ -212,7 +213,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromExtensionContext) {
       {gin::StringToV8(isolate(), ""), extension->id(), true},
       {gin::StringToV8(isolate(), extension->id()), extension->id(), true},
       {gin::StringToV8(isolate(), other_id), other_id, true},
-      {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
+      {gin::StringToV8(isolate(), "invalid id"), std::string_view(), false},
   };
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -240,14 +241,14 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromWebContext) {
   std::string other_id(32, 'a');
   struct {
     v8::Local<v8::Value> passed_id;
-    base::StringPiece expected_id;
+    std::string_view expected_id;
     bool should_pass;
   } test_cases[] = {
       // A web page should always have to specify the extension id.
       {gin::StringToV8(isolate(), other_id), other_id, true},
-      {v8::Null(isolate()), base::StringPiece(), false},
-      {gin::StringToV8(isolate(), ""), base::StringPiece(), false},
-      {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
+      {v8::Null(isolate()), std::string_view(), false},
+      {gin::StringToV8(isolate(), ""), std::string_view(), false},
+      {gin::StringToV8(isolate(), "invalid id"), std::string_view(), false},
   };
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -278,7 +279,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromUserScriptContext) {
   std::string other_id(32, 'a');
   struct {
     v8::Local<v8::Value> passed_id;
-    base::StringPiece expected_id;
+    std::string_view expected_id;
     bool should_pass;
   } test_cases[] = {
       // If the extension ID is not provided, the bindings use the calling
@@ -290,7 +291,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromUserScriptContext) {
       {gin::StringToV8(isolate(), ""), extension->id(), true},
       {gin::StringToV8(isolate(), extension->id()), extension->id(), true},
       // User scripts may not target other extensions.
-      {gin::StringToV8(isolate(), other_id), base::StringPiece(), false},
+      {gin::StringToV8(isolate(), other_id), std::string_view(), false},
   };
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {

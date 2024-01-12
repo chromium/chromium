@@ -148,7 +148,7 @@ class PrerenderTestHelper {
   int AddPrerender(const GURL& prerendering_url,
                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   int AddPrerender(const GURL& prerendering_url,
-                   absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+                   std::optional<blink::mojom::SpeculationEagerness> eagerness,
                    const std::string& target_hint,
                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
@@ -157,7 +157,7 @@ class PrerenderTestHelper {
                          int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   void AddPrerendersAsync(
       const std::vector<GURL>& prerendering_urls,
-      absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
       const std::string& target_hint,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 

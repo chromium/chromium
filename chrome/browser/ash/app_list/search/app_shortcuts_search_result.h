@@ -30,7 +30,7 @@ class AppShortcutSearchResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Owned by ProfileInfo.
+  const raw_ptr<Profile> profile_;  // Owned by ProfileInfo.
 };
 }  // namespace app_list
 

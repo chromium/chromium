@@ -67,7 +67,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, assign) BOOL errorSectionPresented;
 
 // If YES, denote that the particular field requires a value.
-@property(nonatomic, assign) BOOL nameRequired;
 @property(nonatomic, assign) BOOL line1Required;
 @property(nonatomic, assign) BOOL cityRequired;
 @property(nonatomic, assign) BOOL stateRequired;
@@ -631,8 +630,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns true if the itemType belongs to a required field.
 - (BOOL)isItemTypeRequiredField:(AutofillProfileDetailsItemType)itemType {
   switch (itemType) {
-    case AutofillProfileDetailsItemTypeFullName:
-      return self.nameRequired;
     case AutofillProfileDetailsItemTypeLine1:
       return self.line1Required;
     case AutofillProfileDetailsItemTypeCity:
@@ -641,6 +638,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       return self.stateRequired;
     case AutofillProfileDetailsItemTypeZip:
       return self.zipRequired;
+    case AutofillProfileDetailsItemTypeFullName:
     case AutofillProfileDetailsItemTypeHonorificPrefix:
     case AutofillProfileDetailsItemTypeCompanyName:
     case AutofillProfileDetailsItemTypeLine2:

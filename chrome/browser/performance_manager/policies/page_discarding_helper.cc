@@ -32,6 +32,8 @@
 #include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
+using performance_manager::mechanism::PageDiscarder;
+
 namespace performance_manager {
 namespace policies {
 namespace {
@@ -106,7 +108,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
 }  // namespace
 
 PageDiscardingHelper::PageDiscardingHelper()
-    : page_discarder_(std::make_unique<mechanism::PageDiscarder>()) {}
+    : page_discarder_(std::make_unique<PageDiscarder>()) {}
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 
 void PageDiscardingHelper::DiscardAPage(
@@ -127,6 +129,10 @@ void PageDiscardingHelper::DiscardMultiplePages(
 
   LOG(WARNING) << "Discarding multiple pages with target (kb): "
                << (reclaim_target ? reclaim_target->target_kb : 0);
+
+  if (reclaim_target) {
+    unnecessary_discard_monitor_.OnReclaimTargetBegin(*reclaim_target);
+  }
 
   // Ensures running post_discard_cb on early return.
   auto split_callback = base::SplitOnceCallback(std::move(post_discard_cb));
@@ -218,8 +224,14 @@ void PageDiscardingHelper::ImmediatelyDiscardSpecificPage(
   if (CanDiscard(page_node, discard_reason,
                  /*minimum_time_in_background=*/base::TimeDelta()) ==
       CanDiscardResult::kEligible) {
-    page_discarder_->DiscardPageNodes({page_node}, discard_reason,
-                                      std::move(post_discard_cb));
+    page_discarder_->DiscardPageNodes(
+        {page_node}, discard_reason,
+        base::BindOnce(
+            [](base::OnceCallback<void(bool)> callback,
+               const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
+              std::move(callback).Run(discard_events.size() > 0);
+            },
+            std::move(post_discard_cb)));
   } else {
     std::move(post_discard_cb).Run(false);
   }
@@ -240,7 +252,7 @@ void PageDiscardingHelper::ClearNoDiscardPatternsForProfile(
 }
 
 void PageDiscardingHelper::SetMockDiscarderForTesting(
-    std::unique_ptr<mechanism::PageDiscarder> discarder) {
+    std::unique_ptr<PageDiscarder> discarder) {
   page_discarder_ = std::move(discarder);
 }
 
@@ -484,16 +496,23 @@ void PageDiscardingHelper::PostDiscardAttemptCallback(
     base::OnceCallback<void(bool)> post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background,
-    bool success) {
+    const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
   // When there is no discard candidate, DiscardMultiplePages returns
   // early and PostDiscardAttemptCallback is not called.
-  if (!success) {
+  if (discard_events.empty()) {
     // DiscardAttemptMarker will force the retry to choose different pages.
     DiscardMultiplePages(reclaim_target, discard_protected_tabs,
                          std::move(post_discard_cb), discard_reason,
                          minimum_time_in_background);
     return;
   }
+
+  for (const auto& discard_event : discard_events) {
+    unnecessary_discard_monitor_.OnDiscard(
+        discard_event.estimated_memory_freed_kb, discard_event.discard_time);
+  }
+
+  unnecessary_discard_monitor_.OnReclaimTargetEnd();
 
   std::move(post_discard_cb).Run(true);
 }

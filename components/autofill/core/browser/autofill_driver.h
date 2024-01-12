@@ -153,8 +153,11 @@ class AutofillDriver {
   // `triggered_origin` is the origin of the field that triggered the filling
   // operation currently being filled or undone.
   //
+  // Returns the FieldGlobalIds that were safe to modify according to Autofill's
+  // security policy. This is a subset of the FieldGlobalIds of `form.fields`.
+  //
   // This method is a no-op if the renderer is not currently available.
-  virtual std::vector<FieldGlobalId> ApplyFormAction(
+  virtual base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -202,11 +205,6 @@ class AutofillDriver {
   virtual void PopupHidden() = 0;
 
   virtual net::IsolationInfo IsolationInfo() = 0;
-
-  // Tells the renderer about the form fields that are eligible for triggering
-  // manual filling on form interaction.
-  virtual void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) = 0;
 
   // Query's the DOM for four digit combinations that could potentially be of a
   // card number.

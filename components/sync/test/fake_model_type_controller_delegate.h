@@ -65,6 +65,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
   base::WeakPtr<ModelTypeControllerDelegate> GetWeakPtr();
 

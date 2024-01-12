@@ -352,6 +352,26 @@ NSAttributedString* TextForTabCount(int count, CGFloat font_size) {
                                          }];
 }
 
+NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
+  NSString* string;
+  if (count <= 0) {
+    string = @"";
+  } else if (count < 100) {
+    string = [NSString stringWithFormat:@"+%d", count];
+  } else {
+    string = @"99+";
+  }
+
+  UIFont* font = [UIFont systemFontOfSize:font_size weight:UIFontWeightMedium];
+  UIFontDescriptor* descriptor = [font.fontDescriptor
+      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
+  font = [UIFont fontWithDescriptor:descriptor size:font_size];
+
+  return
+      [[NSAttributedString alloc] initWithString:string
+                                      attributes:@{NSFontAttributeName : font}];
+}
+
 #if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 void RegisterEditMenuItem(UIMenuItem* item) {
   UIMenuController* menu = [UIMenuController sharedMenuController];

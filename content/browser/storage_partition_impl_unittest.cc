@@ -126,45 +126,6 @@ const uint32_t kAllQuotaRemoveMask =
     StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
     StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
     StoragePartition::REMOVE_DATA_MASK_WEBSQL;
-
-class AwaitCompletionHelper {
- public:
-  AwaitCompletionHelper() : start_(false), already_quit_(false) {}
-
-  AwaitCompletionHelper(const AwaitCompletionHelper&) = delete;
-  AwaitCompletionHelper& operator=(const AwaitCompletionHelper&) = delete;
-
-  virtual ~AwaitCompletionHelper() = default;
-
-  void BlockUntilNotified() {
-    if (!already_quit_) {
-      DCHECK(!start_);
-      start_ = true;
-      base::RunLoop().Run();
-    } else {
-      DCHECK(!start_);
-      already_quit_ = false;
-    }
-  }
-
-  void Notify() {
-    if (start_) {
-      DCHECK(!already_quit_);
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-      start_ = false;
-    } else {
-      DCHECK(!already_quit_);
-      already_quit_ = true;
-    }
-  }
-
- private:
-  // Helps prevent from running message_loop, if the callback invoked
-  // immediately.
-  bool start_;
-  bool already_quit_;
-};
-
 class RemoveCookieTester {
  public:
   explicit RemoveCookieTester(StoragePartition* storage_partition)
@@ -176,12 +137,13 @@ class RemoveCookieTester {
   // Returns true, if the given cookie exists in the cookie store.
   bool ContainsCookie(const url::Origin& origin) {
     get_cookie_success_ = false;
+    base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->GetCookieList(
         origin.GetURL(), net::CookieOptions::MakeAllInclusive(),
         net::CookiePartitionKeyCollection(),
         base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
-                       base::Unretained(this)));
-    await_completion_.BlockUntilNotified();
+                       base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
     return get_cookie_success_;
   }
 
@@ -189,18 +151,20 @@ class RemoveCookieTester {
     net::CookieInclusionStatus status;
     std::unique_ptr<net::CanonicalCookie> cc(
         net::CanonicalCookie::Create(origin.GetURL(), "A=1", base::Time::Now(),
-                                     /*server_time=*/absl::nullopt,
-                                     /*cookie_partition_key=*/absl::nullopt,
+                                     /*server_time=*/std::nullopt,
+                                     /*cookie_partition_key=*/std::nullopt,
                                      /*block_truncated=*/true, &status));
+    base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
         *cc, origin.GetURL(), net::CookieOptions::MakeAllInclusive(),
         base::BindOnce(&RemoveCookieTester::SetCookieCallback,
-                       base::Unretained(this)));
-    await_completion_.BlockUntilNotified();
+                       base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
   }
 
  private:
   void GetCookieListCallback(
+      base::OnceClosure quit_closure,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies) {
     std::string cookie_line =
@@ -211,16 +175,16 @@ class RemoveCookieTester {
       EXPECT_EQ("", cookie_line);
       get_cookie_success_ = false;
     }
-    await_completion_.Notify();
+    std::move(quit_closure).Run();
   }
 
-  void SetCookieCallback(net::CookieAccessResult result) {
+  void SetCookieCallback(base::OnceClosure quit_closure,
+                         net::CookieAccessResult result) {
     ASSERT_TRUE(result.status.IsInclude());
-    await_completion_.Notify();
+    std::move(quit_closure).Run();
   }
 
   bool get_cookie_success_;
-  AwaitCompletionHelper await_completion_;
   raw_ptr<StoragePartition> storage_partition_;
 };
 
@@ -238,27 +202,29 @@ class RemoveInterestGroupTester {
   bool ContainsInterestGroupOwner(const url::Origin& origin) {
     get_interest_group_success_ = false;
     EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
+    base::RunLoop loop;
     static_cast<InterestGroupManagerImpl*>(
         storage_partition_->GetInterestGroupManager())
         ->GetInterestGroupsForOwner(
             origin, base::BindOnce(
                         &RemoveInterestGroupTester::GetInterestGroupsCallback,
-                        base::Unretained(this)));
-    await_completion_.BlockUntilNotified();
+                        base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
     return get_interest_group_success_;
   }
 
   bool ContainsInterestGroupKAnon(const url::Origin& origin) {
     contains_kanon_ = false;
     EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
+    base::RunLoop loop;
     static_cast<InterestGroupManagerImpl*>(
         storage_partition_->GetInterestGroupManager())
         ->GetLastKAnonymityReported(
             k_anon_key,
             base::BindOnce(
                 &RemoveInterestGroupTester::GetLastKAnonymityReportedCallback,
-                base::Unretained(this)));
-    await_completion_.BlockUntilNotified();
+                base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
     return contains_kanon_;
   }
 
@@ -284,22 +250,23 @@ class RemoveInterestGroupTester {
   }
 
  private:
-  void GetInterestGroupsCallback(scoped_refptr<StorageInterestGroups> groups) {
+  void GetInterestGroupsCallback(base::OnceClosure quit_closure,
+                                 scoped_refptr<StorageInterestGroups> groups) {
     get_interest_group_success_ = groups->size() > 0;
-    await_completion_.Notify();
+    std::move(quit_closure).Run();
   }
 
   void GetLastKAnonymityReportedCallback(
-      absl::optional<base::Time> last_reported) {
+      base::OnceClosure quit_closure,
+      std::optional<base::Time> last_reported) {
     contains_kanon_ =
         last_reported.has_value() && last_reported.value() > base::Time::Min();
-    await_completion_.Notify();
+    std::move(quit_closure).Run();
   }
 
   bool get_interest_group_success_ = false;
   bool contains_kanon_ = false;
   std::string k_anon_key;
-  AwaitCompletionHelper await_completion_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
@@ -326,7 +293,6 @@ class RemoveLocalStorageTester {
   // Returns true, if the given origin URL exists.
   bool DOMStorageExistsForOrigin(const url::Origin& origin) {
     GetLocalStorageUsage();
-    await_completion_.BlockUntilNotified();
     for (size_t i = 0; i < infos_.size(); ++i) {
       if (origin == infos_[i].storage_key.origin())
         return true;
@@ -346,7 +312,7 @@ class RemoveLocalStorageTester {
     auto database = storage::AsyncDomStorageDatabase::OpenDirectory(
         std::move(options),
         storage_partition_->GetPath().Append(storage::kLocalStoragePath),
-        storage::kLocalStorageLeveldbName, absl::nullopt,
+        storage::kLocalStorageLeveldbName, std::nullopt,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           ASSERT_TRUE(status.ok());
@@ -429,15 +395,18 @@ class RemoveLocalStorageTester {
   }
 
   void GetLocalStorageUsage() {
+    base::RunLoop loop;
     dom_storage_context_->GetLocalStorageUsage(
         base::BindOnce(&RemoveLocalStorageTester::OnGotLocalStorageUsage,
-                       base::Unretained(this)));
+                       base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
   }
 
   void OnGotLocalStorageUsage(
+      base::OnceClosure quit_closure,
       const std::vector<content::StorageUsageInfo>& infos) {
     infos_ = infos;
-    await_completion_.Notify();
+    std::move(quit_closure).Run();
   }
 
   // We don't own these pointers.
@@ -446,8 +415,6 @@ class RemoveLocalStorageTester {
   raw_ptr<DOMStorageContext> dom_storage_context_;
 
   std::vector<content::StorageUsageInfo> infos_;
-
-  AwaitCompletionHelper await_completion_;
 };
 
 class RemoveCodeCacheTester {
@@ -554,7 +521,6 @@ class RemoveCodeCacheTester {
   }
 
   bool entry_exists_;
-  AwaitCompletionHelper await_completion_;
   raw_ptr<GeneratedCodeCacheContext> code_cache_context_;
   std::string received_data_;
 };
@@ -1774,27 +1740,27 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
   GURL url2("https://www.example.com/");
   GURL url3("https://www.google.com/");
 
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
   deletion_filter->host_name = url.host();
 
   base::Time now = base::Time::Now();
   std::vector<std::unique_ptr<CanonicalCookie>> valid_cookies;
   valid_cookies.push_back(CanonicalCookie::Create(
-      url, "A=B", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
   valid_cookies.push_back(CanonicalCookie::Create(
-      url, "C=F", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url, "C=F", now, server_time, std::nullopt /* cookie_partition_key */));
   // We should match a different scheme with the same host.
   valid_cookies.push_back(CanonicalCookie::Create(
-      url2, "A=B", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url2, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
 
   std::vector<std::unique_ptr<CanonicalCookie>> invalid_cookies;
   // We don't match domain cookies.
   invalid_cookies.push_back(
       CanonicalCookie::Create(url2, "A=B;domain=.example.com", now, server_time,
-                              absl::nullopt /* cookie_partition_key */));
+                              std::nullopt /* cookie_partition_key */));
   invalid_cookies.push_back(CanonicalCookie::Create(
-      url3, "A=B", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url3, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
 
   for (const auto& cookie : valid_cookies) {
     EXPECT_TRUE(FilterMatchesCookie(deletion_filter, *cookie))

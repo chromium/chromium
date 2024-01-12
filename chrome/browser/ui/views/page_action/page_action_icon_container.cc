@@ -31,5 +31,5 @@ void PageActionIconContainerView::AddPageActionIcon(
   AddChildView(std::move(icon));
 }
 
-BEGIN_METADATA(PageActionIconContainerView, views::View)
+BEGIN_METADATA(PageActionIconContainerView)
 END_METADATA

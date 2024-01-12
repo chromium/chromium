@@ -48,7 +48,8 @@ class ChromeContentBrowserClientParts {
   virtual ~ChromeContentBrowserClientParts() {}
 
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
-  virtual void SiteInstanceGotProcess(content::SiteInstance* site_instance) {}
+  virtual void SiteInstanceGotProcessAndSite(
+      content::SiteInstance* site_instance) {}
 
   // Subclasses that override webkit preferences are responsible for ensuring
   // that their modifications are mututally exclusive.

@@ -5,10 +5,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 
 namespace set_up_list_utils {
 
@@ -17,24 +16,18 @@ bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
       set_up_list_prefs::IsSetUpListDisabled(local_state)) {
     return false;
   }
-  if (FirstRun::IsChromeFirstRun()) {
-    return false;
-  }
-  // Check if we are within 14 days of FRE
-  std::optional<base::Time> first_run_time = GetFirstRunTime();
-  if (!first_run_time) {
+  // Check if we are within 14 days of FRE.
+  if (IsFirstRun()) {
     // If this is the first time the app has been opened, First Run will not
     // have been completed yet. In this case, we will wait until the next run.
     return false;
   }
-  base::Time now = base::Time::Now();
-  base::Time expiry_time = first_run_time.value() + base::Days(14);
-  if (now > expiry_time) {
+  if (!IsFirstRunRecent(base::Days(14))) {
     // It has been 14+ days since FRE, but if user has interacted in the last
     // day the time will be extended.
     base::Time last_interaction =
         set_up_list_prefs::GetLastInteraction(local_state);
-    if (now > last_interaction + base::Days(1)) {
+    if (base::Time::Now() > last_interaction + base::Days(1)) {
       return false;
     }
   }
@@ -43,13 +36,7 @@ bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
 }
 
 bool ShouldShowCompactedSetUpListModule() {
-  std::optional<base::Time> firstRunTime = GetFirstRunTime();
-  base::Time expiry_time =
-      firstRunTime.value() + base::Days(TimeUntilShowingCompactedSetUpList());
-  if (base::Time::Now() > expiry_time) {
-    return true;
-  }
-  return false;
+  return !IsFirstRunRecent(base::Days(TimeUntilShowingCompactedSetUpList()));
 }
 
 }  // namespace set_up_list_utils

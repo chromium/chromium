@@ -7,85 +7,45 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/sessions/core/session_id.h"
+#include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class OmniboxControllerTest : public testing::Test {
  protected:
-  OmniboxControllerTest();
-  ~OmniboxControllerTest() override;
-  OmniboxControllerTest(const OmniboxControllerTest&) = delete;
-  OmniboxControllerTest& operator=(const OmniboxControllerTest&) = delete;
+  OmniboxControllerTest() {
+    // AutocompleteController needs an instance of ClipboardRecentContent to
+    // create the ClipboardProvider. The instance can be nullptr in iOS tests.
+    ClipboardRecentContent::SetInstance(
+        std::make_unique<FakeClipboardRecentContent>());
 
-  void CreateController();
-  void AssertProviders(int expected_providers);
-
-  const AutocompleteController::Providers& GetAutocompleteProviders() const {
-    return omnibox_controller_->autocomplete_controller()->providers();
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
   }
 
- private:
-  // testing::Test:
-  void TearDown() override;
-
+ protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
 };
 
-OmniboxControllerTest::OmniboxControllerTest() {}
+// Tests that the list of autocomplete providers created by the
+// OmniboxController matches the expectations.
+TEST_F(OmniboxControllerTest, CheckDefaultAutocompleteProviders) {
+  int expected_providers = AutocompleteClassifier::DefaultOmniboxProviders();
 
-OmniboxControllerTest::~OmniboxControllerTest() {}
-
-void OmniboxControllerTest::CreateController() {
-  omnibox_controller_ = std::make_unique<OmniboxController>(
-      /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
-}
-
-// Checks that the list of autocomplete providers used by the OmniboxController
-// matches the one in the |expected_providers| bit field.
-void OmniboxControllerTest::AssertProviders(int expected_providers) {
-  const AutocompleteController::Providers& providers =
-      GetAutocompleteProviders();
-
-  for (size_t i = 0; i < providers.size(); ++i) {
+  for (const auto& provider :
+       omnibox_controller_->autocomplete_controller()->providers()) {
     // Ensure this is a provider we wanted.
-    int type = providers[i]->type();
+    int type = provider->type();
     ASSERT_TRUE(expected_providers & type);
-
     // Remove it from expectations so we fail if it's there twice.
     expected_providers &= ~type;
   }
 
   // Ensure we saw all the providers we expected.
   ASSERT_EQ(0, expected_providers);
-}
-
-void OmniboxControllerTest::TearDown() {
-  omnibox_controller_.reset();
-}
-
-TEST_F(OmniboxControllerTest, CheckDefaultAutocompleteProviders) {
-  CreateController();
-  // First collect the basic providers.
-  int observed_providers = 0;
-  const AutocompleteController::Providers& providers =
-      GetAutocompleteProviders();
-  for (size_t i = 0; i < providers.size(); ++i)
-    observed_providers |= providers[i]->type();
-  // Ensure we have at least one provider.
-  ASSERT_NE(0, observed_providers);
-
-  // Ensure instant extended includes all the provides in classic Chrome.
-  int providers_with_instant_extended = observed_providers;
-  // TODO(beaudoin): remove TYPE_SEARCH once it's no longer needed to pass
-  // the Instant suggestion through via FinalizeInstantQuery.
-  CreateController();
-  AssertProviders(providers_with_instant_extended);
 }

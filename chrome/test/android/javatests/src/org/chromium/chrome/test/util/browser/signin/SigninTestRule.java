@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -61,6 +63,10 @@ public class SigninTestRule extends AccountManagerTestRule {
 
     /** Waits for the AccountTrackerService to seed system accounts. */
     public void waitForSeeding() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            // Seed accounts happens synchronously so there is nothing to wait for.
+            return;
+        }
         SigninTestUtil.seedAccounts();
     }
 

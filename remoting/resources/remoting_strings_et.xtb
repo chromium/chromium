@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Leiti protokolli ühildumatu versioon. Veenduge, et mõlemas arvutis oleks installitud tarkvara uusim versioon, ja proovige uuesti.</translation>
 <translation id="1008557486741366299">Mitte praegu</translation>
 <translation id="1201402288615127009">Järgmine</translation>
-<translation id="1296511125400541222">Autoriõigus 2023 The Chromium Authors. Kõik õigused kaitstud.</translation>
 <translation id="1297009705180977556">Viga hostiga <ph name="HOSTNAME" /> ühendamisel</translation>
 <translation id="1450760146488584666">Nõutavat objekti ei ole.</translation>
 <translation id="1480046233931937785">Tiitrid</translation>
@@ -89,7 +88,6 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4808503597364150972">Sisestage hosti <ph name="HOSTNAME" /> PIN-kood.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Saada klahvi PrtScn vajutamine</translation>
-<translation id="4960795469833295568">Autoriõigus 2023 Google LLC. Kõik õigused kaitstud.</translation>
 <translation id="4974476491460646149">Ühendus hostiga <ph name="HOSTNAME" /> on suletud</translation>
 <translation id="4985296110227979402">Esmalt tuleb arvutis seadistada kaugjuurdepääs</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop ei suuda tuvastada brauserit, mis on mõeldud URL-ide kohalikult avamiseks. Valige see allolevast loendist.</translation>
@@ -154,6 +152,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="7693372326588366043">Hostide loendi värskendamine</translation>
 <translation id="7714222945760997814">Teavita sellest</translation>
 <translation id="7868137160098754906">Sisestage kaugarvuti PIN-kood.</translation>
+<translation id="7881455334687220899">Autoriõigus 2024 The Chromium Authors. Kõik õigused kaitstud.</translation>
 <translation id="7895403300744144251">Kaugarvuti turvareeglid ei luba teie kontolt pärinevaid ühendusi.</translation>
 <translation id="7936528439960309876">Doki paremale</translation>
 <translation id="7970576581263377361">Autentimine ebaõnnestus. Logige uuesti Chromiumi sisse.</translation>
@@ -185,6 +184,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="8747048596626351634">Seanss jooksis kokku või selle käivitamine ebaõnnestus. Kui seanss ~/.chrome-remote-desktop-session on kaugarvutis olemas, veenduge, et see käivitaks pikaajalise taustaprotsessi (nt töölauakeskkond või aknahaldur).</translation>
 <translation id="8804164990146287819">Privaatsuseeskirjad</translation>
 <translation id="8906511416443321782">Juurdepääs mikrofonile on vajalik, et jäädvustada heli ja voogesitada seda Chrome Remote Desktopi kliendile.</translation>
+<translation id="9042277333359847053">Autoriõigus 2024 Google LLC. Kõik õigused kaitstud.</translation>
 <translation id="9111855907838866522">Olete kaugseadmega ühendatud. Menüü avamiseks puudutage ekraani nelja sõrmega.</translation>
 <translation id="9126115402994542723">Ära küsi PIN-koodi uuesti, kui sellest seadmest selle hostiga ühendus luuakse.</translation>
 <translation id="916856682307586697">XSession-vaikeseansi käivitamine</translation>

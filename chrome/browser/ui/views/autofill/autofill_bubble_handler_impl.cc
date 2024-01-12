@@ -80,6 +80,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
                                                   controller);
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
+    case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::INACTIVE:
       break;
   }

@@ -21,6 +21,9 @@ specific_include_rules = {
   "chrome_views_delegate_chromeos\.cc": [
     "+ash/shell.h",
   ],
+  "isolated_web_app_installer_view_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
   "qrcode_generator\.*": [
     "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
     "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",

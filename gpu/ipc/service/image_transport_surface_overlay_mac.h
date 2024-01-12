@@ -89,6 +89,8 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   uint64_t previous_frame_fence_ = 0;
 
 #if BUILDFLAG(IS_MAC)
+  base::TimeTicks GetDisplaytime(base::TimeTicks latch_time);
+
   // CGDirectDisplayID of the current monitor used for Creating CVDisplayLink.
   int64_t display_id_ = display::kInvalidDisplayId;
   scoped_refptr<ui::DisplayLinkMac> display_link_mac_;
@@ -100,7 +102,18 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
 
   // Ensure vsync_callback_mac_ is still alive in the case of frame rate
   // throttling such as 30 fps video playback.
-  constexpr static int kMaxKeepAliveCounter = 5;
+  constexpr static int kMaxKeepAliveCounter = 8;
+
+  // The timetick when the GPU has finished completing all the drawing commands
+  base::TimeTicks ready_timestamp_;
+  // The timetick when CATransaction Commits and CoreAnimation latches the
+  // frame.
+  base::TimeTicks latch_timestamp_;
+
+  // Parameters from CVDisplayLinkCallback
+  base::TimeTicks current_display_time_;
+  base::TimeTicks next_display_time_;
+  base::TimeDelta frame_interval_;
 #endif
 
   SwapCompletionCallback completion_callback_;

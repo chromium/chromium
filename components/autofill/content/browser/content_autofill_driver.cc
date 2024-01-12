@@ -226,7 +226,7 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
+base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence,
     const FormData& form,
@@ -348,17 +348,6 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
          const std::vector<FormDataPredictions>& type_predictions) {
         cast(target)->GetAutofillAgent()->FieldTypePredictionsAvailable(
             type_predictions);
-      });
-}
-
-void ContentAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
-    const std::vector<FieldGlobalId>& fields) {
-  router().SendFieldsEligibleForManualFillingToRenderer(
-      this, fields,
-      [](autofill::AutofillDriver* target,
-         const std::vector<FieldRendererId>& fields) {
-        cast(target)->GetAutofillAgent()->SetFieldsEligibleForManualFilling(
-            fields);
       });
 }
 

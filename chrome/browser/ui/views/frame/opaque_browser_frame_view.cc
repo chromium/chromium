@@ -581,17 +581,13 @@ void OpaqueBrowserFrameView::UpdateWindowControlsOverlay(
   }
 }
 
-bool OpaqueBrowserFrameView::IsTranslucentWindowOpacitySupported() const {
-  return frame()->IsTranslucentWindowOpacitySupported();
-}
-
 bool OpaqueBrowserFrameView::ShouldDrawRestoredFrameShadow() const {
   return false;
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-ui::WindowTiledEdges OpaqueBrowserFrameView::GetTiledEdges() const {
-  return frame()->tiled_edges();
+#if BUILDFLAG(IS_LINUX)
+bool OpaqueBrowserFrameView::IsTiled() const {
+  return frame()->tiled();
 }
 #endif
 
@@ -895,7 +891,7 @@ void OpaqueBrowserFrameView::
 }
 #endif
 
-BEGIN_METADATA(OpaqueBrowserFrameView, BrowserNonClientFrameView)
+BEGIN_METADATA(OpaqueBrowserFrameView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, IconBounds)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowWindowTitleBar)
 END_METADATA

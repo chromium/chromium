@@ -269,6 +269,11 @@ const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Makes Lacros fork the zygotes before blocking when prelaunched at login
+// screen.
+const char kEnableLacrosForkZygotesAtLoginScreen[] =
+    "enable-lacros-fork-zygotes-at-login-screen";
+
 // Makes Lacros use a location shared across users for browser components.
 const char kEnableLacrosSharedComponentsDir[] =
     "enable-lacros-shared-components-dir";
@@ -692,6 +697,10 @@ const char kMarketUrlForTesting[] = "market-url-for-testing";
 
 // Force enable user agent overrides to request desktop sites in Clank.
 const char kRequestDesktopSites[] = "request-desktop-sites";
+
+// Hash names of Java functions in SSM. Only has an effect if SSM is enabled.
+const char kStartStackProfilerWithJavaNameHashing[] =
+    "start-stack-profiler-with-java-name-hashing";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -811,12 +820,8 @@ const char kNotificationInlineReply[] = "notification-inline-reply";
 const char kNotificationLaunchId[] = "notification-launch-id";
 
 // /prefetch:# arguments for the browser process launched in background mode and
-// for the watcher process. Use profiles 5, 6 and 7 as documented on
-// kPrefetchArgument* in content_switches.cc.
+// as documented in prefetch_type_win.h.
 const char kPrefetchArgumentBrowserBackground[] = "/prefetch:5";
-// /prefetch:6 was formerly used by the watcher but is no longer used.
-// /prefetch:7 is used by crashpad, which can't depend on constants defined
-// here. See crashpad_win.cc for more details.
 
 // See kHideIcons.
 const char kShowIcons[] = "show-icons";

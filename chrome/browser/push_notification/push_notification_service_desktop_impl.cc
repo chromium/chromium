@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/push_notification/push_notification_service_desktop_impl.h"
+
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
 
@@ -16,6 +17,10 @@ PushNotificationServiceDesktopImpl::PushNotificationServiceDesktopImpl(
 PushNotificationServiceDesktopImpl::~PushNotificationServiceDesktopImpl() =
     default;
 
-void PushNotificationServiceDesktopImpl::Shutdown() {}
+void PushNotificationServiceDesktopImpl::Shutdown() {
+  // TODO(b/306398998): Once fetching GCM token is implemented, reset the token
+  // here.
+  client_manager_.reset();
+}
 
 }  // namespace push_notification

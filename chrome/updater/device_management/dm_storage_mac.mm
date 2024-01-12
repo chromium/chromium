@@ -40,8 +40,9 @@ bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
 
   CFStringRef value_string =
       base::apple::CFCast<CFStringRef>(token_value.get());
-  if (!value_string)
+  if (!value_string) {
     return false;
+  }
 
   *enrollment_token = base::SysCFStringRefToUTF8(value_string);
   return true;

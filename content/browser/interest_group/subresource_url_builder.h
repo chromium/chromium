@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_SUBRESOURCE_URL_BUILDER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_SUBRESOURCE_URL_BUILDER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -45,18 +46,18 @@ class CONTENT_EXPORT SubresourceUrlBuilder {
   };
 
   explicit SubresourceUrlBuilder(
-      const absl::optional<blink::DirectFromSellerSignals>&
+      const std::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals);
   ~SubresourceUrlBuilder();
 
   SubresourceUrlBuilder(const SubresourceUrlBuilder&) = delete;
   SubresourceUrlBuilder& operator=(const SubresourceUrlBuilder&) = delete;
 
-  const absl::optional<BundleSubresourceInfo>& seller_signals() const {
+  const std::optional<BundleSubresourceInfo>& seller_signals() const {
     return seller_signals_;
   }
 
-  const absl::optional<BundleSubresourceInfo>& auction_signals() const {
+  const std::optional<BundleSubresourceInfo>& auction_signals() const {
     return auction_signals_;
   }
 
@@ -66,8 +67,8 @@ class CONTENT_EXPORT SubresourceUrlBuilder {
   }
 
  private:
-  const absl::optional<BundleSubresourceInfo> seller_signals_;
-  const absl::optional<BundleSubresourceInfo> auction_signals_;
+  const std::optional<BundleSubresourceInfo> seller_signals_;
+  const std::optional<BundleSubresourceInfo> auction_signals_;
   const base::flat_map<url::Origin, BundleSubresourceInfo> per_buyer_signals_;
 };
 

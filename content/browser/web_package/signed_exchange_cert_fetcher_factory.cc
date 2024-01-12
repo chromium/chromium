@@ -22,7 +22,7 @@ class SignedExchangeCertFetcherFactoryImpl
   SignedExchangeCertFetcherFactoryImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
-      const absl::optional<base::UnguessableToken>& throttling_profile_id,
+      const std::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info)
       : url_loader_factory_(std::move(url_loader_factory)),
         url_loader_throttles_getter_(std::move(url_loader_throttles_getter)),
@@ -38,7 +38,7 @@ class SignedExchangeCertFetcherFactoryImpl
  private:
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   URLLoaderThrottlesGetter url_loader_throttles_getter_;
-  const absl::optional<base::UnguessableToken> throttling_profile_id_;
+  const std::optional<base::UnguessableToken> throttling_profile_id_;
   const net::IsolationInfo isolation_info_;
 };
 
@@ -63,7 +63,7 @@ std::unique_ptr<SignedExchangeCertFetcherFactory>
 SignedExchangeCertFetcherFactory::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     URLLoaderThrottlesGetter url_loader_throttles_getter,
-    const absl::optional<base::UnguessableToken>& throttling_profile_id,
+    const std::optional<base::UnguessableToken>& throttling_profile_id,
     net::IsolationInfo isolation_info) {
   return std::make_unique<SignedExchangeCertFetcherFactoryImpl>(
       std::move(url_loader_factory), std::move(url_loader_throttles_getter),

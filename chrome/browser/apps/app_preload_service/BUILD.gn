@@ -16,8 +16,6 @@ source_set("app_preload_service") {
     "app_preload_service_factory.h",
     "preload_app_definition.cc",
     "preload_app_definition.h",
-    "web_app_preload_installer.cc",
-    "web_app_preload_installer.h",
   ]
 
   deps = [
@@ -27,6 +25,7 @@ source_set("app_preload_service") {
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_install:app_install_service",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -53,7 +52,6 @@ source_set("unit_tests") {
     "app_preload_server_connector_unittest.cc",
     "app_preload_service_unittest.cc",
     "preload_app_definition_unittest.cc",
-    "web_app_preload_installer_unittest.cc",
   ]
 
   deps = [
@@ -63,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_install:app_install_service",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
@@ -80,11 +79,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [
-    "app_preload_service_browsertest.cc",
-    "web_app_preload_installer_browsertest.cc",
-    "web_app_preload_installer_lacros_browsertest.cc",
-  ]
+  sources = [ "app_preload_service_browsertest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

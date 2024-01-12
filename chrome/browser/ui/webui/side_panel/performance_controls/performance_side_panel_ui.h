@@ -41,6 +41,8 @@ class PerformanceSidePanelUI
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
+  static constexpr std::string GetWebUIName() { return "PerformanceSidePanel"; }
+
  private:
   // side_panel::mojom::PerformancePageHandlerFactory:
   void CreatePerformancePageHandler(

@@ -527,33 +527,3 @@ if (is_android) {
     sources = [ "bluetooth/test/bluetooth_test.h" ]
   }
 }
-
-if (is_win || is_linux || is_mac) {
-  test("passkey_enclave") {
-    testonly = true
-    sources = [ "fido/enclave/test/passkey_enclave.cc" ]
-
-    deps = [
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//device/fido:enclave_service",
-      "//device/fido:fido",
-    ]
-  }
-
-  test("passkey_enclave_client") {
-    testonly = true
-    sources = [ "fido/enclave/test/passkey_enclave_client.cc" ]
-
-    deps = [
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//components/sync/protocol:protocol",
-      "//device/fido",
-      "//mojo/public/cpp/bindings",
-      "//services/cert_verifier:lib",
-      "//services/network:network_service",
-      "//services/network/public/cpp",
-    ]
-  }
-}

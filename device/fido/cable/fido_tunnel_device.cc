@@ -183,10 +183,8 @@ FidoTunnelDevice::FidoTunnelDevice(
   std::vector<network::mojom::HttpHeaderPtr> headers;
   headers.emplace_back(network::mojom::HttpHeader::New(
       kCableClientPayloadHeader, client_payload_hex));
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewHybridUI)) {
-    headers.emplace_back(
-        network::mojom::HttpHeader::New(kCableSignalConnectionHeader, "true"));
-  }
+  headers.emplace_back(
+      network::mojom::HttpHeader::New(kCableSignalConnectionHeader, "true"));
   network_context->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       /*has_storage_access=*/false, net::IsolationInfo(), std::move(headers),

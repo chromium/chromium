@@ -3,33 +3,39 @@
 # found in the LICENSE file.
 
 import("//build/util/process_version.gni")
-
-source_set("keystone_glue") {
-  sources = [
-    "keystone_glue.h",
-    "keystone_glue.mm",
-    "keystone_registration.h",
-    "keystone_registration.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome:strings",
-    "//chrome/app:generated_resources",
-    "//chrome/common:channel_info",
-    "//chrome/common:non_code_constants",
-    "//components/version_info",
-    "//ui/base",
-  ]
-}
+import("//chrome/updater/branding.gni")
+import("//testing/test.gni")
 
 process_version("install") {
   extra_args = [
     "-e",
     "SHEBANGGUARD=\"\"",
+    "-e",
+    "BROWSER_PRODUCT_NAME=\"$browser_product_name\"",
+    "-e",
+    "UPDATER_PRODUCT_NAME=\"$updater_product_full_name\"",
+    "-e",
+    "KEYSTONE_APP_NAME=\"$keystone_app_name\"",
+    "-e",
+    "UPDATER_COMPANY_SHORT_NAME=\"$updater_company_short_name\"",
   ]
   process_only = true
   executable = true
   template_file = "install.sh.in"
   output = "$target_gen_dir/install.sh"
+}
+
+# These tests mutate system state and should not be bundled into unit_tests or
+# other commonly-run targets.
+test("install_sh_test") {
+  testonly = true
+  sources = [ "install_test.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome",
+    "//testing/gtest",
+  ]
 }

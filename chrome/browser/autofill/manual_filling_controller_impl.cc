@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 
 #include <numeric>
+#include <optional>
 #include <utility>
 
 #include "base/containers/fixed_flat_set.h"
@@ -33,7 +34,6 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
@@ -298,7 +298,7 @@ void ManualFillingControllerImpl::RequestAccessorySheet(
     autofill::AccessoryTabType tab_type,
     base::OnceCallback<void(autofill::AccessorySheetData)> callback) {
   // TODO(crbug.com/1169167): Consider to execute this async to reduce jank.
-  absl::optional<AccessorySheetData> sheet =
+  std::optional<AccessorySheetData> sheet =
       GetControllerForTabType(tab_type)->GetSheetData();
   // After they were loaded, all currently existing sheet types always return a
   // value and will always result in a called callback.
@@ -425,7 +425,7 @@ void ManualFillingControllerImpl::UpdateVisibility() {
       if (!controller) {
         continue;  // Most-likely, the controller was cleaned up already.
       }
-      absl::optional<AccessorySheetData> sheet = controller->GetSheetData();
+      std::optional<AccessorySheetData> sheet = controller->GetSheetData();
       if (sheet.has_value())
         view_->OnItemsAvailable(std::move(sheet.value()));
     }
@@ -456,7 +456,7 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
     AccessoryController::IsFillingSourceAvailable is_source_available) {
   TRACE_EVENT0("passwords",
                "ManualFillingControllerImpl::OnSourceAvailabilityChanged");
-  absl::optional<AccessorySheetData> sheet = source_controller->GetSheetData();
+  std::optional<AccessorySheetData> sheet = source_controller->GetSheetData();
   bool show_filling_source = sheet.has_value() && is_source_available;
   // TODO(crbug.com/1169167): Remove once all sheets pull this information
   // instead of waiting to get it pushed.

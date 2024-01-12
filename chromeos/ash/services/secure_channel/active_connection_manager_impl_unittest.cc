@@ -83,12 +83,10 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
     EXPECT_EQ(1u, num_deleted);
   }
 
-  raw_ptr<const MultiplexedChannel::Delegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<const MultiplexedChannel::Delegate, DanglingUntriaged>
       expected_delegate_;
 
-  raw_ptr<AuthenticatedChannel, ExperimentalAsh>
-      next_expected_authenticated_channel_ = nullptr;
+  raw_ptr<AuthenticatedChannel> next_expected_authenticated_channel_ = nullptr;
 
   base::flat_map<ConnectionDetails, FakeMultiplexedChannel*>
       connection_details_to_active_channel_map_;

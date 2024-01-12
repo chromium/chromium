@@ -35,6 +35,9 @@ class ArcFileSystemOperationRunner;
 // All member function must be called on the UI thread.
 class ArcDocumentsProviderRootMap : public KeyedService {
  public:
+  // This constructor should not be used. It is public for the sake of
+  // compatibility with std::make_unique.
+  explicit ArcDocumentsProviderRootMap(Profile* profile);
   ArcDocumentsProviderRootMap(const ArcDocumentsProviderRootMap&) = delete;
   ArcDocumentsProviderRootMap& operator=(const ArcDocumentsProviderRootMap&) =
       delete;
@@ -81,12 +84,10 @@ class ArcDocumentsProviderRootMap : public KeyedService {
  private:
   friend class ArcDocumentsProviderRootMapFactory;
 
-  explicit ArcDocumentsProviderRootMap(Profile* profile);
-
   // |runner_| outlives |this| and ArcDocumentsProviderRoot instances in |map_|
   // as this service has explicit dependency on ArcFileSystemOperationRunner in
   // the BrowserContextKeyedServiceFactory dependency graph.
-  const raw_ptr<ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  const raw_ptr<ArcFileSystemOperationRunner> runner_;
 
   // Key is (authority, root_document_id).
   using Key = std::pair<std::string, std::string>;

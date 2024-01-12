@@ -55,15 +55,51 @@ suite('TrafficCountersTest', function() {
    */
   function generateTrafficCounters(rxBytes, txBytes) {
     return [
-      {'source': 'Unknown', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'Chrome', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'User', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'Arc', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'Crosvm', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'Pluginvm', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'Update Engine', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'Vpn', 'rxBytes': rxBytes, 'txBytes': txBytes},
-      {'source': 'System', 'rxBytes': rxBytes, 'txBytes': txBytes},
+      {
+        'source': 'Unknown',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'Chrome',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'User',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'Arc',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'Crosvm',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'Pluginvm',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'Update Engine',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'Vpn',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
+      {
+        'source': 'System',
+        'rxBytes': rxBytes,
+        'txBytes': txBytes,
+      },
     ];
   }
 

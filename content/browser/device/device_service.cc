@@ -109,7 +109,8 @@ void BindDeviceServiceReceiver(
   params->custom_location_provider_callback =
       base::BindRepeating(&ContentBrowserClient::OverrideSystemLocationProvider,
                           base::Unretained(GetContentClient()->browser()));
-  params->geolocation_manager = device::GeolocationManager::GetInstance();
+  params->geolocation_manager =
+      GetContentClient()->browser()->GetGeolocationManager();
 
 #if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -98,34 +98,13 @@ UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
     return USER_TYPE_REGULAR;
 
   int int_user_type = stored_user_type->GetInt();
-  if (int_user_type < 0 || int_user_type >= NUM_USER_TYPES ||
+  if (int_user_type < 0 ||
+      int_user_type > static_cast<int>(UserType::kMaxValue) ||
       int_user_type == 2) {
     LOG(ERROR) << "Bad user type " << int_user_type;
     return USER_TYPE_REGULAR;
   }
   return static_cast<UserType>(int_user_type);
-}
-
-std::string UserTypeToString(UserType user_type) {
-  switch (user_type) {
-    case USER_TYPE_REGULAR:
-      return "regular";
-    case USER_TYPE_CHILD:
-      return "child";
-    case USER_TYPE_GUEST:
-      return "guest";
-    case USER_TYPE_PUBLIC_ACCOUNT:
-      return "managed-guest-session";
-    case USER_TYPE_KIOSK_APP:
-      return "chrome-app-kiosk";
-    case USER_TYPE_ARC_KIOSK_APP:
-      return "arc-kiosk";
-    case USER_TYPE_WEB_KIOSK_APP:
-      return "web-kiosk";
-    case NUM_USER_TYPES:
-      NOTREACHED();
-      return "";
-  }
 }
 
 }  // namespace
@@ -287,8 +266,8 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
     NotifyUserAddedToSession(active_user_, false /* user switch pending */);
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "UserManager.LoginUserType", active_user_->GetType(), NUM_USER_TYPES);
+  base::UmaHistogramEnumeration("UserManager.LoginUserType",
+                                active_user_->GetType());
 
   static crash_reporter::CrashKeyString<32> session_type("session-type");
   session_type.Set(UserTypeToString(active_user_->GetType()));

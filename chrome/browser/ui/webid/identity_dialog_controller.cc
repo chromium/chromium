@@ -134,8 +134,7 @@ content::WebContents* IdentityDialogController::GetWebContents() {
 content::WebContents* IdentityDialogController::ShowModalDialog(
     const GURL& url,
     DismissCallback dismiss_callback) {
-  // TODO(crbug.com/1429083): connect the dimiss_callback to the
-  // modal dialog close button.
+  on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_) {
     account_view_ = AccountSelectionView::Create(this);
   }

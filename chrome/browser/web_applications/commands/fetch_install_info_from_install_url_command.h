@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
@@ -14,8 +15,6 @@
 
 namespace web_app {
 
-class SharedWebContentsLockDescription;
-class SharedWebContentsLock;
 class WebAppUrlLoader;
 class WebAppDataRetriever;
 
@@ -28,14 +27,14 @@ enum class FetchInstallInfoResult {
   kUrlLoadingFailure,
   kNoValidManifest,
   kWrongManifestId,
-  kSystemShutdown,
   kFailure
 };
 
 std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result);
 
 class FetchInstallInfoFromInstallUrlCommand
-    : public WebAppCommandTemplate<SharedWebContentsLock> {
+    : public WebAppCommand<SharedWebContentsLock,
+                           std::unique_ptr<WebAppInstallInfo>> {
  public:
   FetchInstallInfoFromInstallUrlCommand(
       webapps::ManifestId manifest_id,
@@ -48,14 +47,9 @@ class FetchInstallInfoFromInstallUrlCommand
   FetchInstallInfoFromInstallUrlCommand& operator=(
       const FetchInstallInfoFromInstallUrlCommand&) = delete;
 
-  // WebAppCommandTemplate<SharedWebContentsLock>:
-  base::Value ToDebugValue() const override;
-
  protected:
-  // WebAppCommandTemplate<SharedWebContentsLock>:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
-  void OnShutdown() override;
-  const LockDescription& lock_description() const override;
 
  private:
   bool IsWebContentsDestroyed();
@@ -74,20 +68,16 @@ class FetchInstallInfoFromInstallUrlCommand
       FetchInstallInfoResult result,
       std::unique_ptr<WebAppInstallInfo> install_info);
 
-  std::unique_ptr<SharedWebContentsLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsLock> lock_;
 
   webapps::ManifestId manifest_id_;
   GURL install_url_;
   absl::optional<webapps::ManifestId> parent_manifest_id_;
-  base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>
-      web_app_install_info_callback_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   InstallErrorLogEntry install_error_log_entry_;
-  base::Value::Dict debug_log_;
 
   base::WeakPtrFactory<FetchInstallInfoFromInstallUrlCommand> weak_ptr_factory_{
       this};

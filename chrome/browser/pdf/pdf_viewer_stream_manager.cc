@@ -24,14 +24,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
-#include "url/gurl.h"
 
 namespace pdf {
 
 namespace {
-
-const char kPdfExtensionUrl[] =
-    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html";
 
 // Creates a claimed `EmbedderHostInfo` from the `embedder_host`.
 PdfViewerStreamManager::EmbedderHostInfo GetEmbedderHostInfo(
@@ -249,7 +245,7 @@ void PdfViewerStreamManager::ReadyToCommitNavigation(
   // `embedder_host` should claim the unclaimed `StreamInfo`.
   content::RenderFrameHost* embedder_host =
       navigation_handle->GetRenderFrameHost();
-  if (!GetClaimedStreamInfo(embedder_host) &&
+  if (GetClaimedStreamInfo(embedder_host) ||
       !ContainsUnclaimedStreamInfo(embedder_host->GetFrameTreeNodeId())) {
     return;
   }
@@ -300,8 +296,8 @@ void PdfViewerStreamManager::DidFinishNavigation(
     return;
   }
 
-  const GURL url(kPdfExtensionUrl);
-  content::NavigationController::LoadURLParams params(url);
+  content::NavigationController::LoadURLParams params(
+      stream_info->stream()->handler_url());
   params.frame_tree_node_id = about_blank_host->GetFrameTreeNodeId();
   params.source_site_instance = embedder_host->GetSiteInstance();
   web_contents()->GetController().LoadURLWithParams(params);

@@ -337,6 +337,10 @@ class CORE_EXPORT CSSParserImpl {
   // True when parsing a StyleRule via ConsumeNestedRule.
   bool in_nested_style_rule_ = false;
 
+  // True if we're within the body of an @scope rule. While this is true,
+  // any selectors parsed will gain kScopeActivations as needed.
+  bool is_within_scope_ = false;
+
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };
 

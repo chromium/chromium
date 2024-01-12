@@ -108,6 +108,7 @@ public class org.chromium.net.CronetEngine$Builder {
   public org.chromium.net.CronetEngine$Builder setDnsOptions(org.chromium.net.DnsOptions$Builder);
   public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions);
   public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
+  protected org.chromium.net.ExperimentalCronetEngine buildExperimental();
   public org.chromium.net.CronetEngine build();
 }
 public abstract class org.chromium.net.CronetEngine {
@@ -632,4 +633,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: f464da74f2717f8584d782e27e9e6868
+Stamp: c70494071c55da3be9bb3f922762ba95

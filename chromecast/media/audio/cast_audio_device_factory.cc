@@ -63,9 +63,9 @@ class NonSwitchableAudioRendererSink
     auto* render_frame = GetRenderFrameForToken(frame_token);
     DCHECK(render_frame);
     render_frame->GetBrowserInterfaceBroker()->GetInterface(
-        audio_socket_broker_.InitWithNewPipeAndPassReceiver());
+        pending_audio_socket_broker_.InitWithNewPipeAndPassReceiver());
     render_frame->GetBrowserInterfaceBroker()->GetInterface(
-        app_media_info_manager_.InitWithNewPipeAndPassReceiver());
+        pending_app_media_info_manager_.InitWithNewPipeAndPassReceiver());
   }
 
   void Initialize(const ::media::AudioParameters& params,
@@ -75,42 +75,59 @@ class NonSwitchableAudioRendererSink
     if (is_initialized_)
       return;
     is_initialized_ = true;
+
     if (!(base::android::BundleUtils::IsBundle() ||
           base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) ||
         params.IsBitstreamFormat()) {
       output_device_ =
           NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);
-    } else {
-      LOG(INFO) << "Use cast audio output device.";
-      output_device_ = base::MakeRefCounted<CastAudioOutputDevice>(
-          std::move(audio_socket_broker_), std::move(app_media_info_manager_));
+      output_device_->Initialize(params, callback);
+      return;
     }
-    output_device_->Initialize(params, callback);
+
+    app_media_info_manager_.Bind(std::move(pending_app_media_info_manager_));
+    app_media_info_manager_->GetCastApplicationMediaInfo(base::BindOnce(
+        &NonSwitchableAudioRendererSink::OnApplicationMediaInfoReceived, this,
+        params, callback));
   }
 
   void Start() override {
-    DCHECK(output_device_);
-    output_device_->Start();
+    if (output_device_) {
+      output_device_->Start();
+    } else {
+      pending_start_ = true;
+    }
   }
 
   void Stop() override {
-    if (output_device_)
+    pending_start_ = false;
+    if (output_device_) {
       output_device_->Stop();
+    }
   }
 
   void Pause() override {
-    DCHECK(output_device_);
-    output_device_->Pause();
+    if (output_device_) {
+      output_device_->Pause();
+    } else {
+      pending_pause_ = true;
+    }
   }
 
   void Play() override {
-    DCHECK(output_device_);
-    output_device_->Play();
+    pending_pause_ = false;
+    if (output_device_) {
+      output_device_->Play();
+    }
   }
 
   bool SetVolume(double volume) override {
-    DCHECK(output_device_);
-    return output_device_->SetVolume(volume);
+    if (output_device_) {
+      return output_device_->SetVolume(volume);
+    }
+
+    pending_volume_ = volume;
+    return true;
   }
 
   ::media::OutputDeviceInfo GetOutputDeviceInfo() override {
@@ -156,8 +173,9 @@ class NonSwitchableAudioRendererSink
   }
 
   void Flush() override {
-    DCHECK(output_device_);
-    output_device_->Flush();
+    if (output_device_) {
+      output_device_->Flush();
+    }
   }
 
  protected:
@@ -167,14 +185,56 @@ class NonSwitchableAudioRendererSink
   }
 
  private:
+  void OnApplicationMediaInfoReceived(
+      const ::media::AudioParameters& params,
+      RenderCallback* callback,
+      ::media::mojom::CastApplicationMediaInfoPtr application_media_info) {
+    // Use CastAudioOutputDevice if either:
+    // 1. the playback only has audio stream.
+    // 2. the app is an audio only app.
+    // Otherwise create Chromium's audio output for better av sync quality.
+    if (params.effects() & ::media::AudioParameters::AUDIO_PREFETCH ||
+        application_media_info->is_audio_only_session) {
+      LOG(INFO) << "Use cast audio output device.";
+      output_device_ = base::MakeRefCounted<CastAudioOutputDevice>(
+          std::move(pending_audio_socket_broker_),
+          application_media_info->application_session_id);
+    } else {
+      output_device_ =
+          NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);
+    }
+
+    output_device_->Initialize(params, callback);
+
+    if (pending_start_) {
+      output_device_->Start();
+      pending_start_ = false;
+    }
+
+    if (pending_pause_) {
+      output_device_->Pause();
+      pending_pause_ = false;
+    }
+
+    if (pending_volume_) {
+      output_device_->SetVolume(pending_volume_.value());
+      pending_volume_ = std::nullopt;
+    }
+  }
+
   const blink::LocalFrameToken frame_token_;
   const ::media::AudioSinkParameters sink_params_;
 
-  mojo::PendingRemote<mojom::AudioSocketBroker> audio_socket_broker_;
+  mojo::PendingRemote<mojom::AudioSocketBroker> pending_audio_socket_broker_;
   mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
+      pending_app_media_info_manager_;
+  mojo::Remote<::media::mojom::CastApplicationMediaInfoManager>
       app_media_info_manager_;
   scoped_refptr<::media::AudioRendererSink> output_device_;
   bool is_initialized_ = false;
+  bool pending_start_ = false;
+  bool pending_pause_ = false;
+  std::optional<double> pending_volume_;
 };
 
 CastAudioDeviceFactory::CastAudioDeviceFactory() {

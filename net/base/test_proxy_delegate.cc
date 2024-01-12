@@ -4,7 +4,12 @@
 
 #include "net/base/test_proxy_delegate.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_request_headers.h"
@@ -20,6 +25,16 @@ TestProxyDelegate::TestProxyDelegate() = default;
 
 TestProxyDelegate::~TestProxyDelegate() = default;
 
+void TestProxyDelegate::set_proxy_chain(const ProxyChain& proxy_chain) {
+  CHECK(proxy_chain.IsValid());
+  proxy_chain_ = proxy_chain;
+}
+
+ProxyChain TestProxyDelegate::proxy_chain() const {
+  CHECK(proxy_chain_) << "No proxy chain has been set via 'set_proxy_chain()'";
+  return *proxy_chain_;
+}
+
 void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
     size_t chain_index,
@@ -27,8 +42,10 @@ void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
     const std::string& response_header_value,
     size_t call_index) const {
   ASSERT_LT(call_index, on_tunnel_headers_received_proxy_chains_.size());
-  ASSERT_LT(call_index, on_tunnel_headers_received_chain_indices_.size());
-  ASSERT_LT(call_index, on_tunnel_headers_received_headers_.size());
+  ASSERT_EQ(on_tunnel_headers_received_proxy_chains_.size(),
+            on_tunnel_headers_received_chain_indices_.size());
+  ASSERT_EQ(on_tunnel_headers_received_proxy_chains_.size(),
+            on_tunnel_headers_received_headers_.size());
 
   EXPECT_EQ(proxy_chain,
             on_tunnel_headers_received_proxy_chains_.at(call_index));
@@ -47,20 +64,31 @@ void TestProxyDelegate::OnResolveProxy(
     const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& method,
     const ProxyRetryInfoMap& proxy_retry_info,
-    ProxyInfo* result) {}
+    ProxyInfo* result) {
+  if (proxy_chain_) {
+    result->UseProxyChain(*proxy_chain_);
+  }
+}
 
 void TestProxyDelegate::OnFallback(const ProxyChain& bad_chain, int net_error) {
+}
+
+// static
+std::string TestProxyDelegate::GetExtraHeaderValue(
+    const ProxyServer& proxy_server) {
+  return ProxyServerToProxyUri(proxy_server);
 }
 
 void TestProxyDelegate::OnBeforeTunnelRequest(
     const ProxyChain& proxy_chain,
     size_t chain_index,
     HttpRequestHeaders* extra_headers) {
-  on_before_tunnel_request_called_ = true;
-  if (extra_headers) {
+  on_before_tunnel_request_call_count_++;
+
+  if (extra_header_name_) {
     extra_headers->SetHeader(
-        kTestHeaderName,
-        ProxyServerToProxyUri(proxy_chain.GetProxyServer(chain_index)));
+        *extra_header_name_,
+        GetExtraHeaderValue(proxy_chain.GetProxyServer(chain_index)));
   }
 }
 

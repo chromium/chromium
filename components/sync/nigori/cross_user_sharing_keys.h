@@ -37,21 +37,18 @@ class CrossUserSharingKeys {
   size_t size() const;
   bool HasKeyPair(const uint32_t key_version) const;
 
-  // Adds a Public-private key-pair associated with |version|.
-  void AddKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
+  // Sets a Public-private key-pair associated with `version`. Replaces any
+  // pre-existing key pair for the given `version`.
+  void SetKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
                   uint32_t version);
 
   // Similar to AddKeyPair, but reads the private-key material from a proto and
   // derives the public-key from the private-key.
   bool AddKeyPairFromProto(const sync_pb::CrossUserSharingPrivateKey& key);
 
-  // Returns the Public-private key-pair associated with |version|.
+  // Returns the Public-private key-pair associated with `version`.
   const CrossUserSharingPublicPrivateKeyPair& GetKeyPair(
       uint32_t version) const;
-
-  // Returns (if exists) the Public-private key-pair version for encryption
-  // purposes.
-  absl::optional<uint32_t> GetEncryptionKeyPairVersion() const;
 
  private:
   CrossUserSharingKeys();

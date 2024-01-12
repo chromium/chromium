@@ -5,7 +5,7 @@
 [
   {
     "namespace": "requirements",
-    "description": "Stub namepsace for the 'requirements' manifest key.",
+    "description": "Stub namespace for the 'requirements' manifest key.",
     "compiler_options": {
       "generate_error_messages": true
     },
@@ -39,16 +39,6 @@
               "features": {
                 "type": "array",
                 "items": { "$ref": "3DFeature" }
-              }
-            }
-          },
-          "window": {
-            "type": "object",
-            "optional": true,
-            "properties": {
-              "shape": {
-                "type": "boolean",
-                "optional": true
               }
             }
           }

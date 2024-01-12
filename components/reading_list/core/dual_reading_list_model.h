@@ -142,7 +142,8 @@ class DualReadingListModel : public ReadingListModel,
   ReadingListModel* GetLocalOrSyncableModel();
   // Returns the model responsible for the account-bound reading list. This can
   // toggle between null and non-null at runtime depending on the sync/signin
-  // state.
+  // state, and ReadingListModelCompletedBatchUpdates() will be called each time
+  // it changes.
   ReadingListModel* GetAccountModelIfSyncing();
 
  private:

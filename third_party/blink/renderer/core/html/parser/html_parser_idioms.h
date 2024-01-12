@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
 class TextEncoding;
@@ -40,6 +41,9 @@ namespace blink {
 
 // Strip leading and trailing whitespace as defined by the HTML specification.
 CORE_EXPORT String StripLeadingAndTrailingHTMLSpaces(const String&);
+
+// https://infra.spec.whatwg.org/#split-on-ascii-whitespace
+CORE_EXPORT Vector<String> SplitOnASCIIWhitespace(const String&);
 
 // An implementation of the HTML specification's algorithm to convert a number
 // to a string for number and range types.

@@ -302,7 +302,7 @@ void MultipartUploadRequest::CreateDatapipe(
 }
 
 void MultipartUploadRequest::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
@@ -315,14 +315,15 @@ void MultipartUploadRequest::OnURLLoaderComplete(
 void MultipartUploadRequest::RetryOrFinish(
     int net_error,
     int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
+  std::string response = response_body.value_or("");
   if (net_error == net::OK && response_code == net::HTTP_OK) {
     std::move(callback_).Run(/*success=*/true, response_code,
-                             *response_body.get());
+                             std::move(response));
   } else {
     if (response_code < 500 || retry_count_ >= kMaxRetryAttempts) {
       std::move(callback_).Run(/*success=*/false, response_code,
-                               *response_body.get());
+                               std::move(response));
     } else {
       content::GetUIThreadTaskRunner({})->PostDelayedTask(
           FROM_HERE,

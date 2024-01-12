@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -40,7 +41,6 @@
 #include "content/public/common/url_constants.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
 
@@ -260,7 +260,7 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     return false;
   }
 
-  absl::optional<base::Value> options = base::JSONReader::Read(data);
+  std::optional<base::Value> options = base::JSONReader::Read(data);
   if (!options) {
     LOG(ERROR) << "Options were not valid JSON";
     return false;

@@ -494,7 +494,9 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    # https://crbug.com/1415351
+    # Chrome uses the window APIs directly instead of going through the
+    # androidx middleware.
+    # See //third_party/android_sdk/window_extensions/README.md
     assert_no_deps = [
       "//third_party/androidx:androidx_window_extensions_core_core_java",
       "//third_party/androidx:androidx_window_sidecar_sidecar_java",
@@ -766,20 +768,5 @@ template("chrome_public_test_apk_tmpl") {
     target_type = "instrumentation_test_apk"
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-  }
-}
-
-# TODO(https://crbug.com/1427610): Remove.
-template("monochrome_public_common_apk_or_module_tmpl") {
-  chrome_common_apk_or_module_tmpl(target_name) {
-    forward_variables_from(invoker, "*")
-    if (!defined(is_monochrome)) {
-      is_trichrome = true
-    }
-  }
-}
-template("chrome_public_common_apk_or_module_tmpl") {
-  chrome_common_apk_or_module_tmpl(target_name) {
-    forward_variables_from(invoker, "*")
   }
 }

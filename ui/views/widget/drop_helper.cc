@@ -33,8 +33,7 @@ base::RepeatingClosure* GetDragEnteredCallback() {
 
 }  // namespace
 
-DropHelper::DropHelper(View* root_view)
-    : root_view_(root_view), target_view_(nullptr) {}
+DropHelper::DropHelper(View* root_view) : root_view_(root_view) {}
 
 DropHelper::~DropHelper() = default;
 
@@ -157,7 +156,7 @@ View* DropHelper::CalculateTargetView(const gfx::Point& root_view_location,
 View* DropHelper::CalculateTargetViewImpl(const gfx::Point& root_view_location,
                                           const OSExchangeData& data,
                                           bool check_can_drop,
-                                          View** deepest_view) {
+                                          raw_ptr<View>* deepest_view) {
   View* view = root_view_->GetEventHandlerForPoint(root_view_location);
   if (view == deepest_view_) {
     // The view the mouse is over hasn't changed; reuse the target.

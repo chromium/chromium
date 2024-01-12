@@ -53,7 +53,7 @@ void ContactsProviderAndroid::Select(bool multiple,
                                      bool include_icons,
                                      ContactsSelectedCallback callback) {
   if (!dialog_) {
-    std::move(callback).Run(absl::nullopt, /*percentage_shared=*/-1,
+    std::move(callback).Run(std::nullopt, /*percentage_shared=*/-1,
                             PROPERTIES_NONE);
     return;
   }
@@ -76,7 +76,7 @@ void ContactsProviderAndroid::AddContact(
     const base::android::JavaParamRef<jobjectArray>& icons_java) {
   DCHECK(callback_);
 
-  absl::optional<std::vector<std::string>> names;
+  std::optional<std::vector<std::string>> names;
   if (names_java) {
     std::vector<std::string> names_vector;
     base::android::AppendJavaStringArrayToStringVector(env, names_java,
@@ -84,7 +84,7 @@ void ContactsProviderAndroid::AddContact(
     names = std::move(names_vector);
   }
 
-  absl::optional<std::vector<std::string>> emails;
+  std::optional<std::vector<std::string>> emails;
   if (emails_java) {
     std::vector<std::string> emails_vector;
     base::android::AppendJavaStringArrayToStringVector(env, emails_java,
@@ -92,7 +92,7 @@ void ContactsProviderAndroid::AddContact(
     emails = std::move(emails_vector);
   }
 
-  absl::optional<std::vector<std::string>> tel;
+  std::optional<std::vector<std::string>> tel;
   if (tel_java) {
     std::vector<std::string> tel_vector;
     base::android::AppendJavaStringArrayToStringVector(env, tel_java,
@@ -100,7 +100,7 @@ void ContactsProviderAndroid::AddContact(
     tel = std::move(tel_vector);
   }
 
-  absl::optional<std::vector<payments::mojom::PaymentAddressPtr>> addresses;
+  std::optional<std::vector<payments::mojom::PaymentAddressPtr>> addresses;
   if (addresses_java) {
     std::vector<payments::mojom::PaymentAddressPtr> addresses_vector;
 
@@ -118,7 +118,7 @@ void ContactsProviderAndroid::AddContact(
     addresses = std::move(addresses_vector);
   }
 
-  absl::optional<std::vector<blink::mojom::ContactIconBlobPtr>> icons;
+  std::optional<std::vector<blink::mojom::ContactIconBlobPtr>> icons;
   if (icons_java) {
     std::vector<blink::mojom::ContactIconBlobPtr> icons_vector;
 
@@ -154,7 +154,7 @@ void ContactsProviderAndroid::EndContactsList(JNIEnv* env,
 
 void ContactsProviderAndroid::EndWithPermissionDenied(JNIEnv* env) {
   DCHECK(callback_);
-  std::move(callback_).Run(absl::nullopt, /*percentage_shared=*/-1,
+  std::move(callback_).Run(std::nullopt, /*percentage_shared=*/-1,
                            PROPERTIES_NONE);
 }
 

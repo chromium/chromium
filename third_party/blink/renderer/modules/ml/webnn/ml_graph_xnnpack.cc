@@ -678,38 +678,14 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
     DCHECK(output);
     output_channels = output->Dimensions()[3];
 
-    // According to WebNN conv2d spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d, A depthwise
-    // conv2d operation is a variant of grouped convolution where the
-    // options.groups == input_channels == output_channels.
-    depthwise =
-        (groups == input_channels && groups == output_channels && groups != 1);
-    if (!depthwise) {
-      // For regular conv2d, XNNPACK expects weights layout in ohwi that is
-      // [groups * group_output_channels, kernel_height, kernel_width,
-      //  group_input_channels].
-      //
-      // TODO(crbug.com/1273291): support other layouts by transposing the
-      // filter operand.
-      if (options->filterLayout().AsEnum() !=
-          V8MLConv2dFilterOperandLayout::Enum::kOhwi) {
-        error_message = String::Format("The filter layout %s is not supported.",
-                                       options->filterLayout().AsCStr());
-        return xnn_status_unsupported_parameter;
-      }
-    } else {
-      // For depthwise conv2d, XNNPACK expects weights layout in ihwo that is
-      // [1, kernel_height, kernel_width, input_channels * depth_multiplier].
-      //
-      // TODO(crbug.com/1273291): support other layouts by transposing the
-      // filter operand.
-      if (options->filterLayout().AsEnum() !=
-          V8MLConv2dFilterOperandLayout::Enum::kIhwo) {
-        error_message = String::Format("The filter layout %s is not supported.",
-                                       options->filterLayout().AsCStr());
-        return xnn_status_unsupported_parameter;
-      }
+    depthwise = IsDepthwiseConv2d(input_channels, output_channels, groups);
+    auto validation_result = ValidateFilterLayout(
+        depthwise, options->inputLayout(), options->filterLayout());
+    if (!validation_result.has_value()) {
+      error_message = validation_result.error();
+      return xnn_status_unsupported_parameter;
     }
+
     const auto* filter = conv2d->Inputs()[1].Get();
     DCHECK(filter);
     filter_height = filter->Dimensions()[1];
@@ -992,10 +968,10 @@ xnn_status DefineXnnNodeForElementWiseBinary(
       CHECK(!array_buffer_view->IsDetached());
       CHECK_EQ(array_buffer_view->byteLength(), 4U);
       float exp = static_cast<float*>(array_buffer_view->BaseAddress())[0];
-      if (fabs(exp - 2.0f) <= std::numeric_limits<float>::epsilon()) {
+      if (exp == 2.0f) {
         XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
             xnn_define_square(subgraph, lhs_id, output_id, flags));
-      } else if (fabs(exp - 0.5f) <= std::numeric_limits<float>::epsilon()) {
+      } else if (exp == 0.5f) {
         XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
             xnn_define_square_root(subgraph, lhs_id, output_id, flags));
       } else {
@@ -1040,6 +1016,11 @@ xnn_status DefineXnnNodeForElementWiseUnary(
     case MLOperator::OperatorKind::kNeg: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_negate(subgraph, input_id, output_id, flags));
+      break;
+    }
+    case MLOperator::OperatorKind::kSqrt: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_square_root(subgraph, input_id, output_id, flags));
       break;
     }
     default:
@@ -1100,13 +1081,13 @@ xnn_status DefineXnnNodeForGemm(xnn_subgraph_t subgraph,
       return xnn_status_unsupported_parameter;
     }
   }
-  if (fabs(options->alpha() - 1.0f) > std::numeric_limits<float>::epsilon()) {
+  if (options->alpha() != 1.0f) {
     // TODO(crbug.com/1273291): Support alpha by using element-wise
     // multiplication operator.
     error_message = "gemm doesn't support alpha option.";
     return xnn_status_unsupported_parameter;
   }
-  if (fabs(options->beta() - 1.0f) > std::numeric_limits<float>::epsilon()) {
+  if (options->beta() != 1.0f) {
     // TODO(crbug.com/1273291): Support beta by using element-wise
     // multiplication operator.
     error_message = "gemm doesn't support beta option.";
@@ -1761,7 +1742,8 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case MLOperator::OperatorKind::kAbs:
     case MLOperator::OperatorKind::kCeil:
     case MLOperator::OperatorKind::kFloor:
-    case MLOperator::OperatorKind::kNeg: {
+    case MLOperator::OperatorKind::kNeg:
+    case MLOperator::OperatorKind::kSqrt: {
       XNN_CHECK_STATUS(DefineXnnNodeForElementWiseUnary(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;

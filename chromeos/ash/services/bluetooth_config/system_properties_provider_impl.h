@@ -54,9 +54,9 @@ class SystemPropertiesProviderImpl
       const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
           fast_pairable_devices) override;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
-  raw_ptr<DeviceCache, ExperimentalAsh> device_cache_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
+  raw_ptr<DeviceCache> device_cache_;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

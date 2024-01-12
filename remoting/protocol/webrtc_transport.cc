@@ -812,8 +812,7 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   CHECK(handshake_hmac_.Sign(
       description->type() + " " + sdp_message.NormalizedForSignature(),
       reinterpret_cast<uint8_t*>(&(digest[0])), digest.size()));
-  std::string digest_base64;
-  base::Base64Encode(digest, &digest_base64);
+  std::string digest_base64 = base::Base64Encode(digest);
   offer_tag->SetAttr(QName(std::string(), "signature"), digest_base64);
 
   send_transport_info_callback_.Run(std::move(transport_info));

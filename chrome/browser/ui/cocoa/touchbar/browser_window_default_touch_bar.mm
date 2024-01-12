@@ -83,9 +83,8 @@ const int kSearchBtnMinWidth = 205;
 // Creates an NSImage from the given VectorIcon.
 NSImage* CreateNSImageFromIcon(const gfx::VectorIcon& icon,
                                SkColor color = kTouchBarDefaultIconColor) {
-  return NSImageFromImageSkiaWithColorSpace(
-      gfx::CreateVectorIcon(icon, kTouchBarIconSize, color),
-      base::mac::GetSRGBColorSpace());
+  return NSImageFromImageSkia(
+      gfx::CreateVectorIcon(icon, kTouchBarIconSize, color));
 }
 
 // Creates an NSButton for the touch bar using an existing NSImage.
@@ -548,10 +547,9 @@ class TouchBarNotificationBridge : public CommandObserver,
   NSImage* image = nil;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (isGoogle) {
-    image = NSImageFromImageSkiaWithColorSpace(
+    image = NSImageFromImageSkia(
         gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon, kTouchBarIconSize,
-                              gfx::kPlaceholderColor),
-        base::mac::GetSRGBColorSpace());
+                              gfx::kPlaceholderColor));
   } else {
     image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
   }

@@ -340,6 +340,8 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
   BookmarkModelTest()
       : model_(TestBookmarkClient::CreateModelWithClient(
             std::make_unique<TestBookmarkClientWithUndo>())) {
+    static_cast<TestBookmarkClientWithUndo*>(model_->client())
+        ->AllowFoldersForAccountStorage();
     model_->AddObserver(this);
     ClearCounts();
   }
@@ -2100,6 +2102,53 @@ TEST(BookmarkModelTest2, CreateAndRestore) {
     VerifyModelMatchesNode(&mobile, model->mobile_node());
     VerifyNoDuplicateIDs(model.get());
   }
+}
+
+TEST_F(BookmarkModelTest, CreateAccountPermanentFolders) {
+  ASSERT_EQ(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_EQ(nullptr, model_->account_other_node());
+  ASSERT_EQ(nullptr, model_->account_mobile_node());
+
+  ClearCounts();
+  model_->CreateAccountPermanentFolders();
+
+  ASSERT_NE(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_NE(nullptr, model_->account_other_node());
+  ASSERT_NE(nullptr, model_->account_mobile_node());
+
+  EXPECT_TRUE(model_->account_bookmark_bar_node()->is_permanent_node());
+  EXPECT_TRUE(model_->account_other_node()->is_permanent_node());
+  EXPECT_TRUE(model_->account_mobile_node()->is_permanent_node());
+
+  EXPECT_EQ(BookmarkNode::BOOKMARK_BAR,
+            model_->account_bookmark_bar_node()->type());
+  EXPECT_EQ(BookmarkNode::OTHER_NODE, model_->account_other_node()->type());
+  EXPECT_EQ(BookmarkNode::MOBILE, model_->account_mobile_node()->type());
+
+  AssertObserverCount(3, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  // TODO(crbug.com/1494120): Add expectations about UUIDs when the index allows
+  // it.
+}
+
+TEST_F(BookmarkModelTest, RemoveAccountPermanentFolders) {
+  model_->CreateAccountPermanentFolders();
+
+  ASSERT_NE(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_NE(nullptr, model_->account_other_node());
+  ASSERT_NE(nullptr, model_->account_mobile_node());
+
+  ClearCounts();
+  model_->RemoveAccountPermanentFolders();
+
+  EXPECT_EQ(nullptr, model_->account_bookmark_bar_node());
+  EXPECT_EQ(nullptr, model_->account_other_node());
+  EXPECT_EQ(nullptr, model_->account_mobile_node());
+
+  AssertObserverCount(0, 0, 3, 0, 0, 3, 0, 0, 0);
+
+  // TODO(crbug.com/1494120): Add expectations about UUIDs when the index allows
+  // it.
 }
 
 }  // namespace

@@ -577,11 +577,6 @@ gfx::ImageSkia ShelfAppButton::GetIconImage(float icon_scale) const {
         icon_image, skia::ImageOperations::RESIZE_BEST, preferred_size);
   }
 
-  if (is_promise_app_ || use_fallback_icon) {
-    icon_image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-        preferred_size.width(), icon_image);
-  }
-
   if (has_host_badge_) {
     icon_image = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
         std::round(shelf_view_->GetShelfShortcutIconContainerSize() *
@@ -1478,6 +1473,9 @@ void ShelfAppButton::UpdateProgressRingBounds() {
   // The Progress indicator paints the ring within the bounds of the layer, so
   // add padding for the promise ring.
   progress_indicator_bounds.Inset(-gfx::Insets(kPromiseRingStrokeSize));
+
+  // The masked icons include 1px padding.
+  progress_indicator_bounds.Inset(1);
 
   progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
   layer()->StackAtBottom(progress_indicator_->layer());

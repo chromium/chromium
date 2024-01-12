@@ -72,7 +72,7 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   void OnEndCurrentAuthSession(bool success);
   bool CheckAuthTokenValidity(const std::string& auth_token);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // unowned
+  raw_ptr<Profile> profile_;  // unowned
 
   std::vector<std::string> fingerprints_labels_;
   std::vector<std::string> fingerprints_paths_;

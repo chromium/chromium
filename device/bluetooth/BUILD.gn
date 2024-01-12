@@ -67,6 +67,7 @@ source_set("deprecated_experimental_mojo") {
     # Approved clients:
     "//chrome/browser/ash/nearby:*",
     "//chrome/browser/ui/webui/bluetooth_internals:*",
+    "//chrome/services/sharing/nearby/platform:*",
 
     # Implementation tests
     # Ideally only device_unittests, however android & fushia generate

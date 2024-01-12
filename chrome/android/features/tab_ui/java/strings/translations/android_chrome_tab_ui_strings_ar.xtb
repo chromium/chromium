@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">هل تريد إغلاق علامات التبويب السابقة؟</translation>
 <translation id="1215127405478249895">مراجعة علامات التبويب</translation>
 <translation id="125153950246128346">يُرجى النقر للاطِّلاع على علامة تبويب أخرى</translation>
+<translation id="1326271443836399892">يمكنك الاطّلاع على الإعدادات الحالية لتنظيم علامات التبويب.</translation>
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) مؤرشفة.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}two{لديك علامتا تبويب (<ph name="TABS_COUNT_MANY" />) مؤرشفتان.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب مؤرشفة.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}}</translation>
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9150694013019234766">يمكنك التبديل بين علامات التبويب ضمن المجموعة بالقرب من أسفل الشاشة.</translation>
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>
+<translation id="955558140275419384">يمكنك الاطّلاع على كل علامات التبويب المؤرشفة لتنظيمها من خلال الدخول إلى هذا المحرِّر.</translation>
 <translation id="959682366969460160">بدء التنظيم</translation>
 </translationbundle>

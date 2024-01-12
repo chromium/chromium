@@ -42,14 +42,14 @@ SharedStorageEventParams& SharedStorageEventParams::operator=(
 SharedStorageEventParams::SharedStorageEventParams() = default;
 
 SharedStorageEventParams::SharedStorageEventParams(
-    absl::optional<std::string> script_source_url,
-    absl::optional<std::string> operation_name,
-    absl::optional<std::string> serialized_data,
-    absl::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+    std::optional<std::string> script_source_url,
+    std::optional<std::string> operation_name,
+    std::optional<std::string> serialized_data,
+    std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
-    absl::optional<std::string> key,
-    absl::optional<std::string> value,
-    absl::optional<bool> ignore_if_present)
+    std::optional<std::string> key,
+    std::optional<std::string> value,
+    std::optional<bool> ignore_if_present)
     : script_source_url(std::move(script_source_url)),
       operation_name(std::move(operation_name)),
       serialized_data(std::move(serialized_data)),
@@ -61,9 +61,9 @@ SharedStorageEventParams::SharedStorageEventParams(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
     const GURL& script_source_url) {
-  return SharedStorageEventParams(script_source_url.spec(), absl::nullopt,
-                                  absl::nullopt, absl::nullopt, absl::nullopt,
-                                  absl::nullopt, absl::nullopt);
+  return SharedStorageEventParams(script_source_url.spec(), std::nullopt,
+                                  std::nullopt, std::nullopt, std::nullopt,
+                                  std::nullopt, std::nullopt);
 }
 
 // static
@@ -71,10 +71,10 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const std::string& operation_name,
     const blink::CloneableMessage& serialized_data) {
   return SharedStorageEventParams(
-      absl::nullopt, operation_name,
+      std::nullopt, operation_name,
       std::string(serialized_data.owned_encoded_message.begin(),
                   serialized_data.owned_encoded_message.end()),
-      absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt);
+      std::nullopt, std::nullopt, std::nullopt, std::nullopt);
 }
 
 // static
@@ -83,11 +83,10 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata) {
   return SharedStorageEventParams(
-      absl::nullopt, operation_name,
+      std::nullopt, operation_name,
       std::string(serialized_data.owned_encoded_message.begin(),
                   serialized_data.owned_encoded_message.end()),
-      std::move(urls_with_metadata), absl::nullopt, absl::nullopt,
-      absl::nullopt);
+      std::move(urls_with_metadata), std::nullopt, std::nullopt, std::nullopt);
 }
 
 // static
@@ -95,24 +94,24 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSet(
     const std::string& key,
     const std::string& value,
     bool ignore_if_present) {
-  return SharedStorageEventParams(absl::nullopt, absl::nullopt, absl::nullopt,
-                                  absl::nullopt, key, value, ignore_if_present);
+  return SharedStorageEventParams(std::nullopt, std::nullopt, std::nullopt,
+                                  std::nullopt, key, value, ignore_if_present);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAppend(
     const std::string& key,
     const std::string& value) {
-  return SharedStorageEventParams(absl::nullopt, absl::nullopt, absl::nullopt,
-                                  absl::nullopt, key, value, absl::nullopt);
+  return SharedStorageEventParams(std::nullopt, std::nullopt, std::nullopt,
+                                  std::nullopt, key, value, std::nullopt);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForGetOrDelete(
     const std::string& key) {
-  return SharedStorageEventParams(absl::nullopt, absl::nullopt, absl::nullopt,
-                                  absl::nullopt, key, absl::nullopt,
-                                  absl::nullopt);
+  return SharedStorageEventParams(std::nullopt, std::nullopt, std::nullopt,
+                                  std::nullopt, key, std::nullopt,
+                                  std::nullopt);
 }
 
 // static

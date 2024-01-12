@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -51,7 +52,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -62,7 +62,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -164,9 +163,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
     LOG(ERROR) << "Cannot serialize the response proto";
     return "";
   }
-  std::string response_string;
-  base::Base64Encode(unencoded_response_string, &response_string);
-  return response_string;
+  return base::Base64Encode(unencoded_response_string);
 }
 
 }  // namespace
@@ -701,7 +698,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
                            form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
-  FormStructure::ParseApiQueryResponse(
+  ParseServerPredictionsQueryResponse(
       response_string, {&form_structure},
       test::GetEncodedSignatures({&form_structure}),
       autofill_manager().form_interactions_ukm_logger(), nullptr);
@@ -810,7 +807,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
                            form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
-  FormStructure::ParseApiQueryResponse(
+  ParseServerPredictionsQueryResponse(
       response_string, {&form_structure},
       test::GetEncodedSignatures({&form_structure}),
       autofill_manager().form_interactions_ukm_logger(), nullptr);
@@ -6136,10 +6133,6 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
 
 // Verify that we correctly log metrics tracking the duration of form fill.
 TEST_F(AutofillMetricsTest, FormFillDuration) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData empty_form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
        CreateTestFormField("Email", "email", "", FormControlType::kInputText),
@@ -6169,11 +6162,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     SCOPED_TRACE("Test 1 - no interaction, fields are prefilled");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
@@ -6202,7 +6191,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     SimulateUserChangedTextField(user_filled_form,
                                  user_filled_form.fields.front(),
                                  parse_time + base::Microseconds(3));
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
@@ -6230,7 +6219,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
     FormData autofilled_form = test::AsAutofilled(filled_form);
     FillAutofillFormData(autofilled_form, parse_time + base::Microseconds(5));
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(autofilled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -6267,7 +6256,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                  mixed_filled_form.fields.front(),
                                  parse_time + base::Microseconds(3));
 
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -6302,7 +6291,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                  mixed_filled_form.fields.front(),
                                  parse_time + base::Microseconds(3));
 
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -6331,7 +6320,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
         parse_time = kv.second->form_parsed_timestamp();
     }
 
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(second_form);
 
     histogram_tester.ExpectTotalCount(
@@ -6619,9 +6608,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(response_string, forms_,
-                                       test::GetEncodedSignatures(forms_),
-                                       nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(true, 2)));
@@ -6643,9 +6632,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, OneFormNoServerData) {
                            form_suggestion);
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(response_string, forms_,
-                                       test::GetEncodedSignatures(forms_),
-                                       nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(false, 1), Bucket(true, 1)));
@@ -6665,9 +6654,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(response_string, forms_,
-                                       test::GetEncodedSignatures(forms_),
-                                       nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(false, 2)));
@@ -6690,9 +6679,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, PartialNoServerData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(response_string, forms_,
-                                       test::GetEncodedSignatures(forms_),
-                                       nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms_,
+                                      test::GetEncodedSignatures(forms_),
+                                      nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(true, 2)));
@@ -7526,10 +7515,6 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
 }
 
 TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = CreateForm({CreateTestFormField(
       "", "", "", FormControlType::kInputPassword, "one-time-code")});
   form.fields[0].value = u"123456";
@@ -7537,11 +7522,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   {
     base::HistogramTester histogram_tester;
     SeeForm(form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(form);
 
     histogram_tester.ExpectTotalCount(
@@ -7561,7 +7542,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
     FillAutofillFormData(form, parse_time + base::Microseconds(5));
     SimulateUserChangedTextField(form, form.fields.front(),
                                  parse_time + base::Microseconds(3));
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(form);
 
     histogram_tester.ExpectUniqueSample(
@@ -7700,83 +7681,6 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
       "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ParsedFieldTypesWasPageTranslated", true, 1);
-}
-
-// Tests the following 4 cases when |kAutofillPreventOverridingPrefilledValues|
-// is enabled:
-// 1. The field is not autofilled since it has an initial value but the value
-//    is edited before the form submission and is same as the value that was
-//    to be autofilled in the field.
-//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2|
-//    should emit true for this case.
-// 2. The field is not autofilled since it has an initial value but the value
-//    is edited before the form submission and is different than the value that
-//    was to be autofilled in the field.
-//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2|
-//    should emit false for this case.
-// 3. The field had an initial value that was similar to the value to be
-//    autofilled in the field.
-//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2|
-//    should not record anything in this case.
-// 4. Selection fields are always overridden by Autofill.
-//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2|
-//    should not record anything in this case.
-// TODO(1275649): Re-enable when restarting the experiment.
-TEST_F(AutofillMetricsTest,
-       DISABLED_IsValueNotAutofilledOverExistingValueSameAsSubmittedValue) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      features::kAutofillPreventOverridingPrefilledValues);
-  RecreateProfile();
-
-  FormData form = test::GetFormData(
-      {.description_for_logging =
-           "IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
-       .fields = {
-           {.role = NAME_FULL},
-           {.role = ADDRESS_HOME_CITY,
-            .value = u"Sacremento",
-            .properties_mask = FieldPropertiesFlags::kUserTyped},  // Case #1
-           {.role = ADDRESS_HOME_STATE,
-            .value = u"CA",
-            .form_control_type = FormControlType::kSelectOne,
-            .select_options = {{u"TN", u"Tennesse"},
-                               {u"CA", u"California"},
-                               {u"WA", u"Washington DC"}}},  // Case #4
-           {.role = ADDRESS_HOME_ZIP,
-            .value = u"00000",
-            .properties_mask = FieldPropertiesFlags::kUserTyped},  // Case #2
-           {.role = PHONE_HOME_WHOLE_NUMBER,
-            .value = u"12345678901"},  // Case #3
-           {.role = ADDRESS_HOME_COUNTRY}}});
-
-  std::vector<FieldType> field_types = {
-      NAME_FULL,        ADDRESS_HOME_CITY,       ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_COUNTRY};
-
-  autofill_manager().AddSeenForm(form, field_types, field_types,
-                                 /*preserve_values_in_form_structure=*/true);
-
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
-  DidShowAutofillSuggestions(form);
-
-  FillTestProfile(form);
-
-  // Case #1: Change submitted value to expected autofilled value for the field.
-  // The histogram should emit true for this.
-  SimulateUserChangedTextFieldTo(form, form.fields[1], u"Memphis");
-
-  // Case #2: Change submitted value such that it different than expected
-  // autofilled value for the field. The histogram should emit false for this.
-  SimulateUserChangedTextFieldTo(form, form.fields[3], u"00001");
-
-  base::HistogramTester histogram_tester;
-  SubmitForm(form);
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill."
-                  "IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2"),
-              BucketsInclude(Bucket(true, 1), Bucket(false, 1)));
 }
 
 TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
@@ -7983,6 +7887,17 @@ class AutofillMetricsSeamlessnessTest
   static constexpr auto kVisible = MetricName::Visibility::kVisible;
   static constexpr auto kQualitative = MetricName::Variant::kQualitative;
   static constexpr auto kBitmask = MetricName::Variant::kBitmask;
+
+ protected:
+  AutofillMetricsSeamlessnessTest() {
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillLogUKMEventsWithSampleRate,
+                              features::kAutofillParsingPatternProvider},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests that Autofill.CreditCard.SeamlessFills.* is not emitted for manual
@@ -8196,6 +8111,113 @@ TEST_F(AutofillMetricsSeamlessnessTest,
        }});
 }
 
+// Test if we have correctly recorded the filling status of fields in an unsafe
+// iframe.
+TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
+  // Create a form with the credit card number and CVC code fields in an
+  // iframe with a different origin.
+  SeeForm(form_);
+
+  // Triggering autofill from the credit card name field cannot fill the credit
+  // card number and CVC code fields, which are in an unsafe iframe.
+  FillForm(form_.fields[0]);
+  SetFormValues({CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+                /*is_autofilled=*/true, /*is_user_typed=*/false);
+
+  // Triggering autofill from the credit card number field can fill all the
+  // credit card fields with values.
+  FillForm(form_.fields[1]);
+  SetFormValues({CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                 CREDIT_CARD_VERIFICATION_CODE},
+                /*is_autofilled=*/true, /*is_user_typed=*/false);
+
+  // Record Autofill2.FieldInfo UKM event at autofill manager reset.
+  SubmitForm(form_);
+  ResetDriverToCommitMetrics();
+
+  std::vector<FieldType> field_types = {
+      CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, CREDIT_CARD_VERIFICATION_CODE};
+
+  // Verify FieldInfo UKM event for every field.
+  auto field_entries =
+      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
+  ASSERT_EQ(4u, field_entries.size());
+  for (size_t i = 0; i < field_entries.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << i);
+    using UFIT = UkmFieldInfoType;
+    const auto* const entry = field_entries[i].get();
+    DenseSet<FieldFillingSkipReason> skipped_status_vector;
+    if (i == 0 || i == 2) {
+      skipped_status_vector = {
+          FieldFillingSkipReason::kNotSkipped,
+          FieldFillingSkipReason::kAutofilledFieldsNotRefill};
+    } else {
+      skipped_status_vector = {FieldFillingSkipReason::kNotSkipped};
+    }
+    DenseSet<AutofillStatus> autofill_status_vector;
+    int field_log_events_count = 0;
+    if (i == 0 || i == 2) {
+      autofill_status_vector = {
+          AutofillStatus::kIsFocusable,
+          AutofillStatus::kWasAutofillTriggered,
+          AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+          AutofillStatus::kWasRefill,
+          AutofillStatus::kHadValueBeforeFilling,
+          AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+          AutofillStatus::kWasAutofilledAfterSecurityPolicy};
+      field_log_events_count = i == 0 ? 3 : 2;
+    } else {
+      autofill_status_vector = {
+          AutofillStatus::kIsFocusable,
+          AutofillStatus::kWasAutofillTriggered,
+          AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+          AutofillStatus::kWasRefill,
+          AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+          AutofillStatus::kFillingPreventedByIframeSecurityPolicy,
+          AutofillStatus::kWasAutofilledAfterSecurityPolicy};
+      field_log_events_count = i == 1 ? 3 : 2;
+    }
+    std::map<std::string, int64_t> expected = {
+        {UFIT::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form_.global_id())},
+        {UFIT::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(
+             form_.fields[i].global_id())},
+        {UFIT::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form_.fields[i])).value()},
+        {UFIT::kAutofillSkippedStatusName, skipped_status_vector.data()[0]},
+        {UFIT::kFormControlType2Name,
+         base::to_underlying(FormControlType::kInputText)},
+        {UFIT::kAutocompleteStateName,
+         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+        {UFIT::kOverallTypeName, field_types[i]},
+        {UFIT::kSectionIdName, 1},
+        {UFIT::kTypeChangedByRationalizationName, false},
+        {UFIT::kRankInFieldSignatureGroupName, 1},
+        {UFIT::kHeuristicTypeName, field_types[i]},
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+        {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeDefaultName, field_types[i]},
+        {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
+        {UFIT::kHeuristicTypeNextGenName, field_types[i]},
+        {UFIT::kFieldLogEventCountName, field_log_events_count + 4},
+#else
+        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
+        {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+        {UFIT::kFieldLogEventCountName, field_log_events_count + 2},
+#endif
+    };
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+    }
+  }
+}
+
 // Test the field log events at the form submission.
 class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
  protected:
@@ -8213,10 +8235,6 @@ class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
 // Test if we record FieldInfo UKM event correctly after we click the field and
 // show autofill suggestions.
 TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   RecreateProfile();
   FormData form = test::GetFormData({.fields = {
                                          {.label = u"State", .name = u"state"},
@@ -8235,11 +8253,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
         form, form.fields[0], gfx::RectF(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+    task_environment_.FastForwardBy(base::Milliseconds(9));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
 
@@ -8286,10 +8300,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
 // Test if we record FieldInfo UKM metrics correctly after we fill and submit an
 // address form.
 TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   RecreateProfile();
   FormData form = test::GetFormData({.fields = {
                                          {.label = u"State", .name = u"state"},
@@ -8317,7 +8327,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     // Simulate text input in the first fields.
     SimulateUserChangedTextFieldTo(form, form.fields[0], u"United States",
                                    parse_time + base::Milliseconds(3));
-    test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+    task_environment_.FastForwardBy(base::Milliseconds(9));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
 
@@ -8343,19 +8353,21 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
             AutofillStatus::kIsFocusable,
             AutofillStatus::kWasFocused,
             AutofillStatus::kWasAutofillTriggered,
-            AutofillStatus::kWasAutofilled,
+            AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
             AutofillStatus::kSuggestionWasAvailable,
             AutofillStatus::kSuggestionWasShown,
             AutofillStatus::kSuggestionWasAccepted,
             AutofillStatus::kUserTypedIntoField,
             AutofillStatus::kFilledValueWasModified,
-            AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+            AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+            AutofillStatus::kWasAutofilledAfterSecurityPolicy};
         field_log_events_count = 4;
       } else if (i == 1) {
         autofill_status_vector = {
             AutofillStatus::kIsFocusable, AutofillStatus::kWasAutofillTriggered,
-            AutofillStatus::kWasAutofilled,
-            AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+            AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+            AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+            AutofillStatus::kWasAutofilledAfterSecurityPolicy};
         field_log_events_count = 1;
       } else if (i == 2) {
         autofill_status_vector = {AutofillStatus::kIsFocusable,
@@ -8471,10 +8483,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 // Test if we have recorded UKM metrics correctly about field types after
 // parsing the form by the local heuristic prediction.
 TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = test::GetFormData(
       {.fields = {
            // Heuristic value will match with Autocomplete attribute.
@@ -8533,11 +8541,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       .OnLoadedServerPredictions(
           response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(17));
+  task_environment_.FastForwardBy(base::Milliseconds(17));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
@@ -8605,14 +8609,15 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
     if (heuristic_types[i] != UNKNOWN_TYPE) {
       expected.merge(std::map<std::string, int64_t>({
           {UFIT::kHeuristicTypeName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+          {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
           {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
           {UFIT::kHeuristicTypeNextGenName, heuristic_types[i]},
       }));
-      field_log_events_count += 5;
+      field_log_events_count += 4;
 #else
+          {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
           {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
@@ -8703,7 +8708,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
                                      12, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent", 16, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 35, 1);
 #else
   histogram_tester.ExpectBucketCount(
@@ -8716,10 +8721,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 // fields without autofilling first.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsEditedFieldWithoutFill) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   test::FormDescription form_description = {
       .fields = {{.role = NAME_FULL},
                  {.role = EMAIL_ADDRESS},
@@ -8736,7 +8737,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                  parse_time + base::Milliseconds(3));
   SimulateUserChangedTextFieldTo(form, form.fields[1], u"buddy@gmail.com",
                                  parse_time + base::Milliseconds(3));
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
@@ -8964,10 +8965,6 @@ TEST_F(
 // which have predicted types are recorded in FieldInfo metrics.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnCheckBoxWithTextField) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = test::GetFormData(
       {.fields = {
            // Start with two input text fields.
@@ -8987,11 +8984,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                         UNKNOWN_TYPE};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -9077,10 +9070,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 // metrics.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnSelectListField) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = test::GetFormData(
       {.fields = {
            // Start with two input text fields.
@@ -9096,11 +9085,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                         ADDRESS_HOME_COUNTRY};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -9123,10 +9108,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 // as AutofillStatus::kIsInSubFrame.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnDifferentFrames) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   // The form has three input text fields, the second field is in a sub frame.
   FormData form = test::GetFormData(
       {.fields =
@@ -9142,11 +9123,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   std::vector<FieldType> field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -9186,13 +9163,14 @@ TEST_F(AutofillMetricsFromLogEventsTest,
          base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
         {UFIT::kHeuristicTypeName, field_types[i]},
-        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+        {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeDefaultName, field_types[i]},
         {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
         {UFIT::kHeuristicTypeNextGenName, field_types[i]},
-        {UFIT::kFieldLogEventCountName, 5},
+        {UFIT::kFieldLogEventCountName, 4},
 #else
+        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
         {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
@@ -9245,8 +9223,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                      3, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 15, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 8, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 12, 1);
 #else
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);

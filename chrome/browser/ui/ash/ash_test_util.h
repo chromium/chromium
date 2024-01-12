@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "ui/events/event_constants.h"
 
@@ -27,8 +28,7 @@ void Click(const views::View* view, int flags = ui::EF_NONE);
 // Creates a file at the root of the downloads mount point with the specified
 // `extension`. The default extension is "txt". Returns the path of the created
 // file.
-base::FilePath CreateFile(Profile* profile,
-                          const std::string& extension = "txt");
+base::FilePath CreateFile(Profile* profile, std::string_view extension = "txt");
 
 // Moves mouse to `view` over `count` number of events. `count` is 1 by default.
 void MoveMouseTo(const views::View* view, size_t count = 1u);

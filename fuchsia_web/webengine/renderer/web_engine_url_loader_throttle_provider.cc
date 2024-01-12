@@ -31,7 +31,7 @@ WebEngineURLLoaderThrottleProvider::Clone() {
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 WebEngineURLLoaderThrottleProvider::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-    const blink::WebURLRequest& request) {
+    const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_frame_token.has_value());
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;

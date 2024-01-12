@@ -16,6 +16,9 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 
+using testing::_;
+using testing::Eq;
+
 class MediaViewControllerBaseTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
@@ -45,14 +48,34 @@ class MediaViewControllerBaseTest : public TestWithBrowserView {
   std::unique_ptr<MediaViewControllerBase> controller_;
 };
 
-TEST_F(MediaViewControllerBaseTest, UpdateComboboxEnabledStateTest) {
+TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_NoDevices) {
   EXPECT_TRUE(IsNoDeviceLabelVisible());
   EXPECT_FALSE(IsComboboxEnabled());
 
-  EXPECT_CALL(source_change_callback_, Run(testing::_))
-      .WillOnce(
-          [](std::optional<size_t> index) { EXPECT_EQ(std::nullopt, index); });
-  controller_->AdjustComboboxEnabledState(/*has_devices=*/true);
+  EXPECT_CALL(source_change_callback_, Run(_)).Times(0);
+  controller_->OnDeviceListChanged(/*device_count=*/0);
+
+  EXPECT_TRUE(IsNoDeviceLabelVisible());
+  EXPECT_FALSE(IsComboboxEnabled());
+}
+
+TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_OneDevice) {
+  EXPECT_TRUE(IsNoDeviceLabelVisible());
+  EXPECT_FALSE(IsComboboxEnabled());
+
+  EXPECT_CALL(source_change_callback_, Run(Eq(std::nullopt)));
+  controller_->OnDeviceListChanged(/*device_count=*/1);
+
+  EXPECT_FALSE(IsNoDeviceLabelVisible());
+  EXPECT_FALSE(IsComboboxEnabled());
+}
+
+TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_MultipleDevices) {
+  EXPECT_TRUE(IsNoDeviceLabelVisible());
+  EXPECT_FALSE(IsComboboxEnabled());
+
+  EXPECT_CALL(source_change_callback_, Run(Eq(std::nullopt)));
+  controller_->OnDeviceListChanged(/*device_count=*/2);
 
   EXPECT_FALSE(IsNoDeviceLabelVisible());
   EXPECT_TRUE(IsComboboxEnabled());

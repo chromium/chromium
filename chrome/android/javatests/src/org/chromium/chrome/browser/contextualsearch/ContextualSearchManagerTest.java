@@ -37,9 +37,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -73,7 +70,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
@@ -96,8 +93,7 @@ import java.util.Set;
 // TODO(donnd): Create class with limited API to encapsulate the internals of simulations.
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -159,8 +155,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @DisabledTest(message = "crbug.com/1373276")
     public void testSwipeExpand() throws Exception {
         // TODO(donnd): enable for all features.
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
         assertNoSearchesLoaded();
         triggerResolve("intelligence");
         assertNoSearchesLoaded();
@@ -188,8 +182,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testNonResolveSwipeExpand(@EnabledFeature int enabledFeature) throws Exception {
+    public void testNonResolveSwipeExpand() throws Exception {
         simulateNonResolveSearch("search");
         assertNoWebContents();
         assertLoadedNoUrl();
@@ -209,8 +202,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testLongPressGestureSelects(@EnabledFeature int enabledFeature) throws Exception {
+    public void testLongPressGestureSelects() throws Exception {
         longPressNode("intelligence");
         Assert.assertEquals("Intelligence", getSelectedText());
         waitForPanelToPeek();
@@ -225,9 +217,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky, disabled 4/2021.  https://crbug.com/1192285, https://crbug.com/1192561
-    public void testResolveGestureSelects(@EnabledFeature int enabledFeature) throws Exception {
+    public void testResolveGestureSelects() throws Exception {
         simulateResolveSearch("intelligence");
         Assert.assertEquals("Intelligence", getSelectedText());
         assertLoadedLowPriorityUrl();
@@ -247,8 +238,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testPromotesToTab(@EnabledFeature int enabledFeature) throws Exception {
+    public void testPromotesToTab() throws Exception {
         // -------- SET UP ---------
         // Track Tab creation with this helper.
         final CallbackHelper tabCreatedHelper = new CallbackHelper();
@@ -307,8 +297,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testUnacceptedPrivacy(@EnabledFeature int enabledFeature) throws Exception {
+    public void testUnacceptedPrivacy() throws Exception {
         mPolicy.overrideDecidedStateForTesting(false);
 
         simulateResolvableSearchAndAssertResolveAndPreload("states", false);
@@ -318,8 +307,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testAcceptedPrivacy(@EnabledFeature int enabledFeature) throws Exception {
+    public void testAcceptedPrivacy() throws Exception {
         mPolicy.overrideDecidedStateForTesting(true);
 
         simulateResolvableSearchAndAssertResolveAndPreload("states", true);
@@ -428,8 +416,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTapWithoutLanguage(@EnabledFeature int enabledFeature) throws Exception {
+    public void testTapWithoutLanguage() throws Exception {
         // Resolving an English word should NOT trigger translation.
         simulateResolveSearch("search");
 
@@ -441,8 +428,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @LargeTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTranslateCaption(@EnabledFeature int enabledFeature) throws Exception {
+    public void testTranslateCaption() throws Exception {
         // Resolving a German word should trigger translation.
         simulateResolveSearch("german");
 
@@ -467,9 +453,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     // Previously flaky and disabled 4/2021. See https://crbug.com/1197102
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTapContentAndExpandPanelInFullscreen(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testTapContentAndExpandPanelInFullscreen() throws Exception {
         // Toggle tab to fulllscreen.
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
                 sActivityTestRule.getActivity().getActivityTab(),
@@ -494,10 +478,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky on phones: https://crbug.com/765796
-    public void testPanelDismissedOnToggleFullscreen(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testPanelDismissedOnToggleFullscreen() throws Exception {
         // Simulate a resolving search and assert that the panel peeks.
         simulateResolveSearch("search");
 
@@ -527,8 +509,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testImageControl(@EnabledFeature int enabledFeature) throws Exception {
+    public void testImageControl() throws Exception {
         simulateResolveSearch("search");
 
         final ContextualSearchImageControl imageControl = mPanel.getImageControl();
@@ -561,9 +542,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testQuickActionCaptionAndImage(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testQuickActionCaptionAndImage() throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
@@ -622,9 +601,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled: https://crbug.com/1315417
-    public void testQuickActionIntent(@EnabledFeature int enabledFeature) throws Exception {
+    public void testQuickActionIntent() throws Exception {
         // Add a new filter to the activity monitor that matches the intent that should be fired.
         IntentFilter quickActionFilter = new IntentFilter(Intent.ACTION_VIEW);
         quickActionFilter.addDataScheme("geo");
@@ -669,11 +647,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // TODO(donnd): reenable - recent fixes as of 3/31/2023
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     // Previously disabled: https://crbug.com/1127796
-    public void testQuickActionUrl(@EnabledFeature int enabledFeature) throws Exception {
+    public void testQuickActionUrl() throws Exception {
         final String testUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
@@ -725,9 +702,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled: http://crbug.com/1296677
-    public void testDictionaryDefinitions(@EnabledFeature int enabledFeature) throws Exception {
+    public void testDictionaryDefinitions() throws Exception {
         runDictionaryCardTest(CardTag.CT_DEFINITION);
     }
 
@@ -738,9 +714,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testContextualDictionaryDefinitions(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testContextualDictionaryDefinitions() throws Exception {
         runDictionaryCardTest(CardTag.CT_CONTEXTUAL_DEFINITION);
     }
 
@@ -748,8 +722,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testAccesibilityMode(@EnabledFeature int enabledFeature) throws Exception {
+    public void testAccesibilityMode() throws Exception {
         mManager.onAccessibilityModeChanged(true);
 
         // Simulate a tap that resolves to show the Bar.
@@ -768,8 +741,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testFirstRunNotCompleted(@EnabledFeature int enabledFeature) throws Exception {
+    public void testFirstRunNotCompleted() throws Exception {
         // Store the original value in a temp, and mark the first run as not completed
         // for this test case.
         // Getting value from shared preference rather than FirstRunStatus#getFirstRunFlowComplete
@@ -837,9 +809,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testAllInternalStatesVisitedResolvingLongpress(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testAllInternalStatesVisitedResolvingLongpress__rsearches() throws Exception {
         // Set up a tracking version of the Internal State Controller.
         ContextualSearchInternalStateControllerWrapper internalStateControllerWrapper =
                 ContextualSearchInternalStateControllerWrapper
@@ -873,8 +843,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @DisabledTest(
             message = "TODO(donnd): reenable after unifying resolving and non-resolving longpress.")
     public void testAllInternalStatesVisitedNonResolveLongpress() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
         // Set up a tracking version of the Internal State Controller.
         ContextualSearchInternalStateControllerWrapper internalStateControllerWrapper =
                 ContextualSearchInternalStateControllerWrapper
@@ -902,10 +870,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
-    public void testTriggeringContextualSearchHidesFindInPageOverlay(
-            @EnabledFeature int enabledFeature) throws Exception {
+    public void testTriggeringContextualSearchHidesFindInPageOverlay() throws Exception {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
                 sActivityTestRule.getActivity(),
@@ -945,8 +911,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Feature({"ContextualSearch"})
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = "crbug.com/1301017")
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTabReparenting(@EnabledFeature int enabledFeature) throws Exception {
+    public void testTabReparenting() throws Exception {
         // Move our "tap_test" tab to another activity.
         final ChromeActivity ca = sActivityTestRule.getActivity();
 

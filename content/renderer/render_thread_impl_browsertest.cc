@@ -61,6 +61,7 @@
 
 // IPC messages for testing ----------------------------------------------------
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // TODO(mdempsky): Fix properly by moving into a separate
 // browsertest_message_generator.cc file.
 #undef IPC_IPC_MESSAGE_MACROS_H_
@@ -73,6 +74,8 @@
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START TestMsgStart
 IPC_MESSAGE_CONTROL0(TestMsg_QuitRunLoop)
+
+#endif
 
 // -----------------------------------------------------------------------------
 
@@ -122,6 +125,7 @@ class TestTaskCounter : public base::SingleThreadTaskRunner {
   int count_;
 };
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 class QuitOnTestMsgFilter : public IPC::MessageFilter {
  public:
   explicit QuitOnTestMsgFilter(base::OnceClosure quit_closure)
@@ -147,6 +151,7 @@ class QuitOnTestMsgFilter : public IPC::MessageFilter {
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   base::OnceClosure quit_closure_;
 };
+#endif
 
 class RenderThreadImplBrowserTest : public testing::Test,
                                     public ChildProcessHostDelegate {
@@ -206,9 +211,11 @@ class RenderThreadImplBrowserTest : public testing::Test,
     cmd->InitFromArgv(old_argv);
 
     run_loop_ = std::make_unique<base::RunLoop>();
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
     test_msg_filter_ = base::MakeRefCounted<QuitOnTestMsgFilter>(
         run_loop_->QuitWhenIdleClosure());
     thread_->AddFilter(test_msg_filter_.get());
+#endif
 
     main_thread_scheduler_ =
         static_cast<blink::scheduler::WebMockThreadScheduler*>(
@@ -280,7 +287,9 @@ class RenderThreadImplBrowserTest : public testing::Test,
   std::unique_ptr<ChildProcessHost> process_host_;
 
   std::unique_ptr<RenderProcess> process_;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   scoped_refptr<QuitOnTestMsgFilter> test_msg_filter_;
+#endif
 
   raw_ptr<blink::scheduler::WebMockThreadScheduler, ExperimentalRenderer>
       main_thread_scheduler_;
@@ -293,6 +302,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // Disabled under LeakSanitizer due to memory leaks.
 TEST_F(RenderThreadImplBrowserTest,
        WILL_LEAK(NonResourceDispatchIPCTasksDontGoThroughScheduler)) {
@@ -313,6 +323,7 @@ TEST_F(RenderThreadImplBrowserTest,
 
   EXPECT_EQ(0, test_task_counter_->NumTasksPosted());
 }
+#endif
 
 TEST_F(RenderThreadImplBrowserTest, RendererIsBackgrounded) {
   SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);

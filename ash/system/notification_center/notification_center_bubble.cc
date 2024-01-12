@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
+#include "ash/system/notification_center/notification_center_controller.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -33,8 +35,14 @@ NotificationCenterBubble::NotificationCenterBubble(
   bubble_view_->SetMaxHeight(CalculateMaxTrayBubbleHeight(
       notification_center_tray_->GetBubbleWindowContainer()));
 
-  notification_center_view_ =
-      bubble_view_->AddChildView(std::make_unique<NotificationCenterView>());
+  if (features::IsNotificationCenterControllerEnabled()) {
+    notification_center_controller_ =
+        std::make_unique<NotificationCenterController>();
+    bubble_view_->AddChildView(notification_center_controller_->CreateView());
+  } else {
+    notification_center_view_ =
+        bubble_view_->AddChildView(std::make_unique<NotificationCenterView>());
+  }
 
   bubble_wrapper_ =
       std::make_unique<TrayBubbleWrapper>(notification_center_tray_);
@@ -45,8 +53,13 @@ NotificationCenterBubble::~NotificationCenterBubble() {
 }
 
 void NotificationCenterBubble::ShowBubble() {
+  if (features::IsNotificationCenterControllerEnabled()) {
+    notification_center_controller_->InitView();
+  }
   bubble_wrapper_->ShowBubble(std::move(bubble_view_));
-  notification_center_view_->Init();
+  if (!features::IsNotificationCenterControllerEnabled()) {
+    notification_center_view_->Init();
+  }
   GetBubbleView()->SizeToContents();
 }
 
@@ -56,6 +69,12 @@ TrayBubbleView* NotificationCenterBubble::GetBubbleView() {
 
 views::Widget* NotificationCenterBubble::GetBubbleWidget() {
   return bubble_wrapper_->GetBubbleWidget();
+}
+
+NotificationCenterView* NotificationCenterBubble::GetNotificationCenterView() {
+  return features::IsNotificationCenterControllerEnabled()
+             ? notification_center_controller_->GetNotificationCenterView()
+             : notification_center_view_.get();
 }
 
 void NotificationCenterBubble::UpdateBubbleBounds() {

@@ -5,6 +5,6 @@ file://base/metrics/OWNERS
 # OWNER just for the README.
 per-file README.chromium=*
 
-per-file sampled_profile.proto=wittman@chromium.org
-per-file call_stack_profile.proto=wittman@chromium.org
-per-file execution_context.proto=wittman@chromium.org
+per-file sampled_profile.proto=file://base/profiler/OWNERS
+per-file call_stack_profile.proto=file://base/profiler/OWNERS
+per-file execution_context.proto=file://base/profiler/OWNERS

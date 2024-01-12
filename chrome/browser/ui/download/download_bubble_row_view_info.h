@@ -87,7 +87,8 @@ class DownloadBubbleRowViewInfo
   void PopulateForInProgressOrComplete();
   void PopulateForInterrupted(offline_items_collection::FailState fail_state);
   void PopulateForCancelled();
-  void PopulateForTailoredWarning();
+  void PopulateForTailoredWarning(
+      DownloadUIModel::TailoredWarningType tailored_warning_type);
   void PopulateForFileTypeWarningNoSafeBrowsing();
 
   void PopulateSuspiciousUiPattern();

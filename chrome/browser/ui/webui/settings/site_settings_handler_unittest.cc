@@ -268,7 +268,7 @@ void RegisterWebApp(Profile* profile, apps::AppPtr app) {
 struct TestModels {
   scoped_refptr<browsing_data::MockCookieHelper> cookie_helper;
   scoped_refptr<browsing_data::MockLocalStorageHelper> local_storage_helper;
-  const raw_ref<FakeBrowsingDataModel, ExperimentalAsh> browsing_data_model;
+  const raw_ref<FakeBrowsingDataModel> browsing_data_model;
 };
 
 }  // namespace
@@ -863,10 +863,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>(
         ChromeBrowsingDataModelDelegate::CreateForProfile(profile()));
 
-    std::move(setup).Run(
-        {mock_browsing_data_cookie_helper,
-         mock_browsing_data_local_storage_helper,
-         ToRawRef<ExperimentalAsh>(*fake_browsing_data_model)});
+    std::move(setup).Run({mock_browsing_data_cookie_helper,
+                          mock_browsing_data_local_storage_helper,
+                          ToRawRef(*fake_browsing_data_model)});
 
     mock_browsing_data_local_storage_helper->Notify();
     mock_browsing_data_cookie_helper->Notify();
@@ -2740,7 +2739,11 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
         CreateBrowser(profile(), browser()->type(), false, window2_.get());
     window3_ = CreateBrowserWindow();
 
-    TestingProfile* profile2_ = CreateProfile2();
+    // Creates the second profile used by this test.
+    TestingProfile* profile2_ = profile_manager()->CreateTestingProfile(
+        "testing_profile2@test", nullptr, std::u16string(), 0,
+        GetTestingFactories());
+
     browser3_ =
         CreateBrowser(profile2_, browser()->type(), false, window3_.get());
 
@@ -2807,14 +2810,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   // browser3 is from a different profile `profile2_` than
   // browser2 and browser() which are from profile()
   Browser* browser3() { return browser3_.get(); }
-
-  // Creates the second profile used by this test. The caller doesn't own the
-  // return value.
-  TestingProfile* CreateProfile2() {
-    return profile_manager()->CreateTestingProfile("testing_profile2@test",
-                                                   nullptr, std::u16string(), 0,
-                                                   GetTestingFactories());
-  }
 
   const std::string_view kNotifications =
       site_settings::ContentSettingsTypeToGroupName(

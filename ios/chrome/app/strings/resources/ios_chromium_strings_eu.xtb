@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">Chromium-ek ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
 <translation id="2784449251446768092">Kudeatu Chromium-en ezarpenak</translation>
 <translation id="2798503587425057129">Chromium-en Irakurketa-zerrenda irekitzen du.</translation>
+<translation id="28276745681323897"><ph name="BEGIN_LINK" />Chromium-eko zein datu gordetzen diren<ph name="END_LINK" /> kudea dezakezu Google Kontua atalean.
+
+Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2843571538056574338">Erabili Chromium betetze automatikorako</translation>
 <translation id="2918709798697875261">Chromium-en saioa amaituta edukitzea eskatzen dizu zure erakundeak.</translation>
 <translation id="2942241131342758843">Erabili Chromium modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
@@ -79,6 +82,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}}</translation>
 <translation id="3472200483164753384">Ez da bateragarria Chromium Canary-rekin</translation>
 <translation id="3478750326643748149">Ezkutatu "Atera ahalik eta etekin handiena Chromium-i"</translation>
+<translation id="347967311580159871">Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="3512168799938877162">Ez da partekatu pasahitza. Egiaztatu Internetera konektatuta zaudela eta ziurtatu Chromium-en saioa hasi duzula. Ondoren, saiatu berriro.</translation>
 <translation id="3554027294407525061">Garbitu arakatze-datuak Chromium-en.</translation>
 <translation id="3567399274263440288">Chromium-i etekinik handiena ateratzeko, hasi saioa Chromium-en Google-ko kontuarekin.</translation>

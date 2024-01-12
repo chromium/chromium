@@ -72,6 +72,12 @@ struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
   mutable bool top_navigated = false;
 };
 
+struct BLINK_COMMON_EXPORT ParentPermissionsInfo {
+  std::vector<blink::ParsedPermissionsPolicyDeclaration>
+      parsed_permissions_policy;
+  url::Origin origin;
+};
+
 // Represents a potentially opaque (redacted) value.
 // (If the value is redacted, `potentially_opaque_value` will be
 // `absl::nullopt`.)
@@ -132,6 +138,9 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   effective_enabled_permissions() const {
     return effective_enabled_permissions_;
   }
+  const absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
+    return parent_permissions_info_;
+  }
 
  private:
   friend class content::FencedFrameConfig;
@@ -157,6 +166,15 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
 
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
+
+  // Fenced frames with flexible permissions are allowed to inherit certain
+  // permissions policies from their parent. However, a fenced frame's renderer
+  // process doesn't have access to its parent. Since this is how
+  // `SecurityContextInit::ApplyPermissionsPolicy()` learns what the parent
+  // permissions policies are, this will not work for MPArch. Instead, the
+  // browser gives the renderer this information through the fenced frame
+  // config.
+  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 // Represents a set of fenced frame properties (instantiated from a config) that
@@ -206,6 +224,9 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   effective_enabled_permissions() const {
     return effective_enabled_permissions_;
   }
+  const absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
+    return parent_permissions_info_;
+  }
 
  private:
   friend class content::FencedFrameProperties;
@@ -228,6 +249,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
+  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 }  // namespace blink::FencedFrame

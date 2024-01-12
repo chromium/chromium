@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugal va AQSH klaviaturasi (xalqaro)</translation>
 <translation id="1629521517399325891">Tarmoq autentifikatsiyasi uchun foydalanuvchi sertifikati mavjud emas</translation>
 <translation id="1641780993263690097">Xitoy (Pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ta fayl oflaynga nusxalanmoqda</translation>
 <translation id="164969095109328410">Chrome qurilmasi</translation>
 <translation id="1661207570040737402">Umumiy disk va Google Workspace xotirasida joy qolmadi.</translation>
 <translation id="1661867754829461514">PIN-kod kiritilmagan</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google elektron jadvali</translation>
 <translation id="3479552764303398839">Hozir emas</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
 <translation id="3509680540198371098">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ta element sinxronlashga tayyorlanmoqda...</translation>
 <translation id="3522708245912499433">Portugal tili</translation>
@@ -719,7 +717,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6503285896705205014"><ph name="COUNT" /> ta faylni nusxalash administrator tomonidan bloklandi</translation>
 <translation id="6509122719576673235">Norvey tili</translation>
 <translation id="6528513914570774834">Bu tarmoqdan foydalanish uchun ushbu qurilmadagi boshqa foydalanuvchilarga ruxsat berish</translation>
-<translation id="653019979737152879">“<ph name="FILE_NAME" />” fayli sinxronlanmoqda...</translation>
 <translation id="6549689063733911810">Yaqinda</translation>
 <translation id="6558280019477628686">Xatolik yuz berdi. Ba’zi elementlar o‘chirilmadi.</translation>
 <translation id="656398493051028875">“<ph name="FILENAME" />” fayli o‘chirilmoqda...</translation>
@@ -853,7 +850,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7553492409867692754">Linux ilovalarga <ph name="FOLDER_NAME" /> jildidagi fayllarini ochishga ruxsat berish</translation>
 <translation id="7555339735447658365">Ayni vaqtda siz internetsiz rejimda ishlayapsiz. Internetga ulansangiz, fayl sinxronizatsiyasi davom etadi.</translation>
 <translation id="7589661784326793847">Kutib turing...</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> fayli oflaynga nusxalanmoqda</translation>
 <translation id="7600126690270271294">Serb</translation>
 <translation id="7603724359189955920">To‘r</translation>
 <translation id="7627790789328695202">“<ph name="FILE_NAME" />” fayli allaqachon mavjud. Boshqa nom berib qaytadan urinib ko‘ring.</translation>
@@ -937,6 +933,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8147028810663464959">Toʻliq enli belgilar</translation>
 <translation id="8151638057146502721">Sozlash</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ta xato.}other{# ta xato.}}</translation>
 <translation id="8154842056504218462">Barcha elementlarni belgilandi.</translation>
 <translation id="8157684860301034423">Ilova haqidagi axborot yuklanmadi.</translation>
 <translation id="8175731104491895765">Fransuz (Belgiya)</translation>
@@ -970,6 +967,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="83651606385705612"><ph name="VM_NAME" />ga <ph name="FOLDER_NAME" /> jildidagi fayllarini ochishga ruxsat berish</translation>
 <translation id="8372369524088641025">WEP kaliti yaroqsiz</translation>
 <translation id="8372852072747894550">Grek</translation>
+<translation id="8377269993083688872">Email maketlari</translation>
 <translation id="8386903983509584791">Tarmoq tekshirildi</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> arxivdan chiqarildi.</translation>
 <translation id="8395901698320285466">O‘lchamlar</translation>
@@ -1008,7 +1006,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8569764466147087991">Fayl tanlang</translation>
 <translation id="8577897833047451336">Xorvat</translation>
 <translation id="8578308463707544055">Indonez</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ta element sinxronlanmoqda...</translation>
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
 <translation id="8609695766746872526">Island</translation>
@@ -1029,6 +1026,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8787254343425541995">Umumiy tarmoqlarga proksi-serverlardan foydalanishga ruxsat berish</translation>
 <translation id="8790981080411996443">Oʻsimlik sugʻoruvchi odam</translation>
 <translation id="8798099450830957504">Standart</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ta ogohlantiruv.}other{# ta ogohlantiruv.}}</translation>
 <translation id="8808686172382650546">Mushuk</translation>
 <translation id="8810671769985673465">Arxivlanmadi, bunday element allaqachon arxivlangan: “<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Ispan (Ispaniya)</translation>
@@ -1059,7 +1057,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9038620279323455325">“<ph name="FILE_NAME" />” nomli fayl allaqachon mavjud. Boshqa nom tanlang.</translation>
 <translation id="9046895021617826162">Ulanmadi</translation>
 <translation id="9065512565307033593">Tasdiqlanmasa, tarmoqqa ruxsatingiz yopiladi.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ta ogohlantiruv.}other{<ph name="COUNT" /> ta ogohlantiruv.}}</translation>
 <translation id="908378762078012445">Rus (fonetik AATSEEL klaviaturasi)</translation>
 <translation id="9086302186042011942">Sinxronlanmoqda</translation>
 <translation id="9099674669267916096">Sahifalar soni</translation>

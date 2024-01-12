@@ -14,6 +14,44 @@
 namespace commerce {
 
 namespace {
+constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("shopping_list_ui_image_fetcher",
+                                        R"(
+        semantics {
+          sender: "Product image fetcher for the shopping list feature."
+          description:
+            "Retrieves the image for a product that is displayed on the active "
+            "web page. This will be shown to the user as part of the "
+            "bookmarking or price tracking action."
+          trigger:
+            "On navigation, if the URL of the page is determined to be a "
+            "product that can be price tracked, we will attempt to fetch the "
+            "image for it."
+          user_data {
+            type: NONE
+          }
+          data: "No user data."
+          internal {
+            contacts {
+                email: "chrome-shopping@google.com"
+            }
+          }
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-01-11"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This fetch is enabled for any user with the 'Shopping List' "
+            "feature enabled."
+          chrome_policy {
+            ShoppingListEnabled {
+              policy_options {mode: MANDATORY}
+              ShoppingListEnabled: false
+            }
+          }
+        })");
+
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
 // The minimum price that the price tracking UI always wants to expand at.
@@ -135,6 +173,10 @@ void PriceTrackingPageActionController::ResetForNewNavigation(const GURL& url) {
   got_initial_subscription_status_for_page_ = false;
   expanded_ui_for_page_ = false;
   icon_use_recorded_for_page_ = false;
+
+  // Initiate an update for the icon on navigation since we may not have product
+  // info.
+  NotifyHost();
 
   shopping_service_->GetProductInfoForUrl(
       url, base::BindOnce(
@@ -295,6 +337,11 @@ const GURL& PriceTrackingPageActionController::GetLastFetchedImageUrl() {
 
 bool PriceTrackingPageActionController::IsPriceTrackingCurrentProduct() {
   return is_cluster_id_tracked_by_user_;
+}
+
+void PriceTrackingPageActionController::SetImageFetcherForTesting(
+    image_fetcher::ImageFetcher* image_fetcher) {
+  image_fetcher_ = image_fetcher;
 }
 
 }  // namespace commerce

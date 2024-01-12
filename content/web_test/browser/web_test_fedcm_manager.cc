@@ -4,11 +4,12 @@
 
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 
+#include <optional>
+
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -23,13 +24,13 @@ void WebTestFedCmManager::GetDialogType(
         callback) {
   FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::string type_string;
   switch (auth_request->GetDialogType()) {
     case FederatedAuthRequestImpl::kNone:
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     case FederatedAuthRequestImpl::kSelectAccount:
       type_string = "AccountChooser";
@@ -52,13 +53,13 @@ void WebTestFedCmManager::GetFedCmDialogTitle(
         GetFedCmDialogTitleCallback callback) {
   FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   IdentityRequestDialogController* controller =
       auth_request->GetDialogController();
   if (!controller) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(controller->GetTitle());

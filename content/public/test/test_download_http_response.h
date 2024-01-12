@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_DOWNLOAD_HTTP_RESPONSE_H_
 #define CONTENT_PUBLIC_TEST_TEST_DOWNLOAD_HTTP_RESPONSE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpByteRange;
@@ -192,7 +192,7 @@ class TestDownloadHttpResponse {
 
     // Offset of body to pause the response sending. A -1 offset will pause
     // the response before header is sent.
-    absl::optional<int64_t> pause_offset;
+    std::optional<int64_t> pause_offset;
   };
 
   // Information about completed requests.

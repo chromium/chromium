@@ -5,6 +5,7 @@
 #include "content/browser/payments/payment_app_database.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -17,7 +18,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/skia/include/core/SkBitmap.h"

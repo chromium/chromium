@@ -93,8 +93,10 @@ class LocalStorageHelperTest : public content::ContentBrowserTest {
 // once it finishes fetching the local storage data.
 class StopTestOnCallback {
  public:
-  explicit StopTestOnCallback(LocalStorageHelper* local_storage_helper)
-      : local_storage_helper_(local_storage_helper) {
+  StopTestOnCallback(LocalStorageHelper* local_storage_helper,
+                     base::OnceClosure quit_closure)
+      : local_storage_helper_(local_storage_helper),
+        quit_closure_(std::move(quit_closure)) {
     DCHECK(local_storage_helper_);
   }
 
@@ -117,22 +119,25 @@ class StopTestOnCallback {
     }
     EXPECT_TRUE(origin1_found);
     EXPECT_TRUE(origin2_found);
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
 
  private:
   raw_ptr<LocalStorageHelper> local_storage_helper_;
+  base::OnceClosure quit_closure_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
+  base::RunLoop loop;
   auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   CreateLocalStorageDataForTest();
-  StopTestOnCallback stop_test_on_callback(local_storage_helper.get());
+  StopTestOnCallback stop_test_on_callback(local_storage_helper.get(),
+                                           loop.QuitWhenIdleClosure());
   local_storage_helper->StartFetching(base::BindOnce(
       &StopTestOnCallback::Callback, base::Unretained(&stop_test_on_callback)));
   // Blocks until StopTestOnCallback::Callback is notified.
-  content::RunMessageLoop();
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {

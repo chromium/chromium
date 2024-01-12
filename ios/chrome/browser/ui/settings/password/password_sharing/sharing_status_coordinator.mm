@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -71,8 +70,8 @@
 - (void)start {
   [super start];
 
-  self.viewController = [[SharingStatusViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  self.viewController =
+      [[SharingStatusViewController alloc] initWithNibName:nil bundle:nil];
   self.viewController.delegate = self;
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -89,10 +88,19 @@
           changePasswordURL:_changePasswordURL];
   self.mediator.consumer = self.viewController;
   self.viewController.imageDataSource = self.mediator;
-
-  self.viewController.sheetPresentationController.detents =
-      @[ [UISheetPresentationControllerDetent mediumDetent] ];
   self.viewController.presentationController.delegate = self;
+
+  if (@available(iOS 16, *)) {
+    self.viewController.sheetPresentationController.detents = @[
+      self.viewController.preferredHeightDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+  } else {
+    self.viewController.sheetPresentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+  }
 
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
@@ -125,14 +133,6 @@
 
 - (void)startPasswordSharing {
   [self.delegate startPasswordSharing];
-}
-
-- (void)learnMoreLinkWasTapped {
-  LogPasswordSharingInteraction(
-      PasswordSharingInteraction::kSharingConfirmationLearnMoreClicked);
-
-  [self openURLInNewTabAndCloseSettings:GURL(kPasswordSharingLearnMoreURL)];
-  [self.delegate sharingStatusCoordinatorWasDismissed:self];
 }
 
 - (void)changePasswordLinkWasTapped {

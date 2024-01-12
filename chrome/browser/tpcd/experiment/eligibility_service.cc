@@ -156,7 +156,7 @@ void EligibilityService::UpdateCookieDeprecationLabel() {
         if (auto* cookie_deprecation_label_manager =
                 storage_partition->GetCookieDeprecationLabelManager()) {
           storage_partition->GetNetworkContext()->SetCookieDeprecationLabel(
-              cookie_deprecation_label_manager->GetValue());
+              cookie_deprecation_label_manager->GetValue().value_or(""));
         }
       });
 }
@@ -185,7 +185,9 @@ void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(
     privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
         onboarding_status) {
   if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
-                               OnboardingStatus::kOnboarded) {
+                               OnboardingStatus::kOnboarded ||
+      onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
+                               OnboardingStatus::kOnboardingRequested) {
     experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
   }
 }

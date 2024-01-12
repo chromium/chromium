@@ -70,17 +70,17 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
   }
 
   void TearDown() override {
+    label1_ = nullptr;
+    label2_ = nullptr;
+    textfield_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
   }
 
   UniqueWidgetPtr widget_;
-  raw_ptr<Label, AcrossTasksDanglingUntriaged> label1_ =
-      nullptr;  // Owned by views hierarchy.
-  raw_ptr<Label, AcrossTasksDanglingUntriaged> label2_ =
-      nullptr;  // Owned by views hierarchy.
-  raw_ptr<Textfield, AcrossTasksDanglingUntriaged> textfield_ =
-      nullptr;  // Owned by views hierarchy.
+  raw_ptr<Label> label1_ = nullptr;
+  raw_ptr<Label> label2_ = nullptr;
+  raw_ptr<Textfield> textfield_ = nullptr;
 };
 
 TEST_F(AXTreeSourceViewsTest, Basics) {

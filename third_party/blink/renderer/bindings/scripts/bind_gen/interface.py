@@ -6627,6 +6627,11 @@ def _collect_include_headers(class_like):
         union_def_obj = idl_type.union_definition_object
         if union_def_obj is not None:
             headers.add(PathManager(union_def_obj).api_path(ext="h"))
+            return
+
+        if idl_type.is_frozen_array:
+            headers.add(
+                "third_party/blink/renderer/bindings/core/v8/frozen_array.h")
 
     for attribute in class_like.attributes:
         collect_from_idl_type(attribute.idl_type)

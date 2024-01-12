@@ -361,9 +361,8 @@ bool NeedsFullUpdateAfterPaintingChunk(
 
   // Solid color status change requires full update to change the cc::Layer
   // type.
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled() &&
-      previous.background_color.is_solid_color !=
-          repainted.background_color.is_solid_color) {
+  if (previous.background_color.is_solid_color !=
+      repainted.background_color.is_solid_color) {
     return true;
   }
 

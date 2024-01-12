@@ -41,7 +41,7 @@ void LensStaticPageController::OpenStaticPage() {
   DCHECK(rval);
   LoadChromeLens(img);
 #else
-  ui::GrabWindowSnapshotAsyncCallback load_url_callback =
+  ui::GrabSnapshotImageCallback load_url_callback =
       base::BindOnce(&LensStaticPageController::LoadChromeLens,
                      weak_ptr_factory_.GetWeakPtr());
   const gfx::NativeWindow& native_window = active_web_contents->GetNativeView();

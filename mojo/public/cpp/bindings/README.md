@@ -1274,6 +1274,9 @@ probably never think about while you are coding. It has always been a
 huge pain.
 * Sync calls may lead to deadlocks.
 * Sync web apis are [strongly discouraged](https://www.w3.org/TR/design-principles/#async-by-default).
+* The `[Sync]` annotation does not affect the bindings for the service side
+and therefore does **not** guard against re-entrancy, especially when the
+client is untrusted (e.g. the renderer process).
 
 ### Mojom changes
 

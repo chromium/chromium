@@ -63,7 +63,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     const EntryMetadata* metadata() const { return metadata_.get(); }
     base::File::Error result() const { return result_; }
@@ -73,12 +73,12 @@ class CallbackLogger {
     base::File::Error result_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnGetMetadata(std::unique_ptr<EntryMetadata> metadata,
                      base::File::Error result) {
@@ -98,8 +98,8 @@ using ModificationTime =
 
 class FileSystemProviderOperationsGetMetadataTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsGetMetadataTest() {}
-  ~FileSystemProviderOperationsGetMetadataTest() override {}
+  FileSystemProviderOperationsGetMetadataTest() = default;
+  ~FileSystemProviderOperationsGetMetadataTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

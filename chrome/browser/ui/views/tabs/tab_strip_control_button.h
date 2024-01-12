@@ -26,9 +26,9 @@ enum class Edge {
 
 class TabStripControlButton : public views::LabelButton,
                               public views::MaskedTargeterDelegate {
- public:
-  METADATA_HEADER(TabStripControlButton);
+  METADATA_HEADER(TabStripControlButton, views::LabelButton)
 
+ public:
   static const int kIconSize;
   static const gfx::Size kButtonSize;
 

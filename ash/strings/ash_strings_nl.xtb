@@ -328,6 +328,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2361210043495191221">Wifi aan-/uitzetten. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Kan niet inloggen op je Chromebook</translation>
 <translation id="2367972762794486313">Apps bekijken</translation>
+<translation id="2368828502825385061">Zoeken</translation>
 <translation id="2369165858548251131">Chinees voor 'hallo'</translation>
 <translation id="2382875860893882175">Casten is nu onderbroken. Je kunt het casten op elk moment hervatten of stoppen.</translation>
 <translation id="2386292613071805067">Alles op pagina selecteren</translation>
@@ -1132,6 +1133,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Gebruiker herstellen</translation>
 <translation id="554893713779400387">Dicteren aan/uit</translation>
+<translation id="5550417424894892620">Zet bestanden op het bureaublad neer om ze toe te voegen aan <ph name="HOLDING_SPACE_TITLE" />. Je kunt geen bestanden toevoegen aan het bureaublad.</translation>
 <translation id="5551456515017410630">Agenda openen/sluiten</translation>
 <translation id="5551974246223970793">Naar de volgende overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
 <translation id="5555639311269196631">Hotspot uitzetten</translation>
@@ -1504,6 +1506,7 @@ Nieuwe installatie</translation>
 <translation id="7025533177575372252">Koppel je <ph name="DEVICE_NAME" /> aan je telefoon</translation>
 <translation id="7026338066939101231">Lager</translation>
 <translation id="7029814467594812963">Sessie sluiten</translation>
+<translation id="7031303610220416229">Alle taken in Google Tasks bekijken</translation>
 <translation id="7032161822340700104">Er zijn maar 6 templates toegestaan. Verwijder een template om een nieuwe op te slaan.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke schakelaar van de <ph name="DEVICE_NAME" /> van je apparaat aan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
@@ -1816,6 +1819,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8351131234907093545">Notitie maken</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> in gebruik.</translation>
 <translation id="8369166482916924789">Opgeslagen bureau, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Zoeken naar <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Vooruit per letter</translation>
 <translation id="8371991222807690464">De prestaties van randapparaten kunnen beperkt zijn in de gastmodus</translation>
 <translation id="8374601332003098278">Druk op Enter om het scherm gedeeltelijk op te nemen</translation>
@@ -1871,6 +1875,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Je apps sorteren op naam of kleur</translation>
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
+<translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="8619138598101195078">Volume lager zetten</translation>
 <translation id="8627191004499078455">Verbonden met <ph name="DEVICE_NAME" /></translation>

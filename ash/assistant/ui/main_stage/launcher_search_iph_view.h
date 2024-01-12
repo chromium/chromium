@@ -76,6 +76,8 @@ class LauncherSearchIphView : public views::View {
 
   void NotifyAssistantButtonPressedEvent();
 
+  std::u16string GetTitleText() const;
+
   std::vector<raw_ptr<ChipView>> GetChipsForTesting();
   views::View* GetAssistantButtonForTesting();
 
@@ -100,6 +102,7 @@ class LauncherSearchIphView : public views::View {
 
   std::vector<raw_ptr<ChipView>> chips_;
   raw_ptr<ash::PillButton> assistant_button_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
 
   base::WeakPtrFactory<LauncherSearchIphView> weak_ptr_factory_{this};
 };

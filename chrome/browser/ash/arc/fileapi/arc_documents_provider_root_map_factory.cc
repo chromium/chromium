@@ -41,7 +41,8 @@ ArcDocumentsProviderRootMapFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* ArcDocumentsProviderRootMapFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ArcDocumentsProviderRootMapFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* arc_service_manager = ArcServiceManager::Get();
 
@@ -56,7 +57,8 @@ KeyedService* ArcDocumentsProviderRootMapFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new ArcDocumentsProviderRootMap(Profile::FromBrowserContext(context));
+  return std::make_unique<ArcDocumentsProviderRootMap>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace arc

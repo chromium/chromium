@@ -3607,15 +3607,14 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   if (migrate_idle_sessions) {
     quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
     // A RESET will be sent to the peer to cancel the non-migratable stream.
-    quic_data1.AddWrite(SYNCHRONOUS,  // 3
-                        client_maker_.MakeDataPacket(
-                            packet_num++, GetQpackDecoderStreamId(), false,
-                            StreamCancellationQpackDecoderInstruction(0)));
+    quic_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.MakeDataAndRstPacket(
+                            packet_num++, GetQpackDecoderStreamId(),
+                            StreamCancellationQpackDecoderInstruction(0),
+                            GetNthClientInitiatedBidirectionalStreamId(0),
+                            quic::QUIC_STREAM_CANCELLED));
     quic_data1.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeRetransmissionAndRstPacket(
-            1, packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED));
+        SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(1, packet_num++));
     // Ping packet to send after migration is completed.
     quic_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++));
@@ -3624,9 +3623,11 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   } else {
     client_maker_.set_connection_id(cid_on_old_path);
     socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeDataAckAndConnectionClosePacket(
+        SYNCHRONOUS, client_maker_.MakeDataRstAckAndConnectionClosePacket(
                          packet_num++, GetQpackDecoderStreamId(),
-                         StreamCancellationQpackDecoderInstruction(0), 1, 1,
+                         StreamCancellationQpackDecoderInstruction(0),
+                         GetNthClientInitiatedBidirectionalStreamId(0),
+                         quic::QUIC_STREAM_CANCELLED, 1, 1,
                          quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
                          "net error", /*path_response_frame*/ 0x1b));
   }
@@ -7530,14 +7531,13 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
     quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
     // A RESET will be sent to the peer to cancel the non-migratable stream.
     quic_data1.AddWrite(SYNCHRONOUS,
-                        client_maker_.MakeDataPacket(
-                            packet_num++, GetQpackDecoderStreamId(), false,
-                            StreamCancellationQpackDecoderInstruction(0)));
+                        client_maker_.MakeDataAndRstPacket(
+                            packet_num++, GetQpackDecoderStreamId(),
+                            StreamCancellationQpackDecoderInstruction(0),
+                            GetNthClientInitiatedBidirectionalStreamId(0),
+                            quic::QUIC_STREAM_CANCELLED));
     quic_data1.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeRetransmissionAndRstPacket(
-            1, packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED));
+        SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(1, packet_num++));
     // Ping packet to send after migration is completed.
     quic_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++));
@@ -7546,9 +7546,11 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
   } else {
     client_maker_.set_connection_id(cid_on_old_path);
     socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeDataAckAndConnectionClosePacket(
+        SYNCHRONOUS, client_maker_.MakeDataRstAckAndConnectionClosePacket(
                          packet_num++, GetQpackDecoderStreamId(),
-                         StreamCancellationQpackDecoderInstruction(0), 1, 1,
+                         StreamCancellationQpackDecoderInstruction(0),
+                         GetNthClientInitiatedBidirectionalStreamId(0),
+                         quic::QUIC_STREAM_CANCELLED, 1, 1,
                          quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
                          "net error", /*path_response_frame*/ 0x1b));
   }
@@ -13215,12 +13217,6 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
-  if (!version_.SupportsClientConnectionIds()) {
-    // When the version allows omitting the connection ID in short headers,
-    // this test lacks the proper initialization for clients to successfully
-    // process the packet.
-    return;
-  }
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13270,12 +13266,6 @@ TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
 }
 
 TEST_P(QuicStreamFactoryTest, YieldAfterDuration) {
-  if (!version_.SupportsClientConnectionIds()) {
-    // When the version allows omitting the connection ID in short headers,
-    // this test lacks the proper initialization for clients to successfully
-    // process the packet.
-    return;
-  }
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();

@@ -19,8 +19,6 @@ public abstract class DeviceFeatureList {
     public static final String WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID =
             "WebAuthenticationAndroidCredManForHybrid";
     public static final String WEBAUTHN_ANDROID_FIDO_JSON = "WebAuthenticationAndroidFidoJson";
-    public static final String WEBAUTHN_ANDROID_HYBRID_CLIENT_UI =
-            "WebAuthenticationAndroidHybridClientUi";
     public static final String WEBAUTHN_ANDROID_INCOGNITO_CONFIRMATION =
             "WebAuthenticationAndroidIncognitoConfirmation";
     public static final String WEBAUTHN_CABLE_VIA_CREDMAN = "WebAuthenticationCableViaCredMan";

@@ -39,7 +39,7 @@ class WebsiteApprovalNotifier {
   // No notification is shown if |allowed_host| is a match pattern.
   void MaybeShowApprovalNotification(const std::string& allowed_host);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::CallbackListSubscription website_approval_subscription_;
 

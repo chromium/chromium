@@ -5,7 +5,9 @@
 #include "extensions/browser/verified_contents.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"

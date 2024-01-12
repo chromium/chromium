@@ -127,42 +127,12 @@ bool IsHiddenLoginItem(LSSharedFileListItemRef item) {
 
 }  // namespace
 
-CGColorSpaceRef GetGenericRGBColorSpace() {
-  // Leaked. That's OK, it's scoped to the lifetime of the application.
-  static CGColorSpaceRef g_color_space_generic_rgb(
-      CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
-  DLOG_IF(ERROR, !g_color_space_generic_rgb) <<
-      "Couldn't get the generic RGB color space";
-  return g_color_space_generic_rgb;
-}
-
 CGColorSpaceRef GetSRGBColorSpace() {
   // Leaked.  That's OK, it's scoped to the lifetime of the application.
   static CGColorSpaceRef g_color_space_sRGB =
       CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
   DLOG_IF(ERROR, !g_color_space_sRGB) << "Couldn't get the sRGB color space";
   return g_color_space_sRGB;
-}
-
-CGColorSpaceRef GetSystemColorSpace() {
-  // Leaked.  That's OK, it's scoped to the lifetime of the application.
-  // Try to get the main display's color space.
-  static CGColorSpaceRef g_system_color_space =
-      CGDisplayCopyColorSpace(CGMainDisplayID());
-
-  if (!g_system_color_space) {
-    // Use a generic RGB color space.  This is better than nothing.
-    g_system_color_space = CGColorSpaceCreateDeviceRGB();
-
-    if (g_system_color_space) {
-      DLOG(WARNING) <<
-          "Couldn't get the main display's color space, using generic";
-    } else {
-      DLOG(ERROR) << "Couldn't get any color space";
-    }
-  }
-
-  return g_system_color_space;
 }
 
 void AddToLoginItems(const FilePath& app_bundle_file_path,

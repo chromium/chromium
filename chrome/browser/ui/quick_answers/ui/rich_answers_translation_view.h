@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace quick_answers {
@@ -33,9 +34,9 @@ class RichAnswersTranslationView : public RichAnswersView {
  private:
   void InitLayout();
   void AddLanguageTitle(const std::string& locale, bool is_header_view);
-  views::FlexLayoutView* AddLanguageText(const std::string& language_text,
-                                         bool maybe_append_buttons);
-  void AddReadAndCopyButtons(views::FlexLayoutView* translated_text_view);
+  views::BoxLayoutView* AddLanguageText(const std::string& language_text,
+                                        bool maybe_append_buttons);
+  void AddReadAndCopyButtons(views::BoxLayoutView* container_view);
   void OnReadButtonPressed(const std::string& read_text,
                            const std::string& locale);
   void OnCopyButtonPressed(const std::string& copy_text);

@@ -118,6 +118,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugTogglePowerButtonMenu},
     {true, ui::VKEY_C, kDebugModifier,
      AcceleratorAction::kDebugClearUseKMeansPref},
+    {true, ui::VKEY_H, kDebugModifier,
+     AcceleratorAction::kDebugToggleFocusModeState},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);
@@ -248,6 +250,7 @@ const size_t kActionsAllowedAtLoginOrLockScreenLength =
     std::size(kActionsAllowedAtLoginOrLockScreen);
 
 const AcceleratorAction kActionsAllowedAtLockScreen[] = {
+    AcceleratorAction::kDebugToggleFocusModeState,
     AcceleratorAction::kExit,
     AcceleratorAction::kSuspend,
 };

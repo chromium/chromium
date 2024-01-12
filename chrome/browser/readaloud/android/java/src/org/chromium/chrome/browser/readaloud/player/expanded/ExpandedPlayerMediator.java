@@ -24,6 +24,7 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
             return;
         }
         setVisibility(VisibilityState.SHOWING);
+        setShowMiniPlayerOnDismiss(true);
     }
 
     public void dismiss() {
@@ -42,11 +43,11 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, state);
     }
 
-    void setOptionSheetPending(boolean value) {
-        mModel.set(PlayerProperties.OPTION_SHEET_PENDING, value);
+    void setShowMiniPlayerOnDismiss(boolean value) {
+        mModel.set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, value);
     }
 
-    boolean getOptionSheetPending() {
-        return mModel.get(PlayerProperties.OPTION_SHEET_PENDING);
+    boolean getShowMiniPlayerOnDismiss() {
+        return mModel.get(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS);
     }
 }

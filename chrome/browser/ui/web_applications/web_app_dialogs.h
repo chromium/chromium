@@ -47,6 +47,7 @@ struct Screenshot;
 
 namespace web_app {
 
+class IsolatedWebAppInstallerCoordinator;
 struct WebAppInstallInfo;
 
 // Callback used to indicate whether a user has accepted the installation of a
@@ -171,8 +172,13 @@ void ShowWebAppDetailedInstallDialog(
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
 // Shows the Isolated Web App manual install wizard.
-void LaunchIsolatedWebAppInstaller(Profile* profile,
-                                   const base::FilePath& bundle_path);
+IsolatedWebAppInstallerCoordinator* LaunchIsolatedWebAppInstaller(
+    Profile* profile,
+    const base::FilePath& bundle_path,
+    base::OnceClosure on_closed_callback);
+
+void FocusIsolatedWebAppInstaller(
+    IsolatedWebAppInstallerCoordinator* coordinator);
 
 void PostCallbackOnBrowserActivation(
     const Browser* browser,

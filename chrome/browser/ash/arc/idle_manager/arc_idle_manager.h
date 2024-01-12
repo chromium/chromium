@@ -93,7 +93,7 @@ class ArcIdleManager : public KeyedService,
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcBridgeService> bridge_;
   raw_ptr<ArcPowerBridge> arc_power_bridge_;
 
   base::ElapsedTimer interactive_off_span_timer_;

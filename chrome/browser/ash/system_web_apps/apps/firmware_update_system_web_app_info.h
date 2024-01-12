@@ -27,7 +27,7 @@ class FirmwareUpdateSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowResize() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
 };
 

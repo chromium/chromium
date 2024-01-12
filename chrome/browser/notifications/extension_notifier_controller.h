@@ -36,7 +36,7 @@ class ExtensionNotifierController : public NotifierController,
   std::unique_ptr<AppIconLoader> app_icon_loader_;
 
   // Lifetime of parent must be longer than the source.
-  raw_ptr<Observer, ExperimentalAsh> observer_;
+  raw_ptr<Observer> observer_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_EXTENSION_NOTIFIER_CONTROLLER_H_

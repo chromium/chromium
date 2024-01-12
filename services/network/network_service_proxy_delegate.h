@@ -12,8 +12,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
-#include "services/network/ip_protection_config_cache.h"
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
@@ -34,19 +32,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       mojom::CustomProxyConfigPtr initial_config,
       mojo::PendingReceiver<mojom::CustomProxyConfigClient>
           config_client_receiver,
-      mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
-      NetworkServiceProxyAllowList* network_service_proxy_allow_list);
+      mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
+          observer_remote);
 
   NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
   NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
       delete;
 
   ~NetworkServiceProxyDelegate() override;
-
-  void SetIpProtectionConfigCache(
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
-    ipp_config_cache_ = std::move(ipp_config_cache);
-  }
 
   // net::ProxyDelegate implementation:
   void OnResolveProxy(
@@ -66,22 +59,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
 
-  IpProtectionConfigCache* GetIpProtectionConfigCache() {
-    return ipp_config_cache_.get();
-  }
-
  private:
   friend class NetworkServiceProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyDelegateTest, MergeProxyRules);
 
-  // Checks if this CustomProxyConfig is supporting IP Protection.
-  bool IsForIpProtection();
-
   // Checks whether `proxy_chain` is present in the current proxy config.
   bool IsInProxyConfig(const net::ProxyChain& proxy_chain) const;
-
-  // Whether the current config may proxy |url|.
-  bool MayProxyURL(const GURL& url) const;
 
   // Whether the HTTP |method| with current |proxy_info| is eligible to be
   // proxied.
@@ -99,19 +82,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void OnCustomProxyConfigUpdated(
       mojom::CustomProxyConfigPtr proxy_config,
       OnCustomProxyConfigUpdatedCallback callback) override;
-  void MarkProxiesAsBad(base::TimeDelta bypass_duration,
-                        const net::ProxyList& bad_proxies,
-                        MarkProxiesAsBadCallback callback) override;
-  void ClearBadProxiesCache() override;
 
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
-  raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
   raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
-
-  std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
 };
 
 }  // namespace network

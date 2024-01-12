@@ -20,6 +20,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="chromeos_ash">
 import {SettingsSecureDnsDialogElement} from 'chrome://settings/lazy_load.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 // </if>
 
@@ -357,6 +358,8 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
   });
 
   setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     testElement = document.createElement('settings-secure-dns');
@@ -402,7 +405,9 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
 
     // Wait for onDisableDnsDialogClosed_ to finish.
     await flushTasks();
+    await waitAfterNextRender(secureDnsToggle);
 
+    assertFalse(secureDnsToggleDialog.$.dialog.open);
     assertTrue(secureDnsToggle.checked);
     assertResolverSelectShown();
     assertEquals(

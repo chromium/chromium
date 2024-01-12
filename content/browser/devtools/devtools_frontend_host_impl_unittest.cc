@@ -115,7 +115,7 @@ class DevToolsFrontendHostImplTest : public RenderViewHostTestHarness {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& stack_trace) {
+      const std::optional<std::u16string>& stack_trace) {
     devtools_frontend_host_impl_->OnDidAddMessageToConsole(
         source_frame, log_level, message, line_no, source_id, stack_trace);
   }

@@ -34,6 +34,8 @@ struct LargestContentfulPaintDetailsForReporting {
       absl::nullopt;
   bool is_loaded_from_memory_cache = false;
   bool is_preloaded_with_early_hints = false;
+  // The unclamped paint time of the largest content (image/text).
+  absl::optional<base::TimeTicks> merged_unclamped_paint_time = absl::nullopt;
 };
 
 // This class is used for reporting purposes (e.g. ukm) of non-web-exposed

@@ -315,6 +315,12 @@ void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon& icon) {
   UpdateIconAndColors();
 }
 
+void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon* icon) {
+  icon_ = icon;
+
+  UpdateIconAndColors();
+}
+
 void OmniboxChipButton::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -323,6 +329,6 @@ void OmniboxChipButton::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)
+BEGIN_METADATA(OmniboxChipButton)
 ADD_READONLY_PROPERTY_METADATA(int, IconSize)
 END_METADATA

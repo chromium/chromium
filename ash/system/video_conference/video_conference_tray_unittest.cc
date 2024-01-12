@@ -1056,7 +1056,7 @@ TEST_F(VideoConferenceTrayTest, CloseBubbleOnEffectSupportStateChange) {
   LeftClickOn(toggle_bubble_button());
   ASSERT_TRUE(video_conference_tray()->GetBubbleView());
 
-  controller()->effects_manager().NotifyEffectSupportStateChanged(
+  controller()->GetEffectsManager().NotifyEffectSupportStateChanged(
       VcEffectId::kTestEffect, /*is_supported=*/true);
 
   // When there's a change to effect support state, the bubble should be

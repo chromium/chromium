@@ -38,7 +38,7 @@ BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
 // their fields to be identical.
 BASE_FEATURE(kAndroidAutofillFormSubmissionCheckById,
              "AndroidAutofillFormSubmissionCheckById",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) are supported. Such prefill

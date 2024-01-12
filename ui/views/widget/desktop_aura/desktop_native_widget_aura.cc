@@ -1166,11 +1166,6 @@ void DesktopNativeWidgetAura::SetVisibilityAnimationTransition(
   wm::SetWindowVisibilityAnimationTransition(content_window_, wm_transition);
 }
 
-bool DesktopNativeWidgetAura::IsTranslucentWindowOpacitySupported() const {
-  return desktop_window_tree_host_ &&
-         desktop_window_tree_host_->IsTranslucentWindowOpacitySupported();
-}
-
 ui::GestureRecognizer* DesktopNativeWidgetAura::GetGestureRecognizer() {
   return aura::Env::GetInstance()->gesture_recognizer();
 }

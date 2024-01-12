@@ -76,15 +76,6 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
-  // Parses `payload` as AutofillQueryResponse proto and calls
-  // ProcessQueryResponse().
-  static void ParseApiQueryResponse(
-      std::string_view payload,
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-      const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
-
   // Returns predictions using the details from the given |form_structures| and
   // their fields' predicted types.
   static std::vector<FormDataPredictions> GetFieldTypePredictions(
@@ -226,6 +217,25 @@ class FormStructure {
   // the fields that are considered composing a first complete phone number.
   void RationalizePhoneNumbersInSection(const Section& section);
 
+  // Rationalize the form's autocomplete attributes, repeated fields and field
+  // type predictions.
+  void RationalizeFormStructure(
+      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      LogManager* log_manager);
+
+  // Classifies each field in `fields_` into a logical section.
+  // The function consists of 2 passes:
+  //   - 1st pass: Performed only when `ignore_autocomplete` is true or none of
+  //               the fields in `fields_` has a valid autocomplete section.
+  //               Sections are identified by the heuristic that a logical
+  //               section should not include multiple fields of the same
+  //               autofill type with some exceptions, as described in the
+  //               implementation.
+  //   - 2nd pass: Separate credit card fields from all other fields.
+  // Note: `ignore_autocomplete` is set to true only when identifying sections
+  // after server response.
+  void IdentifySections(bool ignore_autocomplete);
+
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
   static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
@@ -356,6 +366,8 @@ class FormStructure {
 
   FormVersion version() const { return version_; }
 
+  const GeoIpCountryCode& client_country() const { return client_country_; }
+
   std::vector<AutofillUploadContents::SingleUsernameData> single_username_data()
       const {
     return single_username_data_;
@@ -391,52 +403,12 @@ class FormStructure {
         kRequiredFieldsForFormsWithOnlyPasswordFields;
   };
 
-  // Builds a map from a pair of (form_signature, field_signature) to all the
-  // server FieldSuggestion's retrieved from `response`. Also includes the
-  // manual overrides provided from the feature `AutofillOverridePredictions`.
-  static std::map<std::pair<FormSignature, FieldSignature>,
-                  std::deque<FieldSuggestion>>
-  GetSuggestionsMapFromResponse(
-      const AutofillQueryResponse& response,
-      const std::vector<FormSignature>& queried_form_signatures);
-
-  // Given `form` and `field`, returns the appropriate FieldSuggestion stored
-  // for that field in `fields_suggestions`.
-  static std::optional<FieldSuggestion> GetFieldSuggestion(
-      const FormStructure& form,
-      const AutofillField& field,
-      std::map<std::pair<FormSignature, FieldSignature>,
-               std::deque<FieldSuggestion>>& fields_suggestions);
-
-  // Parses the field types from the server query response. |forms| must be the
-  // same as the one passed to EncodeAutofillPageQueryRequest when constructing
-  // the query. |form_interactions_ukm_logger| is used to provide logs to UKM
-  // and can be null in tests.
-  static void ProcessQueryResponse(
-      const AutofillQueryResponse& response,
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-      const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      LogManager* log_manager);
-
   FormStructure(FormSignature form_signature,
                 const std::vector<FieldSignature>& field_signatures);
 
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
                                     LogManager* log_manager = nullptr) const;
 
-  // Classifies each field in `fields_` into a logical section.
-  // The function consists of 2 passes:
-  //   - 1st pass: Performed only when `ignore_autocomplete` is true or none of
-  //               the fields in `fields_` has a valid autocomplete section.
-  //               Sections are identified by the heuristic that a logical
-  //               section should not include multiple fields of the same
-  //               autofill type with some exceptions, as described in the
-  //               implementation.
-  //   - 2nd pass: Separate credit card fields from all other fields.
-  // Note: `ignore_autocomplete` is set to true only when identifying sections
-  // after server response.
-  void IdentifySections(bool ignore_autocomplete);
   void IdentifySectionsWithNewMethod();
 
   // Further processes the extracted |fields_|.

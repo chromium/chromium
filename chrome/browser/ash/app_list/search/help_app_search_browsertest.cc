@@ -40,6 +40,7 @@ namespace app_list::test {
 class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
  public:
   HelpAppSearchBrowserTestBase() {
+    // TODO: Remove parameterization on kProductivityLauncher.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ash::features::kProductivityLauncher, {{"enable_continue", "true"}}},
          {{ash::features::kHelpAppLauncherSearch}, {}}},
@@ -124,9 +125,9 @@ class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase {
                       std::move(drive_continue_section_provider)));
   }
 
-  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged>
       local_continue_section_provider_ = nullptr;
-  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged>
       drive_continue_section_provider_ = nullptr;
 };
 

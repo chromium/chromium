@@ -1677,12 +1677,16 @@ bool IsMonthInput(const WebInputElement& element) {
                                   blink::mojom::FormControlType::kInputMonth;
 }
 
+bool IsMonthInput(const WebFormControlElement& element) {
+  return IsMonthInput(element.DynamicTo<WebInputElement>());
+}
+
 // All text fields, including password fields, should be extracted.
 bool IsTextInput(const WebInputElement& element) {
   return !element.IsNull() && element.IsTextField();
 }
 
-bool IsTextInput(const blink::WebFormControlElement& element) {
+bool IsTextInput(const WebFormControlElement& element) {
   return IsTextInput(element.DynamicTo<WebInputElement>());
 }
 
@@ -2275,7 +2279,7 @@ std::optional<FormData> FindFormForContentEditable(
   return form;
 }
 
-std::vector<FieldRef> ApplyFormAction(
+std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
     base::span<const FormFieldData> fields,
     const WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
@@ -2307,8 +2311,8 @@ std::vector<FieldRef> ApplyFormAction(
   std::vector<std::pair<WebFormControlElement*, const FormFieldData*>>
       autofillable_elements_index_pairs;
 
-  std::vector<FieldRef> matching_fields;
-  matching_fields.reserve(control_elements.size());
+  std::vector<std::pair<FieldRef, blink::WebAutofillState>> filled_fields;
+  filled_fields.reserve(control_elements.size());
 
   // Prepare for binary search.
   SortByFieldRendererIds(control_elements);
@@ -2356,7 +2360,7 @@ std::vector<FieldRef> ApplyFormAction(
         initially_focused_element = &element;
       }
 
-      matching_fields.emplace_back(element);
+      filled_fields.emplace_back(element, element.GetAutofillState());
       // In preview mode, only fill the field if it changes the fields value.
       // With this, the WebAutofillState is not changed from kAutofilled to
       // kPreviewed. This prevents the highlighting to change.
@@ -2378,7 +2382,7 @@ std::vector<FieldRef> ApplyFormAction(
   // If there is no other field to be autofilled, sending the blur event and
   // then the focus event for the initiating element does not make sense.
   if (autofillable_elements_index_pairs.empty()) {
-    return matching_fields;
+    return filled_fields;
   }
 
   // A blur event is emitted for the focused element if it is the initiating
@@ -2390,7 +2394,8 @@ std::vector<FieldRef> ApplyFormAction(
   // Autofill the non-initiating elements.
   for (const auto& [filled_element, field_data] :
        autofillable_elements_index_pairs) {
-    matching_fields.emplace_back(*filled_element);
+    filled_fields.emplace_back(*filled_element,
+                               filled_element->GetAutofillState());
     fill_or_preview(*field_data, false, filled_element, field_data_manager);
   }
 
@@ -2400,14 +2405,14 @@ std::vector<FieldRef> ApplyFormAction(
     initially_focused_element->DispatchFocusEvent();
   }
 
-  return matching_fields;
+  return filled_fields;
 }
 
 void ClearPreviewedElements(
     mojom::ActionType action_type,
-    std::vector<blink::WebFormControlElement>& previewed_elements,
-    const WebFormControlElement& initiating_element,
-    blink::WebAutofillState old_autofill_state) {
+    base::span<std::pair<blink::WebFormControlElement, WebAutofillState>>
+        previewed_elements,
+    const WebFormControlElement& initiating_element) {
   if (action_type == mojom::ActionType::kFill &&
       base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
@@ -2423,35 +2428,21 @@ void ClearPreviewedElements(
       element.SetPreventHighlightingOfAutofilledFields(false);
     }
   }
-  WebAutofillState default_autofill_state =
-      action_type == mojom::ActionType::kFill ? WebAutofillState::kNotFilled
-                                              : WebAutofillState::kAutofilled;
-  for (WebFormControlElement& control_element : previewed_elements) {
+  for (auto& [control_element, prior_autofill_state] : previewed_elements) {
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
     DCHECK(!control_element.IsNull());
 
-    // Clear the suggested value. For the initiating node, also restore the
-    // original value.
-    WebInputElement input_element =
-        control_element.DynamicTo<WebInputElement>();
-    if (IsTextInput(input_element) || IsMonthInput(input_element) ||
-        IsTextAreaElement(control_element)) {
-      control_element.SetSuggestedValue(WebString());
-      bool is_initiating_node = (initiating_element == control_element);
-      if (is_initiating_node) {
-        // Clearing the suggested value in the focused node (above) can cause
-        // selection to be lost. We force selection range to restore the text
-        // cursor.
-        auto length =
-            base::checked_cast<unsigned>(control_element.Value().length());
-        control_element.SetSelectionRange(length, length);
-        control_element.SetAutofillState(old_autofill_state);
-      } else {
-        control_element.SetAutofillState(default_autofill_state);
-      }
-    } else {
-      control_element.SetSuggestedValue(WebString());
-      control_element.SetAutofillState(default_autofill_state);
+    // Clear the suggested value.
+    control_element.SetSuggestedValue(WebString());
+    control_element.SetAutofillState(prior_autofill_state);
+
+    // Clearing the suggested value in the focused node can cause the selection
+    // to be lost. We force-set selection range in order to restore the text
+    // cursor.
+    if (initiating_element == control_element) {
+      auto length =
+          base::checked_cast<unsigned>(control_element.Value().length());
+      control_element.SetSelectionRange(length, length);
     }
   }
 }

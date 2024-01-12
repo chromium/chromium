@@ -157,5 +157,5 @@ SkColor IntentChipButton::GetForegroundColor() const {
           : kColorOmniboxChipForegroundNormalVisibility);
 }
 
-BEGIN_METADATA(IntentChipButton, OmniboxChipButton)
+BEGIN_METADATA(IntentChipButton)
 END_METADATA

@@ -152,52 +152,31 @@ base::File OpenV8File(const char* file_name,
   // Re-try logic here is motivated by http://crbug.com/479537
   // for A/V on Windows (https://support.microsoft.com/en-us/kb/316609).
 
-  // These match tools/metrics/histograms.xml
-  enum OpenV8FileResult {
-    OPENED = 0,
-    OPENED_RETRY,
-    FAILED_IN_USE,
-    FAILED_OTHER,
-    MAX_VALUE
-  };
   base::FilePath path;
   GetV8FilePath(file_name, &path);
 
 #if BUILDFLAG(IS_ANDROID)
   base::File file(base::android::OpenApkAsset(path.value(), region_out));
-  OpenV8FileResult result = file.IsValid() ? OpenV8FileResult::OPENED
-                                           : OpenV8FileResult::FAILED_OTHER;
 #else
   // Re-try logic here is motivated by http://crbug.com/479537
   // for A/V on Windows (https://support.microsoft.com/en-us/kb/316609).
   const int kMaxOpenAttempts = 5;
   const int kOpenRetryDelayMillis = 250;
 
-  OpenV8FileResult result = OpenV8FileResult::FAILED_IN_USE;
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
   base::File file;
   for (int attempt = 0; attempt < kMaxOpenAttempts; attempt++) {
     file.Initialize(path, flags);
     if (file.IsValid()) {
       *region_out = base::MemoryMappedFile::Region::kWholeFile;
-      if (attempt == 0) {
-        result = OpenV8FileResult::OPENED;
-        break;
-      } else {
-        result = OpenV8FileResult::OPENED_RETRY;
-        break;
-      }
+      break;
     } else if (file.error_details() != base::File::FILE_ERROR_IN_USE) {
-      result = OpenV8FileResult::FAILED_OTHER;
       break;
     } else if (kMaxOpenAttempts - 1 != attempt) {
       base::PlatformThread::Sleep(base::Milliseconds(kOpenRetryDelayMillis));
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  UMA_HISTOGRAM_ENUMERATION("V8.Initializer.OpenV8File.Result", result,
-                            OpenV8FileResult::MAX_VALUE);
   return file;
 }
 
@@ -415,6 +394,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-harmony-array-from-async");
   SetV8FlagsIfOverridden(features::kJavaScriptRegExpModifiers,
                          "--js-regexp-modifiers", "--no-js-regexp-modifiers");
+  SetV8FlagsIfOverridden(features::kJavaScriptImportAttributes,
+                         "--harmony-import-attributes",
+                         "--no-harmony-import-attributes");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");

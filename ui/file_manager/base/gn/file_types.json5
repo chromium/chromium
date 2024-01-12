@@ -474,6 +474,14 @@
     "extensions": [".gsite"],
     "mime": "application/vnd.google-apps.site"
   },
+  {
+    "type": "hosted",
+    "icon": "gmaillayout",
+    "translationKey": "EMAIL_LAYOUTS_DOCUMENT_FILE_TYPE",
+    "subtype": "emaillayouts",
+    "extensions": [".gmaillayout"],
+    "mime": "application/vnd.google-apps.mail-layout"
+  },
 
   // Others
   {

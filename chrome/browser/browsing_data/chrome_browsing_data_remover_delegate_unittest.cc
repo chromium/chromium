@@ -256,6 +256,7 @@ using testing::ByRef;
 using testing::Eq;
 using testing::FloatEq;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::MakeMatcher;
 using testing::Matcher;
 using testing::MatcherInterface;
@@ -1653,13 +1654,14 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
     CHECK(provider);
     base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
         future;
-    provider->scheduler().ScheduleCallbackWithLock(
+    provider->scheduler().ScheduleCallbackWithResult(
         "GetControlledFramePartition",
-        std::make_unique<web_app::AppLockDescription>(iwa_url_info.app_id()),
+        web_app::AppLockDescription(iwa_url_info.app_id()),
         base::BindOnce(&web_app::GetControlledFramePartitionWithLock,
                        GetProfile(), iwa_url_info, partition_name,
-                       /*in_memory=*/false, future.GetCallback()),
-        FROM_HERE);
+                       /*in_memory=*/false),
+        future.GetCallback(), /*arg_for_shutdown=*/
+        absl::optional<content::StoragePartitionConfig>(absl::nullopt));
     return future.Get().value();
   }
 
@@ -2387,8 +2389,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 // Verify that clearing autofill form data works.
+#if BUILDFLAG(IS_LINUX)
+// This is disabled due to flakiness: https://crbug.com/1515085
+#define MAYBE_AutofillOriginsRemovedWithHistory \
+  DISABLED_AutofillOriginsRemovedWithHistory
+#else
+#define MAYBE_AutofillOriginsRemovedWithHistory \
+  AutofillOriginsRemovedWithHistory
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       AutofillOriginsRemovedWithHistory) {
+       MAYBE_AutofillOriginsRemovedWithHistory) {
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
@@ -4051,30 +4061,33 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
   EXPECT_EQ(failed_data_types, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        GetDomainsForDeferredCookieDeletion) {
   auto* storage_partition = GetProfile()->GetDefaultStoragePartition();
   auto* delegate = GetProfile()->GetBrowsingDataRemoverDelegate();
 
   auto domains = delegate->GetDomainsForDeferredCookieDeletion(
       storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
-  EXPECT_EQ(domains.size(), 1u);
-  EXPECT_EQ(domains[0], "google.com");
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(domains, IsEmpty());
+#else
+  EXPECT_THAT(domains, UnorderedElementsAre("google.com"));
+#endif
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       storage_partition, constants::DATA_TYPE_PASSWORDS);
-  EXPECT_EQ(domains.size(), 0u);
+  EXPECT_THAT(domains, IsEmpty());
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       storage_partition, constants::ALL_DATA_TYPES);
-  EXPECT_EQ(domains.size(), 0u);
+  EXPECT_THAT(domains, IsEmpty());
 
   content::StoragePartition* non_default_storage_partition =
       GetProfile()->GetStoragePartition(content::StoragePartitionConfig::Create(
           GetProfile(), "domain", /*partition_name=*/"", /*in_memory=*/false));
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       non_default_storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
-  EXPECT_EQ(domains.size(), 0u);
+  EXPECT_THAT(domains, IsEmpty());
 }
 
 // Verify that clearing secure payment confirmation credentials data works.

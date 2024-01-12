@@ -28,7 +28,7 @@ void WebEnginePermissionDelegate::RequestPermissions(
   frame->permission_controller()->RequestPermissions(
       request_description.permissions,
       url::Origin::Create(request_description.requesting_origin),
-      request_description.user_gesture, std::move(callback));
+      std::move(callback));
 }
 
 void WebEnginePermissionDelegate::ResetPermission(
@@ -50,7 +50,7 @@ void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
   frame->permission_controller()->RequestPermissions(
       request_description.permissions,
       render_frame_host->GetLastCommittedOrigin(),
-      request_description.user_gesture, std::move(callback));
+      std::move(callback));
 }
 
 blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(

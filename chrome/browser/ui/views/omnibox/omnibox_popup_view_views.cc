@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -37,9 +38,8 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
-class OmniboxPopupViewViews::AutocompletePopupWidget
-    : public ThemeCopyingWidget,
-      public base::SupportsWeakPtr<AutocompletePopupWidget> {
+class OmniboxPopupViewViews::AutocompletePopupWidget final
+    : public ThemeCopyingWidget {
  public:
   // TODO(tapted): Remove |role_model| when the omnibox is completely decoupled
   // from NativeTheme.
@@ -134,6 +134,10 @@ class OmniboxPopupViewViews::AutocompletePopupWidget
 
   bool is_setting_popup_bounds() const { return is_setting_popup_bounds_; }
 
+  base::WeakPtr<AutocompletePopupWidget> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::unique_ptr<ui::ScopedLayerAnimationSettings>
   GetScopedAnimationSettings() {
@@ -154,6 +158,8 @@ class OmniboxPopupViewViews::AutocompletePopupWidget
 
   // True if the popup's bounds are currently being set.
   bool is_setting_popup_bounds_ = false;
+
+  base::WeakPtrFactory<AutocompletePopupWidget> weak_ptr_factory_{this};
 };
 
 OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
@@ -236,7 +242,9 @@ void OmniboxPopupViewViews::OnSelectionChanged(
 }
 
 void OmniboxPopupViewViews::UpdatePopupAppearance() {
-  if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
+  const auto* autocomplete_controller = controller()->autocomplete_controller();
+  if (autocomplete_controller->result().empty() ||
+      omnibox_view_->IsImeShowingPopup()) {
     // No matches or the IME is showing a popup window which may overlap
     // the omnibox popup window.  Close any existing popup.
     if (popup_) {
@@ -292,7 +300,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
   // Update the match cached by each row, in the process of doing so make sure
   // we have enough row views.
-  const size_t result_size = controller()->result().size();
+  const size_t result_size = autocomplete_controller->result().size();
   std::u16string previous_row_header = u"";
   for (size_t i = 0; i < result_size; ++i) {
     // Create child views lazily.  Since especially the first result view may
@@ -310,7 +318,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     const AutocompleteMatch& match = GetMatchAtIndex(i);
     std::u16string current_row_header =
         match.suggestion_group_id.has_value()
-            ? controller()->result().GetHeaderForSuggestionGroup(
+            ? autocomplete_controller->result().GetHeaderForSuggestionGroup(
                   match.suggestion_group_id.value())
             : u"";
     bool group_hidden = match.suggestion_group_id.has_value() &&
@@ -524,11 +532,12 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
 
 gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
   int popup_height = 0;
-
-  DCHECK_GE(children().size(), controller()->result().size());
+  const auto* autocomplete_controller = controller()->autocomplete_controller();
+  DCHECK_GE(children().size(), autocomplete_controller->result().size());
   popup_height = std::accumulate(
-      children().cbegin(), children().cbegin() + controller()->result().size(),
-      0, [](int height, const views::View* v) {
+      children().cbegin(),
+      children().cbegin() + autocomplete_controller->result().size(), 0,
+      [](int height, const views::View* v) {
         return height + v->GetPreferredSize().height();
       });
 
@@ -570,12 +579,12 @@ OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
 }
 
 bool OmniboxPopupViewViews::HasMatchAt(size_t index) const {
-  return index < controller()->result().size();
+  return index < controller()->autocomplete_controller()->result().size();
 }
 
 const AutocompleteMatch& OmniboxPopupViewViews::GetMatchAtIndex(
     size_t index) const {
-  return controller()->result().match_at(index);
+  return controller()->autocomplete_controller()->result().match_at(index);
 }
 
 size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) {
@@ -583,7 +592,7 @@ size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) {
     return OmniboxPopupSelection::kNoMatch;
   }
 
-  size_t nb_match = controller()->result().size();
+  size_t nb_match = controller()->autocomplete_controller()->result().size();
   DCHECK_LE(nb_match, children().size());
   for (size_t i = 0; i < nb_match; ++i) {
     views::View* child = children()[i];
@@ -630,7 +639,7 @@ void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-BEGIN_METADATA(OmniboxPopupViewViews, views::View)
+BEGIN_METADATA(OmniboxPopupViewViews)
 ADD_PROPERTY_METADATA(size_t, SelectedIndex)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, TargetBounds)
 END_METADATA

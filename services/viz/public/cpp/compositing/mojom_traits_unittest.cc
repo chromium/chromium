@@ -1013,6 +1013,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const ResourceId resource_id5(1337);
   const float vertex_opacity[4] = {1.f, 2.f, 3.f, 4.f};
   const bool premultiplied_alpha = true;
+
   const gfx::PointF uv_top_left(12.1f, 34.2f);
   const gfx::PointF uv_bottom_right(56.3f, 78.4f);
   const SkColor4f background_color = SkColors::kGreen;
@@ -1024,25 +1025,22 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const gfx::Size resource_size_in_pixels5(1234, 5678);
   TextureDrawQuad* texture_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  texture_draw_quad->SetAll(sqs, rect5, rect5, needs_blending, resource_id5,
-                            resource_size_in_pixels5, premultiplied_alpha,
-                            uv_top_left, uv_bottom_right, background_color,
-                            vertex_opacity, y_flipped, nearest_neighbor,
-                            secure_output_only, protected_video_type);
-
+  texture_draw_quad->SetAll(
+      sqs, rect5, rect5, needs_blending, resource_id5, resource_size_in_pixels5,
+      premultiplied_alpha, uv_top_left, uv_bottom_right, background_color,
+      y_flipped, nearest_neighbor, secure_output_only, protected_video_type);
+  texture_draw_quad->set_vertex_opacity(vertex_opacity);
   // Create a stream video TextureDrawQuad.
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
   const ResourceId resource_id6(1234);
   const gfx::Size resource_size_in_pixels6(1234, 5678);
-  const float stream_draw_quad_opacity[] = {1, 1, 1, 1};
   TextureDrawQuad* stream_video_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   stream_video_draw_quad->SetAll(
       sqs, rect6, rect6, needs_blending6, resource_id6,
       resource_size_in_pixels6, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, stream_draw_quad_opacity, false, false, false,
-      protected_video_type);
+      SkColors::kTransparent, false, false, false, protected_video_type);
   stream_video_draw_quad->is_stream_video = true;
 
   // Create a TextureDrawQuad with rounded-display masks.
@@ -1050,7 +1048,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const bool needs_blending7 = false;
   const ResourceId resource_id7(4834);
   const gfx::Size resource_size_in_pixels7(12894, 8878);
-  const float rounded_display_mask_quad_opacity[] = {1.0, 1.5, 1.8, 1.1};
   const int origin_rounded_display_mask_radius = 10;
   const int other_rounded_display_mask_radius = 15;
   const bool is_horizontally_positioned = false;
@@ -1060,9 +1057,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   rounded_display_mask_quad->SetAll(
       sqs, rect7, rect7, needs_blending7, resource_id7,
       resource_size_in_pixels7, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, rounded_display_mask_quad_opacity, false, false,
-      false, protected_video_type);
-
+      SkColors::kTransparent, false, false, false, protected_video_type);
   rounded_display_mask_quad->rounded_display_masks_info =
       TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
           origin_rounded_display_mask_radius, other_rounded_display_mask_radius,

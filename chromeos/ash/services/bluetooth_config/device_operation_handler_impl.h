@@ -48,8 +48,8 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
       std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
+  raw_ptr<DeviceNameManager> device_name_manager_;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_;
 
   base::Time last_reconnection_attempt_start_;
 

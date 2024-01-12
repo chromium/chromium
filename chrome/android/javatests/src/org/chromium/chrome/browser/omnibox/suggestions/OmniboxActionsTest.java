@@ -186,7 +186,7 @@ public class OmniboxActionsTest {
                         Criteria.checkThat(tab, Matchers.notNullValue());
                         Criteria.checkThat(
                                 tab.getUrl().getSpec(),
-                                Matchers.startsWith("chrome://history/journeys"));
+                                Matchers.equalTo("chrome://history/grouped?q=query"));
                     });
         } else {
             mTargetActivity =

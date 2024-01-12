@@ -51,8 +51,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
   GlyphData EmphasisMarkGlyphData(const FontDescription&) const;
 
-  void ExpandRangeToIncludePartialGlyphs(int* from, int* to) const;
-
  private:
   friend class ShapeResultBloberizer;
 

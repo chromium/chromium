@@ -37,7 +37,7 @@ BackendDelegate::BackendDelegate()
       watcher_manager_(new WatcherManager) {
 }
 
-BackendDelegate::~BackendDelegate() {}
+BackendDelegate::~BackendDelegate() = default;
 
 storage::AsyncFileUtil* BackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {

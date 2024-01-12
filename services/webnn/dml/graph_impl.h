@@ -226,19 +226,14 @@ class GraphImpl final : public WebNNGraphImpl {
       std::unique_ptr<CommandRecorder> command_recorder,
       HRESULT hr);
 
-  // If GraphImpl::ComputeImpl fails, report an error and release the command
-  // recorder since it may haven't been closed normally by
+  // If GraphImpl::ComputeImpl fails, report and log an error message and
+  // release the command recorder since it may haven't been closed normally by
   // CommandRecorder::CloseAndExecute.
-  void HandleComputationFailure(mojom::WebNNGraph::ComputeCallback callback);
-  // It will call the
-  // `HandleComputationFailure(mojom::WebNNGraph::ComputeCallback callback)`
-  // method and also log the message from the `error`.
-  void HandleComputationFailure(const char* error,
+  void HandleComputationFailure(const std::string& error_message,
                                 mojom::WebNNGraph::ComputeCallback callback);
-  // It will call the
-  // `HandleComputationFailure(mojom::WebNNGraph::ComputeCallback callback)`
-  // method and log the message from the `error` and the system error code `hr`.
-  void HandleComputationFailure(const char* error,
+  // Similar to the method above, while it will report the error message and log
+  // it with the system error code `hr`.
+  void HandleComputationFailure(const std::string& error_message,
                                 HRESULT hr,
                                 mojom::WebNNGraph::ComputeCallback callback);
 

@@ -1785,7 +1785,7 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
   const viz::SurfaceRange range_for_copy(rwhv_android->GetCurrentSurfaceId(),
                                          rwhv_android->GetCurrentSurfaceId());
   const viz::SurfaceRange range_for_mainframe(
-      absl::nullopt, rwhv_android->GetCurrentSurfaceId());
+      std::nullopt, rwhv_android->GetCurrentSurfaceId());
   base::RunLoop run_loop;
   GetRenderViewHost()->GetWidget()->GetView()->CopyFromSurface(
       gfx::Rect(), gfx::Size(),

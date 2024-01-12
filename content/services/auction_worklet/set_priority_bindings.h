@@ -5,11 +5,12 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_SET_PRIORITY_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_SET_PRIORITY_BINDINGS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 
@@ -31,7 +32,7 @@ class SetPriorityBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  const absl::optional<double>& set_priority() const { return set_priority_; }
+  const std::optional<double>& set_priority() const { return set_priority_; }
 
  private:
   static void SetPriority(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -39,7 +40,7 @@ class SetPriorityBindings : public Bindings {
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
   // This is cleared if an exception is thrown.
-  absl::optional<double> set_priority_;
+  std::optional<double> set_priority_;
 
   // setPriority() can only be called once.
   bool already_called_ = false;

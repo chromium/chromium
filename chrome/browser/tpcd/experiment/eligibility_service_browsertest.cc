@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_base.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
@@ -34,6 +37,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tpcd::experiment {
+
+namespace {
+
+constexpr char kSecCookieDeprecationHeaderStatus[] =
+    "Privacy.3PCD.SecCookieDeprecationHeaderStatus";
+
+}  // namespace
 
 // These tests are running with "force_eligible" enabled to be deterministic
 // and avoid being flaky.
@@ -102,6 +112,8 @@ class EligibilityServiceBrowserTest : public EligibilityServiceBrowserTestBase,
 
 IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                        EligibilityChanged_NetworkContextUpdated) {
+  base::HistogramTester histograms;
+
   auto response_b_a =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           &https_server_, "/b_a");
@@ -142,6 +154,14 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
   response_b_a->WaitForRequest();
   ASSERT_FALSE(base::Contains(response_b_a->http_request()->headers,
                               "Sec-Cookie-Deprecation"));
+
+  // kSet = 0, kNoLabel = 1
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  const auto no_label_count =
+      histograms.GetBucketCount(kSecCookieDeprecationHeaderStatus, 1);
+  EXPECT_GT(no_label_count, 0);
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, 0, 0);
+
   auto http_response_b_a =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response_b_a->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -163,6 +183,12 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
 
   ASSERT_TRUE(privacy_sandbox_settings->IsCookieDeprecationLabelAllowed());
 
+  // kSet = 0, kNoLabel = 1
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, 0, 0);
+  EXPECT_GT(histograms.GetBucketCount(kSecCookieDeprecationHeaderStatus, 1),
+            no_label_count);
+
   MarkProfileEligibility(/*is_eligible=*/true);
 
   // Ensures the cookie deprecation label is updated in the network context.
@@ -176,6 +202,10 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                              "Sec-Cookie-Deprecation"));
   EXPECT_EQ(response_b_c->http_request()->headers.at("Sec-Cookie-Deprecation"),
             "label_test");
+
+  // kSet = 0
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,

@@ -14,8 +14,9 @@
 #include "ui/views/controls/combobox/combobox.h"
 
 class ReadAnythingFontCombobox : public views::Combobox {
+  METADATA_HEADER(ReadAnythingFontCombobox, views::Combobox)
+
  public:
-  METADATA_HEADER(ReadAnythingFontCombobox);
   class Delegate {
    public:
     virtual void OnFontChoiceChanged(int new_index) = 0;

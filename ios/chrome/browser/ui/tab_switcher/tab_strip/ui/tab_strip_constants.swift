@@ -9,7 +9,10 @@ struct TabStripConstants {
 
   /// Collection view constants.
   struct CollectionView {
-    static let inset: CGFloat = 4
+    static let tabStripCellReuseIdentifier = "tabStripCellReuseIdentifier"
+    static let tabStripCellPrefixIdentifier = "tabStripCellPrefixIdentifier"
+    static let topInset: CGFloat = 4
+    static let horizontalInset: CGFloat = 14
   }
 
   /// Tab item constants.
@@ -18,11 +21,13 @@ struct TabStripConstants {
     static let minWidth: CGFloat = 132
     static let maxWidth: CGFloat = 233
     static let horizontalSpacing: CGFloat = 6
-    static let selectedZindex: Int = 10
+
+    static let leadingSeparatorMinInset: CGFloat = 8
   }
 
   /// New tab button constants.
   struct NewTabButton {
+    static let accessibilityIdentifier: String = "TabStripNewTabButtonAccessibilityIdentifier"
     static let width: CGFloat = 46
 
     static let topInset: CGFloat = 4
@@ -32,6 +37,18 @@ struct TabStripConstants {
 
     static let cornerRadius: CGFloat = 16
     static let symbolPointSize: CGFloat = 16
+  }
+
+  /// Separator view constants.
+  struct SeparatorView {
+    static let viewHeight: CGFloat = 40
+    static let separatorWidth: CGFloat = 2
+    static let separatorHeight: CGFloat = 12
+
+    static let leadingInset: CGFloat = 3
+    static let trailingInset: CGFloat = 8
+
+    static let separatorCornerRadius: CGFloat = 1
   }
 
 }

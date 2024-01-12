@@ -936,12 +936,6 @@ void Page::SettingsChanged(ChangeType change_type) {
     case ChangeType::kColorScheme:
       InvalidateColorScheme();
       break;
-    case ChangeType::kSpatialNavigation:
-      if (spatial_navigation_controller_ ||
-          GetSettings().GetSpatialNavigationEnabled()) {
-        GetSpatialNavigationController().OnSpatialNavigationSettingChanged();
-      }
-      break;
     case ChangeType::kUniversalAccess: {
       if (!GetSettings().GetAllowUniversalAccessFromFileURLs())
         break;

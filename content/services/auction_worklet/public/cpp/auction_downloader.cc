@@ -310,7 +310,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
     std::move(auction_downloader_callback_)
         .Run(std::move(body),
              std::move(simple_url_loader->ResponseInfo()->headers),
-             /*error_msg=*/absl::nullopt);
+             /*error_msg=*/std::nullopt);
   }
 }
 

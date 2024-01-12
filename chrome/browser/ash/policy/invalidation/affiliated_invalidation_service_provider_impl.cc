@@ -65,9 +65,8 @@ class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
   std::string GetOwnerName() const override;
 
  private:
-  raw_ptr<AffiliatedInvalidationServiceProviderImpl, ExperimentalAsh> parent_;
-  const raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
-      invalidation_service_;
+  raw_ptr<AffiliatedInvalidationServiceProviderImpl> parent_;
+  const raw_ptr<invalidation::InvalidationService> invalidation_service_;
   bool is_service_connected_;
   bool is_observer_ready_;
 

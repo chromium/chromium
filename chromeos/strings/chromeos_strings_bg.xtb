@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">Разгледайте новото дигитално списание на Chromebook за създатели</translation>
 <translation id="1270369111467284986">Предполага се наличие на портал за удостоверяване</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
+<translation id="1300115153046603471">Името на точката за достъп (APN) е стандартно и за <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Актуализира се (<ph name="PERCENTAGE_VALUE" />% завършено)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минути</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">начална страница на браузъра</translation>
 <translation id="1526389707933164996">Анимация за скрийнсейвъра</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
-<translation id="1539242642795599947">Името на точката за достъп (APN) е стандартно или такова за прикачване.</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1561927818299383735">цвят на фоновото осветление</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">Изображение при вход</translation>
 <translation id="2640549051766135490">Избран албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="2652403576514495859">активиране или превключване на функцията за диктуване</translation>
+<translation id="2656001153562991489">Специално за Chromebook Plus</translation>
 <translation id="267442004702508783">опресняване</translation>
 <translation id="268270014981824665">затъмняване на клавиатурата</translation>
 <translation id="2712812801627182647">Ключ за удостоверяване за TLS</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описанието е задължително</translation>
+<translation id="386280020966669610">Вдъхнови ме</translation>
 <translation id="3865289341173661845">Помощното съдържание не е налично.</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -441,10 +443,12 @@
 <translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
+<translation id="4310735698903592804">Скорошни тапети, базирани на AI на Google</translation>
 <translation id="4333390807948134856">Клавишът <ph name="KEY_NAME" /> е натиснат</translation>
 <translation id="4354430579665871434">клавиш</translation>
 <translation id="4361257691546579041">Името на точката за достъп (APN) е стандартно.</translation>
 <translation id="437294888293595148">Нулиране на всички клавишни комбинации</translation>
+<translation id="4376423484621194274">Администраторът ви не разрешава затварянето на <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4378551569595875038">Свързване...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -553,6 +557,7 @@
 <translation id="5088172560898466307">Име на хоста за сървъра</translation>
 <translation id="5089810972385038852">Щат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Подобни:</translation>
 <translation id="5137451382116112100">Цял екран</translation>
 <translation id="5142961317498132443">Удостоверяване</translation>
 <translation id="5145081769226915336">Да се включва ли автоматично тъмният режим?</translation>
@@ -614,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Повторно сканиране</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за прикачване са деактивирани или премахнати.</translation>
 <translation id="5600027863942488546">Клавишът <ph name="KEY_NAME" /> е тестван</translation>
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5649768706273821470">Слушане</translation>
@@ -645,6 +649,7 @@
 <translation id="5843706793424741864">Фаренхайт</translation>
 <translation id="584953448295717128">Името на точката за достъп (APN) е открито автоматично.</translation>
 <translation id="5849570051105887917">Код на собствения доставчик</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Албум от художествената галерия</translation>
 <translation id="5859969039821714932">Клавишната комбинация не е налице. Натиснете нова клавишна комбинация без <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Изключено</translation>
@@ -660,12 +665,12 @@
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлът ви бе сканиран успешно и запазен в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файловете ви бяха сканирани успешно и запазени в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
+<translation id="593880865674747800">Създаване на още в този стил</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
 <translation id="5946538341867151940">Още нямате връзка. Ако мобилният ви оператор препоръчва персонализирано име на точката за достъп (APN), въведете съответната информация, като изберете „+ Ново име на точка за достъп (APN)“</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Тапет по подразбиране</translation>
-<translation id="6001235009374883388">Името на точката за достъп (APN) е такова за прикачване.</translation>
 <translation id="6017514345406065928">зелено</translation>
 <translation id="6019566113895157499">Клавишни комбинации</translation>
 <translation id="6034694447310538551">Активиране на автоматичното ежемесечно нулиране</translation>
@@ -683,6 +688,7 @@
 <translation id="6104112872696127344">Сканирането бе отменено</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
+<translation id="6108952804512516814">Създаване с AI</translation>
 <translation id="6112878310391905610">Тази настройка се управлява от администраторите ви</translation>
 <translation id="6113701710518389813">Стрелка за нагоре</translation>
 <translation id="6117895505466548728">„<ph name="TITLE" />“ и още <ph name="NUMBER" /> албума</translation>
@@ -751,6 +757,7 @@
 <translation id="6526200165918397681">Съответствие с тапета</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
 <translation id="6535178685492749208">Офлайн сте. Отзивите ще се изпратят по-късно.</translation>
+<translation id="6557784757915238407">Името на точката за достъп (APN) е за <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Плосък скенер</translation>
 <translation id="6560196641871357166">Ярък</translation>
 <translation id="6564646048574748301">Неуспешно – няма връзка с принтера</translation>
@@ -810,6 +817,7 @@
 <translation id="7059230779847288458">Зарежда се: <ph name="TIME_VALUE" /> до пълно зареждане</translation>
 <translation id="7066538517128343186">клавишът <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подгответе устройството си</translation>
+<translation id="7076851914315147928">Изберете тапет</translation>
 <translation id="708426984172631313">СПРЯН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
@@ -863,6 +871,7 @@
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
 <translation id="7458970041932198923">Свържете се с мрежа и презаредете страницата, за да прегледате аватарите и да зададете такъв.</translation>
 <translation id="7469648432129124067">Открит е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
@@ -914,9 +923,11 @@
 <translation id="7799817062559422778">Светъл режим</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7805768142964895445">Състояние</translation>
+<translation id="7819831665603418705">Използване на шаблон</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7841134249932030522">Активиране на тъмния режим</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
+<translation id="7850847810298646851">Тапет, базиран на AI на Google</translation>
 <translation id="7856267634822906833">Сензорен екран с Bluetooth</translation>
 <translation id="7869143217755017858">Деактивиране на тъмния режим</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -959,7 +970,6 @@
 <translation id="8151185429379586178">Инстр. за програмисти</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Първоначално свързване</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>

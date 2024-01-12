@@ -222,8 +222,8 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   ~EnterpriseAccountObserver() override = default;
 
  private:
-  const raw_ptr<SystemTrayClientImpl, ExperimentalAsh> owner_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<SystemTrayClientImpl> owner_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

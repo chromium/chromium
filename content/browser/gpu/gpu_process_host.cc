@@ -98,6 +98,8 @@
 #include "base/win/access_token.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
+#include "content/browser/child_process_launcher_helper.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/window.h"
@@ -342,7 +344,7 @@ static void RunCallbackOnUI(
 
 void OnGpuProcessHostDestroyedOnUI(int host_id, const std::string& message) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  GpuDataManagerImpl::GetInstance()->AddLogMessage(logging::LOG_ERROR,
+  GpuDataManagerImpl::GetInstance()->AddLogMessage(logging::LOGGING_ERROR,
                                                    "GpuProcessHost", message);
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()
@@ -503,7 +505,7 @@ class GpuSandboxedProcessLauncherDelegate
 
     // Desktop is inherited by child process unless overridden, e.g. by sandbox.
     HDESK hdesk = ::GetThreadDesktop(GetCurrentThreadId());
-    absl::optional<base::win::SecurityDescriptor> sd =
+    std::optional<base::win::SecurityDescriptor> sd =
         base::win::SecurityDescriptor::FromHandle(
             hdesk, base::win::SecurityObjectType::kDesktop,
             OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
@@ -512,7 +514,7 @@ class GpuSandboxedProcessLauncherDelegate
       return false;
     }
 
-    absl::optional<base::win::AccessToken> token =
+    std::optional<base::win::AccessToken> token =
         base::win::AccessToken::FromCurrentProcess(/*impersonation=*/true,
                                                    TOKEN_ADJUST_DEFAULT);
     if (!token) {
@@ -523,7 +525,7 @@ class GpuSandboxedProcessLauncherDelegate
       return false;
     }
 
-    absl::optional<base::win::AccessCheckResult> result = sd->AccessCheck(
+    std::optional<base::win::AccessCheckResult> result = sd->AccessCheck(
         *token, desired_access, base::win::SecurityObjectType::kDesktop);
     return result && result->access_status;
   }
@@ -1004,9 +1006,8 @@ gpu::GpuFeatureInfo GpuProcessHost::GetGpuFeatureInfo() const {
 void GpuProcessHost::DidInitialize(
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-    const absl::optional<gpu::GpuFeatureInfo>&
-        gpu_feature_info_for_hardware_gpu,
+    const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+    const std::optional<gpu::GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu,
     const gfx::GpuExtraInfo& gpu_extra_info) {
   if (GetGpuCrashCount() > 0) {
     LOG(WARNING) << "Reinitialized the GPU process after a crash. The reported "
@@ -1058,7 +1059,7 @@ void GpuProcessHost::MaybeShutdownGpuProcess() {
 }
 
 void GpuProcessHost::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
-  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, absl::nullopt);
+  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, std::nullopt);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1221,9 +1222,11 @@ bool GpuProcessHost::LaunchGpuProcess() {
   if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION &&
       base::FeatureList::IsEnabled(
           features::kGpuInfoCollectionSeparatePrefetch)) {
-    cmd_line->AppendArg(switches::kPrefetchArgumentOther);
+    cmd_line->AppendArg(internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+        AppLaunchPrefetchType::kGPUInfo));
   } else {
-    cmd_line->AppendArg(switches::kPrefetchArgumentGpu);
+    cmd_line->AppendArg(internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+        AppLaunchPrefetchType::kGPU));
   }
 #endif  // BUILDFLAG(IS_WIN)
 

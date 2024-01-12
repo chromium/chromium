@@ -63,8 +63,8 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   AnchoredNudgeData& operator=(AnchoredNudgeData&& other);
   ~AnchoredNudgeData();
 
-  views::View* GetAnchorView() { return anchor_view_tracker_->view(); }
-  bool is_anchored() { return is_anchored_; }
+  views::View* GetAnchorView() const { return anchor_view_tracker_->view(); }
+  bool is_anchored() const { return is_anchored_; }
 
   // Sets the anchor view, observes it with a view tracker to assign a nullptr
   // in case the view is deleted, and sets the `is_anchored_` member variable.
@@ -101,7 +101,7 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   base::RepeatingClosure secondary_button_callback = base::DoNothing();
 
   // Used to set the nudge's placement in relation to the anchor view, if any.
-  views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
+  views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_RIGHT;
 
   // Nudges can set a default, medium or long duration for nudges that persist.
   // Refer to `anchored_nudge_manager_impl.cc` to see the duration values.

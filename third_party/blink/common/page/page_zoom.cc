@@ -10,6 +10,11 @@
 
 namespace blink {
 
+static constexpr double kPresetZoomFactorsArray[] = {
+    0.25, 1 / 3.0, 0.5,  2 / 3.0, 0.75, 0.8, 0.9, 1.0, 1.1,
+    1.25, 1.5,     1.75, 2.0,     2.5,  3.0, 4.0, 5.0};
+const base::span<const double> kPresetZoomFactors(kPresetZoomFactorsArray);
+
 #if !BUILDFLAG(IS_ANDROID)
 // The minimum and maximum amount of page zoom that is possible, independent
 // of other factors such as device scale and page scale (pinch). Historically,

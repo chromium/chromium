@@ -127,5 +127,5 @@ const gfx::VectorIcon& ZoomView::GetVectorIcon() const {
   return *icon_;
 }
 
-BEGIN_METADATA(ZoomView, PageActionIconView)
+BEGIN_METADATA(ZoomView)
 END_METADATA

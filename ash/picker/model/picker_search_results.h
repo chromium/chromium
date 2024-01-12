@@ -19,7 +19,7 @@ class ASH_EXPORT PickerSearchResult {
  public:
   explicit PickerSearchResult(const std::u16string& text);
 
-  std::u16string_view text() const;
+  const std::u16string& text() const;
 
  private:
   std::u16string text_;
@@ -36,6 +36,8 @@ class ASH_EXPORT PickerSearchResults {
     Section(const Section& other);
     Section& operator=(const Section& other);
     ~Section();
+
+    const std::u16string& heading() const;
 
     base::span<const PickerSearchResult> results() const;
 

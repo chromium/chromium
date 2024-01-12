@@ -6,16 +6,13 @@
 
 namespace ash::file_system_provider {
 
-RegistryInterface::~RegistryInterface() {
-}
+RegistryInterface::~RegistryInterface() = default;
 
-RegistryInterface::RestoredFileSystem::RestoredFileSystem() {
-}
+RegistryInterface::RestoredFileSystem::RestoredFileSystem() = default;
 
 RegistryInterface::RestoredFileSystem::RestoredFileSystem(
     const RestoredFileSystem& other) = default;
 
-RegistryInterface::RestoredFileSystem::~RestoredFileSystem() {
-}
+RegistryInterface::RestoredFileSystem::~RestoredFileSystem() = default;
 
 }  // namespace ash::file_system_provider

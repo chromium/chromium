@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "services/network/public/cpp/trigger_verification_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -137,7 +137,7 @@ SourceBuilder& SourceBuilder::SetFilterData(
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetDebugKey(absl::optional<uint64_t> debug_key) {
+SourceBuilder& SourceBuilder::SetDebugKey(std::optional<uint64_t> debug_key) {
   registration_.debug_key = debug_key;
   return *this;
 }
@@ -287,14 +287,12 @@ TriggerBuilder& TriggerBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetDedupKey(
-    absl::optional<uint64_t> dedup_key) {
+TriggerBuilder& TriggerBuilder::SetDedupKey(std::optional<uint64_t> dedup_key) {
   dedup_key_ = dedup_key;
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetDebugKey(
-    absl::optional<uint64_t> debug_key) {
+TriggerBuilder& TriggerBuilder::SetDebugKey(std::optional<uint64_t> debug_key) {
   debug_key_ = debug_key;
   return *this;
 }
@@ -313,7 +311,7 @@ TriggerBuilder& TriggerBuilder::SetAggregatableValues(
 }
 
 TriggerBuilder& TriggerBuilder::SetAggregatableDedupKey(
-    absl::optional<uint64_t> aggregatable_dedup_key) {
+    std::optional<uint64_t> aggregatable_dedup_key) {
   aggregatable_dedup_key_ = aggregatable_dedup_key;
   return *this;
 }
@@ -368,26 +366,29 @@ TriggerBuilder& TriggerBuilder::SetTriggerContextId(
 
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
-  std::vector<attribution_reporting::EventTriggerData> event_triggers;
+  attribution_reporting::TriggerRegistration reg;
+  reg.filters = filter_pair_;
+  reg.debug_key = debug_key_;
+  reg.aggregatable_dedup_keys.emplace_back(
+      /*dedup_key=*/aggregatable_dedup_key_,
+      aggregatable_dedup_key_filter_pair_);
 
   if (generate_event_trigger_data) {
-    event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
-                                FilterPair());
+    reg.event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
+                                    FilterPair());
   }
 
-  return AttributionTrigger(
-      reporting_origin_,
-      attribution_reporting::TriggerRegistration(
-          filter_pair_, debug_key_,
-          {attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/aggregatable_dedup_key_,
-              aggregatable_dedup_key_filter_pair_)},
-          std::move(event_triggers), aggregatable_trigger_data_,
-          aggregatable_values_, debug_reporting_,
-          aggregation_coordinator_origin_,
-          *attribution_reporting::AggregatableTriggerConfig::Create(
-              source_registration_time_config_, trigger_context_id_)),
-      destination_origin_, verifications_, is_within_fenced_frame_);
+  reg.aggregatable_trigger_data = aggregatable_trigger_data_;
+  reg.aggregatable_values = aggregatable_values_;
+  reg.debug_reporting = debug_reporting_;
+  reg.aggregation_coordinator_origin = aggregation_coordinator_origin_;
+  reg.aggregatable_trigger_config =
+      *attribution_reporting::AggregatableTriggerConfig::Create(
+          source_registration_time_config_, trigger_context_id_);
+
+  return AttributionTrigger(reporting_origin_, std::move(reg),
+                            destination_origin_, verifications_,
+                            is_within_fenced_frame_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(SuitableOrigin context_origin)
@@ -401,7 +402,7 @@ AttributionInfoBuilder& AttributionInfoBuilder::SetTime(base::Time time) {
 }
 
 AttributionInfoBuilder& AttributionInfoBuilder::SetDebugKey(
-    absl::optional<uint64_t> debug_key) {
+    std::optional<uint64_t> debug_key) {
   debug_key_ = debug_key;
   return *this;
 }
@@ -458,7 +459,7 @@ ReportBuilder& ReportBuilder::SetAggregationCoordinatorOrigin(
 }
 
 ReportBuilder& ReportBuilder::SetVerificationToken(
-    absl::optional<std::string> verification_token) {
+    std::optional<std::string> verification_token) {
   verification_token_ = std::move(verification_token);
   return *this;
 }

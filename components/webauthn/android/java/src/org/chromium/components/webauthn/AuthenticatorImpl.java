@@ -23,6 +23,7 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
@@ -98,7 +99,8 @@ public final class AuthenticatorImpl implements Authenticator {
             FidoIntentSender intentSender,
             @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
             RenderFrameHost renderFrameHost,
-            Origin topOrigin) {
+            Origin topOrigin,
+            @WebauthnMode int mode) {
         assert renderFrameHost != null;
 
         mContext = context;
@@ -109,6 +111,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mCreateConfirmationUiDelegate = createConfirmationUiDelegate;
 
         mGmsCorePackageVersion = PackageUtils.getPackageVersion(GMSCORE_PACKAGE_NAME);
+        WebauthnModeProvider.getInstance().setWebauthnMode(mode);
     }
 
     public static void overrideFido2CredentialRequestForTesting(Fido2CredentialRequest request) {
@@ -274,7 +277,9 @@ public final class AuthenticatorImpl implements Authenticator {
     public void isConditionalMediationAvailable(
             final IsConditionalMediationAvailable_Response callback) {
         if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION
-                || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+                || WebauthnModeProvider.getInstance().getWebauthnMode()
+                        != WebauthnModeProvider.WebauthnMode.CHROME) {
             callback.call(false);
             return;
         }

@@ -108,7 +108,7 @@ class NetworkHealthServiceTestImpl : public NetworkHealthService {
   void FireTimer() { mock_timer_->Fire(); }
 
  private:
-  raw_ptr<base::MockRepeatingTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockRepeatingTimer> mock_timer_;
 };
 
 class NetworkHealthServiceTest : public ::testing::Test {

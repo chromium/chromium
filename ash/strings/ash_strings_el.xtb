@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Εναλλαγή Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Δεν είναι δυνατή η σύνδεση στο Chromebook</translation>
 <translation id="2367972762794486313">Εμφάνιση εφαρμογών</translation>
+<translation id="2368828502825385061">Εντοπισμός</translation>
 <translation id="2369165858548251131">"Γεια σας" στα κινεζικά</translation>
 <translation id="2382875860893882175">Η μετάδοση έχει τεθεί σε παύση. Μπορείτε να συνεχίσετε τη μετάδοση ή να τη διακόψετε ανά πάσα στιγμή.</translation>
 <translation id="2386292613071805067">Επιλογή όλων στη σελίδα</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">Μετάδοση</translation>
 <translation id="5546397813406633847">Ανάκτηση χρήστη</translation>
 <translation id="554893713779400387">Εναλλαγή υπαγόρευσης</translation>
+<translation id="5550417424894892620">Αποθέστε αρχεία στην επιφάνεια εργασίας για να τα προσθέσετε στο <ph name="HOLDING_SPACE_TITLE" />. Δεν είναι δυνατή η προσθήκη αρχείων στην επιφάνεια εργασίας.</translation>
 <translation id="5551456515017410630">Άνοιγμα/κλείσιμο ημερολογίου</translation>
 <translation id="5551974246223970793">Κατά την αναζήτηση μιας σελίδας, μεταβείτε στο επόμενο αποτέλεσμα για αναζήτηση</translation>
 <translation id="5555639311269196631">Απενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">Συνδέστε τη συσκευή <ph name="DEVICE_NAME" /> με το τηλέφωνό σας</translation>
 <translation id="7026338066939101231">Μείωση</translation>
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
+<translation id="7031303610220416229">Εμφάνιση όλων των εργασιών στο Google Tasks</translation>
 <translation id="7032161822340700104">Επιτρέπονται μόνο 6 πρότυπα. Αφαιρέστε ένα πρότυπο για να αποθηκευτεί ένα νέο.</translation>
 <translation id="7034025838182392395">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" />. Ενεργοποιήστε τον φυσικό διακόπτη της συσκευής <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> σε χρήση.</translation>
 <translation id="8369166482916924789">Αποθηκευμένο γραφείο, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Αναζήτηση για <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
 <translation id="8371991222807690464">Η απόδοση των περιφερειακών ενδέχεται να περιορίζεται στη Λειτουργία επισκέπτη</translation>
 <translation id="8374601332003098278">Πατήστε Enter για εγγραφή μέρους της οθόνης</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ταξινόμηση των εφαρμογών σας κατά όνομα ή χρώμα</translation>
 <translation id="8609384513243082612">Άνοιγμα νέας καρτέλας</translation>
+<translation id="8612216344243590325">Διατηρήστε τα σημαντικά αρχεία στο <ph name="HOLDING_SPACE_TITLE" /> αντί στην επιφάνεια εργασίας. Απλώς σύρετε τα αρχεία στο <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Έχει γίνει απόκρυψη των ειδοποιήσεων των εφαρμογών <ph name="APP_1_TITLE" /> και <ph name="APP_2_TITLE" /> επειδή η προστασία προβολής είναι ενεργοποιημένη</translation>
 <translation id="8619138598101195078">Μείωση έντασης ήχου</translation>
 <translation id="8627191004499078455">Συνδέθηκε στη συσκευή <ph name="DEVICE_NAME" /></translation>

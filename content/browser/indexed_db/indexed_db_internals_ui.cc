@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -31,7 +32,6 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using storage::mojom::IdbPartitionMetadataPtr;
 
@@ -82,7 +82,7 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
       base::BindOnce(
           [](GetAllBucketsAcrossAllStorageKeysCallback callback,
              std::vector<IdbPartitionMetadataPtr> partitions) {
-            std::move(callback).Run(absl::nullopt, std::move(partitions));
+            std::move(callback).Run(std::nullopt, std::move(partitions));
           },
           std::move(callback)));
 
@@ -192,7 +192,7 @@ void IndexedDBInternalsUI::ForceClose(storage::BucketId bucket_id,
       bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
           [](ForceCloseCallback callback) {
-            std::move(callback).Run(absl::nullopt);
+            std::move(callback).Run(std::nullopt);
           },
           std::move(callback)));
 }
@@ -308,7 +308,7 @@ void IndexedDBInternalsUI::OnDownloadStarted(
   }
 
   item->AddObserver(new FileDeleter(temp_path));
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace content

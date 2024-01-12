@@ -209,7 +209,7 @@ class OobeUI : public ui::MojoWebUIController {
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
   // Reference to CoreOobeHandler that handles common requests of Oobe page.
-  raw_ptr<CoreOobeHandler, ExperimentalAsh> core_handler_ = nullptr;
+  raw_ptr<CoreOobeHandler> core_handler_ = nullptr;
   std::unique_ptr<CoreOobe> core_oobe_;
 
   std::vector<raw_ptr<BaseWebUIHandler, VectorExperimental>>

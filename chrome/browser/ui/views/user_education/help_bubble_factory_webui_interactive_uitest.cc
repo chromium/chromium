@@ -117,6 +117,10 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                           has_help_bubble ? "true" : "false"))));
   }
 
+  auto Cleanup() {
+    return Do(base::BindLambdaForTesting([this]() { help_bubble_.reset(); }));
+  }
+
  protected:
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
 
@@ -185,7 +189,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
       // Verify that the anchor element is no longer marked.
       CheckJsResultAt(
           kReadLaterWebContentsElementId, kPathToAddCurrentTabElement,
-          "el => el.classList.contains('help-anchor-highlight')", false));
+          "el => el.classList.contains('help-anchor-highlight')", false),
+
+      Cleanup());
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
@@ -209,7 +215,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 
       // Verify that the handler no longer believes that the anchor has a help
       // bubble.
-      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false));
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false),
+
+      Cleanup());
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
@@ -236,7 +244,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 
       // Verify that the handler no longer believes that the anchor has a help
       // bubble.
-      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false));
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false),
+
+      Cleanup());
 }
 
 // Regression test for item (1) in crbug.com/1422875.
@@ -251,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
       // from its widget and effectively hides the WebContents.
       OpenBookmarksSidePanel(),
       WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      Cleanup());
 }
 
 namespace {
@@ -289,5 +300,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
                  side_panel->GetWidget()->LayoutRootViewIfNecessary();
                }),
       WaitForEvent(kSidePanelElementName,
-                   user_education::kHelpBubbleAnchorBoundsChangedEvent));
+                   user_education::kHelpBubbleAnchorBoundsChangedEvent),
+      Cleanup());
 }

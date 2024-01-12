@@ -210,8 +210,9 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
   CHECK(update_context);
 
   // Make the components transition from |kNew| to |kChecking| state.
-  for (const auto& id : update_context->components_to_check_for_updates)
+  for (const auto& id : update_context->components_to_check_for_updates) {
     update_context->components[id]->Handle(base::DoNothing());
+  }
 
   update_context->update_checker =
       update_checker_factory_.Run(config_, config_->GetPersistedData());
@@ -265,8 +266,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   CHECK_EQ(0, error);
 
   std::map<std::string, ProtocolParser::Result> id_to_result;
-  for (const auto& result : results->list)
+  for (const auto& result : results->list) {
     id_to_result[result.extension_id] = result;
+  }
 
   for (const auto& id : update_context->components_to_check_for_updates) {
     CHECK_EQ(1u, update_context->components.count(id));
@@ -277,15 +279,18 @@ void UpdateEngine::UpdateCheckResultsAvailable(
       const auto pair = [](const std::string& status) {
         // First, handle app status literals which can be folded down as an
         // updatecheck status
-        if (status == "error-unknownApplication")
+        if (status == "error-unknownApplication") {
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::UNKNOWN_APPLICATION);
-        if (status == "restricted")
+        }
+        if (status == "restricted") {
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::RESTRICTED_APPLICATION);
-        if (status == "error-invalidAppId")
+        }
+        if (status == "error-invalidAppId") {
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::INVALID_APPID);
+        }
         if (status == "error-osnotsupported") {
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::OS_NOT_SUPPORTED);

@@ -536,17 +536,17 @@ class RenderFrameHostManagerTest
             frame_tree_node->current_replication_state().frame_policy,
             frame_tree_node->AncestorOrSelfHasCSPEE(),
             blink::mojom::SystemEntropy::kNormal,
-            /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+            /*soft_navigation_heuristics_task_id=*/std::nullopt);
     commit_params->post_content_type = post_content_type;
 
     std::unique_ptr<NavigationRequest> navigation_request =
         NavigationRequest::Create(
             frame_tree_node, std::move(common_params), std::move(commit_params),
             !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
-            absl::nullopt /* initiator_frame_token */,
+            std::nullopt /* initiator_frame_token */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
             entry->extra_headers(), frame_entry, entry, is_form_submission,
-            nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+            nullptr /* navigation_ui_data */, std::nullopt /* impression */,
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kDidNotStartWithTransientActivation,
             false /* is_pdf */);
@@ -1047,8 +1047,8 @@ TEST_P(RenderFrameHostManagerTest, Navigate) {
   const GURL kUrl1("http://www.google.com/");
   NavigationEntryImpl entry1(
       nullptr /* instance */, kUrl1, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   host = NavigateToEntry(manager, &entry1);
@@ -1074,7 +1074,7 @@ TEST_P(RenderFrameHostManagerTest, Navigate) {
   NavigationEntryImpl entry2(
       nullptr /* instance */, kUrl2,
       Referrer(kUrl1, network::mojom::ReferrerPolicy::kDefault),
-      kInitiatorOrigin, /* initiator_base_url= */ absl::nullopt,
+      kInitiatorOrigin, /* initiator_base_url= */ std::nullopt,
       std::u16string() /* title */, ui::PAGE_TRANSITION_LINK,
       true /* is_renderer_init */, nullptr /* blob_url_loader_factory */,
       false /* is_initial_entry */);
@@ -1101,8 +1101,8 @@ TEST_P(RenderFrameHostManagerTest, Navigate) {
   NavigationEntryImpl entry3(
       nullptr /* instance */, kUrl3,
       Referrer(kUrl2, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   host = NavigateToEntry(manager, &entry3);
@@ -1144,8 +1144,8 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
   const GURL kUrl(GetWebUIURL("foo"));
   NavigationEntryImpl entry(
       nullptr /* instance */, kUrl, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host = NavigateToEntry(manager, &entry);
@@ -1188,7 +1188,7 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
       web_contents1->GetPrimaryFrameTree().root()->render_manager();
   // Test the case that new RVH is considered live.
   RenderViewHostImpl* rvh1 = manager1->current_frame_host()->render_view_host();
-  rvh1->CreateRenderView(absl::nullopt, MSG_ROUTING_NONE, false);
+  rvh1->CreateRenderView(std::nullopt, MSG_ROUTING_NONE, false);
   EXPECT_TRUE(rvh1->IsRenderViewLive());
   EXPECT_TRUE(manager1->current_frame_host()->IsRenderFrameLive());
 
@@ -1196,8 +1196,8 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   const GURL kUrl1(GetWebUIURL("foo"));
   NavigationEntryImpl entry1(
       nullptr /* instance */, kUrl1, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host1 = NavigateToEntry(manager1, &entry1);
@@ -1229,7 +1229,7 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   // Make sure the new RVH is considered live.  This is usually done in
   // RenderWidgetHost::Init when opening a new tab from a link.
   RenderViewHostImpl* rvh2 = manager2->current_frame_host()->render_view_host();
-  rvh2->CreateRenderView(absl::nullopt, MSG_ROUTING_NONE, false);
+  rvh2->CreateRenderView(std::nullopt, MSG_ROUTING_NONE, false);
   EXPECT_TRUE(rvh2->IsRenderViewLive());
 
   const GURL kUrl2(GetWebUIURL("foo/bar"));
@@ -1237,7 +1237,7 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
       url::Origin::Create(GURL("https://initiator.example.com"));
   NavigationEntryImpl entry2(
       nullptr /* instance */, kUrl2, Referrer(), kInitiatorOrigin,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, true /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host2 = NavigateToEntry(manager2, &entry2);
@@ -1433,7 +1433,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpener) {
   EXPECT_NE(site_instance1, rfh2->GetSiteInstance());
 
   // Disown the opener from rfh2.
-  rfh2->SimulateDidChangeOpener(absl::nullopt);
+  rfh2->SimulateDidChangeOpener(std::nullopt);
 
   // Ensure the opener is cleared.
   EXPECT_FALSE(contents()->HasOpener());
@@ -1454,7 +1454,7 @@ TEST_P(RenderFrameHostManagerTest, DisownSameSiteOpener) {
   EXPECT_TRUE(contents()->HasOpener());
 
   // Disown the opener from rfh1.
-  rfh1->SimulateDidChangeOpener(absl::nullopt);
+  rfh1->SimulateDidChangeOpener(std::nullopt);
 
   // Ensure the opener is cleared even if it is in the same process.
   EXPECT_FALSE(contents()->HasOpener());
@@ -1490,7 +1490,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpenerDuringNavigation) {
   contents()->GetPrimaryMainFrame()->PrepareForCommit();
 
   // Disown the opener from rfh2.
-  rfh2->SimulateDidChangeOpener(absl::nullopt);
+  rfh2->SimulateDidChangeOpener(std::nullopt);
 
   // Ensure the opener is cleared.
   EXPECT_FALSE(contents()->HasOpener());
@@ -1539,7 +1539,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpenerAfterNavigation) {
       entry1->GetTransitionType());
 
   // Disown the opener from rfh2.
-  rfh2->SimulateDidChangeOpener(absl::nullopt);
+  rfh2->SimulateDidChangeOpener(std::nullopt);
   EXPECT_FALSE(contents()->HasOpener());
 }
 
@@ -1563,7 +1563,7 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
   // Make sure the new opener RVH is considered live.
   RenderViewHostImpl* opener_rvh =
       opener1_manager->current_frame_host()->render_view_host();
-  opener_rvh->CreateRenderView(absl::nullopt, MSG_ROUTING_NONE, false);
+  opener_rvh->CreateRenderView(std::nullopt, MSG_ROUTING_NONE, false);
   EXPECT_TRUE(opener_rvh->IsRenderViewLive());
   EXPECT_TRUE(opener1_manager->current_frame_host()->IsRenderFrameLive());
 
@@ -1638,8 +1638,8 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   const GURL kUrl1("http://www.google.com/");
   NavigationEntryImpl entry1(
       nullptr /* instance */, kUrl1, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host = NavigateToEntry(manager, &entry1);
@@ -1685,7 +1685,7 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   NavigationEntryImpl entry2(
       nullptr /* instance */, kUrl2,
       Referrer(kUrl1, network::mojom::ReferrerPolicy::kDefault),
-      kInitiatorOrigin, /* initiator_base_url= */ absl::nullopt,
+      kInitiatorOrigin, /* initiator_base_url= */ std::nullopt,
       std::u16string() /* title */, ui::PAGE_TRANSITION_LINK,
       true /* is_renderer_init */, nullptr /* blob_url_loader_factory */,
       false /* is_initial_entry */);
@@ -1755,8 +1755,8 @@ TEST_P(RenderFrameHostManagerTest, NavigateWithEarlyClose) {
   const GURL kUrl1("http://www.google.com/");
   NavigationEntryImpl entry1(
       nullptr /* instance */, kUrl1, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host = NavigateToEntry(manager, &entry1);
@@ -1777,8 +1777,8 @@ TEST_P(RenderFrameHostManagerTest, NavigateWithEarlyClose) {
   const GURL kUrl2("http://www.example.com");
   NavigationEntryImpl entry2(
       nullptr /* instance */, kUrl2, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host2 = NavigateToEntry(manager, &entry2);
@@ -2129,8 +2129,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   // 1) The first navigation.
   NavigationEntryImpl entryA(
       nullptr /* instance */, kUrlA, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* host1 = NavigateToEntry(iframe1, &entryA);
@@ -2150,8 +2150,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   NavigationEntryImpl entryB(
       nullptr /* instance */, kUrlB,
       Referrer(kUrlA, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   host1 = NavigateToEntry(iframe1, &entryB);
@@ -2297,8 +2297,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   NavigationEntryImpl entry(
       nullptr /* instance */, kUrl2,
       Referrer(kUrl1, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* cross_site = NavigateToEntry(iframe, &entry);
@@ -2450,8 +2450,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   const GURL kWebUIUrl(GetWebUIURL("foo"));
   NavigationEntryImpl webui_entry(
       nullptr /* instance */, kWebUIUrl, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostManager* main_rfhm =
@@ -2465,8 +2465,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   const GURL kSubframeUrl("http://bar.com");
   NavigationEntryImpl subframe_entry(
       nullptr /* instance */, kSubframeUrl, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* bar_rfh =
@@ -2485,7 +2485,7 @@ class UpdateOpenerProxyObserver : public RenderFrameProxyHost::TestObserver {
   ~UpdateOpenerProxyObserver() override {
     RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
-  absl::optional<blink::FrameToken> OpenerFrameToken(
+  std::optional<blink::FrameToken> OpenerFrameToken(
       RenderFrameProxyHost* proxy) {
     return remote_frames_[proxy]->opener_frame_token();
   }
@@ -2497,15 +2497,15 @@ class UpdateOpenerProxyObserver : public RenderFrameProxyHost::TestObserver {
       Init(proxy->BindRemoteFrameReceiverForTesting());
     }
     void UpdateOpener(
-        const absl::optional<blink::FrameToken>& frame_token) override {
+        const std::optional<blink::FrameToken>& frame_token) override {
       frame_token_ = frame_token;
     }
-    absl::optional<blink::FrameToken> opener_frame_token() {
+    std::optional<blink::FrameToken> opener_frame_token() {
       return frame_token_;
     }
 
    private:
-    absl::optional<blink::FrameToken> frame_token_;
+    std::optional<blink::FrameToken> frame_token_;
   };
 
   void OnRemoteFrameBound(RenderFrameProxyHost* proxy_host) override {
@@ -2860,8 +2860,8 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   NavigationEntryImpl entryB(
       nullptr /* instance */, kUrlB,
       Referrer(kUrlA, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   TestRenderFrameHost* host1 =
@@ -2884,8 +2884,8 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   NavigationEntryImpl entryC(
       nullptr /* instance */, kUrlC,
       Referrer(kUrlA, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   TestRenderFrameHost* host3 =
@@ -2973,8 +2973,8 @@ TEST_P(RenderFrameHostManagerTest,
   NavigationEntryImpl entryB(
       nullptr /* instance */, kUrlB,
       Referrer(kUrlA, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   TestRenderFrameHost* hostB =
@@ -2991,8 +2991,8 @@ TEST_P(RenderFrameHostManagerTest,
   NavigationEntryImpl entryC(
       nullptr /* instance */, kUrlC,
       Referrer(kUrlA, network::mojom::ReferrerPolicy::kDefault),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_LINK, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   TestRenderFrameHost* hostC =
@@ -3031,8 +3031,8 @@ TEST_P(RenderFrameHostManagerTest, RestoreNavigationToWebUI) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> new_entry =
       NavigationController::CreateNavigationEntry(
-          kInitUrl, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_TYPED,
+          kInitUrl, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_TYPED,
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));
@@ -3048,8 +3048,8 @@ TEST_P(RenderFrameHostManagerTest, RestoreNavigationToWebUI) {
   // Navigation request to an entry from a previous browsing session.
   NavigationEntryImpl entry(
       nullptr /* instance */, kInitUrl, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_RELOAD, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   entry.set_restore_type(RestoreType::kRestored);
@@ -3403,8 +3403,8 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   const GURL kUrl(GetWebUIURL("foo"));
   NavigationEntryImpl entry(
       nullptr /* instance */, kUrl, Referrer(),
-      /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string() /* title */,
+      /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, std::u16string() /* title */,
       ui::PAGE_TRANSITION_TYPED, false /* is_renderer_init */,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   FrameNavigationEntry* frame_entry = entry.root_node()->frame_entry.get();
@@ -3429,14 +3429,14 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           frame_tree_node->current_replication_state().frame_policy,
           frame_tree_node->AncestorOrSelfHasCSPEE(),
           blink::mojom::SystemEntropy::kNormal,
-          /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+          /*soft_navigation_heuristics_task_id=*/std::nullopt);
 
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           frame_tree_node, std::move(common_params), std::move(commit_params),
           false /* was_opener_suppressed */, entry.extra_headers(), frame_entry,
           &entry, false /* is_form_submission */,
-          nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+          nullptr /* navigation_ui_data */, std::nullopt /* impression */,
           false /* is_pdf */
       );
   frame_tree_node->TakeNavigationRequest(std::move(navigation_request));

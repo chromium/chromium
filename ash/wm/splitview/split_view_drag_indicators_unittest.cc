@@ -24,6 +24,7 @@
 #include "split_view_drag_indicators.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display_switches.h"
@@ -466,6 +467,46 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);
+}
+
+// Verify that the preview area visibility is determined with default snap
+// ratio.
+TEST_F(SplitViewDragIndicatorsTest, PreviewAreaVisibilityDefaultSnapRatio) {
+  UpdateDisplay("900x600");
+  constexpr int screen_width = 900;
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &delegate, -1, gfx::Rect(100, 100, 500, 500)));
+
+  // Snap `window` to 1/3 to set its snap ratio to 1/3.
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY,
+                                    chromeos::kOneThirdSnapRatio);
+  WindowState::Get(window.get())->OnWMEvent(&snap_left);
+  const WMEvent restore(WM_EVENT_RESTORE);
+  WindowState::Get(window.get())->OnWMEvent(&restore);
+
+  // Set minimum size to make `window` snappable in 1/2 ratio but not in 1/3
+  // ratio.
+  delegate.set_minimum_size(gfx::Size(400, 0));
+
+  ToggleOverview();
+
+  // The preview area should be visible as `window` is still snappable in 1/2
+  // ratio.
+  auto* const item = GetOverviewItemForWindow(window.get());
+  ASSERT_TRUE(item);
+
+  const gfx::PointF start_location(item->target_bounds().CenterPoint());
+  overview_session_->InitiateDrag(item, start_location,
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
+  EXPECT_FALSE(IsPreviewAreaShowing());
+  overview_session_->Drag(item, gfx::PointF(0.f, 1.f));
+  EXPECT_TRUE(IsPreviewAreaShowing());
+  overview_session_->Drag(item, gfx::PointF(screen_width, 1.f));
+  EXPECT_TRUE(IsPreviewAreaShowing());
+  overview_session_->CompleteDrag(item, start_location);
+  EXPECT_FALSE(IsPreviewAreaShowing());
 }
 
 // Defines a test fixture to test behavior of SplitViewDragIndicators on

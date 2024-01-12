@@ -381,6 +381,8 @@ TEST_F(WebRtcLogUploaderTest, DisableUploadOfMultipartData) {
 }
 
 TEST_F(WebRtcLogUploaderTest, ProductHasNoSuffixWithoutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kWebRTCLogUploadSuffix);
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 

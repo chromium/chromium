@@ -133,6 +133,10 @@ const char kSystemAecEnabled[] = "system-aec-enabled";
 const char kUnsafelyAllowProtectedMediaIdentifierForDomain[] =
     "unsafely-allow-protected-media-identifier-for-domain";
 
+// Skip the permission prompt for Captured Surface Control.
+const char kAutoGrantCapturedSurfaceControlPrompt[] =
+    "auto-grant-captured-surface-control-prompt";
+
 // Use fake device for Media Stream to replace actual camera and microphone.
 // For the list of allowed parameters, see
 // FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString().
@@ -745,11 +749,6 @@ BASE_FEATURE(kGlobalMediaControlsSeamlessTransfer,
              "GlobalMediaControlsSeamlessTransfer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable an updated version of the Global Media Controls UI.
-BASE_FEATURE(kGlobalMediaControlsModernUI,
-             "GlobalMediaControlsModernUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // CanPlayThrough issued according to standard.
 BASE_FEATURE(kSpecCompliantCanPlayThrough,
              "SpecCompliantCanPlayThrough",
@@ -1158,6 +1157,12 @@ BASE_FEATURE(kMediaDrmPreprovisioningAtStartup,
              "MediaDrmPreprovisioningAtStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables MediaDrmBridge to call into MediaDrm API to query HDCP Status to
+// support the CDM API GetStatusForPolicy.
+BASE_FEATURE(kMediaDrmGetStatusForPolicy,
+             "MediaDrmGetStatusForPolicy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables CanPlayType() (and other queries) for HLS MIME types. Note that
 // disabling this also causes navigation to .m3u8 files to trigger downloading
 // instead of playback.
@@ -1212,6 +1217,13 @@ BASE_FEATURE(kChromeOSHWAV1Decoder,
 // ChromeOS.
 BASE_FEATURE(kChromeOSHWVBREncoding,
              "ChromeOSHWVBREncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use a dedicated thread for hardware video decoding in Video decoder process.
+// If this is disabled, a sequenced task runner in base::ThreadPool is used for
+// hardware video decoding.
+BASE_FEATURE(kUseDedicatedDecoderThreadInVideoDecoderProcess,
+             "UseDedicatedDecoderThreadInVideoDecoderProcess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(USE_VAAPI)
@@ -1590,6 +1602,13 @@ BASE_FEATURE(kCameraMicEffects,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_FUCHSIA)
 
+// Controls whether system loopback audio can be Cast to audio-only Cast
+// receivers, e.g. speakers.
+// TODO(crbug.com/849335): Remove once launched.
+BASE_FEATURE(kCastLoopbackAudioToAudioReceivers,
+             "CastLoopbackAudioToAudioReceivers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether mirroring negotiations will include the AV1 codec for video
 // encoding.
 //
@@ -1648,6 +1667,19 @@ BASE_FEATURE(kUseSharedImagesForPepperVideo,
 BASE_FEATURE(kFFmpegAllowLists,
              "FFmpegAllowLists",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables sending MediaLog to the log stream, which is useful for easier
+// development by ensuring logs can be seen without a remote desktop session.
+// Only affects builds when DCHECK is on for non-ERROR logs (ERROR logs are
+// always sent to the log stream). Enabled by default on Android and ChromeOS.
+BASE_FEATURE(kMediaLogToConsole,
+             "MediaLogToConsole",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 // Allows decoding of theora / vp3 content.

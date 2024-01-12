@@ -127,8 +127,8 @@ class ScopedBadgingClockOverride {
   }
 
  private:
-  const raw_ptr<badging::BadgeManager, ExperimentalAsh> badge_manager_;
-  raw_ptr<const base::Clock, ExperimentalAsh> previous_clock_;
+  const raw_ptr<badging::BadgeManager> badge_manager_;
+  raw_ptr<const base::Clock> previous_clock_;
 };
 
 }  // namespace

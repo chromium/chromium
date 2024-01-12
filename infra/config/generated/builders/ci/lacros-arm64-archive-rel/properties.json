@@ -53,7 +53,8 @@
           "builder": "lacros-arm64-archive-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/lacros-arm64-archive-rel/targets"
     }
   },
   "$build/reclient": {

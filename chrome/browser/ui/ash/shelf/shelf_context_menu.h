@@ -15,6 +15,8 @@ class ChromeShelfController;
 
 // ElementIdentifier for the shelf context menu "Close" menu item.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kShelfCloseMenuItem);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kShelfContextMenuNewWindowMenuItem);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kShelfContextMenuIncognitoWindowMenuItem);
 
 // A base class for browser, extension, and ARC shelf item context menus.
 class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
@@ -64,10 +66,14 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
                             ash::CommandId type,
                             int string_id);
 
+  // Helper method to add element identifiers to some menu items.
+  void MaybeSetElementIdentifier(ui::SimpleMenuModel* menu_model,
+                                 ash::CommandId type);
+
   int64_t display_id() const { return display_id_; }
 
  private:
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
+  raw_ptr<ChromeShelfController> controller_;
 
   const ash::ShelfItem item_;
 

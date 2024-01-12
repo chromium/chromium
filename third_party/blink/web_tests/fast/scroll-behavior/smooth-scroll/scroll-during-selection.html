@@ -33,11 +33,12 @@ body {
       const { y: pixelsToScrollY } = calculatePixelsToScroll(
         document.scrollingElement, 0, expectedScrollY
       );
-      await smoothScroll(
-        pixelsToScrollY, 40, 20, GestureSourceType.MOUSE_INPUT, 'down',
-        SPEED_INSTANT, !isPercentBasedScrollingEnabled()
-      );
-      await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+      await gestureScroll(() => {
+        return smoothScroll(
+          pixelsToScrollY, 40, 20, GestureSourceType.MOUSE_INPUT, 'down',
+          SPEED_INSTANT, !isPercentBasedScrollingEnabled()
+        );
+      }, document.scrollingElement);
       // Windows and Linux values appear to be slightly different
       assert_approx_equals(window.scrollY, expectedScrollY, 0.5);
   }, "This test verifies that text selection does not prevent smooth " +

@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 
+#include <memory>
+
+#include "ash/birch/birch_item.h"
+#include "ash/birch/birch_model.h"
+#include "ash/shell.h"
 #include "base/files/file.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
@@ -15,39 +20,25 @@ namespace ash {
 
 namespace {
 
-// Gets a list of `BirchFileSuggestion` given a list of `FileSuggestData`.
+// Gets a list of `BirchFileItem` given a list of `FileSuggestData`.
 // Performs some asynchronous file IO, so should not be run on the UI thread.
-std::vector<BirchFileSuggestion> GetFileSuggestionInfo(
+std::vector<BirchFileItem> GetFileSuggestionInfo(
     std::vector<FileSuggestData> file_suggestions) {
-  std::vector<BirchFileSuggestion> results;
+  std::vector<BirchFileItem> results;
   for (const auto& suggestion : file_suggestions) {
     base::File::Info info;
     if (base::GetFileInfo(suggestion.file_path, &info)) {
-      results.emplace_back(suggestion.file_path, info.last_modified,
-                           info.last_accessed);
+      // Get the most recent time between last modified and last accessed.
+      base::Time timestamp = (info.last_modified > info.last_accessed)
+                                 ? info.last_modified
+                                 : info.last_accessed;
+      results.emplace_back(suggestion.file_path, timestamp);
     }
   }
   return results;
 }
 
 }  // namespace
-
-BirchFileSuggestion::BirchFileSuggestion(
-    base::FilePath new_file_path,
-    const absl::optional<base::Time> new_last_modified,
-    const absl::optional<base::Time> new_last_accessed)
-    : file_path(new_file_path),
-      last_modified(new_last_modified),
-      last_accessed(new_last_accessed) {}
-
-BirchFileSuggestion::BirchFileSuggestion(BirchFileSuggestion&&) = default;
-
-BirchFileSuggestion::BirchFileSuggestion(const BirchFileSuggestion&) = default;
-
-BirchFileSuggestion& BirchFileSuggestion::operator=(
-    const BirchFileSuggestion&) = default;
-
-BirchFileSuggestion::~BirchFileSuggestion() = default;
 
 BirchKeyedService::BirchKeyedService(Profile* profile)
     : file_suggest_service_(
@@ -70,7 +61,7 @@ void BirchKeyedService::OnFileSuggestionUpdated(FileSuggestionType type) {
 void BirchKeyedService::OnSuggestedFileDataUpdated(
     const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
   if (suggest_results) {
-    // Convert each `FileSuggestData` into a `BirchFileSuggestion`.
+    // Convert each `FileSuggestData` into a `BirchFileItem`.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
@@ -82,8 +73,8 @@ void BirchKeyedService::OnSuggestedFileDataUpdated(
 }
 
 void BirchKeyedService::OnFileInfoRetrieved(
-    std::vector<BirchFileSuggestion> file_suggestions) {
-  // TODO(b/304289452): Pass `file_suggestions` to the birch model.
+    std::vector<BirchFileItem> file_items) {
+  Shell::Get()->birch_model()->SetFileSuggestItems(std::move(file_items));
 }
 
 }  // namespace ash

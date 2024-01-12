@@ -5,6 +5,8 @@
 #include "extensions/renderer/api/messaging/gin_port.h"
 
 #include <optional>
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -173,7 +175,7 @@ TEST_F(GinPortTest, TestPostMessage) {
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
 
   auto test_post_message = [this, port_obj, context](
-                               base::StringPiece function,
+                               std::string_view function,
                                std::optional<PortId> expected_port_id,
                                std::optional<Message> expected_message) {
     SCOPED_TRACE(function);

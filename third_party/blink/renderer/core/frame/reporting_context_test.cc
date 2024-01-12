@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -26,6 +27,9 @@ class ReportingContextTest : public testing::Test {
  protected:
   ReportingContextTest() = default;
   ~ReportingContextTest() override = default;
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {

@@ -54,26 +54,11 @@
 #define MAX_FREE_NODES 100
 #endif
 
-/*
- * The following VA_COPY was coded following an example in
- * the Samba project.  It may not be sufficient for some
- * esoteric implementations of va_list but (hopefully) will
- * be sufficient for libxml2.
- */
-#ifndef VA_COPY
-  #ifdef HAVE_VA_COPY
-    #define VA_COPY(dest, src) va_copy(dest, src)
+#ifndef va_copy
+  #ifdef __va_copy
+    #define va_copy(dest, src) __va_copy(dest, src)
   #else
-    #ifdef HAVE___VA_COPY
-      #define VA_COPY(dest,src) __va_copy(dest, src)
-    #else
-      #ifndef VA_LIST_IS_ARRAY
-        #define VA_COPY(dest,src) (dest) = (src)
-      #else
-        #include <string.h>
-        #define VA_COPY(dest,src) memcpy((char *)(dest),(char *)(src),sizeof(va_list))
-      #endif
-    #endif
+    #define va_copy(dest, src) memcpy(dest, src, sizeof(va_list))
   #endif
 #endif
 
@@ -4590,7 +4575,7 @@ xmlTextReaderBuildMessage(const char *msg, va_list ap) {
     va_list aq;
 
     while (1) {
-        VA_COPY(aq, ap);
+        va_copy(aq, ap);
         chars = vsnprintf(str, size, msg, aq);
         va_end(aq);
         if (chars < 0) {

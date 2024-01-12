@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
   // Update relevant pref keys with preserved file data if missing.
   // Pref keys are found in //report/prefs/fresnel_pref_names.h
   // Pointer will exist throughout class lifetime.
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // Field is used to handle Fresnel requests/responses on a single sequence.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -148,11 +148,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
 
   // Tracks the visible networks and their properties.
   // |network_state_handler_| outlives the lifetime of this class.
-  const raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  const raw_ptr<NetworkStateHandler> network_state_handler_;
 
   // Singleton lives throughout class lifetime.
-  const raw_ptr<system::StatisticsProvider, ExperimentalAsh>
-      statistics_provider_;
+  const raw_ptr<system::StatisticsProvider> statistics_provider_;
 
   // Set high entropy seed, which is passed to the use cases in order to
   // uniquely generate pseudonymous ids when importing.

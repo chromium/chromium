@@ -110,6 +110,10 @@ XMLPUBFUN void
  * Add a new entry to the hash table.
  */
 XMLPUBFUN int
+		xmlHashAdd		(xmlHashTablePtr hash,
+		                         const xmlChar *name,
+		                         void *userdata);
+XMLPUBFUN int
 		xmlHashAddEntry		(xmlHashTablePtr hash,
 		                         const xmlChar *name,
 		                         void *userdata);
@@ -118,6 +122,11 @@ XMLPUBFUN int
 		                         const xmlChar *name,
 		                         void *userdata,
 					 xmlHashDeallocator dealloc);
+XMLPUBFUN int
+		xmlHashAdd2		(xmlHashTablePtr hash,
+		                         const xmlChar *name,
+		                         const xmlChar *name2,
+		                         void *userdata);
 XMLPUBFUN int
 		xmlHashAddEntry2	(xmlHashTablePtr hash,
 		                         const xmlChar *name,
@@ -129,6 +138,12 @@ XMLPUBFUN int
 		                         const xmlChar *name2,
 		                         void *userdata,
 					 xmlHashDeallocator dealloc);
+XMLPUBFUN int
+		xmlHashAdd3		(xmlHashTablePtr hash,
+		                         const xmlChar *name,
+		                         const xmlChar *name2,
+		                         const xmlChar *name3,
+		                         void *userdata);
 XMLPUBFUN int
 		xmlHashAddEntry3	(xmlHashTablePtr hash,
 		                         const xmlChar *name,
@@ -199,6 +214,10 @@ XMLPUBFUN void *
 /*
  * Helpers.
  */
+XMLPUBFUN xmlHashTablePtr
+		xmlHashCopySafe		(xmlHashTablePtr hash,
+					 xmlHashCopier copy,
+					 xmlHashDeallocator dealloc);
 XMLPUBFUN xmlHashTablePtr
 		xmlHashCopy		(xmlHashTablePtr hash,
 					 xmlHashCopier copy);

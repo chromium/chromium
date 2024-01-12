@@ -15,7 +15,7 @@ namespace autofill {
 
 class AddressNormalizationManagerTest : public testing::Test {
  protected:
-  AddressNormalizationManagerTest() {}
+  AddressNormalizationManagerTest() = default;
 
   void Initialize(const std::string& app_locale) {
     manager_ = std::make_unique<AddressNormalizationManager>(

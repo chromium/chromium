@@ -376,7 +376,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // associated with the database (rollback journal, write-ahead log,
   // shared-memory file) may be created.
   //
-  // Returns true in case of success, false in case of failure.
+  // Returns true in case of success, false in case of failure. If an error
+  // occurs, this function will invoke the error callback if it is present and
+  // then may attempt to open the database a second time. If the second attempt
+  // succeeds, it will return true.
   [[nodiscard]] bool Open(const base::FilePath& db_file_path);
 
   // Alternative to Open() that creates an in-memory database.
@@ -732,17 +735,13 @@ class COMPONENT_EXPORT(SQL) Database {
   // Enables a special behavior for OpenInternal().
   enum class OpenMode {
     // No special behavior.
-    kNone = 0,
-
-    // Retry if the database error handler is invoked and closes the database.
-    // Database error handlers that call RazeAndPoison() take advantage of this.
-    kRetryOnPoision = 1,
+    kNone,
 
     // Open an in-memory database. Used by OpenInMemory().
-    kInMemory = 2,
+    kInMemory,
 
     // Open a temporary database. Used by OpenTemporary().
-    kTemporary = 3,
+    kTemporary,
   };
 
   // Implements Open(), OpenInMemory(), and OpenTemporary().

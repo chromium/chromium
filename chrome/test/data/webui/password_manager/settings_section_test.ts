@@ -15,7 +15,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-import {createBlockedSiteEntry, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
+import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 // clang-format off
 // <if expr="is_win or is_macosx">
@@ -467,4 +467,137 @@ suite('SettingsSectionTest', function() {
 
     assertFalse(isVisible(settings.$.blockedSitesList));
   });
+
+  test('Move passwords to account button is visible', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
+    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({
+          id: 0,
+          username: 'test1',
+          inProfileStore: true,
+          inAccountStore: false,
+        }),
+      ],
+    });
+
+    passwordManager.data.groups = [group];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await passwordManager.whenCalled('getSavedPasswordList');
+    await flushTasks();
+
+    assertTrue(!!settings.shadowRoot!.getElementById('movePasswordsButton'));
+  });
+
+  test('Move passwords to account button is not visible', async function() {
+    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
+    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({
+          id: 0,
+          username: 'test1',
+          inProfileStore: false,
+          inAccountStore: true,
+        }),
+      ],
+    });
+
+    passwordManager.data.groups = [group];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await passwordManager.whenCalled('getSavedPasswordList');
+    await flushTasks();
+
+    assertFalse(!!settings.shadowRoot!.getElementById('movePasswordsButton'));
+  });
+
+  test(
+      'Move passwords to account button not visible because feature disabled',
+      async function() {
+        loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
+        passwordManager.data.isOptedInAccountStorage = true;
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: true,
+          isSyncingPasswords: false,
+        };
+
+        const group = createCredentialGroup({
+          name: 'test.com',
+          credentials: [
+            createPasswordEntry({
+              id: 0,
+              username: 'test1',
+              inProfileStore: true,
+              inAccountStore: false,
+            }),
+          ],
+        });
+
+        passwordManager.data.groups = [group];
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await passwordManager.whenCalled('getSavedPasswordList');
+        await flushTasks();
+
+        assertFalse(
+            !!settings.shadowRoot!.getElementById('movePasswordsButton'));
+      });
+
+  test(
+      'clicking save passwords in account opens move passwords dialog',
+      async function() {
+        loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
+        passwordManager.data.isOptedInAccountStorage = true;
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: true,
+          isSyncingPasswords: false,
+        };
+
+        const group = createCredentialGroup({
+          name: 'test.com',
+          credentials: [
+            createPasswordEntry({
+              id: 0,
+              username: 'test1',
+              inProfileStore: true,
+              inAccountStore: false,
+            }),
+          ],
+        });
+
+        passwordManager.data.groups = [group];
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await passwordManager.whenCalled('getSavedPasswordList');
+        await flushTasks();
+
+        const movePasswordsButton =
+            settings.shadowRoot!.getElementById('movePasswordsButton');
+        assertTrue(!!movePasswordsButton);
+        assertTrue(isVisible(movePasswordsButton));
+
+        movePasswordsButton!.click();
+        await flushTasks();
+
+        const moveDialog =
+            settings.shadowRoot!.querySelector('move-passwords-dialog');
+        assertTrue(!!moveDialog);
+        const dialog = moveDialog!.shadowRoot!.querySelector('#dialog');
+        assertTrue(!!dialog);
+      });
 });

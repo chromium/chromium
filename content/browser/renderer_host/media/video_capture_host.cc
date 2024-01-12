@@ -255,8 +255,8 @@ void VideoCaptureHost::OnFrameWithEmptyRegionCapture(
     return;
   }
 
-  if (region_capture_rect_ != absl::nullopt) {
-    region_capture_rect_ = absl::nullopt;
+  if (region_capture_rect_ != std::nullopt) {
+    region_capture_rect_ = std::nullopt;
     media_stream_manager_->OnRegionCaptureRectChanged(controller_id,
                                                       region_capture_rect_);
   }

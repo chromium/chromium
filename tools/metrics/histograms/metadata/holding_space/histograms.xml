@@ -108,6 +108,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.FileCreatedFromShowSaveFilePicker.Extension"
+    enum="HoldingSpaceExtension" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the extension for a file that was created in fulfillment of a
+    `window.showSaveFilePicker()` request at the moment of file creation.
+  </summary>
+</histogram>
+
+<histogram
+    name="HoldingSpace.FileCreatedFromShowSaveFilePicker.FilePickerBindingContext"
+    enum="HoldingSpaceFilePickerBindingContext" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the binding context for the file picker used to create a file in
+    fulfillment of a `window.showSaveFilePicker()` request at the moment of file
+    creation.
+  </summary>
+</histogram>
+
 <histogram name="HoldingSpace.FilesAppChip.Action.All"
     enum="HoldingSpaceFilesAppChipAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
@@ -125,6 +147,56 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records an action taken on an item in holding space UI at the moment the
     action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.Launch.Empty"
+    enum="HoldingSpaceItemType" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records an attempt to launch a holding space item of a specific type, backed
+    by an empty file, at the moment of attempt.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.Launch.Empty.Extension"
+    enum="HoldingSpaceExtension" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records an attempt to launch a holding space item backed by an empty file of
+    a specific extension at the moment of attempt.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.Launch.Failure"
+    enum="HoldingSpaceItemType" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records a failure to launch a holding space item of a specific type at the
+    moment of failure.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.Launch.Failure.Extension"
+    enum="HoldingSpaceExtension" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records a failure to launch a holding space item backed by file of a
+    specific extension at the moment of failure.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.Launch.Failure.Reason"
+    enum="HoldingSpaceItemLaunchFailureReason" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the reason for failing to launch a holding space item at the moment
+    of failure.
   </summary>
 </histogram>
 
@@ -170,36 +242,6 @@ chromium-metrics-reviews@google.com.
     at the moment holding space UI is shown. {type}
   </summary>
   <token key="type" variants="HoldingSpaceItemType"/>
-</histogram>
-
-<histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
-    expires_after="2024-06-01">
-  <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records a failure to launch a holding space item of a specific type at the
-    moment of failure.
-  </summary>
-</histogram>
-
-<histogram name="HoldingSpace.Item.FailureToLaunch.Extension"
-    enum="HoldingSpaceExtension" expires_after="2024-06-01">
-  <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records a failure to launch a holding space item backed by file of a
-    specific extension at the moment of failure.
-  </summary>
-</histogram>
-
-<histogram name="HoldingSpace.Item.FailureToLaunch.Reason"
-    enum="HoldingSpaceItemFailureToLaunchReason" expires_after="2024-06-01">
-  <owner>dmblack@google.com</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records the reason for failing to launch a holding space item at the moment
-    of failure.
-  </summary>
 </histogram>
 
 <histogram name="HoldingSpace.Item.TotalCount.{type}" units="items"

@@ -27,9 +27,9 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:117-127
-- chrome_os:117-127
-- android:117-127
-- webview_android:117-127
+- chrome.*:117-
+- chrome_os:117-
+- android:117-
+- webview_android:117-
 tags: []
 type: main

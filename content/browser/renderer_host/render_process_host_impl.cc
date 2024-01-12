@@ -98,6 +98,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
+#include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
@@ -171,6 +172,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ipc/trace_ipc_message.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
@@ -259,9 +261,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
+#include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -295,6 +299,10 @@
 #include "content/public/common/profiling_utils.h"
 #endif
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+#include "content/public/browser/browser_message_filter.h"
+#endif
+
 // VLOG additional statements in Fuchsia release builds.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBEVLOG VLOG
@@ -323,6 +331,13 @@ const char kSiteProcessMapKeyName[] = "content_site_process_map";
 
 RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
+
+#if BUILDFLAG(IS_WIN)
+// This is from extensions/common/switches.cc
+// Marks a renderer as extension process.
+// TODO(joel@microsoft.com): Replace this with a layer-respecting alternative.
+const char kExtensionProcess[] = "extension-process";
+#endif
 
 // the global list of all renderer processes
 base::IDMap<RenderProcessHost*>& GetAllHosts() {
@@ -469,7 +484,7 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
 bool MayReuseAndIsSuitableWithMainFrameThreshold(
     RenderProcessHost* host,
     SiteInstanceImpl* site_instance,
-    absl::optional<size_t> main_frame_threshold) {
+    std::optional<size_t> main_frame_threshold) {
   // It's possible that |host| has become unsuitable for hosting
   // |site_instance|, for example if it was reused by a navigation to a
   // different site, and |site_instance| requires a dedicated process. Do not
@@ -582,7 +597,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
   void FindRenderProcessesForSiteInstance(
       SiteInstanceImpl* site_instance,
-      absl::optional<size_t> main_frame_threshold,
+      std::optional<size_t> main_frame_threshold,
       std::set<RenderProcessHost*>* foreground_processes,
       std::set<RenderProcessHost*>* background_processes) {
     auto result = map_.find(site_instance->GetSiteInfo());
@@ -869,7 +884,7 @@ class UnmatchedServiceWorkerProcessTracker
 
   RenderProcessHost* TakeFreshestProcessForSite(
       SiteInstanceImpl* site_instance) {
-    absl::optional<SiteProcessIDPair> site_process_pair =
+    std::optional<SiteProcessIDPair> site_process_pair =
         FindFreshestProcessForSite(site_instance);
 
     if (!site_process_pair)
@@ -894,7 +909,7 @@ class UnmatchedServiceWorkerProcessTracker
     return host;
   }
 
-  absl::optional<SiteProcessIDPair> FindFreshestProcessForSite(
+  std::optional<SiteProcessIDPair> FindFreshestProcessForSite(
       SiteInstanceImpl* site_instance) const {
     const auto reversed_site_process_set = base::Reversed(site_process_set_);
     if (site_instance->IsDefaultSiteInstance()) {
@@ -912,7 +927,7 @@ class UnmatchedServiceWorkerProcessTracker
           return site_process_pair;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Returns true if this tracker contains the process ID |host->GetID()|.
@@ -1819,11 +1834,6 @@ void RenderProcessHostImpl::ResetChannelProxy() {
 
 void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  scoped_refptr<RenderMessageFilter> render_message_filter =
-      base::MakeRefCounted<RenderMessageFilter>(GetID(), GetBrowserContext(),
-                                                widget_helper_.get());
-  AddFilter(render_message_filter.get());
-
 #if BUILDFLAG(ENABLE_PPAPI)
   pepper_renderer_connection_ = base::MakeRefCounted<PepperRendererConnection>(
       GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
@@ -2296,6 +2306,17 @@ void RenderProcessHostImpl::WriteIntoTrace(
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
   auto registry = std::make_unique<service_manager::BinderRegistry>();
 
+  registry->AddInterface(base::BindRepeating(
+      [](int rph_id, scoped_refptr<RenderWidgetHelper> helper,
+         mojo::PendingReceiver<mojom::RenderMessageFilter> receiver) {
+        // We should only ever see one instance of this created per
+        // RenderProcessHost since it is maintained by the `RenderThreadImpl`.
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<RenderMessageFilter>(rph_id, helper.get()),
+            std::move(receiver));
+      },
+      GetID(), widget_helper_));
+
   AddUIThreadInterface(
       registry.get(),
       base::BindRepeating(
@@ -2643,7 +2664,7 @@ void RenderProcessHostImpl::RegisterCoordinatorClient(
                 GetMemoryInstrumentationRegistry()->RegisterClientProcess(
                     std::move(receiver), std::move(client_process),
                     memory_instrumentation::mojom::ProcessType::RENDERER, pid,
-                    /*service_name=*/absl::nullopt);
+                    /*service_name=*/std::nullopt);
               },
               std::move(receiver), std::move(client_process),
               GetProcess().Pid()));
@@ -3290,7 +3311,15 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
     command_line->AppendSwitch(switches::kPdfRenderer);
 
 #if BUILDFLAG(IS_WIN)
-  command_line->AppendArg(switches::kPrefetchArgumentRenderer);
+  if (command_line->HasSwitch(kExtensionProcess)) {
+    command_line->AppendArg(
+        internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+            AppLaunchPrefetchType::kExtension));
+  } else {
+    command_line->AppendArg(
+        internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+            AppLaunchPrefetchType::kRenderer));
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   // Now send any options from our own command line we want to propagate.
@@ -4242,10 +4271,12 @@ IPC::ChannelProxy* RenderProcessHostImpl::GetChannel() {
   return channel_.get();
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 void RenderProcessHostImpl::AddFilter(BrowserMessageFilter* filter) {
   filter->RegisterAssociatedInterfaces(channel_.get());
   channel_->AddFilter(filter->GetFilter());
 }
+#endif
 
 bool RenderProcessHostImpl::FastShutdownStarted() {
   return fast_shutdown_started_;
@@ -5048,6 +5079,10 @@ void RenderProcessHostImpl::SetPrivateMemoryFootprint(
 }
 #endif
 
+void RenderProcessHostImpl::HasGpuProcess(HasGpuProcessCallback callback) {
+  GpuProcessHost::GetHasGpuProcess(std::move(callback));
+}
+
 void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
   int32_t new_visible_widgets_count = 0;
   unsigned int new_frame_depth = kMaxFrameDepthForPriority;
@@ -5266,7 +5301,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 #else
     priority_.visible = child_process_launcher_->GetProcess().GetPriority() ==
                         base::Process::Priority::kUserBlocking;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
     // Only update the priority on startup if boosting is enabled (to avoid
     // reintroducing https://crbug.com/560446#c13 while pending views only
@@ -5346,7 +5381,7 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 RenderProcessHost*
 RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
     SiteInstanceImpl* site_instance,
-    absl::optional<size_t> main_frame_threshold) {
+    std::optional<size_t> main_frame_threshold) {
   BrowserContext* browser_context = site_instance->GetBrowserContext();
   if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
     return nullptr;

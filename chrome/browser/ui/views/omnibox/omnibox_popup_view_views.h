@@ -30,8 +30,9 @@ struct AutocompleteMatch;
 class OmniboxPopupViewViews : public views::View,
                               public OmniboxPopupView,
                               public views::WidgetObserver {
+  METADATA_HEADER(OmniboxPopupViewViews, views::View)
+
  public:
-  METADATA_HEADER(OmniboxPopupViewViews);
   OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
                         OmniboxController* controller,
                         LocationBarView* location_bar_view);

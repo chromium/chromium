@@ -252,7 +252,7 @@ class AutofillDriverRouter {
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.
-  std::vector<FieldGlobalId> ApplyFormAction(
+  base::flat_set<FieldGlobalId> ApplyFormAction(
       AutofillDriver* source,
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
@@ -339,11 +339,6 @@ class AutofillDriverRouter {
       const std::vector<FormDataPredictions>& type_predictions,
       void (*callback)(AutofillDriver* target,
                        const std::vector<FormDataPredictions>& predictions));
-  void SendFieldsEligibleForManualFillingToRenderer(
-      AutofillDriver* source,
-      const std::vector<FieldGlobalId>& fields,
-      void (*callback)(AutofillDriver* target,
-                       const std::vector<FieldRendererId>& fields));
 
   // Event called by the browser, passed to the browser:
   void OnContextMenuShownInField(

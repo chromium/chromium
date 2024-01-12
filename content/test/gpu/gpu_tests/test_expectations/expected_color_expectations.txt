@@ -37,7 +37,7 @@
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm ]
+#         qualcomm qualcomm-0x41333430 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -104,7 +104,7 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 
 # ExpectedColor_MediaRecorderFromVideoElement fails on several FYI bots
 crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
-crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ chromeos chromeos-board-amd64-generic cros-chrome target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ angle-vulkan arm fuchsia no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
@@ -113,8 +113,8 @@ crbug.com/1302427 [ clang-coverage fuchsia fuchsia-board-qemu-x64 ] ExpectedColo
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-crbug.com/1506258 [ asan graphite-enabled intel-0x3e9b mac no-clang-coverage release ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
-crbug.com/1506258 [ debug graphite-enabled intel-0x3e9b mac no-asan no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/1506258 [ asan graphite-enabled intel-0x3e9b mac no-clang-coverage release ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1506258 [ debug graphite-enabled intel-0x3e9b mac no-asan no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 
 #######################################################################

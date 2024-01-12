@@ -58,10 +58,10 @@ class ArcKioskBridge : public KeyedService,
   // |delegate| should be alive while the ArcKioskBridge instance is alive.
   ArcKioskBridge(ArcBridgeService* bridge_service, Delegate* delegate);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Tracks current maintenance session id.
   int32_t session_id_ = -1;

@@ -169,6 +169,17 @@ TEST_F(WebElementTest, SelectedTextOfTextArea) {
   EXPECT_EQ(TestElement().SelectedText().Utf8(), "plain text");
 }
 
+// Tests SelectedText() and ContainsFrameSelection() with a document
+// with no root, on a form control element.
+TEST_F(WebElementTest, SelectedTextEmptyDocument) {
+  InsertHTML(R"(<input type=text id=testElement></div>)");
+  WebElement test_element = TestElement();
+  GetDocument().documentElement()->remove();
+
+  EXPECT_FALSE(test_element.ContainsFrameSelection());
+  EXPECT_EQ(test_element.SelectedText().Utf8(), "");
+}
+
 TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   InsertHTML(
       "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>"

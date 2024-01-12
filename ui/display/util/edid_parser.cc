@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/hash/md5.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -33,6 +34,7 @@ constexpr char kBlockZeroSerialNumberTypeMetric[] =
 constexpr char kNumOfSerialNumbersProvidedByExternalDisplay[] =
     "Display.External.NumOfSerialNumbersProvided";
 constexpr uint8_t kMaxSerialNumberCount = 2;
+constexpr uint8_t kDisplayIdExtensionTag = 0x70;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -172,6 +174,10 @@ std::string EdidParser::ProductIdToString(uint16_t product_id) {
   uint8_t lower_char = (product_id >> 8) & 0xFF;
   uint8_t upper_char = product_id & 0xFF;
   return base::StringPrintf("%02X%02X", upper_char, lower_char);
+}
+
+bool EdidParser::TileCanScaleToFit() const {
+  return tile_can_scale_to_fit_;
 }
 
 void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
@@ -597,10 +603,17 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       break;
 
     const size_t extension_offset = kExtensionBaseOffset + i * kExtensionSize;
-    const uint8_t cea_tag = edid[extension_offset];
+    const uint8_t extention_tag = edid[extension_offset];
     const uint8_t revision = edid[extension_offset + 1];
-    if (cea_tag != kCEAExtensionTag || revision != kExpectedExtensionRevision)
+
+    if (extention_tag == kDisplayIdExtensionTag) {
+      ParseDisplayIdExtension(edid, extension_offset);
       continue;
+    }
+    if (extention_tag != kCEAExtensionTag ||
+        revision != kExpectedExtensionRevision) {
+      continue;
+    }
 
     const uint8_t timing_descriptors_start = std::min(
         edid[extension_offset + 2], static_cast<unsigned char>(kExtensionSize));
@@ -730,6 +743,99 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   base::UmaHistogramEnumeration(kParseEdidFailureMetric,
                                 ParseEdidFailure::kNoError);
   ReportEdidOptionalsForExternalDisplay();
+}
+
+// TODO(b/316356595): Move DisplayID parsing into its own class.
+// NOTE: Refer to figure Figure 2-1 of VESA DisplayID Standard Version 2.1 for
+// how DisplayID Structure v2.0 is laid out as an EDID extension.
+void EdidParser::ParseDisplayIdExtension(const std::vector<uint8_t>& edid,
+                                         size_t extension_offset) {
+  const uint8_t extension_tag = edid[extension_offset];
+  if (extension_tag != kDisplayIdExtensionTag) {
+    LOG(ERROR) << "Unable to proceed with parsing DisplayID extension as "
+                  "extension tag is not for DisplayID (0x70). Actual tag: "
+               << extension_tag;
+    return;
+  }
+
+  // There are two data blocks that describe tiled displays:
+  // * DisplayID v1.3 with tag 0x12
+  // * DisplayID v2.0 with tag 0x28
+  // The v1.3 block is superscede by v2.0. Both of the blocks are laregely
+  // identical.
+  constexpr uint8_t kTiledDisplayDataBlockTag2_0 = 0x28;
+  constexpr uint8_t kTiledDisplayDataBlockTag1_3 = 0x12;
+
+  // Section data block is divided into (block tag, revision #, number of
+  // payload bytes, payload), where everything except for the payload is one
+  // byte long.
+  constexpr size_t kDataBlockNumPayloadBytesOffset = 2;
+  constexpr size_t kDataBlockNonPayloadBytes = 3;
+
+  // The EDID-extension section block tag is the first byte
+  // (|extension_offset|), followed by 4 bytes of DisplayID extension section
+  // header, then the data blocks.
+  const size_t displayid_extension_offset = extension_offset + 1;
+  const size_t displayid_data_block_base = displayid_extension_offset + 4;
+  size_t current_data_block_offset = displayid_data_block_base;
+
+  // The second byte in the extension section header indicates the total number
+  // of bytes in the section data block(s). This should always be 121.
+  const uint8_t num_bytes_in_section_data_blocks =
+      edid[displayid_extension_offset + 1];
+  if (num_bytes_in_section_data_blocks != 121) {
+    LOG(WARNING) << "Number of bytes in section data block should be 121 "
+                    "according to the "
+                    "DisplayID spec. Actual # of bytes: "
+                 << num_bytes_in_section_data_blocks;
+    return;
+  }
+
+  const size_t max_offset =
+      std::min(edid.size(),
+               displayid_data_block_base + num_bytes_in_section_data_blocks);
+  while (current_data_block_offset < max_offset
+         // If there are no remaining data blocks before the fixed 121 bytes of
+         // section data block space runs out, the remaining space is padded
+         // with 0. Since there are no data block tag with ID 0, if a data block
+         // tag is 0 then the rest of the section is just padding.
+         && edid[current_data_block_offset] != 0) {
+    const uint8_t current_data_block_tag = edid[current_data_block_offset];
+    switch (current_data_block_tag) {
+      case kTiledDisplayDataBlockTag1_3:
+      case kTiledDisplayDataBlockTag2_0:
+        ParseTiledDisplayBlock(edid, current_data_block_offset);
+        break;
+    }
+    // NOTE: Parse other DisplayID blocks here.
+
+    // Increment |current_data_block_offset| to point to the next data block's
+    // tag (1st byte of the section data block).
+    current_data_block_offset +=
+        edid[current_data_block_offset + kDataBlockNumPayloadBytesOffset] +
+        kDataBlockNonPayloadBytes;
+  }
+}
+
+// DisplayID 1.3 and 2.0 tiled display data blocks look identical, at
+// least for the current set of fields. Consult both of the specs before
+// parsing more fields.
+void EdidParser::ParseTiledDisplayBlock(const std::vector<uint8_t>& edid,
+                                        size_t block_offset) {
+  // See:
+  // https://en.wikipedia.org/wiki/DisplayID#0x28_Tiled_display_topology
+  // "Tile capabilities" is described in the 4th byte (offset + 3).
+  // Bits 2:0 describe "Tile Behavior when It Is the Only Tile Receiving an
+  // Image from the Source". With value of 2 indicating that the tile will
+  // "Scale to fit the display" when it is the only tile receiving an image from
+  // the source.
+  constexpr size_t kTileCapabilitiesOffset = 3;
+  constexpr uint8_t kSingleTileBehaviorBitmask = 0b111;
+  constexpr uint8_t kSingleTileStretchToFit = 0x02;
+
+  tile_can_scale_to_fit_ =
+      (edid[block_offset + kTileCapabilitiesOffset] &
+       kSingleTileBehaviorBitmask) == kSingleTileStretchToFit;
 }
 
 void EdidParser::ReportEdidOptionalsForExternalDisplay() const {

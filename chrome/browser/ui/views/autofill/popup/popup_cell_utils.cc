@@ -21,11 +21,13 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/plus_addresses/resources/vector_icons.h"
+#endif
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,6 +126,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
+    case Suggestion::Icon::kPlusAddress:
       return std::u16string();
   }
   NOTREACHED_NORETURN();
@@ -199,6 +202,13 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
     case Suggestion::Icon::kGooglePasswordManager:
       return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
                                      kGooglePasswordManagerIconSize);
+    case Suggestion::Icon::kPlusAddress:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ImageViewFromVectorIcon(plus_addresses::kPlusAddressesLogoIcon,
+                                     kIconSize);
+#else
+      return ImageViewFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
+#endif
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGooglePayDark:
@@ -480,14 +490,15 @@ void AddSuggestionContentToView(
 
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
-                 PopupType popup_type,
+                 FillingProduct main_filling_product,
                  int maximum_width_single_line) {
-  switch (popup_type) {
-    case PopupType::kAddresses:
-    case PopupType::kAutocomplete:
+  switch (main_filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPlusAddresses:
       label.SetMaximumWidthSingleLine(maximum_width_single_line);
       break;
-    case PopupType::kCreditCards:
+    case FillingProduct::kCreditCard:
       if (text.should_truncate.value()) {
         // should_truncate should only be set to true iff the experiments are
         // enabled.
@@ -498,9 +509,11 @@ void FormatLabel(views::Label& label,
         label.SetMaximumWidthSingleLine(maximum_width_single_line);
       }
       break;
-    case PopupType::kIbans:
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
+    case FillingProduct::kCompose:
+    case FillingProduct::kIban:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
       break;
   }
 }
@@ -535,7 +548,7 @@ int GetMaxPopupAddressProfileWidth() {
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupRowContentView& content_view,
     const Suggestion& suggestion,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     int text_style) {
   std::vector<std::unique_ptr<views::View>> result;
   const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -566,12 +579,12 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
       // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
-        FormatLabel(*label, label_text, popup_type,
+        FormatLabel(*label, label_text, main_filling_product,
                     GetMaxPopupAddressProfileWidth());
       } else {
         // To make sure the popup width will not exceed its maximum value,
         // divide the maximum label width by the number of labels.
-        FormatLabel(*label, label_text, popup_type,
+        FormatLabel(*label, label_text, main_filling_product,
                     GetMaxPopupAddressProfileWidth() / label_row.size());
       }
     }
@@ -579,21 +592,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
   }
 
   return result;
-}
-
-void AddSuggestionStrategyContentCellChildren(PopupRowContentView* view,
-                                              const Suggestion& suggestion,
-                                              PopupType popup_type) {
-  // Add the label views.
-  std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
-      suggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
-  FormatLabel(*main_text_label, suggestion.main_text, popup_type,
-              GetMaxPopupAddressProfileWidth());
-  AddSuggestionContentToView(
-      suggestion, std::move(main_text_label),
-      CreateMinorTextLabel(suggestion.minor_text),
-      /*description_label=*/nullptr,
-      CreateAndTrackSubtextViews(*view, suggestion, popup_type), *view);
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(

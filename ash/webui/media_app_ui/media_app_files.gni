@@ -8,27 +8,28 @@ ts_root_dir = "$root_gen_dir/ash/webui/media_app_ui/stage_ts"
 # Static JS files that have .d.ts files generated for them for consumption by
 # tsc in the staging folder. These are also copied for rollup.
 media_app_unconverted_js_sources = [
-  "app_context_test_support.js",
   "error_reporter.js",
-  "launch.js",
-  "message_types.js",
   "mojo_api_bootstrap.js",
-  "mojo_api_bootstrap_untrusted.js",
-  "piex_module_loader.js",
 ]
 
 # Files converted to TS.
-media_app_converted_ts_sources = [ "receiver.ts" ]
+media_app_converted_ts_sources = [
+  "app_context_test_support.ts",
+  "launch.ts",
+  "message_types.ts",
+  "mojo_api_bootstrap_untrusted.ts",
+  "piex_module.ts",
+  "piex_module_loader.ts",
+  "receiver.ts",
+]
+
+media_app_mojom_sources = [ "media_app_ui_untrusted.mojom-webui.ts" ]
 
 # Corresponding .js outputs of compiled .ts that are consumed by rollup.
 media_app_compiled_sources =
     process_file_template(
-        media_app_converted_ts_sources,
-        "$root_gen_dir/ash/webui/media_app_ui/{{source_name_part}}.js")
-
-# Inputs to rollup with no additional deps. These are also fed to tsc in case
-# they ever get converted to .ts in future.
-media_app_static_js_sources = [ "piex_module.js" ]
+        media_app_converted_ts_sources + media_app_mojom_sources,
+        "$root_gen_dir/ash/webui/media_app_ui/tsc/{{source_name_part}}.js")
 
 media_app_static_defs = [
   "extra_types.d.ts",

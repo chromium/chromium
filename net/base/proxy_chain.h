@@ -68,7 +68,7 @@ class NET_EXPORT ProxyChain {
     return ProxyChain(ProxyServer::FromSchemeHostAndPort(scheme, host, port));
   }
   // Create a "direct" proxy chain, which includes no proxy servers.
-  static ProxyChain Direct() { return ProxyChain(ProxyServer::Direct()); }
+  static ProxyChain Direct() { return ProxyChain(std::vector<ProxyServer>()); }
 
   // Get ProxyServer at index in chain. This is not valid for direct or invalid
   // proxy chains.
@@ -83,11 +83,6 @@ class NET_EXPORT ProxyChain {
       const {
     return proxy_server_list_;
   }
-
-  // Get the single ProxyServer equivalent to this chain. This must not be
-  // called for multi-proxy chains.
-  // TODO(crbug.com/1491092): Remove this method.
-  const ProxyServer& proxy_server() const;
 
   // Returns number of proxy servers in chain.
   size_t length() const {

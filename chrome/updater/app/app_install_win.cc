@@ -4,12 +4,6 @@
 
 #include "chrome/updater/app/app_install.h"
 
-#include <memory>
-#include <optional>
-#include <string>
-#include <tuple>
-#include <vector>
-
 #include <ocidl.h>
 #include <olectl.h>
 #include <shldisp.h>
@@ -17,6 +11,12 @@
 #include <windows.h>
 #include <winhttp.h>
 #include <wrl/client.h>
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -42,7 +42,9 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app_install_progress.h"
+#include "chrome/updater/app/app_install_util_win.h"
 #include "chrome/updater/app/app_install_win_internal.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
@@ -169,6 +171,14 @@ void InstallProgressSilentObserver::OnComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(events_sink_);
   VLOG(1) << __func__;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kAlwaysLaunchCmdSwitch)) {
+    auto scoped_com_initializer =
+        std::make_unique<base::win::ScopedCOMInitializer>(
+            base::win::ScopedCOMInitializer::kMTA);
+    LaunchCmdLines(observer_info);
+  }
 
   events_sink_->DoExit();
 }

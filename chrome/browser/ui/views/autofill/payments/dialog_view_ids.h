@@ -69,6 +69,10 @@ enum DialogViewId : int {
   // The following are views::StyledLabel objects.
   SETTINGS_LABEL,  // Appears in the mandatory reauth opt-in confirmation
                    // bubble.
+
+  // The following are views::Throbber objects.
+  LOADING_THROBBER,  // Appears during server card upload in save card offer
+                     // bubble.
 };
 
 }  // namespace autofill

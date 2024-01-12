@@ -6,8 +6,10 @@
 #define MEDIA_BASE_ANDROID_MEDIA_CODEC_UTIL_H_
 
 #include <jni.h>
+
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -74,7 +76,7 @@ class MEDIA_EXPORT MediaCodecUtil {
   // Returns absl::nullopt if the decoder isn't recognized. `host_sdk_int` may
   // be set for testing purposes.
   static absl::optional<gfx::Size> LookupCodedSizeAlignment(
-      base::StringPiece name,
+      std::string_view name,
       absl::optional<int> host_sdk_int = absl::nullopt);
 
   //

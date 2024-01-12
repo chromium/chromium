@@ -27,6 +27,7 @@ class SkiaOutputSurface;
 namespace cc {
 
 struct ApplyViewportChangesArgs;
+struct BeginMainFrameMetrics;
 
 // Used by test stubs to notify the test when something interesting happens.
 class TestHooks : public AnimationDelegate {
@@ -125,6 +126,7 @@ class TestHooks : public AnimationDelegate {
   virtual void DidReceiveCompositorFrameAck() {}
   virtual void DidActivateSyncTree() {}
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) {}
+  virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics();
 
   // AnimationDelegate implementation.
   void NotifyAnimationStarted(base::TimeTicks monotonic_time,

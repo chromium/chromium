@@ -619,10 +619,10 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
       // Parse a selector from rawSelector. If the result is failure, then
       // return null. Otherwise, let selector be the result.
-      base::span<CSSSelector> selector_vector =
-          CSSParser::ParseSelector(css_parser_context, CSSNestingType::kNone,
-                                   /*parent_rule_for_nesting=*/nullptr, nullptr,
-                                   raw_selector_string, arena);
+      base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
+          css_parser_context, CSSNestingType::kNone,
+          /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
+          nullptr, raw_selector_string, arena);
       if (selector_vector.empty()) {
         SetParseErrorMessage(
             out_error, String::Format("\"%s\" is not a valid selector.",

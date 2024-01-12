@@ -52,6 +52,10 @@
 #include "components/unexportable_keys/fake_unexportable_key_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+namespace {
+constexpr char kNoBindingChallenge[] = "";
+}
+
 class MutableProfileOAuth2TokenServiceDelegateTest
     : public testing::Test,
       public OAuth2AccessTokenConsumer,
@@ -847,7 +851,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchPersistentError) {
   scope_list.push_back("scope");
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
-          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this);
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          kNoBindingChallenge);
   fetcher->Start("foo", "bar", scope_list);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, access_token_success_count_);
@@ -877,7 +882,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RetryBackoff) {
   scope_list.push_back("scope");
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher1 =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
-          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this);
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          kNoBindingChallenge);
   fetcher1->Start("foo", "bar", scope_list);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, access_token_success_count_);
@@ -891,7 +897,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RetryBackoff) {
       base::TimeTicks());
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher2 =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
-          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this);
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          kNoBindingChallenge);
   fetcher2->Start("foo", "bar", scope_list);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, access_token_success_count_);
@@ -920,7 +927,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ResetBackoff) {
   scope_list.push_back("scope");
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher1 =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
-          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this);
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          kNoBindingChallenge);
   fetcher1->Start("foo", "bar", scope_list);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, access_token_success_count_);
@@ -931,7 +939,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ResetBackoff) {
       network::mojom::ConnectionType::CONNECTION_WIFI);
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher2 =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
-          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this);
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          kNoBindingChallenge);
   fetcher2->Start("foo", "bar", scope_list);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, access_token_success_count_);
@@ -1343,7 +1352,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchWithBoundToken) {
   EXPECT_EQ(0, access_token_failure_count_);
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
       delegate->CreateAccessTokenFetcher(account_id,
-                                         delegate->GetURLLoaderFactory(), this);
+                                         delegate->GetURLLoaderFactory(), this,
+                                         kNoBindingChallenge);
   fetcher->Start("foo", "bar", {"scope"});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, access_token_success_count_);

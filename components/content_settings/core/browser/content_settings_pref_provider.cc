@@ -30,6 +30,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -113,14 +114,15 @@ PrefProvider::PrefProvider(PrefService* prefs,
 
   DiscardOrMigrateObsoletePreferences();
 
-  pref_change_registrar_.Init(prefs_);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs_);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
     content_settings_prefs_.insert(std::make_pair(
         info->type(), std::make_unique<ContentSettingsPref>(
-                          info->type(), prefs_, &pref_change_registrar_,
+                          info->type(), prefs_, pref_change_registrar_.get(),
                           info->pref_name(), off_the_record_, restore_session,
                           base::BindRepeating(&PrefProvider::Notify,
                                               base::Unretained(this)))));
@@ -157,6 +159,20 @@ std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
   }
 
   return GetPref(content_type)->GetRuleIterator(off_the_record);
+}
+
+std::unique_ptr<Rule> PrefProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
+  if (!supports_type(content_type)) {
+    return nullptr;
+  }
+
+  return GetPref(content_type)
+      ->GetRule(primary_url, secondary_url, off_the_record);
 }
 
 // TODO(b/307193732): handle the PartitionKey in all relevant methods.
@@ -263,7 +279,7 @@ bool PrefProvider::UpdateSetting(
     if (!updated) {
       return false;
     }
-    base::Value value = rule->TakeValue();
+    base::Value value = std::move(rule->value);
     RuleMetaData metadata = std::move(rule->metadata);
     ContentSettingsPattern primary_pattern = std::move(rule->primary_pattern);
     ContentSettingsPattern secondary_pattern =
@@ -285,7 +301,8 @@ bool PrefProvider::UpdateSetting(
 bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
                                       const GURL& secondary_url,
                                       ContentSettingsType content_type,
-                                      const base::Time time) {
+                                      const base::Time time,
+                                      const PartitionKey& partition_key) {
   return UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
@@ -301,7 +318,8 @@ bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
 bool PrefProvider::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
                           base::Time());
 }
@@ -309,7 +327,8 @@ bool PrefProvider::ResetLastVisitTime(
 bool PrefProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
                           GetCoarseVisitedTime(clock_->Now()));
 }
@@ -318,7 +337,8 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    absl::optional<ContentSetting> setting_to_match) {
+    absl::optional<ContentSetting> setting_to_match,
+    const PartitionKey& partition_key) {
   absl::optional<base::TimeDelta> delta_to_expiration;
   UpdateSetting(
       content_type,
@@ -327,7 +347,7 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
                rule.secondary_pattern.Matches(secondary_url) &&
                (!setting_to_match.has_value() ||
                 setting_to_match.value() ==
-                    content_settings::ValueToContentSetting(rule.value()));
+                    content_settings::ValueToContentSetting(rule.value));
       },
       [&](Rule& rule) -> bool {
         // Only settings whose lifetimes are non-zero can be
@@ -368,7 +388,7 @@ void PrefProvider::ShutdownOnUIThread() {
   for (const auto& pref : content_settings_prefs_) {
     pref.second->OnShutdown();
   }
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.reset();
   prefs_ = nullptr;
 }
 

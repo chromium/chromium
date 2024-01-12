@@ -25,7 +25,7 @@ const std::array<uint8_t, 16> kIv = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25,
 
 // For disabling noisy logging.
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
 Environment* env = new Environment();

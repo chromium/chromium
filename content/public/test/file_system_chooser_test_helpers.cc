@@ -35,7 +35,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
       if (file_types) {
         out_params_->file_types = *file_types;
       } else {
-        out_params_->file_types = absl::nullopt;
+        out_params_->file_types = std::nullopt;
       }
       out_params_->owning_window = owning_window;
       out_params_->file_type_index = file_type_index;
@@ -44,7 +44,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
       if (caller) {
         out_params_->caller = *caller;
       } else {
-        out_params_->caller = absl::nullopt;
+        out_params_->caller = std::nullopt;
       }
 
       // Free the pointer since output parameters should only be written to
@@ -94,7 +94,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       if (file_types) {
         out_params_->file_types = *file_types;
       } else {
-        out_params_->file_types = absl::nullopt;
+        out_params_->file_types = std::nullopt;
       }
       out_params_->owning_window = owning_window;
       out_params_->file_type_index = file_type_index;
@@ -103,7 +103,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       if (caller) {
         out_params_->caller = *caller;
       } else {
-        out_params_->caller = absl::nullopt;
+        out_params_->caller = std::nullopt;
       }
 
       // Clean up the output parameters; they should only be filled in once.

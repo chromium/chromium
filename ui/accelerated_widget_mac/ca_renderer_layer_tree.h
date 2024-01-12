@@ -316,11 +316,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   const bool allow_solid_color_layers_ = true;
   id<MTLDevice> __strong metal_device_ = nil;
 
-  // Used for uma.
-  int changed_io_surfaces_during_commit_ = 0;
-  int unchanged_io_surfaces_during_commit_ = 0;
-  int total_updated_io_surface_size_during_commit_ = 0;
-
   // Enable CALayerTree optimization that will try to reuse the CALayer with a
   // matched CALayer from the old CALayerTree in the previous frame.
   const bool ca_layer_tree_optimization_;

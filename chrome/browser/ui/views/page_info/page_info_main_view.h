@@ -42,16 +42,18 @@ class PageInfoMainView : public views::View,
                          public PageInfoUI,
                          public PermissionToggleRowViewObserver,
                          public ChosenObjectViewObserver {
+  METADATA_HEADER(PageInfoMainView, views::View)
+
  public:
-  METADATA_HEADER(PageInfoMainView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
   class ContainerView : public views::View {
+    METADATA_HEADER(ContainerView, views::View)
+
    public:
-    METADATA_HEADER(ContainerView);
     ContainerView();
 
     // Notifies that preferred size changed and updates the layout.

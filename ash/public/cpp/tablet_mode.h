@@ -64,6 +64,9 @@ class ASH_PUBLIC_EXPORT TabletMode {
   virtual bool ForceUiTabletModeState(std::optional<bool> enabled) = 0;
 
   // Enable/disable the tablet mode. Used only by test cases.
+  // Do NOT call this directly from unit tests. Instead, please use
+  // ash::TabletModeControllerTestApi().{Enter/Leave}TabletMode().
+  // TODO(crbug.com/1502114): Move this to private.
   virtual void SetEnabledForTest(bool enabled) = 0;
 
  protected:

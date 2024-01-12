@@ -144,15 +144,6 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
              WorkerThreadObserver* worker_thread_observer = nullptr);
 
 
-
-  // Joins this WorkerThread. If a Task is already running, it will be
-  // allowed to complete its execution. This can only be called once.
-  //
-  // Note: A thread that detaches before JoinForTesting() is called may still be
-  // running after JoinForTesting() returns. However, it can't run tasks after
-  // JoinForTesting() returns.
-  virtual void JoinForTesting() = 0;
-
   // Returns true if the worker is alive.
   bool ThreadAliveForTesting() const;
 
@@ -189,6 +180,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   class Thread;
 
   ~WorkerThread() override;
+
+  // Must be called by implementations on destruction.
+  void Destroy();
 
   bool ShouldExit() const;
 
@@ -256,8 +250,8 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // because all post-construction accesses occur on the thread.
   ThreadType current_thread_type_;
 
-  // Set once JoinForTesting() has been called.
-  AtomicFlag join_called_for_testing_;
+  // Whether this worker has been joined for testing.
+  virtual bool join_called_for_testing() const = 0;
 
   const size_t sequence_num_;
 

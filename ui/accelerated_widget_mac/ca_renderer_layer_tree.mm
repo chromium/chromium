@@ -59,36 +59,6 @@ class ComparatorSkColor4f {
   }
 };
 
-void RecordIOSurfaceHistograms(
-    int changed_io_surfaces_during_commit,
-    int unchanged_io_surfaces_during_commit,
-    int total_updated_io_surface_size_during_commit) {
-  // UMA for updated IOSurfaces.
-  int total_io_surfaces =
-      changed_io_surfaces_during_commit + unchanged_io_surfaces_during_commit;
-  if (total_io_surfaces > 0) {
-    // Total changed IOSurface size per frame. Use 100M as a max for this
-    // histogram. IOSurface size = w x h x bpp x planes. A 32 bpp HD surface
-    // takes ~8M bytes.
-    base::UmaHistogramCustomCounts(
-        "Compositing.Renderer.CALayer.ChangedIOSurfacesSizePerFrame",
-        total_updated_io_surface_size_during_commit, /*min=*/1,
-        /*exclusive_max=*/100000000, /*buckets=*/50);
-
-    // The number of changed IOSurfaces per frame.
-    base::UmaHistogramCustomCounts(
-        "Compositing.Renderer.CALayer.ChangedIOSurfacesPerFrame",
-        changed_io_surfaces_during_commit, /*min=*/1, /*exclusive_max=*/300,
-        /*buckets=*/50);
-
-    int changed_io_surface_percentage =
-        changed_io_surfaces_during_commit * 100 / total_io_surfaces;
-    base::UmaHistogramPercentage(
-        "Compositing.Renderer.CALayer.ChangedIOSurfacesPercentagePerFrame",
-        changed_io_surface_percentage);
-  }
-}
-
 // This will enqueue |io_surface| to be drawn by |av_layer|. This will
 // retain |cv_pixel_buffer| until it is no longer being displayed.
 bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
@@ -376,11 +346,6 @@ void CARendererLayerTree::CommitScheduledCALayers(
   // tree, they will be removed from the CALayer tree in this deallocation.
   old_tree.reset();
   has_committed_ = true;
-
-  // UMA
-  RecordIOSurfaceHistograms(changed_io_surfaces_during_commit_,
-                            unchanged_io_surfaces_during_commit_,
-                            total_updated_io_surface_size_during_commit_);
 }
 
 void CARendererLayerTree::MatchLayersToOldTreeDefault(
@@ -1239,20 +1204,12 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
       if (update_contents) {
         if (io_surface_) {
           ca_layer_.contents = (__bridge id)io_surface_.get();
-          // Used for UMA
-          tree()->changed_io_surfaces_during_commit_++;
-          tree()->total_updated_io_surface_size_during_commit_ +=
-              IOSurfaceGetAllocSize(io_surface_.get());
         } else if (solid_color_contents_) {
           ca_layer_.contents = solid_color_contents_->GetContents();
         } else {
           ca_layer_.contents = nil;
         }
         ca_layer_.contentsScale = tree()->scale_factor_;
-      } else {
-        // Used for UMA
-        if (io_surface_)
-          tree()->unchanged_io_surfaces_during_commit_++;
       }
       break;
   }

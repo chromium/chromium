@@ -5,6 +5,7 @@
 #include "content/browser/shared_storage/shared_storage_header_observer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -82,16 +82,16 @@ enum class TestCaseType {
       {blink::ParsedPermissionsPolicyDeclaration(
           blink::mojom::PermissionsPolicyFeature::kSharedStorage,
           std::move(allowed_origins),
-          /*self_if_matches=*/absl::nullopt,
+          /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/shared_storage_enabled_for_all,
           /*matches_opaque_src=*/false)});
 }
 
 [[nodiscard]] OperationPtr MakeSharedStorageOperationPtr(
     OperationType operation_type,
-    absl::optional<std::string> key,
-    absl::optional<std::string> value,
-    absl::optional<bool> ignore_if_present) {
+    std::optional<std::string> key,
+    std::optional<std::string> value,
+    std::optional<bool> ignore_if_present) {
   return network::mojom::SharedStorageOperation::New(
       operation_type, std::move(key), std::move(value),
       AbslToMojomOptionalBool(ignore_if_present));
@@ -99,9 +99,9 @@ enum class TestCaseType {
 
 [[nodiscard]] std::vector<OperationPtr> MakeOperationVector(
     std::vector<std::tuple<OperationType,
-                           absl::optional<std::string>,
-                           absl::optional<std::string>,
-                           absl::optional<bool>>> operation_tuples) {
+                           std::optional<std::string>,
+                           std::optional<std::string>,
+                           std::optional<bool>>> operation_tuples) {
   std::vector<OperationPtr> operations;
   for (const auto& operation_tuple : operation_tuples) {
     OperationPtr operation = MakeSharedStorageOperationPtr(
@@ -116,7 +116,7 @@ enum class TestCaseType {
     const url::Origin& request_origin,
     std::string key,
     std::string value,
-    absl::optional<bool> ignore_if_present,
+    std::optional<bool> ignore_if_present,
     OperationResult result) {
   return SharedStorageWriteOperationAndResult::SetOperation(
       request_origin, std::move(key), std::move(value), ignore_if_present,
@@ -619,19 +619,19 @@ TEST_P(SharedStorageHeaderObserverTest, SharedStorageNotAllowed) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
   std::vector<OperationPtr> operations = MakeOperationVector(
-      {std::make_tuple(OperationType::kClear, /*key*/ absl::nullopt,
-                       /*value*/ absl::nullopt,
-                       /*ignore_if_present*/ absl::nullopt),
+      {std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
+                       /*value*/ std::nullopt,
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kSet, "key1", "value1",
-                       /*ignore_if_present*/ absl::nullopt),
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kAppend, "key1", "value1",
-                       /*ignore_if_present*/ absl::nullopt),
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kSet, "key1", "value2",
                        /*ignore_if_present*/ true),
        std::make_tuple(OperationType::kSet, "key2", "value2",
                        /*ignore_if_present*/ false),
-       std::make_tuple(OperationType::kDelete, "key2", /*value*/ absl::nullopt,
-                       /*ignore_if_present*/ absl::nullopt)});
+       std::make_tuple(OperationType::kDelete, "key2", /*value*/ std::nullopt,
+                       /*ignore_if_present*/ std::nullopt)});
 
   // No operations are invoked because we've simulated shared storage being
   // disabled in user preferences.
@@ -647,19 +647,19 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
   std::vector<OperationPtr> operations = MakeOperationVector(
-      {std::make_tuple(OperationType::kClear, /*key*/ absl::nullopt,
-                       /*value*/ absl::nullopt,
-                       /*ignore_if_present*/ absl::nullopt),
+      {std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
+                       /*value*/ std::nullopt,
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kSet, "key1", "value1",
-                       /*ignore_if_present*/ absl::nullopt),
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kAppend, "key1", "value1",
-                       /*ignore_if_present*/ absl::nullopt),
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kSet, "key1", "value2",
                        /*ignore_if_present*/ true),
        std::make_tuple(OperationType::kSet, "key2", "value2",
                        /*ignore_if_present*/ false),
-       std::make_tuple(OperationType::kDelete, "key2", /*value*/ absl::nullopt,
-                       /*ignore_if_present*/ absl::nullopt)});
+       std::make_tuple(OperationType::kDelete, "key2", /*value*/ std::nullopt,
+                       /*ignore_if_present*/ std::nullopt)});
 
   RunHeaderReceived(kOrigin1, std::move(operations));
 
@@ -680,7 +680,7 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
       observer_->operations(),
       testing::ElementsAre(
           ClearOperation(kOrigin1, OperationResult::kSuccess),
-          SetOperation(kOrigin1, "key1", "value1", absl::nullopt,
+          SetOperation(kOrigin1, "key1", "value1", std::nullopt,
                        OperationResult::kSet),
           AppendOperation(kOrigin1, "key1", "value1", OperationResult::kSet),
           SetOperation(kOrigin1, "key1", "value2", true,
@@ -703,13 +703,13 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
 
   std::vector<OperationPtr> operations1 = MakeOperationVector(
       {std::make_tuple(OperationType::kSet, "a", "b",
-                       /*ignore_if_present*/ absl::nullopt)});
+                       /*ignore_if_present*/ std::nullopt)});
   std::vector<OperationPtr> operations2 =
       MakeOperationVector({std::make_tuple(OperationType::kSet, "a", "c",
                                            /*ignore_if_present*/ true)});
   std::vector<OperationPtr> operations3 = MakeOperationVector(
-      {std::make_tuple(OperationType::kDelete, "a", /*value=*/absl::nullopt,
-                       /*ignore_if_present*/ absl::nullopt)});
+      {std::make_tuple(OperationType::kDelete, "a", /*value=*/std::nullopt,
+                       /*ignore_if_present*/ std::nullopt)});
 
   RunHeaderReceived(kOrigin1, std::move(operations1));
 
@@ -742,12 +742,12 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
               testing::ElementsAre(true));
 
   observer_->WaitForOperations(3);
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  SetOperation(kOrigin1, "a", "b", absl::nullopt,
-                               OperationResult::kSet),
-                  SetOperation(kOrigin2, "a", "c", true, OperationResult::kSet),
-                  DeleteOperation(kOrigin3, "a", OperationResult::kSuccess)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          SetOperation(kOrigin1, "a", "b", std::nullopt, OperationResult::kSet),
+          SetOperation(kOrigin2, "a", "c", true, OperationResult::kSet),
+          DeleteOperation(kOrigin3, "a", OperationResult::kSuccess)));
 
   // Operations on different origins don't affect each other.
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");
@@ -764,35 +764,35 @@ TEST_P(SharedStorageHeaderObserverTest, SkipMissingParams) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
   std::vector<OperationPtr> operations = MakeOperationVector({
-      std::make_tuple(OperationType::kClear, /*key*/ absl::nullopt,
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // success
-      std::make_tuple(OperationType::kSet, "a", /*value*/ absl::nullopt,
+      std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // success
+      std::make_tuple(OperationType::kSet, "a", /*value*/ std::nullopt,
                       /*ignore_if_present*/ false),  // fail
-      std::make_tuple(OperationType::kSet, /*key*/ absl::nullopt, "b",
+      std::make_tuple(OperationType::kSet, /*key*/ std::nullopt, "b",
                       /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kSet, /*key*/ absl::nullopt,
-                      /*value*/ absl::nullopt,
+      std::make_tuple(OperationType::kSet, /*key*/ std::nullopt,
+                      /*value*/ std::nullopt,
                       /*ignore_if_present*/ true),  // fail
-      std::make_tuple(OperationType::kAppend, "a", /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+      std::make_tuple(OperationType::kAppend, "a", /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kAppend, "a", "b",
-                      /*ignore_if_present*/ absl::nullopt),  // success
-      std::make_tuple(OperationType::kAppend, /*key*/ absl::nullopt, "b",
-                      /*ignore_if_present*/ absl::nullopt),  // fail
-      std::make_tuple(OperationType::kAppend, /*key*/ absl::nullopt,
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // success
+      std::make_tuple(OperationType::kAppend, /*key*/ std::nullopt, "b",
+                      /*ignore_if_present*/ std::nullopt),  // fail
+      std::make_tuple(OperationType::kAppend, /*key*/ std::nullopt,
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kSet, "a", "c",
                       /*ignore_if_present*/ true),  // success
       std::make_tuple(OperationType::kSet, "d", "c",
-                      /*ignore_if_present*/ absl::nullopt),  // success
-      std::make_tuple(OperationType::kDelete, /*key*/ absl::nullopt,
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // success
+      std::make_tuple(OperationType::kDelete, /*key*/ std::nullopt,
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kDelete, "anything",
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // success
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // success
   });
 
   RunHeaderReceived(kOrigin1, std::move(operations));
@@ -817,8 +817,7 @@ TEST_P(SharedStorageHeaderObserverTest, SkipMissingParams) {
           ClearOperation(kOrigin1, OperationResult::kSuccess),
           AppendOperation(kOrigin1, "a", "b", OperationResult::kSet),
           SetOperation(kOrigin1, "a", "c", true, OperationResult::kIgnored),
-          SetOperation(kOrigin1, "d", "c", absl::nullopt,
-                       OperationResult::kSet),
+          SetOperation(kOrigin1, "d", "c", std::nullopt, OperationResult::kSet),
           DeleteOperation(kOrigin1, "anything", OperationResult::kSuccess)));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");
@@ -834,9 +833,9 @@ TEST_P(SharedStorageHeaderObserverTest, SkipInvalidParams) {
   const std::string kLong(1025, 'x');
 
   std::vector<OperationPtr> operations = MakeOperationVector({
-      std::make_tuple(OperationType::kClear, /*key*/ absl::nullopt,
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // success
+      std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // success
       std::make_tuple(OperationType::kSet, "a", kLong,
                       /*ignore_if_present*/ false),  // fail
       std::make_tuple(OperationType::kSet, kLong, "b",
@@ -848,30 +847,30 @@ TEST_P(SharedStorageHeaderObserverTest, SkipInvalidParams) {
       std::make_tuple(OperationType::kSet, "", kLong,
                       /*ignore_if_present*/ true),  // fail
       std::make_tuple(OperationType::kAppend, "a", kLong,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kAppend, "a", "b",
-                      /*ignore_if_present*/ absl::nullopt),  // success
+                      /*ignore_if_present*/ std::nullopt),  // success
       std::make_tuple(OperationType::kAppend, kLong, "b",
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kAppend, "", "b",
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kAppend, kLong, kLong,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kAppend, "", kLong,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kSet, "a", "c",
                       /*ignore_if_present*/ true),  // success
       std::make_tuple(OperationType::kSet, "d", "c",
-                      /*ignore_if_present*/ absl::nullopt),  // success
+                      /*ignore_if_present*/ std::nullopt),  // success
       std::make_tuple(OperationType::kDelete, kLong,
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kDelete, "",
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // fail
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // fail
       std::make_tuple(OperationType::kDelete, "anything",
-                      /*value*/ absl::nullopt,
-                      /*ignore_if_present*/ absl::nullopt),  // success
+                      /*value*/ std::nullopt,
+                      /*ignore_if_present*/ std::nullopt),  // success
   });
 
   RunHeaderReceived(kOrigin1, std::move(operations));
@@ -897,8 +896,7 @@ TEST_P(SharedStorageHeaderObserverTest, SkipInvalidParams) {
           ClearOperation(kOrigin1, OperationResult::kSuccess),
           AppendOperation(kOrigin1, "a", "b", OperationResult::kSet),
           SetOperation(kOrigin1, "a", "c", true, OperationResult::kIgnored),
-          SetOperation(kOrigin1, "d", "c", absl::nullopt,
-                       OperationResult::kSet),
+          SetOperation(kOrigin1, "d", "c", std::nullopt, OperationResult::kSet),
           DeleteOperation(kOrigin1, "anything", OperationResult::kSuccess)));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");
@@ -916,7 +914,7 @@ TEST_P(SharedStorageHeaderObserverTest, IgnoreExtraParams) {
       {std::make_tuple(OperationType::kClear, "key1", "value2",
                        /*ignore_if_present*/ true),  // extra params
        std::make_tuple(OperationType::kSet, "key1", "value1",
-                       /*ignore_if_present*/ absl::nullopt),
+                       /*ignore_if_present*/ std::nullopt),
        std::make_tuple(OperationType::kAppend, "key1", "value1",
                        /*ignore_if_present*/ false),  // extra param
        std::make_tuple(OperationType::kSet, "key1", "value2",
@@ -946,7 +944,7 @@ TEST_P(SharedStorageHeaderObserverTest, IgnoreExtraParams) {
       observer_->operations(),
       testing::ElementsAre(
           ClearOperation(kOrigin1, OperationResult::kSuccess),
-          SetOperation(kOrigin1, "key1", "value1", absl::nullopt,
+          SetOperation(kOrigin1, "key1", "value1", std::nullopt,
                        OperationResult::kSet),
           AppendOperation(kOrigin1, "key1", "value1", OperationResult::kSet),
           SetOperation(kOrigin1, "key1", "value2", true,

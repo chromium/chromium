@@ -33,6 +33,7 @@
 #include "partition_alloc/partition_direct_map_extent.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
 
@@ -308,11 +309,9 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                           PageAccessibilityDisposition::kRequireUpdate);
     }
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-    // allocate a system page for BRP ref-count table (only one of its elements
-    // will be used).
     if (pool == kBRPPoolHandle) {
+      // Allocate a system page for BRP ref-count table (only one of its
+      // elements will be used).
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(reservation_start + SystemPageSize() * 2,
                           SystemPageSize(),
@@ -320,7 +319,6 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
     {
@@ -581,26 +579,6 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
   return static_cast<uint8_t>(best_pages);
 }
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
-// Returns size that should be tagged. Avoiding the previous slot ref count if
-// it exists to avoid a race (crbug.com/1445816).
-PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot* root, size_t slot_size) {
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-  if (root->brp_enabled()) {
-    PA_DCHECK(root->settings.ref_count_size > 0);
-    PA_DCHECK((root->settings.ref_count_size % kMemTagGranuleSize) == 0);
-  } else {
-    PA_DCHECK(root->settings.ref_count_size == 0);
-  }
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
-  return slot_size - root->settings.ref_count_size;
-#else  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-  return slot_size;
-#endif
-}
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
-
 }  // namespace
 
 uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
@@ -810,17 +788,14 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                         PageAccessibilityDisposition::kRequireUpdate);
   }
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-  // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-  // allocate a system page for BRP ref-count table.
   if (root->ChoosePool() == kBRPPoolHandle) {
+    // Allocate a system page for BRP ref-count table.
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize() * 2, SystemPageSize(),
                         root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   {
@@ -991,7 +966,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
   if (PA_LIKELY(use_tagging)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
-    TagMemoryRangeRandomly(return_slot, TagSizeForSlot(root, slot_size));
+    TagMemoryRangeRandomly(return_slot, root->TagSizeForSlot(slot_size));
   }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
@@ -1006,7 +981,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       // unguessable. They will be returned to the app as is, and the MTE-tag
       // will only change upon calling Free().
       next_slot_ptr =
-          TagMemoryRangeRandomly(next_slot, TagSizeForSlot(root, slot_size));
+          TagMemoryRangeRandomly(next_slot, root->TagSizeForSlot(slot_size));
     } else {
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
@@ -1322,6 +1297,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
                                          AllocFlags flags,
                                          size_t raw_size,
                                          size_t slot_span_alignment,
+                                         SlotSpanMetadata** slot_span,
                                          bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             std::has_single_bit(slot_span_alignment));
@@ -1465,6 +1441,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
     root->OutOfMemory(raw_size);
     PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
+  *slot_span = new_slot_span;
 
   PA_DCHECK(new_bucket != &root->sentinel_bucket);
   new_bucket->active_slot_spans_head = new_slot_span;

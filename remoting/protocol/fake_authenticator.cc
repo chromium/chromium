@@ -209,8 +209,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> FakeAuthenticator::GetNextMessage() {
     auth_key_ = base::RandBytesAsString(16);
     jingle_xmpp::XmlElement* key = new jingle_xmpp::XmlElement(
         jingle_xmpp::QName(kChromotingXmlNamespace, "key"));
-    std::string key_base64;
-    base::Base64Encode(auth_key_, &key_base64);
+    std::string key_base64 = base::Base64Encode(auth_key_);
     key->AddText(key_base64);
     result->AddElement(key);
   }

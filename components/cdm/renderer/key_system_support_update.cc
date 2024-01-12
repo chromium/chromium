@@ -136,9 +136,6 @@ SupportedCodecs GetDolbyVisionCodecs(
       case media::DOLBYVISION_PROFILE0:
         supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE0;
         break;
-      case media::DOLBYVISION_PROFILE4:
-        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE4;
-        break;
       case media::DOLBYVISION_PROFILE5:
         supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE5;
         break;
@@ -197,6 +194,11 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
         supported_codecs |= media::EME_CODEC_EAC3;
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+      case media::AudioCodec::kAC4:
+        supported_codecs |= media::EME_CODEC_AC4;
+        break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
       default:
         DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);

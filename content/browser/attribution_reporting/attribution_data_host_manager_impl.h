@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
@@ -112,8 +112,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::mojom::RegistrationEligibility,
       GlobalRenderFrameHostId render_frame_id,
       int64_t last_navigation_id,
-      absl::optional<blink::AttributionSrcToken> attribution_src_token,
-      absl::optional<std::string> devtools_request_id) override;
+      std::optional<blink::AttributionSrcToken> attribution_src_token,
+      std::optional<std::string> devtools_request_id) override;
   bool NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId id,
       const net::HttpResponseHeaders* headers,
@@ -125,7 +125,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
-      absl::optional<int64_t> navigation_id,
+      std::optional<int64_t> navigation_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
       AttributionInputEvent input_event,
@@ -212,7 +212,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void OnWebHeaderParsed(
       RegistrationsId,
       attribution_reporting::mojom::RegistrationType,
-      absl::optional<std::vector<network::TriggerVerification>>,
+      std::optional<std::vector<network::TriggerVerification>>,
       data_decoder::DataDecoder::ValueOrError result);
   void HandleParsedWebSource(const Registrations&,
                              const HeaderPendingDecode&,

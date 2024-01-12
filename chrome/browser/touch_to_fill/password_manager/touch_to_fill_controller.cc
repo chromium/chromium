@@ -65,6 +65,9 @@ bool TouchToFillController::Show(
 
   ttf_delegate_->OnShow(credentials, passkey_credentials);
   GURL url = ttf_delegate_->GetFrameUrl();
+  // If the render frame host has been destroyed already, the url will be empty
+  // in which case Show() should never be called.
+  CHECK(!url.is_empty());
 
   switch (GetResponsibleDisplayTarget(credentials, passkey_credentials)) {
     case DisplayTarget::kNone:

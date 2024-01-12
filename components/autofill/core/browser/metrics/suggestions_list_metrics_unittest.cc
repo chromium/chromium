@@ -72,7 +72,7 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
 
 TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kAddresses);
+  LogAutofillSelectedManageEntry(FillingProduct::kAddress);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(base::Bucket(ManageSuggestionType::kAddresses, 1)));
@@ -81,7 +81,7 @@ TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {
 TEST(SuggestionsListMetricsTest,
      LogAutofillSelectedManageEntry_PaymentMethodsCreditCards) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kCreditCards);
+  LogAutofillSelectedManageEntry(FillingProduct::kCreditCard);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(
@@ -91,7 +91,7 @@ TEST(SuggestionsListMetricsTest,
 TEST(SuggestionsListMetricsTest,
      LogAutofillSelectedManageEntry_PaymentMethodsIbans) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kIbans);
+  LogAutofillSelectedManageEntry(FillingProduct::kIban);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(base::Bucket(ManageSuggestionType::kPaymentMethodsIbans, 1)));
@@ -99,8 +99,8 @@ TEST(SuggestionsListMetricsTest,
 
 TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Other) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kUnspecified);
-  LogAutofillSelectedManageEntry(PopupType::kPasswords);
+  LogAutofillSelectedManageEntry(FillingProduct::kNone);
+  LogAutofillSelectedManageEntry(FillingProduct::kPassword);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(base::Bucket(ManageSuggestionType::kOther, 2)));

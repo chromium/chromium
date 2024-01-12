@@ -30,8 +30,8 @@ const int kRequestId = 2;
 
 class FileSystemProviderOperationsUnmountTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsUnmountTest() {}
-  ~FileSystemProviderOperationsUnmountTest() override {}
+  FileSystemProviderOperationsUnmountTest() = default;
+  ~FileSystemProviderOperationsUnmountTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

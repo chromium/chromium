@@ -122,7 +122,7 @@ class SynchronousShutdownObjectContainerImpl
       secure_channel::SecureChannelClient* secure_channel_client);
 
  private:
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 
   std::unique_ptr<NetworkListSorter> network_list_sorter_;
   std::unique_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;

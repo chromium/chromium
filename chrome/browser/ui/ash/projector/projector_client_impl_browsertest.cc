@@ -115,7 +115,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
 
  private:
   base::OnceClosure quit_closure_;
-  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> service_;
+  raw_ptr<drive::DriveIntegrationService> service_;
 };
 
 class ProjectorClientTest : public InProcessBrowserTest {

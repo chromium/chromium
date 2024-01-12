@@ -76,7 +76,6 @@
 <translation id="162175252992296058">ፖርቱጋልኛ በአሜሪካ ዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="1629521517399325891">የተጠቃሚ እውቅና ማረጋገጫ ለአውታረ መረብ ማረጋገጫ አይገኝም።</translation>
 <translation id="1641780993263690097">የቻይንኛ ፒንዪን</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ፋይሎች ከመስመር ውጭ እንዲገኙ በመደረግ ላይ</translation>
 <translation id="164969095109328410">የChrome መሣሪያ</translation>
 <translation id="1661207570040737402">ሁሉንም የእርስዎን የተጋራ Drive የGoogle Workspace ማከማቻ ተጠቅመዋል።</translation>
 <translation id="1661867754829461514">ፒን ይጎድላል</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google ተመን ሉህ</translation>
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3486821258960016770">ሞንጎሊያኛ</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ስህተቶች።</translation>
 <translation id="3509680540198371098">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ለማስመር በማዘጋጀት ላይ...</translation>
 <translation id="3522708245912499433">ፖርቱጋሊኛ</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> ፋይሎችን ማባዛት በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="6509122719576673235">ኖርዌጂያን</translation>
 <translation id="6528513914570774834">ሌሎች የዚህ መሣሪያ ተጠቃሚዎች ይህን አውታረ መረብ እንዲጠቀሙ ይፍቀዱላቸው</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" />ን በማመሳሰል ላይ...</translation>
 <translation id="6549689063733911810">የቅርብ ጊዜ</translation>
 <translation id="6558280019477628686">አንድ ስህተት ተከስቷል። አንዳንድ ንጥሎች አልተሰረዙ ሊሆኑ ይችላሉ።</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»ን በመሰረዝ ላይ...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
 <translation id="7555339735447658365">በአሁኑ ጊዜ ከመስመር ውጭ ነዎት። የፋይል ማስመር ከበይነመረብ ጋር በሚገናኙበት ጊዜ ከቆመበት ይቀጥላል</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጭ እንዲገኝ በማድረግ ላይ</translation>
 <translation id="7600126690270271294">ሰርቢኛ</translation>
 <translation id="7603724359189955920">ፍርግርግ</translation>
 <translation id="7627790789328695202">ውይ፣ <ph name="FILE_NAME" /> አስቀድሞ አለ። ዳግም ይሰይሙትና እንደገና ይሞክሩ።</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8147028810663464959">የቁምፊ ስፋት ሙሉ ነው</translation>
 <translation id="8151638057146502721">አዋቅር</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ስህተት።}one{# ስህተቶች።}other{# ስህተቶች}}</translation>
 <translation id="8154842056504218462">ሁሉም ግቤቶች ተመርጠዋል።</translation>
 <translation id="8157684860301034423">የመተግበሪያ መረጃን ሰርስሮ ማውጣት አልተሳካም።</translation>
 <translation id="8175731104491895765">ፈረንሳይኛ (ቤልጄየም)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርሱ ፈቃድ ይስጡ</translation>
 <translation id="8372369524088641025">መጥፎ የWEP ቁልፍ</translation>
 <translation id="8372852072747894550">ግሪክኛ</translation>
+<translation id="8377269993083688872">የኢሜይል አቀማመጦች</translation>
 <translation id="8386903983509584791">መቃኘት ተጠናቅቋል</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ከማህደር ወጥቷል።</translation>
 <translation id="8395901698320285466">ልኬቶች</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">የሚከፈት ፋይል ይምረጡ</translation>
 <translation id="8577897833047451336">ክሮሽያኛ</translation>
 <translation id="8578308463707544055">የኢንዶኔዢያኛ</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ንጥሎችን በማመሳሰል ላይ...</translation>
 <translation id="8600173386174225982">የፋይል ዝርዝር ወደ ድንክየ ዕይታ ተለውጧል።</translation>
 <translation id="8601932370724196034">የCrostini ምስል ፋይል</translation>
 <translation id="8609695766746872526">አይስላንድኛ</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">ለተጋሩ አውታረ መረቦች ተኪዎችን ይፍቀዱ</translation>
 <translation id="8790981080411996443">ተክሎችን ውሃ የሚያጠጣ ሰው</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ማስጠንቀቂያ።}one{# ማስጠንቀቂያዎች}other{# ማስጠንቀቂያዎች}}</translation>
 <translation id="8808686172382650546">ድመት</translation>
 <translation id="8810671769985673465">መጭመቅ አልተሳካም፣ ንጥል አለ፦ «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">ስፓኒሽ (ስፔን)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» የሚባለው ፋይል አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
 <translation id="9046895021617826162">ማገናኘት አልተሳካም</translation>
 <translation id="9065512565307033593">ማረጋገጥ ካልቻሉ የእርስዎ የአውታረ መረብ መዳረሻ ይሰናከላል።</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ማስጠንቀቂያ።}one{<ph name="COUNT" /> ማስጠንቀቂያ።}other{<ph name="COUNT" /> ማስጠንቀቂያዎች።}}</translation>
 <translation id="908378762078012445">ሩሲያኛ በፎነቲክ በAATSEEL ቁልፍ ሰሌዳ</translation>
 <translation id="9086302186042011942">በማመሳሰል ላይ</translation>
 <translation id="9099674669267916096">የገጽ ብዛት</translation>

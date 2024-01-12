@@ -179,7 +179,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       bool request_unadjusted_movement) override;
   void UnlockMouse() override;
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
-  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes) override;
+  bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
@@ -266,7 +266,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+  std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
       const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
@@ -278,8 +278,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // bounds of the active editable element. This is used to report the layout
   // bounds of the text input control to TSF on Windows.
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -439,7 +439,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void UpdateFrameSinkIdRegistration() override;
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
-  absl::optional<DisplayFeature> GetDisplayFeature() override;
+  std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
@@ -577,7 +577,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
-      const absl::optional<viz::LocalSurfaceId>& child_local_surface_id);
+      const std::optional<viz::LocalSurfaceId>& child_local_surface_id);
 
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
@@ -595,8 +595,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // the bounds of the webcontents. It is needed for accessibility and
   // for scrolling to work in legacy drivers for trackpoints/trackpads, etc.
   void UpdateLegacyWin();
-
-  bool UsesNativeWindowFrame() const;
 #endif
 
   ui::InputMethod* GetInputMethod() const;
@@ -742,21 +740,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   CursorVisibilityState cursor_visibility_state_in_renderer_;
 
 #if BUILDFLAG(IS_WIN)
-  // The LegacyRenderWidgetHostHWND class provides a dummy HWND which is used
-  // for accessibility, as the container for windowless plugins like
-  // Flash/Silverlight, etc and for legacy drivers for trackpoints/trackpads,
-  // etc.
-  // The LegacyRenderWidgetHostHWND instance is created during the first call
-  // to RenderWidgetHostViewAura::InternalSetBounds. The instance is destroyed
-  // when the LegacyRenderWidgetHostHWND hwnd is destroyed.
-  raw_ptr<content::LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
+  // Provides a dummy HWND for legacy accessibility tools and drivers.
+  raw_ptr<LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_ = nullptr;
 
-  // Set to true if the legacy_render_widget_host_HWND_ instance was destroyed
-  // by Windows. This could happen if the browser window was destroyed by
-  // DestroyWindow for e.g. This flag helps ensure that we don't try to create
-  // the LegacyRenderWidgetHostHWND instance again as that would be a futile
-  // exercise.
-  bool legacy_window_destroyed_;
+  // Whether Windows destroyed the legacy HWND, e.g. via browser DestroyWindow.
+  // Indicates that recreating the HWND instance again would be futile.
+  bool legacy_window_destroyed_ = false;
 
   // Contains a copy of the last context menu request parameters. Only set when
   // we receive a request to show the context menu on a long press.
@@ -823,7 +812,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more
   // details.
-  absl::optional<DisplayFeature> display_feature_;
+  std::optional<DisplayFeature> display_feature_;
   // Viewport segments returned by the platform.
   std::vector<gfx::Rect> viewport_segments_;
 
@@ -833,7 +822,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       device_posture_receiver_{this};
 #endif
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   bool allocate_local_surface_id_on_next_show_ = false;
 

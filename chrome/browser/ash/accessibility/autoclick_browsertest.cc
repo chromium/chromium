@@ -258,8 +258,7 @@ class AutoclickWithAccessibilityServiceTest : public AutoclickBrowserTest {
 
  protected:
   // Unowned.
-  raw_ptr<FakeAccessibilityService, DanglingUntriaged | ExperimentalAsh>
-      fake_service_ = nullptr;
+  raw_ptr<FakeAccessibilityService, DanglingUntriaged> fake_service_ = nullptr;
 
  private:
   std::unique_ptr<KeyedService> CreateTestAccessibilityService(

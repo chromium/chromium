@@ -30,6 +30,13 @@ BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
 // the blocklist check on child file handles.
 BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
              "FileSystemAccessDirectoryIterationBlocklistCheck",
+#if BUILDFLAG(IS_WIN)
+// On Windows, resolving a symlink by getting an absolute path does not work,
+// and it requires a different implementation approach. Enable it on Windows
+// once available.
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content::features

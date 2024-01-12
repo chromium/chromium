@@ -140,6 +140,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SetWindowRect(const gfx::Rect&, LocalFrame&) = 0;
 
+  virtual void Minimize(LocalFrame&) = 0;
+  virtual void Maximize(LocalFrame&) = 0;
+  virtual void Restore(LocalFrame&) = 0;
   virtual void SetResizable(bool resizable, LocalFrame&) = 0;
 
   // For non-composited WebViews that exist to contribute to a "parent" WebView

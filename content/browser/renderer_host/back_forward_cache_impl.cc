@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 
 #include <list>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,7 +49,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
@@ -199,6 +199,7 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kSharedWorker,
           WebSchedulerTrackedFeature::kSpeechRecognizer,
           WebSchedulerTrackedFeature::kSpeechSynthesis,
+          WebSchedulerTrackedFeature::kUnloadHandler,
           WebSchedulerTrackedFeature::kWebDatabase,
           WebSchedulerTrackedFeature::kWebHID,
           WebSchedulerTrackedFeature::kWebLocks,
@@ -488,6 +489,10 @@ BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
     }
     result.PutAll(non_sticky);
   }
+  if (IsUnloadAllowed() ||
+      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+    result.Put(WebSchedulerTrackedFeature::kUnloadHandler);
+  }
   // When not under "Cache-Control: no-store" context, the features listed in
   // `GetDisallowedForCacheControlNoStoreFeatures()` should be considered as
   // allowed features.
@@ -510,6 +515,10 @@ BlockListedFeatures BackForwardCacheImpl::GetDisallowedFeatures(
   if (requested_features == RequestedFeatures::kOnlySticky) {
     // Remove all non-sticky features from |result|.
     result = Intersection(result, blink::scheduler::StickyFeatures());
+  }
+  if (IsUnloadAllowed() ||
+      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+    result.Remove(WebSchedulerTrackedFeature::kUnloadHandler);
   }
   // When under "Cache-Control: no-store" context, the features listed in
   // `GetDisallowedForCacheControlNoStoreFeatures()` should be considered as
@@ -591,16 +600,16 @@ BackForwardCacheImpl::~BackForwardCacheImpl() {
   Shutdown();
 }
 
-absl::optional<int> GetFieldTrialParamByFeatureAsOptionalInt(
+std::optional<int> GetFieldTrialParamByFeatureAsOptionalInt(
     const base::Feature& feature,
     const std::string& param_name) {
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
   int value_as_int = 0;
   if (base::StringToInt(value_as_string, &value_as_int)) {
-    return absl::optional<int>(value_as_int);
+    return std::optional<int>(value_as_int);
   }
-  return absl::optional<int>();
+  return std::optional<int>();
 }
 
 base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
@@ -616,7 +625,7 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
 
   if (base::FeatureList::IsEnabled(
           features::kBackForwardCacheTimeToLiveControl)) {
-    absl::optional<int> time_to_live = GetFieldTrialParamByFeatureAsOptionalInt(
+    std::optional<int> time_to_live = GetFieldTrialParamByFeatureAsOptionalInt(
         features::kBackForwardCacheTimeToLiveControl, "time_to_live_seconds");
     if (time_to_live.has_value()) {
       return base::Seconds(time_to_live.value());
@@ -884,7 +893,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
             expected_related_active_contents_count);
   if (rfh->GetSiteInstance()->GetRelatedActiveContentsCount() >
       expected_related_active_contents_count) {
-    absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result;
+    std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result;
     if (auto* metrics = rfh->GetBackForwardCacheMetrics())
       browsing_instance_swap_result = metrics->browsing_instance_swap_result();
     result.NoDueToRelatedActiveContents(browsing_instance_swap_result);
@@ -1072,11 +1081,27 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     }
   }
 
-  // Do not cache if we have navigations in any of the subframes.
-  if (rfh->GetParentOrOuterDocument() &&
-      rfh->frame_tree_node()->HasNavigation()) {
-    result.No(
-        BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+  // Handle ongoing navigations in subframes.
+  // - When kEnableBackForwardCacheForOngoingSubframeNavigation is enabled, we
+  // only allow the page to be cached if subframe navigations don't need URL
+  // loaders and haven't reached the pending commit stage (if there are
+  // other type of navigations in any of the subframes, we disallow BFCache).
+  // - When kEnableBackForwardCacheForOngoingSubframeNavigation is disabled, do
+  // not cache if any navigation is ongoing in any of the subframes.
+  if (rfh->GetParentOrOuterDocument()) {
+    if (base::FeatureList::IsEnabled(
+            features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
+      NavigationRequest* nav_request =
+          rfh->frame_tree_node()->navigation_request();
+      if ((nav_request && nav_request->NeedsUrlLoader()) ||
+          rfh->frame_tree_node()->HasPendingCommitNavigation()) {
+        result.No(
+            BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+      }
+    } else if (rfh->frame_tree_node()->HasNavigation()) {
+      result.No(
+          BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+    }
   }
 }
 
@@ -1116,12 +1141,12 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
     RequestedFeatures requested_features)
     : NotRestoredReasonBuilder(root_rfh,
                                requested_features,
-                               /* eviction_info = */ absl::nullopt) {}
+                               /* eviction_info = */ std::nullopt) {}
 
 BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
     RenderFrameHostImpl* root_rfh,
     RequestedFeatures requested_features,
-    absl::optional<EvictionInfo> eviction_info)
+    std::optional<EvictionInfo> eviction_info)
     : root_rfh_(root_rfh),
       bfcache_(root_rfh_->frame_tree_node()
                    ->navigator()
@@ -1364,7 +1389,7 @@ bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
 void BackForwardCache::DisableForRenderFrameHost(
     RenderFrameHost* render_frame_host,
     DisabledReason reason,
-    absl::optional<ukm::SourceId> source_id) {
+    std::optional<ukm::SourceId> source_id) {
   DisableForRenderFrameHost(render_frame_host->GetGlobalId(), reason,
                             source_id);
 }
@@ -1373,7 +1398,7 @@ void BackForwardCache::DisableForRenderFrameHost(
 void BackForwardCache::DisableForRenderFrameHost(
     GlobalRenderFrameHostId id,
     DisabledReason reason,
-    absl::optional<ukm::SourceId> source_id) {
+    std::optional<ukm::SourceId> source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_bfcache_disabled_test_observer)
     g_bfcache_disabled_test_observer->OnDisabledForFrameWithReason(id, reason);

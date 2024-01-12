@@ -10,11 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
-
-namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
 
 class SharingDeviceSource {
  public:
@@ -30,13 +27,14 @@ class SharingDeviceSource {
   virtual bool IsReady() = 0;
 
   // Returns the device matching |guid|, or nullptr if no match was found.
-  virtual std::unique_ptr<syncer::DeviceInfo> GetDeviceByGuid(
+  virtual std::unique_ptr<SharingTargetDeviceInfo> GetDeviceByGuid(
       const std::string& guid) = 0;
 
   // Returns all device candidates for |required_feature|. Internally filters
   // out older devices and returns them in (not strictly) decreasing order of
   // last updated timestamp.
-  virtual std::vector<std::unique_ptr<syncer::DeviceInfo>> GetDeviceCandidates(
+  virtual std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
+  GetDeviceCandidates(
       sync_pb::SharingSpecificFields::EnabledFeatures required_feature) = 0;
 
   // Adds a callback to be run when the SharingDeviceSource is ready. If a

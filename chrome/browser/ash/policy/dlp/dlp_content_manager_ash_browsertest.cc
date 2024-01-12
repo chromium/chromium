@@ -237,8 +237,7 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<DlpContentManagerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      mock_rules_manager_;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_;
   std::vector<DlpPolicyEvent> events_;
 };
 

@@ -192,6 +192,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
       *out = PermissionType::CAPTURED_SURFACE_CONTROL;
       break;
+    case ContentSettingsType::WEB_PRINTING:
+      *out = PermissionType::WEB_PRINTING;
+      break;
     default:
       return false;
   }
@@ -331,6 +334,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::DISPLAY_CAPTURE;
     case PermissionType::CAPTURED_SURFACE_CONTROL:
       return ContentSettingsType::CAPTURED_SURFACE_CONTROL;
+    case PermissionType::WEB_PRINTING:
+      return ContentSettingsType::WEB_PRINTING;
     case PermissionType::NUM:
       break;
   }

@@ -1970,7 +1970,13 @@ TEST_F(RenderViewContextMenuPrefsTest,
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Companion feature is force disabled on ChromeOS.
+  ASSERT_EQ(initial_num_processes + 1,
+            mock_rph_factory().GetProcesses()->size());
+#else
   ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(RenderViewContextMenuPrefsTest,

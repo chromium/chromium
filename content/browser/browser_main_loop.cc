@@ -501,7 +501,7 @@ BrowserMainLoop::BrowserMainLoop(
       ,
       // TODO(fdoray): Create the fence on Android too. Not enabled yet because
       // tests timeout. https://crbug.com/887407
-      scoped_best_effort_execution_fence_(absl::in_place)
+      scoped_best_effort_execution_fence_(std::in_place)
 #endif
 {
   DCHECK(!g_current_browser_main_loop);

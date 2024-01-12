@@ -410,7 +410,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // |runner_| outlives this object. ArcDocumentsProviderRootMap, the owner of
   // this object, depends on ArcFileSystemOperationRunner in the
   // BrowserContextKeyedServiceFactory dependency graph.
-  const raw_ptr<ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  const raw_ptr<ArcFileSystemOperationRunner> runner_;
 
   const std::string authority_;
   const std::string root_document_id_;

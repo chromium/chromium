@@ -94,7 +94,6 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
     ProxyServer uri =
         ProxyUriToProxyServer(test.input_uri, ProxyServer::SCHEME_HTTP);
     EXPECT_TRUE(uri.is_valid());
-    EXPECT_FALSE(uri.is_direct());
     EXPECT_EQ(test.expected_uri, ProxyServerToProxyUri(uri));
     EXPECT_EQ(test.expected_scheme, uri.scheme());
     EXPECT_EQ(test.expected_host, uri.host_port_pair().host());
@@ -103,15 +102,25 @@ TEST(ProxySpecificationUtilTest, ProxyUriToProxyServer) {
   }
 }
 
-// Test parsing of the special URI form "direct://". analogous to the "DIRECT"
-// element in a PAC result.
-TEST(ProxySpecificationUtilTest, DirectProxyUriToProxyServer) {
-  ProxyServer uri =
-      ProxyUriToProxyServer("direct://", ProxyServer::SCHEME_HTTP);
-  EXPECT_TRUE(uri.is_valid());
-  EXPECT_TRUE(uri.is_direct());
-  EXPECT_EQ("direct://", ProxyServerToProxyUri(uri));
-  EXPECT_EQ("DIRECT", ProxyServerToPacResultElement(uri));
+// Test parsing of the special URI form "direct://".
+TEST(ProxySpecificationUtilTest, DirectProxyUriToProxyChain) {
+  const char* const uris[] = {
+      "direct://",
+      "DIRECT://",
+      "DiReCt://",
+  };
+
+  for (const char* uri : uris) {
+    ProxyChain valid_uri = ProxyUriToProxyChain(uri, ProxyServer::SCHEME_HTTP);
+    EXPECT_TRUE(valid_uri.IsValid());
+    EXPECT_TRUE(valid_uri.is_direct());
+  }
+
+  // Direct is not allowed a host/port.
+  ProxyChain invalid_uri =
+      ProxyUriToProxyChain("direct://xyz", ProxyServer::SCHEME_HTTP);
+  EXPECT_FALSE(invalid_uri.IsValid());
+  EXPECT_FALSE(invalid_uri.is_direct());
 }
 
 // Test parsing some invalid inputs.
@@ -122,7 +131,7 @@ TEST(ProxySpecificationUtilTest, InvalidProxyUriToProxyServer) {
       "dddf:",         // not a valid port
       "dddd:d",        // not a valid port
       "http://",       // not a valid host/port.
-      "direct://xyz",  // direct is not allowed a host/port.
+      "direct://",     // direct is not a valid proxy server.
       "http:/",        // ambiguous, but will fail because of bad port.
       "http:",         // ambiguous, but will fail because of bad port.
       "foopy.111",     // Interpreted as invalid IPv4 address.
@@ -135,7 +144,6 @@ TEST(ProxySpecificationUtilTest, InvalidProxyUriToProxyServer) {
     SCOPED_TRACE(test);
     ProxyServer uri = ProxyUriToProxyServer(test, ProxyServer::SCHEME_HTTP);
     EXPECT_FALSE(uri.is_valid());
-    EXPECT_FALSE(uri.is_direct());
     EXPECT_FALSE(uri.is_http());
     EXPECT_FALSE(uri.is_socks());
   }
@@ -192,10 +200,6 @@ TEST(ProxySpecificationUtilTest, PacResultElementToProxyServer) {
       {
           "socks5 foopy:11",
           "socks5://foopy:11",
-      },
-      {
-          " direct  ",
-          "direct://",
       },
       {
           "https foopy",

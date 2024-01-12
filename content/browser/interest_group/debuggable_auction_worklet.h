@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_DEBUGGABLE_AUCTION_WORKLET_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_DEBUGGABLE_AUCTION_WORKLET_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "url/gurl.h"
@@ -62,7 +62,7 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // Returns true if the worklet should start in the paused state.
   bool should_pause_on_start() const { return should_pause_on_start_; }
 
-  absl::optional<base::ProcessId> GetPid(PidCallback callback);
+  std::optional<base::ProcessId> GetPid(PidCallback callback);
 
  private:
   friend class AuctionRunner;
@@ -100,7 +100,7 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   const GURL url_;
   const std::string unique_id_;
 
-  absl::optional<base::ProcessId> pid_;
+  std::optional<base::ProcessId> pid_;
   bool should_pause_on_start_ = false;
 
   absl::variant<auction_worklet::mojom::BidderWorklet*,

@@ -169,8 +169,9 @@ class SidePanelBorder : public views::Border {
 };
 
 class BorderView : public views::View {
+  METADATA_HEADER(BorderView, views::View)
+
  public:
-  METADATA_HEADER(BorderView);
   explicit BorderView(BrowserView* browser_view) {
     SetVisible(false);
     auto border = std::make_unique<SidePanelBorder>(browser_view);
@@ -209,7 +210,7 @@ class BorderView : public views::View {
   raw_ptr<SidePanelBorder> border_;
 };
 
-BEGIN_METADATA(BorderView, views::View)
+BEGIN_METADATA(BorderView)
 END_METADATA
 
 }  // namespace
@@ -422,5 +423,5 @@ void SidePanel::UpdateVisibility() {
   SetVisible(any_child_visible);
 }
 
-BEGIN_METADATA(SidePanel, views::View)
+BEGIN_METADATA(SidePanel)
 END_METADATA

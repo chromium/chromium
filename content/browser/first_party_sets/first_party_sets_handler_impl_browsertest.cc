@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/test_future.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
+
+#include <optional>
+
+#include "base/test/test_future.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -14,7 +17,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -52,7 +54,7 @@ class FirstPartySetsHandlerImplBrowserTest
     }
 
     base::test::TestFuture<net::GlobalFirstPartySets> future_;
-    absl::optional<net::GlobalFirstPartySets> sets =
+    std::optional<net::GlobalFirstPartySets> sets =
         FirstPartySetsHandlerImpl::GetInstance()->GetSets(
             future_.GetCallback());
     sets_ = sets.has_value() ? std::move(sets) : future_.Take();
@@ -61,7 +63,7 @@ class FirstPartySetsHandlerImplBrowserTest
   }
 
  private:
-  absl::optional<net::GlobalFirstPartySets> sets_;
+  std::optional<net::GlobalFirstPartySets> sets_;
 };
 
 IN_PROC_BROWSER_TEST_F(FirstPartySetsHandlerImplBrowserTest, LocalSwitch) {
@@ -70,12 +72,12 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsHandlerImplBrowserTest, LocalSwitch) {
   EXPECT_EQ(
       GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteB)),
                                 net::FirstPartySetsContextConfig()),
-      absl::make_optional(net::FirstPartySetEntry(
+      std::make_optional(net::FirstPartySetEntry(
           net::SchemefulSite(GURL(kSiteA)), net::SiteType::kAssociated, 0)));
   EXPECT_EQ(
       GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteC)),
                                 net::FirstPartySetsContextConfig()),
-      absl::make_optional(net::FirstPartySetEntry(
+      std::make_optional(net::FirstPartySetEntry(
           net::SchemefulSite(GURL(kSiteA)), net::SiteType::kAssociated, 1)));
 }
 
@@ -105,17 +107,17 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsHandlerImplWithNewSwitchBrowserTest,
   EXPECT_EQ(
       GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteB)),
                                 net::FirstPartySetsContextConfig()),
-      absl::make_optional(net::FirstPartySetEntry(
+      std::make_optional(net::FirstPartySetEntry(
           net::SchemefulSite(GURL(kSiteD)), net::SiteType::kAssociated, 0)));
   EXPECT_EQ(
       GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteC)),
                                 net::FirstPartySetsContextConfig()),
-      absl::make_optional(net::FirstPartySetEntry(
+      std::make_optional(net::FirstPartySetEntry(
           net::SchemefulSite(GURL(kSiteD)), net::SiteType::kAssociated, 1)));
 
   EXPECT_EQ(GetGlobalSets().FindEntry(net::SchemefulSite(GURL(kSiteA)),
                                       net::FirstPartySetsContextConfig()),
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace content

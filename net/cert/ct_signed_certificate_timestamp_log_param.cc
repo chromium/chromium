@@ -23,8 +23,7 @@ namespace {
 void SetBinaryData(const char* key,
                    base::StringPiece value,
                    base::Value::Dict& dict) {
-  std::string b64_value;
-  base::Base64Encode(value, &b64_value);
+  std::string b64_value = base::Base64Encode(value);
 
   dict.Set(key, b64_value);
 }

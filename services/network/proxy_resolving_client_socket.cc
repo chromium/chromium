@@ -256,9 +256,8 @@ int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {
     // TODO(crbug.com/876885): Allow QUIC proxy once net::QuicProxyClientSocket
     // supports ReadIfReady() and CancelReadIfReady().
     proxy_info_.RemoveProxiesWithoutScheme(
-        net::ProxyServer::SCHEME_DIRECT | net::ProxyServer::SCHEME_HTTP |
-        net::ProxyServer::SCHEME_HTTPS | net::ProxyServer::SCHEME_SOCKS4 |
-        net::ProxyServer::SCHEME_SOCKS5);
+        net::ProxyServer::SCHEME_HTTP | net::ProxyServer::SCHEME_HTTPS |
+        net::ProxyServer::SCHEME_SOCKS4 | net::ProxyServer::SCHEME_SOCKS5);
 
     if (proxy_info_.is_empty()) {
       // No proxies/direct to choose from. This happens when we don't support
@@ -293,7 +292,7 @@ int ProxyResolvingClientSocket::DoInitConnection() {
   net::SSLConfig ssl_config;
   connect_job_ = connect_job_factory_->CreateConnectJob(
       use_tls_, net::HostPortPair::FromURL(url_), proxy_info_.proxy_chain(),
-      proxy_annotation_tag, &ssl_config, &ssl_config, /*force_tunnel=*/true,
+      proxy_annotation_tag, &ssl_config, /*force_tunnel=*/true,
       net::PRIVACY_MODE_DISABLED, net::OnHostResolutionCallback(),
       net::MAXIMUM_PRIORITY, net::SocketTag(), network_anonymization_key_,
       net::SecureDnsPolicy::kAllow, common_connect_job_params_, this);

@@ -46,7 +46,7 @@ class TimerController : public mojom::TimerController,
 
   // Owned by |ServiceController|, set in OnAssistantClientRunning() and reset
   // in OnDestroyingAssistantClient().
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::TimerController> receiver_{this};
   mojo::Remote<mojom::TimerDelegate> delegate_;

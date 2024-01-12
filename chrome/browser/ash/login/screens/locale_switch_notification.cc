@@ -85,7 +85,7 @@ class LocaleSwitchNotificationDelegate
   };
 
   std::string new_locale_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   locale_util::SwitchLanguageCallback callback_;
 
   bool is_screen_changed_ = false;

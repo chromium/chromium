@@ -1186,7 +1186,8 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
 
   void NotifyConsumerOfCompletion(bool destroy_results) override {
     body_reader_.reset();
-    stream_consumer_->OnComplete(simple_url_loader()->NetError() == net::OK);
+    stream_consumer_.ExtractAsDangling()->OnComplete(
+        simple_url_loader()->NetError() == net::OK);
   }
 
   void PrepareToRetry(base::OnceClosure retry_callback) override {
@@ -1235,8 +1236,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     body_reader_->Resume();
   }
 
-  raw_ptr<SimpleURLLoaderStreamConsumer, AcrossTasksDanglingUntriaged>
-      stream_consumer_;
+  raw_ptr<SimpleURLLoaderStreamConsumer> stream_consumer_;
 
   const base::Location url_loader_created_from_;
 

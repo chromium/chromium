@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_cell.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -185,12 +187,18 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     [NSLayoutConstraint activateConstraints:constraints];
     [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
     [self updateCircleImageView];
-    // Set the button/accessibility settings.
-    self.accessibilityTraits |= UIAccessibilityTraitButton;
     self.userInteractionEnabled = YES;
-    self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   }
   return self;
+}
+
+- (void)updateAccessibilityTraits {
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+  if (_checked) {
+    self.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
 }
 
 #pragma mark - Properties
@@ -200,12 +208,8 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     return;
   }
   _checked = checked;
-  if (_checked) {
-    self.accessibilityTraits |= UIAccessibilityTraitSelected;
-  } else {
-    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
-  }
   [self updateCircleImageView];
+  [self updateAccessibilityTraits];
 }
 
 - (void)setFaviconImage:(UIImage*)faviconImage {
@@ -230,16 +234,22 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 // Called by the chevron button.
 - (void)chevronToggleAction:(id)sender {
   switch (_snippetState) {
-    case SnippetState::kShown:
+    case SnippetState::kShown: {
       // Need to hide the snippet.
       [self updateCellWithSnippetSate:SnippetState::kHidden animate:YES];
+      NSString* collapsedFeedback = l10n_util::GetNSString(
+          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_SNIPPET_COLLAPSED);
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                      collapsedFeedback);
       break;
-    case SnippetState::kHidden:
+    }
+    case SnippetState::kHidden: {
       // Need to show the snippet.
       [self updateCellWithSnippetSate:SnippetState::kShown animate:YES];
       UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                       self.snippetLabel.text);
       break;
+    }
   }
   if (self.chevronToggledBlock) {
     self.chevronToggledBlock(_snippetState);
@@ -317,17 +327,22 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
   [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
   self.checked = NO;
   self.chevronToggledBlock = nil;
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+  self.userInteractionEnabled = YES;
 }
 
 #pragma mark - Accessibility
 
 - (NSString*)accessibilityLabel {
-  NSString* accessibilityLabel = self.nameLabel.text;
-  if (self.snippetLabel.text.length > 0) {
-    accessibilityLabel = [NSString
-        stringWithFormat:@"%@. %@", accessibilityLabel, self.snippetLabel.text];
+  CHECK_NE(self.snippetLabel.text.length, 0ul);
+  switch (_snippetState) {
+    case SnippetState::kShown:
+      return [NSString stringWithFormat:@"%@. %@", self.nameLabel.text,
+                                        self.snippetLabel.text];
+    case SnippetState::kHidden:
+      return self.nameLabel.text;
   }
-  return accessibilityLabel;
+  NOTREACHED_NORETURN();
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {

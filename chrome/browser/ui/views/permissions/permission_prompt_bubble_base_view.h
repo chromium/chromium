@@ -39,8 +39,9 @@ constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 // |                        [ Block ] [ Allow ] |
 // ----------------------------------------------
 class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
+  METADATA_HEADER(PermissionPromptBubbleBaseView, PermissionPromptBaseView)
+
  public:
-  METADATA_HEADER(PermissionPromptBubbleBaseView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);

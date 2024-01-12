@@ -90,7 +90,7 @@
 //
 //      [Ready]
 //         |
-// (MEDIA_CODEC_NO_KEY)
+// (MediaCodecResult::Codes::kNoKey)
 //         |
 //   [WaitingForKey]
 //         |
@@ -314,8 +314,8 @@ class MEDIA_EXPORT MediaCodecLoop {
   base::TimeTicks idle_time_begin_;
 
   // Index of the dequeued and filled buffer that we keep trying to enqueue.
-  // Such buffer appears in MEDIA_CODEC_NO_KEY processing. The -1 value means
-  // there is no such buffer.
+  // Such buffer appears in MediaCodecResult::Codes::kNoKey processing. The -1
+  // value means there is no such buffer.
   int pending_input_buf_index_;
 
   // When processing a pending input buffer, this is the data that was returned

@@ -12,13 +12,11 @@ import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '/shared/nearby_page_template.js';
 import '/shared/nearby_shared_icons.html.js';
 
 import {RegisterReceiveSurfaceResult} from '/shared/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_share_high_visibility_page.html.js';
@@ -33,22 +31,10 @@ enum NearbyVisibilityErrorState {
   SOMETHING_WRONG = 3,
 }
 
-// TODO(TODO(b/279623883): Remove dark mode handling.
-
 /**
- * The pulse animation asset URL for light mode.
+ * The pulse animation asset URL.
  */
-const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
-
-/**
- * The pulse animation asset URL for dark mode.
- */
-const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
-
-/**
- * The pulse animation asset URL for jelly mode.
- */
-const PULSE_ANIMATION_URL_JELLY = 'nearby_share_pulse_animation_jelly.json';
+const PULSE_ANIMATION_URL = 'nearby_share_pulse_animation.json';
 
 const NearbyShareHighVisibilityPageElementBase = I18nMixin(PolymerElement);
 
@@ -113,26 +99,6 @@ export class NearbyShareHighVisibilityPageElement extends
             'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
             'registerResult, nearbyProcessStopped, startAdvertisingFailed)',
       },
-
-      /**
-       * Whether the high visibility page is being rendered in dark mode.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Return true if the Jelly feature flag is enabled.
-       */
-      isJellyEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
-        },
-      },
     };
   }
 
@@ -142,8 +108,6 @@ export class NearbyShareHighVisibilityPageElement extends
   shutoffTimestamp: number;
   startAdvertisingFailed: boolean;
   private errorState_: NearbyVisibilityErrorState|null;
-  private isDarkModeActive_: boolean;
-  private isJellyEnabled_: boolean;
   private remainingTimeInSeconds_: number;
   private remainingTimeIntervalId_: number;
 
@@ -287,14 +251,7 @@ export class NearbyShareHighVisibilityPageElement extends
    * pulsing background animation.
    */
   private getAnimationUrl_(): string {
-    if (this.isJellyEnabled_) {
-      return PULSE_ANIMATION_URL_JELLY;
-    }
-
-    // TODO(b/279623883): Clean up dark mode logic and duplicate assets after
-    // Jelly is launched.
-    return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
-                                    PULSE_ANIMATION_URL_LIGHT;
+    return PULSE_ANIMATION_URL;
   }
 }
 

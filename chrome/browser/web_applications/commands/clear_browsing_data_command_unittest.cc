@@ -131,9 +131,6 @@ TEST_F(ClearBrowsingDataCommandTest,
   base::test::TestFuture<void> future;
   provider()->scheduler().ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), future.GetCallback());
-
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
-
   Init();
   EXPECT_TRUE(future.Wait());
 }

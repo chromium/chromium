@@ -51,6 +51,9 @@ const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName[] =
         "Accessibility.LiveCaption.Duration.CaptionBubbleHidden3";
 
+constexpr char kLiveCaptionLanguageCountHistogramName[] =
+    "Accessibility.LiveCaption.LanguageCount";
+
 namespace {
 
 // Callback executed by the SODA library on a speech recognition event. The
@@ -469,6 +472,9 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
       multilang_language_pack_directory[base::ToLowerASCII(config.first)] =
           config.second.AsUTF8Unsafe();
     }
+
+    base::UmaHistogramCounts100(kLiveCaptionLanguageCountHistogramName,
+                                config_paths_.size());
   }
 
   auto serialized = config_msg.SerializeAsString();

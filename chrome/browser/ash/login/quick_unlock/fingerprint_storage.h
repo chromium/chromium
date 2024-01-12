@@ -119,7 +119,7 @@ class FingerprintStorage final
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   // Number of fingerprint unlock attempts.
   int unlock_attempt_count_ = 0;
 

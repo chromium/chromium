@@ -5,6 +5,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,10 +36,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(USE_BLINK)
-#include "third_party/blink/public/common/features_generated.h"
-#endif
 
 namespace content_settings {
 
@@ -118,13 +115,15 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
   if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
       std::cmp_greater_equal(settings_for_3pcd_metadata_grants_.size(),
                              features::kMetadataGrantsThreshold.Get())) {
-    DCHECK(SettingsLookupsAreConsistent(
-        url, first_party_url, settings_for_3pcd_metadata_grants_,
-        indexed_settings_for_3pcd_metadata_grants_))
+#if DCHECK_IS_ON()
+    DCHECK(
+        indexed_settings_for_3pcd_metadata_grants_.IsSameResultAsLinearLookup(
+            url, first_party_url, settings_for_3pcd_metadata_grants_))
         << "Different result in index lookup: " << url.spec() << " "
         << first_party_url.spec();
-    result = FindInHostIndexedContentSettings(
-        url, first_party_url, indexed_settings_for_3pcd_metadata_grants_);
+#endif
+    result =
+        indexed_settings_for_3pcd_metadata_grants_.Find(url, first_party_url);
   } else {
     result = FindContentSetting(url, first_party_url,
                                 settings_for_3pcd_metadata_grants_);
@@ -350,15 +349,13 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
           ContentSettingsType::COOKIES);
   const std::vector<std::string> allowed_schemes =
       content_settings_info->third_party_cookie_allowed_secondary_schemes();
-  const auto it =
-      std::find(allowed_schemes.begin(), allowed_schemes.end(), scheme);
-  return it != allowed_schemes.end();
+  return base::Contains(allowed_schemes, scheme);
 }
 
 bool CookieSettings::IsStorageAccessApiEnabled() const {
-  // TODO(https://crbug.com/1411765): instead of using a BUILDFLAG and checking
-  // the feature here, we should rely on CookieSettingsFactory to plumb in this
-  // boolean instead.
+  // TODO(https://crbug.com/1411765): instead of explicitly checking for
+  // USE_BLINK throughout the core code of this component, we should rely on
+  // CookieSettingsFactory to plumb in the necessary configuration instead.
 #if BUILDFLAG(USE_BLINK)
   return true;
 #else

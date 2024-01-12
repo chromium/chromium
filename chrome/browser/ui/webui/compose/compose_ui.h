@@ -41,6 +41,8 @@ class ComposeUI : public ui::MojoBubbleWebUIController,
     triggering_web_contents_ = web_contents->GetWeakPtr();
   }
 
+  static constexpr std::string GetWebUIName() { return "Compose"; }
+
  private:
   void CreateComposeSessionPageHandler(
       mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>

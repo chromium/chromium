@@ -9,8 +9,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/extension_url_pattern_index_matcher.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
@@ -21,9 +23,7 @@ class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
-namespace extensions {
-
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct RuleCounts;
 
@@ -48,7 +48,13 @@ class RulesetMatcher {
 
   ~RulesetMatcher();
 
+  // Returns an action to be performed on the request before it is sent.
   std::optional<RequestAction> GetBeforeRequestAction(
+      const RequestParams& params) const;
+
+  // Returns an action to be performed on the request after response headers
+  // have been received.
+  std::optional<RequestAction> GetOnHeadersReceivedAction(
       const RequestParams& params) const;
 
   // Returns a list of actions corresponding to all matched
@@ -58,8 +64,14 @@ class RulesetMatcher {
       std::optional<uint64_t> min_priority) const;
 
   bool IsExtraHeadersMatcher() const;
+
+  // Returns the total rule count for this ruleset, across all request matching
+  // stages
   size_t GetRulesCount() const;
   std::optional<size_t> GetUnsafeRulesCount() const;
+
+  // Returns the regex rule count for this ruleset, across all request matching
+  // stages
   size_t GetRegexRulesCount() const;
 
   // Returns a RuleCounts object for this matcher containing the total rule
@@ -86,6 +98,14 @@ class RulesetMatcher {
   const base::flat_set<int>& GetDisabledRuleIdsForTesting() const;
 
  private:
+  // Returns the total rule count for rules within this ruleset to be matched
+  // for the given request matching `stage`.
+  size_t GetRulesCount(RulesetMatchingStage stage) const;
+
+  // Returns the regex rule count for rules within this ruleset to be matched
+  // for the given request matching `stage`.
+  size_t GetRegexRulesCount(RulesetMatchingStage stage) const;
+
   const std::string ruleset_data_;
 
   const raw_ptr<const flat::ExtensionIndexedRuleset> root_;
@@ -99,13 +119,12 @@ class RulesetMatcher {
 
   // Underlying matcher for filter-list style rules supported using the
   // |url_pattern_index| component.
-  ExtensionUrlPatternIndexMatcher url_pattern_index_matcher_;
+  ExtensionUrlPatternIndexMatcher url_matcher_;
 
   // Underlying matcher for regex rules.
   RegexRulesMatcher regex_matcher_;
 };
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_MATCHER_H_

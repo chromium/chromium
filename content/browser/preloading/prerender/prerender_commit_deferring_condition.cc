@@ -34,7 +34,7 @@ std::unique_ptr<CommitDeferringCondition>
 PrerenderCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request,
     NavigationType navigation_type,
-    absl::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<int> candidate_prerender_frame_tree_node_id) {
   // Don't create if this navigation is not for prerender page activation.
   if (navigation_type != NavigationType::kPrerenderedPageActivation)
     return nullptr;

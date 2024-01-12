@@ -52,7 +52,7 @@ class CodecImageTest : public testing::Test {
         base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
         kFrameSize, absl::nullopt);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-        .WillByDefault(Return(MEDIA_CODEC_OK));
+        .WillByDefault(Return(OkStatus()));
 
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);

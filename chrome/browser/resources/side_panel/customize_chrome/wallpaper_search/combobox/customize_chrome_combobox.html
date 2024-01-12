@@ -16,6 +16,7 @@
 }
 
 #dropdownContainer {
+  display: none;
   overflow: hidden;
   position: absolute;
   border-radius: 12px;
@@ -25,8 +26,12 @@
   width: 220px;
 }
 
-#dropdownContainer {
-  display: none;
+@media (forced-colors: active) {
+  #dropdownContainer {
+    background: Field;
+    color: FieldText;
+    border: solid 1px Highlight;
+  }
 }
 
 :host([expanded_]) #dropdownContainer {
@@ -57,7 +62,7 @@
 
 .group-item {
   display: flex;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .group-item iron-icon {
@@ -79,6 +84,15 @@
 .group-item[highlighted],
 .item[highlighted] {
   background: var(--cr-active-neutral-on-subtle-background-color);
+}
+
+@media (forced-colors: active) {
+  .group-item[highlighted],
+  .item[highlighted] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
 }
 
 .item iron-icon {
@@ -118,6 +132,10 @@
 .item:has(img) span {
   padding-inline-start: 16px;
 }
+
+:host([indent-default-option_]) #defaultOption {
+  padding-inline-start: 44px;
+}
 </style>
 
 <button id="input" class="md-select"
@@ -128,25 +146,34 @@
     aria-activedescendant$="[[getAriaActiveDescendant_(highlightedElement_)]]"
     on-click="onInputClick_"
     on-focusout="onInputFocusout_">
-  <div>[[getInputLabel_(label, selectedElement_)]]</div>
+  <div>[[getInputLabel_(label, selectedElement_, value)]]</div>
 </button>
 <div id="dropdownContainer">
   <div id="dropdown" role="listbox" on-click="onDropdownClick_"
       on-pointerdown="onDropdownPointerdown_"
       on-pointermove="onDropdownPointermove_"
       on-pointerover="onDropdownPointerover_">
+    <div id="defaultOption" class="item" role="option"
+        aria-selected="[[getDefaultItemAriaSelected_(value)]]">
+      [[defaultOptionLabel]]
+    </div>
     <template is="dom-repeat" items="[[items]]" restamp>
       <template is="dom-if" if="[[isGroup_(item)]]" restamp>
         <div class="group" role="group">
-          <label class="group-item" on-click="onGroupClick_">
+          <label role="button" class="group-item" on-click="onGroupClick_"
+              aria-expanded="[[
+                  getGroupAriaExpanded_(index, expandedGroups_.*)]]">
             [[item.label]]
-            <iron-icon icon="[[getGroupIcon_(index, expandedGroups_.*)]]">
+            <iron-icon icon="[[getGroupIcon_(index, expandedGroups_.*)]]"
+                aria-hidden="true">
             </iron-icon>
           </label>
-          <template is="dom-if" restamp if="[[isGroupExpanded_(index, expandedGroups_.*)]]">
+          <template is="dom-if" restamp
+              if="[[isGroupExpanded_(index, expandedGroups_.*)]]">
             <template is="dom-repeat" items="[[item.items]]" as="subitem">
-              <div class="item" role="option" value="[[subitem.label]]">
-                <iron-icon icon="cr:check"></iron-icon>
+              <div class="item" role="option" value="[[subitem.label]]"
+                  aria-selected="[[getItemAriaSelected_(subitem, value)]]">
+                <iron-icon icon="cr:check" aria-hidden="true"></iron-icon>
                 <span>[[subitem.label]]</span>
               </div>
             </template>
@@ -155,7 +182,8 @@
       </template>
 
       <template is="dom-if" if="[[!isGroup_(item)]]" restamp>
-        <div class="item" role="option" value="[[item.label]]">
+        <div class="item" role="option" value="[[item.label]]"
+            aria-selected="[[getItemAriaSelected_(item, value)]]">
           <template is="dom-if" if="[[item.imagePath]]">
             <customize-chrome-check-mark-wrapper
                 checked="[[isItemSelected_(item, value)]]">

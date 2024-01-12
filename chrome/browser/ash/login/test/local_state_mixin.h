@@ -32,7 +32,7 @@ class LocalStateMixin : public InProcessBrowserTestMixin {
       content::BrowserMainParts* browser_main_parts) override;
 
  private:
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

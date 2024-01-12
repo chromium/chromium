@@ -10,6 +10,7 @@
 
 #include "base/mac/mac_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/platform_test.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
@@ -48,9 +49,12 @@ TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
   EXPECT_TRUE([waiter wait]);
 
   // Take the snapshot.
-  gfx::Image image;
+  base::test::TestFuture<gfx::Image> future;
   gfx::Rect bounds = gfx::Rect(0, 0, window_size, window_size);
-  EXPECT_TRUE(ui::GrabWindowSnapshot(window, bounds, &image));
+  ui::GrabWindowSnapshotAsync(window, bounds, future.GetCallback());
+
+  gfx::Image image = future.Take();
+  ASSERT_TRUE(!image.IsEmpty());
 
   // The call to `CGWindowListCreateImage` returned a `CGImageRef` that is
   // wrapped in an `NSImage` (inside the returned `gfx::Image`). The image rep

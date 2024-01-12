@@ -57,7 +57,7 @@ void SidePanelResizeHandle::OnDidChangeFocus(views::View* before,
   }
 }
 
-BEGIN_METADATA(SidePanelResizeHandle, ImageView)
+BEGIN_METADATA(SidePanelResizeHandle)
 END_METADATA
 
 SidePanelResizeArea::SidePanelResizeArea(SidePanel* side_panel)
@@ -110,7 +110,7 @@ void SidePanelResizeArea::Layout() {
   SetBoundsRect(resize_bounds);
 }
 
-BEGIN_METADATA(SidePanelResizeArea, ResizeArea)
+BEGIN_METADATA(SidePanelResizeArea)
 END_METADATA
 
 }  // namespace views

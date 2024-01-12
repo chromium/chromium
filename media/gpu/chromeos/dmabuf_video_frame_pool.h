@@ -30,8 +30,6 @@ class PlatformVideoFramePool;
 // different thread. The implementation must be thread-safe.
 class MEDIA_GPU_EXPORT DmabufVideoFramePool {
  public:
-  using DmabufId = const std::vector<base::ScopedFD>*;
-
   using CreateFrameCB =
       base::RepeatingCallback<CroStatus::Or<scoped_refptr<VideoFrame>>(
           VideoPixelFormat,
@@ -41,10 +39,6 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
           bool,
           bool,
           base::TimeDelta)>;
-
-  // Get the identifier of Dmabuf-backed |frame|. Calling this method with the
-  // frames backed by the same Dmabuf should return the same result.
-  static DmabufId GetDmabufId(const VideoFrame& frame);
 
   DmabufVideoFramePool();
   virtual ~DmabufVideoFramePool();

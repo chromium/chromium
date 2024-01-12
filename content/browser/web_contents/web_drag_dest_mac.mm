@@ -7,6 +7,8 @@
 #include <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -23,7 +25,6 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 #include "content/public/common/drop_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
@@ -89,7 +90,7 @@ int GetModifierFlags() {
 
 void DropCompletionCallback(WebDragDest* drag_dest,
                             const content::DropContext context,
-                            absl::optional<content::DropData> drop_data) {
+                            std::optional<content::DropData> drop_data) {
   // This is an async callback. Make sure RWH is still valid.
   if (!context.target_rwh)
     return;
@@ -383,7 +384,7 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   return YES;
 }
 
-- (void)completeDropAsync:(absl::optional<content::DropData>)dropData
+- (void)completeDropAsync:(std::optional<content::DropData>)dropData
               withContext:(const content::DropContext)context {
   if (dropData.has_value()) {
     if (_delegate)
@@ -476,7 +477,7 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   // Get custom MIME data.
   if ([types containsObject:ui::kUTTypeChromiumWebCustomData]) {
     NSData* customData = [pboard dataForType:ui::kUTTypeChromiumWebCustomData];
-    if (absl::optional<std::unordered_map<std::u16string, std::u16string>>
+    if (std::optional<std::unordered_map<std::u16string, std::u16string>>
             maybe_custom_data = ui::ReadCustomDataIntoMap(
                 base::span(reinterpret_cast<const uint8_t*>([customData bytes]),
                            [customData length]));

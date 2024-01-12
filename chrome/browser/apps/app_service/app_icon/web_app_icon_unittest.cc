@@ -68,7 +68,6 @@ using IconPurpose = web_app::IconPurpose;
 
 class WebAppIconFactoryTest : public testing::Test {
  public:
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   WebAppIconFactoryTest() = default;
 
   ~WebAppIconFactoryTest() override = default;

@@ -22,8 +22,8 @@ namespace prefs {
 
 class AutofillPrefsTest : public testing::Test {
  protected:
-  AutofillPrefsTest() {}
-  ~AutofillPrefsTest() override {}
+  AutofillPrefsTest() = default;
+  ~AutofillPrefsTest() override = default;
 
   void SetUp() override { pref_service_ = CreatePrefServiceAndRegisterPrefs(); }
 

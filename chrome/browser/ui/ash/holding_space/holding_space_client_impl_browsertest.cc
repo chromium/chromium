@@ -21,6 +21,8 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -253,18 +255,32 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
   auto* holding_space_client = HoldingSpaceController::Get()->client();
   ASSERT_TRUE(holding_space_client);
 
-  // OpenItems() depends on the Files app. Install the Files SWA.
+  // `HoldingSpaceClient::OpenItems()` depends on Files app installation.
   WaitForTestSystemAppInstall();
 
-  // Verify no failures have yet been recorded.
+  // Alias histogram names.
+  static constexpr char kItemLaunchEmpty[] =
+      "HoldingSpace.Item.Action.Launch.Empty";
+  static constexpr char kItemLaunchEmptyExtension[] =
+      "HoldingSpace.Item.Action.Launch.Empty.Extension";
+  static constexpr char kItemLaunchFailure[] =
+      "HoldingSpace.Item.Action.Launch.Failure";
+  static constexpr char kItemLaunchFailureExtension[] =
+      "HoldingSpace.Item.Action.Launch.Failure.Extension";
+  static constexpr char kItemLaunchFailureReason[] =
+      "HoldingSpace.Item.Action.Launch.Failure.Reason";
+
+  // Verify no histograms have yet been recorded.
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 0);
-  histogram_tester.ExpectTotalCount(
-      "HoldingSpace.Item.FailureToLaunch.Extension", 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchEmpty, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchEmptyExtension, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailure, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureExtension, 0);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureReason, 0);
 
   {
-    // Create a holding space item backed by a non-existing file.
-    auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+    // Create a holding space `item` backed by a non-existing file.
+    auto item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload,
         HoldingSpaceFile(base::FilePath("foo.pdf"),
                          HoldingSpaceFile::FileSystemType::kTest,
@@ -272,48 +288,55 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
         base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::OpenItems()` to fail when the backing file
-    // for `holding_space_item` does not exist.
-    base::RunLoop run_loop;
-    holding_space_client->OpenItems(
-        {holding_space_item.get()},
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_FALSE(success);
+    // for `item` does not exist.
+    base::test::TestFuture<bool> success;
+    holding_space_client->OpenItems({item.get()}, success.GetCallback());
+    EXPECT_FALSE(success.Take());
 
-          // Verify the failure has been recorded.
-          histogram_tester.ExpectBucketCount(
-              "HoldingSpace.Item.FailureToLaunch", holding_space_item->type(),
-              1);
-          histogram_tester.ExpectBucketCount(
-              "HoldingSpace.Item.FailureToLaunch.Extension",
-              holding_space_metrics::FilePathToExtension(
-                  holding_space_item->file().file_path),
-              1);
-
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // Verify the failure has been recorded.
+    histogram_tester.ExpectBucketCount(kItemLaunchFailure, item->type(), 1);
+    histogram_tester.ExpectBucketCount(
+        kItemLaunchFailureExtension,
+        holding_space_metrics::FilePathToExtension(item->file().file_path), 1);
+    histogram_tester.ExpectBucketCount(
+        kItemLaunchFailureReason,
+        holding_space_metrics::ItemLaunchFailureReason::kFileInfoError, 1);
   }
 
   {
-    // Create a holding space item backed by a newly created txt file.
-    HoldingSpaceItem* holding_space_item = AddPinnedFile();
+    // Create a holding space `item` backed by a newly created file.
+    HoldingSpaceItem* item = AddPinnedFile();
 
     // We expect `HoldingSpaceClient::OpenItems()` to succeed when the backing
-    // file for `holding_space_item` exists.
-    base::RunLoop run_loop;
-    holding_space_client->OpenItems(
-        {holding_space_item},
-        base::BindLambdaForTesting([&run_loop](bool success) {
-          EXPECT_TRUE(success);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // file for `item` exists and is empty.
+    base::test::TestFuture<bool> success;
+    holding_space_client->OpenItems({item}, success.GetCallback());
+    EXPECT_TRUE(success.Take());
+
+    // Verify the empty launch has been recorded.
+    histogram_tester.ExpectBucketCount(kItemLaunchEmpty, item->type(), 1);
+    histogram_tester.ExpectBucketCount(
+        kItemLaunchEmptyExtension,
+        holding_space_metrics::FilePathToExtension(item->file().file_path), 1);
+
+    {
+      // Write "contents" to `item`'s backing file.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::WriteFile(item->file().file_path, "contents"));
+    }
+
+    // We expect `HoldingSpaceClient::OpenItems()` to succeed when the backing
+    // file for `item` exists and is non-empty.
+    holding_space_client->OpenItems({item}, success.GetCallback());
+    EXPECT_TRUE(success.Take());
   }
 
-  // Verify that only the expected failure was recorded.
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 1);
-  histogram_tester.ExpectTotalCount(
-      "HoldingSpace.Item.FailureToLaunch.Extension", 1);
+  // Verify that only the expected histograms were recorded.
+  histogram_tester.ExpectTotalCount(kItemLaunchEmpty, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchEmptyExtension, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailure, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureExtension, 1);
+  histogram_tester.ExpectTotalCount(kItemLaunchFailureReason, 1);
 }
 
 // Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when

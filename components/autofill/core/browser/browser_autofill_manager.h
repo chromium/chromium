@@ -497,19 +497,6 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillTriggerDetails trigger_details,
       bool is_refill = false);
 
-  // Returns true if the field value should not be overridden by Autofill.
-  // Selection fields are excluded from this check because they may have a
-  // non-empty value. If the initiating element had a prefilled value but the
-  // autofill suggestion is present that includes the currently filled value in
-  // the field as a substring, Autofill would override the filled value in that
-  // case.
-  [[nodiscard]] bool ShouldPreventAutofillFromOverridingPrefilledField(
-      mojom::ActionPersistence action_persistence,
-      AutofillField& cached_field,
-      const FormFieldData& field_data,
-      bool is_initiating_field,
-      const AutofillProfile& profile);
-
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.
@@ -519,11 +506,15 @@ class BrowserAutofillManager : public AutofillManager {
   // the `trigger_source` on the `field`. The field's type is `field_type`.
   // The `trigger_source` controls which fields are considered for filling and
   // thus influences the suggestion labels.
+  // `form_structure` and `autofill_field` can be null when the `field` from
+  // which Autofill was triggered is not an address field. This means the user
+  // chose the address manual fallback option to fill an arbitrary non address
+  // field.
   std::vector<Suggestion> GetProfileSuggestions(
       const FormData& form,
-      const FormStructure& form_structure,
-      const FormFieldData& field,
-      const AutofillField& autofill_field,
+      const FormStructure* form_structure,
+      const FormFieldData& trigger_field,
+      const AutofillField* trigger_autofill_field,
       AutofillSuggestionTriggerSource trigger_source) const;
 
   // Returns a list of values from the stored credit cards that match
@@ -769,6 +760,11 @@ class BrowserAutofillManager : public AutofillManager {
   // A map from FormGlobalId to FillingContext instances used to make refill
   // attempts for dynamic forms.
   std::map<FormGlobalId, std::unique_ptr<FillingContext>> filling_context_;
+
+  // The maximum amount of time between a change in the form and the original
+  // fill that triggers a refill. This value is only changed in browser tests,
+  // where time cannot be mocked, to avoid flakiness.
+  base::TimeDelta limit_before_refill_ = kLimitBeforeRefill;
 
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.

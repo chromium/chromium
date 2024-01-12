@@ -53,6 +53,11 @@ class IdleService : public KeyedService {
   // This ensure that actions do not run when the app is backgrounded or when
   // the screen is locked.
   void OnApplicationWillEnterBackground();
+  // Checks whether the browser has been idle for the first time since last
+  // being active.
+  bool IsIdleAfterPreviouslyBeingActive();
+  // Returns true if the `IdleTimeout` pref is set.
+  bool IsIdleTimeoutPolicySet();
   // Runs actions on timeout after it has been confirmed that the user is idle.
   void RunActions();
   // Shows the snackbar after actions have completed.
@@ -88,9 +93,6 @@ class IdleService : public KeyedService {
   // it calls `RunActionsForState` to run actions. Otherwise, it posts a task to
   // check again when the browser might possibly become idle.
   void CheckIfIdle();
-  // Checks whether the browser has been idle for the first time since last
-  // being active.
-  bool IsIdleAfterPreviouslyBeingActive();
   // Checks if any action needs to run on idle timeout.
   bool IsAnyActionNeededToRun();
   // Runs the actions based on `IdleTimeoutActions` and update the UI based on

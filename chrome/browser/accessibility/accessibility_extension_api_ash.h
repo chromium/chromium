@@ -222,6 +222,16 @@ class AccessibilityPrivateSetHighlightsFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_SETHIGHLIGHTS)
 };
 
+// API function that is called when the Select to Speak reading position
+// changes.
+class AccessibilityPrivateSetSelectToSpeakFocusFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateSetSelectToSpeakFocusFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setSelectToSpeakFocus",
+                             ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKFOCUS)
+};
+
 // API function that sets keyboard capture mode.
 class AccessibilityPrivateSetKeyboardListenerFunction
     : public ExtensionFunction {

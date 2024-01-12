@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -48,7 +48,7 @@ class AttributionSqlQueryPlanTest : public testing::Test {
   // Helper method to make tests as readable as possible.
   base::expected<SqlQueryPlan, SqlQueryPlanExplainer::Error> GetPlan(
       std::string query,
-      absl::optional<SqlFullScanReason> reason = absl::nullopt) {
+      std::optional<SqlFullScanReason> reason = std::nullopt) {
     return explainer_->GetPlan(std::move(query), reason);
   }
 

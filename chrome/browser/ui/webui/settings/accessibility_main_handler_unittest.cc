@@ -55,8 +55,7 @@ class TestAccessibilityMainHandler : public AccessibilityMainHandler {
   using AccessibilityMainHandler::set_web_ui;
 
  private:
-  raw_ptr<TestScreenAIInstallState, ExperimentalAsh>
-      test_screen_ai_install_state_ = nullptr;
+  raw_ptr<TestScreenAIInstallState> test_screen_ai_install_state_ = nullptr;
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           screen_ai::ScreenAIInstallState::Observer>
       component_ready_observer_{this};

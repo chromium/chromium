@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_MEDIA_CDM_STORAGE_MANAGER_H_
 #define CONTENT_BROWSER_MEDIA_CDM_STORAGE_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,7 +19,6 @@
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -39,7 +40,7 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
       const blink::StorageKey& storage_key,
       const media::CdmType& cdm_type,
       const std::string& file_name,
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback);
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback);
 
   void WriteFile(const blink::StorageKey& storage_key,
                  const media::CdmType& cdm_type,
@@ -53,9 +54,13 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
                   base::OnceCallback<void(bool)> callback);
 
   void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
+                               const base::Time begin,
+                               const base::Time end,
                                base::OnceCallback<void(bool)> callback);
 
-  void DeleteDatabase();
+  void DeleteDataForTimeFrame(const base::Time begin,
+                              const base::Time end,
+                              base::OnceCallback<void(bool)> callback);
 
   void OnFileReceiverDisconnect(const std::string& name,
                                 const media::CdmType& cdm_type,
@@ -87,21 +92,18 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
                    CdmStorageOpenError error);
 
   void DidReadFile(
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback,
-      absl::optional<std::vector<uint8_t>> data);
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+      std::optional<std::vector<uint8_t>> data);
 
   void DidWriteFile(base::OnceCallback<void(bool)> callback, bool success);
 
-  void DidDeleteFile(base::OnceCallback<void(bool)> callback, bool success);
-
-  void DidDeleteForStorageKey(base::OnceCallback<void(bool)> callback,
-                              bool success);
-
-  void DidDeleteDatabase(bool success);
+  void DidDelete(base::OnceCallback<void(bool)> callback,
+                 const std::string& operation,
+                 bool success);
 
   void ReportDatabaseOpenError(CdmStorageOpenError error);
 
-  std::string GetHistogramName(const char operation[]);
+  std::string GetHistogramName(const std::string& operation);
 
   const base::FilePath path_;
 

@@ -35,6 +35,7 @@
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/patcher.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/unzip/unzip_impl.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -77,13 +78,13 @@ void RecoveryComponentActionHandler::Unpack() {
   auto unzipper = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
                       base::BindRepeating(&unzip::LaunchUnzipper))
                       ->Create();
-  update_client::PuffinComponentUnpacker::Unpack(
+  update_client::Unpacker::Unpack(
       key_hash_, crx_path_, std::move(unzipper), verifier_format_,
       base::BindOnce(&RecoveryComponentActionHandler::UnpackComplete, this));
 }
 
 void RecoveryComponentActionHandler::UnpackComplete(
-    const update_client::PuffinComponentUnpacker::Result& result) {
+    const update_client::Unpacker::Result& result) {
   if (result.error != update_client::UnpackerError::kNone) {
     DCHECK(!base::DirectoryExists(result.unpack_path));
     main_task_runner_->PostTask(

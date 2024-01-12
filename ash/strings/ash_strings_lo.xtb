@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">ສະຫຼັບ Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບຫາ Chromebook ຂອງທ່ານໄດ້</translation>
 <translation id="2367972762794486313">ສະແດງແອັບ</translation>
+<translation id="2368828502825385061">ຊອກຫາ</translation>
 <translation id="2369165858548251131">"ສະບາຍດີ" ເປັນພາສາຈີນ</translation>
 <translation id="2382875860893882175">ປັດຈຸບັນການສົ່ງສັນຍານຖືກຢຸດຊົ່ວຄາວ. ທ່ານສາມາດສືບຕໍ່ສົ່ງສັນຍານ ຫຼື ຢຸດສົ່ງສັນຍານຕອນໃດກໍໄດ້.</translation>
 <translation id="2386292613071805067">ເລືອກທຸກຢ່າງໃນໜ້າ</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">ຄາສທ໌</translation>
 <translation id="5546397813406633847">ກູ້ຜູ້ໃຊ້ຄືນມາ</translation>
 <translation id="554893713779400387">ເປີດປິດການຂຽນຕາມຄຳບອກ</translation>
+<translation id="5550417424894892620">ວາງໄຟລ໌ຢູ່ເດັສທັອບເພື່ອເພີ່ມພວກມັນໄປໃສ່ <ph name="HOLDING_SPACE_TITLE" />. ທ່ານບໍ່ສາມາດເພີ່ມໄຟລ໌ນີ້ໄປໃສ່ເດັສທັອບໄດ້.</translation>
 <translation id="5551456515017410630">ເປີດ/ປິດປະຕິທິນ</translation>
 <translation id="5551974246223970793">ເມື່ອຊອກຫາໃນໜ້າ, ໃຫ້ເຂົ້າໄປລາຍການຕໍ່ໄປທີ່ກົງກັນກັບການຊອກຫາ</translation>
 <translation id="5555639311269196631">ປິດຮັອດສະປອດ</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="7026338066939101231">ການຫຼຸດລົງ</translation>
 <translation id="7029814467594812963">ອອກຈາກເຊດຊັນ</translation>
+<translation id="7031303610220416229">ເບິ່ງໜ້າວຽກທັງໝົດໃນ Google Tasks</translation>
 <translation id="7032161822340700104">ອະນຸຍາດໃຫ້ມີແມ່ແບບ 6 ອັນເທົ່ານັ້ນ. ກະລຸນາລຶບແມ່ແບບໃດໜຶ່ງອອກເພື່ອບັນທຶກອັນໃໝ່.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ຕ້ອງການໃຊ້ <ph name="DEVICE_NAME" />. ເປີດສະວິດ <ph name="DEVICE_NAME" /> ຂອງອຸປະກອນທ່ານ.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, ຜູ້ຊ່ວຍ Google</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ກຳລັງນຳໃຊ້ຢູ່.</translation>
 <translation id="8369166482916924789">ໂຕະທີ່ບັນທຶກໄວ້, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">ຊອກຫາ <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">ໄປໜ້າເທື່ອລະຕົວໜັງສື</translation>
 <translation id="8371991222807690464">ປະສິດທິພາບຂອງອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໃນໂໝດແຂກ</translation>
 <translation id="8374601332003098278">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ຈັດຮຽງແອັບຂອງທ່ານຕາມຊື່ ຫຼື ສີ</translation>
 <translation id="8609384513243082612">ເປີດແຖບໃໝ່</translation>
+<translation id="8612216344243590325">ເກັບໄວ້ສຳຄັນໄວ້ໃນ <ph name="HOLDING_SPACE_TITLE" /> ແທນເດັສທັອບ. ພຽງລາກໄຟລ໌ໄປໃສ່ <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">ການແຈ້ງເຕືອນ <ph name="APP_1_TITLE" /> ແລະ <ph name="APP_2_TITLE" /> ຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="8619138598101195078">ຫຼຸດສຽງລົງ</translation>
 <translation id="8627191004499078455">ເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -31,7 +32,6 @@
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/source_location.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom-forward.h"
@@ -192,11 +192,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |initiator_rfh| is the frame that requested the navigation.
   // |soft_navigation_heuristics_task_id| is the task in the renderer that
   // initiated this call (if any).
-  void GoToOffsetFromRenderer(
-      int offset,
-      RenderFrameHostImpl* initiator_rfh,
-      absl::optional<blink::scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id);
+  void GoToOffsetFromRenderer(int offset,
+                              RenderFrameHostImpl* initiator_rfh,
+                              std::optional<blink::scheduler::TaskAttributionId>
+                                  soft_navigation_heuristics_task_id);
 
 #if BUILDFLAG(IS_ANDROID)
   // The difference between (Can)GoToOffsetWithSkipping and
@@ -214,8 +213,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const GURL& url,
       const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
-      const absl::optional<url::Origin>& initiator_origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<GURL>& initiator_base_url,
       bool is_renderer_initiated,
       SiteInstance* source_site_instance,
       const Referrer& referrer,
@@ -228,7 +227,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       network::mojom::SourceLocationPtr source_location,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_form_submission,
-      const absl::optional<blink::Impression>& impression,
+      const std::optional<blink::Impression>& impression,
       blink::mojom::NavigationInitiatorActivationAndAdStatus
           initiator_activation_and_ad_status,
       base::TimeTicks navigation_start_time,
@@ -236,8 +235,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_unfenced_top_navigation = false,
       bool force_new_browsing_instance = false,
       bool is_container_initiated = false,
-      absl::optional<std::u16string> embedder_shared_storage_context =
-          absl::nullopt);
+      std::optional<std::u16string> embedder_shared_storage_context =
+          std::nullopt);
 
   // Navigates to the history entry associated with the given navigation API
   // |key|. Searches |entries_| for a FrameNavigationEntry associated with
@@ -259,7 +258,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // initiated this call (if any).
   void NavigateToNavigationApiKey(
       RenderFrameHostImpl* initiator_rfh,
-      absl::optional<blink::scheduler::TaskAttributionId>
+      std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
       const std::string& key);
 
@@ -281,10 +280,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Returns the index that would be used by `GoBack`. This respects skippable
   // entries. Returns nullopt if no unskippable back entry exists.
-  absl::optional<int> GetIndexForGoBack();
+  std::optional<int> GetIndexForGoBack();
   // Returns the index that would be used by `GoForward`. This respects
   // skippable entries. Returns nullopt if no forward entry exists.
-  absl::optional<int> GetIndexForGoForward();
+  std::optional<int> GetIndexForGoForward();
 
   // Return the entry with the given unique id, or null if not found.
   NavigationEntryImpl* GetEntryWithUniqueID(int nav_entry_id) const;
@@ -420,9 +419,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   static std::unique_ptr<NavigationEntryImpl> CreateNavigationEntry(
       const GURL& url,
       Referrer referrer,
-      absl::optional<url::Origin> initiator_origin,
-      absl::optional<GURL> initiator_base_url,
-      absl::optional<GURL> source_process_site_url,
+      std::optional<url::Origin> initiator_origin,
+      std::optional<GURL> initiator_base_url,
+      std::optional<GURL> source_process_site_url,
       ui::PageTransition transition,
       bool is_renderer_initiated,
       const std::string& extra_headers,
@@ -592,7 +591,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // asked to be navigated to.
   void GoToIndex(int index,
                  RenderFrameHostImpl* initiator_rfh,
-                 absl::optional<blink::scheduler::TaskAttributionId>
+                 std::optional<blink::scheduler::TaskAttributionId>
                      soft_navigation_heuristics_task_id,
                  const std::string* navigation_api_key);
 
@@ -606,7 +605,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void NavigateToExistingPendingEntry(
       ReloadType reload_type,
       RenderFrameHostImpl* initiator_rfh,
-      absl::optional<blink::scheduler::TaskAttributionId>
+      std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
       const std::string* navigation_api_key);
 
@@ -626,9 +625,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void FindFramesToNavigate(
       FrameTreeNode* frame,
       ReloadType reload_type,
-      const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+      const std::optional<blink::LocalFrameToken>& initiator_frame_token,
       int initiator_process_id,
-      absl::optional<blink::scheduler::TaskAttributionId>
+      std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
       std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
       std::vector<std::unique_ptr<NavigationRequest>>*
@@ -677,8 +676,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_unfenced_top_navigation = false,
       bool is_container_initiated = false,
-      absl::optional<std::u16string> embedder_shared_storage_context =
-          absl::nullopt);
+      std::optional<std::u16string> embedder_shared_storage_context =
+          std::nullopt);
 
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot
@@ -694,10 +693,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       ReloadType reload_type,
       bool is_same_document_history_load,
       bool is_history_navigation_in_new_child_frame,
-      const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+      const std::optional<blink::LocalFrameToken>& initiator_frame_token,
       int initiator_process_id,
-      absl::optional<blink::scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id = absl::nullopt);
+      std::optional<blink::scheduler::TaskAttributionId>
+          soft_navigation_heuristics_task_id = std::nullopt);
 
   // Returns whether there is a pending NavigationEntry whose unique ID matches
   // the given NavigationRequest's pending_nav_entry_id.

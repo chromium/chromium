@@ -295,6 +295,8 @@ bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
   switch (spec->promo_subtype()) {
     case user_education::FeaturePromoSpecification::PromoSubtype::kNormal:
     case user_education::FeaturePromoSpecification::PromoSubtype::kLegalNotice:
+    case user_education::FeaturePromoSpecification::PromoSubtype::
+        kActionableAlert:
       return data->is_dismissed;
     case user_education::FeaturePromoSpecification::PromoSubtype::kPerApp:
       return base::Contains(data->shown_for_apps, GetAppId());

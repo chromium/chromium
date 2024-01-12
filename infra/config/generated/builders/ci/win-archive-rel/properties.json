@@ -51,7 +51,8 @@
           "builder": "win-clobber-rel",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-archive-rel/targets"
     }
   },
   "$build/reclient": {

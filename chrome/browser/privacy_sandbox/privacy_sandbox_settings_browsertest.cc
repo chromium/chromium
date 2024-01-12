@@ -249,33 +249,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest,
             privacy_sandbox_settings()->TopicsDataAccessibleSince());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest,
-                       SettingsAreNotOverridden) {
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
-  EXPECT_FALSE(base::FeatureList::IsEnabled(
-      privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting));
-}
-
-class PrivacySandboxSettingsAdsApisFlagBrowserTest
-    : public PrivacySandboxSettingsBrowserTest {
- public:
-  PrivacySandboxSettingsAdsApisFlagBrowserTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnablePrivacySandboxAdsApis);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAdsApisFlagBrowserTest,
-                       FollowsOverrideBehavior) {
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
-
-  // The flag should enable this feature.
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting));
-}
-
 namespace {
 
 enum class AttestedApiStatus {

@@ -80,12 +80,16 @@ void StoragePolicyObserver::StartTrackingOrigins(
   for (const auto& origin : origins) {
     // If the origin exists, emplace fails, and its state is unchanged.
     GURL origin_url = GURL(origin.Serialize());
-    auto& entry =
-        *origin_state_.emplace(std::move(origin_url), OriginState()).first;
-    updates.push_back(&entry);
+    auto [entry, success] =
+        origin_state_.emplace(std::move(origin_url), OriginState());
+    if (success) {
+      updates.push_back(&*entry);
+    }
   }
 
-  OnPolicyChangedForOrigins(updates);
+  if (!updates.empty()) {
+    OnPolicyChangedForOrigins(updates);
+  }
 }
 
 void StoragePolicyObserver::StopTrackingOrigin(const url::Origin& origin) {

@@ -248,7 +248,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     const areAnyPrivacySandboxApisEnabled =
         this.getPref('privacy_sandbox.m1.topics_enabled').value ||
         this.getPref('privacy_sandbox.m1.fledge_enabled').value ||
-        this.getPref('privacy_sandbox.m1.fledge_enabled').value;
+        this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
     const areThirdPartyCookiesAllowed =
         currentCookieControlsMode === CookieControlsMode.OFF ||
         currentCookieControlsMode === CookieControlsMode.INCOGNITO_ONLY;
@@ -261,55 +261,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacySandbox.Block3PCookies');
     } else {
-      this.$.toast.hide();
-    }
-
-    primarySettingGroup.sendPrefChange();
-  }
-
-  /**
-   * Record interaction metrics for the primary cookie radio setting.
-   */
-  private onCookiePrimarySettingChanged_() {
-    const primarySettingGroup: SettingsRadioGroupElement =
-        this.shadowRoot!.querySelector('#primarySettingGroup')!;
-    const selection = Number(primarySettingGroup.selected);
-    if (selection === CookiePrimarySetting.ALLOW_ALL) {
-      this.metricsBrowserProxy_.recordSettingsPageHistogram(
-          PrivacyElementInteractions.COOKIES_ALL);
-    } else if (selection === CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) {
-      this.metricsBrowserProxy_.recordSettingsPageHistogram(
-          PrivacyElementInteractions.COOKIES_INCOGNITO);
-    } else if (selection === CookiePrimarySetting.BLOCK_THIRD_PARTY) {
-      this.metricsBrowserProxy_.recordSettingsPageHistogram(
-          PrivacyElementInteractions.COOKIES_THIRD);
-    } else {  // CookiePrimarySetting.BLOCK_ALL
-      this.metricsBrowserProxy_.recordSettingsPageHistogram(
-          PrivacyElementInteractions.COOKIES_BLOCK);
-    }
-
-    // If this change resulted in the user now blocking 3P cookies where they
-    // previously were not, and privacy sandbox APIs are enabled,
-    // the privacy sandbox toast should be shown.
-    const currentCookieSetting =
-        this.getPref('generated.cookie_primary_setting').value;
-    const privacySandboxEnabled =
-        this.getPref('privacy_sandbox.apis_enabled_v2').value;
-
-    if (privacySandboxEnabled &&
-        (currentCookieSetting === CookiePrimarySetting.ALLOW_ALL ||
-         currentCookieSetting ===
-             CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) &&
-        (selection === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
-         selection === CookiePrimarySetting.BLOCK_ALL)) {
-      if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
-        this.$.toast.show();
-      }
-      this.metricsBrowserProxy_.recordAction(
-          'Settings.PrivacySandbox.Block3PCookies');
-    } else if (
-        selection === CookiePrimarySetting.ALLOW_ALL ||
-        selection === CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) {
       this.$.toast.hide();
     }
 

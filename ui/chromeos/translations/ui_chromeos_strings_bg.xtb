@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Португалски с американската международна клавиатура</translation>
 <translation id="1629521517399325891">Потребителският сертификат не може да се използва за удостоверяване в мрежа.</translation>
 <translation id="1641780993263690097">Китайски (пинин)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файла се правят налични офлайн</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
 <translation id="1661207570040737402">Използвахте цялото хранилище за споделения си диск в Google Workspace.</translation>
 <translation id="1661867754829461514">Липсва PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Електронна таблица в Google</translation>
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">Монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> елемента се подготвят за синхронизиране...</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Копирането на <ph name="COUNT" /> файла е блокирано чрез администраторско правило</translation>
 <translation id="6509122719576673235">норвежки</translation>
 <translation id="6528513914570774834">Разрешаване на другите потребители на устройството да използват тази мрежа</translation>
-<translation id="653019979737152879">„<ph name="FILE_NAME" />“ се синхронизира...</translation>
 <translation id="6549689063733911810">Скорошни</translation>
 <translation id="6558280019477628686">Възникна грешка. Някои елементи може да не са изтрити.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“ се изтрива...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Даване на приложенията за Linux на достъп до файловете в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Понастоящем сте офлайн. Синхронизирането на файловете ще се възобнови, когато имате връзка с интернет</translation>
 <translation id="7589661784326793847">Изчакайте само секунда</translation>
-<translation id="7592775719802218421">Файлът „<ph name="FILE_NAME" />“ се прави наличен офлайн</translation>
 <translation id="7600126690270271294">Сръбски</translation>
 <translation id="7603724359189955920">Решетки</translation>
 <translation id="7627790789328695202">Ами сега! Файлът „<ph name="FILE_NAME" />“ вече съществува. Преименувайте го и опитайте отново.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8147028810663464959">Ширината на знаците е пълна</translation>
 <translation id="8151638057146502721">Конфигуриране</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}other{# грешки.}}</translation>
 <translation id="8154842056504218462">Избрахте всички елементи.</translation>
 <translation id="8157684860301034423">Извличането на информацията за приложението не бе успешно.</translation>
 <translation id="8175731104491895765">Френски (Белгия)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Разрешете на <ph name="VM_NAME" /> да осъществява достъп до файловете в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="8372369524088641025">Ключът за WEP е неправилен</translation>
 <translation id="8372852072747894550">Гръцки</translation>
+<translation id="8377269993083688872">Оформления за имейл</translation>
 <translation id="8386903983509584791">Сканирането завърши</translation>
 <translation id="8387733224523483503">Елементът <ph name="FILE_NAME" /> е извлечен.</translation>
 <translation id="8395901698320285466">Размери</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Изберете файл за отваряне</translation>
 <translation id="8577897833047451336">Хърватски</translation>
 <translation id="8578308463707544055">Индонезийски</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> елемента се синхронизират...</translation>
 <translation id="8600173386174225982">Списъкът с файлове е превключен към изглед с миниизображения.</translation>
 <translation id="8601932370724196034">Файл с образ на Crostini</translation>
 <translation id="8609695766746872526">Исландски</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Разрешаване на прокси сървъри за споделените мрежи</translation>
 <translation id="8790981080411996443">Човек, който полива цветя</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 предупреждение.}other{# предупреждения.}}</translation>
 <translation id="8808686172382650546">Котка</translation>
 <translation id="8810671769985673465">Компресирането не бе успешно. Съществува елемент: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Испански (Испания)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Файлът „<ph name="FILE_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 предупреждение.}other{<ph name="COUNT" /> предупреждения.}}</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9099674669267916096">Брой страници</translation>

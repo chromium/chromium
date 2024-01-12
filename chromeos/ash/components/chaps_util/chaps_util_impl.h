@@ -5,7 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"

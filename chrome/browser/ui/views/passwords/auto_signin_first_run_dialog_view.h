@@ -12,8 +12,9 @@
 
 class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
                                      public AutoSigninFirstRunPrompt {
+  METADATA_HEADER(AutoSigninFirstRunDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(AutoSigninFirstRunDialogView);
   AutoSigninFirstRunDialogView(CredentialManagerDialogController* controller,
                                content::WebContents* web_contents);
   AutoSigninFirstRunDialogView(const AutoSigninFirstRunDialogView&) = delete;

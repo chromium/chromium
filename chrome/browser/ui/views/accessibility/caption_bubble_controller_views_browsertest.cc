@@ -93,7 +93,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
                        : nullptr;
   }
 
-  views::StyledLabel* GetLanguageLabel() {
+  views::Label* GetLanguageLabel() {
     return controller_
                ? controller_->caption_bubble_->GetLanguageLabelForTesting()
                : nullptr;
@@ -1344,14 +1344,11 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   EXPECT_EQ(2u, GetHeader()->children().size());
   views::View* left_header_container = GetHeader()->children()[0];
 
-  // The left header container should contain the language label and the
-  // caption settings icon.
-  EXPECT_EQ(2u, left_header_container->children().size());
+  // The left header container should contain the language label button.
+  EXPECT_EQ(1u, left_header_container->children().size());
 
   auto* language_label = left_header_container->children()[0].get();
-  auto* caption_settings_icon = left_header_container->children()[1].get();
   ASSERT_TRUE(language_label->GetVisible());
-  ASSERT_TRUE(caption_settings_icon->GetVisible());
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(
                    left_header_container->GetLayoutManager())
                    ->inside_border_insets()
@@ -1359,15 +1356,15 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   EXPECT_EQ(464, left_header_container->GetPreferredSize().width());
 
   EXPECT_EQ(u"English",
-            static_cast<views::StyledLabel*>(language_label)->GetText());
+            static_cast<views::LabelButton*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("fr-FR");
   EXPECT_EQ(u"French (auto-detected)",
-            static_cast<views::StyledLabel*>(language_label)->GetText());
+            static_cast<views::LabelButton*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("en-GB");
   EXPECT_EQ(u"English",
-            static_cast<views::StyledLabel*>(language_label)->GetText());
+            static_cast<views::LabelButton*>(language_label)->GetText());
 
   // Enable Live Translate.
   browser()->profile()->GetPrefs()->SetString(
@@ -1378,21 +1375,20 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
                                                true);
 
   ASSERT_TRUE(language_label->GetVisible());
-  ASSERT_TRUE(caption_settings_icon->GetVisible());
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(
                    left_header_container->GetLayoutManager())
                    ->inside_border_insets()
                    .left());
   EXPECT_EQ(u"Translating French to English",
-            static_cast<views::StyledLabel*>(language_label)->GetText());
+            static_cast<views::LabelButton*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("it-IT");
   EXPECT_EQ(u"Translating Italian (auto-detected) to English",
-            static_cast<views::StyledLabel*>(language_label)->GetText());
+            static_cast<views::LabelButton*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("en-US");
   EXPECT_EQ(u"English (auto-detected)",
-            static_cast<views::StyledLabel*>(language_label)->GetText());
+            static_cast<views::LabelButton*>(language_label)->GetText());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,

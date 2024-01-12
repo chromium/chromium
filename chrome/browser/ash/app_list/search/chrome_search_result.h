@@ -250,7 +250,7 @@ class ChromeSearchResult {
 
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
+  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
 
   base::WeakPtrFactory<ChromeSearchResult> weak_ptr_factory_{this};
 };

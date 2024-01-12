@@ -14,7 +14,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
+#include "chrome/browser/ash/app_list/search/manatee/manatee_cache.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/test/test_manatee_cache.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -78,16 +81,25 @@ std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedStates(
 
 }  // namespace
 
-class KeyboardShortcutProviderTest : public ChromeAshTestBase,
-                                     public testing::WithParamInterface<bool> {
+// TODO(longbowei): Remove KeyboardShortcutProviderTest when deprecating old
+// shortcut app.
+class KeyboardShortcutProviderFuzzyMatchTest
+    : public ChromeAshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  KeyboardShortcutProviderTest() {
+  KeyboardShortcutProviderFuzzyMatchTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{search_features::
+                                    kLauncherFuzzyMatchAcrossProviders},
+          /*disabled_features=*/{
+              ash::features::kSearchCustomizableShortcutsInLauncher});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              search_features::kLauncherFuzzyMatchAcrossProviders,
+              ash::features::kSearchCustomizableShortcutsInLauncher});
     }
   }
 
@@ -100,7 +112,10 @@ class KeyboardShortcutProviderTest : public ChromeAshTestBase,
 
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
+    std::unique_ptr<TestManateeCache> test_manatee_cache_ =
+        std::make_unique<TestManateeCache>();
+    auto provider = std::make_unique<KeyboardShortcutProvider>(
+        profile_.get(), std::move(test_manatee_cache_));
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
   }
@@ -118,17 +133,17 @@ class KeyboardShortcutProviderTest : public ChromeAshTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
-                         KeyboardShortcutProviderTest,
+                         KeyboardShortcutProviderFuzzyMatchTest,
                          testing::Bool());
 
 // Make search queries which yield shortcut results with shortcut key
 // combinations of differing length and format. Check that the top result has a
 // high relevance score, and correctly set title and accessible name.
-TEST_P(KeyboardShortcutProviderTest, Search) {
+TEST_P(KeyboardShortcutProviderFuzzyMatchTest, Search) {
   Wait();
 
   // Result format: Single Key
@@ -222,6 +237,96 @@ TEST_P(KeyboardShortcutProviderTest, Search) {
             u"Open Emoji Picker, Shortcuts, Shift+ Launcher+ Space");
 }
 
+// Parameterized by feature kLauncherManateeForKeyboardShortcuts.
+class KeyboardShortcutProviderManateeTest
+    : public ChromeAshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  KeyboardShortcutProviderManateeTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{search_features::
+                                    kLauncherManateeForKeyboardShortcuts},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              search_features::kLauncherManateeForKeyboardShortcuts});
+    }
+  }
+
+ protected:
+  void SetUp() override {
+    ChromeAshTestBase::SetUp();
+    // A DCHECK inside a KSV metadata utility function relies on device lists
+    // being complete.
+    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+    profile_ = std::make_unique<TestingProfile>();
+    search_controller_ = std::make_unique<TestSearchController>();
+    std::unique_ptr<TestManateeCache> test_manatee_cache_ =
+        std::make_unique<TestManateeCache>();
+    // Values are arbitrary and used to avoid making a call to model.
+    embeddings_ = {{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}};
+    test_manatee_cache_->SetResponseForTest(embeddings_);
+    auto provider = std::make_unique<KeyboardShortcutProvider>(
+        profile_.get(), std::move(test_manatee_cache_));
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
+  }
+
+  void Wait() { task_environment()->RunUntilIdle(); }
+
+  const SearchProvider::Results& results() {
+    return search_controller_->last_results();
+  }
+
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<Profile> profile_;
+  std::unique_ptr<TestSearchController> search_controller_;
+  raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
+  EmbeddingsList embeddings_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ManateeForProviders,
+                         KeyboardShortcutProviderManateeTest,
+                         testing::Bool());
+
+TEST_P(KeyboardShortcutProviderManateeTest, EmbeddingsSet) {
+  std::vector<KeyboardShortcutData> test_shortcut_data = {
+      KeyboardShortcutData(u"Description 1"),
+      KeyboardShortcutData(u"Description 2"),
+      KeyboardShortcutData(u"Description 3")};
+  provider_->set_shortcut_data_for_test(test_shortcut_data);
+
+  Wait();
+  StartSearch(u"example query");
+  Wait();
+
+  if (GetParam()) {
+    std::vector<KeyboardShortcutData> shortcut_data_list =
+        provider_->shortcut_data();
+    for (size_t i = 0; i < shortcut_data_list.size(); ++i) {
+      const auto& data_item = shortcut_data_list[i];
+
+      // Returned embeddings are mocked for testing and content is not
+      // important.
+      ASSERT_FALSE(data_item.embedding().empty());
+      ASSERT_EQ(data_item.embedding().size(), 3u);
+      ASSERT_EQ(data_item.embedding(), embeddings_[i]);
+    }
+  } else {
+    for (const auto& data_item : provider_->shortcut_data()) {
+      ASSERT_TRUE(data_item.embedding().empty());
+    }
+  }
+}
+
 class FakeSearchHandler : public ash::shortcut_ui::SearchHandler {
  public:
   FakeSearchHandler(
@@ -280,7 +385,10 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
 
     // Initialize provider_;
     profile_ = std::make_unique<TestingProfile>();
-    auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
+    std::unique_ptr<TestManateeCache> test_manatee_cache_ =
+        std::make_unique<TestManateeCache>();
+    auto provider = std::make_unique<KeyboardShortcutProvider>(
+        profile_.get(), std::move(test_manatee_cache_));
     provider_ = provider.get();
     provider_->SetSearchHandlerForTesting(search_handler_.get());
 
@@ -308,7 +416,7 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
   std::unique_ptr<FakeSearchHandler> search_handler_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
 };
 
 // Test that when there are more than 3 results whose relevant score exceeds the
@@ -318,7 +426,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest, FourQualifiedReturnThree) {
       {0.9, 0.8, 0.7, 0.53, 0.5, 0.4});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   EXPECT_EQ(kMaxResults, results().size());
@@ -334,7 +442,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest, NoneQualifiedReturnEmpty) {
       CreateFakeSearchResultsWithSpecifiedScores({0.51, 0.51, 0.5});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   EXPECT_TRUE(results().empty());
@@ -348,7 +456,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
       CreateFakeSearchResultsWithSpecifiedScores({0.9, 0.8, 0.51, 0.51, 0.5});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   const size_t results_count = 2;
@@ -368,7 +476,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
        AcceleratorState::kDisabledByUser});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   const size_t results_count = 3;

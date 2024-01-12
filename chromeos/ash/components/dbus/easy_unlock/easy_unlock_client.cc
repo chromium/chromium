@@ -171,7 +171,7 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
     std::move(callback).Run(private_key, public_key);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

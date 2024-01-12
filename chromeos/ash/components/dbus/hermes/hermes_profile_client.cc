@@ -205,7 +205,7 @@ class HermesProfileClientImpl : public HermesProfileClient {
     std::move(callback).Run(HermesResponseStatus::kSuccess);
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   ObjectMap object_map_;
   base::WeakPtrFactory<HermesProfileClientImpl> weak_ptr_factory_{this};
 };

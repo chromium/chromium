@@ -41,7 +41,7 @@ class AssistantStateClient
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::WeakPtrFactory<AssistantStateClient> weak_ptr_factory_{this};
 };

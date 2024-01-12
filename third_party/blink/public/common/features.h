@@ -186,6 +186,15 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBoostImagePriorityTightMediumLimit;
 
+// Boost the priority of certain loading tasks (https://crbug.com/1470003).
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostImageSetLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostFontLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostVideoLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBoostRenderBlockingStyleLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBoostNonRenderBlockingStyleLoadingTaskPriority);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopics);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBrowsingTopicsBypassIPIsPubliclyRoutableCheck);
@@ -477,6 +486,16 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFledgeDebugReportRestrictedCooldown;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFledgeDebugReportShortCooldown;
+// Gives a 1/(kFledgeDebugReportSamplingRandomMax+1) chance of allowing sending
+// forDebuggingOnly reports.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeDebugReportSamplingRandomMax;
+// Gives a 1/(kFledgeDebugReportSamplingRestrictedCooldownRandomMax+1) chance of
+// putting an ad tech in a restricted cooldown period.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeDebugReportSamplingRestrictedCooldownRandomMax;
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDebugReportFilterAfterSampling);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
@@ -707,6 +726,18 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kHttpDiskCachePrewarmingMaxUrlLength;
 
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kHttpDiskCachePrewarmingHistorySize;
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kHttpDiskCachePrewarmingReprewarmPeriod;
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kHttpDiskCachePrewarmingTriggerOnNavigation;
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.
@@ -769,10 +800,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kLowPriorityScriptLoadingDenyListParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityScriptLoadingMainFrameOnlyParam;
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMaxUnthrottledTimeoutNestingLevel);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxUnthrottledTimeoutNestingLevelParam;
 
 // Keep strong references in the blink memory cache to maximize resource reuse.
 // See https://crbug.com/1409349.
@@ -1040,12 +1067,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRegisterJSSourceLocationBlockingBFCache);
 
-// If enabled, renderers look for cached resources from another renderer
-// that has the same process isolation policies. Note that renderers don't
-// use cached resources in other rendereres yet, just record histograms.
-// See https://crbug.com/1414262
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoteResourceCache);
-
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);
@@ -1284,6 +1305,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpOnPointerover;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpOnPointerdown;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpFromLoadingPredictor;
 
 // Make the browser decide when to turn on the capture indicator (red button)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -1345,6 +1368,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEmulateLoadStartedForInspectorOncePerResource);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnloadBlocklisted);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseImageInsteadOfStorageForStagingBuffer);
 
@@ -1367,12 +1392,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignal);
 // for managed users according to Data Leak Prevention policies.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableFileBackedBlobFactory);
 
-// Feature flag for driving the Metronome by VSyncs instead of by timer.
+// Feature flag for driving decoding with the Metronome by VSyncs instead of by
+// timer.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);
 // Feature parameter controlling WebRTC VSyncDecoding tick durations during
 // occluded tabs.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration;
+
+// Feature flag for driving encoding with the Metronome by VSyncs.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncEncoding);
 
 // Feature flag for making use of VideoFrameMetadata::capture_begin_time
 // if set, instead of relating incoming media timestamps to local time in the
@@ -1431,8 +1460,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 
 BLINK_COMMON_EXPORT bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled();
 
-BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
-
 // Checks both of kAllowPageWithIDBConnectionInBFCache and
 // kAllowPageWithIDBTransactionInBFCache are turned on when determining if a
 // page with IndexedDB transaction is eligible for BFCache.
@@ -1442,8 +1469,6 @@ IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled();
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
-
-BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
 
 // This function checks both kNewBaseUrlInheritanceBehavior and
 // kIsolateSandboxedIframes and returns true if either is enabled.
@@ -1462,6 +1487,10 @@ BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 // via enterprise policy.
 BLINK_COMMON_EXPORT bool
 IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
+
+// Returns if unload handlers are considered as a blocklisted reason for
+// back/forward cache.
+BLINK_COMMON_EXPORT bool IsUnloadBlocklisted();
 
 BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 

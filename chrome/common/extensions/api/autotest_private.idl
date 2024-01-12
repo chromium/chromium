@@ -89,6 +89,8 @@ namespace autotestPrivate {
     Fullscreen,
     PrimarySnapped,
     SecondarySnapped,
+    Pinned,
+    TrustedPinned,
     PIP,
     Floated
   };

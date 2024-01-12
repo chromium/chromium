@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
+#include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -52,18 +53,23 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   std::unique_ptr<views::View> CreateMainContentView() override;
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
+  std::unique_ptr<views::View> CreateLoadingRow();
   std::unique_ptr<LegalMessageView> CreateLegalMessageView();
 
   void LinkClicked(const GURL& url);
 
   raw_ptr<views::Textfield> cardholder_name_textfield_ = nullptr;
-  raw_ptr<LegalMessageView> legal_message_view_ = nullptr;
 
   // Holds expiration inputs:
   raw_ptr<views::Combobox> month_input_dropdown_ = nullptr;
   raw_ptr<views::Combobox> year_input_dropdown_ = nullptr;
   MonthComboboxModel month_combobox_model_;
   YearComboboxModel year_combobox_model_;
+
+  // loading_row_ is only set for upload card saves.
+  raw_ptr<views::View> loading_row_ = nullptr;
+  // loading_throbber_ is only used after upload save acceptance.
+  raw_ptr<views::Throbber> loading_throbber_ = nullptr;
 };
 
 }  // namespace autofill

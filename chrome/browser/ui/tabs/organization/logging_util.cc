@@ -28,14 +28,14 @@ void AddOrganizationDetailsToQualityOrganization(
 
   quality_organization->set_user_feedback(organization->feedback());
 
-  switch (organization->choice().value()) {
-    case TabOrganization::UserChoice::REJECTED: {
+  switch (organization->choice()) {
+    case TabOrganization::UserChoice::kRejected: {
       quality_organization->set_choice(
           optimization_guide::proto::
               TabOrganizationQuality_Organization_Choice_REJECTED);
       break;
     }
-    case TabOrganization::UserChoice::ACCEPTED: {
+    case TabOrganization::UserChoice::kAccepted: {
       quality_organization->set_choice(
           optimization_guide::proto::
               TabOrganizationQuality_Organization_Choice_ACCEPTED);
@@ -62,6 +62,8 @@ void AddOrganizationDetailsToQualityOrganization(
 
       break;
     }
+    case TabOrganization::UserChoice::kNoChoice: {
+    }
   }
 }
 
@@ -86,7 +88,8 @@ void AddSessionDetailsToQuality(
                    response_organization_id;
           });
       if (matching_organization != session->tab_organizations().end() &&
-          matching_organization->get()->choice().has_value()) {
+          matching_organization->get()->choice() !=
+              TabOrganization::UserChoice::kNoChoice) {
         matching_organization_ptr = matching_organization->get();
       }
     }

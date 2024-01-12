@@ -23,7 +23,7 @@ import {RemoteCall} from './remote_call.js';
  */
 export function sendTestMessage(command) {
   if (typeof command.name === 'string') {
-    return new Promise(function(fulfill) {
+    return new Promise((fulfill) => {
       chrome.test.sendMessage(JSON.stringify(command), fulfill);
     });
   } else {
@@ -63,10 +63,11 @@ export async function checkIfNoErrorsOccuredOnApp(app, callback) {
  * @param {Array<!RemoteCall>} apps An array of RemoteCall interfaces.
  */
 export async function testPromiseAndApps(promise, apps) {
-  const finished = chrome.test.callbackPass(function() {
-    // The callbackPass is necessary to avoid prematurely finishing tests.
-    // Don't use chrome.test.succeed() here to avoid doubled success log.
-  });
+  const finished = chrome.test.callbackPass(
+      () => {
+          // The callbackPass is necessary to avoid prematurely finishing tests.
+          // Don't use chrome.test.succeed() here to avoid doubled success log.
+      });
   try {
     await promise;
     await Promise.all(apps.map(app => checkIfNoErrorsOccuredOnApp(app)));
@@ -125,7 +126,7 @@ export function pending(caller, message, ..._var_args) {
   let index = 2;
   const args = arguments;
   message = String(message);
-  const formattedMessage = message.replace(/%[sdj]/g, function(pattern) {
+  const formattedMessage = message.replace(/%[sdj]/g, (pattern) => {
     const arg = args[index++];
     switch (pattern) {
       case '%s':
@@ -207,7 +208,7 @@ export async function sendBrowserTestCommand(command, callback, opt_debug) {
 export async function getBrowserWindows(expectedInitialCount = 0) {
   const caller = getCaller();
   return repeatUntil(async () => {
-    const result = await new Promise(function(fulfill) {
+    const result = await new Promise((fulfill) => {
       chrome.windows.getAll({'populate': true}, fulfill);
     });
     if (result.length === expectedInitialCount) {
@@ -230,11 +231,11 @@ export async function getBrowserWindows(expectedInitialCount = 0) {
  * @return {Promise} Promise to be fulfilled when the entries are added.
  */
 export async function addEntries(volumeNames, entries, opt_callback) {
-  if (volumeNames.length == 0) {
+  if (volumeNames.length === 0) {
     opt_callback && opt_callback(true);
     return;
   }
-  const volumeResultPromises = volumeNames.map(function(volume) {
+  const volumeResultPromises = volumeNames.map((volume) => {
     return sendTestMessage({
       name: 'addEntries',
       volume: volume,
@@ -449,7 +450,7 @@ export class TestEntryInfo {
    * @return {!Array<!Array<string>>}
    */
   static getExpectedRows(entries) {
-    return entries.map(function(entry) {
+    return entries.map((entry) => {
       return entry.getExpectedRow();
     });
   }

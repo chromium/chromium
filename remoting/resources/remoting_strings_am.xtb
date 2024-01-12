@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">ተኳሃኝ ያልሆነ የፕሮቶኮል ስሪት ተገኝቷል። እባክዎ በሁለቱም ኮምፒውተሮች ላይ የሶፍትዌሩ የቅርብ ጊዜ ስሪት እንዳለዎት ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="1008557486741366299">አሁን አይደለም</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
-<translation id="1296511125400541222">የቅጂ መብት 2023 የChromium ደራሲዎች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="1297009705180977556">ከ<ph name="HOSTNAME" /> ጋር መገናኘት ላይ ስህተት</translation>
 <translation id="1450760146488584666">የተጠየቀው ነገር አይገኝም።</translation>
 <translation id="1480046233931937785">ክሬዲቶች</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972">እባክዎ ለ<ph name="HOSTNAME" /> ፒንዎን ያስገቡ።</translation>
 <translation id="4812684235631257312">አስተናጋጅ</translation>
 <translation id="4867841927763172006">PrtScn ላክ</translation>
-<translation id="4960795469833295568">የቅጂ መብት 2023 Google LLC። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="4974476491460646149">የ<ph name="HOSTNAME" /> ግንኙነት ተዘግቷል</translation>
 <translation id="4985296110227979402">በመጀመሪያ ኮምፒውተርዎን ለርቀት መዳረሻ ማዋቀር አለብዎት</translation>
 <translation id="4987330545941822761">Chrome የርቀት ዴስክቶፕ ዩአርኤሎችን በአካባቢው ለመክፈት አሳሹን መወሰን አይችልም። እባክዎን ከዚህ በታች ካለው ዝርዝር ውስጥ ይምረጡ።</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">የአስተናጋጆች ዝርዝር ያድሱ</translation>
 <translation id="7714222945760997814">ይህን ሪፖርት አድርግ</translation>
 <translation id="7868137160098754906">እባክዎ የእርስዎን ፒን ለርቀት ኮምፒውተር ያስገቡ</translation>
+<translation id="7881455334687220899">የቅጂ መብት 2024 የChromium ደራሲዎች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="7895403300744144251">በርቀት ኮምፒውተሩ ላይ ያሉ የደህንነት መመሪያዎች ከእርስዎ መለያ ጋር ግንኙነቶችን አይፈቅዱም።</translation>
 <translation id="7936528439960309876">መትከያ ወደ ቀኝ</translation>
 <translation id="7970576581263377361">ማረጋገጥ አልተሳካም። እባክዎ እንደገና ወደ Chromium ይግቡ።</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">ክፍለ ጊዜው ተበላሽቷል ወይም ለመጀመር አልቻለም። ~/.chrome-የርቀት-ዴስክቶፕ-ክፍለ ጊዜ በርቀት ኮምፒውተሩ ላይ የሚገኝ ከሆነ እንደ የዴስክቶፕ ድባብ ወይም የመስኮት አስተዳዳሪ የመሰለ ከፊት ገፅ የሚሄድ ሂደትን በመጠቀም እንደሚጀምር ያረጋግጡ።</translation>
 <translation id="8804164990146287819">የግላዊነት መመሪያ</translation>
 <translation id="8906511416443321782">ድምጽን ለመቅዳት እና ወደ Chrome የርቀት ዴስክቶፕ ደንበኛው ለማሰራጨት የማይክሮፎን መዳረሻ ያስፈልጋል።</translation>
+<translation id="9042277333359847053">የቅጂ መብት 2024 Google LLC። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="9111855907838866522">ከርቀት መሣሪያዎ ጋር ተገናኝተዋል። ምናሌውን ለመክፈት እባክዎ ማያ ገጹን በአራት ጣቶች መታ ያድርጉት።</translation>
 <translation id="9126115402994542723">ከዚህ መሣሪያ ሆኜ ከዚህ አስተናጋጅ ጋር ስገናኝ ዳግም ፒን አትጠይቅ።</translation>
 <translation id="916856682307586697">ነባሪውን XSession አስጀምር</translation>

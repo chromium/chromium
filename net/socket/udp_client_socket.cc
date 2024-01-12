@@ -17,8 +17,7 @@ namespace {
 base::Value::Dict CreateNetLogUDPConnectParams(const IPEndPoint& address,
                                                int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
-  base::Value::Dict params;
-  params.Set("address", address.ToString());
+  auto params = base::Value::Dict().Set("address", address.ToString());
   if (net_error < 0) {
     params.Set("net_error", net_error);
   }
@@ -29,8 +28,7 @@ base::Value::Dict CreateNetLogUDPBindToNetworkParams(
     handles::NetworkHandle network,
     int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
-  base::Value::Dict params;
-  params.Set("network", static_cast<int>(network));
+  auto params = base::Value::Dict().Set("network", static_cast<int>(network));
   if (net_error < 0) {
     params.Set("net_error", net_error);
   }

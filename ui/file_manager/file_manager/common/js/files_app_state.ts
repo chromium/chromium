@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../../externs/ts/state.js';
+import {DialogType} from '../../state/state.js';
 
 import {AllowedPaths} from './volume_manager_types.js';
 
@@ -13,6 +13,7 @@ import {AllowedPaths} from './volume_manager_types.js';
 export interface TypeList {
   extensions: string[];
   description: string;
+  selected: boolean;
 }
 
 /**

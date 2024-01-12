@@ -209,8 +209,8 @@ class NetworkConnectTest : public testing::Test {
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface> device_test_;
+  raw_ptr<ShillServiceClient::TestInterface> service_test_;
 };
 
 TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {

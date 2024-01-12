@@ -108,7 +108,7 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
     const Color override_color = ConvertToColor(override_pair);
 
     FontPalette::FontPaletteOverride palette_override{
-        palette_index.GetIntValue(), override_color};
+        palette_index.GetValue<uint16_t>(), override_color};
     return_overrides.push_back(palette_override);
   }
 

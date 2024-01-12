@@ -27,10 +27,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   static NetworkServiceProxyAllowList CreateForTesting(
       std::map<std::string, std::set<std::string>> first_party_map);
 
-  // Create a custom proxy config that instructs NetworkServiceProxyDelegate to
-  // handle IP protection.
-  static mojom::CustomProxyConfigPtr MakeIpProtectionCustomProxyConfig();
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
@@ -56,9 +52,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl);
 
  private:
-  void AddDomainWithBypass(const std::string& domain,
-                           net::SchemeHostPortMatcher bypass_matcher);
-
   // Policy that determines which domains are bypassed from IP Protection.
   network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
 

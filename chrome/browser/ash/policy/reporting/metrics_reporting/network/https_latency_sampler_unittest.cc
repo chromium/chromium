@@ -100,7 +100,7 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
   }
 
  private:
-  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics> fake_diagnostics_;
 };
 
 TEST(HttpsLatencySamplerTest, NoProblem) {

@@ -358,18 +358,18 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
   // be changed.
   gfx::Point start(divider_bounds.x(), 10);
   gfx::Point end(start.x() + kSwipingDistanceForGoingBack + 10, 10);
-  EXPECT_GT(split_view_controller->divider_position(),
+  EXPECT_GT(split_view_controller->GetDividerPosition(),
             0.33f * display_bounds.width());
-  EXPECT_LE(split_view_controller->divider_position(),
+  EXPECT_LE(split_view_controller->GetDividerPosition(),
             0.5f * display_bounds.width());
   generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
   EXPECT_EQ(1, target_back_press.accelerator_count());
   EXPECT_EQ(1, target_back_release.accelerator_count());
-  EXPECT_GT(split_view_controller->divider_position(),
+  EXPECT_GT(split_view_controller->GetDividerPosition(),
             0.33f * display_bounds.width());
-  EXPECT_LE(split_view_controller->divider_position(),
+  EXPECT_LE(split_view_controller->GetDividerPosition(),
             0.5f * display_bounds.width());
 
   // Drag from the divider's resizable area should trigger splitview resizing.
@@ -380,9 +380,9 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
   generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   EXPECT_EQ(1, target_back_press.accelerator_count());
   EXPECT_EQ(1, target_back_release.accelerator_count());
-  EXPECT_GT(split_view_controller->divider_position(),
+  EXPECT_GT(split_view_controller->GetDividerPosition(),
             0.5f * display_bounds.width());
-  EXPECT_LE(split_view_controller->divider_position(),
+  EXPECT_LE(split_view_controller->GetDividerPosition(),
             0.67f * display_bounds.width());
   split_view_controller->EndSplitView();
 }

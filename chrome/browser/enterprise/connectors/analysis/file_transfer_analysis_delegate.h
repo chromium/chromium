@@ -182,7 +182,7 @@ class FileTransferAnalysisDelegate {
   void ContentAnalysisCompleted(std::vector<RequestHandlerResult> results);
 
   AnalysisSettings settings_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   safe_browsing::DeepScanAccessPoint access_point_;
   std::vector<storage::FileSystemURL> scanning_urls_;
   storage::FileSystemURL source_url_;

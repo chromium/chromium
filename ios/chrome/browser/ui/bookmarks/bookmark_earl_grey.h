@@ -49,9 +49,13 @@ const GURL GetFrenchUrl();
 - (void)setupBookmarksWhichExceedsScreenHeightInStorage:
     (bookmarks::StorageType)storageType;
 
-// Waits for the Bookmark modedl to be `loaded`. GREYAssert is induced if test
+// Waits for the Bookmark model to be `loaded`. GREYAssert is induced if test
 // bookmarks can not be loaded.
 - (void)waitForBookmarkModelsLoaded;
+
+// Flush any pending bookmarks writes to disk now. This is useful before
+// terminating and restarting the app.
+- (void)commitPendingWrite;
 
 #pragma mark - Common Helpers
 

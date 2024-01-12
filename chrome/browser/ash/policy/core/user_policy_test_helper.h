@@ -54,8 +54,7 @@ class UserPolicyTestHelper {
 
  private:
   const std::string account_id_;
-  raw_ptr<ash::EmbeddedPolicyTestServerMixin, ExperimentalAsh>
-      embedded_policy_server_ = nullptr;
+  raw_ptr<ash::EmbeddedPolicyTestServerMixin> embedded_policy_server_ = nullptr;
 };
 
 }  // namespace policy

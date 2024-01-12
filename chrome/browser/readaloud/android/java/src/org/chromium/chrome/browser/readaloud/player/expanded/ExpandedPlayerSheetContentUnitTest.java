@@ -240,7 +240,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testShowOptionsMenu() {
         mContent.showOptionsMenu();
-        verify(mModel).set(PlayerProperties.OPTION_SHEET_PENDING, true);
+        verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
         verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
     }
@@ -248,7 +248,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testShowSpeedMenu() {
         mContent.showSpeedMenu();
-        verify(mModel).set(PlayerProperties.OPTION_SHEET_PENDING, true);
+        verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
         verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
     }
@@ -258,5 +258,10 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.notifySheetClosed(mContent);
         verify(mOptionsMenu).notifySheetClosed(eq(mContent));
         verify(mSpeedMenu).notifySheetClosed(eq(mContent));
+    }
+
+    @Test
+    public void testCanSuppressInAnyState() {
+        assertTrue(mContent.canSuppressInAnyState());
     }
 }

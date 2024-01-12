@@ -5,13 +5,14 @@
 #ifndef CONTENT_BROWSER_NAVIGATION_OR_DOCUMENT_HANDLE_H_
 #define CONTENT_BROWSER_NAVIGATION_OR_DOCUMENT_HANDLE_H_
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -47,8 +48,8 @@ class CONTENT_EXPORT NavigationOrDocumentHandle
   FrameTreeNode* GetFrameTreeNode() const;
 
   // Returns the outermost top-frame origin, if available; otherwise
-  // `absl::nullopt`.
-  absl::optional<url::Origin> GetTopmostFrameOrigin() const;
+  // `std::nullopt`.
+  std::optional<url::Origin> GetTopmostFrameOrigin() const;
 
   bool IsInPrimaryMainFrame() const;
 

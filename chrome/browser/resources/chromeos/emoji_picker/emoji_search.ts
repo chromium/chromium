@@ -16,7 +16,7 @@ import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
 import {GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
-import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
+import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
 
 export interface EmojiSearch {
   $: {
@@ -43,12 +43,14 @@ export class EmojiSearch extends PolymerElement {
       searchResults: {type: Array},
       needIndexing: {type: Boolean, value: false},
       gifSupport: {type: Boolean, value: false},
-      jellySupport: {type: Boolean, value: false},
       status: {type: Status, value: null},
       searchQuery: {type: String, value: ''},
       nextGifPos: {type: String, value: ''},
       errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
       closeGifNudgeOverlay: {type: Object},
+      useGroupedPreference: {type: Boolean, value: false},
+      globalTone: {type: Number, value: null, readonly: true},
+      globalGender: {type: Number, value: null, readonly: true},
     };
   }
   categoriesData: EmojiGroupData;
@@ -59,6 +61,9 @@ export class EmojiSearch extends PolymerElement {
   private gifSupport: boolean;
   private status: Status|null;
   private closeGifNudgeOverlay: () => void;
+  private useGroupedPreference: boolean;
+  private globalTone: Tone|null = null;
+  private globalGender: Gender|null = null;
 
   // TODO(b/235419647): Update the config to use extended search.
   private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
@@ -433,10 +438,6 @@ export class EmojiSearch extends PolymerElement {
    */
   setSearchQuery(value: string): void {
     this.$.search.setValue(value);
-  }
-
-  computeCrSearchFieldClass(jellySupport: boolean): string {
-    return jellySupport ? 'jelly' : '';
   }
 }
 

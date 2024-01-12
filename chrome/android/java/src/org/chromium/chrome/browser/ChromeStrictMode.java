@@ -16,13 +16,13 @@ import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.strictmode.KnownViolations;
 import org.chromium.components.strictmode.StrictModePolicyViolation;
 import org.chromium.components.strictmode.ThreadStrictModeInterceptor;
 import org.chromium.components.strictmode.Violation;
-import org.chromium.components.version_info.VersionInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

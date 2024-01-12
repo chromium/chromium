@@ -138,6 +138,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   void RecordInternalError(ConnectionToHostInternalError internal_error);
 
+  void RecordUnavoidableError(ConnectionToHostResult result);
+
   // An Instant Tethering connection can fail for several different reasons.
   // Though traditionally success and each failure case would be logged to a
   // single enum, we have chosen to start at a top-level of view of simply
@@ -162,6 +164,15 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     SUCCESS = 0,
     FAILURE = 1,
     SUCCESS_MAX
+  };
+
+  enum class ConnectionToHostResult_UnavoidableErrorEventType {
+    OTHER = 0,
+    PROVISIONING_FAILED = 1,
+    USER_CANCELLATION = 2,
+    TETHERING_UNSUPPORTED = 3,
+    NO_CELLULAR_DATA = 4,
+    kMax
   };
 
   enum class ConnectionToHostResult_FailureEventType {
@@ -215,8 +226,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   void SetClockForTesting(base::Clock* test_clock);
 
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<base::Clock> clock_;
 
   base::Time connect_to_host_start_time_;
   std::string active_host_device_id_;

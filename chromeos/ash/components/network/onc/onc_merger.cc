@@ -197,11 +197,11 @@ class MergeListOfDictionaries {
 class MergeSettingsAndPolicies : public MergeListOfDictionaries {
  public:
   struct ValueParams {
-    raw_ptr<const base::Value, ExperimentalAsh> user_policy;
-    raw_ptr<const base::Value, ExperimentalAsh> device_policy;
-    raw_ptr<const base::Value, ExperimentalAsh> user_setting;
-    raw_ptr<const base::Value, ExperimentalAsh> shared_setting;
-    raw_ptr<const base::Value, ExperimentalAsh> active_setting;
+    raw_ptr<const base::Value> user_policy;
+    raw_ptr<const base::Value> device_policy;
+    raw_ptr<const base::Value> user_setting;
+    raw_ptr<const base::Value> shared_setting;
+    raw_ptr<const base::Value> active_setting;
     bool user_editable;
     bool device_editable;
   };
@@ -538,7 +538,7 @@ class MergeToAugmented : public MergeToEffective {
   }
 
  private:
-  raw_ptr<const chromeos::onc::OncValueSignature, ExperimentalAsh> signature_;
+  raw_ptr<const chromeos::onc::OncValueSignature> signature_;
 };
 
 }  // namespace

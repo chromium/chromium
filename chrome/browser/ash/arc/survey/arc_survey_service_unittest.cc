@@ -77,7 +77,7 @@ class ArcSurveyServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   ArcServiceManager arc_service_manager_;
-  raw_ptr<ArcSurveyService, ExperimentalAsh> arc_survey_service_ = nullptr;
+  raw_ptr<ArcSurveyService> arc_survey_service_ = nullptr;
 };
 
 TEST_F(ArcSurveyServiceTest, ConstructDestruct) {}

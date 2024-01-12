@@ -69,10 +69,6 @@ class UpdateScreenUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Configure the browser to use Hands-Off Enrollment.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
     chromeos::PowerManagerClient::InitializeFake();
@@ -118,10 +114,9 @@ class UpdateScreenUnitTest : public testing::Test {
   MockUpdateView mock_view_;
   MockErrorScreenView mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
-  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged>
       mock_network_portal_detector_;
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
-      fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
   std::unique_ptr<WizardContext> wizard_context_;
 
   std::optional<UpdateScreen::Result> last_screen_result_;

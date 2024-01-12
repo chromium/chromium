@@ -5,6 +5,7 @@
 #include "extensions/common/extension_icon_set.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -55,11 +56,11 @@ const std::string& ExtensionIconSet::Get(int size_in_px,
   return result == map_.cend() ? base::EmptyString() : result->second;
 }
 
-bool ExtensionIconSet::ContainsPath(base::StringPiece path) const {
+bool ExtensionIconSet::ContainsPath(std::string_view path) const {
   return GetIconSizeFromPath(path) != 0;
 }
 
-int ExtensionIconSet::GetIconSizeFromPath(base::StringPiece path) const {
+int ExtensionIconSet::GetIconSizeFromPath(std::string_view path) const {
   if (path.empty())
     return 0;
 

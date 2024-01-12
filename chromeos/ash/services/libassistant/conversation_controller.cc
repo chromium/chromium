@@ -194,7 +194,7 @@ class ConversationController::GrpcEventsObserver
 
   int next_interaction_id_ = 1;
   std::map<std::string, AssistantInteractionMetadata> pending_interactions_;
-  const raw_ref<ConversationController, ExperimentalAsh> parent_;
+  const raw_ref<ConversationController> parent_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

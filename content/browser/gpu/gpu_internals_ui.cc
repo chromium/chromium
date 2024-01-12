@@ -479,7 +479,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
 
 base::Value::List GetDevicePerfInfo() {
   base::Value::List list;
-  const absl::optional<gpu::DevicePerfInfo> device_perf_info =
+  const std::optional<gpu::DevicePerfInfo> device_perf_info =
       gpu::GetDevicePerfInfo();
   if (device_perf_info.has_value()) {
     list.Append(display::BuildGpuInfoEntry(
@@ -585,8 +585,6 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "vp9 profile3";
     case gpu::DOLBYVISION_PROFILE0:
       return "dolby vision profile 0";
-    case gpu::DOLBYVISION_PROFILE4:
-      return "dolby vision profile 4";
     case gpu::DOLBYVISION_PROFILE5:
       return "dolby vision profile 5";
     case gpu::DOLBYVISION_PROFILE7:
@@ -643,8 +641,7 @@ base::Value::List GetVideoAcceleratorsInfo() {
   base::Value::List info;
 
   struct {
-    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles,
-                  ExperimentalAsh>
+    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles>
         capabilities;
     std::string name;
   } kVideoDecoderImplementations[] = {

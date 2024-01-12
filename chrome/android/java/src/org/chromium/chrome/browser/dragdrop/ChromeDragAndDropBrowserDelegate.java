@@ -35,8 +35,6 @@ import java.util.List;
 
 /** Delegate for browser related functions used by Drag and Drop. */
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
-    /** The MIME type for a tab object dragged from Chrome. */
-    public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
     @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
     private final String[] mSupportedMimeTypes;
@@ -68,7 +66,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         DropDataProviderUtils.setClearCachedDataIntervalMs(delay);
 
         List<String> supportedMimeTypeList = new ArrayList();
-        supportedMimeTypeList.add(CHROME_MIMETYPE_TAB);
+        supportedMimeTypeList.add(MimeTypeUtils.CHROME_MIMETYPE_TAB);
         if (!TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.getValue()) {
             supportedMimeTypeList.addAll(
                     Arrays.asList(

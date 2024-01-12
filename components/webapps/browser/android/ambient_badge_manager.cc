@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -29,6 +30,20 @@
 namespace webapps {
 
 namespace {
+
+constexpr base::TimeDelta kSuppressedForFirsVisitPeriod = base::Days(30);
+
+constexpr char kSegmentationResultHistogramName[] =
+    "WebApk.InstallPrompt.SegmentationResult";
+
+// This enum is used to back UMA histograms, Entries should not be renumbered
+// and numeric values should never be reused.
+enum class SegmentationResult {
+  kInvalid = 0,
+  kDontShow = 1,
+  kShowInstallPrompt = 2,
+  kMaxValue = kShowInstallPrompt,
+};
 
 InstallableParams ParamsToPerformWorkerCheck() {
   InstallableParams params;
@@ -65,11 +80,6 @@ void AmbientBadgeManager::MaybeShow(
   app_identifier_ = app_identifier;
   a2hs_params_ = std::move(a2hs_params);
   show_banner_callback_ = std::move(show_banner_callback);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kInstallableAmbientBadgeMessage)) {
-    return;
-  }
 
   UpdateState(State::kActive);
 
@@ -127,15 +137,6 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kBlockInstallPromptIfIgnoreRecently) &&
-      AppBannerSettingsHelper::WasBannerRecentlyIgnored(
-          web_contents_.get(), validated_url_, app_identifier_,
-          AppBannerManager::GetCurrentTime())) {
-    UpdateState(State::kBlocked);
-    return;
-  }
-
   if (ShouldSuppressAmbientBadgeOnFirstVisit()) {
     UpdateState(State::kPendingEngagement);
     return;
@@ -175,9 +176,8 @@ bool AmbientBadgeManager::ShouldSuppressAmbientBadgeOnFirstVisit() {
     return true;
   }
 
-  base::TimeDelta period =
-      features::kAmbientBadgeSuppressFirstVisit_Period.Get();
-  return AppBannerManager::GetCurrentTime() - *last_could_show_time > period;
+  return AppBannerManager::GetCurrentTime() - *last_could_show_time >
+         kSuppressedForFirsVisitPeriod;
 }
 
 void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
@@ -237,15 +237,25 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart() {
 void AmbientBadgeManager::OnGotClassificationResult(
     const segmentation_platform::ClassificationResult& result) {
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
+                              SegmentationResult::kInvalid,
+                              SegmentationResult::kMaxValue);
+
     // If the classification is not ready yet, fallback to the legacy logic.
     MaybeShowAmbientBadgeLegacy();
     return;
   }
 
-  if (!result.ordered_labels.empty() &&
-      result.ordered_labels[0] ==
-          MLInstallabilityPromoter::kShowInstallPromptLabel) {
-      ShowAmbientBadge();
+  bool show = !result.ordered_labels.empty() &&
+              result.ordered_labels[0] ==
+                  MLInstallabilityPromoter::kShowInstallPromptLabel;
+
+  UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
+                            show ? SegmentationResult::kShowInstallPrompt
+                                 : SegmentationResult::kDontShow,
+                            SegmentationResult::kMaxValue);
+  if (show) {
+    ShowAmbientBadge();
   }
 }
 
@@ -296,11 +306,9 @@ void AmbientBadgeManager::ShowAmbientBadge() {
   GURL url = a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK
                  ? a2hs_params_->shortcut_info->url
                  : validated_url_;
-  if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage)) {
-    message_controller_.EnqueueMessage(
-        web_contents_.get(), app_name_, a2hs_params_->primary_icon,
-        a2hs_params_->HasMaskablePrimaryIcon(), url);
-  }
+  message_controller_.EnqueueMessage(
+      web_contents_.get(), app_name_, a2hs_params_->primary_icon,
+      a2hs_params_->HasMaskablePrimaryIcon(), url);
 }
 
 }  // namespace webapps

@@ -40,7 +40,6 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -888,7 +887,7 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
       client_->GetURLLoaderFactory().get(),
       base::BindOnce(&AutofillCrowdsourcingManager::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(--url_loaders_.end()),
-                     std::move(request_data), AutofillTickClock::NowTicks()));
+                     std::move(request_data), base::TimeTicks::Now()));
   return true;
 }
 
@@ -963,7 +962,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
           : response_code);
   base::UmaHistogramTimes(
       GetMetricName(request_data.request_type, "RequestDuration"),
-      AutofillTickClock::NowTicks() - request_start);
+      base::TimeTicks::Now() - request_start);
 
   if (!success) {
     std::string error_message =

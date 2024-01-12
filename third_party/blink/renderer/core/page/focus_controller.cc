@@ -1354,14 +1354,6 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
     if (next_form_control_element->formOwner() != form_owner ||
         next_form_control_element->IsDisabledOrReadOnly())
       continue;
-    // Focusless spatial navigation supports all form types. However, submit
-    // buttons are explicitly excluded as moving to them isn't necessary - the
-    // IME should just submit instead.
-    if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled() &&
-        page_->GetSettings().GetSpatialNavigationEnabled() &&
-        !next_form_control_element->CanBeSuccessfulSubmitButton()) {
-      return next_element;
-    }
     LayoutObject* layout = next_element->GetLayoutObject();
     if (layout && layout->IsTextControl()) {
       // TODO(crbug.com/1320441): Extend it for radio buttons and checkboxes.

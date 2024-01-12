@@ -65,7 +65,7 @@ class ScopedTestMountPoint {
   const storage::FileSystemType file_system_type_;
   const file_manager::VolumeType volume_type_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   bool mounted_ = false;
   base::ScopedTempDir temp_dir_;
 };

@@ -14,23 +14,39 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './base_page.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_discovery_consent_page.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'profile-discovery-consent-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ProfileDiscoveryConsentPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ProfileDiscoveryConsentPageElement extends
+    ProfileDiscoveryConsentPageElementBase {
+  static get is() {
+    return 'profile-discovery-consent-page';
+  }
 
-  properties: {
-    shouldSkipDiscovery: {
-      type: Boolean,
-      notify: true,
-    },
-  },
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      shouldSkipDiscovery: {
+        type: Boolean,
+        notify: true,
+      },
+
+    };
+  }
 
   shouldSkipDiscoveryClicked_(e) {
     // A place holder href with the value "#" is used to have a compliant link.
@@ -38,6 +54,12 @@ Polymer({
     e.detail.event.preventDefault();
     e.stopPropagation();
     this.shouldSkipDiscovery = true;
-    this.fire('forward-navigation-requested');
-  },
-});
+    this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
+
+customElements.define(
+    ProfileDiscoveryConsentPageElement.is, ProfileDiscoveryConsentPageElement);

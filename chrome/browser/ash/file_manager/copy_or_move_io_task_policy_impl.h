@@ -122,7 +122,7 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // Returns the total number of files in `connectors_blocked_files_`.
   size_t GetConnectorsBlockedFilesNum() const;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Stores the settings, only valid until creation of respective.

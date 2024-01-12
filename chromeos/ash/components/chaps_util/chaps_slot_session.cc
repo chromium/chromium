@@ -8,6 +8,9 @@
 #include <pkcs11.h>
 #include <pkcs11t.h>
 
+#include <memory>
+#include <optional>
+
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -236,7 +239,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   static constexpr CK_FLAGS kOpenSessionFlags =
       CKF_RW_SESSION | CKF_SERIAL_SESSION;
 
-  raw_ptr<void, ExperimentalAsh> chaps_handle_ = nullptr;
+  raw_ptr<void> chaps_handle_ = nullptr;
   ChapsFunctions functions_;
 
   const CK_SLOT_ID slot_id_;

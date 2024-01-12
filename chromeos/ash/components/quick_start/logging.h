@@ -13,7 +13,7 @@ namespace ash::quick_start {
 
 // Use the QS_LOG() macro for all logging related to Quick Start.
 #define QS_LOG(severity) \
-  ScopedLogMessage(__FILE__, __LINE__, logging::LOG_##severity).stream()
+  ScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity).stream()
 
 // An intermediate object used by the QS_LOG macro, wrapping a
 // logging::LogMessage instance. When this object is destroyed, the message will

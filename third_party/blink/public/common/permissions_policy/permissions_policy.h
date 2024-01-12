@@ -173,11 +173,18 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
       const PermissionsPolicy*);
 
-  // Creates a PermissionsPolicy for a fenced frame. All permissions are
-  // disabled in fenced frames except for attribution reporting (which are only
-  // enabled for opaque-ads fenced frames). Permissions do not inherit from the
-  // parent to prevent cross-channel communication.
-  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+  // Creates a flexible PermissionsPolicy for a fenced frame. Inheritance is
+  // allowed, but only a specific list of permissions are allowed to be enabled.
+  static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
+      const PermissionsPolicy* parent_policy,
+      const ParsedPermissionsPolicy& container_policy,
+      const url::Origin& subframe_origin);
+
+  // Creates a fixed PermissionsPolicy for a fenced frame. Only the permissions
+  // specified in the fenced frame config's effective enabled permissions are
+  // enabled. Permissions do not inherit from the parent to prevent
+  // cross-channel communication.
+  static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
       base::span<const blink::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
@@ -269,7 +276,13 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
-  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+  static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
+      const PermissionsPolicy* parent_policy,
+      const ParsedPermissionsPolicy& container_policy,
+      const url::Origin& subframe_origin,
+      const PermissionsPolicyFeatureList& features);
+
+  static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features,
       base::span<const blink::mojom::PermissionsPolicyFeature>

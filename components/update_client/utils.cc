@@ -57,15 +57,17 @@ bool IsHttpServerError(int status_code) {
 }
 
 bool DeleteFileAndEmptyParentDirectory(const base::FilePath& filepath) {
-  if (!base::DeleteFile(filepath))
+  if (!base::DeleteFile(filepath)) {
     return false;
+  }
 
   return DeleteEmptyDirectory(filepath.DirName());
 }
 
 bool DeleteEmptyDirectory(const base::FilePath& dir_path) {
-  if (!base::IsDirectoryEmpty(dir_path))
+  if (!base::IsDirectoryEmpty(dir_path)) {
     return true;
+  }
 
   return base::DeleteFile(dir_path);
 }
@@ -93,12 +95,14 @@ bool VerifyFileHash256(const base::FilePath& filepath,
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
 
   int64_t file_size = 0;
-  if (!base::GetFileSize(filepath, &file_size))
+  if (!base::GetFileSize(filepath, &file_size)) {
     return false;
+  }
   if (file_size > 0) {
     base::MemoryMappedFile mmfile;
-    if (!mmfile.Initialize(filepath))
+    if (!mmfile.Initialize(filepath)) {
       return false;
+    }
     hasher->Update(mmfile.data(), mmfile.length());
   }
 

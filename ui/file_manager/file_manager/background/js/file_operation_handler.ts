@@ -7,8 +7,9 @@ import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {checkAPIError, visitURL} from '../../common/js/util.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {getStore} from '../../state/store.js';
+
+import type {ProgressCenter} from './progress_center.js';
 
 /**
  * An event handler of the background page for file operations.
@@ -223,7 +224,7 @@ function getMessageFromProgressEvent(
   // TODO(b/295438773): Remove this special case for the "in use" error once
   // the files app error strings are made consistent and an "in use" string is
   // properly added.
-  if (event.errorName == 'InUseError' && event.itemCount == 1) {
+  if (event.errorName === 'InUseError' && event.itemCount === 1) {
     switch (event.type) {
       case chrome.fileManagerPrivate.IOTaskType.MOVE:
         return str('MOVE_IN_USE_ERROR');

@@ -8,14 +8,14 @@
  * objects.
  */
 
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../css/wallpaper.css.js';
-import '../../common/icons.html.js';
-import '../../css/common.css.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -30,7 +30,6 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
-import {isSeaPenEnabled} from './sea_pen/load_time_booleans.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';
@@ -226,7 +225,7 @@ function getSeaPenTile(): SeaPenTile {
     id: kSeaPenId,
     name: 'Sea Pen',
     type: TileType.SEA_PEN,
-    preview: [{url: 'chrome://personalization/images/sea_pen_tile.svg'}],
+    preview: [{url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg'}],
   };
 }
 

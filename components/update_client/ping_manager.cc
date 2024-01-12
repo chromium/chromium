@@ -81,8 +81,9 @@ void PingSender::SendPing(const Component& component,
   CHECK(component.crx_component());
 
   auto urls(config_->PingUrl());
-  if (component.crx_component()->requires_network_encryption)
+  if (component.crx_component()->requires_network_encryption) {
     RemoveUnsecureUrls(&urls);
+  }
 
   if (urls.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

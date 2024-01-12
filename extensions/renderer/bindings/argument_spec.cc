@@ -5,9 +5,9 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 
 #include <cmath>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -356,7 +356,7 @@ const std::string& ArgumentSpec::GetTypeName() const {
       type_name_ = ref_->c_str();
       break;
     case ArgumentType::CHOICES: {
-      std::vector<base::StringPiece> choices_strings;
+      std::vector<std::string_view> choices_strings;
       choices_strings.reserve(choices_.size());
       for (const auto& choice : choices_)
         choices_strings.push_back(choice->GetTypeName());
@@ -610,7 +610,7 @@ bool ArgumentSpec::ParseArgumentToObject(
       v8::String::Utf8Value constructor(context->GetIsolate(),
                                         current->GetConstructorName());
       if (*instance_of_ ==
-          base::StringPiece(*constructor, constructor.length())) {
+          std::string_view(*constructor, constructor.length())) {
         found = true;
         break;
       }

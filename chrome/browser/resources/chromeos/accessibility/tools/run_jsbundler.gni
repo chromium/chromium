@@ -26,6 +26,16 @@ template("run_jsbundler") {
   } else {
     rewrite_rules = []
   }
+  if (defined(invoker.clear_dest_dirs)) {
+    assert(defined(invoker.dest_dir))
+    clear_dest_dirs = []
+    foreach(clear_dest_dir, invoker.clear_dest_dirs) {
+      clear_dest_dirs += [ rebase_path(invoker.dest_dir + "/" + clear_dest_dir,
+                                       root_build_dir) ]
+    }
+  } else {
+    clear_dest_dirs = []
+  }
 
   action(target_name) {
     script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/jsbundler.py"
@@ -65,6 +75,13 @@ template("run_jsbundler") {
         rebase_path(invoker.output_file, root_build_dir),
       ]
     }
+    foreach(clear_dest_dir, clear_dest_dirs) {
+      args += [
+        "--clear_dest_dir",
+        clear_dest_dir,
+      ]
+    }
+
     if (defined(invoker.dest_dir)) {
       args += [
         "-d",

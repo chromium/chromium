@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">ต้องการปิดแท็บเก่าใช่ไหม</translation>
 <translation id="1215127405478249895">ตรวจสอบแท็บ</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
+<translation id="1326271443836399892">ตรวจสอบการตั้งค่าการจัดระเบียบปัจจุบัน</translation>
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
 <translation id="1657719826150349398">ย้ายแท็บลงล่าง</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{คุณมีแท็บที่เก็บไว้ <ph name="TABS_COUNT_ONE" /> แท็บ}other{คุณมีแท็บที่เก็บไว้ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="3194464645767632461">การให้คะแนน</translation>
 <translation id="3291470810748040983">คุณจะได้รับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>
 <translation id="3328308545011660196">คำแนะนำ: ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">ปิดข้อมูลเกี่ยวกับร้านนี้แล้ว</translation>
 <translation id="9150694013019234766">สลับไปมาระหว่างแท็บในกลุ่มแท็บบริเวณด้านล่างของหน้าจอ</translation>
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
+<translation id="955558140275419384">ตรวจสอบแท็บที่เก็บไว้ทั้งหมดเพื่อจัดระเบียบโดยเข้าเครื่องมือแก้ไขนี้</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
 </translationbundle>

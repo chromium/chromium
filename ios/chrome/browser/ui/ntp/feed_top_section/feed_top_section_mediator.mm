@@ -4,15 +4,21 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/push_notification/model/notifications_alert_presenter.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -25,6 +31,11 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
+
+using base::RecordAction;
+using base::UmaHistogramEnumeration;
+using base::UserMetricsAction;
 
 @interface FeedTopSectionMediator () <IdentityManagerObserverBridgeDelegate> {
   // Observes changes in identity.
@@ -129,7 +140,8 @@
 
 #pragma mark - FeedTopSectionMutator
 
-- (void)notificationsPromoViewCloseButtonWasTapped {
+- (void)notificationsPromoViewDismissedFromButton:
+    (NotificationsPromoButtonType)buttonType {
   [self updateFeedTopSectionWhenClosed];
   // Update prefs that save the dismissed times if the promo conditions are not
   // being overriden.
@@ -141,34 +153,103 @@
     self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
                                  notificationsPromoTimesDismissed + 1);
   }
+  switch (buttonType) {
+    case NotificationsPromoButtonTypeClose:
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDismissedFromCloseButton];
+      break;
+    case NotificationsPromoButtonTypeSecondary:
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDismissedFromSecondaryButton];
+      break;
+    case NotificationsPromoButtonTypePrimary:
+      // This should never be executed as the primary button does not close the
+      // promo.
+      DCHECK(false);
+      break;
+  }
 }
 
 - (void)notificationsPromoViewMainButtonWasTapped {
   // Show the Notifications promo alert.
-  PushNotificationService* service =
-      GetApplicationContext()->GetPushNotificationService();
-  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-  service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
-                         true);
+  RecordAction(UserMetricsAction(
+      "ContentNotifications.Promo.TopOfFeed.MainButtonTapped"));
+  [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                  kMainButtonTapped];
   __weak FeedTopSectionMediator* weakSelf = self;
+  // Request displaying the OS notifications permission prompt.
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
-    if (!error && !promptShown && !granted) {
-      // This callback can be executed on a background thread, make sure
-      // the UI is displayed on the main thread.
+    if (error) {
+      [self closeNotificationPromoAndEnablePref:NO];
+      [self
+          logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::kError];
+      return;
+    }
+    if (!promptShown && !granted) {
+      // If the OS notification prompt has been previously shown, display a
+      // custom alert to ask for permission.
+      // This callback can be executed on a background thread, make sure the UI
+      // is updated on the main thread.
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf
                 .notificationsPresenter presentPushNotificationPermissionAlert];
+        [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
+                                       kPromptShown];
       });
+      return;
     }
-    if (error) {
-      [self updateFeedTopSectionWhenClosed];
+    if (promptShown && granted) {
+      // If the OS prompt is shown and the user granted notifications access,
+      // save the preference and close the promo.
+      [self closeNotificationPromoAndEnablePref:YES];
+      RecordAction(UserMetricsAction(
+          "ContentNotifications.Promo.TopOfFeed.Permission.Accepted"));
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kAccept];
+      return;
+    }
+    if (promptShown && !granted) {
+      // If the OS prompt is shown and the user denied notifications access,
+      // close the promo.
+      [self closeNotificationPromoAndEnablePref:NO];
+      RecordAction(UserMetricsAction(
+          "ContentNotifications.Promo.TopOfFeed.Permission.Declined"));
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDecline];
+      return;
+    }
+    if (!promptShown && granted) {
+      // If the OS prompt has been previously shown but notifications are not
+      // active on Chrome activate the notifications. This is an edge case.
+      [self closeNotificationPromoAndEnablePref:YES];
+      [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
+                                     kNotifActive];
+      return;
     }
   }];
 }
 
 #pragma mark - Private
+
+// Helper method to close the promo on the main thread. Takes `enablePref` as a
+// parameter which toggles the pref ON only.
+- (void)closeNotificationPromoAndEnablePref:(BOOL)enablePref {
+  // This callback can be executed on a background thread, make sure the UI
+  // is updated on the main thread.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (enablePref) {
+      PushNotificationService* service =
+          GetApplicationContext()->GetPushNotificationService();
+      id<SystemIdentity> identity =
+          self.authenticationService->GetPrimaryIdentity(
+              signin::ConsentLevel::kSignin);
+      service->SetPreference(identity.gaiaID,
+                             PushNotificationClientId::kContent, true);
+    }
+    [self updateFeedTopSectionWhenClosed];
+  });
+}
 
 // Handles closing the promo, and the NTP and Feed Top Section layout when the
 // promo is closed.
@@ -186,6 +267,32 @@
   return self.identityManager->HasPrimaryAccount(consent);
 }
 
+// Returns true if notifications are enabled in Chime or at the OS level.
+- (BOOL)isNotificationsEnabled {
+  DCHECK([self isUserSignedIn]);
+  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+  // Check if user has notifications enabled at the Chime level.
+  BOOL isChimeEnabled =
+      push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
+          base::SysNSStringToUTF8(identity.gaiaID), self.prefService);
+  if (isChimeEnabled) {
+    return true;
+  }
+  // Check the user's OS notification permission status for Chrome.
+  __block UNAuthorizationStatus status;
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        status = settings.authorizationStatus;
+      }];
+
+  if (status != UNAuthorizationStatusNotDetermined &&
+      status != UNAuthorizationStatusDenied) {
+    return true;
+  }
+  return false;
+}
+
 // TODO(b/315161586): Disable notifications promo if DSE changes.
 - (BOOL)shouldShowNotificationsPromo {
   // Check feature flag.
@@ -201,6 +308,11 @@
   // Check if override is active. Override only works if the user is signed in.
   if (experimental_flags::ShouldForceContentNotificationsPromo()) {
     return true;
+  }
+
+  // Check if notifications are enabled of any type at the Chime level.
+  if ([self isNotificationsEnabled]) {
+    return false;
   }
 
   int notificationsPromoTimesShown =
@@ -286,6 +398,17 @@
     [self.consumer showPromo];
     return;
   }
+}
+
+#pragma mark - Metrics
+
+- (void)logHistogramForAction:(ContentNotificationTopOfFeedPromoAction)action {
+  UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Action",
+                          action);
+}
+
+- (void)logHistogramForEvent:(ContentNotificationTopOfFeedPromoEvent)event {
+  UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Event", event);
 }
 
 @end

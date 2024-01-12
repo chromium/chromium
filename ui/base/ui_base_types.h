@@ -7,9 +7,6 @@
 
 #include <cstdint>
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
 namespace ui {
 
 // This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
@@ -32,7 +29,6 @@ enum WindowShowState {
   SHOW_STATE_END = 6  // The end of show state enum.
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Specifies which edges of the window are tiled.
 //
 // Wayland can notify the application if certain edge of the window is
@@ -54,7 +50,6 @@ struct WindowTiledEdges {
            bottom != other.bottom;
   }
 };
-#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
 // Dialog button identifiers used to specify which buttons to show the user.
 enum DialogButton {

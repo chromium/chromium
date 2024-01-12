@@ -4,63 +4,171 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.DESTROY_COORDINATOR_DELAY_MS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.HARD_CLEANUP_DELAY_MS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.SOFT_CLEANUP_DELAY_MS;
+
+import android.content.Context;
+import android.os.Handler;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.hub.DelegateButtonData;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
+import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
-import org.chromium.chrome.browser.hub.ResourceButtonData;
+import org.chromium.chrome.browser.hub.PaneHubController;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.List;
+
 /**
- * A abstract {@link Pane} representing a tab switcher for shared logic between the normal and
- * incognito modes. This is effectively an adapter layer between the {@link Pane} and {@link
- * TabSwitcher} APIs.
+ * An abstract {@link Pane} representing a tab switcher for shared logic between the normal and
+ * incognito modes.
  */
-public abstract class TabSwitcherPaneBase implements Pane {
-    protected final TabSwitcher mTabSwitcher;
+public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandler {
     protected final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
+            new ObservableSupplierImpl<>();
+    private final Handler mHandler = new Handler();
+    private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
+    private final Runnable mHardCleanupRunnable = this::hardCleanupInternal;
+    private final Runnable mDestroyCoordinatorRunnable = this::destroyTabSwitcherPaneCoordinator;
 
-    private OnClickListener mNewTabButtonClickListener;
+    private final MenuOrKeyboardActionHandler mMenuOrKeyboardActionHandler =
+            new MenuOrKeyboardActionHandler() {
+                @Override
+                public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+                    if (id == R.id.menu_select_tabs) {
+                        @Nullable
+                        TabSwitcherPaneCoordinator coordinator =
+                                mTabSwitcherPaneCoordinatorSupplier.get();
+                        if (coordinator == null) return false;
+
+                        coordinator.showTabListEditor();
+                        RecordUserAction.record("MobileMenuSelectTabs");
+                        return true;
+                    }
+                    return false;
+                }
+            };
+    private final ObservableSupplierImpl<TabSwitcherPaneCoordinator>
+            mTabSwitcherPaneCoordinatorSupplier = new ObservableSupplierImpl<>();
+    private final TransitiveObservableSupplier<TabSwitcherPaneCoordinator, Boolean>
+            mHandleBackPressChangedSupplier =
+                    new TransitiveObservableSupplier<>(
+                            mTabSwitcherPaneCoordinatorSupplier,
+                            pc -> pc.getHandleBackPressChangedSupplier());
+    private final ViewGroup mRootView;
+    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    private final TabSwitcherPaneCoordinatorFactory mFactory;
+    private final boolean mIsIncognito;
+
+    private boolean mNativeInitialized;
+    private @Nullable PaneHubController mPaneHubController;
 
     /**
-     * @param tabSwitcher The {@link TabSwitcher} hosted by the Pane.
-     * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
-     * @param newTabButtonContentDescriptionRes The resource for the new tab button content
-     *     description.
+     * @param context The activity context.
+     * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
+     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
+     * @param isIncognito Whether the pane is incognito.
      */
     TabSwitcherPaneBase(
-            @NonNull TabSwitcher tabSwitcher,
-            @NonNull OnClickListener newTabButtonClickListener,
-            @StringRes int newTabButtonContentDescriptionRes) {
-        mTabSwitcher = tabSwitcher;
+            @NonNull Context context,
+            @NonNull TabSwitcherPaneCoordinatorFactory factory,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            boolean isIncognito) {
+        mFactory = factory;
+        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
+        mIsIncognito = isIncognito;
 
-        mNewTabButtonDataSupplier.set(
-                new DelegateButtonData(
-                        new ResourceButtonData(
-                                org.chromium.chrome.browser.toolbar.R.string.button_new_tab,
-                                newTabButtonContentDescriptionRes,
-                                org.chromium.chrome.browser.toolbar.R.drawable.new_tab_icon),
-                        () -> newTabButtonClickListener.onClick(null)));
+        mRootView = new FrameLayout(context);
+        mIsVisibleSupplier.set(false);
+        mIsAnimatingSupplier.set(false);
+    }
+
+    @Override
+    public void destroy() {
+        mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                mMenuOrKeyboardActionHandler);
+        destroyTabSwitcherPaneCoordinator();
     }
 
     @Override
     public @NonNull View getRootView() {
-        return mTabSwitcher.getController().getTabSwitcherContainer();
+        return mRootView;
+    }
+
+    @Override
+    public void setPaneHubController(@Nullable PaneHubController paneHubController) {
+        mPaneHubController = paneHubController;
+        if (mPaneHubController != null) {
+            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
+                    mMenuOrKeyboardActionHandler);
+        } else {
+            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                    mMenuOrKeyboardActionHandler);
+        }
+    }
+
+    @Override
+    public void notifyLoadHint(@LoadHint int loadHint) {
+        boolean isVisible = loadHint == LoadHint.HOT;
+        mIsVisibleSupplier.set(isVisible);
+
+        removeDelayedCallbacks();
+
+        if (isVisible) {
+            createTabSwitcherPaneCoordinator();
+            showAllTabs();
+            setInitialScrollIndexOffset();
+            // TODO(crbug/1502201): This should only happen when the Pane becomes user visible which
+            // might only happen after the Hub animation finishes. Figure out how to handle that
+            // since the load hint for hot will come before the animation is started. Panes likely
+            // need to know an animation is going to play and when it is finished (possibly using
+            // the isAnimatingSupplier?).
+            requestAccessibilityFocusOnCurrentTab();
+        }
+
+        if (loadHint == LoadHint.WARM) {
+            if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) {
+                mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
+            } else {
+                createTabSwitcherPaneCoordinator();
+            }
+        }
+
+        if (loadHint == LoadHint.COLD) {
+            if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) {
+                mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
+                mHandler.postDelayed(mHardCleanupRunnable, HARD_CLEANUP_DELAY_MS);
+                mHandler.postDelayed(mDestroyCoordinatorRunnable, DESTROY_COORDINATOR_DELAY_MS);
+            }
+        }
     }
 
     @Override
@@ -77,7 +185,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1505772): Replace with shrink animator.
+        // TODO(crbug/1516949): Replace with shrink animator and set animating supplier.
         return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                 hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
     }
@@ -86,18 +194,187 @@ public abstract class TabSwitcherPaneBase implements Pane {
     public @NonNull HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1505772): Replace with expand animator.
+        // TODO(crbug/1516949): Replace with expand animator and set animating supplier.
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
     }
 
     @Override
     public @BackPressResult int handleBackPress() {
-        return mTabSwitcher.getController().handleBackPress();
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return BackPressResult.FAILURE;
+        return coordinator.handleBackPress();
     }
 
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mTabSwitcher.getController().getHandleBackPressChangedSupplier();
+        return mHandleBackPressChangedSupplier;
+    }
+
+    @Override
+    public boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode) {
+        assert false : "Not reached.";
+        return true;
+    }
+
+    @Override
+    public void softCleanup() {
+        assert false : "Not reached.";
+    }
+
+    @Override
+    public void hardCleanup() {
+        assert false : "Not reached.";
+    }
+
+    public void initWithNative() {
+        if (mNativeInitialized) return;
+
+        mNativeInitialized = true;
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator != null) {
+            coordinator.initWithNative();
+        }
+    }
+
+    /** Returns a {@link Supplier} that provides dialog visibility information. */
+    public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return null;
+        return coordinator.getTabGridDialogVisibilitySupplier();
+    }
+
+    /** Returns a {@link TabSwitcherCustomViewManager} for supplying custom views. */
+    public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return null;
+        return coordinator.getTabSwitcherCustomViewManager();
+    }
+
+    /** Returns the number of elements in the tab switcher's tab list model. */
+    public int getTabSwitcherTabListModelSize() {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return 0;
+        return coordinator.getTabSwitcherTabListModelSize();
+    }
+
+    /** Set the tab switcher's RecyclerViewPosition. */
+    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition position) {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.setTabSwitcherRecyclerViewPosition(position);
+    }
+
+    /**
+     * Request to show all the tabs in the pane. Subclasses should override this method to invoke
+     * {@link TabSwitcherResetHandler#resetWithTabList} with their available tabs.
+     */
+    protected abstract void showAllTabs();
+
+    /** Requests accessibility focus on the currently selected tab in the tab switcher. */
+    protected void requestAccessibilityFocusOnCurrentTab() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.requestAccessibilityFocusOnCurrentTab();
+    }
+
+    /** Returns the {@link TabListMode} of the {@link TabListCoordinator} that the pane hosts. */
+    protected @TabListMode int getTabListMode() {
+        return mFactory.getTabListMode();
+    }
+
+    /** Returns whether the pane is visible onscreen. Note this is not the same as being focused. */
+    protected boolean isVisible() {
+        return mIsVisibleSupplier.get();
+    }
+
+    /** Returns whether the pane is focused. */
+    protected boolean isFocused() {
+        return mPaneHubController != null;
+    }
+
+    /** Returns the PaneHubController if one exists or null otherwise. */
+    protected @Nullable PaneHubController getPaneHubController() {
+        return mPaneHubController;
+    }
+
+    /** Returns the current {@link TabSwitcherPaneCoordinator} or null if one doesn't exist. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @Nullable
+    TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
+        return mTabSwitcherPaneCoordinatorSupplier.get();
+    }
+
+    /** Creates a {@link TabSwitcherCoordinator}. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    void createTabSwitcherPaneCoordinator() {
+        if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
+
+        @NonNull
+        TabSwitcherPaneCoordinator coordinator =
+                mFactory.create(
+                        mRootView,
+                        /* resetHandler= */ this,
+                        mIsVisibleSupplier,
+                        mIsAnimatingSupplier,
+                        this::onTabClick,
+                        mIsIncognito);
+        mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
+        if (mNativeInitialized) {
+            coordinator.initWithNative();
+        }
+    }
+
+    /**
+     * Destroys the current {@link TabSwitcherCoordinator}. It is safe to call this even if a
+     * coordinator does not exist.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    void destroyTabSwitcherPaneCoordinator() {
+        if (!mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
+
+        @NonNull TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        mTabSwitcherPaneCoordinatorSupplier.set(null);
+        mRootView.removeAllViews();
+        coordinator.destroy();
+    }
+
+    private void onTabClick(int tabId) {
+        if (mPaneHubController == null) return;
+
+        // TODO(crbug/1516949): Consider using INVALID_TAB_ID if already selected to prevent a
+        // repeat selection. For now this is required to ensure the tab gets marked as shown when
+        // exiting the Hub. See if this can be updated/changed.
+        mPaneHubController.selectTabAndHideHub(tabId);
+    }
+
+    private void setInitialScrollIndexOffset() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.setInitialScrollIndexOffset();
+    }
+
+    private void softCleanupInternal() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.softCleanup();
+    }
+
+    private void hardCleanupInternal() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.hardCleanup();
+    }
+
+    private void removeDelayedCallbacks() {
+        mHandler.removeCallbacks(mSoftCleanupRunnable);
+        mHandler.removeCallbacks(mHardCleanupRunnable);
+        mHandler.removeCallbacks(mDestroyCoordinatorRunnable);
     }
 }

@@ -63,10 +63,8 @@ class InputConnectionImpl : public mojom::InputConnection {
 
   void SendControlKeyEvent(const std::u16string& text);
 
-  const raw_ptr<ash::input_method::InputMethodEngine, ExperimentalAsh>
-      ime_engine_;  // Not owned
-  const raw_ptr<ArcInputMethodManagerBridge, ExperimentalAsh>
-      imm_bridge_;  // Not owned
+  const raw_ptr<ash::input_method::InputMethodEngine> ime_engine_;  // Not owned
+  const raw_ptr<ArcInputMethodManagerBridge> imm_bridge_;  // Not owned
   const int input_context_id_;
 
   mojo::Receiver<mojom::InputConnection> receiver_{this};

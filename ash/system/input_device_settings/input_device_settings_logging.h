@@ -14,7 +14,7 @@ namespace ash {
 
 // Use the IDS_LOG() macro for all logging related to Input Device.
 #define IDS_LOG(severity) \
-  ScopedLogMessage(__FILE__, __LINE__, logging::LOG_##severity).stream()
+  ScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity).stream()
 
 // An intermediate object used by the IDS_LOG macro, wrapping a
 // logging::LogMessage instance. When this object is destroyed, the message will

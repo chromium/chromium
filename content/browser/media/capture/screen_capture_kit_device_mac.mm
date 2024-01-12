@@ -6,6 +6,8 @@
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
+#include <optional>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/task/bind_post_task.h"
@@ -14,13 +16,12 @@
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/io_surface_capture_device_base_mac.h"
 #include "content/browser/media/capture/screen_capture_kit_fullscreen_module.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/gfx/native_widget_types.h"
 
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
-                                                    absl::optional<gfx::Size>,
-                                                    absl::optional<gfx::Rect>)>;
+                                                    std::optional<gfx::Size>,
+                                                    std::optional<gfx::Rect>)>;
 using ErrorCallback = base::RepeatingClosure;
 
 API_AVAILABLE(macos(12.3))
@@ -58,8 +59,8 @@ API_AVAILABLE(macos(12.3))
   // captured content. |contentSize| is used to detect when a captured window is
   // resized so that the stream configuration can be updated and |visibleRect|
   // is needed because the IOSurface may be larger than the captured content.
-  absl::optional<gfx::Size> contentSize;
-  absl::optional<gfx::Rect> visibleRect;
+  std::optional<gfx::Size> contentSize;
+  std::optional<gfx::Rect> visibleRect;
   CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(
       sampleBuffer, /*createIfNecessary=*/false);
   if (attachmentsArray && CFArrayGetCount(attachmentsArray) > 0) {
@@ -265,8 +266,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     }
   }
   void OnStreamSample(gfx::ScopedInUseIOSurface io_surface,
-                      absl::optional<gfx::Size> content_size,
-                      absl::optional<gfx::Rect> visible_rect) {
+                      std::optional<gfx::Size> content_size,
+                      std::optional<gfx::Rect> visible_rect) {
     if (requested_capture_format_) {
       // Does the size of io_surface match the requested format?
       size_t io_surface_width = IOSurfaceGetWidth(io_surface.get());
@@ -423,7 +424,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
   // The requested format if a request to update the configuration has been
   // sent.
-  absl::optional<media::VideoCaptureFormat> requested_capture_format_;
+  std::optional<media::VideoCaptureFormat> requested_capture_format_;
 
   // The size of the content at the time that we configured the stream.
   gfx::Size stream_config_content_size_;

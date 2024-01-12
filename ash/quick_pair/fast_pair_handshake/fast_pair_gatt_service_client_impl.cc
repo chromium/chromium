@@ -314,6 +314,16 @@ void FastPairGattServiceClientImpl::AttemptGattConnection() {
     return;
   }
 
+  // If we are already bonded and connected, potentially due to attempting to
+  // retroactive pair, don't disconnect the device since the device is already
+  // in a good working state.
+  if (device->IsBonded() && device->IsConnected()) {
+    CD_LOG(INFO, Feature::FP)
+        << __func__ << ": Device already bonded and connected";
+    CreateGattConnection();
+    return;
+  }
+
   // Remove any pre-existing GATT connection on the device before we make a
   // new one. We cannot determine if there is a GATT connection already
   // established, and because its not very expensive and has no impact if there

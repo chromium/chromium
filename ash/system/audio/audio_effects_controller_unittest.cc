@@ -236,7 +236,7 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSupported) {
 
   // Delegate should be registered.
   EXPECT_TRUE(VideoConferenceTrayController::Get()
-                  ->effects_manager()
+                  ->GetEffectsManager()
                   .IsDelegateRegistered(audio_effects_controller()));
 }
 
@@ -486,7 +486,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSupported) {
 
   // Delegate should be registered.
   EXPECT_TRUE(VideoConferenceTrayController::Get()
-                  ->effects_manager()
+                  ->GetEffectsManager()
                   .IsDelegateRegistered(audio_effects_controller()));
 }
 
@@ -629,13 +629,13 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionAndNoiseCancellationAdded) {
 
   // Delegate should be registered.
   EXPECT_TRUE(VideoConferenceTrayController::Get()
-                  ->effects_manager()
+                  ->GetEffectsManager()
                   .IsDelegateRegistered(audio_effects_controller()));
 }
 
 TEST_F(AudioEffectsControllerTest, DelegateRegistered) {
   VideoConferenceTrayEffectsManager& effects_manager =
-      VideoConferenceTrayController::Get()->effects_manager();
+      VideoConferenceTrayController::Get()->GetEffectsManager();
 
   // No effects supported. Delegate should not be registered.
   SimulateUserLogin("testuser1@gmail.com");

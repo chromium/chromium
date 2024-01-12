@@ -190,7 +190,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     std::string device_public_key_;
     multidevice::SoftwareFeature software_feature_;
     bool enabled_;
-    raw_ptr<RemoteDeviceProvider, ExperimentalAsh> remote_device_provider_;
+    raw_ptr<RemoteDeviceProvider> remote_device_provider_;
     SetSoftwareFeatureStateCallback callback_;
   };
 
@@ -214,7 +214,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     std::string device_instance_id_;
     multidevice::SoftwareFeature software_feature_;
     FeatureStatusChange status_change_;
-    raw_ptr<RemoteDeviceProvider, ExperimentalAsh> remote_device_provider_;
+    raw_ptr<RemoteDeviceProvider> remote_device_provider_;
     SetFeatureStatusCallback callback_;
   };
 
@@ -286,15 +286,13 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void StartSetSoftwareFeatureTimer();
   void OnSetSoftwareFeatureTimerFired();
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
-  raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
-  raw_ptr<PrefService, ExperimentalAsh> profile_prefs_;
-  raw_ptr<const GcmDeviceInfoProvider, ExperimentalAsh>
-      gcm_device_info_provider_;
-  raw_ptr<ClientAppMetadataProvider, ExperimentalAsh>
-      client_app_metadata_provider_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
+  raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<const GcmDeviceInfoProvider> gcm_device_info_provider_;
+  raw_ptr<ClientAppMetadataProvider> client_app_metadata_provider_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<base::OneShotTimer> timer_;
   AttestationCertificatesSyncer::GetAttestationCertificatesFunction
       get_attestation_certificates_function_;

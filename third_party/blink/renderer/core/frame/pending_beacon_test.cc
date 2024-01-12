@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/pending_post_beacon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -105,6 +106,9 @@ class PendingBeaconTestBase : public ::testing::Test {
                                     PendingBeaconOptions::Create(),
                                     exception_state);
   }
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 class PendingBeaconTestingScope : public V8TestingScope {

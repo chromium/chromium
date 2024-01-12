@@ -14,5 +14,5 @@ group("chromevox_third_party_resources") {
 
 copy("chromevox_third_party_background_resources") {
   sources = [ "third_party/sre/sre_browser.js" ]
-  outputs = [ "$chromevox_out_dir/background/{{source_file_part}}" ]
+  outputs = [ "$chromevox_out_dir/third_party/sre/{{source_file_part}}" ]
 }

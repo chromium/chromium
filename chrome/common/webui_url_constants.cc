@@ -192,6 +192,8 @@ const char kChromeUIPrivacySandboxFledgeURL[] =
     "chrome://settings/adPrivacy/sites";
 const char kChromeUIPrivacySandboxTopicsURL[] =
     "chrome://settings/adPrivacy/interests";
+const char kChromeUIPrivacySandboxManageTopicsLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ad_privacy";
 const char kChromeUIQuitHost[] = "quit";
 const char kChromeUIQuitURL[] = "chrome://quit/";
 const char kChromeUIQuotaInternalsHost[] = "quota-internals";
@@ -221,6 +223,7 @@ const char kChromeUISiteEngagementHost[] = "site-engagement";
 const char kChromeUISupervisedUserPassphrasePageHost[] =
     "managed-user-passphrase";
 const char kChromeUISupportToolHost[] = "support-tool";
+const char kChromeUISupportToolURL[] = "chrome://support-tool";
 const char kChromeUISyncConfirmationHost[] = "sync-confirmation";
 const char kChromeUISyncConfirmationLoadingPath[] = "loading";
 const char kChromeUISyncConfirmationURL[] = "chrome://sync-confirmation/";
@@ -509,6 +512,7 @@ const char kOsUIHelpAppURL[] = "os://help-app";
 const char kOsUIPrintManagementAppURL[] = "os://print-management";
 const char kOsUIScanningAppURL[] = "os://scanning";
 const char kOsUIShortcutCustomizationAppURL[] = "os://shortcut-customization";
+const char kOsUISystemURL[] = "os://system";
 const char kOsUIVersionURL[] = "os://version";
 #endif
 
@@ -607,6 +611,7 @@ const char kFileSystemSubpage[] = "content/filesystem";
 const char kFileSystemSettingsSubpage[] = "content/filesystem/siteDetails";
 const char kOnDeviceSiteDataSubpage[] = "content/siteData";
 const char kCookieSettingsSubPage[] = "cookies";
+const char kExperimentalAISettingsSubPage[] = "ai";
 const char kDownloadsSubPage[] = "downloads";
 const char kHandlerSettingsSubPage[] = "handlers";
 const char kImportDataSubPage[] = "importData";
@@ -630,7 +635,6 @@ const char kSearchSubPage[] = "search";
 const char kSearchEnginesSubPage[] = "searchEngines";
 const char kSignOutSubPage[] = "signOut";
 const char kSiteDetailsSubpage[] = "content/siteDetails";
-const char kSyncSetupPageContentSubPage[] = "syncSetup/pageContent";
 const char kSyncSetupSubPage[] = "syncSetup";
 const char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";

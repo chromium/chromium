@@ -57,6 +57,12 @@ public class TestBottomSheetContent implements BottomSheetContent {
     private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
 
     /**
+     * Whether this content can be immediately replaced by higher-priority content even while the
+     * sheet is open.
+     */
+    private boolean mCanSuppressInAnyState;
+
+    /**
      * @param context A context to inflate views with.
      * @param priority The content's priority.
      * @param hasCustomLifecycle Whether the content is browser specific.
@@ -72,6 +78,7 @@ public class TestBottomSheetContent implements BottomSheetContent {
         mFullHeight = BottomSheetContent.HeightMode.DEFAULT;
         mPriority = priority;
         mHasCustomLifecycle = hasCustomLifecycle;
+        mCanSuppressInAnyState = false;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbarView = new View(context);
@@ -233,5 +240,14 @@ public class TestBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return android.R.string.copy;
+    }
+
+    @Override
+    public boolean canSuppressInAnyState() {
+        return mCanSuppressInAnyState;
+    }
+
+    public void setCanSuppressInAnyState(boolean value) {
+        mCanSuppressInAnyState = value;
     }
 }

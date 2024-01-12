@@ -126,10 +126,6 @@ class NET_EXPORT ProxyConfig {
     // Reverse the meaning of |bypass_rules|.
     bool reverse_bypass = false;
 
-    // Only proxy resources in NetworkServiceProxyAllowList if they are used in
-    // a 3P context. 1P resources will bypass the proxy.
-    bool restrict_to_network_service_proxy_allow_list = false;
-
     Type type = Type::EMPTY;
 
     // Set if |type| is Type::PROXY_LIST.

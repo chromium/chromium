@@ -75,24 +75,30 @@ void VideoEncoderFallback::Encode(scoped_refptr<VideoFrame> frame,
   if (use_fallback_) {
     if (fallback_initialized_) {
       encoder_->Encode(std::move(frame), encode_options, std::move(done_cb));
-    } else {
+    } else if (encoder_) {
       encodes_to_retry_.push_back(
           std::make_unique<PendingEncode>(MakePendingEncode(
               std::move(frame), encode_options, std::move(done_cb))));
+    } else {
+      // Failed to create fallback.
+      std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedEncode);
     }
     return;
   }
+
+  DCHECK(encoder_);
 
   auto done_callback = [](base::WeakPtr<VideoEncoderFallback> self,
                           PendingEncode args, EncoderStatus status) {
     if (!self)
       return;
-    DCHECK(self->encoder_);
-    if (status.is_ok()) {
+    // self->encoder_ is nullptr when main encoder failed to encode and software
+    // fallback is not available.
+    if (status.is_ok() || !self->encoder_) {
       std::move(args.done_callback).Run(std::move(status));
       return;
     }
-    self->FallbackEncode(std::move(args));
+    self->FallbackEncode(std::move(args), std::move(status));
   };
 
   encoder_->Encode(frame, encode_options,
@@ -156,14 +162,14 @@ void VideoEncoderFallback::FallbackInitialize() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void VideoEncoderFallback::FallbackEncode(PendingEncode args) {
+void VideoEncoderFallback::FallbackEncode(PendingEncode args,
+                                          EncoderStatus main_encoder_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!use_fallback_) {
     use_fallback_ = true;
     encoder_ = std::move(create_fallback_cb_).Run();
     if (!encoder_) {
-      std::move(args.done_callback)
-          .Run(EncoderStatus::Codes::kEncoderInitializationError);
+      std::move(args.done_callback).Run(main_encoder_status.code());
       return;
     }
 

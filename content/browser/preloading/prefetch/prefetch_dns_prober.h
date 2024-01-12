@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_DNS_PROBER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_DNS_PROBER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,7 +14,6 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -22,7 +22,7 @@ namespace content {
 class PrefetchDNSProber : public network::mojom::ResolveHostClient {
  public:
   using OnDNSResultsCallback = base::OnceCallback<
-      void(int, const absl::optional<net::AddressList>& resolved_addresses)>;
+      void(int, const std::optional<net::AddressList>& resolved_addresses)>;
 
   explicit PrefetchDNSProber(OnDNSResultsCallback callback);
   ~PrefetchDNSProber() override;
@@ -32,8 +32,8 @@ class PrefetchDNSProber : public network::mojom::ResolveHostClient {
   void OnHostnameResults(const std::vector<net::HostPortPair>&) override {}
   void OnComplete(int32_t error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
  private:

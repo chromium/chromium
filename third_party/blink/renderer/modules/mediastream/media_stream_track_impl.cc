@@ -103,6 +103,7 @@ bool ConstraintSetHasNonImageCapture(
          constraint_set->hasChannelCount() || constraint_set->hasDeviceId() ||
          constraint_set->hasEchoCancellation() ||
          constraint_set->hasNoiseSuppression() ||
+         constraint_set->hasVoiceIsolation() ||
          constraint_set->hasAutoGainControl() ||
          constraint_set->hasFacingMode() || constraint_set->hasResizeMode() ||
          constraint_set->hasFrameRate() || constraint_set->hasGroupId() ||
@@ -458,7 +459,8 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
   }
 
   if (component_->GetSourceType() == MediaStreamSource::kTypeAudio) {
-    Vector<bool> echo_cancellation, auto_gain_control, noise_suppression;
+    Vector<bool> echo_cancellation, auto_gain_control, noise_suppression,
+        voice_isolation;
     for (bool value : platform_capabilities.echo_cancellation) {
       echo_cancellation.push_back(value);
     }
@@ -471,6 +473,10 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
       noise_suppression.push_back(value);
     }
     capabilities->setNoiseSuppression(noise_suppression);
+    for (bool value : platform_capabilities.voice_isolation) {
+      voice_isolation.push_back(value);
+    }
+    capabilities->setVoiceIsolation(voice_isolation);
     Vector<String> echo_cancellation_type;
     for (String value : platform_capabilities.echo_cancellation_type) {
       echo_cancellation_type.push_back(value);
@@ -622,7 +628,9 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   if (platform_settings.noise_supression) {
     settings->setNoiseSuppression(*platform_settings.noise_supression);
   }
-
+  if (platform_settings.voice_isolation) {
+    settings->setVoiceIsolation(*platform_settings.voice_isolation);
+  }
   if (platform_settings.HasSampleRate()) {
     settings->setSampleRate(platform_settings.sample_rate);
   }

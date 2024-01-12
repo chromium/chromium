@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -17,7 +18,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
@@ -89,9 +92,11 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
   // "initializing" or "undefined/unknown" as "Sync disabled" and go ahead with
   // the migration?
 
-  // Check the feature flag last, so that metrics can record all the other
+  // Check the feature flag(s) last, so that metrics can record all the other
   // reasons to not do the migration, even with the flag disabled.
-  if (!base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      !base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
     return SyncToSigninMigrationDecision::kDontMigrateFlagDisabled;
   }
 
@@ -127,6 +132,10 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
 
   // Mark the user as syncing again.
   pref_service->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->SetBoolean(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
+#endif
 
   // Restore the "previously syncing user" prefs too.
   pref_service->SetString(prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
@@ -207,6 +216,8 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
 
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service) {
+  base::Time start_time = base::Time::Now();
+
   // ======================================
   // Global migration decision and metrics.
   // ======================================
@@ -302,6 +313,13 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+  // Also clear the "InitialSyncFeatureSetup" pref. It's not needed
+  // post-migration, and that pref being true without ConsentLevel::kSync would
+  // be an inconsistent state.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->ClearPref(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
+#endif
 
   // Migrate the global data type prefs (used for Sync-the-feature) over to the
   // account-specific ones.
@@ -317,6 +335,8 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // Data-type-specific migrations.
   // ==============================
 
+  bool migration_successful = true;
+
   // Move passwords DB file, if password sync is enabled.
   if (passwords_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     base::FilePath from_path =
@@ -328,6 +348,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     base::UmaHistogramExactLinear(
         "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove", -error,
         -base::File::FILE_ERROR_MAX);
+
+    migration_successful =
+        migration_successful && (error == base::File::Error::FILE_OK);
   }
 
 #if BUILDFLAG(IS_IOS)
@@ -342,6 +365,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     base::UmaHistogramExactLinear(
         "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove", -error,
         -base::File::FILE_ERROR_MAX);
+
+    migration_successful =
+        migration_successful && (error == base::File::Error::FILE_OK);
   }
 #else
   // TODO(crbug.com/1503647): On platforms other than iOS, the on-disk layout of
@@ -359,7 +385,39 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         syncer::prefs::internal::kMigrateReadingListFromLocalToAccount, true);
     syncer::RecordSyncToSigninMigrationReadingListStep(
         syncer::ReadingListMigrationStep::kMigrationRequested);
+
+    // Note: Triggering this migration cannot fail, so no need to update
+    // `migration_successful` here. The actual outcome will be recorded in other
+    // histograms.
   }
+
+  // Finally, record the overall outcome, i.e. whether all individual data type
+  // migrations were successful. The total count of this histogram also serves
+  // as the number of migrations that were completed.
+  base::UmaHistogramBoolean("Sync.SyncToSigninMigrationOutcome",
+                            migration_successful);
+  base::UmaHistogramTimes("Sync.SyncToSigninMigrationTime",
+                          base::Time::Now() - start_time);
+}
+
+bool WasPrimaryAccountMigratedFromSyncingToSignedIn(
+    const signin::IdentityManager* identity_manager,
+    const PrefService* pref_service) {
+  // Only signed-in non-syncing users can be in the "migrated" state.
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return false;
+  }
+
+  // Check if the current signed-in account ID matches the migrated account ID.
+  // In the common case where the account was *not* migrated, the migrated
+  // account ID will be empty, and thus not match the current account ID.
+  std::string authenticated_gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  std::string migrated_gaia_id = pref_service->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  return migrated_gaia_id == authenticated_gaia_id;
 }
 
 }  // namespace browser_sync

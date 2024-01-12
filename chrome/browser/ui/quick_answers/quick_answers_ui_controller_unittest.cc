@@ -37,8 +37,7 @@ class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
   QuickAnswersUiController* ui_controller() { return ui_controller_; }
 
  private:
-  raw_ptr<QuickAnswersUiController, DanglingUntriaged | ExperimentalAsh>
-      ui_controller_ = nullptr;
+  raw_ptr<QuickAnswersUiController, DanglingUntriaged> ui_controller_ = nullptr;
 };
 
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {

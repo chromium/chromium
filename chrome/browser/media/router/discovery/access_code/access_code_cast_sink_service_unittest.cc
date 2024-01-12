@@ -324,9 +324,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   EXPECT_TRUE(media_routes_observer()->removed_route_id_.empty());
 
   // Remove the non-access code sink from the list of routes.
-  route_list.erase(
-      std::remove(route_list.begin(), route_list.end(), media_route_cast),
-      route_list.end());
+  std::erase(route_list, media_route_cast);
   SimulateRoutesUpdated(route_list);
   EXPECT_EQ(media_routes_observer()->removed_route_id_,
             media_route_cast.media_route_id());
@@ -341,9 +339,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   task_environment_.FastForwardBy(kRemoveRouteDelay);
 
   // Remove the access code sink from the list of routes.
-  route_list.erase(
-      std::remove(route_list.begin(), route_list.end(), media_route_access),
-      route_list.end());
+  std::erase(route_list, media_route_access);
 
   SimulateRoutesUpdated(route_list);
   EXPECT_EQ(media_routes_observer()->removed_route_id_,

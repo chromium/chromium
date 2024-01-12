@@ -99,16 +99,14 @@ SharedMemoryBufferTracker::DuplicateAsUnsafeRegion() {
   return region_.Duplicate();
 }
 
-mojo::ScopedSharedBufferHandle
-SharedMemoryBufferTracker::DuplicateAsMojoBuffer() {
-  DCHECK(region_.IsValid());
-  return mojo::WrapUnsafeSharedMemoryRegion(region_.Duplicate());
-}
-
 gfx::GpuMemoryBufferHandle
 SharedMemoryBufferTracker::GetGpuMemoryBufferHandle() {
   NOTREACHED() << "Unsupported operation";
   return gfx::GpuMemoryBufferHandle();
+}
+
+VideoCaptureBufferType SharedMemoryBufferTracker::GetBufferType() {
+  return VideoCaptureBufferType::kSharedMemory;
 }
 
 uint32_t SharedMemoryBufferTracker::GetMemorySizeInBytes() {

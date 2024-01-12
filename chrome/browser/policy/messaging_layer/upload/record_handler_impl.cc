@@ -123,11 +123,13 @@ static bool GenerationGuidIsValid(const std::string& generation_guid) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Processes LOG_UPLOAD event.
-void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
-                       Priority priority,
-                       Record record_copy,
-                       const ScopedReservation& scoped_reservation,
-                       base::OnceCallback<void(Status)> done_cb) {
+void ProcessFileUpload(
+    Priority priority,
+    Record record_copy,
+    const ScopedReservation& scoped_reservation,
+    base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+        delegate_factory,
+    base::OnceCallback<void(Status)> done_cb) {
   // Here we need to determine which events we got. It would be better to
   // use protobuf reflection and detect upload_settings presence in the event,
   // but protobuf_lite library included in Chrome does not expose reflection.
@@ -157,7 +159,7 @@ void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
       // whole `upload_settings` (including retry count).
       FileUploadJob::Manager::GetInstance()->Register(
           priority, std::move(record_copy), std::move(log_upload_event),
-          delegate,
+          delegate_factory.Run(),
           base::BindOnce(
               [](ScopedReservation scoped_reservation,
                  base::OnceCallback<void(Status)> done_cb,
@@ -372,11 +374,12 @@ class RecordHandlerImpl::ReportUploader
     : public TaskRunnerContext<CompletionResponse> {
  public:
   ReportUploader(
-      base::WeakPtr<FileUploadJob::Delegate> delegate,
       bool need_encryption_key,
       int config_file_version,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
+      base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+          delegate_factory,
       CompletionCallback upload_complete_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
@@ -407,8 +410,6 @@ class RecordHandlerImpl::ReportUploader
   absl::optional<EncryptedRecord> HandleFailedUploadedSequenceInformation(
       const base::Value::Dict& sequence_information);
 
-  const base::WeakPtr<FileUploadJob::Delegate> delegate_;
-
   bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
   int config_file_version_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -416,6 +417,10 @@ class RecordHandlerImpl::ReportUploader
 
   std::unique_ptr<UploadEncryptedReportingRequestBuilder> request_builder_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // File upload delegate factory.
+  const base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+      delegate_factory_;
 
   // Encryption key delivery callback.
   EncryptionKeyAttachedCallback encryption_key_attached_cb_
@@ -432,21 +437,22 @@ class RecordHandlerImpl::ReportUploader
 };
 
 RecordHandlerImpl::ReportUploader::ReportUploader(
-    base::WeakPtr<FileUploadJob::Delegate> delegate,
     bool need_encryption_key,
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
+    base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+        delegate_factory,
     CompletionCallback completion_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
-      delegate_(delegate),
       need_encryption_key_(need_encryption_key),
       config_file_version_(config_file_version),
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
+      delegate_factory_(delegate_factory),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -543,11 +549,9 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
         },
         base::Unretained(this),  // `ReportUploader` destructs on completion.
         std::move(record), next_record));
-    FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&ProcessFileUpload, delegate_, priority,
-                                  std::move(record_copy),
-                                  ScopedReservation(0uL, scoped_reservation_),
-                                  std::move(resume_cb)));
+    ProcessFileUpload(priority, std::move(record_copy),
+                      ScopedReservation(0uL, scoped_reservation_),
+                      delegate_factory_, std::move(resume_cb));
     return;  // We will resume on `resume_cb`
   }
 
@@ -805,14 +809,12 @@ void RecordHandlerImpl::ReportUploader::Complete(
 
 RecordHandlerImpl::RecordHandlerImpl(
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-    std::unique_ptr<FileUploadJob::Delegate> delegate)
+    base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+        delegate_factory)
     : sequenced_task_runner_(sequenced_task_runner),
-      delegate_(std::move(delegate)) {}
+      delegate_factory_(delegate_factory) {}
 
-RecordHandlerImpl::~RecordHandlerImpl() {
-  FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->DeleteSoon(
-      FROM_HERE, std::move(delegate_));
-}
+RecordHandlerImpl::~RecordHandlerImpl() = default;
 
 void RecordHandlerImpl::HandleRecords(
     bool need_encryption_key,
@@ -821,16 +823,10 @@ void RecordHandlerImpl::HandleRecords(
     ScopedReservation scoped_reservation,
     CompletionCallback upload_complete_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
-  // Prepare weak pointer to delegate for ChromeOS Ash case only, since
-  // file uploads are not available in other configurations: `delegate_` is
-  // nullptr there, and so is the weak pointer.
-  base::WeakPtr<FileUploadJob::Delegate> delegate;
-  if (delegate_.get()) {
-    delegate = delegate_->GetWeakPtr();
-  }
   Start<RecordHandlerImpl::ReportUploader>(
-      delegate, need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), std::move(upload_complete_cb),
-      std::move(encryption_key_attached_cb), sequenced_task_runner_);
+      need_encryption_key, config_file_version, std::move(records),
+      std::move(scoped_reservation), delegate_factory_,
+      std::move(upload_complete_cb), std::move(encryption_key_attached_cb),
+      sequenced_task_runner_);
 }
 }  // namespace reporting

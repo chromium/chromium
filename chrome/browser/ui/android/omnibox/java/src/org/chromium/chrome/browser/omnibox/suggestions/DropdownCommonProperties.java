@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** The set of common properties associated with dropdown suggestions. */
 public @interface DropdownCommonProperties {
@@ -18,12 +17,6 @@ public @interface DropdownCommonProperties {
     public static final WritableBooleanPropertyKey BG_BOTTOM_CORNER_ROUNDED =
             new WritableBooleanPropertyKey();
 
-    /** The top margin of the suggestion. */
-    public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
-
-    /** The bottom margin of the suggestion. */
-    public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
-
     /** Whether a divider should be shown at the bottom of the suggestion. */
     public static final WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
 
@@ -32,7 +25,5 @@ public @interface DropdownCommonProperties {
                 BG_TOP_CORNER_ROUNDED,
                 BG_BOTTOM_CORNER_ROUNDED,
                 SHOW_DIVIDER,
-                TOP_MARGIN,
-                BOTTOM_MARGIN
             };
 }

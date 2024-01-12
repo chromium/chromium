@@ -335,7 +335,7 @@ EventMetrics::EventMetrics(const EventMetrics& other)
 EventMetrics::~EventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
   }
 }
 
@@ -558,7 +558,7 @@ ScrollEventMetrics::ScrollEventMetrics(const ScrollEventMetrics&) = default;
 ScrollEventMetrics::~ScrollEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
   }
 }
 
@@ -728,7 +728,7 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
 ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
   }
 }
 
@@ -822,7 +822,7 @@ PinchEventMetrics::PinchEventMetrics(const PinchEventMetrics&) = default;
 PinchEventMetrics::~PinchEventMetrics() {
   if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        this, base::TimeTicks::Now(), nullptr, nullptr);
+        this, base::TimeTicks::Now(), base::TimeDelta(), nullptr, nullptr);
   }
 }
 

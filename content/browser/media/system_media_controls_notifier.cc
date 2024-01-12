@@ -120,7 +120,7 @@ void SystemMediaControlsNotifier::MediaSessionInfoChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (metadata.has_value()) {
@@ -151,7 +151,7 @@ void SystemMediaControlsNotifier::MediaSessionActionsChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   if (!request_id.has_value()) {
     system_media_controls_->SetID(nullptr);
     return;
@@ -169,7 +169,7 @@ void SystemMediaControlsNotifier::MediaControllerImageChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (position) {
@@ -233,7 +233,7 @@ void SystemMediaControlsNotifier::DebounceSetIsSeekToEnabled(
       self->system_media_controls_->SetIsSeekToEnabled(
           *self->delayed_is_seek_to_enabled_);
 
-      self->delayed_is_seek_to_enabled_ = absl::nullopt;
+      self->delayed_is_seek_to_enabled_ = std::nullopt;
     };
 
     actions_update_timer_.Start(
@@ -260,7 +260,7 @@ void SystemMediaControlsNotifier::UpdateMetadata() {
 
   if (delayed_position_update_) {
     system_media_controls_->SetPosition(*delayed_position_update_);
-    delayed_position_update_ = absl::nullopt;
+    delayed_position_update_ = std::nullopt;
   }
 
   if (delayed_metadata_update_) {
@@ -294,12 +294,12 @@ void SystemMediaControlsNotifier::UpdateMetadata() {
     }
 
     system_media_controls_->UpdateDisplay();
-    delayed_metadata_update_ = absl::nullopt;
+    delayed_metadata_update_ = std::nullopt;
   }
 
   if (delayed_playback_status_) {
     system_media_controls_->SetPlaybackStatus(*delayed_playback_status_);
-    delayed_playback_status_ = absl::nullopt;
+    delayed_playback_status_ = std::nullopt;
   }
 }
 
@@ -325,7 +325,7 @@ void SystemMediaControlsNotifier::UpdateIcon() {
     // If no images are fetched in the fetch image algorithm, the user agent
     // may have fallback behavior such as displaying a default image as
     // artwork. We display the application icon if no artwork is provided.
-    absl::optional<gfx::ImageSkia> icon =
+    std::optional<gfx::ImageSkia> icon =
         GetContentClient()->browser()->GetProductLogo();
     if (icon.has_value()) {
       system_media_controls_->SetThumbnail(*icon->bitmap());
@@ -334,16 +334,16 @@ void SystemMediaControlsNotifier::UpdateIcon() {
     }
   }
 
-  delayed_icon_update_ = absl::nullopt;
+  delayed_icon_update_ = std::nullopt;
 }
 
 void SystemMediaControlsNotifier::ClearAllMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_update_timer_.Stop();
 
-  delayed_position_update_ = absl::nullopt;
-  delayed_metadata_update_ = absl::nullopt;
-  delayed_playback_status_ = absl::nullopt;
+  delayed_position_update_ = std::nullopt;
+  delayed_metadata_update_ = std::nullopt;
+  delayed_playback_status_ = std::nullopt;
 
   system_media_controls_->ClearMetadata();
 }

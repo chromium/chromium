@@ -620,7 +620,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordSafetyHubNotificationPermissionsModuleListCountHistogram(suggestions:
                                                                      number) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyHub.NotificationPermissionsModuleListCount',
+      'Settings.SafetyHub.NotificationPermissionsModule.ListCount',
       suggestions,
       99 /*max value for Notification Permissions suggestions*/,
     ]);
@@ -638,7 +638,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(suggestions:
                                                                    number) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyHub.UnusedSitePermissionsModuleListCount',
+      'Settings.SafetyHub.UnusedSitePermissionsModule.ListCount',
       suggestions,
       99 /*max value for Unused Site Permissions suggestions*/,
     ]);

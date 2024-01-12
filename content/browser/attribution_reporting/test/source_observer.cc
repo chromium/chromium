@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 
 namespace content {

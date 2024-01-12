@@ -11,6 +11,8 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {SeaPenQueryParams} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,8 +21,6 @@ import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personaliz
 import {isAmbientModeAllowed} from './load_time_booleans.js';
 import {logPersonalizationPathUMA} from './personalization_metrics_logger.js';
 import {getTemplate} from './personalization_router_element.html.js';
-import {isSeaPenEnabled} from './wallpaper/sea_pen/load_time_booleans.js';
-import {SeaPenQueryParams} from './wallpaper/sea_pen/sea_pen_router_element.js';
 import {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 
 export enum Paths {

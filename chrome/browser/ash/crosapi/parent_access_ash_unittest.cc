@@ -83,8 +83,7 @@ class ParentAccessAshTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<crosapi::mojom::ParentAccess> parent_access_remote_;
   std::unique_ptr<crosapi::ParentAccessAsh> parent_access_ash_;
-  raw_ptr<FakeParentAccessDialogProvider, DanglingUntriaged | ExperimentalAsh>
-      dialog_provider_;
+  raw_ptr<FakeParentAccessDialogProvider, DanglingUntriaged> dialog_provider_;
 };
 
 // Tests that the correct parameters were passed through to the dialog for

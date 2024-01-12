@@ -20,8 +20,9 @@ namespace sharing_hub {
 namespace {
 
 class UrlLabel : public views::Label {
+  METADATA_HEADER(UrlLabel, views::Label)
+
  public:
-  METADATA_HEADER(UrlLabel);
   UrlLabel(GURL url, int context, int style)
       : views::Label(base::UTF8ToUTF16(url.spec()), context, style), url_(url) {
     // Never use the elided URL for the accessible name or tooltip - both of
@@ -50,7 +51,7 @@ class UrlLabel : public views::Label {
   GURL url_;
 };
 
-BEGIN_METADATA(UrlLabel, views::Label)
+BEGIN_METADATA(UrlLabel)
 END_METADATA
 
 }  // namespace
@@ -111,7 +112,7 @@ PreviewView::PreviewView(share::ShareAttempt attempt) {
 
 PreviewView::~PreviewView() = default;
 
-BEGIN_METADATA(PreviewView, views::View)
+BEGIN_METADATA(PreviewView)
 END_METADATA
 
 }  // namespace sharing_hub

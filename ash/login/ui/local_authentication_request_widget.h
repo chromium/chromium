@@ -33,7 +33,14 @@ class ASH_EXPORT LocalAuthenticationRequestWidget {
     TestApi();
     ~TestApi();
 
+    // Returns nullptr if the dialog does not exists.
     static LocalAuthenticationRequestView* GetView();
+    // Returns false if the dialog does not exists or exists but not visible.
+    static bool IsVisible();
+    // Returns false if the dialog does not exists.
+    static bool CancelDialog();
+    // Returns false if the dialog does not exists.
+    static bool SubmitPassword(const std::string& password);
   };
 
   LocalAuthenticationRequestWidget(const LocalAuthenticationRequestWidget&) =

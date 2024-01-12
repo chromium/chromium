@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beginLoadRecentSeaPenImagesAction, beginSearchSeaPenThumbnailsAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadRecentSeaPenImagesAction, beginSearchSeaPenThumbnailsAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setThumbnailResponseStatusCodeAction} from 'chrome://personalization/js/personalization_app.js';
+import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -47,6 +48,7 @@ suite('SeaPen reducers', () => {
     assertDeepEquals(
         [
           beginSearchSeaPenThumbnailsAction(query),
+          setThumbnailResponseStatusCodeAction(MantaStatusCode.kOk),
           setSeaPenThumbnailsAction(query, seaPenProvider.images),
         ],
         personalizationStore.actions, 'expected actions match');
@@ -64,6 +66,24 @@ suite('SeaPen reducers', () => {
               },
               recentImageData: {},
               recentImages: null,
+              thumbnailResponseStatusCode: null,
+              thumbnails: null,
+              pendingSelected: null,
+              currentSelected: null,
+            }),
+          },
+          {
+            'wallpaper.seaPen': typeCheck<SeaPenState>({
+              loading: {
+                recentImageData: {},
+                recentImages: false,
+                thumbnails: true,
+                currentSelected: false,
+                setImage: 0,
+              },
+              recentImageData: {},
+              recentImages: null,
+              thumbnailResponseStatusCode: MantaStatusCode.kOk,
               thumbnails: null,
               pendingSelected: null,
               currentSelected: null,
@@ -80,6 +100,7 @@ suite('SeaPen reducers', () => {
               },
               recentImageData: {},
               recentImages: null,
+              thumbnailResponseStatusCode: MantaStatusCode.kOk,
               thumbnails: seaPenProvider.images,
               pendingSelected: null,
               currentSelected: null,

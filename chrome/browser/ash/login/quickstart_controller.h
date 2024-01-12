@@ -17,6 +17,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "google_apis/gaia/gaia_oauth_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -31,7 +32,8 @@ namespace ash::quick_start {
 class QuickStartController
     : public OobeUI::Observer,
       public TargetDeviceBootstrapController::Observer,
-      public bluetooth_config::mojom::SystemPropertiesObserver {
+      public bluetooth_config::mojom::SystemPropertiesObserver,
+      public gaia::GaiaOAuthClient::Delegate {
  public:
   // QuickStart flow entry point locations.
   enum class EntryPoint {
@@ -50,11 +52,13 @@ class QuickStartController
     CONNECTED,
     // TODO(b:283965994) - Replace with more appropriate state.
     CONTINUING_AFTER_ENROLLMENT_CHECKS,
+    SETUP_COMPLETE,
   };
 
   enum class AbortFlowReason {
     USER_CLICKED_BACK,
     USER_CLICKED_CANCEL,
+    ENTERPRISE_ENROLLMENT,
     QUICK_START_FLOW_COMPLETE,
     ERROR,
   };
@@ -65,7 +69,7 @@ class QuickStartController
     // UI State that is used for dictating what the QuickStartScreen should
     // show.
     enum class UiState {
-      LOADING,
+      CONNECTING_TO_PHONE,
       SHOWING_QR,
       SHOWING_PIN,
       CONNECTING_TO_WIFI,
@@ -74,6 +78,7 @@ class QuickStartController
       SIGNING_IN,
       // Same state as 'SIGNING_IN' but without the 'Cancel' button.
       CREATING_ACCOUNT,
+      SETUP_COMPLETE,
       // Exits the screen.
       EXIT_SCREEN,
     };
@@ -110,8 +115,8 @@ class QuickStartController
   void DetermineEntryPointVisibility(
       EntryPointButtonVisibilityCallback callback);
 
-  // Invoked by the frontend whenever the user cancels the flow, the flow
-  // completes, or we encounter an error.
+  // Invoked by the frontend whenever the user cancels the flow or proceeds with
+  // enterprise enrollment, the flow completes, or we encounter an error.
   void AbortFlow(AbortFlowReason reason);
 
   // Whether QuickStart is ongoing and orchestrating the flow.
@@ -176,6 +181,20 @@ class QuickStartController
                               OobeScreenId current_screen) override;
   void OnDestroyingOobeUI() override;
 
+  // gaia::GaiaOAuthClient::Delegate
+  // The methods below are used while exchanging the authorization code for the
+  // tokens and retrieving the obfuscated Gaia ID.
+  // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.
+  void OnOAuthError() override;
+  void OnNetworkError(int response_code) override;
+  void OnGetUserInfoResponse(const base::Value::Dict& user_info) override;
+  void OnGetTokensResponse(const std::string& refresh_token,
+                           const std::string& access_token,
+                           int expires_in_seconds) override;
+  void OnRefreshTokenResponse(const std::string& access_token,
+                              int expires_in_seconds) override;
+  // TODO(b/318664950) - Remove all methods above.
+
   // Activates the OobeUI::Observer
   void StartObservingScreenTransitions();
 
@@ -185,12 +204,18 @@ class QuickStartController
   // Starts transferring the user account from the phone.
   void StartAccountTransfer();
 
+  // Steps to take when all the account data has been exchanged with the phone.
+  void OnOAuthTokenReceived(TargetDeviceBootstrapController::GaiaCredentials);
+
   // Steps to take when the connection with the phone is fully established.
   // Either transfers WiFi credentials if early in the OOBE flow, or starts
   // to transfer the user's credentials.
   void OnPhoneConnectionEstablished();
 
   void SavePhoneInstanceID();
+
+  // Performs the final steps and triggers ChromeOS account creation flow.
+  void FinishAccountCreation();
 
   // Resets all internal values. Invoked when the flow is interrupted.
   void ResetState();
@@ -232,6 +257,13 @@ class QuickStartController
   // is shown. UI updates happen over this observation path.
   base::ObserverList<UiDelegate> ui_delegates_;
 
+  // Used for fetching the GaiaID using the retrieved auth code from the phone.
+  // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.
+  std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;
+
+  // Gaia credentials used for account creation.
+  TargetDeviceBootstrapController::GaiaCredentials gaia_creds_;
+
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       cros_bluetooth_config_remote_;
 
@@ -244,6 +276,9 @@ class QuickStartController
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const QuickStartController::UiState& ui_state);
 
 }  // namespace ash::quick_start
 

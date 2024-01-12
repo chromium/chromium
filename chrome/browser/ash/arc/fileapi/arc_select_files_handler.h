@@ -103,7 +103,7 @@ class ArcSelectFilesHandlersManager {
       mojom::FileSystemHost::SelectFilesCallback callback,
       mojom::SelectFilesResultPtr result);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Map of Task ID -> ArcSelectFilesHandler.
   std::map<int, std::unique_ptr<ArcSelectFilesHandler>> handlers_by_task_id_;
@@ -149,7 +149,7 @@ class ArcSelectFilesHandler : public ui::SelectFileDialog::Listener {
   void SetDialogHolderForTesting(
       std::unique_ptr<SelectFileDialogHolder> dialog_holder);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   mojom::FileSystemHost::SelectFilesCallback callback_;
   std::unique_ptr<SelectFileDialogHolder> dialog_holder_;

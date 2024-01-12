@@ -33,6 +33,7 @@
 #include "components/permissions/request_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "printing/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -125,6 +126,10 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
     case RequestType::kVrSession:
       return RequestTypeForUma::PERMISSION_VR;
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+    case RequestType::kWebPrinting:
+      return RequestTypeForUma::PERMISSION_WEB_PRINTING;
+#endif
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowManagement:
       return RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT;
@@ -196,6 +201,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "CapturedSurfaceControl";
     case RequestTypeForUma::PERMISSION_SMART_CARD:
       return "SmartCard";
+    case RequestTypeForUma::PERMISSION_WEB_PRINTING:
+      return "WebPrinting";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1239,6 +1246,10 @@ void PermissionUmaUtil::RecordPermissionAction(
       break;
     case ContentSettingsType::SMART_CARD_DATA:
       base::UmaHistogramEnumeration("Permissions.Action.SmartCard", action,
+                                    PermissionAction::NUM);
+      break;
+    case ContentSettingsType::WEB_PRINTING:
+      base::UmaHistogramEnumeration("Permissions.Action.WebPrinting", action,
                                     PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no

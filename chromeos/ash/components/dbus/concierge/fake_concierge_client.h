@@ -381,8 +381,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal);
 
-  const raw_ptr<FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
-      fake_cicerone_client_;
+  const raw_ptr<FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
 
   int wait_for_service_to_be_available_call_count_ = 0;
   int create_disk_image_call_count_ = 0;

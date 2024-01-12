@@ -6,10 +6,10 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 
 import {createChild} from '../../common/js/dom_utils.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
+import {FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
-import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-import {State} from '../../externs/ts/state.js';
+import type {State} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
 import type {DirectoryChangeEvent} from './directory_model.js';

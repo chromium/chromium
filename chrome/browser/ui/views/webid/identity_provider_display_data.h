@@ -16,7 +16,8 @@ struct IdentityProviderDisplayData {
       const content::IdentityProviderMetadata& idp_metadata,
       const content::ClientMetadata& client_metadata,
       const std::vector<content::IdentityRequestAccount>& accounts,
-      bool request_permission);
+      bool request_permission,
+      bool has_login_status_mismatch);
 
   IdentityProviderDisplayData(const IdentityProviderDisplayData& other);
 
@@ -27,6 +28,7 @@ struct IdentityProviderDisplayData {
   content::ClientMetadata client_metadata;
   std::vector<content::IdentityRequestAccount> accounts;
   bool request_permission;
+  bool has_login_status_mismatch;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_IDENTITY_PROVIDER_DISPLAY_DATA_H_

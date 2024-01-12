@@ -163,6 +163,8 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
 
+  // Only true when ApplyDisableSyncChanges() is running, false otherwise.
+  bool ongoing_apply_disable_sync_changes_ = false;
   const syncer::StorageType storage_type_for_uma_;
   const raw_ptr<base::Clock> clock_;
   raw_ptr<ReadingListModelImpl> model_ = nullptr;

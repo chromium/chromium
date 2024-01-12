@@ -361,6 +361,13 @@ static_library("test_support") {
     "sync_username_test_base.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "mock_password_credential_filler.cc",
+      "mock_password_credential_filler.h",
+    ]
+  }
+
   public_deps = [
     ":browser",
     ":hash_password_manager",

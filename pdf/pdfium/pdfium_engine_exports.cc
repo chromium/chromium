@@ -5,11 +5,12 @@
 #include "pdf/pdfium/pdfium_engine_exports.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -320,6 +321,13 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
     int page_index,
     const RenderingSettings& settings,
     void* bitmap_buffer) {
+  constexpr int kBgraImageColorChannels = 4;
+  base::CheckedNumeric<int> stride = kBgraImageColorChannels;
+  stride *= settings.bounds.width();
+  if (!stride.IsValid()) {
+    return false;
+  }
+
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
@@ -332,9 +340,9 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
   gfx::Rect dest;
   int rotate = CalculatePosition(page.get(), settings, &dest);
 
-  ScopedFPDFBitmap bitmap(FPDFBitmap_CreateEx(
-      settings.bounds.width(), settings.bounds.height(), FPDFBitmap_BGRA,
-      bitmap_buffer, settings.bounds.width() * 4));
+  ScopedFPDFBitmap bitmap(
+      FPDFBitmap_CreateEx(settings.bounds.width(), settings.bounds.height(),
+                          FPDFBitmap_BGRA, bitmap_buffer, stride.ValueOrDie()));
   // Clear the bitmap
   FPDFBitmap_FillRect(bitmap.get(), 0, 0, settings.bounds.width(),
                       settings.bounds.height(), 0xFFFFFFFF);

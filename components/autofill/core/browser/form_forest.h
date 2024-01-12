@@ -268,7 +268,7 @@ class FormForest {
     RendererForms& operator=(RendererForms&&);
     ~RendererForms();
     std::vector<FormData> renderer_forms;
-    std::vector<FieldGlobalId> safe_fields;
+    base::flat_set<FieldGlobalId> safe_fields;
   };
 
   // Returns the renderer forms of |browser_form| and the fields that are safe

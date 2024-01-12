@@ -49,8 +49,6 @@ namespace web_app {
 namespace {
 
 using testing::HasSubstr;
-using InstallabilityCheckResult =
-    CheckIsolatedWebAppBundleInstallabilityCommand::InstallabilityCheckResult;
 
 constexpr base::StringPiece kIconPath = "/icon.png";
 
@@ -120,7 +118,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
 
   void ScheduleCommand(
       const SignedWebBundleMetadata& bundle_metadata,
-      base::OnceCallback<void(InstallabilityCheckResult,
+      base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                               absl::optional<base::Version>)> callback) {
     fake_provider().scheduler().CheckIsolatedWebAppBundleInstallability(
         bundle_metadata, std::move(callback));
@@ -174,14 +172,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path()};
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kInstallable);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kInstallable);
   EXPECT_FALSE(installed_version.has_value());
 }
 
@@ -192,14 +190,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   AddMockIwaToRegistrar(url_info, base::Version("7.7.6"), location);
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kUpdatable);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kUpdatable);
   EXPECT_EQ(installed_version, base::Version("7.7.6"));
 }
 
@@ -210,14 +208,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   AddMockIwaToRegistrar(url_info, base::Version("7.7.7"), location);
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kOutdated);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kOutdated);
   EXPECT_EQ(installed_version, base::Version("7.7.7"));
 }
 
@@ -228,14 +226,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   AddMockIwaToRegistrar(url_info, base::Version("7.7.8"), location);
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kOutdated);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kOutdated);
   EXPECT_EQ(installed_version, base::Version("7.7.8"));
 }
 
@@ -259,14 +257,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
   AddMockIwaToRegistrar(url_info, base::Version("7.7.6"), location);
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kUpdatable);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kUpdatable);
   EXPECT_EQ(installed_version, base::Version("7.7.6"));
 }
 
@@ -277,14 +275,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
   AddMockIwaToRegistrar(url_info, base::Version("7.7.7"), location);
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kUpdatable);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kUpdatable);
   EXPECT_EQ(installed_version, base::Version("7.7.7"));
 }
 
@@ -295,14 +293,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
   AddMockIwaToRegistrar(url_info, base::Version("7.7.8"), location);
   SignedWebBundleMetadata metadata = GetBundleMetadata(url_info, location);
 
-  base::test::TestFuture<InstallabilityCheckResult,
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
                          absl::optional<base::Version>>
       command_future;
   ScheduleCommand(metadata, command_future.GetCallback());
-  InstallabilityCheckResult result = command_future.Get<0>();
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
   absl::optional<base::Version> installed_version = command_future.Get<1>();
 
-  EXPECT_EQ(result, InstallabilityCheckResult::kOutdated);
+  EXPECT_EQ(result, IsolatedInstallabilityCheckResult::kOutdated);
   EXPECT_EQ(installed_version, base::Version("7.7.8"));
 }
 

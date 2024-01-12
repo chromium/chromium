@@ -47,7 +47,8 @@ static_library("component_updater") {
     "//components/prefs",
     "//components/update_client",
     "//components/version_info",
-    "//third_party/boringssl:boringssl",
+    "//net",
+    "//third_party/boringssl",
     "//ui/base",
     "//url",
   ]
@@ -83,9 +84,10 @@ source_set("unit_tests") {
     "//components/crx_file",
     "//components/prefs:test_support",
     "//components/update_client:test_support",
+    "//net:test_support",
     "//services/service_manager/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/boringssl:boringssl",
+    "//third_party/boringssl",
   ]
 }

@@ -299,6 +299,11 @@ void Event::SetSkipped() {
   result_ = static_cast<EventResult>(result_ | ER_CONSUMED | ER_SKIPPED);
 }
 
+void Event::SetFlags(int flags) {
+  flags_ = flags;
+  OnFlagsUpdated();
+}
+
 std::string Event::ToString() const {
   return base::StrCat(
       {GetName(), " time_stamp=",
@@ -589,7 +594,7 @@ void MouseEvent::SetClickCount(int click_count) {
       f |= EF_IS_TRIPLE_CLICK;
       break;
   }
-  set_flags(f);
+  SetFlags(f);
 }
 
 std::string MouseEvent::ToString() const {
@@ -942,7 +947,7 @@ void KeyEvent::InitializeNative() {
   // Check if this is a key repeat. This must be called before initial flags
   // processing, e.g: NormalizeFlags(), to avoid issues like crbug.com/1069690.
   if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
-    set_flags(flags() | EF_IS_REPEAT);
+    SetFlags(flags() | EF_IS_REPEAT);
 
 #if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
@@ -950,11 +955,11 @@ void KeyEvent::InitializeNative() {
   // Only Windows has native character events.
   if (is_char_) {
     key_ = DomKey::FromCharacter(static_cast<int32_t>(native_event().wParam));
-    set_flags(PlatformKeyMap::ReplaceControlAndAltWithAltGraph(flags()));
+    SetFlags(PlatformKeyMap::ReplaceControlAndAltWithAltGraph(flags()));
   } else {
     int adjusted_flags = flags();
     key_ = PlatformKeyMap::DomKeyFromKeyboardCode(key_code(), &adjusted_flags);
-    set_flags(adjusted_flags);
+    SetFlags(adjusted_flags);
   }
 #endif
 }
@@ -1046,7 +1051,7 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
 
   if (is_repeat) {
     last->set_time_stamp(time_stamp());
-    last->set_flags(last->flags() | EF_IS_REPEAT);
+    last->SetFlags(last->flags() | EF_IS_REPEAT);
     return true;
   }
 
@@ -1074,6 +1079,10 @@ DomKey KeyEvent::GetDomKey() const {
   if (key_ == DomKey::NONE)
     ApplyLayout();
   return key_;
+}
+
+void KeyEvent::OnFlagsUpdated() {
+  key_ = DomKey::NONE;
 }
 
 char16_t KeyEvent::GetCharacter() const {
@@ -1154,9 +1163,9 @@ void KeyEvent::NormalizeFlags() {
       return;
   }
   if (type() == ET_KEY_PRESSED)
-    set_flags(flags() | mask);
+    SetFlags(flags() | mask);
   else
-    set_flags(flags() & ~mask);
+    SetFlags(flags() & ~mask);
 }
 
 std::string KeyEvent::ToString() const {

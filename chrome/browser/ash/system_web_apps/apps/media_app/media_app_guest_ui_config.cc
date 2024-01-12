@@ -17,7 +17,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -79,7 +78,6 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("colorThemes", true);
-  source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
   source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(

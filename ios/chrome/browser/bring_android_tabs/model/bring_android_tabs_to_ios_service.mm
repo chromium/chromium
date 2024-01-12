@@ -23,9 +23,9 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
-#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -54,21 +54,10 @@ void RecordPromptAttemptStatus(PromptAttemptStatus status) {
 // Returns true if the user is eligible for the Bring Android Tabs prompt. Logs
 // attempt status metric on UMA if the user is NOT eligible.
 bool UserEligibleForAndroidSwitcherPrompt() {
-  bool first_run = FirstRun::IsChromeFirstRun() ||
-                   experimental_flags::AlwaysDisplayFirstRun();
-  if (!first_run) {
-    // Check the time of first run.
-    std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
-    if (info.has_value()) {
-      base::Time first_run_time = info.value().creation_time;
-      bool first_run_over_7_days_ago =
-          base::Time::Now() - first_run_time > base::Days(7);
-      if (first_run_over_7_days_ago) {
-        return false;
-      }
-    }
+  if (IsFirstRunRecent(base::Days(7))) {
+    return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
   }
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  return false;
 }
 
 // Returns true if the user is segmented as an Android switcher, either by

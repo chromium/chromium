@@ -103,7 +103,7 @@ class DeviceEmulatorMessageHandler::BluetoothObserver
   void DeviceRemoved(const dbus::ObjectPath& object_path) override;
 
  private:
-  raw_ptr<DeviceEmulatorMessageHandler, ExperimentalAsh> owner_;
+  raw_ptr<DeviceEmulatorMessageHandler> owner_;
 };
 
 void DeviceEmulatorMessageHandler::BluetoothObserver::DeviceAdded(
@@ -153,7 +153,7 @@ class DeviceEmulatorMessageHandler::CrasAudioObserver
   }
 
  private:
-  raw_ptr<DeviceEmulatorMessageHandler, ExperimentalAsh> owner_;
+  raw_ptr<DeviceEmulatorMessageHandler> owner_;
 };
 
 class DeviceEmulatorMessageHandler::PowerObserver
@@ -173,7 +173,7 @@ class DeviceEmulatorMessageHandler::PowerObserver
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
  private:
-  raw_ptr<DeviceEmulatorMessageHandler, ExperimentalAsh> owner_;
+  raw_ptr<DeviceEmulatorMessageHandler> owner_;
 };
 
 void DeviceEmulatorMessageHandler::PowerObserver::PowerChanged(

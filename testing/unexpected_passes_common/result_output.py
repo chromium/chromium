@@ -12,11 +12,17 @@ import collections
 import logging
 import sys
 import tempfile
-from typing import Any, Dict, IO, List, Optional, OrderedDict, Set, Union
+from typing import Any, Dict, IO, List, Optional, OrderedDict, Set, Tuple, Union
 
 import six
 
 from unexpected_passes_common import data_types
+
+# Used for posting Monorail comments.
+from blinkpy.common.net import luci_auth
+from blinkpy.common.system import executive
+from blinkpy.common.system import system_host
+from blinkpy.w3c import monorail
 
 FULL_PASS = 'Fully passed in the following'
 PARTIAL_PASS = 'Partially passed in the following'
@@ -164,6 +170,11 @@ SECTION_UNUSED = ('Unused Expectations (Indicative Of The Configuration No '
 
 MAX_BUGS_PER_LINE = 5
 MAX_CHARACTERS_PER_CL_LINE = 72
+
+MONORAIL_COMMENT = ('The unexpected pass finder removed the last expectation '
+                    'associated with this bug. An associated CL should be '
+                    'landing shortly, after which this bug can be closed once '
+                    'a human confirms there is no more work to be done.')
 
 ElementType = Union[Dict[str, Any], List[str], str]
 # Sample:
@@ -566,7 +577,8 @@ def AddStatsToStr(s: str, stats: data_types.BuildStats) -> str:
 
 def OutputAffectedUrls(removed_urls: RemovedUrlsType,
                        orphaned_urls: Optional[RemovedUrlsType] = None,
-                       bug_file_handle: Optional[IO] = None) -> None:
+                       bug_file_handle: Optional[IO] = None,
+                       auto_close_bugs: bool = True) -> None:
   """Outputs URLs of affected expectations for easier consumption by the user.
 
   Outputs the following:
@@ -584,6 +596,9 @@ def OutputAffectedUrls(removed_urls: RemovedUrlsType,
         corresponding expectations.
     bug_file_handle: An optional open file-like object to write CL description
         bug information to. If not specified, will print to the terminal.
+    auto_close_bugs: A boolean specifying whether bugs in |orphaned_urls| should
+        be auto-closed on CL submission or not. If not closed, a comment will
+        be posted instead.
   """
   removed_urls = list(removed_urls)
   removed_urls.sort()
@@ -593,7 +608,8 @@ def OutputAffectedUrls(removed_urls: RemovedUrlsType,
   _OutputAffectedUrls(removed_urls, orphaned_urls)
   _OutputUrlsForClDescription(removed_urls,
                               orphaned_urls,
-                              file_handle=bug_file_handle)
+                              file_handle=bug_file_handle,
+                              auto_close_bugs=auto_close_bugs)
 
 
 def _OutputAffectedUrls(affected_urls: List[str],
@@ -637,7 +653,8 @@ def _OutputUrlsForCommandLine(urls: List[str],
 
 def _OutputUrlsForClDescription(affected_urls: List[str],
                                 orphaned_urls: List[str],
-                                file_handle: Optional[IO] = None) -> None:
+                                file_handle: Optional[IO] = None,
+                                auto_close_bugs: bool = True) -> None:
   """Outputs |urls| for use in a CL description.
 
   Output adheres to the line length recommendation and max number of bugs per
@@ -647,6 +664,9 @@ def _OutputUrlsForClDescription(affected_urls: List[str],
     affected_urls: A list of strings containing URLs to output.
     orphaned_urls: A list of strings containing URLs to output as closable.
     file_handle: A file handle to write the string to. Defaults to stdout.
+    auto_close_bugs: A boolean specifying whether bugs in |orphaned_urls| should
+        be auto-closed on CL submission or not. If not closed, a comment will
+        be posted instead.
   """
 
   def AddBugTypeToOutputString(urls, prefix):
@@ -690,6 +710,72 @@ def _OutputUrlsForClDescription(affected_urls: List[str],
   if affected_but_not_closable:
     output_str += AddBugTypeToOutputString(affected_but_not_closable, 'Bug:')
   if orphaned_urls:
-    output_str += AddBugTypeToOutputString(orphaned_urls, 'Fixed:')
+    if auto_close_bugs:
+      output_str += AddBugTypeToOutputString(orphaned_urls, 'Fixed:')
+    else:
+      output_str += AddBugTypeToOutputString(orphaned_urls, 'Bug:')
+      _PostCommentsToOrphanedBugs(orphaned_urls)
 
   file_handle.write('Affected bugs for CL description:\n%s' % output_str)
+
+
+def _PostCommentsToOrphanedBugs(orphaned_urls: List[str]) -> None:
+  """Posts comments to bugs in |orphaned_urls| saying they can likely be closed.
+
+  Does not post again if the comment has been posted before in the past.
+
+  Args:
+    orphaned_urls: A list of strings containing URLs to post comments to.
+  """
+
+  try:
+    monorail_api = _GetMonorailApi()
+  except executive.ScriptError as e:
+    logging.error(
+        'Encountered error when authenticating, cannot post comments. %s', e)
+    return
+
+  for url in orphaned_urls:
+    try:
+      project, issue = _ExtractMonorailInfoFromUrl(url)
+    except ValueError as e:
+      logging.warning('Unable to extract Monorail information from %s: %s', url,
+                      e)
+      continue
+
+    comment_list = monorail_api.get_comment_list(project, issue)
+    existing_comments = [c['content'] for c in comment_list['items']]
+    if MONORAIL_COMMENT not in existing_comments:
+      monorail_api.insert_comment(project, issue, MONORAIL_COMMENT)
+
+
+def _GetMonorailApi() -> monorail.MonorailAPI:
+  """Helper function to get a usable Monorail API."""
+  host = system_host.SystemHost()
+  auth = luci_auth.LuciAuth(host)
+  token = auth.get_access_token()
+  return monorail.MonorailAPI(access_token=token)
+
+
+def _ExtractMonorailInfoFromUrl(url: str) -> Tuple[str, int]:
+  """Extracts information for use with Monorail from a crbug URL.
+
+  Raises ValueError if parsing is not possible.
+
+  Args:
+    url: A crbug.com URL to parse.
+
+  Returns:
+    A tuple (project, issue). |project| is a string containing the Monorail
+    project, while |issue| is an int containing the issue ID/bug number.
+  """
+  if 'crbug.com/' not in url:
+    raise ValueError('Given URL does not appear to be a crbug URL')
+  identifier = url.split('crbug.com/', 1)[1]
+  if '/' in identifier:
+    project, _, issue = identifier.partition('/')
+    issue = int(issue)
+  else:
+    project = 'chromium'
+    issue = int(identifier)
+  return project, issue

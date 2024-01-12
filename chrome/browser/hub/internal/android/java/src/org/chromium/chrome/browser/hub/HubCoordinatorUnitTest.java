@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,7 +101,7 @@ public class HubCoordinatorUnitTest {
                         .registerPane(
                                 PaneId.INCOGNITO_TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
-        mPaneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+        mPaneManager = spy(new PaneManagerImpl(builder, mHubVisibilitySupplier));
 
         assertTrue(mPaneManager.focusPane(PaneId.TAB_SWITCHER));
         assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
@@ -279,5 +281,21 @@ public class HubCoordinatorUnitTest {
         // Exit Hub navigation.
         assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
         verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testFocusPane() {
+        reset(mPaneManager);
+        mHubCoordinator.focusPane(PaneId.TAB_SWITCHER);
+        verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+    }
+
+    @Test
+    @SmallTest
+    public void testSelectTabAndHideHub() {
+        int tabId = 5;
+        mHubCoordinator.selectTabAndHideHub(tabId);
+        verify(mHubLayoutController).selectTabAndHideHubLayout(tabId);
     }
 }

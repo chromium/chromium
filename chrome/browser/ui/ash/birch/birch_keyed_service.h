@@ -18,19 +18,7 @@ class Profile;
 
 namespace ash {
 
-struct BirchFileSuggestion {
-  BirchFileSuggestion(base::FilePath new_file_path,
-                      const absl::optional<base::Time> new_last_modified,
-                      const absl::optional<base::Time> new_last_accessed);
-  BirchFileSuggestion(BirchFileSuggestion&&);
-  BirchFileSuggestion(const BirchFileSuggestion&);
-  BirchFileSuggestion& operator=(const BirchFileSuggestion&);
-  ~BirchFileSuggestion();
-
-  base::FilePath file_path;
-  absl::optional<base::Time> last_modified;
-  absl::optional<base::Time> last_accessed;
-};
+struct BirchFileItem;
 
 // A keyed service which is used to manage data providers for the birch feature.
 // Fetched data will be sent to the `BirchModel` to be stored.
@@ -49,9 +37,9 @@ class BirchKeyedService : public KeyedService,
       const absl::optional<std::vector<FileSuggestData>>& suggest_results);
 
  private:
-  void OnFileInfoRetrieved(std::vector<BirchFileSuggestion> file_suggestions);
+  void OnFileInfoRetrieved(std::vector<BirchFileItem> file_items);
 
-  const raw_ptr<FileSuggestKeyedService, ExperimentalAsh> file_suggest_service_;
+  const raw_ptr<FileSuggestKeyedService> file_suggest_service_;
 
   base::ScopedObservation<FileSuggestKeyedService,
                           FileSuggestKeyedService::Observer>

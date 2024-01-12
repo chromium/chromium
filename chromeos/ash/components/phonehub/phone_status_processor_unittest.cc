@@ -246,7 +246,7 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
-  raw_ptr<TestDecoderDelegate, ExperimentalAsh> decoder_delegate_;
+  raw_ptr<TestDecoderDelegate> decoder_delegate_;
   TestingPrefServiceSimple pref_service_;
   AppStreamManager app_stream_manager_;
   AppStreamManagerObserver app_stream_manager_observer_;

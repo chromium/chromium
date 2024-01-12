@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -94,7 +94,7 @@ class MockAttributionManager : public AttributionManager {
 
   MOCK_METHOD(void,
               SetDebugMode,
-              (absl::optional<bool> enabled, base::OnceClosure done),
+              (std::optional<bool> enabled, base::OnceClosure done),
               (override));
 
   void AddObserver(AttributionObserver*) override;
@@ -106,14 +106,14 @@ class MockAttributionManager : public AttributionManager {
   void NotifySourceHandled(
       const StorableSource&,
       StorableSource::Result,
-      absl::optional<uint64_t> cleared_debug_key = absl::nullopt);
+      std::optional<uint64_t> cleared_debug_key = std::nullopt);
   void NotifyReportSent(const AttributionReport&,
                         bool is_debug_report,
                         const SendResult&);
   void NotifyTriggerHandled(
       const AttributionTrigger&,
       const CreateReportResult&,
-      absl::optional<uint64_t> cleared_debug_key = absl::nullopt);
+      std::optional<uint64_t> cleared_debug_key = std::nullopt);
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,
                              base::Time);

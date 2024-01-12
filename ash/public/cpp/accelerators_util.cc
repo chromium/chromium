@@ -15,6 +15,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -24,7 +25,11 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
+namespace ash {
+
 namespace {
+
+using KeyCodeLookupEntry = AcceleratorKeycodeLookupCache::KeyCodeLookupEntry;
 
 constexpr char kUnidentifiedKeyString[] = "Unidentified";
 
@@ -123,10 +128,18 @@ bool IsValidDomCode(ui::DomCode dom_code) {
 
 }  // namespace
 
-namespace ash {
+absl::optional<ash::KeyCodeLookupEntry> FindKeyCodeEntry(
+    ui::KeyboardCode key_code,
+    ui::DomCode original_dom_code,
+    bool remap_positional_key) {
+  absl::optional<ash::KeyCodeLookupEntry> cached_key_data =
+      ash::AcceleratorKeycodeLookupCache::Get()->Find(key_code,
+                                                      remap_positional_key);
+  // Cache hit, return immediately.
+  if (cached_key_data) {
+    return cached_key_data;
+  }
 
-std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
-                                  bool remap_positional_key) {
   ui::DomKey dom_key;
   ui::KeyboardCode key_code_to_compare = ui::VKEY_UNKNOWN;
   const ui::KeyboardLayoutEngine* layout_engine =
@@ -144,29 +157,30 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
   if (remap_positional_key &&
       ::features::IsImprovedKeyboardShortcutsEnabled()) {
     ui::DomCode dom_code =
-        ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
+        ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
+            key_code, original_dom_code);
     if (dom_code != ui::DomCode::NONE) {
+      std::u16string result;
       if (IsValidDomCode(dom_code) &&
           layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
                                 &key_code_to_compare)) {
-        if (dom_key.IsDeadKey()) {
-          return GetStringForDeadKey(dom_key);
-        }
         if (!dom_key.IsValid()) {
-          return std::u16string();
+          return absl::nullopt;
         }
-        return base::UTF8ToUTF16(
-            ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+        if (dom_key.IsDeadKey()) {
+          result = GetStringForDeadKey(dom_key);
+        } else {
+          result = base::UTF8ToUTF16(
+              ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+        }
       }
-      return std::u16string();
+      if (dom_key != ui::DomKey::UNIDENTIFIED) {
+        ash::AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(
+            key_code, /*remap_positional_key=*/remap_positional_key, dom_code,
+            dom_key, key_code_to_compare, result);
+      }
+      return KeyCodeLookupEntry{dom_code, dom_key, key_code_to_compare, result};
     }
-  }
-
-  const std::optional<std::u16string> cached_key_string =
-      AcceleratorKeycodeLookupCache::Get()->Find(key_code);
-  // Cache hit, return immediately.
-  if (cached_key_string.has_value()) {
-    return std::move(cached_key_string).value();
   }
 
   // Cache miss, get the key string and store it.
@@ -177,7 +191,7 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
       continue;
     }
 
-    if (!dom_key.IsValid() || dom_key.IsDeadKey()) {
+    if (!dom_key.IsValid() || dom_key == ui::DomKey::UNIDENTIFIED) {
       continue;
     }
 
@@ -188,24 +202,36 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
     const std::u16string key_string =
         base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
     if (dom_key != ui::DomKey::UNIDENTIFIED) {
-      AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(key_code,
-                                                           key_string);
+      AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(
+          key_code,
+          /*remap_positional_key=*/remap_positional_key, dom_code, dom_key,
+          key_code_to_compare, key_string);
     }
 
-    return key_string;
+    return ash::KeyCodeLookupEntry{dom_code, dom_key, key_code_to_compare,
+                                   key_string};
   }
-  return std::u16string();
+  return absl::nullopt;
 }
 
-std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
+std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
+                                  bool remap_positional_key) {
+  auto entry =
+      FindKeyCodeEntry(key_code, ui::DomCode::NONE, remap_positional_key);
+  return entry ? std::move(entry->key_display) : std::u16string();
+}
+
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code,
+                             bool remap_positional_key) {
   // If there's an entry for this key_code in our
   // map, return that entry's value.
   auto it = GetKeyDisplayMap().find(key_code);
   if (it != GetKeyDisplayMap().end()) {
     return it->second;
   } else {
-    const std::string converted_string =
-        base::UTF16ToUTF8(KeycodeToKeyString(key_code));
+    const std::u16string unconverted_string =
+        KeycodeToKeyString(key_code, remap_positional_key);
+    const std::string converted_string = base::UTF16ToUTF8(unconverted_string);
     // If `KeycodeToKeyString` fails to get a proper string, fallback to
     // the domcode string.
     if (converted_string == kUnidentifiedKeyString || converted_string == "") {
@@ -227,8 +253,7 @@ std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
       return base::UTF8ToUTF16(
           base::StringPrintf("Key %u", static_cast<unsigned int>(key_code)));
     }
-    // Otherwise, get the key_display from a util function.
-    return KeycodeToKeyString(key_code);
+    return unconverted_string;
   }
 }
 

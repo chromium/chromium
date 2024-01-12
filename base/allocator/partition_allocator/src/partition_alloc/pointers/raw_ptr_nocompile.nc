@@ -132,4 +132,18 @@ void CrossKindConversionFromDummy() {
   DanglingPtrB ptr_b2(std::move(ptr_b1));   // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeB, partition_alloc::internal::RawPtrTraits::kDummyForTest>::Traits | RawPtrTraits::kMayDangle)'}}
 }
 
+void CantStorePointerObtainedFromEphemeralRawAddr() {
+   int v = 123;
+   raw_ptr<int> ptr = &v;
+   int** wont_work = &ptr.AsEphemeralRawAddr();  // expected-error {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+   *wont_work = nullptr;
+}
+
+void CantStoreReferenceObtainedFromEphemeralRawAddr() {
+   int v = 123;
+   raw_ptr<int> ptr = &v;
+   int*& wont_work = ptr.AsEphemeralRawAddr();  // expected-error {{temporary bound to local reference 'wont_work' will be destroyed at the end of the full-expression}}
+   wont_work = nullptr;
+}
+
 }  // namespace

@@ -4,8 +4,9 @@
 
 #include "content/public/browser/tracing_delegate.h"
 
+#include <optional>
+
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -25,8 +26,8 @@ bool TracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 }
 
-absl::optional<base::Value::Dict> TracingDelegate::GenerateMetadataDict() {
-  return absl::nullopt;
+std::optional<base::Value::Dict> TracingDelegate::GenerateMetadataDict() {
+  return std::nullopt;
 }
 
 }  // namespace content

@@ -24,6 +24,7 @@ import androidx.test.filters.SmallTest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,9 +71,10 @@ public class Fido2CredentialRequestRobolectricTest {
     @Mock private RenderFrameHost mFrameHost;
     @Mock GURLUtils.Natives mGURLUtilsJniMock;
     @Mock Activity mActivity;
-    @Mock WebAuthnBrowserBridge mBrowserBridgeMock;
+    @Mock WebauthnBrowserBridge mBrowserBridgeMock;
     @Mock CredManHelper mCredManHelperMock;
     @Mock Barrier mBarrierMock;
+    @Mock WebauthnModeProvider mModeProviderMock;
 
     @Rule public JniMocker mMocker = new JniMocker();
 
@@ -96,6 +98,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 .thenReturn("https://subdomain.example.test:443");
 
         mFido2ApiCallHelper = new FakeFido2ApiCallHelper();
+        mFido2ApiCallHelper.setArePlayServicesAvailable(true);
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
@@ -104,7 +107,9 @@ public class Fido2CredentialRequestRobolectricTest {
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.REQUIRED;
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-
+        WebauthnModeProvider.setInstanceForTesting(mModeProviderMock);
+        Mockito.when(mModeProviderMock.getWebauthnMode())
+                .thenReturn(WebauthnModeProvider.WebauthnMode.CHROME);
         mRequest = new Fido2CredentialRequest(/* intentSender= */ null);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);
@@ -142,6 +147,11 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.setBarrierForTesting(mBarrierMock);
     }
 
+    @After
+    public void tearDown() {
+        WebauthnModeProvider.setInstanceForTesting(null);
+    }
+
     @Test
     @SmallTest
     public void testMakeCredential_credManEnabled() {
@@ -154,9 +164,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mFrameHost,
                 /* maybeClientDataHash= */ null,
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         verify(mCredManHelperMock, times(1))
                 .startMakeRequest(any(), any(), any(), any(), any(), any(), any());
@@ -179,9 +188,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* frameHost= */ null,
                 clientDataHash,
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         verify(mCredManHelperMock, times(0))
                 .startMakeRequest(any(), any(), any(), any(), any(), any(), any());
@@ -207,9 +215,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* frameHost= */ null,
                 clientDataHash,
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         verify(mCredManHelperMock, times(1))
                 .startMakeRequest(any(), any(), any(), any(), any(), any(), any());
@@ -230,9 +237,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* frameHost= */ null,
                 clientDataHash,
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         verify(mCredManHelperMock, times(0))
                 .startMakeRequest(any(), any(), any(), any(), any(), any(), any());
@@ -252,9 +258,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mFrameHost,
                 /* maybeClientDataHash= */ null,
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         verify(mCredManHelperMock, times(0))
@@ -275,9 +280,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mFrameHost,
                 /* maybeClientDataHash= */ null,
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         verifyNoInteractions(mCredManHelperMock);
@@ -297,9 +301,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* mFrameHost= */ null,
                 /* maybeClientDataHash= */ new byte[] {0},
                 mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onRegisterResponse,
+                mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         verifyNoInteractions(mCredManHelperMock);
@@ -320,7 +323,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock)
@@ -358,7 +361,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         ArgumentCaptor<Runnable> fido2ApiCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -403,7 +406,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verifyNoInteractions(mCredManHelperMock);
     }
@@ -430,7 +433,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -452,7 +455,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
-        mFido2ApiCallHelper.mCredentials.add(createWebAuthnCredential());
+        mFido2ApiCallHelper.mCredentials.add(createWebauthnCredential());
 
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
         mRequest.handleGetAssertionRequest(
@@ -464,7 +467,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verifyNoInteractions(mCredManHelperMock);
     }
@@ -486,7 +489,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -509,7 +512,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         ArgumentCaptor<Runnable> setNoCredentialsParamCaptor =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -556,7 +559,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -595,7 +598,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -618,7 +621,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
-        mFido2ApiCallHelper.mCredentials.add(createWebAuthnCredential());
+        mFido2ApiCallHelper.mCredentials.add(createWebauthnCredential());
 
         mRequest.handleGetAssertionRequest(
                 mActivity,
@@ -629,7 +632,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -662,7 +665,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -676,6 +679,62 @@ public class Fido2CredentialRequestRobolectricTest {
                         any(),
                         /* ignoreGpm= */ eq(true));
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_WebAuthnModeApp_GoesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+
+        Mockito.when(mModeProviderMock.getWebauthnMode())
+                .thenReturn(WebauthnModeProvider.WebauthnMode.APP);
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mRequest.handleGetAssertionRequest(
+                mActivity,
+                mRequestOptions,
+                /* frameHost= */ null,
+                clientDataHash,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        verifyNoInteractions(mCredManHelperMock);
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+        assertThat(mFido2ApiCallHelper.mClientDataHash).isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_WebAuthnModeApp_failsIfGmscoreNotAvailable() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+
+        Mockito.when(mModeProviderMock.getWebauthnMode())
+                .thenReturn(WebauthnModeProvider.WebauthnMode.APP);
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mFido2ApiCallHelper.setArePlayServicesAvailable(false);
+        Fido2CredentialRequest request = new Fido2CredentialRequest(/* intentSender= */ null);
+
+        request.handleGetAssertionRequest(
+                mActivity,
+                mRequestOptions,
+                /* frameHost= */ null,
+                clientDataHash,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        verifyNoInteractions(mCredManHelperMock);
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
     }
 
     @Test
@@ -694,7 +753,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock, times(1))
@@ -734,7 +793,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         ArgumentCaptor<Runnable> fido2ApiCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -761,6 +820,30 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testConditionalGetAssertion_webauthnModeNotChrome_notImplemented() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        mRequestOptions.isConditional = true;
+        Mockito.when(mModeProviderMock.getWebauthnMode())
+                .thenReturn(WebauthnModeProvider.WebauthnMode.APP);
+
+        mRequest.handleGetAssertionRequest(
+                mActivity,
+                mRequestOptions,
+                mFrameHost,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.NOT_IMPLEMENTED);
+        verifyNoInteractions(mCredManHelperMock);
+    }
+
+    @Test
+    @SmallTest
     public void
             testConditionalGetAssertion_credManEnabledRpCancelWhileIdleWithGpmInCredManFlag_notAllowedError() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
@@ -776,7 +859,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         mRequest.cancelConditionalGetAssertion(mFrameHost);
 
@@ -810,7 +893,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         ArgumentCaptor<Runnable> fido2ApiCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -852,7 +935,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                errorStatus -> mCallback.onError(errorStatus));
+                mCallback::onError);
 
         // The request should have requested RP ID validation.
         assertThat(rpIdValidationCallback[0]).isNotNull();
@@ -868,14 +951,14 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.ABORT_ERROR);
     }
 
-    private WebAuthnCredentialDetails createWebAuthnCredential() {
+    private WebauthnCredentialDetails createWebauthnCredential() {
         PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
         descriptor.type = 0;
         descriptor.id = new byte[] {1, 2, 3, 4};
         descriptor.transports = new int[] {0};
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
 
-        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+        WebauthnCredentialDetails details = new WebauthnCredentialDetails();
         details.mCredentialId = descriptor.id;
         return details;
     }
@@ -883,26 +966,32 @@ public class Fido2CredentialRequestRobolectricTest {
     static class FakeFido2ApiCallHelper extends Fido2ApiCallHelper {
         public boolean mMakeCredentialCalled;
         public boolean mGetAssertionCalled;
-        public List<WebAuthnCredentialDetails> mCredentials;
+        public List<WebauthnCredentialDetails> mCredentials;
         public Exception mCredentialsError;
         public byte[] mClientDataHash;
 
+        private boolean mArePlayServicesAvailable = true;
+
         @Override
         public boolean arePlayServicesAvailable() {
-            return true;
+            return mArePlayServicesAvailable;
+        }
+
+        public void setArePlayServicesAvailable(boolean arePlayServicesAvailable) {
+            mArePlayServicesAvailable = arePlayServicesAvailable;
         }
 
         @Override
         public void invokeFido2GetCredentials(
                 String relyingPartyId,
-                OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
+                OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
                 OnFailureListener failureCallback) {
             if (mCredentialsError != null) {
                 failureCallback.onFailure(mCredentialsError);
                 return;
             }
 
-            List<WebAuthnCredentialDetails> credentials;
+            List<WebauthnCredentialDetails> credentials;
             if (mCredentials == null) {
                 credentials = new ArrayList();
             } else {

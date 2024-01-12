@@ -93,6 +93,10 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // AppListControllerObserver:
   void OnAppListVisibilityChanged(bool shown, int64_t display_id) override;
 
+  // Sets the available width for the privacy toast view, so the privacy toast
+  // preferred size fits within `available_width` of available horizontal space.
+  void ConfigureLayoutForAvailableWidth(int available_width);
+
   AppListNudgeController* nudge_controller_for_test() const {
     return nudge_controller_;
   }
@@ -139,6 +143,10 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   void MaybeAnimateOutPrivacyNotice();
 
   const raw_ptr<AppListViewDelegate> view_delegate_;
+
+  // If set, the amount of horizontal space available for the continue section -
+  // used to configure layout for the continue section privacy notice toast.
+  absl::optional<int> available_width_;
 
   bool tablet_mode_ = false;
 

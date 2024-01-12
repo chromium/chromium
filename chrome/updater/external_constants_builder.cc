@@ -43,9 +43,9 @@ std::vector<std::string> StringVectorFromGURLVector(
 }  // namespace
 
 ExternalConstantsBuilder::~ExternalConstantsBuilder() {
-  LOG_IF(WARNING, !written_) << "An ExternalConstantsBuilder with "
-                             << overrides_.size() << " entries is being "
-                             << "discarded without being written to a file.";
+  LOG_IF(WARNING, !written_)
+      << "An ExternalConstantsBuilder with " << overrides_.size()
+      << " entries is being " << "discarded without being written to a file.";
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetUpdateURL(
@@ -213,11 +213,13 @@ bool ExternalConstantsBuilder::Modify() {
   scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
-  if (!verifier)
+  if (!verifier) {
     return Overwrite();
+  }
 
-  if (!overrides_.contains(kDevOverrideKeyUrl))
+  if (!overrides_.contains(kDevOverrideKeyUrl)) {
     SetUpdateURL(StringVectorFromGURLVector(verifier->UpdateURL()));
+  }
   if (!overrides_.contains(kDevOverrideKeyCrashUploadUrl)) {
     SetCrashUploadURL(verifier->CrashUploadURL().possibly_invalid_spec());
   }
@@ -225,18 +227,24 @@ bool ExternalConstantsBuilder::Modify() {
     SetDeviceManagementURL(
         verifier->DeviceManagementURL().possibly_invalid_spec());
   }
-  if (!overrides_.contains(kDevOverrideKeyUseCUP))
+  if (!overrides_.contains(kDevOverrideKeyUseCUP)) {
     SetUseCUP(verifier->UseCUP());
-  if (!overrides_.contains(kDevOverrideKeyInitialDelay))
+  }
+  if (!overrides_.contains(kDevOverrideKeyInitialDelay)) {
     SetInitialDelay(verifier->InitialDelay());
-  if (!overrides_.contains(kDevOverrideKeyServerKeepAliveSeconds))
+  }
+  if (!overrides_.contains(kDevOverrideKeyServerKeepAliveSeconds)) {
     SetServerKeepAliveTime(verifier->ServerKeepAliveTime());
-  if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat))
+  }
+  if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat)) {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
-  if (!overrides_.contains(kDevOverrideKeyGroupPolicies))
+  }
+  if (!overrides_.contains(kDevOverrideKeyGroupPolicies)) {
     SetGroupPolicies(verifier->GroupPolicies());
-  if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout))
+  }
+  if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout)) {
     SetOverinstallTimeout(verifier->OverinstallTimeout());
+  }
   if (!overrides_.contains(kDevOverrideKeyIdleCheckPeriodSeconds)) {
     SetIdleCheckPeriod(verifier->IdleCheckPeriod());
   }

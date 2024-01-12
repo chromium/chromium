@@ -32,35 +32,31 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
     ManifestWriteCallback write_callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive)
-    : WebAppCommandTemplate<AppLock>("ManifestUpdateFinalizeCommand"),
-      lock_description_(std::make_unique<AppLockDescription>(app_id)),
+    : WebAppCommand<AppLock,
+                    const GURL&,
+                    const webapps::AppId&,
+                    ManifestUpdateResult>(
+          "ManifestUpdateFinalizeCommand",
+          AppLockDescription(app_id),
+          std::move(write_callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(url, app_id, ManifestUpdateResult::kSystemShutdown)),
       url_(url),
       app_id_(app_id),
       install_info_(std::move(install_info)),
-      write_callback_(std::move(write_callback)),
       keep_alive_(std::move(keep_alive)),
       profile_keep_alive_(std::move(profile_keep_alive)) {
   CHECK(install_info_.manifest_id.is_valid());
   CHECK(install_info_.start_url.is_valid());
+  GetMutableDebugValue().Set("url", url_.spec());
+  GetMutableDebugValue().Set("app_id", app_id_);
+  GetMutableDebugValue().Set("install_info_.manifest_id",
+                             install_info_.manifest_id.spec());
+  GetMutableDebugValue().Set("install_info_.start_url",
+                             install_info_.start_url.spec());
 }
 
 ManifestUpdateFinalizeCommand::~ManifestUpdateFinalizeCommand() = default;
-
-const LockDescription& ManifestUpdateFinalizeCommand::lock_description() const {
-  return *lock_description_;
-}
-
-void ManifestUpdateFinalizeCommand::OnShutdown() {
-  CompleteCommand(webapps::InstallResultCode::kUpdateTaskFailed,
-                  ManifestUpdateResult::kAppUpdateFailed);
-}
-
-base::Value ManifestUpdateFinalizeCommand::ToDebugValue() const {
-  base::Value::Dict data = debug_log_.Clone();
-  data.Set("url", url_.spec());
-  data.Set("app_id", app_id_);
-  return base::Value(std::move(data));
-}
 
 void ManifestUpdateFinalizeCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
@@ -105,11 +101,11 @@ void ManifestUpdateFinalizeCommand::OnInstallationComplete(
 void ManifestUpdateFinalizeCommand::CompleteCommand(
     webapps::InstallResultCode code,
     ManifestUpdateResult result) {
-  debug_log_.Set("installation_code", base::ToString(code));
-  debug_log_.Set("result", base::ToString(result));
-  SignalCompletionAndSelfDestruct(
-      IsSuccess(code) ? CommandResult::kSuccess : CommandResult::kFailure,
-      base::BindOnce(std::move(write_callback_), url_, app_id_, result));
+  GetMutableDebugValue().Set("installation_code", base::ToString(code));
+  GetMutableDebugValue().Set("result", base::ToString(result));
+  CompleteAndSelfDestruct(
+      IsSuccess(code) ? CommandResult::kSuccess : CommandResult::kFailure, url_,
+      app_id_, result);
 }
 
 }  // namespace web_app

@@ -26,6 +26,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -126,9 +127,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   }
 
   void EnableSignin() {
+    auto account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
     identity_test_env_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("user@gmail.com",
-                                      signin::ConsentLevel::kSignin);
+        ->UpdateAccountInfoForAccount(account_info);
     identity_test_env_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
   }
@@ -584,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kTabOrganizationAllowed,
+  policies.Set(policy::key::kTabOrganizerSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
@@ -606,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Enable via the enterprise policy.
   policies.Set(
-      policy::key::kTabOrganizationAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kTabOrganizerSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -645,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    model_execution::prefs::ModelExecutionEnterprisePolicyValue::
@@ -660,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Enable via the enterprise policy.
   policies.Set(
-      policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -693,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kWallpaperSearchAllowed,
+  policies.Set(policy::key::kCreateThemesSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
@@ -709,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Enable via the enterprise policy.
   policies.Set(
-      policy::key::kWallpaperSearchAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kCreateThemesSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -736,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // EnableWithoutLogging via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kTabOrganizationAllowed,
+  policies.Set(policy::key::kTabOrganizerSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(

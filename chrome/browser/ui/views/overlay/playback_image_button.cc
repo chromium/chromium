@@ -75,5 +75,5 @@ void PlaybackImageButton::UpdateImageAndText() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(PlaybackImageButton, OverlayWindowImageButton)
+BEGIN_METADATA(PlaybackImageButton)
 END_METADATA

@@ -178,8 +178,7 @@ class FakeInputDevice {
   }
 
   media::AudioParameters audio_parameters_;
-  raw_ptr<media::AudioCapturerSource::CaptureCallback, ExperimentalAsh>
-      callback_;
+  raw_ptr<media::AudioCapturerSource::CaptureCallback> callback_;
   std::unique_ptr<media::AudioBlockFifo> audio_blocks_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_ =

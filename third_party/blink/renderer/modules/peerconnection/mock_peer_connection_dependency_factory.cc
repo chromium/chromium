@@ -11,7 +11,9 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/metronome/metronome.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 
 using webrtc::AudioSourceInterface;
 using webrtc::AudioTrackInterface;
@@ -26,6 +28,21 @@ using webrtc::VideoTrackSourceInterface;
 using webrtc::VideoTrackVector;
 
 namespace blink {
+
+namespace {
+// TODO(crbug.com/1502070): Migrate to webrtc::FakeMetronome once it's
+// exported.
+class FakeMetronome : public webrtc::Metronome {
+ public:
+  void RequestCallOnNextTick(absl::AnyInvocable<void() &&> callback) override {
+    std::move(callback)();
+  }
+  webrtc::TimeDelta TickPeriod() const override {
+    return webrtc::TimeDelta::Seconds(0);
+  }
+};
+
+}  // namespace
 
 template <class V>
 static typename V::iterator FindTrack(V* vector, const std::string& track_id) {
@@ -390,6 +407,11 @@ MockPeerConnectionDependencyFactory::GetWebRtcSignalingTaskRunner() {
 scoped_refptr<base::SingleThreadTaskRunner>
 MockPeerConnectionDependencyFactory::GetWebRtcNetworkTaskRunner() {
   return thread_.task_runner();
+}
+
+std::unique_ptr<webrtc::Metronome>
+MockPeerConnectionDependencyFactory::CreateDecodeMetronome() {
+  return std::make_unique<FakeMetronome>();
 }
 
 void MockPeerConnectionDependencyFactory::SetFailToCreateSessionDescription(

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <utility>
@@ -29,7 +28,9 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -110,12 +111,12 @@ gfx::RoundedCornersF GetRoundedCornersForTransformWindow(aura::Window* window,
                        /*upper_left=*/0,
                        /*upper_right=*/0, /*lower_right=*/0,
                        /*lower_left=*/
-                       kOverviewItemCornerRadius / scale)
+                       kWindowMiniViewCornerRadius / scale)
                  : gfx::RoundedCornersF(
                        /*upper_left=*/0,
                        /*upper_right=*/0,
                        /*lower_right=*/
-                       kOverviewItemCornerRadius / scale,
+                       kWindowMiniViewCornerRadius / scale,
                        /*lower_left=*/0);
     }
   }
@@ -123,8 +124,8 @@ gfx::RoundedCornersF GetRoundedCornersForTransformWindow(aura::Window* window,
   return gfx::RoundedCornersF(
       /*upper_left=*/0,
       /*upper_right=*/0,
-      /*lower_right=*/kOverviewItemCornerRadius / scale,
-      /*lower_left=*/kOverviewItemCornerRadius / scale);
+      /*lower_right=*/kWindowMiniViewCornerRadius / scale,
+      /*lower_left=*/kWindowMiniViewCornerRadius / scale);
 }
 
 }  // namespace

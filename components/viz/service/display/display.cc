@@ -87,7 +87,9 @@ const DrawQuad::Material kNonSplittableMaterials[] = {
     DrawQuad::Material::kYuvVideoContent,
 };
 
+#if !BUILDFLAG(IS_MAC)
 constexpr base::TimeDelta kAllowedDeltaFromFuture = base::Milliseconds(16);
+#endif
 
 // A lower bounds for GetEstimatedDisplayDrawTime, influenced by
 // Compositing.Display.DrawToSwapUs.
@@ -112,22 +114,33 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
   // before swap-time), then invalidate the feedback. Also report how far into
   // the future (or from the past) the timestamps are.
   // https://crbug.com/894440
-  const auto now = base::TimeTicks::Now();
+  //
   // The timestamp for the presentation feedback may have a different source and
   // therefore the timestamp can be slightly in the future in comparison with
   // base::TimeTicks::Now(). Such presentation feedbacks should not be rejected.
   // See https://crbug.com/1040178
   // Sometimes we snap the feedback's time stamp to the nearest vsync, and that
   // can be offset by one vsync-internal. These feedback has kVSync set.
+
+  // If the the presentation is from before the swap-time, then invalidate
+  // the feedback.
+  if (feedback.timestamp < draw_time) {
+    return gfx::PresentationFeedback::Failure();
+  }
+
+  // All |feedback.timestamp| on Mac are valid and should not be sanitized.
+#if !BUILDFLAG(IS_MAC)
+  const auto now = base::TimeTicks::Now();
   const auto allowed_delta_from_future =
       ((feedback.flags & (gfx::PresentationFeedback::kHWClock |
                           gfx::PresentationFeedback::kVSync)) != 0)
           ? kAllowedDeltaFromFuture
           : base::TimeDelta();
-  if ((feedback.timestamp > now + allowed_delta_from_future) ||
-      (feedback.timestamp < draw_time)) {
+  if (feedback.timestamp > now + allowed_delta_from_future) {
     return gfx::PresentationFeedback::Failure();
   }
+#endif
+
   return feedback;
 }
 

@@ -358,9 +358,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   chrome::ChainedBackNavigationTracker::CreateForWebContents(web_contents);
   chrome_browser_net::NetErrorTabHelper::CreateForWebContents(web_contents);
-#if BUILDFLAG(ENABLE_COMPOSE)
-  ChromeComposeClient::CreateForWebContents(web_contents);
-#endif
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
   CreateSubresourceFilterWebContentsHelper(web_contents);
@@ -623,8 +620,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  if ((ComposeEnabling::IsEnabledForProfile(profile)) &&
-      !profile->IsOffTheRecord()) {
+  // We need to create the ChromeComposeClient to listen for the feature
+  // being turned on, even if it is not enabled yet.
+  if (!profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
   }
 #endif

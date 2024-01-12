@@ -43,6 +43,7 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
                            const CSSParserContext* context,
                            CSSNestingType nesting_type,
                            StyleRule* parent_rule_for_nesting,
+                           bool is_within_scope,
                            StyleSheetContents* style_sheet);
 
   void Trace(blink::Visitor*) const;

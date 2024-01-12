@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Желите да затворите старе картице?</translation>
 <translation id="1215127405478249895">Прегледајте картице</translation>
 <translation id="125153950246128346">Додирните да бисте видели неку другу картицу</translation>
+<translation id="1326271443836399892">Прегледајте актуелна подешавања организовања.</translation>
 <translation id="1499635324672558517">Желите да затворите све картице без архивирања?</translation>
 <translation id="1657719826150349398">Преместите картицу надоле</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картица}one{<ph name="TABS_COUNT_MANY" /> картица}few{<ph name="TABS_COUNT_MANY" /> картице}other{<ph name="TABS_COUNT_MANY" /> картица}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Уклони из групе</translation>
 <translation id="3008554597174452548">Заустави праћење производа</translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> архивирану картицу}one{Имате <ph name="TABS_COUNT_MANY" /> архивирану картицу}few{Имате <ph name="TABS_COUNT_MANY" /> архивиране картице}other{Имате <ph name="TABS_COUNT_MANY" /> архивираних картица}}</translation>
 <translation id="3194464645767632461">оцена</translation>
 <translation id="3291470810748040983">Добићете обавештење када постоји нижа цена на отвореној картици</translation>
 <translation id="3328308545011660196">Предлог: Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Информације о овој продавници су затворене</translation>
 <translation id="9150694013019234766">Прелазите са једне картице на другу у групи картица у дну екрана</translation>
 <translation id="9169594135889675189">Додајте нову картицу у групу</translation>
+<translation id="955558140275419384">У овом уређивачу прегледајте све архивиране картице да бисте их организовали.</translation>
 <translation id="959682366969460160">Боља организација</translation>
 </translationbundle>

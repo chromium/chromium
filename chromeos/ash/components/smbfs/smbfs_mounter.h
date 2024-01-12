@@ -128,9 +128,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsMounter {
   const std::string share_path_;
   const std::string mount_dir_name_;
   const MountOptions options_;
-  const raw_ptr<SmbFsHost::Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
-      disk_mount_manager_;
+  const raw_ptr<SmbFsHost::Delegate> delegate_;
+  const raw_ptr<ash::disks::DiskMountManager> disk_mount_manager_;
   const base::UnguessableToken token_;
   const std::string mount_url_;
   bool mojo_fd_pending_ = false;

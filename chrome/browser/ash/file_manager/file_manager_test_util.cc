@@ -164,7 +164,7 @@ class VolumeWaiter : public VolumeManagerObserver {
   }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::RepeatingClosure on_mount_;
 };
 }  // namespace

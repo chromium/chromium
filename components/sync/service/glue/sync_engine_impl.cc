@@ -142,6 +142,10 @@ void SyncEngineImpl::Initialize(InitParams params) {
     prefs_->SetGaiaId(params.authenticated_account_info.gaia);
   }
 
+  // Clear host here to avoid holding a dangling pointer in case the task
+  // outlives the SyncEngineHost. It is safe to clear host here since because
+  // SyncEngineBackend doesn't actually need it.
+  params.host = nullptr;
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
                                 std::move(params),

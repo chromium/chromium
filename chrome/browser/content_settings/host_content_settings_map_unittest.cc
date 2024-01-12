@@ -102,25 +102,29 @@ class MockUserModifiableProvider
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 
-  MOCK_METHOD4(UpdateLastUsedTime,
+  MOCK_METHOD5(UpdateLastUsedTime,
                bool(const GURL& primary_url,
                     const GURL& secondary_url,
                     ContentSettingsType content_type,
-                    const base::Time time));
-  MOCK_METHOD3(UpdateLastVisitTime,
+                    const base::Time time,
+                    const content_settings::PartitionKey& partition_key));
+  MOCK_METHOD4(UpdateLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type));
-  MOCK_METHOD3(ResetLastVisitTime,
+                    ContentSettingsType content_type,
+                    const content_settings::PartitionKey& partition_key));
+  MOCK_METHOD4(ResetLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type));
-  MOCK_METHOD4(RenewContentSetting,
+                    ContentSettingsType content_type,
+                    const content_settings::PartitionKey& partition_key));
+  MOCK_METHOD5(RenewContentSetting,
                absl::optional<base::TimeDelta>(
                    const GURL& primary_url,
                    const GURL& secondary_url,
                    ContentSettingsType content_type,
-                   absl::optional<ContentSetting> setting_to_match));
+                   absl::optional<ContentSetting> setting_to_match,
+                   const content_settings::PartitionKey& partition_key));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };
@@ -142,6 +146,25 @@ class HostContentSettingsMapTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+};
+
+class IndexedHostContentSettingsMapTest
+    : public HostContentSettingsMapTest,
+      public ::testing::WithParamInterface<
+          /*kIndexedContentSettingsMap*/ bool> {
+ public:
+  IndexedHostContentSettingsMapTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          content_settings::features::kIndexedHostContentSettingsMap);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          content_settings::features::kIndexedHostContentSettingsMap);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Wrapper to TestingProfile to reduce test boilerplates, by keeping a fixed
@@ -207,7 +230,7 @@ class TesterForType {
   const char* policy_default_setting_;
 };
 
-TEST_F(HostContentSettingsMapTest, DefaultValues) {
+TEST_P(IndexedHostContentSettingsMapTest, DefaultValues) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -233,7 +256,7 @@ TEST_F(HostContentSettingsMapTest, DefaultValues) {
                 ContentSettingsType::POPUPS));
 }
 
-TEST_F(HostContentSettingsMapTest, IndividualSettings) {
+TEST_P(IndexedHostContentSettingsMapTest, IndividualSettings) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -291,7 +314,7 @@ TEST_F(HostContentSettingsMapTest, IndividualSettings) {
   EXPECT_EQ(1U, host_settings.size());
 }
 
-TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
+TEST_P(IndexedHostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   TestingProfile profile;
   GURL hosts[] = {GURL("https://example1.com/"), GURL("https://example2.com/")};
   HostContentSettingsMap* host_content_settings_map =
@@ -362,7 +385,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   }
 }
 
-TEST_F(HostContentSettingsMapTest, Clear) {
+TEST_P(IndexedHostContentSettingsMapTest, Clear) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -385,7 +408,7 @@ TEST_F(HostContentSettingsMapTest, Clear) {
   EXPECT_EQ(1U, host_settings.size());
 }
 
-TEST_F(HostContentSettingsMapTest, Patterns) {
+TEST_P(IndexedHostContentSettingsMapTest, Patterns) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -421,7 +444,7 @@ TEST_F(HostContentSettingsMapTest, Patterns) {
 }
 
 // Changing a setting for one origin doesn't affect subdomains.
-TEST_F(HostContentSettingsMapTest, Origins) {
+TEST_P(IndexedHostContentSettingsMapTest, Origins) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -452,7 +475,7 @@ TEST_F(HostContentSettingsMapTest, Origins) {
                 host4, host4, ContentSettingsType::COOKIES));
 }
 
-TEST_F(HostContentSettingsMapTest, Observer) {
+TEST_P(IndexedHostContentSettingsMapTest, Observer) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -485,7 +508,7 @@ TEST_F(HostContentSettingsMapTest, Observer) {
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(HostContentSettingsMapTest, ObserveDefaultPref) {
+TEST_P(IndexedHostContentSettingsMapTest, ObserveDefaultPref) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -515,7 +538,7 @@ TEST_F(HostContentSettingsMapTest, ObserveDefaultPref) {
                 host, host, ContentSettingsType::COOKIES));
 }
 
-TEST_F(HostContentSettingsMapTest, ObserveExceptionPref) {
+TEST_P(IndexedHostContentSettingsMapTest, ObserveExceptionPref) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -559,7 +582,7 @@ TEST_F(HostContentSettingsMapTest, ObserveExceptionPref) {
                 host, host, ContentSettingsType::COOKIES));
 }
 
-TEST_F(HostContentSettingsMapTest, HostTrimEndingDotCheck) {
+TEST_P(IndexedHostContentSettingsMapTest, HostTrimEndingDotCheck) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -645,7 +668,7 @@ TEST_F(HostContentSettingsMapTest, HostTrimEndingDotCheck) {
                 ContentSettingsType::AUTOPLAY));
 }
 
-TEST_F(HostContentSettingsMapTest, NestedSettings) {
+TEST_P(IndexedHostContentSettingsMapTest, NestedSettings) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -721,7 +744,7 @@ TEST_F(HostContentSettingsMapTest, NestedSettings) {
                 https_host2, https_host2, ContentSettingsType::COOKIES));
 }
 
-TEST_F(HostContentSettingsMapTest, TypeIsolatedSettings) {
+TEST_P(IndexedHostContentSettingsMapTest, TypeIsolatedSettings) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -738,7 +761,7 @@ TEST_F(HostContentSettingsMapTest, TypeIsolatedSettings) {
                 host, host, ContentSettingsType::GEOLOCATION));
 }
 
-TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoInheritInitialAllow) {
   // The cookie setting has an initial value of ALLOW, so all changes should be
   // inherited from regular to incognito mode.
   TestingProfile profile;
@@ -832,7 +855,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
   }
 }
 
-TEST_F(HostContentSettingsMapTest, IncognitoInheritPopups) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoInheritPopups) {
   // The popup setting has an initial value of BLOCK, but it is allowed
   // to inherit ALLOW settings because it doesn't provide access to user data.
   TestingProfile profile;
@@ -877,7 +900,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritPopups) {
       otr_map->GetContentSetting(host, host, ContentSettingsType::POPUPS));
 }
 
-TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoPartialInheritPref) {
   // Permissions marked INHERIT_IF_LESS_PERMISSIVE in
   // ContentSettingsRegistry only inherit BLOCK and ASK settings from regular
   // to incognito if the initial value is ASK.
@@ -960,7 +983,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
   }
 }
 
-TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritDefault) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoPartialInheritDefault) {
   // Permissions marked INHERIT_IF_LESS_PERMISSIVE in
   // ContentSettingsRegistry only inherit BLOCK and ASK settings from regular
   // to incognito if the initial value is ASK.
@@ -1018,7 +1041,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritDefault) {
       otr_map->GetContentSetting(host, host, ContentSettingsType::GEOLOCATION));
 }
 
-TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritSetting) {
   // Website settings marked DONT_INHERIT_IN_INCOGNITO in
   // WebsiteSettingsRegistry (e.g. usb chooser data) don't inherit any values
   // from from regular to incognito.
@@ -1061,7 +1084,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
   }
 }
 
-TEST_F(HostContentSettingsMapTest, PrefExceptionsOperation) {
+TEST_P(IndexedHostContentSettingsMapTest, PrefExceptionsOperation) {
   using content_settings::SETTING_SOURCE_POLICY;
   using content_settings::SETTING_SOURCE_USER;
 
@@ -1096,7 +1119,7 @@ TEST_F(HostContentSettingsMapTest, PrefExceptionsOperation) {
   EXPECT_EQ(SETTING_SOURCE_POLICY, tester.GetSettingSourceForURL(kUrl3));
 }
 
-TEST_F(HostContentSettingsMapTest, GetUserModifiableContentSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, GetUserModifiableContentSetting) {
   GURL url("http://user_exception_allow.com");
 
   TestingProfile profile;
@@ -1118,7 +1141,7 @@ TEST_F(HostContentSettingsMapTest, GetUserModifiableContentSetting) {
 
 // For a single Unicode encoded pattern, check if it gets converted to punycode
 // and old pattern gets deleted.
-TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
+TEST_P(IndexedHostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
   TestingProfile profile;
   PrefService* prefs = profile.GetPrefs();
 
@@ -1144,7 +1167,8 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
 // If both Unicode and its punycode pattern exist, make sure we don't touch the
 // settings for the punycode, and that Unicode pattern gets deleted.
-TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
+TEST_P(IndexedHostContentSettingsMapTest,
+       CanonicalizeExceptionsUnicodeAndPunycode) {
   TestingProfile profile;
 
   base::Value value =
@@ -1172,7 +1196,7 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
 
 // If a default-content-setting is managed, the managed value should be used
 // instead of the default value.
-TEST_F(HostContentSettingsMapTest, ManagedDefaultContentSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, ManagedDefaultContentSetting) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1214,7 +1238,7 @@ TEST_F(HostContentSettingsMapTest, ManagedDefaultContentSetting) {
                 ContentSettingsType::ADS));
 }
 
-TEST_F(HostContentSettingsMapTest,
+TEST_P(IndexedHostContentSettingsMapTest,
        GetNonDefaultContentSettingsIfTypeManaged) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
@@ -1245,7 +1269,7 @@ TEST_F(HostContentSettingsMapTest,
 
 // Managed default content setting should have higher priority
 // than user defined patterns.
-TEST_F(HostContentSettingsMapTest,
+TEST_P(IndexedHostContentSettingsMapTest,
        ManagedDefaultContentSettingIgnoreUserPattern) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
@@ -1287,7 +1311,7 @@ TEST_F(HostContentSettingsMapTest,
 
 // If a default-content-setting is set to managed setting, the user defined
 // setting should be preserved.
-TEST_F(HostContentSettingsMapTest, OverwrittenDefaultContentSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, OverwrittenDefaultContentSetting) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1318,7 +1342,8 @@ TEST_F(HostContentSettingsMapTest, OverwrittenDefaultContentSetting) {
 // If a setting for a default-content-setting-type is set while the type is
 // managed, then the new setting should be preserved and used after the
 // default-content-setting-type is not managed anymore.
-TEST_F(HostContentSettingsMapTest, SettingDefaultContentSettingsWhenManaged) {
+TEST_P(IndexedHostContentSettingsMapTest,
+       SettingDefaultContentSettingsWhenManaged) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1343,7 +1368,7 @@ TEST_F(HostContentSettingsMapTest, SettingDefaultContentSettingsWhenManaged) {
                 ContentSettingsType::COOKIES));
 }
 
-TEST_F(HostContentSettingsMapTest, GetContentSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, GetContentSetting) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1360,7 +1385,7 @@ TEST_F(HostContentSettingsMapTest, GetContentSetting) {
                 embedder, host, ContentSettingsType::COOKIES));
 }
 
-TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
+TEST_P(IndexedHostContentSettingsMapTest, AddContentSettingsObserver) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1384,7 +1409,7 @@ TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
 
 // Guest profiles do not exist on Android, so don't run these tests there.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(HostContentSettingsMapTest, GuestProfile) {
+TEST_P(IndexedHostContentSettingsMapTest, GuestProfile) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
   std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -1414,7 +1439,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
 
 // Default settings should not be modifiable for Guest profile (there is no UI
 // to do this).
-TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, GuestProfileDefaultSetting) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
   std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -1438,7 +1463,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-TEST_F(HostContentSettingsMapTest, InvalidPattern) {
+TEST_P(IndexedHostContentSettingsMapTest, InvalidPattern) {
   // This is a regression test for crbug.com/618529, which fixed a memory leak
   // when a website setting was set under a URL that mapped to an invalid
   // pattern.
@@ -1456,7 +1481,8 @@ TEST_F(HostContentSettingsMapTest, InvalidPattern) {
                                ContentSettingsType::APP_BANNER));
 }
 
-TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
+TEST_P(IndexedHostContentSettingsMapTest,
+       ClearSettingsForOneTypeWithPredicate) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1541,7 +1567,7 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
             host_settings[0].primary_pattern);
 }
 
-TEST_F(HostContentSettingsMapTest, ClearSettingsWithTimePredicate) {
+TEST_P(IndexedHostContentSettingsMapTest, ClearSettingsWithTimePredicate) {
   TestingProfile profile;
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
   base::Time now = base::Time::Now();
@@ -1613,7 +1639,7 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsWithTimePredicate) {
   EXPECT_EQ("*", host_settings[0].primary_pattern.ToString());
 }
 
-TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
+TEST_P(IndexedHostContentSettingsMapTest, GetSettingLastModified) {
   TestingProfile profile;
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
 
@@ -1645,7 +1671,7 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
   EXPECT_EQ(t, test_clock.Now());
 }
 
-TEST_F(HostContentSettingsMapTest, IsRestrictedToSecureOrigins) {
+TEST_P(IndexedHostContentSettingsMapTest, IsRestrictedToSecureOrigins) {
   TestingProfile profile;
   const auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
   EXPECT_TRUE(
@@ -1655,7 +1681,7 @@ TEST_F(HostContentSettingsMapTest, IsRestrictedToSecureOrigins) {
       map->IsRestrictedToSecureOrigins(ContentSettingsType::JAVASCRIPT));
 }
 
-TEST_F(HostContentSettingsMapTest, CanSetNarrowestSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, CanSetNarrowestSetting) {
   TestingProfile profile;
   const auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
 
@@ -1668,7 +1694,8 @@ TEST_F(HostContentSettingsMapTest, CanSetNarrowestSetting) {
                                                   ContentSettingsType::POPUPS));
 }
 
-TEST_F(HostContentSettingsMapTest, MigrateRequestingAndTopLevelOriginSettings) {
+TEST_P(IndexedHostContentSettingsMapTest,
+       MigrateRequestingAndTopLevelOriginSettings) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1726,7 +1753,7 @@ TEST_F(HostContentSettingsMapTest, MigrateRequestingAndTopLevelOriginSettings) {
             host_settings[1].secondary_pattern);
 }
 
-TEST_F(HostContentSettingsMapTest,
+TEST_P(IndexedHostContentSettingsMapTest,
        MigrateRequestingAndTopLevelOriginSettingsResetsEmbeddedSetting) {
   TestingProfile profile;
   HostContentSettingsMap* map =
@@ -1776,7 +1803,7 @@ void ReloadProviders(PrefService* pref_service,
       HostContentSettingsMap::PREF_PROVIDER);
 }
 
-TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
+TEST_P(IndexedHostContentSettingsMapTest, GetPatternsFromScopingType) {
   const GURL primary_url("http://a.b.example1.com:8080");
   const GURL secondary_url("http://a.b.example2.com:8080");
 
@@ -1956,7 +1983,7 @@ TEST_F(HostContentSettingsMapTest, GetPatternsForContentSettingsType) {
 
 // Tests if changing a settings in incognito mode does not affects the regular
 // mode.
-TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
   TestingProfile profile;
   auto* regular_map = HostContentSettingsMapFactory::GetForProfile(&profile);
   auto* incognito_map = HostContentSettingsMapFactory::GetForProfile(
@@ -2022,7 +2049,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
 
 // Validate that a content setting that uses a different scope/constraint can
 // co-exist with another setting
-TEST_F(HostContentSettingsMapTest, MixedScopeSettings) {
+TEST_P(IndexedHostContentSettingsMapTest, MixedScopeSettings) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -2082,7 +2109,8 @@ TEST_F(HostContentSettingsMapTest, MixedScopeSettings) {
 // We should act like no preference is specified if the value is
 // SessionModel::None; otherwise, only the preferences from the specified
 // scope should be returned (if any).
-TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithSessionModel) {
+TEST_P(IndexedHostContentSettingsMapTest,
+       GetSettingsForOneTypeWithSessionModel) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -2316,7 +2344,7 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
       GetParam() ? 2 : 0);
 }
 
-TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {
+TEST_P(IndexedHostContentSettingsMapTest, StorageAccessMetrics) {
   const ContentSettingsType type = ContentSettingsType::STORAGE_ACCESS;
   const GURL url1("https://example1.com");
   const GURL url2("https://example2.com");
@@ -2347,7 +2375,7 @@ TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {
   t.ExpectUniqueSample(base_histogram + ".MaxTopLevel", 4, 1);
 }
 
-TEST_F(HostContentSettingsMapTest, RenewContentSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, RenewContentSetting) {
   TestingProfile profile;
   const base::Time now = base::Time::Now();
   const base::Time plus_1_hour = now + base::Hours(1);
@@ -2374,7 +2402,7 @@ TEST_F(HostContentSettingsMapTest, RenewContentSetting) {
             absl::make_optional(base::Hours(1)));
 }
 
-TEST_F(HostContentSettingsMapTest, Increments3pcSettingsMetrics) {
+TEST_P(IndexedHostContentSettingsMapTest, Increments3pcSettingsMetrics) {
   TestingProfile profile;
   ContentSettingsPattern wildcard_pattern =
       ContentSettingsPattern::FromString("[*.]foo.com");
@@ -2409,7 +2437,7 @@ TEST_F(HostContentSettingsMapTest, Increments3pcSettingsMetrics) {
 }
 
 // Regression test for https://crbug.com/1497777.
-TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
   TestingProfile profile;
   GURL host("https://example.com/");
   auto type = ContentSettingsType::STORAGE_ACCESS;
@@ -2436,9 +2464,29 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
   EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
 }
 
+TEST_F(HostContentSettingsMapTest, ShutdownDuringExpirationAsanTest) {
+  TestingProfile profile;
+
+  auto host_content_settings_map = base::MakeRefCounted<HostContentSettingsMap>(
+      profile.GetPrefs(), false, true, true, true);
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+
+  base::TimeDelta ttl = base::Seconds(1);
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(ttl);
+
+  host_content_settings_map->SetContentSettingCustomScope(
+      pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW, constraints);
+
+  host_content_settings_map->ShutdownOnUIThread();
+  FastForwardTime(ttl);
+}
+
 // File access is not implemented on Android. Luckily we don't need it for DevTools.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(HostContentSettingsMapTest, DevToolsFileAccess) {
+TEST_P(IndexedHostContentSettingsMapTest, DevToolsFileAccess) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -2458,3 +2506,7 @@ TEST_F(HostContentSettingsMapTest, DevToolsFileAccess) {
                 ContentSettingsType::FILE_SYSTEM_WRITE_GUARD));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IndexedHostContentSettingsMapTest,
+    testing::Bool());

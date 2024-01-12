@@ -8,13 +8,14 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
+#include "content/public/browser/browser_message_filter.h"
 
 namespace content {
 class BrowserContext;

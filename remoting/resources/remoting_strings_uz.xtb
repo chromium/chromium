@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Mos kelmaydigan protokol versiyasi aniqlandi. Har ikkala kompyuterga dasturning so‘nggi versiyasini o‘rnatib, keyin qayta urinib ko‘ring.</translation>
 <translation id="1008557486741366299">Hozir emas</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Barcha huquqlar himoyalangan.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> qurilmasiga ulana olmadi</translation>
 <translation id="1450760146488584666">So‘ralgan obyekt mavjud emas.</translation>
 <translation id="1480046233931937785">Mualliflar</translation>
@@ -89,7 +88,6 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="4808503597364150972"><ph name="HOSTNAME" /> hosti uchun PIN-kod kiriting.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">PrtScn yuborish</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Barcha huquqlar himoyalangan.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> qurilmasiga ulanish uzilib qoldi</translation>
 <translation id="4985296110227979402">Avval kompyuterda masofaviy ruxsatni sozlang</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop URL manzillarni qurilmada ochish uchun brauzer topa olmaydi. Kerakli ilovani quyidagi roʻyxatdan tanlang.</translation>
@@ -154,6 +152,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="7693372326588366043">Hostlar ro‘yxatini yangilang</translation>
 <translation id="7714222945760997814">Bu muammo haqida xabar yuborish</translation>
 <translation id="7868137160098754906">Masofadagi kompyuterga ulanish uchun PIN-kod kiriting.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Barcha huquqlar himoyalangan.</translation>
 <translation id="7895403300744144251">Hisobingizdan aloqa o‘rnatish imkoniyati masofaviy kompyuterdagi xavfsizlik qoidalari tomonidan taqiqlangan.</translation>
 <translation id="7936528439960309876">O‘ngga qadash</translation>
 <translation id="7970576581263377361">Haqiqiylik tekshiruvida xatolik yuz berdi. Chromium hisobiga qaytadan kiring.</translation>
@@ -184,6 +183,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="8747048596626351634">Seans ishdan chiqdi yoki ishga tushirilishida xatolik yuz berdi. Agar ~/.chrome-remote-desktop-session seansi masofaviy kompyuterda bo‘lsa, ish stoli yoki oynalar menejeri asosiy jarayonda ishga tushganligini tekshiring.</translation>
 <translation id="8804164990146287819">Maxfiylik siyosati</translation>
 <translation id="8906511416443321782">Audioni yozib olish va uni Chrome Remote Desktop mijoziga uzatish uchun mikrofondan foydalanishga ruxsat berish.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Barcha huquqlar himoyalangan.</translation>
 <translation id="9111855907838866522">Siz masofaviy qurilmaga ulandingiz. Menyuni ochish uchun ekranga to‘rt barmoq bilan bosing.</translation>
 <translation id="9126115402994542723">Bu hostga ushbu qurilmadan ulanish vaqtida PIN-kod boshqa so‘ralmasin.</translation>
 <translation id="916856682307586697">Standart XSession seansini ishga tushirish</translation>

@@ -173,11 +173,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
                            ReceivedContentType type,
                            const SkBitmap& image);
 
-  raw_ptr<NotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NotificationDisplayService, DanglingUntriaged>
       notification_display_service_;
-  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_service_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<NearbySharingService> nearby_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<SettingsOpener> settings_opener_;
 
   // Maps notification ids to notification delegates.

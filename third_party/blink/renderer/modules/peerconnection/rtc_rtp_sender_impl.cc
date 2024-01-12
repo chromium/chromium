@@ -214,7 +214,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       if (webrtc_sender_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
         encoded_video_transformer_ =
             std::make_unique<RTCEncodedVideoStreamTransformer>(
-                main_task_runner_);
+                main_task_runner_, /*metronome=*/nullptr);
         webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
             encoded_video_transformer_->Delegate());
       }

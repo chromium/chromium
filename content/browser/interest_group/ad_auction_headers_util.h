@@ -7,6 +7,7 @@
 
 #include <functional>
 
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -87,13 +88,13 @@ CONTENT_EXPORT void ParseAdAuctionAdditionalBidResponseHeader(
 CONTENT_EXPORT void ProcessAdAuctionResponseHeaders(
     const url::Origin& request_origin,
     Page& page,
-    net::HttpResponseHeaders& headers);
+    scoped_refptr<net::HttpResponseHeaders> headers);
 
 // Removes the `Ad-Auction-Signals` and `Ad-Auction-Additional-Bid` response
 // headers from `headers`. Called when the request encountered a redirect or
 // error page.
 CONTENT_EXPORT void RemoveAdAuctionResponseHeaders(
-    net::HttpResponseHeaders& headers);
+    scoped_refptr<net::HttpResponseHeaders> headers);
 
 }  // namespace content
 

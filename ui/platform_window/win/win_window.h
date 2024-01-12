@@ -74,7 +74,6 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
   bool IsAnimatingClosed() const override;
-  bool IsTranslucentWindowOpacitySupported() const override;
 
   bool IsFullscreen() const;
 

@@ -11,36 +11,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "url/url_canon.h"
+#include "url/url_canon_icu_test_helpers.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_test_utils.h"
 
 namespace url {
 
 namespace {
-
-// Wrapper around a UConverter object that managers creation and destruction.
-class UConvScoper {
- public:
-  explicit UConvScoper(const char* charset_name) {
-    UErrorCode err = U_ZERO_ERROR;
-    converter_ = ucnv_open(charset_name, &err);
-    if (!converter_) {
-      LOG(ERROR) << "Failed to open charset " << charset_name << ": "
-                 << u_errorName(err);
-    }
-  }
-
-  ~UConvScoper() {
-    if (converter_)
-      ucnv_close(converter_.ExtractAsDangling());
-  }
-
-  // Returns the converter object, may be NULL.
-  UConverter* converter() const { return converter_; }
-
- private:
-  raw_ptr<UConverter> converter_;
-};
 
 TEST(URLCanonIcuTest, ICUCharsetConverter) {
   struct ICUCase {
@@ -61,7 +38,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
   };
 
   for (size_t i = 0; i < std::size(icu_cases); i++) {
-    UConvScoper conv(icu_cases[i].encoding);
+    test::UConvScoper conv(icu_cases[i].encoding);
     ASSERT_TRUE(conv.converter() != NULL);
     ICUCharsetConverter converter(conv.converter());
 
@@ -80,7 +57,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
   // Test string sizes around the resize boundary for the output to make sure
   // the converter resizes as needed.
   const int static_size = 16;
-  UConvScoper conv("utf-8");
+  test::UConvScoper conv("utf-8");
   ASSERT_TRUE(conv.converter());
   ICUCharsetConverter converter(conv.converter());
   for (int i = static_size - 2; i <= static_size + 2; i++) {
@@ -121,7 +98,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
   for (size_t i = 0; i < std::size(query_cases); i++) {
     Component out_comp;
 
-    UConvScoper conv(query_cases[i].encoding);
+    test::UConvScoper conv(query_cases[i].encoding);
     ASSERT_TRUE(!query_cases[i].encoding || conv.converter());
     ICUCharsetConverter converter(conv.converter());
 

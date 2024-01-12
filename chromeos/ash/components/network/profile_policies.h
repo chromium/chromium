@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     // Applies the runtime values.
     ChangeEffect ReapplyRuntimeValues();
 
-    raw_ptr<const ProfilePolicies, ExperimentalAsh> parent_;
+    raw_ptr<const ProfilePolicies> parent_;
 
     client_cert::ResolvedCert resolved_cert_ =
         client_cert::ResolvedCert::NotKnownYet();

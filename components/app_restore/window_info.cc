@@ -11,38 +11,37 @@ namespace app_restore {
 
 namespace {
 
-std::string ToPrefixedString(absl::optional<int32_t> val,
+std::string ToPrefixedString(std::optional<int32_t> val,
                              const std::string& prefix) {
-  return prefix + base::StringPrintf(": %d \n", val ? *val : -1);
+  return prefix + base::StringPrintf(": %d \n", val.value_or(-1));
 }
 
-std::string ToPrefixedString(absl::optional<gfx::Rect> val,
+std::string ToPrefixedString(std::optional<gfx::Rect> val,
                              const std::string& prefix) {
-  return prefix + ": " + (val ? *val : gfx::Rect()).ToString() + " \n";
+  return prefix + ": " + val.value_or(gfx::Rect()).ToString() + " \n";
 }
 
-std::string ToPrefixedString(absl::optional<chromeos::WindowStateType> val,
+std::string ToPrefixedString(std::optional<chromeos::WindowStateType> val,
                              const std::string& prefix) {
-  absl::optional<int> new_val =
-      val ? absl::make_optional(static_cast<int>(*val)) : absl::nullopt;
+  std::optional<int> new_val =
+      val ? std::make_optional(static_cast<int32_t>(*val)) : std::nullopt;
   return ToPrefixedString(new_val, prefix);
 }
 
-std::string ToPrefixedString(absl::optional<ui::WindowShowState> val,
+std::string ToPrefixedString(std::optional<ui::WindowShowState> val,
                              const std::string& prefix) {
-  absl::optional<int> new_val =
-      val ? absl::make_optional(static_cast<int>(*val)) : absl::nullopt;
+  std::optional<int> new_val =
+      val ? std::make_optional(static_cast<int32_t>(*val)) : std::nullopt;
   return ToPrefixedString(new_val, prefix);
 }
 
-std::string ToPrefixedString(absl::optional<std::u16string> val,
+std::string ToPrefixedString(std::optional<std::u16string> val,
                              const std::string& prefix) {
   return prefix + ": " + base::UTF16ToASCII(val.value_or(u""));
 }
 
 std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
-  return prefix + ": " +
-         (val.is_valid() ? val : base::Uuid()).AsLowercaseString() + " \n";
+  return prefix + ": " + val.AsLowercaseString() + " \n";
 }
 
 }  // namespace

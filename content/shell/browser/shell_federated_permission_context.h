@@ -67,7 +67,7 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
-      const absl::optional<std::string>& account_id) override;
+      const std::optional<std::string>& account_id) override;
   bool HasSharingPermission(
       const url::Origin& relying_party_requester) override;
   void GrantSharingPermission(const url::Origin& relying_party_requester,
@@ -78,7 +78,7 @@ class ShellFederatedPermissionContext
                                const url::Origin& relying_party_embedder,
                                const url::Origin& identity_provider,
                                const std::string& account_id) override;
-  absl::optional<bool> GetIdpSigninStatus(
+  std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
   void SetIdpSigninStatus(const url::Origin& idp_origin,
                           bool idp_signin_status) override;
@@ -102,7 +102,7 @@ class ShellFederatedPermissionContext
   std::set<std::tuple<std::string, std::string, std::string, std::string>>
       sharing_permissions_;
   // Map of <IDP, IDPSigninStatus>
-  std::map<std::string, absl::optional<bool>> idp_signin_status_;
+  std::map<std::string, std::optional<bool>> idp_signin_status_;
   // Pairs of <IDP, RP embedder>
   std::set<std::pair<std::string, std::string>> has_third_party_cookies_access_;
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {getODFSMetadataQueryEntry, isInteractiveVolume, isOneDrive, isRecentRootType} from '../../common/js/entry_utils.js';
+import {FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
@@ -134,7 +134,7 @@ export class EmptyFolderController {
     }
     // If the error is not NO_MODIFICATION_ALLOWED_ERR, return. This is
     // equivalent to the ACCESS_DENIED error thrown by ODFS.
-    if (event.detail.error.name !=
+    if (event.detail.error.name !==
         FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
       this.updateUi_();
       return;
@@ -284,7 +284,7 @@ export class EmptyFolderController {
       return;
     }
 
-    if (svgRef == ODFS_REAUTHENTICATION_REQUIRED) {
+    if (svgRef === ODFS_REAUTHENTICATION_REQUIRED) {
       this.showOdfsReauthenticationMessage_();
       return;
     }

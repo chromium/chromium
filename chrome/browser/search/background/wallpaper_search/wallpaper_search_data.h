@@ -11,7 +11,7 @@
 
 // Represents a history entry in wallpaper search.
 struct HistoryEntry {
-  HistoryEntry() = default;
+  HistoryEntry();
   explicit HistoryEntry(const base::Token& id);
   HistoryEntry(const HistoryEntry&);
   HistoryEntry(HistoryEntry&&);
@@ -19,8 +19,12 @@ struct HistoryEntry {
 
   HistoryEntry& operator=(const HistoryEntry&);
   HistoryEntry& operator=(HistoryEntry&&);
+  bool operator==(const HistoryEntry& rhs) const;
 
   base::Token id;
+  absl::optional<std::string> subject;
+  absl::optional<std::string> style;
+  absl::optional<std::string> mood;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_DATA_H_

@@ -43,8 +43,9 @@ class ParentPermissionInputSection;
 // asynchronously fetched).
 class ParentPermissionDialogView : public views::DialogDelegateView,
                                    public GaiaAuthConsumer {
+  METADATA_HEADER(ParentPermissionDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ParentPermissionDialogView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDialogViewIdForTesting);
 
   class Observer {

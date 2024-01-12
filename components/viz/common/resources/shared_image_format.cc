@@ -126,6 +126,8 @@ const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
       return "Y_UV";
     case SharedImageFormat::PlaneConfig::kY_UV_A:
       return "Y_UV_A";
+    case SharedImageFormat::PlaneConfig::kY_U_V_A:
+      return "Y_U_V_A";
   }
 }
 
@@ -200,6 +202,8 @@ int SharedImageFormat::NumberOfPlanes() const {
       return 2;
     case PlaneConfig::kY_UV_A:
       return 3;
+    case PlaneConfig::kY_U_V_A:
+      return 4;
   }
 }
 
@@ -297,12 +301,15 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
     return size;
   }
 
-  // Y plane is always size
+  // First plane is always Y plane and it is always size (not subsampled).
   if (plane_index == 0) {
     return size;
   }
   // A plane is always size
   if (plane_config() == PlaneConfig::kY_UV_A && plane_index == 2) {
+    return size;
+  }
+  if (plane_config() == PlaneConfig::kY_U_V_A && plane_index == 3) {
     return size;
   }
 
@@ -329,6 +336,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
   switch (plane_config()) {
     case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
+    case PlaneConfig::kY_U_V_A:
       return 1;
     case PlaneConfig::kY_UV:
       return plane_index == 1 ? 2 : 1;
@@ -406,6 +414,7 @@ bool SharedImageFormat::HasAlpha() const {
     case PlaneConfig::kY_UV:
       return false;
     case PlaneConfig::kY_UV_A:
+    case PlaneConfig::kY_U_V_A:
       return true;
   }
 }

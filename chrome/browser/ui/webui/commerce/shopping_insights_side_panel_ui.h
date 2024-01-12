@@ -42,6 +42,10 @@ class ShoppingInsightsSidePanelUI
       mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
           receiver);
 
+  static constexpr std::string GetWebUIName() {
+    return "ShoppingInsightsSidePanel";
+  }
+
  private:
   // shopping_list::mojom::ShoppingListHandlerFactory:
   void CreateShoppingListHandler(

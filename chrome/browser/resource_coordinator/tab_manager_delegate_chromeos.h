@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "components/memory_pressure/reclaim_target.h"
+#include "components/memory_pressure/unnecessary_discard_monitor.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
@@ -281,6 +282,8 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   // Sequences to check if the last tab event is handled.
   uint64_t tab_event_sequence_ = 0;
   uint64_t tab_report_sequence_ = 0;
+
+  memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
 
   // Weak pointer factory used for posting tasks to other threads.
   base::WeakPtrFactory<TabManagerDelegate> weak_ptr_factory_{this};

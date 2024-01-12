@@ -160,12 +160,9 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
  private:
   gfx::NativeWindow parent_window_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<SharesheetBubbleViewDelegate, DanglingUntriaged | ExperimentalAsh>
-      bubble_delegate_;
-  raw_ptr<SharesheetBubbleView, DanglingUntriaged | ExperimentalAsh>
-      sharesheet_bubble_view_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh>
-      sharesheet_widget_;
+  raw_ptr<SharesheetBubbleViewDelegate, DanglingUntriaged> bubble_delegate_;
+  raw_ptr<SharesheetBubbleView, DanglingUntriaged> sharesheet_bubble_view_;
+  raw_ptr<views::Widget, DanglingUntriaged> sharesheet_widget_;
 };
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {

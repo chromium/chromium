@@ -82,6 +82,16 @@ AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
   DCHECK(IsA<HTMLOptionElement>(*element));
 
   AXObject* ax_object = AXObjectCache().GetOrCreate(element, this);
+  CHECK(ax_object);
+  if (ChildrenNeedToUpdateCachedValues()) {
+    ax_object->InvalidateCachedValues();
+  }
+  // Update cached values preemptively, where we can control the
+  // notify_parent_of_ignored_changes parameter, so that we do not try to notify
+  // a parent of children changes (which would be redundant as we are already
+  // processing children changed on the parent).
+  ax_object->UpdateCachedAttributeValuesIfNeeded(
+      /*notify_parent_of_ignored_changes*/ false);
 
   return DynamicTo<AXMenuListOption>(ax_object);
 }
@@ -123,8 +133,7 @@ void AXMenuListPopup::AddChildren() {
     return;
 
   DCHECK(children_.empty());
-  DCHECK(children_dirty_);
-  children_dirty_ = false;
+  CHECK(NeedsToUpdateChildren());
 
   if (active_index_ == -1) {
     active_index_ = GetSelectedIndex();
@@ -138,6 +147,7 @@ void AXMenuListPopup::AddChildren() {
       children_.push_back(option);
     }
   }
+  SetNeedsToUpdateChildren(false);
 }
 
 void AXMenuListPopup::DidUpdateActiveOption(int option_index,

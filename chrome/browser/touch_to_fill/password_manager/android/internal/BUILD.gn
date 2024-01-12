@@ -36,6 +36,7 @@ android_library("java") {
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/signin/public/android:java_resources",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+
 import {XfBase} from '../../widgets/xf_base.js';
 
 /**
@@ -20,4 +23,12 @@ export async function waitForElementUpdate(element: HTMLElement):
   }
   // For others, wait for the next animation frame.
   return new Promise(resolve => window.requestAnimationFrame(() => resolve()));
+}
+
+/**
+ * Mock PluralStringProxy in the unit test.
+ */
+export function mockPluralStringProxy() {
+  const testPluralStringProxy = new TestPluralStringProxy();
+  PluralStringProxyImpl.setInstance(testPluralStringProxy);
 }

@@ -84,7 +84,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     bool use_fixed_aspect_ratio));
   // This is never called.
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
-  void ChangeTarget(const absl::optional<viz::VideoCaptureTarget>& target,
+  void ChangeTarget(const std::optional<viz::VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version) final {
     frame_sink_id_ = target ? target->frame_sink_id : viz::FrameSinkId();
     MockChangeTarget(frame_sink_id_, sub_capture_target_version);

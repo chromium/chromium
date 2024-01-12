@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 
@@ -38,7 +40,7 @@ std::vector<T> All() {
 }
 
 void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
-  auto isOldSection = [](mojom::Section section) {
+  std::erase_if(sections, [](mojom::Section section) {
     // TODO(b/292678609) Gradually add checks here to filter out old Sections
     // from the set of available Sections. An old Section can be filtered out
     // once it has been fully incorporated into the new revamp Section.
@@ -49,18 +51,11 @@ void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
            section == mojom::Section::kPrinting ||
            section == mojom::Section::kReset ||
            section == mojom::Section::kSearchAndAssistant;
-  };
-  sections.erase(std::remove_if(sections.begin(), sections.end(), isOldSection),
-                 sections.end());
+  });
 }
 
 void RemoveRevampSections(std::vector<mojom::Section>& sections) {
-  auto isRevampSection = [](mojom::Section section) {
-    return section == mojom::Section::kSystemPreferences;
-  };
-  sections.erase(
-      std::remove_if(sections.begin(), sections.end(), isRevampSection),
-      sections.end());
+  std::erase(sections, mojom::Section::kSystemPreferences);
 }
 
 }  // namespace

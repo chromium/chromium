@@ -374,17 +374,17 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // Invalidate pointers from and cancel all hypothetical in-flight requests
     // to the WaitOnceForEvents() routine.
     weak_ptr_factory_for_events_.InvalidateWeakPtrs();
-    weak_ptr_factory_for_frame_pool_.InvalidateWeakPtrs();
+    weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
     cancelable_task_tracker_.TryCancelAll();
 
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
     OUTPUT_queue_.reset();
     CAPTURE_queue_.reset();
-
-    framerate_control_ = std::make_unique<V4L2FrameRateControl>(
-        base::BindRepeating(&HandledIoctl, device_fd_.get()),
-        base::SequencedTaskRunner::GetCurrentDefault());
   }
+
+  framerate_control_ = std::make_unique<V4L2FrameRateControl>(
+      base::BindRepeating(&HandledIoctl, device_fd_.get()),
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   // At this point we initialize the |OUTPUT_queue_| only, following
   // instructions in e.g. [1]. The decoded video frames queue configuration
@@ -650,7 +650,7 @@ V4L2StatefulVideoDecoder::V4L2StatefulVideoDecoder(
                         std::move(task_runner),
                         std::move(client)),
       weak_ptr_factory_for_events_(this),
-      weak_ptr_factory_for_frame_pool_(this) {
+      weak_ptr_factory_for_CAPTURE_availability_(this) {
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
@@ -661,7 +661,7 @@ V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
   DVLOGF(1);
 
   weak_ptr_factory_for_events_.InvalidateWeakPtrs();
-  weak_ptr_factory_for_frame_pool_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();  // Not needed, but good explicit.
 
   if (wake_event_.is_valid()) {
@@ -973,9 +973,19 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
         // |wrapped_frame| is destroyed, allowing -maybe- for it to get back to
         // |CAPTURE_queue_|s free buffers.
         wrapped_frame->AddDestructionObserver(
-            base::BindPostTaskToCurrentDefault(
-                base::BindOnce([](scoped_refptr<V4L2ReadableBuffer> buffer) {},
-                               std::move(dequeued_buffer))));
+            base::BindPostTaskToCurrentDefault(base::BindOnce(
+                [](scoped_refptr<V4L2ReadableBuffer> buffer,
+                   base::WeakPtr<V4L2StatefulVideoDecoder> weak_this) {
+                  // See also TryAndEnqueueCAPTUREQueueBuffers(), V4L2Queue is
+                  // funny: We need to "enqueue" released buffers in the driver
+                  // in order to use them (otherwise they would stay as "free").
+                  if (weak_this) {
+                    weak_this->TryAndEnqueueCAPTUREQueueBuffers();
+                    weak_this->PrintAndTraceQueueStates(FROM_HERE);
+                  }
+                },
+                std::move(dequeued_buffer),
+                weak_ptr_factory_for_CAPTURE_availability_.GetWeakPtr())));
         CHECK(wrapped_frame);
         VLOGF(3) << wrapped_frame->AsHumanReadableString();
         output_cb_.Run(std::move(wrapped_frame));
@@ -1039,7 +1049,7 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
             base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
             base::BindOnce(
                 &V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers,
-                weak_ptr_factory_for_frame_pool_.GetWeakPtr())));
+                weak_ptr_factory_for_CAPTURE_availability_.GetWeakPtr())));
         return;
       }
       auto video_frame = client_->GetVideoFramePool()->GetFrame();

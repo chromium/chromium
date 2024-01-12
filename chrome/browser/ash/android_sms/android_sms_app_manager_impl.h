@@ -83,11 +83,10 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
                             bool success);
   void HandleAppSetupFinished();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AndroidSmsAppSetupController, ExperimentalAsh> setup_controller_;
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
-      app_list_syncable_service_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AndroidSmsAppSetupController> setup_controller_;
+  raw_ptr<app_list::AppListSyncableService> app_list_syncable_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // True if installation is in currently in progress.
   bool is_new_app_setup_in_progress_ = false;

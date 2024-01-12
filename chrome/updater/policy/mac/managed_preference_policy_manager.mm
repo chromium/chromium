@@ -19,10 +19,12 @@
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
 
-namespace updater {
+namespace {
+NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
+NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+}  // namespace
 
-static NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
-static NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+namespace updater {
 
 class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
@@ -130,8 +132,9 @@ ManagedPreferencePolicyManager::GetEffectivePolicyForAppUpdates(
     const std::string& app_id) const {
   // Check app-specific settings first.
   int update_policy = [impl_ appUpdatePolicy:base::SysUTF8ToNSString(app_id)];
-  if (update_policy != kPolicyNotSet)
+  if (update_policy != kPolicyNotSet) {
     return update_policy;
+  }
 
   // Then fallback to global-level policy if needed.
   update_policy = [impl_ defaultUpdatePolicy];
@@ -210,8 +213,9 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
       CFPreferencesCopyAppValue(
           base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
           base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite)));
-  if (!policies)
+  if (!policies) {
     return nil;
+  }
 
   if (!CFPreferencesAppValueIsForced(
           base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),

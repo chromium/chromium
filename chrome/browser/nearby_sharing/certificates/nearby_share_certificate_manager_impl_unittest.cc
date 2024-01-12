@@ -460,16 +460,14 @@ class NearbyShareCertificateManagerImplTest
     }
   }
 
-  raw_ptr<FakeNearbyShareCertificateStorage,
-          DanglingUntriaged | ExperimentalAsh>
-      cert_store_;
-  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeNearbyShareCertificateStorage, DanglingUntriaged> cert_store_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged>
       private_cert_exp_scheduler_;
-  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged>
       public_cert_exp_scheduler_;
-  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged>
       upload_scheduler_;
-  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged>
       download_scheduler_;
   bool is_bluetooth_adapter_present_ = true;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;

@@ -195,10 +195,12 @@ bool IsFetchLaterUseBackgroundSyncPermissionEnabled() {
 
 // Allows manually overriding the "send-on-enter-bfcache" behavior without
 // considering BackgroundSync permission.
-// Defaults to false to delegate the decision to BackgroundSync permission.
+// Defaults to true to flush on entering BackForwardCache.
+// See also
+// https://github.com/WICG/pending-beacon/issues/30#issuecomment-1333869614
 bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kFetchLaterAPI, "send_on_enter_bfcache", false);
+  return base::GetFieldTrialParamByFeatureAsBool(features::kFetchLaterAPI,
+                                                 "send_on_enter_bfcache", true);
 }
 
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
@@ -506,7 +508,6 @@ class FetchManager::Loader final
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
   TraceWrapperV8Reference<v8::Value> exception_;
   base::TimeTicks request_started_time_;
-  absl::optional<base::TimeTicks> detached_time_;
 };
 
 FetchManager::Loader::Loader(ExecutionContext* execution_context,
@@ -871,7 +872,6 @@ void FetchManager::Loader::Dispose() {
   fetch_manager_ = nullptr;
   if (threadable_loader_) {
     if (GetFetchRequestData()->Keepalive()) {
-      detached_time_ = base::TimeTicks::Now();
       threadable_loader_->Detach();
     } else {
       threadable_loader_->Cancel();
@@ -1204,36 +1204,17 @@ void FetchManager::Loader::LogIfKeepalive(
 
   base::UmaHistogramEnumeration("FetchKeepAlive.Renderer.Metrics", type);
 
-  auto now = base::TimeTicks::Now();
-  base::TimeDelta duration = now - request_started_time_;
-  absl::optional<base::TimeDelta> duration_after_detached =
-      detached_time_.has_value() ? absl::make_optional(now - *detached_time_)
-                                 : absl::nullopt;
+  base::TimeDelta duration = base::TimeTicks::Now() - request_started_time_;
   if (type == FetchKeepAliveRendererMetricType::kLoadingSuceeded ||
       type == FetchKeepAliveRendererMetricType::kLoadingFailed) {
     base::UmaHistogramMediumTimes("FetchKeepAlive.Renderer.Duration", duration);
-    if (duration_after_detached.has_value()) {
-      base::UmaHistogramMediumTimes(
-          "FetchKeepAlive.Renderer.DurationAfterDetached",
-          *duration_after_detached);
-    }
 
     if (type == FetchKeepAliveRendererMetricType::kLoadingSuceeded) {
       base::UmaHistogramMediumTimes(
           "FetchKeepAlive.Renderer.Duration.Succeeded", duration);
-      if (duration_after_detached.has_value()) {
-        base::UmaHistogramMediumTimes(
-            "FetchKeepAlive.Renderer.DurationAfterDetached.Succeeded",
-            *duration_after_detached);
-      }
     } else {
       base::UmaHistogramMediumTimes("FetchKeepAlive.Renderer.Duration.Failed",
                                     duration);
-      if (duration_after_detached.has_value()) {
-        base::UmaHistogramMediumTimes(
-            "FetchKeepAlive.Renderer.DurationAfterDetached.Failed",
-            *duration_after_detached);
-      }
     }
   }
 }

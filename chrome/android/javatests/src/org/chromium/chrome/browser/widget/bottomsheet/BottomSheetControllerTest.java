@@ -984,6 +984,29 @@ public class BottomSheetControllerTest {
 
     @Test
     @MediumTest
+    public void testReplaceLowPriorityContentWhileOpen() throws ExecutionException {
+        // Allow the content to be replaced without first closing the sheet.
+        mLowPriorityContent.setCanSuppressInAnyState(true);
+        requestContentInSheet(mLowPriorityContent, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetController.expandSheet();
+                    mTestSupport.endAllAnimations();
+                });
+
+        assertTrue("The sheet should be open.", mSheetController.isSheetOpen());
+
+        requestContentInSheet(mHighPriorityContent, true);
+
+        assertEquals(
+                "The high priority content should be shown.",
+                mHighPriorityContent,
+                mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @MediumTest
     public void testOpenTwiceWhileInQueue() {
         requestContentInSheet(mHighPriorityContent, true);
         expandSheet();

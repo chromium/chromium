@@ -19,8 +19,9 @@
 //  convenience class for the ReadAnythingToolbarView.
 //
 class ReadAnythingButtonView : public views::ImageButton {
+  METADATA_HEADER(ReadAnythingButtonView, views::ImageButton)
+
  public:
-  METADATA_HEADER(ReadAnythingButtonView);
   ReadAnythingButtonView(const views::ImageButton::PressedCallback callback,
                          const gfx::VectorIcon& icon,
                          int icon_size,

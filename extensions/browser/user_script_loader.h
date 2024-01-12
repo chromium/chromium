@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
@@ -57,7 +58,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   };
 
   // Parses the includes out of |script| and returns them in |includes|.
-  static bool ParseMetadataHeader(const std::string_view& script_text,
+  static bool ParseMetadataHeader(std::string_view script_text,
                                   UserScript* script);
 
   UserScriptLoader(content::BrowserContext* browser_context,

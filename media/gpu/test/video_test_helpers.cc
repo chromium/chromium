@@ -19,6 +19,7 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_frame_helpers.h"
+#include "media/media_buildflags.h"
 #include "media/parsers/vp8_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"

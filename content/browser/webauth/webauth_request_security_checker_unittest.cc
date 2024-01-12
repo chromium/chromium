@@ -30,7 +30,7 @@ namespace {
 blink::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
   return {blink::ParsedPermissionsPolicyDeclaration(
       blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
-      /*allowed_origins=*/{}, /*self_if_matches=*/absl::nullopt,
+      /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/true,
       /*matches_opaque_src=*/false)};
 }
@@ -40,7 +40,7 @@ blink::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
 blink::ParsedPermissionsPolicy CreatePolicyToDenyWebAuthn() {
   return {blink::ParsedPermissionsPolicyDeclaration(
       blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet,
-      /*allowed_origins=*/{}, /*self_if_matches=*/absl::nullopt,
+      /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false)};
 }
@@ -48,7 +48,7 @@ blink::ParsedPermissionsPolicy CreatePolicyToDenyWebAuthn() {
 blink::ParsedPermissionsPolicy CreatePolicyToAllowWebPayments() {
   return {blink::ParsedPermissionsPolicyDeclaration(
       blink::mojom::PermissionsPolicyFeature::kPayment, /*allowed_origins=*/{},
-      /*self_if_matches=*/absl::nullopt,
+      /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/true, /*matches_opaque_src=*/false)};
 }
 
@@ -335,7 +335,7 @@ class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
  protected:
   blink::mojom::AuthenticatorStatus Test(base::StringPiece caller_origin_str,
                                          base::StringPiece json) {
-    absl::optional<base::Value> parsed =
+    std::optional<base::Value> parsed =
         base::JSONReader::Read(json, base::JSON_PARSE_RFC);
     CHECK(parsed) << json;
 

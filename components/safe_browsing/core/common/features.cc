@@ -27,27 +27,11 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
 
 BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
              "AddWarningShownTSToClientSafeBrowsingReport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAntiPhishingTelemetry,
-             "AntiPhishingTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClientSideDetectionModelIsFlatBuffer,
-             "ClientSideDetectionModelIsFlatBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClientSideDetectionModelTag,
-             "ClientSideDetectionTag",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClientSideDetectionTypeForceRequest,
-             "ClientSideDetectionTypeForceRequest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
              "CreateWarningShownClientSafeBrowsingReports",
@@ -131,14 +115,6 @@ constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     /*default_value=*/
     "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
 
-BASE_FEATURE(kHashRealTimeOverOhttp,
-             "SafeBrowsingHashRealTimeOverOhttp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl{
-    &kHashRealTimeOverOhttp, "SafeBrowsingHashRealTimeOverOhttpRelayUrl",
-    /*default_value=*/""};
-
 BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -192,15 +168,6 @@ BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
-             "SafeBrowsingLookupMechanismExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
-    &kSafeBrowsingLookupMechanismExperiment,
-    "UrlLevelValidationForHprtExperimentEnabled",
-    /*default_value=*/true};
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
@@ -229,7 +196,13 @@ BASE_FEATURE(kSafeBrowsingSkipSubresources,
 
 BASE_FEATURE(kSafeBrowsingSkipSubresources2,
              "SafeBrowsingSkipSubResources2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSevenZipEvaluationEnabled,
              "SafeBrowsingSevenZipEvaluationEnabled",
@@ -315,10 +288,7 @@ constexpr struct {
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
     {&kAddWarningShownTSToClientSafeBrowsingReport, false},
-    {&kAntiPhishingTelemetry, false},
     {&kClientSideDetectionKillswitch, true},
-    {&kClientSideDetectionModelIsFlatBuffer, true},
-    {&kClientSideDetectionTypeForceRequest, true},
     {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
     {&kDownloadTailoredWarnings, true},
@@ -330,14 +300,12 @@ constexpr struct {
     {&kExtensionTelemetryTabsApiSignal, true},
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kHashPrefixRealTimeLookups, true},
-    {&kHashRealTimeOverOhttp, true},
     {&kImprovedDownloadPageWarnings, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
     {&kRedInterstitialFacelift, false},
     {&kSafeBrowsingAsyncRealTimeCheck, true},
-    {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSafeBrowsingSkipSubresources, true},
     {&kSafeBrowsingSkipSubresources2, true},
@@ -374,31 +342,10 @@ base::Value::List GetFeatureStatusList() {
   }
 
   // Manually add experimental features that we want param values for.
-  param_list.Append(base::GetFieldTrialParamValueByFeature(
-      safe_browsing::kClientSideDetectionModelTag,
-      kClientSideDetectionTagParamName));
-  param_list.Append(kClientSideDetectionModelTag.name);
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
-  param_list.Append(kHashRealTimeOverOhttpRelayUrl.Get());
-  param_list.Append(kHashRealTimeOverOhttpRelayUrl.name);
 
   return param_list;
-}
-
-std::string GetClientSideDetectionTag() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionModelTag)) {
-    return base::GetFieldTrialParamValueByFeature(
-        safe_browsing::kClientSideDetectionModelTag,
-        kClientSideDetectionTagParamName);
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  return "android_1";
-#else
-  return "desktop_1_flatbuffer";
-#endif
 }
 
 }  // namespace safe_browsing

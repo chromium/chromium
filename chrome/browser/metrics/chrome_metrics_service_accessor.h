@@ -17,9 +17,9 @@
 #include "ppapi/buildflags/buildflags.h"
 
 class BrowserProcessImpl;
+class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
-class ChromeProcessSingleton;
 class ChromeVariationsServiceClient;
 class HttpsFirstModeService;
 class NavigationMetricsRecorder;
@@ -105,6 +105,10 @@ namespace SearchEngineChoiceClientSideTrial {
 void RegisterSyntheticTrials();
 }
 
+namespace readaloud {
+class SyntheticTrial;
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -153,7 +157,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class segmentation_platform::FieldTrialRegisterImpl;
   friend class ChromeMetricsServiceClient;
   friend class ChromePasswordManagerClient;
-  friend class ChromeProcessSingleton;
   friend class NavigationMetricsRecorder;
   friend class ChromeBrowserMainExtraPartsGpu;
   friend class Browser;
@@ -167,7 +170,10 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
+  // Used to register synthetic trials for ongoing growth experiments.
+  friend class CampaignsManagerClientImpl;
   friend class tpcd::experiment::ExperimentManagerImpl;
+  friend class readaloud::SyntheticTrial;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;

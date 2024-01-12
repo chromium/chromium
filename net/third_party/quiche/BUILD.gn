@@ -36,7 +36,6 @@ config("quiche_internal_config") {
   if (is_clang) {
     cflags += [
       "-Wno-unused-private-field",
-      "-Wno-shadow",
       "-Wno-sign-compare",
     ]
   }
@@ -676,9 +675,6 @@ source_set("quiche_tests") {
     "src/quiche/spdy/core/spdy_alt_svc_wire_format_test.cc",
     "src/quiche/spdy/core/spdy_frame_builder_test.cc",
     "src/quiche/spdy/core/spdy_framer_test.cc",
-    "src/quiche/spdy/core/spdy_intrusive_list_test.cc",
-    "src/quiche/spdy/core/spdy_pinnable_buffer_piece_test.cc",
-    "src/quiche/spdy/core/spdy_prefixed_buffer_reader_test.cc",
     "src/quiche/spdy/core/spdy_protocol_test.cc",
   ]
 
@@ -858,17 +854,11 @@ proto_library("blind_sign_auth_proto") {
 
   proto_in_dir = "src"
 
-  deps = [
-    "//base"
-  ]
+  deps = [ "//base" ]
 
-  proto_deps = [
-    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
-  ]
+  proto_deps = [ "//third_party/anonymous_tokens:anonymous_tokens_cc_proto" ]
 
-  proto_data_sources = [
-    "//third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.proto",
-  ]
+  proto_data_sources = [ "//third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.proto" ]
 
   import_dirs = [ "//third_party/anonymous_tokens/src/" ]
 

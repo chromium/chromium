@@ -55,10 +55,9 @@ public class IphMessageService extends MessageService {
         }
     }
 
-    IphMessageService(TabSwitcherIphController controller) {
+    IphMessageService(Profile profile, TabSwitcherIphController controller) {
         super(MessageType.IPH);
         mIphController = controller;
-        Profile profile = Profile.getLastUsedRegularProfile().getOriginalProfile();
         mTracker = TrackerFactory.getTrackerForProfile(profile);
     }
 

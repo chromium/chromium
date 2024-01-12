@@ -144,9 +144,9 @@ class optional_ref {
   // Constructs a `optional_ref<const T>` from a `optional_ref<T>`. Conversions
   // in the reverse direction are disallowed.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(optional_ref<std::remove_const_t<T>> rhs)
+  template <typename U = std::remove_const<T>>
     requires(std::is_const_v<T>)
-      : ptr_(rhs.as_ptr()) {}
+  constexpr optional_ref(optional_ref<U> rhs) : ptr_(rhs.as_ptr()) {}
 
   // Copy construction is allowed to make it possible to pass `optional_ref`s to
   // another call. However, assignment is disallowed, as it makes it easy to

@@ -62,8 +62,7 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const std::optional<std::string>& id);
 
-  raw_ptr<ArcGhostWindowView, DanglingUntriaged | ExperimentalAsh>
-      view_observer_ = nullptr;
+  raw_ptr<ArcGhostWindowView, DanglingUntriaged> view_observer_ = nullptr;
   std::optional<std::string> app_id_;
 
   std::unique_ptr<exo::Surface> controller_surface_;

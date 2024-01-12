@@ -43,8 +43,7 @@ GetActions::GetActions(RequestDispatcher* dispatcher,
       entry_paths_(entry_paths),
       callback_(std::move(callback)) {}
 
-GetActions::~GetActions() {
-}
+GetActions::~GetActions() = default;
 
 bool GetActions::Execute(int request_id) {
   using extensions::api::file_system_provider::GetActionsRequestedOptions;

@@ -94,8 +94,9 @@ size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
       [&](const auto& app_command_runner) {
         base::Process process;
         if (FAILED(app_command_runner.Run(
-                {base::SysUTF8ToWide(os_upgrade_string_)}, process)))
+                {base::SysUTF8ToWide(os_upgrade_string_)}, process))) {
           return;
+        }
 
         VLOG(1) << "Successfully launched OS upgrade task with PID: "
                 << process.Pid() << ": " << os_upgrade_string_;
@@ -116,8 +117,9 @@ bool AutoRunOnOsUpgradeTask::HasOSUpgraded() {
     return false;
   }
 
-  if (!CompareOSVersions(previous_os_version.value(), VER_GREATER))
+  if (!CompareOSVersions(previous_os_version.value(), VER_GREATER)) {
     return false;
+  }
 
   if (const std::optional<OSVERSIONINFOEX> current_os_version = GetOSVersion();
       current_os_version) {

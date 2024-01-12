@@ -123,6 +123,7 @@ export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-ic
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+export {AppLanguageSelectionDialogEntryPoint} from './common/app_language_selection_dialog/app_language_selection_dialog.js';
 export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './common/app_management/actions.js';
 export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './common/app_management/browser_proxy.js';
 export {reduceAction, updateApps} from './common/app_management/reducers.js';
@@ -227,6 +228,7 @@ export {PrivacyHubSensorSubpageUserAction} from './os_privacy_page/privacy_hub_m
 export {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';
+export {SettingsSearchEngineElement} from './os_search_page/search_engine.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsMenuItemElement} from './os_settings_menu/menu_item.js';

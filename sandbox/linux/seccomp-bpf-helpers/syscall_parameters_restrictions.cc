@@ -431,9 +431,13 @@ ResultExpr RestrictClockID() {
 #define GRND_NONBLOCK 1
 #endif
 
+#if !defined(GRND_INSECURE)
+#define GRND_INSECURE 4
+#endif
+
 ResultExpr RestrictGetRandom() {
   const Arg<unsigned int> flags(2);
-  const unsigned int kGoodFlags = GRND_NONBLOCK;
+  const unsigned int kGoodFlags = GRND_NONBLOCK | GRND_INSECURE;
   return If((flags & ~kGoodFlags) == 0, Allow()).Else(CrashSIGSYS());
 }
 

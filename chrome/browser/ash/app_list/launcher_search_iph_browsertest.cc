@@ -629,19 +629,16 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
 
-// The bool param indicates if the kIPHLauncherSearchHelpUiFeature feature is
-// enabled or not.
-class AppListIphBrowserTestAssistantZeroState : public AppListIphBrowserTest {
+class AppListIphBrowserTestAssistantZeroState
+    : public AppListIphBrowserTestWithTestConfig {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        feature_engagement::kIPHLauncherSearchHelpUiFeature);
+  void SetUpOnMainThread() override {
+    AppListIphBrowserTestWithTestConfig::SetUpOnMainThread();
 
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    // Record the click event so that this test suite only tests the
+    // AssistantPageView behaviors.
+    tracker_->NotifyEvent("IPH_LauncherSearchHelpUi_assistant_click");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest, NoAssistantZeroStateIphFlagOff) {

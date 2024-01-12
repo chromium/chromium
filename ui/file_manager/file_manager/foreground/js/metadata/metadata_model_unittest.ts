@@ -4,7 +4,7 @@
 
 import {assertEquals, assertThrows} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 
 import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';

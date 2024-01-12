@@ -22,9 +22,9 @@ class BrowserCaptionButtonContainer;
 
 class BrowserFrameViewWin : public BrowserNonClientFrameView,
                             public TabIconViewModel {
- public:
-  METADATA_HEADER(BrowserFrameViewWin);
+  METADATA_HEADER(BrowserFrameViewWin, BrowserNonClientFrameView)
 
+ public:
   // Constructs a non-client view for an BrowserFrame.
   BrowserFrameViewWin(BrowserFrame* frame, BrowserView* browser_view);
   BrowserFrameViewWin(const BrowserFrameViewWin&) = delete;

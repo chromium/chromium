@@ -12,7 +12,7 @@ namespace base {
 class FilePath;
 class TimeDelta;
 class Version;
-}
+}  // namespace base
 
 namespace updater {
 

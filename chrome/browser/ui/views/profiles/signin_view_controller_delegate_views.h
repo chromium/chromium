@@ -46,9 +46,9 @@ class SigninViewControllerDelegateViews
       public SigninViewControllerDelegate,
       public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate {
- public:
-  METADATA_HEADER(SigninViewControllerDelegateViews);
+  METADATA_HEADER(SigninViewControllerDelegateViews, views::DialogDelegateView)
 
+ public:
   SigninViewControllerDelegateViews(const SigninViewControllerDelegateViews&) =
       delete;
   SigninViewControllerDelegateViews& operator=(

@@ -5,11 +5,11 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
+import {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {FileSystemType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ProvidersModel} from './providers_model.js';
 
@@ -116,7 +116,7 @@ function addProvidedVolume(
   const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
   fileSystem.entries['/'] = MockDirectoryEntry.create(fileSystem, '');
 
-  const volumeInfo = new VolumeInfoImpl(
+  const volumeInfo = new VolumeInfo(
       VolumeType.PROVIDED, volumeId, fileSystem,
       '',                                         // error
       '',                                         // deviceType
@@ -126,7 +126,6 @@ function addProvidedVolume(
       {isCurrentProfile: true, displayName: ''},  // profile
       '',                                         // label
       providerId,                                 // providerId
-      false,                                      // hasMedia
       false,                                      // configurable
       false,                                      // watchable
       Source.NETWORK,                             // source

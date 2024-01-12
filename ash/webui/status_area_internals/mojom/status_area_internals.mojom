@@ -32,6 +32,9 @@ interface PageHandler {
   // Sets whether the active directory is being managed or not.
   SetActiveDirectoryManaged(bool managed);
 
+  // Sets whether user is in a child session or not.
+  SetIsInUserChildSession(bool in_child_session);
+
   // Triggers the privacy indicators in the status area.
   TriggerPrivacyIndicators(string app_id, string app_name, bool is_camera_used,
     bool is_microphone_used);

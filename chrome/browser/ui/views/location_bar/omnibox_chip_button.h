@@ -23,9 +23,10 @@
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
 class OmniboxChipButton : public views::MdTextButton {
+  METADATA_HEADER(OmniboxChipButton, views::MdTextButton)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChipElementId);
-  METADATA_HEADER(OmniboxChipButton);
   explicit OmniboxChipButton(PressedCallback callback);
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
@@ -64,6 +65,7 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetBlockedIconShowing(bool should_show_blocked_icon);
   void SetPermissionPromptStyle(PermissionPromptStyle prompt_style);
   void SetChipIcon(const gfx::VectorIcon& icon);
+  void SetChipIcon(const gfx::VectorIcon* icon);
 
   bool ShouldShowBlockedIcon() const { return should_show_blocked_icon_; }
   permissions::PermissionAction GetUserDecision() const {

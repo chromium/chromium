@@ -115,6 +115,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       this.categoryList_.push(ContentSettingsTypes.MIDI_DEVICES);
     }
 
+    if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
+      this.categoryList_.push(ContentSettingsTypes.WEB_PRINTING);
+    }
+
     this.prefs_ = createSiteSettingsPrefs([], [], []);
   }
 

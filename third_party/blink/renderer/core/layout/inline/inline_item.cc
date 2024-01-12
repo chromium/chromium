@@ -245,7 +245,7 @@ const Font& InlineItem::FontWithSvgScaling() const {
 String InlineItem::ToString() const {
   String object_info;
   if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
-    object_info = layout_text->GetText().EncodeForDebugging();
+    object_info = layout_text->TransformedText().EncodeForDebugging();
   } else {
     object_info = GetLayoutObject()->ToString();
   }

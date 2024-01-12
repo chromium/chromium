@@ -210,6 +210,10 @@ void FakePasswordStoreBackend::OnSyncServiceInitialized(
   NOTIMPLEMENTED();
 }
 
+base::WeakPtr<PasswordStoreBackend> FakePasswordStoreBackend::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
   LoginsResult result;
   for (const auto& elements : stored_passwords_) {

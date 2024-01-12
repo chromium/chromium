@@ -491,9 +491,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
 
   if (item_->IsDangerous()) {
     notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
-    RecordDangerousDownloadWarningShown(
-        item_->GetDangerType(), item_->GetTargetFilePath(),
-        item_->GetURL().SchemeIs(url::kHttpsScheme), item_->HasUserGesture());
+    MaybeRecordDangerousDownloadWarningShown(*item_);
     if (!item_->MightBeMalicious() &&
         item_->GetDangerType() !=
             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {

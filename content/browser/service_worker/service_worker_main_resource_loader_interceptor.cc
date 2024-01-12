@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,8 +31,8 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
@@ -189,8 +190,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
           handle_->parent_container_host();
       if (parent_container_host &&
           tentative_resource_request.url.SchemeIsBlob()) {
-        container_host->InheritControllerFrom(*parent_container_host,
-                                              tentative_resource_request.url);
+        // TODO(crbug.com/1509923): add a test to check this path.
+        container_host->InheritControllerFrom(
+            *parent_container_host,
+            net::SimplifyUrlForRequest(tentative_resource_request.url));
         inherit_controller_only = true;
       }
     }
@@ -223,7 +226,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
   // accounts for extension URLs. The absence of this logic was a potential
   // cause for https://crbug.com/1346450.
-  absl::optional<blink::StorageKey> storage_key =
+  std::optional<blink::StorageKey> storage_key =
       GetStorageKeyFromRenderFrameHost(
           new_origin, base::OptionalToPtr(isolation_info_.nonce()));
   if (!storage_key.has_value()) {
@@ -259,11 +262,11 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       std::move(loader_callback), std::move(fallback_callback));
 }
 
-absl::optional<SubresourceLoaderParams>
+std::optional<SubresourceLoaderParams>
 ServiceWorkerMainResourceLoaderInterceptor::
     MaybeCreateSubresourceLoaderParams() {
   if (!handle_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       handle_->container_host();
@@ -271,7 +274,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
   // We didn't find a matching service worker for this request, and
   // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
   if (!container_host || !container_host->controller()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Otherwise let's send the controller service worker information along
@@ -287,7 +290,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
         object_host->CreateIncompleteObjectInfo();
   }
 
-  return absl::optional<SubresourceLoaderParams>(std::move(params));
+  return std::optional<SubresourceLoaderParams>(std::move(params));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -330,33 +333,33 @@ bool ServiceWorkerMainResourceLoaderInterceptor::ShouldCreateForNavigation(
          SchemeMaySupportRedirectingToHTTPS(browser_context, url);
 }
 
-absl::optional<blink::StorageKey>
+std::optional<blink::StorageKey>
 ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromRenderFrameHost(
     const url::Origin& origin,
     const base::UnguessableToken* nonce) {
   // In this case |frame_tree_node_id_| is invalid.
   if (!blink::IsRequestDestinationFrame(request_destination_))
-    return absl::nullopt;
+    return std::nullopt;
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   if (!frame_tree_node)
-    return absl::nullopt;
+    return std::nullopt;
   RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
   if (!frame_host)
-    return absl::nullopt;
+    return std::nullopt;
 
   return frame_host->CalculateStorageKey(origin, nonce);
 }
 
-absl::optional<blink::StorageKey>
+std::optional<blink::StorageKey>
 ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
     const url::Origin& origin) {
   if (!worker_token_.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto* storage_partition = process->GetStoragePartition();
 
@@ -367,7 +370,7 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
                      *worker_token_);
 }
 
-absl::optional<blink::StorageKey>
+std::optional<blink::StorageKey>
 ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
     content::StoragePartition* storage_partition,
     blink::DedicatedWorkerToken dedicated_worker_token,
@@ -379,10 +382,10 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
   if (worker_host) {
     return worker_host->GetStorageKey().WithOrigin(origin);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<blink::StorageKey>
+std::optional<blink::StorageKey>
 ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
     content::StoragePartition* storage_partition,
     blink::SharedWorkerToken shared_worker_token,
@@ -394,7 +397,7 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
   if (worker_host) {
     return worker_host->GetStorageKey().WithOrigin(origin);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace content

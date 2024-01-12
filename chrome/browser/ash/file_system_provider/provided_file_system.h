@@ -255,9 +255,8 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   // Creates `request_manager_`, or replaces it if it exists (in tests).
   void ConstructRequestManager();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
-  raw_ptr<extensions::EventRouter, ExperimentalAsh>
-      event_router_;  // Not owned. May be NULL.
+  raw_ptr<Profile> profile_;                       // Not owned.
+  raw_ptr<extensions::EventRouter> event_router_;  // Not owned. May be NULL.
   ProvidedFileSystemInfo file_system_info_;
   std::unique_ptr<NotificationManagerInterface> notification_manager_;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;

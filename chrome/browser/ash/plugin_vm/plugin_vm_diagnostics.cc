@@ -281,7 +281,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     return base::ReplaceStringPlaceholders(string_template, subs, nullptr);
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> active_profile_;
+  const raw_ptr<Profile> active_profile_;
   DiagnosticsCallback callback_;
   guest_os::DiagnosticsBuilder builder_;
 };

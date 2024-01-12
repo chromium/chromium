@@ -4,8 +4,8 @@
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import {isAllowedVolume, isBelowThreshold} from './banner_controller.js';
 import type {AllowedVolumeOrType, MinDiskThreshold} from './ui/banners/types.js';

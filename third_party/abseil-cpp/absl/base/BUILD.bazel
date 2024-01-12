@@ -514,6 +514,7 @@ cc_library(
     deps = [
         ":base",
         ":base_internal",
+        ":no_destructor",
         ":raw_logging_internal",
         "//absl/synchronization",
         "@com_github_google_benchmark//:benchmark_main",

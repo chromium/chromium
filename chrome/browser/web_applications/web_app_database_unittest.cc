@@ -289,7 +289,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 
   if (IsChromeOsDataMandatory()) {
     proto->mutable_chromeos_data()->set_show_in_launcher(false);
-    proto->mutable_chromeos_data()->set_show_in_search(false);
+    proto->mutable_chromeos_data()->set_show_in_search_and_shelf(false);
     proto->mutable_chromeos_data()->set_show_in_management(false);
     proto->mutable_chromeos_data()->set_is_disabled(true);
   }
@@ -312,7 +312,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 
   if (IsChromeOsDataMandatory()) {
     EXPECT_FALSE(app->chromeos_data()->show_in_launcher);
-    EXPECT_FALSE(app->chromeos_data()->show_in_search);
+    EXPECT_FALSE(app->chromeos_data()->show_in_search_and_shelf);
     EXPECT_FALSE(app->chromeos_data()->show_in_management);
     EXPECT_TRUE(app->chromeos_data()->is_disabled);
   } else {
@@ -404,7 +404,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   auto& chromeos_data = app_copy->chromeos_data();
   if (IsChromeOsDataMandatory()) {
     EXPECT_TRUE(chromeos_data->show_in_launcher);
-    EXPECT_TRUE(chromeos_data->show_in_search);
+    EXPECT_TRUE(chromeos_data->show_in_search_and_shelf);
     EXPECT_TRUE(chromeos_data->show_in_management);
     EXPECT_FALSE(chromeos_data->is_disabled);
     EXPECT_FALSE(chromeos_data->oem_installed);

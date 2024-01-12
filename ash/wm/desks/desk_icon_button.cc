@@ -11,7 +11,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/wm_constants.h"
 #include "base/check_op.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -68,7 +68,7 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
       background_color_id_(background_color_id) {
   SetEnabled(initially_enabled);
   views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset),
+      this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
     auto* focus_ring = views::FocusRing::Get(this);
@@ -114,7 +114,7 @@ void DeskIconButton::UpdateState(State state) {
   SetBackground(views::CreateRoundedRectBackground(
       background()->get_color(), GetCornerRadiusOnState(state_)));
   views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset),
+      this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
 }
 

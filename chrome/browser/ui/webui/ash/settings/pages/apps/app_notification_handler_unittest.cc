@@ -134,7 +134,7 @@ class AppNotificationHandlerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
 
   AppNotificationHandlerTestObserver* observer() { return observer_.get(); }

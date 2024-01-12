@@ -50,7 +50,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
     virtual void RecreateAudioInputStream();
 
    protected:
-    raw_ptr<AudioInputImpl, ExperimentalAsh> input_;
+    raw_ptr<AudioInputImpl> input_;
   };
 
   void Initialize(mojom::PlatformDelegate* platform_delegate);
@@ -127,8 +127,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   std::unique_ptr<AudioCapturer> audio_capturer_;
 
   // Owned by |LibassistantService|.
-  raw_ptr<mojom::PlatformDelegate, ExperimentalAsh> platform_delegate_ =
-      nullptr;
+  raw_ptr<mojom::PlatformDelegate> platform_delegate_ = nullptr;
 
   // Preferred audio input device which will be used for capture.
   std::optional<std::string> preferred_device_id_;

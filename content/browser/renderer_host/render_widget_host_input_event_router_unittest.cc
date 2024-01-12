@@ -1075,7 +1075,7 @@ class MockDelegatedInkPointRenderer
 
  private:
   mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_;
-  absl::optional<gfx::DelegatedInkPoint> delegated_ink_point_;
+  std::optional<gfx::DelegatedInkPoint> delegated_ink_point_;
   bool prediction_reset_ = false;
 };
 

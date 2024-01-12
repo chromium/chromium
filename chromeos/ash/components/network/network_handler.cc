@@ -178,7 +178,8 @@ void NetworkHandler::Init() {
                                 network_state_handler_.get());
   hotspot_allowed_flag_handler_->Init();
   if (ash::features::IsHotspotEnabled()) {
-    hotspot_capabilities_provider_->Init(network_state_handler_.get());
+    hotspot_capabilities_provider_->Init(network_state_handler_.get(),
+                                         hotspot_allowed_flag_handler_.get());
     hotspot_feature_usage_metrics_->Init(
         enterprise_managed_metadata_store_.get(),
         hotspot_capabilities_provider_.get());

@@ -43,10 +43,20 @@ class BookmarkModelView {
   virtual const bookmarks::BookmarkNode* other_node() const = 0;
   virtual const bookmarks::BookmarkNode* mobile_node() const = 0;
 
+  // Ensures that bookmark_bar_node(), other_node() and mobile_node() return
+  // non-null. This is always the case for local-or-syncable permanent folders,
+  // and the function a no-op, but for account permanent folders it is necessary
+  // to create them explicitly.
+  virtual void EnsurePermanentNodesExist() = 0;
+
   // Deletes all nodes that would return true for IsNodeSyncable(). Permanent
   // folders may or may not be deleted depending on precise mapping (only
   // account permanent folders can be deleted).
   virtual void RemoveAllSyncableNodes() = 0;
+
+  // TODO(crbug.com/1494120): Remove this API once proper UUIDs are adopted for
+  // account bookmarks.
+  virtual bool HasWellKnownPermanentNodeUuids() const = 0;
 
   // See bookmarks::BookmarkModel for documentation, as all functions below
   // mimic the same API.
@@ -118,7 +128,9 @@ class BookmarkModelViewUsingLocalOrSyncableNodes : public BookmarkModelView {
   const bookmarks::BookmarkNode* bookmark_bar_node() const override;
   const bookmarks::BookmarkNode* other_node() const override;
   const bookmarks::BookmarkNode* mobile_node() const override;
+  void EnsurePermanentNodesExist() override;
   void RemoveAllSyncableNodes() override;
+  bool HasWellKnownPermanentNodeUuids() const override;
 };
 
 class BookmarkModelViewUsingAccountNodes : public BookmarkModelView {
@@ -133,7 +145,9 @@ class BookmarkModelViewUsingAccountNodes : public BookmarkModelView {
   const bookmarks::BookmarkNode* bookmark_bar_node() const override;
   const bookmarks::BookmarkNode* other_node() const override;
   const bookmarks::BookmarkNode* mobile_node() const override;
+  void EnsurePermanentNodesExist() override;
   void RemoveAllSyncableNodes() override;
+  bool HasWellKnownPermanentNodeUuids() const override;
 };
 
 }  // namespace sync_bookmarks

@@ -30,6 +30,7 @@ class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
   VideoColorSpace ColorSpace() const { return color_space_; }
   base::TimeDelta VideoFrameTimestamp() const { return video_frame_timestamp_; }
   uint64_t GetReferenceTimestamp() const;
+  gfx::Rect GetVisibleRect() const { return visible_rect_; }
 
   void SetReferenceSurfaces(
       std::vector<scoped_refptr<StatelessDecodeSurface>> ref_surfaces);

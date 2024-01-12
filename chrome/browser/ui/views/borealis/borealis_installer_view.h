@@ -104,19 +104,16 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   void StartInstallation();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> primary_message_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> secondary_message_label_ = nullptr;
-  raw_ptr<BorealisBetaBadge, ExperimentalAsh> beta_badge_ = nullptr;
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh>
-      installation_progress_percentage_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> installation_progress_separator_ =
-      nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> installation_progress_eta_label_ =
-      nullptr;
-  raw_ptr<views::BoxLayout, ExperimentalAsh> right_container_layout_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> big_image_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<views::Label> primary_message_label_ = nullptr;
+  raw_ptr<views::Label> secondary_message_label_ = nullptr;
+  raw_ptr<BorealisBetaBadge> beta_badge_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+  raw_ptr<views::Label> installation_progress_percentage_label_ = nullptr;
+  raw_ptr<views::Label> installation_progress_separator_ = nullptr;
+  raw_ptr<views::Label> installation_progress_eta_label_ = nullptr;
+  raw_ptr<views::BoxLayout> right_container_layout_ = nullptr;
+  raw_ptr<views::ImageView> big_image_ = nullptr;
 
   base::Time install_start_time_;
   State state_ = State::kConfirmInstall;

@@ -78,7 +78,7 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
   // The terms of service version number.
   std::string terms_of_service_version_number_;
 
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // |in_error_state_| boolean tracks whether an error has occurred.
   // The error could happen when trying to access OAuth tokens.

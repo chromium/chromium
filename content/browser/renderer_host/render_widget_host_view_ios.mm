@@ -15,13 +15,13 @@
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_ios.h"
-#include "content/browser/renderer_host/input/web_input_event_builders_ios.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/input/web_input_event_builders_ios.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
@@ -78,7 +78,7 @@ gfx::Rect GetDefaultSizeForTesting() {
 
 @interface RenderWidgetUIView : CALayerFrameSinkProvider {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
-  absl::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
+  std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
 }
 
 // TextInput state.
@@ -584,8 +584,8 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
   return GetViewBounds().size();
 }
 
-absl::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
-  return absl::nullopt;
+std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
+  return std::nullopt;
 }
 void RenderWidgetHostViewIOS::SetDisplayFeatureForTesting(
     const DisplayFeature* display_feature) {}

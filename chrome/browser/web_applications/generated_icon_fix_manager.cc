@@ -5,10 +5,16 @@
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -49,54 +55,56 @@ void GeneratedIconFixManager::Start() {
     return;
   }
 
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "GeneratedIconFixManager::Start",
-      std::make_unique<AllAppsLockDescription>(),
-      base::BindOnce(
-          [](base::WeakPtr<GeneratedIconFixManager> manager,
-             AllAppsLock& all_apps_lock) {
-            if (!manager) {
-              return;
-            }
-            size_t started_attempt_count = 0;
-            for (const webapps::AppId& app_id :
-                 all_apps_lock.registrar().GetAppIds()) {
-              bool scheduled = manager->MaybeScheduleFix(all_apps_lock, app_id);
-              if (!scheduled) {
-                continue;
-              }
-
-              ++started_attempt_count;
-              const WebApp* app = all_apps_lock.registrar().GetAppById(app_id);
-              const absl::optional<GeneratedIconFix>& generated_icon_fix =
-                  app->generated_icon_fix();
-              base::UmaHistogramCounts100(
-                  "WebApp.GeneratedIconFix.AttemptCount",
-                  generated_icon_fix.has_value()
-                      ? generated_icon_fix->attempt_count()
-                      : 0u);
-            }
-            base::UmaHistogramCounts100(
-                "WebApp.GeneratedIconFix.StartUpAttemptCount",
-                started_attempt_count);
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+  provider_->scheduler().ScheduleCallback(
+      "GeneratedIconFixManager::Start", AllAppsLockDescription(),
+      base::BindOnce(&GeneratedIconFixManager::ScheduleFixes,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
 }
 
 void GeneratedIconFixManager::InvalidateWeakPtrsForTesting() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-bool GeneratedIconFixManager::MaybeScheduleFix(WithAppResources& resources,
-                                               const webapps::AppId& app_id) {
+void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
+                                            base::Value::Dict& debug_value) {
+  int started_attempt_count = 0;
+  for (const webapps::AppId& app_id : all_apps_lock.registrar().GetAppIds()) {
+    bool scheduled = MaybeScheduleFix(app_id, all_apps_lock,
+                                      *debug_value.EnsureDict(app_id));
+    if (!scheduled) {
+      continue;
+    }
+    debug_value.EnsureList("fixes_scheduled")->Append(app_id);
+
+    ++started_attempt_count;
+    const WebApp* app = all_apps_lock.registrar().GetAppById(app_id);
+    const absl::optional<GeneratedIconFix>& generated_icon_fix =
+        app->generated_icon_fix();
+    base::UmaHistogramCounts100("WebApp.GeneratedIconFix.AttemptCount",
+                                generated_icon_fix.has_value()
+                                    ? generated_icon_fix->attempt_count()
+                                    : 0u);
+  }
+  base::UmaHistogramCounts100("WebApp.GeneratedIconFix.StartUpAttemptCount",
+                              started_attempt_count);
+  debug_value.Set("started_attempt_count", started_attempt_count);
+}
+
+bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
+                                               WithAppResources& resources,
+                                               base::Value::Dict& debug_value) {
   CHECK(IsEnabled());
 
   const WebApp* app = resources.registrar().GetAppById(app_id);
   GeneratedIconFixScheduleDecision decision = MakeScheduleDecision(app);
+
+  debug_value.Set("decision", base::ToString(decision));
   base::UmaHistogramEnumeration("WebApp.GeneratedIconFix.ScheduleDecision",
                                 decision);
 
   bool schedule = decision == GeneratedIconFixScheduleDecision::kSchedule;
+  debug_value.Set("schedule", schedule);
   if (schedule) {
     scheduled_fixes_.insert(app_id);
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -111,6 +119,13 @@ bool GeneratedIconFixManager::MaybeScheduleFix(WithAppResources& resources,
   }
 
   return schedule;
+}
+
+void GeneratedIconFixManager::MaybeScheduleFixAppLock(
+    const webapps::AppId& app_id,
+    AppLock& app_lock,
+    base::Value::Dict& debug_value) {
+  MaybeScheduleFix(app_id, app_lock, debug_value);
 }
 
 GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
@@ -162,18 +177,11 @@ void GeneratedIconFixManager::FixCompleted(const webapps::AppId& app_id,
     case GeneratedIconFixResult::kStillGenerated:
     case GeneratedIconFixResult::kWriteFailure: {
       if (!g_disable_auto_retry_for_testing) {
-        provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
-            "GeneratedIconFixManager::Retry",
-            std::make_unique<AppLockDescription>(app_id),
-            base::BindOnce(
-                [](base::WeakPtr<GeneratedIconFixManager> manager,
-                   const webapps::AppId& app_id, AppLock& app_lock) {
-                  if (!manager) {
-                    return;
-                  }
-                  manager->MaybeScheduleFix(app_lock, app_id);
-                },
-                weak_ptr_factory_.GetWeakPtr(), app_id));
+        provider_->scheduler().ScheduleCallback(
+            "GeneratedIconFixManager::Retry", AppLockDescription(app_id),
+            base::BindOnce(&GeneratedIconFixManager::MaybeScheduleFixAppLock,
+                           weak_ptr_factory_.GetWeakPtr(), app_id),
+            base::DoNothing());
       }
       break;
     }

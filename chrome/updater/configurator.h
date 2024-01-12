@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/update_client/configurator.h"
 
@@ -40,8 +41,6 @@ class PersistedData;
 class PolicyService;
 class UpdaterPrefs;
 
-// This class is free-threaded. Its instance is shared by multiple sequences and
-// it can't be mutated.
 class Configurator : public update_client::Configurator {
  public:
   Configurator(scoped_refptr<UpdaterPrefs> prefs,
@@ -80,6 +79,7 @@ class Configurator : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   std::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
   scoped_refptr<PersistedData> GetUpdaterPersistedData() const;
   virtual GURL CrashUploadURL() const;
@@ -93,6 +93,7 @@ class Configurator : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<Configurator>;
   ~Configurator() override;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdaterPrefs> prefs_;
   scoped_refptr<PolicyService> policy_service_;
   scoped_refptr<ExternalConstants> external_constants_;

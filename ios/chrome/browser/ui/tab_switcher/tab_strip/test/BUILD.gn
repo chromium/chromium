@@ -29,7 +29,10 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "tab_strip_egtest.mm" ]
+  sources = [
+    "tab_strip_drag_drop_egtest.mm",
+    "tab_strip_egtest.mm",
+  ]
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",

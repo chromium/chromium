@@ -81,14 +81,6 @@
   --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
 }
 
-:host-context([cros]) .primary-toggle {
-  color: var(--cros-text-color-secondary);
-}
-
-:host-context([cros]) .primary-toggle[checked] {
-  color: var(--cros-text-color-prominent);
-}
-
 :host-context([cros]) paper-spinner-lite {
   --paper-spinner-color: var(--cros-icon-color-prominent);
 }

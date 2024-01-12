@@ -124,12 +124,10 @@ EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
         return EME_CODEC_HEVC_PROFILE_MAIN10;
       return EME_CODEC_NONE;
     case VideoCodec::kDolbyVision:
-      // Only profiles 0, 4, 5, 7, 8, 9 are valid. Profile 0 and 9 are encoded
-      // based on AVC while profile 4, 5, 7 and 8 are based on HEVC.
+      // Only profiles 0, 5, 7, 8, 9 are valid. Profile 0 and 9 are encoded
+      // based on AVC while profile 5, 7 and 8 are based on HEVC.
       if (profile == DOLBYVISION_PROFILE0)
         return EME_CODEC_DOLBY_VISION_PROFILE0;
-      if (profile == DOLBYVISION_PROFILE4)
-        return EME_CODEC_DOLBY_VISION_PROFILE4;
       if (profile == DOLBYVISION_PROFILE5)
         return EME_CODEC_DOLBY_VISION_PROFILE5;
       if (profile == DOLBYVISION_PROFILE7)
@@ -472,14 +470,15 @@ EmeCodec KeySystemsImpl::GetEmeCodecForString(
   // exceptions where we need to know the profile. For example, for VP9, there
   // are older CDMs only supporting profile 0, hence EmeCodec differentiate
   // between VP9 profile 0 and higher profiles.
-  VideoCodec video_codec = VideoCodec::kUnknown;
-  VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
-  uint8_t level = 0;
-  VideoColorSpace color_space;
-  ParseVideoCodecString(container_mime_type, codec_string, &is_ambiguous,
-                        &video_codec, &profile, &level, &color_space);
-  DVLOG(3) << "Video codec = " << video_codec << ", profile = " << profile;
-  return ToVideoEmeCodec(video_codec, profile);
+  auto result = ParseVideoCodecString(container_mime_type, codec_string,
+                                      /*allow_ambiguous_matches=*/true);
+  if (!result) {
+    return EME_CODEC_NONE;
+  }
+
+  DVLOG(3) << "Video codec = " << result->codec
+           << ", profile = " << result->profile;
+  return ToVideoEmeCodec(result->codec, result->profile);
 }
 
 void KeySystemsImpl::OnSupportedKeySystemsUpdated(KeySystemInfos key_systems) {

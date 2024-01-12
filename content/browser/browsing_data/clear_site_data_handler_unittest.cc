@@ -5,6 +5,7 @@
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 using ::testing::_;
@@ -56,18 +56,17 @@ const StoragePartitionConfig kTestStoragePartitionConfig;
 // functionality.
 class TestHandler : public ClearSiteDataHandler {
  public:
-  TestHandler(
-      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-      base::RepeatingCallback<WebContents*()> web_contents_getter,
-      const StoragePartitionConfig& storage_partition_config,
-      const GURL& url,
-      const std::string& header_value,
-      int load_flags,
-      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-      const absl::optional<blink::StorageKey> storage_key,
-      bool partitioned_state_allowed_only,
-      base::OnceClosure callback,
-      std::unique_ptr<ConsoleMessagesDelegate> delegate)
+  TestHandler(base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+              base::RepeatingCallback<WebContents*()> web_contents_getter,
+              const StoragePartitionConfig& storage_partition_config,
+              const GURL& url,
+              const std::string& header_value,
+              int load_flags,
+              const std::optional<net::CookiePartitionKey> cookie_partition_key,
+              const std::optional<blink::StorageKey> storage_key,
+              bool partitioned_state_allowed_only,
+              base::OnceClosure callback,
+              std::unique_ptr<ConsoleMessagesDelegate> delegate)
       : ClearSiteDataHandler(browser_context_getter,
                              web_contents_getter,
                              storage_partition_config,
@@ -92,8 +91,8 @@ class TestHandler : public ClearSiteDataHandler {
            const ClearSiteDataTypeSet clear_site_data_types,
            const std::set<std::string>& storage_buckets_to_remove,
            bool avoid_closing_connections,
-           const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-           const absl::optional<blink::StorageKey> storage_key,
+           const std::optional<net::CookiePartitionKey> cookie_partition_key,
+           const std::optional<blink::StorageKey> storage_key,
            bool partitioned_state_allowed_only));
 
  protected:
@@ -326,7 +325,7 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
         base::BindRepeating(&FakeWebContentsGetter),
         kTestStoragePartitionConfig, request->url(), test_case.header,
         request->load_flags(),
-        /*cookie_partition_key=*/absl::nullopt, /*storage_key=*/absl::nullopt,
+        /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
         std::make_unique<ConsoleMessagesDelegate>());
 
@@ -396,7 +395,7 @@ TEST_F(ClearSiteDataHandlerTest, ClearCookieSuccess) {
       base::BindRepeating(&FakeBrowserContextGetter),
       base::BindRepeating(&FakeWebContentsGetter), kTestStoragePartitionConfig,
       request->url(), kClearCookiesHeader, request->load_flags(),
-      /*cookie_partition_key=*/absl::nullopt, /*storage_key=*/absl::nullopt,
+      /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false, base::DoNothing(),
       std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
 
@@ -425,7 +424,7 @@ TEST_F(ClearSiteDataHandlerTest, LoadDoNotSaveCookies) {
       base::BindRepeating(&FakeBrowserContextGetter),
       base::BindRepeating(&FakeWebContentsGetter), kTestStoragePartitionConfig,
       request->url(), kClearCookiesHeader, request->load_flags(),
-      /*cookie_partition_key=*/absl::nullopt, /*storage_key=*/absl::nullopt,
+      /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false, base::DoNothing(),
       std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
 
@@ -477,7 +476,7 @@ TEST_F(ClearSiteDataHandlerTest, InvalidOrigin) {
         base::BindRepeating(&FakeWebContentsGetter),
         kTestStoragePartitionConfig, request->url(), kClearCookiesHeader,
         request->load_flags(),
-        /*cookie_partition_key=*/absl::nullopt, /*storage_key=*/absl::nullopt,
+        /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
         std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
 
@@ -587,7 +586,7 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
           base::BindRepeating(&FakeWebContentsGetter),
           kTestStoragePartitionConfig, GURL(test.url), test.header,
           request->load_flags(),
-          /*cookie_partition_key=*/absl::nullopt, /*storage_key=*/absl::nullopt,
+          /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
           /*partitioned_state_allowed_only=*/false, base::DoNothing(),
           std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
       handler.DoHandleHeader();
@@ -613,8 +612,8 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
 }
 
 TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
-  absl::optional<net::CookiePartitionKey> cookie_partition_keys[] = {
-      absl::nullopt,
+  std::optional<net::CookiePartitionKey> cookie_partition_keys[] = {
+      std::nullopt,
       net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")),
   };
   const GURL kTestURL("https://www.bar.com");
@@ -630,7 +629,7 @@ TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
         base::BindRepeating(&FakeWebContentsGetter),
         kTestStoragePartitionConfig, kTestURL, "\"cookies\"",
         request->load_flags(), cookie_partition_key,
-        /*storage_key=*/absl::nullopt,
+        /*storage_key=*/std::nullopt,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
         std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
     EXPECT_CALL(handler,
@@ -640,8 +639,8 @@ TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
 }
 
 TEST_F(ClearSiteDataHandlerTest, StorageKey) {
-  absl::optional<blink::StorageKey> storage_keys[] = {
-      absl::nullopt,
+  std::optional<blink::StorageKey> storage_keys[] = {
+      std::nullopt,
       blink::StorageKey::CreateFromStringForTesting("https://example.com")};
   const GURL kTestURL("https://example.com");
 
@@ -655,7 +654,7 @@ TEST_F(ClearSiteDataHandlerTest, StorageKey) {
         base::BindRepeating(&FakeBrowserContextGetter),
         base::BindRepeating(&FakeWebContentsGetter),
         kTestStoragePartitionConfig, kTestURL, "\"storage\"",
-        request->load_flags(), /*cookie_partition_key=*/absl::nullopt,
+        request->load_flags(), /*cookie_partition_key=*/std::nullopt,
         storage_key,
         /*partitioned_state_allowed_only=*/false, base::DoNothing(),
         std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
@@ -680,8 +679,8 @@ TEST_F(ClearSiteDataHandlerTest, ThirdPartyCookieBlockingEnabled) {
         base::BindRepeating(&FakeBrowserContextGetter),
         base::BindRepeating(&FakeWebContentsGetter),
         kTestStoragePartitionConfig, kTestURL, "\"storage\"",
-        request->load_flags(), /*cookie_partition_key=*/absl::nullopt,
-        /*storage_key=*/absl::nullopt, partitioned_state_allowed_only,
+        request->load_flags(), /*cookie_partition_key=*/std::nullopt,
+        /*storage_key=*/std::nullopt, partitioned_state_allowed_only,
         base::DoNothing(),
         std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
     EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _, _,
@@ -716,8 +715,8 @@ TEST_F(ClearSiteDataHandlerTest, CorrectStoragePartition) {
         base::BindRepeating(&FakeBrowserContextGetter),
         base::BindRepeating(&FakeWebContentsGetter), storage_partition_config,
         kTestURL, "\"storage\"", request->load_flags(),
-        /*cookie_partition_key=*/absl::nullopt,
-        /*storage_key=*/absl::nullopt, /*partitioned_state_allowed_only=*/false,
+        /*cookie_partition_key=*/std::nullopt,
+        /*storage_key=*/std::nullopt, /*partitioned_state_allowed_only=*/false,
         base::DoNothing(),
         std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
     EXPECT_CALL(handler,

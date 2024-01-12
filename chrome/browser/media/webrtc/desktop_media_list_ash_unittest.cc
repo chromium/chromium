@@ -61,55 +61,63 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
   std::unique_ptr<DesktopMediaListAsh> list_;
 };
 
-ACTION(QuitMessageLoop) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+ACTION_P2(QuitMessageLoop, quit_closure) {
+  std::move(quit_closure).Run();
 }
 
 TEST_F(DesktopMediaListAshTest, ScreenOnly) {
   CreateList(DesktopMediaList::Type::kScreen);
-
+  base::RunLoop loop;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
 
   EXPECT_CALL(observer_, OnSourceAdded(0));
   EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .WillOnce(QuitMessageLoop())
+      .WillOnce(QuitMessageLoop(loop.QuitWhenIdleClosure()))
       .WillRepeatedly(DoDefault());
 
   list_->StartUpdating(&observer_);
-  base::RunLoop().Run();
+  loop.Run();
 }
 
 TEST_F(DesktopMediaListAshTest, WindowOnly) {
   CreateList(DesktopMediaList::Type::kWindow);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  {
+    base::RunLoop loop1;
+    base::RunLoop loop2;
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
 
-  EXPECT_CALL(observer_, OnSourceAdded(0));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .WillOnce(QuitMessageLoop())
-      .WillRepeatedly(DoDefault());
-  EXPECT_CALL(observer_, OnSourceRemoved(0)).WillOnce(QuitMessageLoop());
+    EXPECT_CALL(observer_, OnSourceAdded(0));
+    EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+        .WillOnce(QuitMessageLoop(loop1.QuitWhenIdleClosure()))
+        .WillRepeatedly(DoDefault());
+    EXPECT_CALL(observer_, OnSourceRemoved(0))
+        .WillOnce(QuitMessageLoop(loop2.QuitWhenIdleClosure()));
 
-  list_->StartUpdating(&observer_);
-  base::RunLoop().Run();
-  window.reset();
-  base::RunLoop().Run();
-
+    list_->StartUpdating(&observer_);
+    loop1.Run();
+    window.reset();
+    loop2.Run();
+  }
   // Tests that a floated window shows up on the list. Regression test for
   // crbug.com/1462516.
-  std::unique_ptr<aura::Window> float_window = CreateAppWindow();
-  ui::test::EventGenerator event_generator(float_window->GetRootWindow());
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  {
+    base::RunLoop loop1;
+    base::RunLoop loop2;
+    std::unique_ptr<aura::Window> float_window = CreateAppWindow();
+    ui::test::EventGenerator event_generator(float_window->GetRootWindow());
+    event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
 
-  EXPECT_CALL(observer_, OnSourceAdded(0));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
-      .WillOnce(QuitMessageLoop())
-      .WillRepeatedly(DoDefault());
-  EXPECT_CALL(observer_, OnSourceRemoved(0)).WillOnce(QuitMessageLoop());
+    EXPECT_CALL(observer_, OnSourceAdded(0));
+    EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+        .WillOnce(QuitMessageLoop(loop1.QuitWhenIdleClosure()))
+        .WillRepeatedly(DoDefault());
+    EXPECT_CALL(observer_, OnSourceRemoved(0))
+        .WillOnce(QuitMessageLoop(loop2.QuitWhenIdleClosure()));
 
-  base::RunLoop().Run();
-  float_window.reset();
-  base::RunLoop().Run();
+    loop1.Run();
+    float_window.reset();
+    loop2.Run();
+  }
 }

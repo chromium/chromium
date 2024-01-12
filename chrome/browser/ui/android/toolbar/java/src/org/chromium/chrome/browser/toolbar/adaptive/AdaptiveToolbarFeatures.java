@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 
+import java.util.HashMap;
+
 /** A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}. */
 public class AdaptiveToolbarFeatures {
     /** Finch default group for new tab variation. */
@@ -54,6 +56,9 @@ public class AdaptiveToolbarFeatures {
     /** Default action chip delay for price tracking. */
     public static final int DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS = 6000;
 
+    /** Default action chip delay for reader mode. */
+    public static final int DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS = 3000;
+
     @AdaptiveToolbarButtonVariant private static Integer sButtonVariant;
 
     /** For testing only. */
@@ -62,6 +67,8 @@ public class AdaptiveToolbarFeatures {
     private static Boolean sIgnoreSegmentationResultsForTesting;
     private static Boolean sDisableUiForTesting;
     private static Boolean sShowUiOnlyAfterReadyForTesting;
+    private static HashMap<Integer, Boolean> sActionChipOverridesForTesting;
+    private static HashMap<Integer, Boolean> sAlternativeColorOverridesForTesting;
     private static Profile sProfileForTesting;
 
     /** @return Whether the button variant is a dynamic action. */
@@ -115,8 +122,14 @@ public class AdaptiveToolbarFeatures {
     /** @return Whether the contextual page actions should show the action chip version. */
     public static boolean shouldShowActionChip(@AdaptiveToolbarButtonVariant int buttonVariant) {
         if (!isDynamicAction(buttonVariant)) return false;
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING) {
-            // Price tracking launched with the action chip variant.
+        if (sActionChipOverridesForTesting != null
+                && sActionChipOverridesForTesting.containsKey(buttonVariant)) {
+            return Boolean.TRUE.equals(sActionChipOverridesForTesting.get(buttonVariant));
+        }
+
+        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
+                || buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
+            // Price tracking and reader mode launched with the action chip variant.
             return true;
         }
 
@@ -133,6 +146,9 @@ public class AdaptiveToolbarFeatures {
         if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING) {
             // Price tracking launched with an action chip delay of 6 seconds.
             return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
+        } else if (buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
+            // Reader mode launched with an action chip delay of 3 seconds.
+            return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
         }
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
@@ -146,8 +162,14 @@ public class AdaptiveToolbarFeatures {
      */
     public static boolean shouldUseAlternativeActionChipColor(
             @AdaptiveToolbarButtonVariant int buttonVariant) {
-        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING) {
-            // Price tracking launched without using alternative color.
+        if (sAlternativeColorOverridesForTesting != null
+                && sAlternativeColorOverridesForTesting.containsKey(buttonVariant)) {
+            return Boolean.TRUE.equals(sAlternativeColorOverridesForTesting.get(buttonVariant));
+        }
+
+        if (buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
+                || buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE) {
+            // Price tracking and reader mode launched without using alternative color.
             return false;
         }
 
@@ -197,7 +219,7 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
                 "reader_mode_session_rate_limiting",
-                true);
+                false);
     }
 
     // TODO: This should use a passed in reference to a Profile rather than
@@ -312,6 +334,24 @@ public class AdaptiveToolbarFeatures {
     static void setShowUiOnlyAfterReadyForTesting(boolean showUiOnlyAfterReady) {
         sShowUiOnlyAfterReadyForTesting = showUiOnlyAfterReady;
         ResettersForTesting.register(() -> sShowUiOnlyAfterReadyForTesting = null);
+    }
+
+    public static void setActionChipOverrideForTesting(
+            @AdaptiveToolbarButtonVariant int buttonVariant, Boolean useActionChip) {
+        if (sActionChipOverridesForTesting == null) {
+            sActionChipOverridesForTesting = new HashMap<>();
+        }
+        sActionChipOverridesForTesting.put(buttonVariant, useActionChip);
+        ResettersForTesting.register(() -> sActionChipOverridesForTesting = null);
+    }
+
+    public static void setAlternativeColorOverrideForTesting(
+            @AdaptiveToolbarButtonVariant int buttonVariant, Boolean useAlternativeColor) {
+        if (sAlternativeColorOverridesForTesting == null) {
+            sAlternativeColorOverridesForTesting = new HashMap<>();
+        }
+        sAlternativeColorOverridesForTesting.put(buttonVariant, useAlternativeColor);
+        ResettersForTesting.register(() -> sAlternativeColorOverridesForTesting = null);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -25,15 +27,18 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/devices/device_data_manager.h"
 
 namespace settings {
 namespace {
 TemplateURL* AddSearchEngine(TemplateURLService* template_url_service,
                              const std::string& name,
+                             const std::u16string& keyword,
                              int prepopulated_id,
                              std::optional<std::string> url) {
   TemplateURLData default_search_engine;
   default_search_engine.SetShortName(base::UTF8ToUTF16(name));
+  default_search_engine.SetKeyword(keyword);
   default_search_engine.prepopulate_id = prepopulated_id;
 
   if (url.has_value()) {
@@ -52,7 +57,9 @@ TemplateURL* AddSearchEngine(TemplateURLService* template_url_service,
 class SearchEnginesHandlerTestBase : public testing::Test {
  public:
   SearchEnginesHandlerTestBase()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    ui::DeviceDataManager::CreateInstance();
+  }
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -64,10 +71,11 @@ class SearchEnginesHandlerTestBase : public testing::Test {
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile());
-    TemplateURL* default_engine =
-        AddSearchEngine(template_url_service, "foo.com", /*prepopulated_id=*/0,
-                        /*url=*/std::nullopt);
+    TemplateURL* default_engine = AddSearchEngine(
+        template_url_service, "foo.com", u"foo_com", /*prepopulated_id=*/0,
+        /*url=*/std::nullopt);
     AddSearchEngine(template_url_service, "bing",
+                    TemplateURLPrepopulateData::bing.keyword,
                     TemplateURLPrepopulateData::bing.id,
                     TemplateURLPrepopulateData::bing.search_url);
 
@@ -138,9 +146,9 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   EXPECT_EQ(0U, web_ui()->call_data().size());
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
-  TemplateURL* template_url =
-      AddSearchEngine(template_url_service, "bar.com", /*prepopulated_id=*/0,
-                      /*url=*/std::nullopt);
+  TemplateURL* template_url = AddSearchEngine(template_url_service, "bar.com",
+                                              u"bar_com", /*prepopulated_id=*/0,
+                                              /*url=*/std::nullopt);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();

@@ -30,6 +30,10 @@ class MediaSession : public media_session::mojom::MediaSession {
   // none is currently available.
   CONTENT_EXPORT static MediaSession* Get(WebContents* contents);
 
+  // Returns the MediaSession associated to this WebContents if it already
+  // exists. Returns null otherwise.
+  CONTENT_EXPORT static MediaSession* GetIfExists(WebContents* contents);
+
   // Returns the source identity for the given BrowserContext.
   CONTENT_EXPORT static const base::UnguessableToken& GetSourceId(
       BrowserContext* browser_context);

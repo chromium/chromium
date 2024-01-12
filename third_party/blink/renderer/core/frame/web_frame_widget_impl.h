@@ -990,6 +990,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // True when `this` should ignore input events.
   bool ShouldIgnoreInputEvents();
 
+  // Triggers onmove event for window.
+  void EnqueueMoveEvent();
+
   // Stores the current composition line bounds. These bounds are rectangles
   // which surround each line of text in a currently focused input or textarea
   // element.

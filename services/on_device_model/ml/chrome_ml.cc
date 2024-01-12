@@ -17,6 +17,7 @@
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -55,6 +56,33 @@ enum class GpuBlockedReason {
 
 void LogGpuBlocked(GpuBlockedReason reason) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GpuErrorReason {
+  kOther = 0,
+  kDxgiErrorDeviceHung = 1,
+  kDxgiErrorDeviceRemoved = 2,
+  kMaxValue = kDxgiErrorDeviceRemoved,
+};
+
+void FatalGpuErrorFn(const char* msg) {
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg", msg);
+  std::string msg_str(msg);
+  GpuErrorReason error_reason = GpuErrorReason::kOther;
+  if (msg_str.find("DXGI_ERROR_DEVICE_HUNG") != std::string::npos) {
+    error_reason = GpuErrorReason::kDxgiErrorDeviceHung;
+  } else if (msg_str.find("DXGI_ERROR_DEVICE_REMOVED") != std::string::npos) {
+    error_reason = GpuErrorReason::kDxgiErrorDeviceRemoved;
+  }
+  base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
+  if (error_reason == GpuErrorReason::kOther) {
+    // Collect crash reports on unknown errors.
+    CHECK(false) << "ChromeML(GPU) Error: " << msg;
+  } else {
+    base::Process::TerminateCurrentProcessImmediately(0);
+  }
 }
 
 void FatalErrorFn(const char* msg) {
@@ -126,7 +154,10 @@ std::unique_ptr<ChromeML> ChromeML::Create(
 
   api->InitDawnProcs(dawn::native::GetProcs());
   if (api->SetFatalErrorFn) {
-    api->SetFatalErrorFn(&FatalErrorFn);
+    api->SetFatalErrorFn(&FatalGpuErrorFn);
+  }
+  if (api->SetFatalErrorNonGpuFn) {
+    api->SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
   return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
                                     std::move(scoped_library), api);

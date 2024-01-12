@@ -164,7 +164,7 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
-void ShellContentBrowserClient::SiteInstanceGotProcess(
+void ShellContentBrowserClient::SiteInstanceGotProcessAndSite(
     content::SiteInstance* site_instance) {
   // If this isn't an extension renderer there's nothing to do.
   const Extension* extension = GetExtension(site_instance);

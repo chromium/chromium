@@ -45,9 +45,8 @@ class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
  private:
   friend class PowerMetricsReporterTest;
 
-  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
-      power_manager_client_;                            // Not owned.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;  // Not owned.
+  raw_ptr<chromeos::PowerManagerClient> power_manager_client_;  // Not owned.
+  raw_ptr<PrefService> pref_service_;                   // Not owned.
 
   std::unique_ptr<metrics::DailyEvent> daily_event_;
 

@@ -9,7 +9,7 @@
 <translation id="1171824629317156389">iOS-т Chromium-н тохиргоог нээгээд дараа нь "Өгөгдмөл хөтчийн апп"-ыг товшоод Chromium-г сонгоно уу.</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
-<translation id="12739128458173458">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд аль аль төхөөрөмж дээр Chromium-д нэвтэрнэ үү.</translation>
+<translation id="12739128458173458">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд хоёр төхөөрөмж дээр хоёулан дээр нь Chromium-д нэвтэрнэ үү.</translation>
 <translation id="1289216811211435351">Chromium руу сэлгэх</translation>
 <translation id="1361748954329991663">Chromium хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол таны төхөөрөмж Chromium-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
 <translation id="1423007117030725713">Chromium-н шинэ табд хайлт эхлүүлнэ үү.</translation>
@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">Таны камерыг өөр апп-д ашиглаж байгаа тул үүнийг Chromium ашиглах боломжгүй</translation>
 <translation id="2784449251446768092">Chromium-н тохиргоог удирдах</translation>
 <translation id="2798503587425057129">Chromium-н Унших жагсаалтыг нээнэ.</translation>
+<translation id="28276745681323897">Та Google Бүртгэлдээ <ph name="BEGIN_LINK" />Chromium-н ямар өгөгдлийг хадгалахыг удирдах<ph name="END_LINK" /> боломжтой.
+
+Таны Chromium-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="2843571538056574338">Chromium-г Автоматаар бөглөх хэсэгт ашиглах</translation>
 <translation id="2918709798697875261">Танай байгууллага танаас Chromium-с гарсан хэвээр байхыг шаардаж байна.</translation>
 <translation id="2942241131342758843">Холбооснуудыг нээх, жижиг хэрэгслүүдээс хайх, бусад аппад нууц үгнүүдийг автоматаар бөглөхийн тулд Chromium-г өгөгдмөлөөр ашиглана уу</translation>
@@ -79,6 +82,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно. Үүнд түүх болон автоматаар бөглөх хэсэг багтаж болно.}other{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно. Үүнд түүх болон автоматаар бөглөх хэсэг багтаж болно.}}</translation>
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
 <translation id="3478750326643748149">“Chromium-г бүрэн ашиглах”-ыг нуух</translation>
+<translation id="347967311580159871">Таны Chromium-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="3512168799938877162">Таны нууц үгийг хуваалцаагүй. Интернэт холболтоо шалгаад Chromium-д нэвтэрсэн болохоо баталгаажуулна уу. Дараа нь дахин оролдоно уу.</translation>
 <translation id="3554027294407525061">Chromium-н интернэтээр үзсэн өгөгдлийг арилгана уу.</translation>
 <translation id="3567399274263440288">Chromium-г бүрэн ашиглахын тулд Chromium-д Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
@@ -192,7 +196,7 @@
 
 Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chromium-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium-ыг сайжрууллаа! Одоо шинэ хувилбарыг ашиглах боломжтой.</translation>
-<translation id="6502321914804101924">Chromium гарсан байна</translation>
+<translation id="6502321914804101924">Chromium-с гарсан байна</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium таны өгөгдлийг хэрхэн хувийн байлгадаг<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6625409903340039086">Chromium одоо таны тохиргоо хийгдсэн бүртгэлд хэрэглэгчийн бодлогыг дэмжинэ</translation>
 <translation id="6728350288669261079">Тохиргоог Chromium-д нээнэ.</translation>

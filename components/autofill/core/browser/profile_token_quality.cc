@@ -132,6 +132,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     return p->guid() == profile_->guid();
   });
 
+  const FieldTypeSet supported_types = GetSupportedTypes(*profile_);
   std::vector<std::pair<FieldType, Observation>> possible_observations;
   for (size_t i = 0; i < form_structure.field_count(); i++) {
     const AutofillField& field = *form_structure.field(i);
@@ -144,14 +145,15 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       // `autofilled_type()`.
       continue;
     }
-    if (!GetSupportedTypes(*profile_).contains(*field.autofilled_type())) {
-      // If the user changed the country of their profile before submission, the
-      // `autofilled_type()` might not be supported anymore.
-      continue;
-    }
 
     const FieldType stored_type =
         profile_->GetStorableTypeOf(*field.autofilled_type());
+    if (!supported_types.contains(stored_type)) {
+      // If the user changed the country of their profile before submission, the
+      // type might not be supported anymore.
+      continue;
+    }
+
     const FormSignatureHash hash =
         GetFormSignatureHash(form_structure.form_signature());
     if (auto observations = observations_.find(stored_type);
@@ -224,7 +226,7 @@ ProfileTokenQuality::GetObservationTypesForFieldType(FieldType type) const {
 
 void ProfileTokenQuality::AddObservation(FieldType type,
                                          Observation observation) {
-  CHECK(GetSupportedTypes(*profile_).contains(type));
+  CHECK(GetSupportedTypes(*profile_).contains(type)) << FieldTypeToString(type);
   CHECK_NE(observation.type, base::to_underlying(ObservationType::kUnknown));
   base::circular_deque<Observation>& observations =
       observations_[profile_->GetStorableTypeOf(type)];
@@ -243,7 +245,7 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
   }
   const size_t observations_to_add =
       diable_randomization_for_testing_ ? observations.size()
-      : observations_.size() >= 11      ? 8
+      : observations.size() >= 11       ? 8
       : observations.size() > 3         ? observations.size() - 3
                                         : 1;
   // Shuffle the `observations` and add the first `observations_to_add` many.

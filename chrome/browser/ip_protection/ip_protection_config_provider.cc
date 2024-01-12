@@ -14,11 +14,14 @@
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
@@ -26,10 +29,15 @@
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     Profile* profile)
-    : identity_manager_(identity_manager), profile_(profile) {
+    : identity_manager_(identity_manager),
+      tracking_protection_settings_(tracking_protection_settings),
+      profile_(profile) {
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
+  CHECK(tracking_protection_settings);
+  tracking_protection_settings_->AddObserver(this);
 }
 
 void IpProtectionConfigProvider::SetUp() {
@@ -412,19 +420,9 @@ void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
     // called in unit tests.
     return;
   }
-  // Notify the main profile network context to invalidate its stored backoff
-  // time.
-  profile_->GetDefaultStoragePartition()
-      ->GetNetworkContext()
-      ->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
 
-  // If an associated incognito profile exists, tell it to invalidate its
-  // backoff time as well.
-  if (profile_->HasPrimaryOTRProfile()) {
-    profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false)
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+  for (auto& ipp_proxy_delegate : remotes_) {
+    ipp_proxy_delegate->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
   }
 }
 
@@ -514,6 +512,9 @@ void IpProtectionConfigProvider::Shutdown() {
   CHECK(identity_manager_);
   identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
+  CHECK(tracking_protection_settings_);
+  tracking_protection_settings_->RemoveObserver(this);
+  tracking_protection_settings_ = nullptr;
   profile_ = nullptr;
   // If we are shutting down, we can't process messages anymore because we rely
   // on having `identity_manager_` to get the OAuth token. Thus, just reset the
@@ -527,14 +528,17 @@ IpProtectionConfigProvider* IpProtectionConfigProvider::Get(Profile* profile) {
   return IpProtectionConfigProviderFactory::GetForProfile(profile);
 }
 
-void IpProtectionConfigProvider::AddReceiver(
+void IpProtectionConfigProvider::AddNetworkService(
     mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
-        pending_receiver) {
+        pending_receiver,
+    mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
+        pending_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;
   }
   receiver_id_for_testing_ = receivers_.Add(this, std::move(pending_receiver));
+  remote_id_for_testing_ = remotes_.Add(std::move(pending_remote));
 
   // We only expect two concurrent receivers, one corresponding to the main
   // profile network context and one for an associated incognito mode profile
@@ -600,4 +604,8 @@ bool IpProtectionConfigProvider::CanRequestOAuthToken() {
   }
 
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
+  // TODO(brgoldstein): Update IP protection state based on user settings.
 }

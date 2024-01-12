@@ -16,6 +16,11 @@ class GURL;
 // Opens the Most Visited associated with this `item` at the `mostVisitedItem`.
 - (void)openMostVisitedItem:(NSObject*)item atIndex:(NSInteger)mostVisitedIndex;
 
+// Indicates to the receiver that a Most Visited tile `sender` was tapped.
+- (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender;
+
+- (void)shortcutsTapped:(UIGestureRecognizer*)sender;
+
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;

@@ -63,6 +63,13 @@ try_.builder(
 try_.builder(
     name = "win-celab-try-rel",
     executable = "recipe:celab",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     properties = {
         "exclude": "chrome_only",
         "pool_name": "celab-chromium-try",
@@ -90,6 +97,19 @@ try_.builder(
     name = "win-libfuzzer-asan-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "release_try_builder",
+            "reclient",
+            "chrome_with_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "mojo_fuzzer",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_ANY,
     main_list_view = "try",
@@ -380,11 +400,22 @@ try_.gpu.optional_tests_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "disable_nacl",
+        ],
     ),
     os = os.WINDOWS_DEFAULT,
     main_list_view = "try",

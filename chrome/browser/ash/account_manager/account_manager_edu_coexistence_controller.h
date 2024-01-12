@@ -63,11 +63,9 @@ class EduCoexistenceConsentInvalidationController {
       const std::vector<std::string>& account_emails_to_invalidate,
       const std::vector<::account_manager::Account>& accounts);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
-      account_manager_;
-  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
-      account_manager_facade_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<account_manager::AccountManager> account_manager_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
   const AccountId device_account_id_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<EduCoexistenceConsentInvalidationController>

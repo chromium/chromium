@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.price_change;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -102,8 +107,25 @@ public class PriceChangeModuleMediator {
                             res.get(0).getTab().getUrl(),
                             mFaviconSize,
                             (image, iconUrl) -> {
+                                if (image != null) {
+                                    mModel.set(
+                                            PriceChangeModuleProperties.MODULE_FAVICON_BITMAP,
+                                            image);
+                                    return;
+                                }
+                                Drawable drawable =
+                                        AppCompatResources.getDrawable(
+                                                mContext, R.drawable.ic_globe_24dp);
+                                Bitmap bitmap =
+                                        Bitmap.createBitmap(
+                                                mFaviconSize,
+                                                mFaviconSize,
+                                                Bitmap.Config.ARGB_8888);
+                                Canvas canvas = new Canvas(bitmap);
+                                drawable.setBounds(0, 0, mFaviconSize, mFaviconSize);
+                                drawable.draw(canvas);
                                 mModel.set(
-                                        PriceChangeModuleProperties.MODULE_FAVICON_BITMAP, image);
+                                        PriceChangeModuleProperties.MODULE_FAVICON_BITMAP, bitmap);
                             });
 
                     ImageFetcher.Params params =

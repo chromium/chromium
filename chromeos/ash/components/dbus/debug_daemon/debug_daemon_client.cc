@@ -249,40 +249,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetFeedbackLogsV2(
-      const cryptohome::AccountIdentifier& id,
-      const std::vector<debugd::FeedbackLogType>& requested_logs,
-      GetLogsCallback callback) override {
-    // The PipeReaderWrapper is a self-deleting object; we don't have to worry
-    // about ownership or lifetime. We need to create a new one for each Big
-    // Logs requests in order to queue these requests. One request can take a
-    // long time to be processed and a new request should never be ignored nor
-    // cancels the on-going one.
-    PipeReaderWrapper* pipe_reader = new PipeReaderWrapper(std::move(callback));
-    base::ScopedFD pipe_write_end = pipe_reader->Initialize();
-
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kGetFeedbackLogsV2);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendFileDescriptor(pipe_write_end.get());
-    writer.AppendString(id.account_id());
-    // Write |requested_logs|.
-    dbus::MessageWriter sub_writer(nullptr);
-    writer.OpenArray("i", &sub_writer);
-    for (auto log_type : requested_logs) {
-      sub_writer.AppendInt32(log_type);
-    }
-    writer.CloseContainer(&sub_writer);
-
-    DVLOG(1) << "Requesting feedback logs";
-    debugdaemon_proxy_->CallMethodWithErrorResponse(
-        &method_call, kBigLogsDBusTimeoutMS,
-        base::BindOnce(&DebugDaemonClientImpl::OnFeedbackLogsResponse,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       pipe_reader->AsWeakPtr()));
-  }
-
-  void GetFeedbackLogsV3(
+  void GetFeedbackLogs(
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) override {
@@ -1087,7 +1054,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       observer.OnPacketCaptureStopped();
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> debugdaemon_proxy_;
+  raw_ptr<dbus::ObjectProxy> debugdaemon_proxy_;
   std::unique_ptr<chromeos::PipeReader> pipe_reader_;
   StopAgentTracingCallback callback_;
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;

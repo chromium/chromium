@@ -173,7 +173,7 @@ std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateSSLPage(web_contents, cert_error, ssl_info,
                                              request_url, options_mask,
-                                             time_triggered_, GURL(), nullptr);
+                                             time_triggered_, GURL());
 }
 
 std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
@@ -195,8 +195,7 @@ std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
   net::SSLInfo ssl_info;
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   return blocking_page_factory.CreateMITMSoftwareBlockingPage(
-      web_contents, cert_error, request_url, nullptr, ssl_info,
-      mitm_software_name);
+      web_contents, cert_error, request_url, ssl_info, mitm_software_name);
 }
 
 std::unique_ptr<BlockedInterceptionBlockingPage>
@@ -208,7 +207,7 @@ CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents) {
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateBlockedInterceptionBlockingPage(
-      web_contents, cert_error, request_url, nullptr, ssl_info);
+      web_contents, cert_error, request_url, ssl_info);
 }
 
 std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
@@ -242,7 +241,7 @@ std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateBadClockBlockingPage(
       web_contents, cert_error, ssl_info, request_url, base::Time::Now(),
-      clock_state, nullptr);
+      clock_state);
 }
 
 std::unique_ptr<LookalikeUrlBlockingPage> CreateLookalikeInterstitialPage(
@@ -475,7 +474,7 @@ std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   std::unique_ptr<CaptivePortalBlockingPage> blocking_page =
       blocking_page_factory.CreateCaptivePortalBlockingPage(
-          web_contents, request_url, landing_url, nullptr, ssl_info,
+          web_contents, request_url, landing_url, ssl_info,
           net::ERR_CERT_COMMON_NAME_INVALID);
   blocking_page->OverrideWifiInfoForTesting(is_wifi_connection, wifi_ssid);
   return blocking_page;

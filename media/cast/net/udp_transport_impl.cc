@@ -179,9 +179,7 @@ void UdpTransportImpl::ReceiveNextPacket(int length_or_status) {
   while (true) {
     if (length_or_status == net::ERR_IO_PENDING) {
       next_packet_ = std::make_unique<Packet>(media::cast::kMaxIpPacketSize);
-      recv_buf_ = base::MakeRefCounted<net::WrappedIOBuffer>(
-          reinterpret_cast<char*>(&next_packet_->front()),
-          next_packet_->size());
+      recv_buf_ = base::MakeRefCounted<net::WrappedIOBuffer>(*next_packet_);
       length_or_status = udp_socket_->RecvFrom(
           recv_buf_.get(), media::cast::kMaxIpPacketSize, &recv_addr_,
           base::BindOnce(&UdpTransportImpl::ReceiveNextPacket,
@@ -252,8 +250,7 @@ bool UdpTransportImpl::SendPacket(PacketRef packet, base::OnceClosure cb) {
     }
   }
 
-  auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      reinterpret_cast<char*>(&packet->data.front()), packet->data.size());
+  auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(packet->data);
 
   int result;
   net::CompletionOnceCallback callback =

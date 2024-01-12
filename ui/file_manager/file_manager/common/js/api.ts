@@ -6,30 +6,10 @@
  * @fileoverview Helpers for APIs used within Files app.
  */
 
-import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
 import {unwrapEntry} from './entry_utils.js';
-
-/**
- * Calls the `fn` function which should expect the callback as last argument.
- *
- * Resolves with the result of the `fn`.
- *
- * Rejects if there is `chrome.runtime.lastError`.
- */
-export async function promisify<T>(fn: Function, ...args: any[]): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const callback = (result: T) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError.message);
-      } else {
-        resolve(result);
-      }
-    };
-
-    fn(...args, callback);
-  });
-}
+import {promisify} from './util.js';
 
 /**
  * Opens a new window for Files SWA.

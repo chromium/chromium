@@ -68,15 +68,14 @@ class TrashBaseTest : public testing::Test {
   // DriveFS setup methods to ensure the tests have access to a mock
   // DriveIntegrationService tied to the TestingProfile.
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged>
       integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
 
-  raw_ptr<crostini::CrostiniManager, DanglingUntriaged | ExperimentalAsh>
-      crostini_manager_;
+  raw_ptr<crostini::CrostiniManager, DanglingUntriaged> crostini_manager_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
 
   base::ScopedTempDir temp_dir_;

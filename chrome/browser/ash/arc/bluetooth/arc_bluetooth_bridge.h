@@ -630,7 +630,7 @@ class ArcBluetoothBridge
   void OnBluetoothConnectingSocketReady(
       ArcBluetoothBridge::BluetoothConnectingSocket* socket);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
@@ -754,7 +754,7 @@ class ArcBluetoothBridge
     void OnConnectionClosed() override;
 
    private:
-    raw_ptr<ArcBluetoothBridge, ExperimentalAsh> arc_bluetooth_bridge_;
+    raw_ptr<ArcBluetoothBridge> arc_bluetooth_bridge_;
   };
   BluetoothArcConnectionObserver bluetooth_arc_connection_observer_;
 

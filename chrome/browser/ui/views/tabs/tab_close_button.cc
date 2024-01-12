@@ -90,8 +90,9 @@ TabStyle::TabColors TabCloseButton::GetColors() const {
 }
 
 void TabCloseButton::SetColors(TabStyle::TabColors colors) {
-  if (colors == colors_)
+  if (colors == colors_) {
     return;
+  }
   colors_ = std::move(colors);
   views::InkDrop::Get(this)->SetBaseColor(
       color_utils::GetColorWithMaxContrast(colors_.background_color));
@@ -108,8 +109,9 @@ views::View* TabCloseButton::GetTooltipHandlerForPoint(
   // Tab close button has no children, so tooltip handler should be the same
   // as the event handler. In addition, a hit test has to be performed for the
   // point (as GetTooltipHandlerForPoint() is responsible for it).
-  if (!HitTestPoint(point))
+  if (!HitTestPoint(point)) {
     return nullptr;
+  }
   return GetEventHandlerForPoint(point);
 }
 
@@ -147,8 +149,9 @@ views::View* TabCloseButton::TargetForRect(views::View* root,
                                            const gfx::Rect& rect) {
   CHECK_EQ(root, this);
 
-  if (!views::UsePointBasedTargeting(rect))
+  if (!views::UsePointBasedTargeting(rect)) {
     return ViewTargeterDelegate::TargetForRect(root, rect);
+  }
 
   // Ignore the padding set on the button.
   gfx::Rect contents_bounds = GetMirroredRect(GetContentsBounds());
@@ -163,8 +166,9 @@ views::View* TabCloseButton::TargetForRect(views::View* root,
   // whole function deleted.  Note that in these cases, we should probably
   // also remove the padding on the close button bounds (see Tab::Layout()),
   // as it will be pointless.
-  if (aura::Env::GetInstance()->is_touch_down())
+  if (aura::Env::GetInstance()->is_touch_down()) {
     contents_bounds = GetLocalBounds();
+  }
 #endif
 
   return contents_bounds.Intersects(rect) ? this : parent();
@@ -189,6 +193,6 @@ void TabCloseButton::UpdateIcon() {
                                                kIconSize));
 }
 
-BEGIN_METADATA(TabCloseButton, views::LabelButton)
+BEGIN_METADATA(TabCloseButton)
 ADD_PROPERTY_METADATA(TabStyle::TabColors, Colors)
 END_METADATA

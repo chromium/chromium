@@ -59,7 +59,8 @@ export class EmojiVariants extends PolymerElement {
   static get properties() {
     return {
       variants: {type: Array, readonly: true},
-      variantRows: {type: Array},
+      groupedTone: {type: Boolean, readonly: true},
+      groupedGender: {type: Boolean, readonly: true},
       baseEmoji: {type: Array},
       showSkinTones: {type: Boolean},
       showBaseEmoji: {type: Boolean},
@@ -67,7 +68,8 @@ export class EmojiVariants extends PolymerElement {
     };
   }
   variants: Emoji[];
-  private variantRows: Emoji[][];
+  private groupedTone = false;
+  private groupedGender = false;
   private baseEmoji: string;
   private showSkinTones: boolean;
   private showBaseEmoji: boolean;
@@ -86,17 +88,19 @@ export class EmojiVariants extends PolymerElement {
     this.baseEmoji = this.variants[0]?.string ?? '';
     this.showSkinTones = isTwoPeople;
 
-    // if we are showing a base emoji separately, omit it from the main grid.
-    const gridEmoji =
-        this.showBaseEmoji ? this.variants.slice(1) : this.variants;
-    const rowLengths = this.computeVariantRowLengths(gridEmoji);
-    this.variantRows = partitionArray(gridEmoji, rowLengths);
-
     this.addEventListener('keydown', (ev) => this.onKeyDown(ev));
   }
 
   override connectedCallback() {
     beforeNextRender(this, () => this.$.fakeFocusTarget.focus());
+  }
+
+  private computeVariantRows(showBaseEmoji: boolean, variants: Emoji[]):
+      Emoji[][] {
+    // if we are showing a base emoji separately, omit it from the main grid.
+    const gridEmoji = showBaseEmoji ? variants.slice(1) : variants;
+    const rowLengths = this.computeVariantRowLengths(gridEmoji);
+    return partitionArray(gridEmoji, rowLengths);
   }
 
   private computeVariantRowLengths(variants: Emoji[]): number[] {

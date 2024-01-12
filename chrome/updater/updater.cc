@@ -97,8 +97,9 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
 int HandleUpdaterCommands(UpdaterScope updater_scope,
                           const base::CommandLine* command_line) {
   // Used for unit test purposes. There is no need to run with a crash handler.
-  if (command_line->HasSwitch(kTestSwitch))
+  if (command_line->HasSwitch(kTestSwitch)) {
     return kErrorOk;
+  }
 
   if (command_line->HasSwitch(kCrashHandlerSwitch)) {
     const int retval = CrashReporterMain();
@@ -174,12 +175,14 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppServer()->Run();
   }
 
-  if (command_line->HasSwitch(kUpdateSwitch))
+  if (command_line->HasSwitch(kUpdateSwitch)) {
     return MakeAppUpdate()->Run();
+  }
 
 #if BUILDFLAG(IS_WIN)
-  if (command_line->HasSwitch(kWindowsServiceSwitch))
+  if (command_line->HasSwitch(kWindowsServiceSwitch)) {
     return ServiceMain::RunWindowsService(command_line);
+  }
 
   if (command_line->HasSwitch(kHealthCheckSwitch)) {
     return kErrorOk;

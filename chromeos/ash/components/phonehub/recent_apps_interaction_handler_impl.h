@@ -107,12 +107,10 @@ class RecentAppsInteractionHandlerImpl
   base::ObserverList<RecentAppClickObserver> observer_list_;
   std::vector<std::pair<Notification::AppMetadata, base::Time>>
       recent_app_metadata_list_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
-  raw_ptr<MultideviceFeatureAccessManager, ExperimentalAsh>
-      multidevice_feature_access_manager_;
-  raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+  raw_ptr<MultideviceFeatureAccessManager> multidevice_feature_access_manager_;
+  raw_ptr<eche_app::EcheConnectionStatusHandler>
       eche_connection_status_handler_ = nullptr;
 
   base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{

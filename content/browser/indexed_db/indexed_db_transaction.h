@@ -90,6 +90,12 @@ class CONTENT_EXPORT IndexedDBTransaction
   // Called by the scopes lock manager when this transaction is unblocked.
   void Start();
 
+  // Returns the locks required for this transaction to start. NB: this is only
+  // relevant to readonly and readwrite transactions. Lock requests for version
+  // change transactions are created by the `IndexedDBConnectionCoordinator`.
+  std::vector<PartitionedLockManager::PartitionedLockRequest>
+  BuildLockRequests() const;
+
   blink::mojom::IDBTransactionMode mode() const { return mode_; }
   const std::set<int64_t>& scope() const { return object_store_ids_; }
 

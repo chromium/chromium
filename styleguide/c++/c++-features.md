@@ -1916,7 +1916,7 @@ aligned to at least some particular power of 2.
 
 **Notes:**
 *** promo
-[Migration bug](https://crbug.com/1414637)
+None
 ***
 
 ### std::erase[_if] for containers <sup>[allowed]</sup>
@@ -2040,7 +2040,7 @@ qualifiers from a type.
 
 **Notes:**
 *** promo
-[Migration bug](https://crbug.com/1414646)
+None
 ***
 
 ### std::ssize <sup>[allowed]</sup>
@@ -2094,7 +2094,7 @@ pointer does not refer to a constructed object (in which case an expression like
 
 **Notes:**
 *** promo
-[Migration bug](https://crbug.com/1414648)
+None
 ***
 
 ## C++20 Banned Language Features {#core-blocklist-20}
@@ -2147,8 +2147,6 @@ Has no effect on Windows, for compatibility with Microsoft's ABI. Use
 `NO_UNIQUE_ADDRESS` from `base/compiler_specific.h` instead. Do not use (either
 form) on members of unions due to
 [potential memory safety problems](https://github.com/llvm/llvm-project/issues/60711).
-
-[Migration bug](https://crbug.com/1414621)
 ***
 
 ## C++20 Banned Library Features {#library-blocklist-20}

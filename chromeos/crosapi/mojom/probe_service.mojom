@@ -74,8 +74,8 @@ interface TelemetryProbeService {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// Next ID: 17
-// Next Version: 2
+// Next ID: 18
+// Next Version: 3
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 11,
@@ -95,6 +95,7 @@ enum ProbeCategoryEnum {
   kAudio = 14,
   kBus = 15,
   [MinVersion=1] kDisplay = 16,
+  [MinVersion=2] kThermal = 17,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -922,6 +923,51 @@ union ProbeDisplayResult {
   ProbeError error;
 };
 
+// The location of sensor.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Extensible]
+enum ProbeThermalSensorSource {
+  // For mojo backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // Thermal sensor is located in the EC.
+  kEc = 1,
+  // Thermal sensor is located in SysFs.
+  kSysFs = 2,
+};
+
+// Information about various thermal sensors.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct ProbeThermalSensorInfo {
+  // Name of the thermal sensor.
+  string name@0;
+  // Temperature detected by the thermal sensor in celsius.
+  double temperature_celsius@1;
+  // Where the thermal sensor is detected from.
+  ProbeThermalSensorSource source@2;
+};
+
+// Thermal information.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct ProbeThermalInfo {
+  // An array containing all the information retrieved for thermal sensors.
+  array<ProbeThermalSensorInfo> thermal_sensors@0;
+};
+
+// Can either be populated with the Thermal result or an error retrieving the
+// information.
+[Stable]
+union ProbeThermalResult {
+  // Valid thermal info.
+  ProbeThermalInfo thermal_info;
+  // The error that occurred attempting to retrieve ThermalInfo.
+  ProbeError error;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -930,8 +976,8 @@ union ProbeDisplayResult {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// Next ID: 16
-// Next MinVersion: 4
+// Next ID: 17
+// Next MinVersion: 5
 [Stable]
 struct ProbeTelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -985,6 +1031,9 @@ struct ProbeTelemetryInfo {
   // Information about the bus devices. Only present when kDisplay was included
   // in the categories input to ProbeTelemetryInfo.
   [MinVersion=3] ProbeDisplayResult? display_result@15;
+  // Information about the thermal temperatures. Only present when kThermal was
+  // included in the categories input to ProbeTelemetryInfo.
+  [MinVersion=4] ProbeThermalResult? thermal_result@16;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.

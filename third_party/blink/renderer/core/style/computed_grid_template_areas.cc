@@ -6,9 +6,9 @@
 
 namespace blink {
 
-namespace {
-
-NamedGridLinesMap CreateImplicitNamedGridLinesFromGridArea(
+// static
+NamedGridLinesMap
+ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
     const NamedGridAreaMap& named_areas,
     GridTrackSizingDirection direction) {
   NamedGridLinesMap named_grid_lines;
@@ -32,8 +32,6 @@ NamedGridLinesMap CreateImplicitNamedGridLinesFromGridArea(
   }
   return named_grid_lines;
 }
-
-}  // namespace
 
 ComputedGridTemplateAreas::ComputedGridTemplateAreas(
     const NamedGridAreaMap& named_areas,

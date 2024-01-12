@@ -442,9 +442,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    # TODO(crbug.com/1471166): enable gardener rotation.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "tast",
@@ -662,8 +659,9 @@ ci.builder(
 )
 
 ci.builder(
-    name = "lacros-amd64-generic-rel",
+    name = "lacros-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_BRANCHES,
+    description_html = "This is a renamed builder of lacros-amd64-generic-rel.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_no_telemetry_dependencies",
@@ -994,7 +992,7 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chromeos-sw-engprod@google.com",
     health_spec = health_spec.modified_default({
-        "Unhealthy": struct(
+        "Unhealthy": health_spec.unhealthy_thresholds(
             build_time = struct(
                 p50_mins = 150,
             ),

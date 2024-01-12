@@ -1458,7 +1458,7 @@ void SaveCreditCard(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   autofill::SaveCardBubbleControllerImpl* controller =
       autofill::SaveCardBubbleControllerImpl::FromWebContents(web_contents);
-  controller->ReshowBubble();
+  controller->ReshowBubble(/*is_user_gesture=*/true);
 }
 
 void SaveIban(Browser* browser) {
@@ -1521,6 +1521,9 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
 void StartTabOrganizationRequest(Browser* browser) {
   TabOrganizationService* service =
       TabOrganizationServiceFactory::GetForProfile(browser->profile());
+  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
+  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.ThreeDotMenu.Clicked", true);
+
   service->ResetSessionForBrowser(browser);
   service->OnUserInvokedFeature(browser);
 }
@@ -1769,7 +1772,8 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
 }
 
 void ShowTabSearch(Browser* browser) {
-  browser->window()->CreateTabSearchBubble();
+  const int tab_search_tab_index = 0;
+  browser->window()->CreateTabSearchBubble(tab_search_tab_index);
 }
 
 void CloseTabSearch(Browser* browser) {

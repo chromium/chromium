@@ -433,7 +433,17 @@ void IsolatedWebAppInstallationManager::MaybeScheduleGarbageCollection() {
       provider_->extensions_manager().ShouldGarbageCollectStoragePartitions()) {
     provider_->command_manager().ScheduleCommand(
         std::make_unique<web_app::GarbageCollectStoragePartitionsCommand>(
-            &profile_.get(), base::DoNothing()));
+            &profile_.get(),
+            base::BindOnce(
+                [](base::WeakPtr<IsolatedWebAppInstallationManager> weak_this) {
+                  if (!weak_this) {
+                    return;
+                  }
+                  weak_this
+                      ->on_garbage_collect_storage_partitions_done_for_testing_
+                      .Signal();
+                },
+                weak_ptr_factory_.GetWeakPtr())));
   }
 }
 

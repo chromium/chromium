@@ -10,7 +10,7 @@
 #include <ostream>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -118,14 +118,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   void DumpState(std::ostream& out) const;
 
-  // Sets a callback which is posted when data transfer steps are finished, ie:
-  // once per mime type and one more when the whole process ends, regardless it
-  // succeeded or not.
-  void set_data_transferred_callback_for_testing(
-      base::RepeatingCallback<void(const std::string&)> cb) {
-    data_transferred_callback_for_testing_ = cb;
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
@@ -161,13 +153,16 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
-  void HandleUnprocessedMimeTypes(base::TimeTicks start_time);
-  void OnMimeTypeDataTransferred(base::TimeTicks start_time,
-                                 PlatformClipboard::Data contents);
+  // Starts the process of fetching data offered by an external client (ie:
+  // incoming drag session). The actual I/O is performed in a separate thread
+  // using ThreadPool infra. Once data for all supported mime types is fetched,
+  // the OnDataTransferFinished callback is fired.
+  void PostDataTransferTask(const gfx::PointF& location,
+                            base::TimeTicks start_time);
+
   void OnDataTransferFinished(
       base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
-  std::string GetNextUnprocessedMimeType();
   // Calls the window's OnDragEnter with the given location and data,
   // then immediately calls OnDragMotion to get the actual operation.
   void PropagateOnDragEnter(const gfx::PointF& location,
@@ -204,8 +199,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                  struct wl_callback* callback,
                                  uint32_t time);
 
-  void RunDataTransferredCallbackForTesting(const std::string& mime_type = {});
-
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandDataDeviceManager> data_device_manager_;
   const raw_ptr<WaylandDataDevice> data_device_;
@@ -231,9 +224,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // dnd session running or Chromium is the data source.
   std::unique_ptr<WaylandDataOffer> data_offer_;
 
-  // Mime types to be handled.
-  std::list<std::string> unprocessed_mime_types_;
-
   // The window that initiated the drag session. Can be null when the session
   // has been started by an external Wayland client.
   raw_ptr<WaylandWindow> origin_window_ = nullptr;
@@ -243,9 +233,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;
-
-  // The provider for the dnd data received from another Wayland client.
-  std::unique_ptr<WaylandExchangeDataProvider> received_exchange_data_provider_;
 
   // Set when 'leave' event is fired while data is being transferred.
   bool is_leave_pending_ = false;
@@ -270,9 +257,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   raw_ptr<WaylandWindow> pointer_grabber_for_window_drag_ = nullptr;
 
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
-
-  base::RepeatingCallback<void(const std::string&)>
-      data_transferred_callback_for_testing_;
 
   base::WeakPtrFactory<WaylandDataDragController> weak_factory_{this};
 };

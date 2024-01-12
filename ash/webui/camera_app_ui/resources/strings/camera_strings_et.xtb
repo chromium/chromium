@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Panoraami paremale</translation>
 <translation id="3081586908890909590">Vaheta video salvestamise režiimile</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Liitu võrguga „<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link on kopeeritud</translation>
 <translation id="3354465018370944241">Foto seaded</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Foto kuvasuhe</translation>
 <translation id="5057360777601936059">Teie kaamera pole praegu saadaval.
         Kontrollige, kas kaamera on korralikult ühendatud.</translation>
+<translation id="5157591164390831335">Tuvastati URL.</translation>
 <translation id="5163387177077603948">Liigub paremale</translation>
 <translation id="5235304959032763950">16 : 9</translation>
 <translation id="5266635337630551423">Dokumendi vasak ülanurk</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Täname, et andsite tagasisidet rakenduse Kaamera kohta.
 
 Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena näidisfoto või -video ja kirjeldage, mis on valesti. (Näiteks foto on liiga tume või objekt pole teravustatud.)</translation>
+<translation id="6519884562954018934">Liitu võrguga <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6617916774429601017">Kuva kõik eraldusvõimed</translation>
 <translation id="6631515515009660915">Peegeldamine on välja lülitatud</translation>
@@ -158,6 +161,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>
+<translation id="874854738381978209">Tuvastati Wi-Fi-võrk.</translation>
 <translation id="8815966864175525708">Vaheta portreefoto jäädvustamiseks</translation>
 <translation id="8828441885228359828">Jätka salvestamist</translation>
 <translation id="8870695351537079478">Salvestamise alustamine ebaõnnestus</translation>

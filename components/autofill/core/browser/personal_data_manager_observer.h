@@ -22,9 +22,6 @@ class PersonalDataManagerObserver {
   // interpretation, e.g. differentiation of pure local or syncable profile.
   virtual void OnPersonalDataSyncStateChanged() {}
 
-  // Called when there is insufficient data to fill a form. Used for testing.
-  virtual void OnInsufficientFormData() {}
-
   // Notifies the observer that the PersonalDataManager has no more tasks to
   // handle.
   virtual void OnPersonalDataFinishedProfileTasks() {}

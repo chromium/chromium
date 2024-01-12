@@ -1133,6 +1133,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5537725057119320332">Predvajanje</translation>
 <translation id="5546397813406633847">Obnovi uporabnika</translation>
 <translation id="554893713779400387">Preklop narekovanja</translation>
+<translation id="5550417424894892620">Če želite datoteke dodati na mesto <ph name="HOLDING_SPACE_TITLE" />, jih spustite na namizje. Datotek ni mogoče dodati na namizje.</translation>
 <translation id="5551456515017410630">Odpiranje/zapiranje koledarja</translation>
 <translation id="5551974246223970793">Preklop na naslednje ujemanje za iskanje pri iskanju na strani</translation>
 <translation id="5555639311269196631">Izklopi dostopno točko</translation>
@@ -1505,6 +1506,7 @@ Nova namestitev</translation>
 <translation id="7025533177575372252">Povežite napravo <ph name="DEVICE_NAME" /> s telefonom</translation>
 <translation id="7026338066939101231">Pomanjšava</translation>
 <translation id="7029814467594812963">Zapusti sejo</translation>
+<translation id="7031303610220416229">Ogled vseh opravil v Google Opravilih</translation>
 <translation id="7032161822340700104">Dovoljenih je samo 6 predlog. Če želite shraniti novo, odstranite eno.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />. Vklopite fizično stikalo naprave <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Pomočnik Google</translation>
@@ -1817,6 +1819,7 @@ Nova namestitev</translation>
 <translation id="8351131234907093545">Ustvarjanje zapiska</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> je v uporabi.</translation>
 <translation id="8369166482916924789">Shranjeno namizje, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Iskanje tega: <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Naprej po črko</translation>
 <translation id="8371991222807690464">Delovanje zunanje dodatne opreme je v načinu za goste morda omejeno.</translation>
 <translation id="8374601332003098278">Pritisnite Enter, če želite snemati delni zaslon</translation>
@@ -1872,6 +1875,7 @@ Nova namestitev</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Razvrstitev aplikacij po imenu ali barvi</translation>
 <translation id="8609384513243082612">Odpiranje novega zavihka</translation>
+<translation id="8612216344243590325">Pomembne datoteke shranjujte na mestu <ph name="HOLDING_SPACE_TITLE" /> namesto na namizju. Preprosto povlecite datoteke na mesto <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obvestili aplikacij <ph name="APP_1_TITLE" /> in <ph name="APP_2_TITLE" /> sta skriti zaradi vklopljene zaščite pred ogledovanjem.</translation>
 <translation id="8619138598101195078">Zmanjšanje glasnosti</translation>
 <translation id="8627191004499078455">Vzpostavljena povezava z napravo <ph name="DEVICE_NAME" /></translation>

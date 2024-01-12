@@ -32,6 +32,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -227,7 +228,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
   void EnsureLauncherShown() {
     if (tablet_mode_param()) {
       // Convert to tablet mode to show fullscren launcher.
-      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      ash::TabletModeControllerTestApi().EnterTabletMode();
       Shell::Get()->app_list_controller()->ShowAppList(
           AppListShowSource::kSearchKey);
       test_api_ = std::make_unique<test::AppsGridViewTestApi>(

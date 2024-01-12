@@ -4,6 +4,10 @@ include_rules = [
   # This header contains macros and such that abstract away non-standard
   # compiler features. It does not bring a dependency on the base library.
   "+base/compiler_specific.h",
+  # For the version_info::Channel enum.
+  "+base/version_info/channel.h",
+  # For the compile-time PRODUCT_VERSION macro.
+  "+base/version_info/version_info_values.h",
   # To avoid including windows.h in headers.
   "+base/win/windows_types.h",
   # Nothing from chrome.
@@ -18,10 +22,6 @@ include_rules = [
   "+chrome/install_static",
   # For BUILDFLAG(ENABLE_NACL)
   "+components/nacl/common/buildflags.h",
-  # For the version_info::Channel enum.
-  "+components/version_info/channel.h",
-  # For the compile-time PRODUCT_VERSION macro.
-  "+components/version_info/version_info_values.h",
 ]
 
 specific_include_rules = {

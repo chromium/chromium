@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing::mojom {
 class BackgroundTracingAgent;
@@ -122,8 +122,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
 
   bool HasTraceToUpload() override;
   void GetTraceToUpload(
-      base::OnceCallback<void(absl::optional<std::string>,
-                              absl::optional<std::string>)>) override;
+      base::OnceCallback<void(std::optional<std::string>,
+                              std::optional<std::string>)>) override;
   std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override;
   void SetSystemProfileRecorder(
@@ -200,14 +200,14 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
           provider);
   static void ClearPendingAgent(int child_process_id);
   void MaybeConstructPendingAgents();
-  void OnFinalizeComplete(absl::optional<BaseTraceReport> trace_to_upload,
+  void OnFinalizeComplete(std::optional<BaseTraceReport> trace_to_upload,
                           bool success);
   void OnTraceDatabaseCreated(ScenarioCountMap scenario_saved_counts,
-                              absl::optional<BaseTraceReport> trace_to_upload,
+                              std::optional<BaseTraceReport> trace_to_upload,
                               bool success);
   void OnTraceDatabaseUpdated(ScenarioCountMap scenario_saved_counts);
   void OnTraceSaved(const std::string& scenario_name,
-                    absl::optional<NewTraceReport> trace_to_upload,
+                    std::optional<NewTraceReport> trace_to_upload,
                     bool success);
   void CleanDatabase();
   size_t GetTraceUploadLimitKb() const;
@@ -242,7 +242,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  absl::optional<NewTraceReport> trace_report_to_upload_;
+  std::optional<NewTraceReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;

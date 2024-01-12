@@ -47,7 +47,7 @@ class HibernateManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeHibermanClient, ExperimentalAsh> hiberman_client_;
+  raw_ptr<FakeHibermanClient> hiberman_client_;
   HibernateManager hibernate_manager_;
   std::unique_ptr<UserContext> user_context_;
   int successful_callbacks_ = 0;

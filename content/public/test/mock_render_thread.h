@@ -33,7 +33,6 @@ namespace mojom {
 class CreateNewWindowParams;
 class CreateNewWindowReply;
 class Frame;
-class RenderMessageFilter;
 }
 
 // This class is a very simple mock of RenderThread. It simulates an IPC channel
@@ -44,8 +43,10 @@ class MockRenderThread : public RenderThread {
   MockRenderThread();
   ~MockRenderThread() override;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Provides access to the messages that have been received by this thread.
   IPC::TestSink& sink() { return sink_; }
+#endif
 
   void SetIOTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -53,23 +54,26 @@ class MockRenderThread : public RenderThread {
   }
 
   // RenderThread implementation:
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   bool Send(IPC::Message* msg) override;
-  IPC::SyncChannel* GetChannel() override;
-  std::string GetLocale() override;
   IPC::SyncMessageFilter* GetSyncMessageFilter() override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
-  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
   void AttachTaskRunnerToRoute(
       int32_t routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
+  void AddFilter(IPC::MessageFilter* filter) override;
+  void RemoveFilter(IPC::MessageFilter* filter) override;
+#endif
+  IPC::SyncChannel* GetChannel() override;
+  std::string GetLocale() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
+  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   bool GenerateFrameRoutingID(int32_t& routing_id,
                               blink::LocalFrameToken& frame_token,
                               base::UnguessableToken& devtools_frame_token,
                               blink::DocumentToken& document_token) override;
-  void AddFilter(IPC::MessageFilter* filter) override;
-  void RemoveFilter(IPC::MessageFilter* filter) override;
+
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
   void RecordAction(const base::UserMetricsAction& action) override;
@@ -95,8 +99,10 @@ class MockRenderThread : public RenderThread {
   // widget, or frame.
   int32_t GetNextRoutingID();
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Dispatches control messages to observers.
   bool OnControlMessageReceived(const IPC::Message& msg);
+#endif
 
   base::ObserverList<RenderThreadObserver>::Unchecked& observers() {
     return observers_;
@@ -127,11 +133,13 @@ class MockRenderThread : public RenderThread {
       const blink::LocalFrameToken& frame_token);
 
  protected:
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // This function operates as a regular IPC listener. Subclasses
   // overriding this should first delegate to this implementation.
   virtual bool OnMessageReceived(const IPC::Message& msg);
 
   IPC::TestSink sink_;
+#endif
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
@@ -144,11 +152,13 @@ class MockRenderThread : public RenderThread {
            mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
       frame_token_to_initial_browser_brokers_;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // The last known good deserializer for sync messages.
   std::unique_ptr<IPC::MessageReplyDeserializer> reply_deserializer_;
 
   // A list of message filters added to this thread.
   std::vector<scoped_refptr<IPC::MessageFilter> > filters_;
+#endif
 
   // `blink::WebView`s associated with CreateNewWindow have their
   // lifecycle associated with the mojo channel provided to them.
@@ -157,8 +167,6 @@ class MockRenderThread : public RenderThread {
 
   // Observers to notify.
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;
-
-  std::unique_ptr<mojom::RenderMessageFilter> mock_render_message_filter_;
 };
 
 }  // namespace content

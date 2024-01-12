@@ -270,6 +270,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
     cursor_accessibility_scale_factor_ = scale;
   }
 
+  void OnScrollbarDestroyed(const Scrollbar& scrollbar);
+
   Element* GetElementUnderMouse();
 
   Element* CurrentTouchDownElement();

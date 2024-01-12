@@ -207,11 +207,11 @@ void WiredDisplayMediaRouteProvider::DiscoverSinksNow() {
   NotifySinkObservers();
 }
 
-void WiredDisplayMediaRouteProvider::CreateMediaRouteController(
+void WiredDisplayMediaRouteProvider::BindMediaController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-    CreateMediaRouteControllerCallback callback) {
+    BindMediaControllerCallback callback) {
   // Local screens do not support media controls.
   auto it = presentations_.find(route_id);
   if (it == presentations_.end()) {

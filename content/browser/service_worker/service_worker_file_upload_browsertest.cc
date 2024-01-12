@@ -46,7 +46,7 @@ void GetKey(const base::Value::Dict& dict,
 void GetKey(const base::Value::Dict& dict,
             const std::string& key,
             int* out_value) {
-  absl::optional<int> value = dict.FindInt(key);
+  std::optional<int> value = dict.FindInt(key);
   ASSERT_TRUE(value);
   *out_value = *value;
 }
@@ -187,7 +187,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     std::string result;
     RunTest(BuildTargetUrl("/service_worker/upload", target_query),
             TargetOrigin::kSameOrigin, out_filename, &result);
-    absl::optional<base::Value> parsed_result = base::test::ParseJson(result);
+    std::optional<base::Value> parsed_result = base::test::ParseJson(result);
     ASSERT_TRUE(parsed_result);
     ASSERT_TRUE(parsed_result->is_dict());
     out_result = std::move(*parsed_result).TakeDict();
@@ -321,7 +321,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     base::ReplaceFirstSubstringAfterOffset(&expectation, 0, "@PATH@", filename);
     base::ReplaceFirstSubstringAfterOffset(&expectation, 0, "@SIZE@",
                                            base::NumberToString(kFileSize));
-    absl::optional<base::Value> result = base::test::ParseJson(expectation);
+    std::optional<base::Value> result = base::test::ParseJson(expectation);
     return std::move(*result).TakeDict();
   }
 

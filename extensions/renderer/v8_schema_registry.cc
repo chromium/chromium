@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -158,7 +159,7 @@ v8::Local<v8::Object> V8SchemaRegistry::GetSchema(v8::Isolate* isolate,
   v8::MicrotasksScope microtasks_scope(
       context, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
-  base::StringPiece schema_string =
+  std::string_view schema_string =
       ExtensionAPI::GetSharedInstance()->GetSchemaStringPiece(api);
   CHECK(!schema_string.empty());
   v8::MaybeLocal<v8::String> v8_maybe_string = v8::String::NewExternalOneByte(

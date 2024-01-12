@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -13,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
@@ -165,6 +167,10 @@ class FakeOnDeviceModelService
         load_model_result_(result),
         drop_connection_request_(drop_connection_request) {}
 
+  size_t on_device_model_receiver_count() const {
+    return model_receivers_.size();
+  }
+
  private:
   // on_device_model::mojom::OnDeviceModelService:
   void LoadModel(
@@ -223,6 +229,10 @@ class FakeOnDeviceModelServiceController
     drop_connection_request_ = value;
   }
 
+  size_t on_device_model_receiver_count() const {
+    return service_ ? service_->on_device_model_receiver_count() : 0;
+  }
+
  private:
   ~FakeOnDeviceModelServiceController() override = default;
 
@@ -239,19 +249,60 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     g_model_execute_result.clear();
     g_execute_delay = base::TimeDelta();
     g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOptimizationGuideOnDeviceModel,
-        {{"on_device_model_min_tokens_for_context", "10"},
-         {"on_device_model_max_tokens_for_context", "22"},
-         {"on_device_model_context_token_chunk_size", "4"},
-         {"on_device_must_use_safety_model", "false"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationGuideModelExecution, {}},
+         {features::kOptimizationGuideOnDeviceModel,
+          {{"on_device_model_min_tokens_for_context", "10"},
+           {"on_device_model_max_tokens_for_context", "22"},
+           {"on_device_model_context_token_chunk_size", "4"}}},
+         {features::kTextSafetyClassifier,
+          {{"on_device_must_use_safety_model", "false"}}}},
+        {});
     prefs::RegisterLocalStatePrefs(pref_service_.registry());
-    RecreateServiceController();
+
+    // Fake the requirements to install the model.
+    pref_service_.SetInteger(
+        prefs::localstate::kOnDevicePerformanceClass,
+        base::to_underlying(OnDeviceModelPerformanceClass::kLow));
+    pref_service_.SetTime(
+        prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
+        base::Time::Now());
   }
 
   void TearDown() override {
     access_controller_ = nullptr;
     test_controller_ = nullptr;
+  }
+
+  struct InitializeParams {
+    // The model execution config to write before initialization. Writes a
+    // default configuration if not provided.
+    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config;
+    // Whether to make the downloaded model available prior to initialization of
+    // the service controller.
+    bool model_component_ready = true;
+  };
+
+  void Initialize() { Initialize({}); }
+
+  void Initialize(const InitializeParams& params) {
+    if (params.config) {
+      WriteFeatureConfig(*params.config);
+    } else {
+      proto::OnDeviceModelExecutionFeatureConfig default_config;
+      PopulateConfigForFeature(default_config);
+      WriteFeatureConfig(default_config);
+    }
+
+    if (params.model_component_ready) {
+      on_device_component_state_manager_.get()->OnStartup();
+      task_environment_.FastForwardBy(base::Seconds(1));
+      on_device_component_state_manager_.SetReady(temp_dir());
+    }
+
+    RecreateServiceController();
+    // Wait until the OnDeviceModelExecutionConfig has been read.
+    task_environment_.RunUntilIdle();
   }
 
   ExecuteRemoteFn CreateExecuteRemoteFn() {
@@ -332,19 +383,19 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         std::move(access_controller),
         on_device_component_state_manager_.get()->GetWeakPtr());
 
-    proto::OnDeviceModelExecutionFeatureConfig config;
-    PopulateConfigForFeature(config);
-    auto config_interpreter =
-        std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
-    test_controller_->Init(base::FilePath::FromASCII("/foo"),
-                           std::move(config_interpreter));
-    OverrideFeatureConfigForTesting(config);
+    test_controller_->Init();
   }
 
-  void OverrideFeatureConfigForTesting(
+  void WriteExecutionConfig(const proto::OnDeviceModelExecutionConfig& config) {
+    CHECK(base::WriteFile(temp_dir().Append(kOnDeviceModelExecutionConfigFile),
+                          config.SerializeAsString()));
+  }
+
+  void WriteFeatureConfig(
       const proto::OnDeviceModelExecutionFeatureConfig& config) {
-    test_controller_->ConfigInterpreterForTesting()
-        .OverrideFeatureConfigForTesting(config);
+    proto::OnDeviceModelExecutionConfig execution_config;
+    *execution_config.add_feature_configs() = config;
+    WriteExecutionConfig(execution_config);
   }
 
   void AddContext(OptimizationGuideModelExecutor::Session& session,
@@ -398,6 +449,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       response_error_ = result.error().error();
       return;
     }
+    provided_by_on_device_ = result.value().provided_by_on_device;
     auto response =
         ParsedAnyMetadata<proto::ComposeResponse>(result.value().response);
     if (result.value().is_complete) {
@@ -418,6 +470,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   std::vector<std::string> streamed_responses_;
   std::optional<std::string> response_received_;
+  std::optional<bool> provided_by_on_device_;
   std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
@@ -430,8 +483,9 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
-  base::HistogramTester histogram_tester;
+  Initialize();
 
+  base::HistogramTester histogram_tester;
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -440,8 +494,22 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_TRUE(response_received_);
   const std::string expected_response = "Input: execute:foo\n";
   EXPECT_EQ(*response_received_, expected_response);
+  EXPECT_TRUE(*provided_by_on_device_);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
   EXPECT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
@@ -449,6 +517,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -475,6 +544,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsSingleContextChunk) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -496,6 +566,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsLongContextInChunks) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -519,6 +590,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -536,7 +608,67 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelNotAvailable) {
+  Initialize({.model_component_ready = false});
+
+  base::HistogramTester histogram_tester;
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_FALSE(session);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
+      OnDeviceModelEligibilityReason::kModelNotAvailable, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
+  Initialize({.model_component_ready = false});
+
+  // Model not yet available.
+  base::HistogramTester histogram_tester;
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_FALSE(session);
+
+  on_device_component_state_manager_.get()->OnStartup();
+  task_environment_.RunUntilIdle();
+  on_device_component_state_manager_.SetReady(temp_dir());
+  task_environment_.RunUntilIdle();
+
+  // Model now available.
+  session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_TRUE(session);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
+  Initialize();
+
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  AddContext(*session, "context");
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+
+  // Simulates a model update. This should close the model remote.
+  // Write a new empty execution config to check that the config is reloaded.
+  WriteExecutionConfig({});
+  on_device_component_state_manager_.SetReady(temp_dir());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0ull, test_controller_->on_device_model_receiver_count());
+
+  // Create a new session and verify it fails due to the configuration.
+  base::HistogramTester histogram_tester;
+  session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_FALSE(session);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
+      OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
+  Initialize();
   base::HistogramTester histogram_tester;
 
   EXPECT_FALSE(test_controller_->CreateSession(
@@ -550,9 +682,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
+  Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
+      features::kTextSafetyClassifier,
       {{"on_device_must_use_safety_model", "true"}});
 
   // No safety model received yet.
@@ -623,6 +756,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
+  Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
@@ -651,6 +785,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
+  Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
@@ -675,6 +810,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -692,9 +828,11 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  ASSERT_FALSE(log_entry_received_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -713,6 +851,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
+  Initialize();
   // Start a session.
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session =
@@ -737,6 +876,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
+  Initialize();
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
@@ -752,6 +892,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
+  Initialize();
   // Start a session.
   test_controller_->set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
@@ -776,6 +917,7 @@ TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
+  Initialize();
   // Start a session.
   for (int i = 0; i < 10; ++i) {
     test_controller_->set_drop_connection_request(i % 2 == 1);
@@ -788,6 +930,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        MultipleDisconnectsThenVersionChangeRetries) {
+  Initialize();
   // Create enough sessions that fail to trigger no longer creating a session.
   test_controller_->set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
@@ -806,6 +949,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   pref_service_.SetString(prefs::localstate::kOnDeviceModelChromeVersion,
                           "BOGUS VERSION");
   RecreateServiceController();
+  // Wait until configuration is read.
+  task_environment_.RunUntilIdle();
 
   // A new session should be started because the version changed.
   auto session =
@@ -814,6 +959,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -852,6 +998,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
@@ -867,6 +1014,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
+  Initialize();
   auto session1 =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session1);
@@ -927,6 +1075,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
+  Initialize();
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), &logger_);
@@ -953,23 +1102,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
-  access_controller_ = nullptr;
-  test_controller_ = nullptr;
-
-  auto access_controller =
-      std::make_unique<OnDeviceModelAccessController>(pref_service_);
-  access_controller_ = access_controller.get();
-  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      std::move(access_controller),
-      on_device_component_state_manager_.get()->GetWeakPtr());
-
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(kFeature);
-  auto config_interpreter =
-      std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
-  test_controller_->Init(base::FilePath::FromASCII("/foo"),
-                         std::move(config_interpreter));
-  OverrideFeatureConfigForTesting(config);
+  Initialize({.config = config});
 
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), &logger_);
@@ -996,23 +1131,9 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
-  access_controller_ = nullptr;
-  test_controller_ = nullptr;
-
-  auto access_controller =
-      std::make_unique<OnDeviceModelAccessController>(pref_service_);
-  access_controller_ = access_controller.get();
-  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      std::move(access_controller),
-      on_device_component_state_manager_.get()->GetWeakPtr());
-
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(kFeature);
-  auto config_interpreter =
-      std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
-  test_controller_->Init(base::FilePath::FromASCII("/foo"),
-                         std::move(config_interpreter));
-  OverrideFeatureConfigForTesting(config);
+  Initialize({.config = config});
 
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), &logger_);
@@ -1029,6 +1150,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
+  Initialize();
   g_execute_delay = features::GetOnDeviceModelTimeForInitialResponse() * 2;
 
   auto session = test_controller_->CreateSession(
@@ -1058,10 +1180,12 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
             "2z");
   EXPECT_FALSE(
       log_ai_data_request_passed_to_remote_->compose().has_response_data());
+  EXPECT_FALSE(provided_by_on_device_.has_value());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FallbackToServerOnDisconnectWhileWaitingForExecute) {
+  Initialize();
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), &logger_);
   EXPECT_TRUE(session);
@@ -1086,6 +1210,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        DestroySessionWhileWaitingForResponse) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   ASSERT_TRUE(session);
@@ -1104,6 +1229,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
+  Initialize();
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   ASSERT_TRUE(session);
@@ -1119,6 +1245,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
+  Initialize();
   g_execute_delay = features::GetOnDeviceModelTimeForInitialResponse() * 2;
 
   // Create a bunch of sessions that all timeout.
@@ -1144,6 +1271,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsedOnDeviceOutputUnsafe) {
+  Initialize();
   g_on_complete_response_type =
       on_device_model::mojom::ResponseStatus::kRetracted;
   auto session =
@@ -1158,9 +1286,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UsedOnDeviceOutputUnsafe) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
+  Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
+      features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
   g_on_complete_response_type =
       on_device_model::mojom::ResponseStatus::kRetracted;
@@ -1174,12 +1303,28 @@ TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  // Although we send an error, we should be sending a log entry back so the
+  // filtering can be logged.
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   PopulateConfigForFeatureWithRedactRule(config, "bar");
-  OverrideFeatureConfigForTesting(config);
+  Initialize({.config = config});
 
   // `foo` doesn't match the redaction, so should be returned.
   auto session1 =
@@ -1221,7 +1366,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   PopulateConfigForFeatureWithRedactRule(config, "bar",
                                          proto::RedactBehavior::REJECT);
-  OverrideFeatureConfigForTesting(config);
+  Initialize({.config = config});
 
   auto session1 =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
@@ -1233,6 +1378,22 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  // Although we send an error, we should be sending a log entry back so the
+  // filtering can be logged.
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
@@ -1244,7 +1405,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   auto& field = *redact_rules.add_fields_to_check();
   field.add_proto_descriptors()->set_tag_number(8);
   field.add_proto_descriptors()->set_tag_number(1);
-  OverrideFeatureConfigForTesting(config);
+  Initialize({.config = config});
 
   // Force 'bar' to be returned from model.
   g_model_execute_result = "bar";
@@ -1264,7 +1425,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   PopulateConfigForFeatureWithRedactRule(config, "bar")
       .set_replacement_string("[redacted]");
-  OverrideFeatureConfigForTesting(config);
+  Initialize({.config = config});
 
   // Output contains redacted text (and  input doesn't), so redact.
   g_model_execute_result = "abarx";

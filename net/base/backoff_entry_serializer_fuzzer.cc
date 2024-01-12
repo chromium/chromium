@@ -23,7 +23,7 @@ namespace net {
 
 namespace {
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_ERROR); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_ERROR); }
 };
 
 class ProtoTranslator {

@@ -127,5 +127,5 @@ int TabGroupUnderline::GetStrokeInset() {
              : (TabStyle::Get()->GetTabOverlap() + kStrokeThickness);
 }
 
-BEGIN_METADATA(TabGroupUnderline, views::View)
+BEGIN_METADATA(TabGroupUnderline)
 END_METADATA

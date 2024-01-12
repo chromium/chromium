@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/activity.h"
-
 #include <string>
 
 #include "base/functional/function_ref.h"
@@ -12,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/user_info.h"
@@ -31,8 +30,9 @@ bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
       ERROR_SUCCESS) {
     // We support both string and DWORD formats for backward compatibility.
     std::wstring value;
-    if ((key.ReadValue(kDidRun, &value) == ERROR_SUCCESS) && (value == L"1"))
+    if ((key.ReadValue(kDidRun, &value) == ERROR_SUCCESS) && (value == L"1")) {
       return true;
+    }
 
     DWORD value_dw = 0;
     if ((key.ReadValueDW(kDidRun, &value_dw) == ERROR_SUCCESS) &&
@@ -43,6 +43,8 @@ bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   return false;
 }
 
+// Always returns false to avoid the short circuit in ProcessActiveBit and
+// the early return in ProcessSystemActiveBit.
 bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
   if (key.Open(rootkey, key_name.c_str(),
@@ -51,14 +53,15 @@ bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
     return false;
   }
 
-  if (!key.HasValue(kDidRun))
-    return true;
+  if (!key.HasValue(kDidRun)) {
+    return false;
+  }
 
   // We always clear the value as a string "0".
   const LONG result = key.WriteValue(kDidRun, L"0");
   VLOG_IF(2, result) << "Failed to clear activity key for " << key_name << ": "
                      << result;
-  return !result;
+  return false;
 }
 
 bool ProcessActiveBit(ProcessActiveBitUnderKeyCallback callback,
@@ -102,8 +105,9 @@ bool ProcessSystemActiveBit(ProcessActiveBitUnderKeyCallback callback,
   for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const std::wstring sid = it.Name();
-    if (ProcessActiveBit(callback, HKEY_USERS, sid, id))
+    if (ProcessActiveBit(callback, HKEY_USERS, sid, id)) {
       return true;
+    }
   }
 
   return false;

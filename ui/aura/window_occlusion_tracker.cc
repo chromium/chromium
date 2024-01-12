@@ -260,7 +260,7 @@ WindowOcclusionTracker::ComputeTargetOcclusionForWindow(Window* window) {
   base::AutoReset<OcclusionData> auto_reset_occlusion_data(
       &tracked_window_iter->second, OcclusionData());
   DCHECK(!target_occlusion_window_);
-  base::AutoReset<Window*> auto_reset_target_occlusion_window(
+  base::AutoReset<raw_ptr<Window>> auto_reset_target_occlusion_window(
       &target_occlusion_window_, window);
 
   Window* root_window = window->GetRootWindow();

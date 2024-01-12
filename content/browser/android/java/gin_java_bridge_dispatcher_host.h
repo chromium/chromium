@@ -127,7 +127,7 @@ class GinJavaBridgeDispatcherHost
   GinJavaBoundObject::ObjectID AddObject(
       const base::android::JavaRef<jobject>& object,
       const base::android::JavaRef<jclass>& safe_annotation_clazz,
-      absl::optional<GlobalRenderFrameHostId> holder);
+      std::optional<GlobalRenderFrameHostId> holder);
   scoped_refptr<GinJavaBoundObject> FindObject(
       GinJavaBoundObject::ObjectID object_id);
   bool FindObjectId(const base::android::JavaRef<jobject>& object,

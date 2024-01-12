@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+class PrefRegistrySimple;
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -49,6 +51,7 @@ constexpr char kAppCategoryPWA[] = "progressive_web_apps";
 constexpr char kAppCategorySystemApps[] = "system_apps";
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Gets the corresponding app metric reporting category for the specified app
 // type.

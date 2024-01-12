@@ -161,8 +161,10 @@ std::u16string GetProfileSuggestionMainTextForNonAddressField(
   const std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
   // The first part contains the main text.
-  return suggestion_text_array[0].substr(
-      0, suggestion_text_array[0].find_first_of(separator));
+  std::vector<std::u16string> text_pieces =
+      base::SplitStringUsingSubstr(suggestion_text_array[0], separator,
+                                   base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  return text_pieces[0];
 }
 
 // Check comment of method above:
@@ -837,11 +839,16 @@ CreateSuggestionLabelsWithGranularFillingDetails(
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type,
     const std::string& app_locale) {
-  AutofillFillingMethod filling_method = GetFillingMethodFromTargetedFields(
-      last_targeted_fields.value_or(kAllFieldTypes));
-  // Field-by-field filling suggestions should not have labels because they are
-  // guaranteed to be unique, see `DeduplicatedProfilesForSuggestions()`.
-  if (filling_method == AutofillFillingMethod::kFieldByFieldFilling) {
+  // Suggestions for filling only one field (field-by-field filling, email group
+  // filling, etc.) should not have labels because they are guaranteed to be
+  // unique, see `DeduplicatedProfilesForSuggestions()`.
+  // As an exception, when a user triggers autofill from the context menu on a
+  // field which is not classified as an address, labels should be added because
+  // the first-level suggestion is not clickable. The first-level suggestion
+  // needs to give plenty of info about the profile.
+  if (field_types.size() == 1 && IsAddressType(trigger_field_type) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
     return std::vector<std::vector<Suggestion::Text>>(profiles.size());
   }
 
@@ -1225,9 +1232,16 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
   for (const AutofillProfile* profile : profiles) {
+    // Name fields should have `NAME_FULL` as main text.
+    FieldType main_text_field_type =
+        GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
+                base::FeatureList::IsEnabled(
+                    features::kAutofillGranularFillingAvailable)
+            ? NAME_FULL
+            : trigger_field_type;
     // Compute the main text to be displayed in the suggestion bubble.
-    std::u16string main_text =
-        GetProfileSuggestionMainText(*profile, app_locale, trigger_field_type);
+    std::u16string main_text = GetProfileSuggestionMainText(
+        *profile, app_locale, main_text_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
       main_text = GetPhoneNumberValueForInput(
           trigger_field_max_length, main_text,
@@ -1495,9 +1509,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
                                   field.is_autofilled)) {
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
-      // TODO(crbug.com/1493361): decide whether virtual credit card suggestions
-      // should be shown for the manual fallback.
-      if (!is_manual_fallback && ShouldShowVirtualCardOption(&credit_card)) {
+      if (ShouldShowVirtualCardOption(&credit_card)) {
         suggestions.push_back(CreateCreditCardSuggestion(
             credit_card, trigger_field_type,
             /*virtual_card_option=*/true, card_linked_offer_available));
@@ -1546,8 +1558,8 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
         u" " +
         CreditCard::GetObfuscatedStringForCardDigits(GetObfuscationLength(),
                                                      virtual_card_last_four);
-    if (IsKeyboardAccessoryEnabled()) {
-      // For keyboard accessory, we concatenate all the content to the
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      // For Android keyboard accessory, we concatenate all the content to the
       // `main_text` to prevent the suggestion descriptor from being cut off.
       suggestion.main_text.value = base::StrCat(
           {main_text, u"  ", credit_card.CardNameForAutofillDisplay()});
@@ -1809,33 +1821,35 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     AdjustVirtualCardSuggestionContent(suggestion, credit_card,
                                        trigger_field_type);
   } else if (card_linked_offer_available) {
+#if BUILDFLAG(IS_ANDROID)
     // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
     // suggestion icon only if card linked offers are also enabled.
-    if (IsKeyboardAccessoryEnabled() &&
-        base::FeatureList::IsEnabled(
+    if (base::FeatureList::IsEnabled(
             features::kAutofillEnableOffersInClankKeyboardAccessory)) {
-#if BUILDFLAG(IS_ANDROID)
       suggestion.feature_for_iph =
           feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature.name;
       suggestion.icon = Suggestion::Icon::kOfferTag;
-#endif
     } else {
-      // On Desktop/Android dropdown, populate an offer label.
+#else   // Add the offer label on Desktop unconditionally.
+    {
+#endif  // BUILDFLAG(IS_ANDROID)
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(
               l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
     }
   }
 
-  if (is_manual_fallback) {
+  if (virtual_card_option) {
+    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY);
+  } else if (is_manual_fallback) {
     AddPaymentsGranularFillingChildSuggestions(credit_card, suggestion);
+    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
+  } else {
+    suggestion.acceptance_a11y_announcement =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
   }
-
-  suggestion.acceptance_a11y_announcement =
-      suggestion.is_acceptable
-          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM)
-          : l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
 
   return suggestion;
 }
@@ -1929,17 +1943,18 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 
   // If the focused field is not a card number field AND the card number is NOT
   // empty.
-  // On Android keyboard accessory, the label is formatted as "••1234".
-  if (IsKeyboardAccessoryEnabled()) {
+
+  if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
+    // On Mobile, the label is formatted as either "••••1234" or "••1234",
+    // depending on the obfuscation length.
     return {
         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
             GetObfuscationLength()))};
   }
 
-  // On Desktop/Android dropdown, the label is formatted as
-  // "Product Description/Nickname/Network  ••••1234". If the card name is too
-  // long, it will be truncated from the tail.
   if (ShouldSplitCardNameAndLastFourDigits()) {
+    // Format the label as "Product Description/Nickname/Network  ••••1234".
+    // If the card name is too long, it will be truncated from the tail.
     return {
         Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
                          Suggestion::Text::IsPrimary(false),
@@ -1948,22 +1963,10 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
             GetObfuscationLength()))};
   }
 
-#if BUILDFLAG(IS_IOS)
-  // On iOS, the label is formatted as either "••••1234" or "••1234", depending
-  // on the obfuscation length.
-  return {
-      Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-          GetObfuscationLength()))};
-#elif BUILDFLAG(IS_ANDROID)
-  // On Android dropdown, the label is formatted as
-  // "Nickname/Network  ••••1234".
-  return {Suggestion::Text(credit_card.CardNameAndLastFourDigits(nickname))};
-#else
-  // On Desktop, the label is formatted as
+  // Format the label as
   // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
   return {Suggestion::Text(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))};
-#endif
 }
 
 void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
@@ -1978,6 +1981,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
   }
 
   suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
+  suggestion.is_acceptable = true;
   suggestion.feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 
@@ -1990,7 +1994,8 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
           features::kAutofillEnableVirtualCardMetadata)) {
     suggestion.minor_text.value = suggestion.main_text.value;
     suggestion.main_text.value = VIRTUAL_CARD_LABEL;
-  } else if (IsKeyboardAccessoryEnabled()) {
+  } else {
+#if BUILDFLAG(IS_ANDROID)
     // The keyboard accessory chips can only accommodate 2 strings which are
     // displayed on a single row. The minor_text and the labels are
     // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
@@ -2025,7 +2030,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       // removed.
       suggestion.labels = {};
     }
-  } else {  // Desktop/Android dropdown.
+#else   // Desktop/Android dropdown.
     if (trigger_field_type == CREDIT_CARD_NUMBER) {
       // If the focused field is a credit card number field, reset all labels
       // and populate only the virtual card text.
@@ -2036,6 +2041,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(VIRTUAL_CARD_LABEL)});
     }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

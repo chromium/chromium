@@ -139,20 +139,25 @@ LogHelper::~LogHelper() {
   if (media_log_->ShouldLogToDebugConsole()) {
     switch (level_) {
       case MediaLogMessageLevel::kERROR:
+        // ERRORs are always logged regardless of kMediaLogToConsole value.
         if (DLOG_IS_ON(ERROR)) {
-          logging::LogMessage(file_, line_, logging::LOG_ERROR).stream() << log;
+          logging::LogMessage(file_, line_, logging::LOGGING_ERROR).stream()
+              << log;
         }
         break;
       case MediaLogMessageLevel::kWARNING:
-        if (DLOG_IS_ON(WARNING)) {
-          logging::LogMessage(file_, line_, logging::LOG_WARNING).stream()
+        if (DLOG_IS_ON(WARNING) &&
+            base::FeatureList::IsEnabled(kMediaLogToConsole)) {
+          logging::LogMessage(file_, line_, logging::LOGGING_WARNING).stream()
               << log;
         }
         break;
       case MediaLogMessageLevel::kINFO:
       case MediaLogMessageLevel::kDEBUG:
-        if (DLOG_IS_ON(INFO)) {
-          logging::LogMessage(file_, line_, logging::LOG_INFO).stream() << log;
+        if (DLOG_IS_ON(INFO) &&
+            base::FeatureList::IsEnabled(kMediaLogToConsole)) {
+          logging::LogMessage(file_, line_, logging::LOGGING_INFO).stream()
+              << log;
         }
         break;
     }

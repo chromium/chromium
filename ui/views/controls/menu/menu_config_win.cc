@@ -28,7 +28,6 @@ void MenuConfig::Init() {
 
   bool is_win11 = base::win::GetVersion() >= base::win::Version::WIN11;
   bool is_refresh = features::IsChromeRefresh2023();
-  UMA_HISTOGRAM_BOOLEAN("Windows.Menu.Win11Style", is_win11 && !is_refresh);
   separator_upper_height = 5;
   separator_lower_height = 7;
 

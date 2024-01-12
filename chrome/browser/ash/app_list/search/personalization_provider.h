@@ -48,7 +48,7 @@ class PersonalizationResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 // Provides search results for Personalization App based on a search query. No

@@ -46,7 +46,6 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shm.h"
-#include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 #if BUILDFLAG(IS_FREEBSD)
@@ -653,19 +652,6 @@ bool IsVulkanSurfaceSupported() {
     }
   }
   return false;
-}
-
-bool DoesVisualHaveAlphaForTest() {
-  uint8_t depth = 0;
-  bool visual_has_alpha = false;
-  x11::Connection::Get()->GetOrCreateVisualManager().ChooseVisualForWindow(
-      true, nullptr, &depth, nullptr, &visual_has_alpha);
-
-  if (visual_has_alpha) {
-    DCHECK_EQ(32, depth);
-  }
-
-  return visual_has_alpha;
 }
 
 gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {

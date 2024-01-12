@@ -272,13 +272,12 @@ class PluginVmInstallerTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<PluginVmTestHelper> plugin_vm_test_helper_;
-  raw_ptr<PluginVmInstaller, DanglingUntriaged | ExperimentalAsh> installer_;
+  raw_ptr<PluginVmInstaller, DanglingUntriaged> installer_;
   std::unique_ptr<MockObserver> observer_;
 
   // A pointer to a singleton object which is valid until
   // ConciergeClient::Shutdown() is called.
-  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
-      fake_concierge_client_;
+  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
   ash::FakeDlcserviceClient fake_dlcservice_client_;
 
  private:
@@ -407,11 +406,9 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
     return fake_drive_service_ptr;
   }
 
-  raw_ptr<PluginVmDriveImageDownloadService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<PluginVmDriveImageDownloadService, DanglingUntriaged>
       drive_download_service_;
-  raw_ptr<drive::FakeDriveService, DanglingUntriaged | ExperimentalAsh>
-      fake_drive_service_;
+  raw_ptr<drive::FakeDriveService, DanglingUntriaged> fake_drive_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 

@@ -166,11 +166,6 @@ class GridSizingSubtree
                     wtf_size_t subtree_root)
       : GridSubtree(sizing_tree, parent_end_index, subtree_root) {}
 
-  GridLayoutData& LayoutData() const {
-    DCHECK(grid_tree_);
-    return grid_tree_->At(subtree_root_).layout_data;
-  }
-
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const {
     DCHECK(grid_tree_);
@@ -193,9 +188,21 @@ class GridSizingSubtree
         /* subtree_root */ grid_tree_->LookupSubgridIndex(subgrid_data));
   }
 
-  GridSizingTree::GridTreeNode& SubtreeRootData() const {
+  GridItems& GridItems() const {
     DCHECK(grid_tree_);
-    return grid_tree_->At(subtree_root_);
+    return grid_tree_->At(subtree_root_).grid_items;
+  }
+
+  GridLayoutData& LayoutData() const {
+    DCHECK(grid_tree_);
+    return grid_tree_->At(subtree_root_).layout_data;
+  }
+
+  GridSizingTrackCollection& SizingCollection(
+      GridTrackSizingDirection track_direction) const {
+    DCHECK(grid_tree_);
+    return grid_tree_->At(subtree_root_)
+        .layout_data.SizingCollection(track_direction);
   }
 };
 

@@ -30,8 +30,9 @@ struct AXNodeData;
 }  // namespace ui
 
 class OmniboxHeaderView : public views::View {
+  METADATA_HEADER(OmniboxHeaderView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxHeaderView);
   OmniboxHeaderView(OmniboxPopupViewViews* popup_view, size_t model_index);
 
   void SetHeader(const std::u16string& header_text,

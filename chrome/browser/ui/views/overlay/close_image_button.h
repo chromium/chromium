@@ -11,9 +11,9 @@
 
 // An image button representing a close button.
 class CloseImageButton : public OverlayWindowImageButton {
- public:
-  METADATA_HEADER(CloseImageButton);
+  METADATA_HEADER(CloseImageButton, OverlayWindowImageButton)
 
+ public:
   explicit CloseImageButton(PressedCallback callback);
   CloseImageButton(const CloseImageButton&) = delete;
   CloseImageButton& operator=(const CloseImageButton&) = delete;

@@ -26,6 +26,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
@@ -33,8 +34,10 @@
 #include "content/browser/indexed_db/indexed_db_compaction_task.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
+#include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
+#include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -543,6 +546,49 @@ void IndexedDBBucketContext::RunTasks() {
   }
 }
 
+void IndexedDBBucketContext::OpenDatabase(
+    const std::u16string& name,
+    int64_t version,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+        database_callbacks_remote,
+    int64_t transaction_id,
+    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+        transaction_receiver,
+    bool was_cold_open,
+    IndexedDBDataLossInfo data_loss_info,
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+        state_checker) {
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      std::make_unique<IndexedDBFactoryClient>(
+          std::move(pending_factory_client)),
+      std::make_unique<IndexedDBDatabaseCallbacks>(
+          std::move(database_callbacks_remote)),
+      transaction_id, version, std::move(transaction_receiver));
+  connection->was_cold_open = was_cold_open;
+  connection->data_loss_info = data_loss_info;
+  // Null in unit tests.
+  if (state_checker) {
+    connection->client_state_checker.Bind(std::move(state_checker));
+  }
+
+  IndexedDBDatabase* database_ptr = nullptr;
+  auto it = databases().find(name);
+  if (it == databases().end()) {
+    auto database = std::make_unique<IndexedDBDatabase>(
+        name, *this, IndexedDBDatabase::Identifier(bucket_locator(), name));
+    // The database must be added before the schedule call, as the
+    // CreateDatabaseDeleteClosure can be called synchronously.
+    database_ptr = database.get();
+    AddDatabase(name, std::move(database));
+  } else {
+    database_ptr = it->second.get();
+  }
+
+  database_ptr->ScheduleOpenConnection(std::move(connection));
+}
+
 void IndexedDBBucketContext::DeleteDatabase(
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
         pending_factory_client,
@@ -684,6 +730,7 @@ void IndexedDBBucketContext::FillInMetadata(
     database_list.push_back(std::move(db_info));
   }
   info->databases = std::move(database_list);
+  std::move(result).Run(std::move(info));
 }
 
 void IndexedDBBucketContext::CompactBackingStoreForTesting() {

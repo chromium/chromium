@@ -70,9 +70,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kNextButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kCloseButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
- public:
-  METADATA_HEADER(FindBarMatchCountLabel);
+  METADATA_HEADER(FindBarMatchCountLabel, views::Label)
 
+ public:
   FindBarMatchCountLabel() = default;
 
   FindBarMatchCountLabel(const FindBarMatchCountLabel&) = delete;
@@ -138,7 +138,7 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel)
 
-BEGIN_METADATA(FindBarMatchCountLabel, views::Label)
+BEGIN_METADATA(FindBarMatchCountLabel)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -522,5 +522,5 @@ void FindBarView::OnThemeChanged() {
                                          fg_color, fg_disabled_color);
 }
 
-BEGIN_METADATA(FindBarView, views::View)
+BEGIN_METADATA(FindBarView)
 END_METADATA

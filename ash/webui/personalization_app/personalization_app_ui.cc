@@ -13,10 +13,10 @@
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
@@ -154,6 +154,18 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ariaLabelEnableAutoColorMode",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_AUTO_COLOR_MODE},
       {"tooltipAutoColorMode", IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE},
+      {"geolocationWarningTextForWallpaper",
+       IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER},
+      {"geolocationWarningTextForWeather",
+       IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER},
+      {"systemGeolocationDialogTitle",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_TITLE},
+      {"systemGeolocationDialogBody",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_BODY},
+      {"systemGeolocationDialogConfirmButton",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CONFIRM_BUTTON},
+      {"systemGeolocationDialogCancelButton",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CANCEL_BUTTON},
 
       // User/avatar related strings.
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
@@ -352,6 +364,7 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_EXCLUSIVE_WALLPAPERS_HEADING},
       {"seaPenChooseAWallpaperHeading",
        IDS_PERSONALIZATION_APP_CHOOSE_A_WALLPAPER_HEADING},
+      {"seaPenLabel", IDS_SEA_PEN_LABEL},
       {"seaPenPoweredByGoogle", IDS_SEA_PEN_POWERED_BY_GOOGLE},
       {"seaPenTemplateHeading", IDS_SEA_PEN_TEMPLATE_HEADING},
       {"seaPenRecentWallpapersHeading", IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING},
@@ -363,6 +376,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"seaPenDeleteWallpaper", IDS_SEA_PEN_DELETE_WALLPAPER},
       {"seaPenCreateMore", IDS_SEA_PEN_CREATE_MORE},
       {"seaPenAbout", IDS_SEA_PEN_ABOUT},
+      {"seaPenErrorNoInternet", IDS_SEA_PEN_ERROR_NO_INTERNET},
+      {"seaPenErrorResourceExhausted", IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED},
+      {"seaPenErrorGeneric", IDS_SEA_PEN_ERROR_GENERIC},
       {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -374,6 +390,9 @@ void AddStrings(content::WebUIDataSource* source) {
 
   source->AddString("timeOfDayBannerImageUrl",
                     GetAmbientBackendController()->GetPromoBannerUrl());
+
+  source->AddString("systemGeolocationDialogLearnMoreUrl",
+                    kPrivacyHubGeolocationLearnMoreUrl);
 
   // Product name does not need to be translated.
   auto product_name =
@@ -540,6 +559,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isSeaPenTextInputEnabled",
                      features::IsSeaPenTextInputEnabled() &&
                          manta::features::IsMantaServiceEnabled());
+
+  source->AddBoolean("isCrosPrivacyHubLocationEnabled",
+                     features::IsCrosPrivacyHubLocationEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

@@ -35,13 +35,11 @@
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
 
-// Configures every tab of the group with a given snapshot/favicon pairs.
-- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos;
+// Configures every tab of the group with a given snapshot/favicon pairs and
+// passes the total tabs count to the bottomTrailingView.
+- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
+                    totalTabsCount:(NSInteger)totalTabsCount;
 
-// Starts the activity indicator animation.
-- (void)showActivityIndicator;
-// Stops the activity indicator animation.
-- (void)hideActivityIndicator;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GROUP_GRID_CELL_H_

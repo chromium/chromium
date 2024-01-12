@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
@@ -13,7 +15,6 @@
 #include "content/common/content_export.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -60,12 +61,12 @@ class CONTENT_EXPORT FirstPartySetsLoader {
 
   // Holds the global First-Party Sets. This is nullopt until received from
   // Component Updater. It may be modified based on the manually-specified set.
-  absl::optional<net::GlobalFirstPartySets> sets_
+  std::optional<net::GlobalFirstPartySets> sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Holds the set that was provided on the command line (if any). This is
   // nullopt until `SetManuallySpecifiedSet` is called.
-  absl::optional<net::LocalSetDeclaration> manually_specified_set_
+  std::optional<net::LocalSetDeclaration> manually_specified_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum Progress {

@@ -17,8 +17,12 @@ template <typename ElementType>
 class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
  public:
   using BackingListType = VectorOf<ElementType>;
-  using size_type = uint32_t;
-  using value_type = ElementType;
+  using size_type = typename BackingListType::size_type;
+  using value_type = typename BackingListType::value_type;
+  using reference = typename BackingListType::reference;
+  using const_reference = typename BackingListType::const_reference;
+  using pointer = typename BackingListType::pointer;
+  using const_pointer = typename BackingListType::const_pointer;
   using iterator = typename BackingListType::iterator;
   using const_iterator = typename BackingListType::const_iterator;
   using reverse_iterator = typename BackingListType::reverse_iterator;
@@ -38,21 +42,17 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   using bindings::ObservableArrayBase::GetExoticObject;
 
   // Vector-compatible APIs (accessors)
-  wtf_size_t size() const { return backing_list_.size(); }
-  wtf_size_t capacity() const { return backing_list_.capacity(); }
-  bool IsEmpty() const { return backing_list_.IsEmpty(); }
-  void ReserveCapacity(size_type new_capacity) {
-    backing_list_.reserve(new_capacity);
-  }
+  size_type size() const { return backing_list_.size(); }
+  size_type capacity() const { return backing_list_.capacity(); }
+  bool empty() const { return backing_list_.empty(); }
+  void reserve(size_type new_capacity) { backing_list_.reserve(new_capacity); }
   void ReserveInitialCapacity(size_type initial_capacity) {
     backing_list_.ReserveInitialCapacity(initial_capacity);
   }
-  value_type& at(size_type index) { return backing_list_.at(index); }
-  const value_type& at(size_type index) const {
-    return backing_list_.at(index);
-  }
-  value_type& operator[](size_type index) { return backing_list_[index]; }
-  const value_type& operator[](size_type index) const {
+  reference at(size_type index) { return backing_list_.at(index); }
+  const_reference at(size_type index) const { return backing_list_.at(index); }
+  reference operator[](size_type index) { return backing_list_[index]; }
+  const_reference operator[](size_type index) const {
     return backing_list_[index];
   }
   value_type* data() { return backing_list_.data(); }
@@ -65,10 +65,10 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   reverse_iterator rend() { return backing_list_.rend(); }
   const_reverse_iterator rbegin() const { return backing_list_.rbegin(); }
   const_reverse_iterator rend() const { return backing_list_.rend(); }
-  value_type& front() { return backing_list_.front(); }
-  value_type& back() { return backing_list_.back(); }
-  const value_type& front() const { return backing_list_.front(); }
-  const value_type& back() const { return backing_list_.back(); }
+  reference front() { return backing_list_.front(); }
+  reference back() { return backing_list_.back(); }
+  const_reference front() const { return backing_list_.front(); }
+  const_reference back() const { return backing_list_.back(); }
   // Vector-compatible APIs (modifiers)
   void resize(size_type size) { backing_list_.resize(size); }
   void clear() { backing_list_.clear(); }
@@ -78,7 +78,7 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   }
   void pop_back() { backing_list_.pop_back(); }
   template <typename... Args>
-  value_type& emplace_back(Args&&... args) {
+  reference emplace_back(Args&&... args) {
     return backing_list_.emplace_back(std::forward<Args>(args)...);
   }
   template <typename T>

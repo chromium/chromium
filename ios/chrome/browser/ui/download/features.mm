@@ -22,4 +22,4 @@ BASE_FEATURE(kPassKitKillSwitch,
 
 BASE_FEATURE(kIOSIncognitoDownloadsWarning,
              "IOSIncognitoDownloadsWarning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);

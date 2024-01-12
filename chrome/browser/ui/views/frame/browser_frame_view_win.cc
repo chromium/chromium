@@ -933,5 +933,5 @@ void BrowserFrameViewWin::InitThrobberIcons() {
   }
 }
 
-BEGIN_METADATA(BrowserFrameViewWin, BrowserNonClientFrameView)
+BEGIN_METADATA(BrowserFrameViewWin)
 END_METADATA

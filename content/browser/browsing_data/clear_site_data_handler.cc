@@ -4,6 +4,8 @@
 
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,7 +19,6 @@
 #include "net/base/load_flags.h"
 #include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
@@ -128,8 +129,8 @@ void ClearSiteDataHandler::HandleHeader(
     const GURL& url,
     const std::string& header_value,
     int load_flags,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-    const absl::optional<blink::StorageKey> storage_key,
+    const std::optional<net::CookiePartitionKey> cookie_partition_key,
+    const std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   ClearSiteDataHandler handler(
@@ -159,8 +160,8 @@ ClearSiteDataHandler::ClearSiteDataHandler(
     const GURL& url,
     const std::string& header_value,
     int load_flags,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-    const absl::optional<blink::StorageKey> storage_key,
+    const std::optional<net::CookiePartitionKey> cookie_partition_key,
+    const std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback,
     std::unique_ptr<ConsoleMessagesDelegate> delegate)

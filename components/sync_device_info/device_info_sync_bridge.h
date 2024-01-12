@@ -88,9 +88,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   // DeviceInfoTracker implementation.
   bool IsSyncing() const override;
-  std::unique_ptr<DeviceInfo> GetDeviceInfo(
-      const std::string& client_id) const override;
-  std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override;
+  const DeviceInfo* GetDeviceInfo(const std::string& client_id) const override;
+  std::vector<const DeviceInfo*> GetAllDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
@@ -102,12 +101,32 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void ForcePulseForTest() override;
 
  private:
+  class ImmutableDeviceInfoAndSpecifics {
+   public:
+    explicit ImmutableDeviceInfoAndSpecifics(
+        sync_pb::DeviceInfoSpecifics specifics);
+
+    const sync_pb::DeviceInfoSpecifics& specifics() const { return specifics_; }
+
+    const DeviceInfo& device_info() const { return device_info_; }
+
+   private:
+    const sync_pb::DeviceInfoSpecifics specifics_;
+    const DeviceInfo device_info_;
+  };
+
   // Cache of all syncable and local data, stored by device cache guid.
-  using ClientIdToSpecifics =
-      std::map<std::string, std::unique_ptr<sync_pb::DeviceInfoSpecifics>>;
+  using ClientIdToDeviceInfo =
+      std::map<std::string, ImmutableDeviceInfoAndSpecifics>;
+
+  // Parses the content of |record_list| into |*all_data|. The output
+  // parameter is first for binding purposes.
+  static absl::optional<ModelError> ParseSpecificsOnBackendSequence(
+      ClientIdToDeviceInfo* all_data,
+      std::unique_ptr<ModelTypeStore::RecordList> record_list);
 
   // Store SyncData in the cache and durable storage.
-  void StoreSpecifics(std::unique_ptr<sync_pb::DeviceInfoSpecifics> specifics,
+  void StoreSpecifics(sync_pb::DeviceInfoSpecifics specifics,
                       ModelTypeStore::WriteBatch* batch);
   // Delete SyncData from the cache and durable storage, returns true if there
   // was actually anything at the given tag.
@@ -127,7 +146,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
                       std::unique_ptr<ModelTypeStore> store);
   void OnLocalDeviceNameInfoRetrieved(
       LocalDeviceNameInfo local_device_name_info);
-  void OnReadAllData(std::unique_ptr<ClientIdToSpecifics> all_data,
+  void OnReadAllData(std::unique_ptr<ClientIdToDeviceInfo> all_data,
                      const absl::optional<syncer::ModelError>& error);
   void OnSyncInvalidationsInitialized();
   void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
@@ -161,7 +180,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
       local_device_info_provider_;
 
   std::string local_cache_guid_;
-  ClientIdToSpecifics all_data_;
+  ClientIdToDeviceInfo all_data_;
 
   LocalDeviceNameInfo local_device_name_info_;
 

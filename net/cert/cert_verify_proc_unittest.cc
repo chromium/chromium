@@ -1544,39 +1544,6 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
               testing::UnorderedElementsAreArray(public_key_hash_strings));
 }
 
-// Tests that a Netscape Server Gated crypto is accepted in place of a
-// serverAuth EKU.
-// TODO(crbug.com/843735): Deprecate support for this.
-TEST_P(CertVerifyProcInternalTest, Sha1IntermediateUsesServerGatedCrypto) {
-  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-
-  ASSERT_TRUE(root->UseKeyFromFile(
-      GetTestCertsDirectory().AppendASCII("rsa-2048-1.key")));
-  root->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kRsaPkcs1Sha1);
-
-  intermediate->SetExtendedKeyUsages(
-      {bssl::der::Input(bssl::kNetscapeServerGatedCrypto)});
-  intermediate->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kRsaPkcs1Sha1);
-
-  ScopedTestRoot scoped_root(root->GetX509Certificate());
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  // The cert chain including the root is passed to Verify, as on recent
-  // Android versions (something like 11+) the verifier fails on SHA1 certs and
-  // then the CertVerifyProc wrapper just returns the input chain, which this
-  // test then depends on for its expectations. (This is all kind of silly, but
-  // this is just matching how the test was originally written, and we'll
-  // delete this sometime soon anyway so there's not much benefit to thinking
-  // about it too hard.)
-  int error = Verify(leaf->GetX509CertificateFullChain().get(),
-                     "www.example.com", flags, &verify_result);
-
-  EXPECT_NE(error, OK);
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-}
-
 // Basic test for returning the chain in CertVerifyResult. Note that the
 // returned chain may just be a reflection of the originally supplied chain;
 // that is, if any errors occur, the default chain returned is an exact copy

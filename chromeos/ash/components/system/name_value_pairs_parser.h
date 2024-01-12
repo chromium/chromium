@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
                            NameValuePairsFormat format,
                            const std::string& debug_source);
 
-  raw_ptr<NameValueMap, ExperimentalAsh> map_;
+  raw_ptr<NameValueMap> map_;
 };
 
 }  // namespace ash::system

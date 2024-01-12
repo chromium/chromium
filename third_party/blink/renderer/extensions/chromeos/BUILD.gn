@@ -49,9 +49,7 @@ component("chromeos") {
     ":chromeos_generated",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/extensions/chromeos/diagnostics",
-    "//third_party/blink/renderer/extensions/chromeos/system_extensions/hid",
-    "//third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services/telemetry",
-    "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management",
+    "//third_party/blink/renderer/extensions/chromeos/kiosk",
     "//third_party/blink/renderer/modules",
   ]
 

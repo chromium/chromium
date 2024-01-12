@@ -67,6 +67,11 @@ import java.text.NumberFormat;
  * good way of testing with native code there.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Features.DisableFeatures({
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS,
+    ContentFeatureList.SMART_ZOOM
+})
+@Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
 public class AccessibilitySettingsTest {
     private static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
     private AccessibilitySettings mAccessibilitySettings;
@@ -94,6 +99,8 @@ public class AccessibilitySettingsTest {
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(false));
     }
 
+    // Generic AccessibilitySettings tests (no feature flag dependency).
+
     /**
      * Tests setting FontScaleFactor and ForceEnableZoom in AccessibilitySettings and ensures that
      * ForceEnableZoom changes corresponding to FontScaleFactor.
@@ -101,7 +108,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
     public void testAccessibilitySettings() throws Exception {
         TextScalePreference textScalePref =
                 (TextScalePreference)
@@ -151,7 +158,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
     public void testChangedFontPrefSavedOnStop() {
         TextScalePreference textScalePref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_TEXT_SCALE);
@@ -184,7 +191,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
     public void testUnchangedFontPrefNotSavedOnStop() {
         // Simulate activity stopping.
         TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
@@ -223,7 +230,6 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
     public void testImageDescriptionsPreferences_Enabled() {
         Preference imageDescriptionsPref =
                 mAccessibilitySettings.findPreference(PREF_IMAGE_DESCRIPTIONS);
@@ -251,11 +257,94 @@ public class AccessibilitySettingsTest {
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
     }
 
+    // Tests related to Page Zoom feature.
+
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_savedZoomLevelsPreference() {
+    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
+    public void testPageZoomPreference_hiddenWhenDisabled() {
+        mPageZoomPref =
+                (PageZoomPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+        Assert.assertNotNull(mPageZoomPref);
+        Assert.assertFalse(
+                "Page Zoom default zoom option should not be visible when disabled",
+                mPageZoomPref.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_visibleWhenEnabled() {
+        getPageZoomPref();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_decreaseButtonUpdatesValue() {
+        getPageZoomPref();
+
+        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
+        onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
+        Assert.assertTrue(startingVal > mPageZoomPref.getZoomSliderForTesting().getProgress());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
+        getPageZoomPref();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPageZoomPref.setZoomValueForTesting(0);
+                });
+        onView(withId(R.id.page_zoom_decrease_zoom_button)).check(matches(sDisabled));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_increaseButtonUpdatesValue() {
+        getPageZoomPref();
+
+        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
+        onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
+        Assert.assertTrue(startingVal < mPageZoomPref.getZoomSliderForTesting().getProgress());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_increaseButtonProperlyDisabled() {
+        getPageZoomPref();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPageZoomPref.setZoomValueForTesting(
+                            PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
+                });
+        onView(withId(R.id.page_zoom_increase_zoom_button)).check(matches(sDisabled));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_zoomSliderUpdatesValue() {
+        getPageZoomPref();
+        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
+        onView(withId(R.id.page_zoom_slider)).perform(ViewActions.swipeRight());
+        Assert.assertNotEquals(startingVal, mPageZoomPref.getZoomSliderForTesting().getProgress());
+    }
+
+    // Tests related to Page Zoom Enhancements (v2) feature.
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS})
+    public void testPageZoomPreference_savedZoomLevelsPreference_visibleWhenEnabled() {
         Preference zoomInfoPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_ZOOM_INFO);
         Assert.assertNotNull(zoomInfoPref);
@@ -283,31 +372,21 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_hiddenWhenDisabled() {
-        mPageZoomPref =
-                (PageZoomPreference)
-                        mAccessibilitySettings.findPreference(
-                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
-        Assert.assertNotNull(mPageZoomPref);
+    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS})
+    public void testPageZoomPreference_savedZoomLevelsPreference_hiddenWhenDisables() {
+        Preference zoomInfoPref =
+                mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_ZOOM_INFO);
+        Assert.assertNotNull(zoomInfoPref);
         Assert.assertFalse(
-                "Page Zoom default zoom option should not be visible when disabled",
-                mPageZoomPref.isVisible());
+                "Saved Zoom Levels link should not be visible when disabled",
+                zoomInfoPref.isVisible());
     }
+
+    // Tests related to the Smart Zoom feature.
 
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
-    public void testPageZoomPreference_visibleWhenEnabled() {
-        getPageZoomPref();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-    @DisableFeatures(ContentFeatureList.SMART_ZOOM)
     public void testPageZoomPreference_smartZoom_hiddenWhenDisabled() {
         getPageZoomPref();
         ViewUtils.waitForViewCheckingState(
@@ -327,7 +406,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_visibleWhenEnabled() {
         getPageZoomPref();
         ViewUtils.waitForViewCheckingState(
@@ -347,73 +426,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-    @DisableFeatures(ContentFeatureList.SMART_ZOOM)
-    public void testPageZoomPreference_decreaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
-        Assert.assertTrue(startingVal > mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-    @DisableFeatures(ContentFeatureList.SMART_ZOOM)
-    public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(0);
-                });
-        onView(withId(R.id.page_zoom_decrease_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-    @DisableFeatures(ContentFeatureList.SMART_ZOOM)
-    public void testPageZoomPreference_increaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
-        Assert.assertTrue(startingVal < mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-    @DisableFeatures(ContentFeatureList.SMART_ZOOM)
-    public void testPageZoomPreference_increaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(
-                            PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
-                });
-        onView(withId(R.id.page_zoom_increase_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_zoomSliderUpdatesValue() {
-        getPageZoomPref();
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_slider)).perform(ViewActions.swipeRight());
-        Assert.assertNotEquals(startingVal, mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_decreaseButtonUpdatesValue() {
         getPageZoomPref();
 
@@ -430,7 +443,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -443,7 +456,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_increaseButtonUpdatesValue() {
         getPageZoomPref();
 
@@ -456,7 +469,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
         getPageZoomPref();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -470,7 +483,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_zoomSliderUpdatesValue() {
         getPageZoomPref();
         int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
@@ -478,6 +491,8 @@ public class AccessibilitySettingsTest {
         Assert.assertNotEquals(
                 startingVal, mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
     }
+
+    // Helper methods.
 
     private static final BaseMatcher<View> sDisabled =
             new BaseMatcher<View>() {

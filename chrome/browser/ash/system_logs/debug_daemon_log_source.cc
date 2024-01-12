@@ -190,20 +190,11 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
         cryptohome::CreateAccountIdentifierFromAccountId(
             user ? user->GetAccountId() : EmptyAccountId());
 
-    if (base::FeatureList::IsEnabled(
-            ash::features::kEnableGetDebugdLogsInParallel)) {
-      // GetFeedbackLogsV3 collects logs in parallel.
-      client->GetFeedbackLogsV3(
-          account_identifier, GetLogTypesForUser(user),
-          base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                         weak_ptr_factory_.GetWeakPtr(), start_time));
-    } else {
-      // GetFeedbackLogsV2 collects logs in sequence.
-      client->GetFeedbackLogsV2(
-          account_identifier, GetLogTypesForUser(user),
-          base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                         weak_ptr_factory_.GetWeakPtr(), start_time));
-    }
+    client->GetFeedbackLogs(
+        account_identifier, GetLogTypesForUser(user),
+        base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
+                       weak_ptr_factory_.GetWeakPtr(), start_time));
+
   } else {
     client->GetAllLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
                                       weak_ptr_factory_.GetWeakPtr(),

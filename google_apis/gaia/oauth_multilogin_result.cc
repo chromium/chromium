@@ -5,14 +5,14 @@
 #include "google_apis/gaia/oauth_multilogin_result.h"
 
 #include <algorithm>
-
 #include <optional>
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "net/cookies/cookie_constants.h"
 
 namespace {
@@ -59,9 +59,9 @@ OAuthMultiloginResult::OAuthMultiloginResult(
     : status_(status) {}
 
 // static
-base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
+std::string_view OAuthMultiloginResult::StripXSSICharacters(
     const std::string& raw_data) {
-  base::StringPiece body(raw_data);
+  std::string_view body(raw_data);
   return body.substr(std::min(body.find('\n'), body.size()));
 }
 
@@ -152,7 +152,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
 }
 
 OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data) {
-  base::StringPiece data = StripXSSICharacters(raw_data);
+  std::string_view data = StripXSSICharacters(raw_data);
   status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
   std::optional<base::Value> json_data = base::JSONReader::Read(data);
   if (!json_data) {

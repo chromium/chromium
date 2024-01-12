@@ -45,7 +45,7 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
 
  private:
   void FallbackInitialize();
-  void FallbackEncode(PendingEncode args);
+  void FallbackEncode(PendingEncode args, EncoderStatus main_encoder_status);
   void FallbackInitCompleted(EncoderStatus status);
   PendingEncode MakePendingEncode(scoped_refptr<VideoFrame> frame,
                                   const EncodeOptions& encode_options,

@@ -60,10 +60,9 @@ class AccessibilitySection : public OsSettingsSection,
   void UpdateTextToSpeechVoiceSearchTags();
   void UpdateTextToSpeechEnginesSearchTags();
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
 };
 
 }  // namespace ash::settings

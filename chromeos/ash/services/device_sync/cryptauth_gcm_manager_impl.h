@@ -88,10 +88,10 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
                                gcm::GCMClient::Result result);
 
   // Handles the communications with GCM. Not owned.
-  raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
 
   // Manages preferences across process restarts. Not owned.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Whether a GCM registration is currently being processed.
   bool registration_in_progress_;

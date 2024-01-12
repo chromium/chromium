@@ -112,11 +112,10 @@ class OneDriveUploadHandler
                           const file_system_provider::Actions& actions,
                           base::File::Error result);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   base::FilePath destination_folder_path_;
-  raw_ptr<::file_manager::io_task::IOTaskController, ExperimentalAsh>
-      io_task_controller_;
+  raw_ptr<::file_manager::io_task::IOTaskController> io_task_controller_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
   ::file_manager::io_task::IOTaskId observed_task_id_;

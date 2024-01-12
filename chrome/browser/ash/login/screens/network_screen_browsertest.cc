@@ -7,8 +7,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -171,7 +169,7 @@ class NetworkScreenTest : public OobeBaseTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  raw_ptr<NetworkScreen, DanglingUntriaged | ExperimentalAsh> network_screen_;
+  raw_ptr<NetworkScreen, DanglingUntriaged> network_screen_;
   base::test::TestFuture<NetworkScreen::Result> screen_result_waiter_;
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
 };
@@ -306,39 +304,6 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, Timeout) {
   // Trigger timeout explicitly for test.
   network_screen()->connection_timer_.FireNow();
   WaitForErrorMessageToBeShown();
-}
-
-// The network screen should be skipped if the device can connect and it's using
-// zero-touch hands-off enrollment.
-IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffCanConnect_Skipped) {
-  SetUpConnectedEthernet();
-  // Configure the UI to use Hands-Off Enrollment flow. This cannot be done in
-  // the `SetUpCommandLine` method, because the welcome screen would also be
-  // skipped, causing the network screen to be shown before we could set up this
-  // test class properly.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-
-  ShowNetworkScreen();
-  EXPECT_EQ(WaitForScreenExitResult(), NetworkScreen::Result::NOT_APPLICABLE);
-}
-
-// The network screen should NOT be skipped if the connection times out, even if
-// it's using zero-touch hands-off enrollment.
-IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffTimeout_NotSkipped) {
-  // Configure the UI to use Hands-Off Enrollment flow. This cannot be done in
-  // the `SetUpCommandLine` method, because the welcome screen would also be
-  // skipped, causing the network screen to be shown before we could set up this
-  // test class properly.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-
-  ShowNetworkScreen();
-  SetUpConnectingToWifiNetwork();
-  // Trigger timeout explicitly for test.
-  network_screen()->connection_timer_.FireNow();
-  WaitForErrorMessageToBeShown();
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenTest, EthernetConnection_Skipped) {

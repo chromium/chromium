@@ -90,9 +90,9 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   OnStartCallback on_start_callback_;
   // Delegate that helps handle speech recognition events. `delegate_` is
   // required to outlive this object.
-  const raw_ptr<SpeechRecognitionPrivateDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<SpeechRecognitionPrivateDelegate> delegate_;
   // The associated BrowserContext.
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   // A unique ID for this speech recognizer.
   const std::string id_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;

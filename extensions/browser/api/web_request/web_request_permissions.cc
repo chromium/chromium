@@ -168,7 +168,9 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
       return GetHostAccessForURL(*extension, initiator->GetURL(), tab_id);
     }
     case WebRequestPermissions::REQUIRE_ALL_URLS:
-      return extension->permissions_data()->HasEffectiveAccessToAllHosts()
+      return extension->permissions_data()
+                     ->active_permissions()
+                     .HasEffectiveAccessToAllHosts()
                  ? PermissionsData::PageAccess::kAllowed
                  : PermissionsData::PageAccess::kDenied;
   }
@@ -222,6 +224,12 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
   }
 
   return true;
+}
+
+bool IsMainFrameNavigationRequest(const extensions::WebRequestInfo& request) {
+  return request.is_navigation_request &&
+         request.web_request_type ==
+             extensions::WebRequestResourceType::MAIN_FRAME;
 }
 
 }  // namespace
@@ -318,13 +326,22 @@ bool WebRequestPermissions::HideRequest(
     return true;
   }
 
-  // Treat requests from chrome-untrusted:// as sensitive to ensure that the
-  // Web Request API doesn't see them. Note that Extensions are never allowed to
-  // request permission for chrome-untrusted:// URLs so this is check is here
-  // just in case.
+  // Requests from chrome-untrusted:// are generally sensitive (because they
+  // are considered part of browser UI).
+  //
+  // Main frame navigations from chrome-untrusted:// to non-WebUI origins are an
+  // exception: These requests are inspectable by the Web Request API (e.g. by a
+  // content filtering extension) and therefore allowlisted.
   if (request.initiator.has_value() &&
       request.initiator->scheme() == content::kChromeUIUntrustedScheme) {
-    return true;
+    // The call to `HasWebRequestScheme()` with an early exit at the top already
+    // ensures that request.url does not point to a chrome-untrusted:// URL.
+    // Therefore, it's not necessary to check the scheme of request.url again.
+    bool allowlist = IsMainFrameNavigationRequest(request);
+
+    if (!allowlist) {
+      return true;
+    }
   }
 
   // Allow the extension embedder to hide the request.

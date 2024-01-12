@@ -216,7 +216,7 @@ class CryptohomeMiscClientImpl : public CryptohomeMiscClient {
   }
 
   // D-Bus proxy for cryptohomed, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // For making blocking dbus calls.
   std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;

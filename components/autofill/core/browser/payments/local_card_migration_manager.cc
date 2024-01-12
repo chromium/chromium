@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -49,15 +50,13 @@ MigratableCreditCard::~MigratableCreditCard() = default;
 
 LocalCardMigrationManager::LocalCardMigrationManager(
     AutofillClient* client,
-    payments::PaymentsNetworkInterface* payments_network_interface,
     const std::string& app_locale,
     PersonalDataManager* personal_data_manager)
     : client_(client),
-      payments_network_interface_(payments_network_interface),
       app_locale_(app_locale),
       personal_data_manager_(personal_data_manager) {}
 
-LocalCardMigrationManager::~LocalCardMigrationManager() {}
+LocalCardMigrationManager::~LocalCardMigrationManager() = default;
 
 bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
     const std::optional<CreditCard>& extracted_credit_card,
@@ -142,8 +141,11 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
 
 void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
     bool is_from_settings_page) {
-  // Abort the migration if `payments_network_interface_` is nullptr.
-  if (!payments_network_interface_) {
+  payments::PaymentsNetworkInterface* payments_network_interface =
+      client_->GetPaymentsNetworkInterface();
+  // If `payments_network_interface` is nullptr, we can not offer local card
+  // migration as it requires a server call.
+  if (!payments_network_interface) {
     return;
   }
   migration_request_ =
@@ -152,7 +154,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
   if (observer_for_testing_)
     observer_for_testing_->OnDecideToRequestLocalCardMigration();
 
-  payments_network_interface_->GetUploadDetails(
+  payments_network_interface->GetUploadDetails(
       std::vector<AutofillProfile>(), GetDetectedValues(),
       /*client_behavior_signals=*/std::vector<ClientBehaviorConstants>(),
       app_locale_,
@@ -272,19 +274,18 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
                 NOT_OFFERED_NO_SUPPORTED_CARDS);
         return;
       }
-      client_->ShowLocalCardMigrationDialog(base::BindOnce(
-          &LocalCardMigrationManager::OnUserAcceptedIntermediateMigrationDialog,
-          weak_ptr_factory_.GetWeakPtr()));
+      client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationDialog(
+          base::BindOnce(&LocalCardMigrationManager::
+                             OnUserAcceptedIntermediateMigrationDialog,
+                         weak_ptr_factory_.GetWeakPtr()));
       autofill_metrics::LogLocalCardMigrationPromptMetric(
           local_card_migration_origin_,
           autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN);
     }
 
-    // TODO(crbug.com/876895): Clean up the LoadRiskData Bind/BindRepeating
-    // usages
-    client_->LoadRiskData(base::BindRepeating(
-        &LocalCardMigrationManager::OnDidGetMigrationRiskData,
-        weak_ptr_factory_.GetWeakPtr()));
+    client_->GetPaymentsAutofillClient()->LoadRiskData(
+        base::BindOnce(&LocalCardMigrationManager::OnDidGetMigrationRiskData,
+                       weak_ptr_factory_.GetWeakPtr()));
     autofill_metrics::LogLocalCardMigrationDecisionMetric(
         autofill_metrics::LocalCardMigrationDecisionMetric::OFFERED);
   } else {
@@ -365,9 +366,9 @@ void LocalCardMigrationManager::OnDidGetMigrationRiskData(
     SendMigrateLocalCardsRequest();
 }
 
-// Send the migration request. Will call `payments_network_interface` to create
-// a new PaymentsRequest. Also create a new callback function
-// OnDidMigrateLocalCards.
+// Send the migration request. Will call
+// `client_->GetPaymentsNetworkInterface()` to create a new PaymentsRequest.
+// Also create a new callback function OnDidMigrateLocalCards.
 void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
   if (observer_for_testing_)
     observer_for_testing_->OnSentMigrateCardsRequest();
@@ -375,7 +376,7 @@ void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
   migration_request_.app_locale = app_locale_;
   migration_request_.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
-  payments_network_interface_->MigrateCards(
+  client_->GetPaymentsNetworkInterface()->MigrateCards(
       migration_request_, migratable_credit_cards_,
       base::BindOnce(&LocalCardMigrationManager::OnDidMigrateLocalCards,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -117,7 +117,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   virtual device::mojom::WakeLock* GetWakeLock();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string user_id_hash_;
 
   ArcVmDataMigrationScreenView::UIState current_ui_state_ =
@@ -135,7 +135,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   // |update_button_pressed_| is flipped to true.
   double lowest_battery_percent_during_migration_;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
   base::TimeTicks previous_ticks_ = {};
   uint64_t previous_bytes_ = 0;
 

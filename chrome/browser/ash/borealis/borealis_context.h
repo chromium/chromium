@@ -64,7 +64,7 @@ class BorealisContext {
 
   explicit BorealisContext(Profile* profile);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   BorealisLaunchOptions::Options launch_options_;
   std::string vm_name_;
   std::string container_name_;

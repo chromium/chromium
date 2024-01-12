@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -32,8 +31,6 @@ class WaylandWindow;
 // such as copy-and-paste and drag-and-drop mechanisms.
 class WaylandDataDevice : public WaylandDataDeviceBase {
  public:
-  using RequestDataCallback = base::OnceCallback<void(PlatformClipboard::Data)>;
-
   // DragDelegate is responsible for handling drag and drop sessions.
   class DragDelegate {
    public:
@@ -75,12 +72,6 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   // TODO(crbug.com/1401598): Drop once drag delegate improvements are done.
   void ResetDragDelegateIfNotDragSource();
 
-  // Requests data for an |offer| in a format specified by |mime_type|. The
-  // transfer happens asynchronously and |callback| is called when it is done.
-  void RequestData(WaylandDataOffer* offer,
-                   const std::string& mime_type,
-                   RequestDataCallback callback);
-
   // Returns the underlying wl_data_device singleton object.
   wl_data_device* data_device() const { return data_device_.get(); }
 
@@ -95,8 +86,6 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            DestroyWindowWhileFetchingForeignData);
-
-  void ReadDragDataFromFD(base::ScopedFD fd, RequestDataCallback callback);
 
   // wl_data_device_listener callbacks:
   static void OnDataOffer(void* data,

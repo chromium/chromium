@@ -65,7 +65,7 @@ void EditorMenuBadgeView::OnThemeChanged() {
       GetPreferredSize().height() / 2));
 }
 
-BEGIN_METADATA(EditorMenuBadgeView, views::View)
+BEGIN_METADATA(EditorMenuBadgeView)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

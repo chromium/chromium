@@ -197,7 +197,6 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   gfx::Rect rect(0, 0, 100, 100);
   gfx::Rect visible_rect(0, 0, 100, 100);
   bool needs_blending = true;
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
   static const gpu::SyncToken kSyncToken(
       gpu::CommandBufferNamespace::GPU_IO,
@@ -255,25 +254,24 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   // code paths.
   auto* stream_video_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  stream_video_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                            resource6, false, gfx::PointF(0.f, 0.f),
-                            gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-                            vertex_opacity, false, false, false,
-                            gfx::ProtectedVideoType::kHardwareProtected);
+  stream_video_quad->SetNew(
+      shared_state, rect, visible_rect, needs_blending, resource6, false,
+      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
+      false, false, false, gfx::ProtectedVideoType::kHardwareProtected);
   stream_video_quad->is_stream_video = true;
 
   auto* texture_quad = to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  texture_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, resource1, false,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
+                       resource1, false, gfx::PointF(0.f, 0.f),
+                       gfx::PointF(1.f, 1.f), SkColors::kTransparent, false,
+                       false, false, gfx::ProtectedVideoType::kClear);
 
   auto* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, resource8, false,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
+      false, false, false, gfx::ProtectedVideoType::kClear);
 
   auto* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
@@ -334,8 +332,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   gfx::Rect rect(0, 0, 100, 100);
   gfx::Rect visible_rect(0, 0, 100, 100);
   bool needs_blending = true;
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
-
   static const gpu::SyncToken kDefaultSyncToken(
       gpu::CommandBufferNamespace::GPU_IO,
       gpu::CommandBufferId::FromUnsafeValue(0x111), 42);
@@ -441,26 +437,25 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::TextureDrawQuad* stream_video_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  stream_video_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                            mapped_resource6, false, gfx::PointF(0.f, 0.f),
-                            gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-                            vertex_opacity, false, false, false,
-                            gfx::ProtectedVideoType::kHardwareProtected);
+  stream_video_quad->SetNew(
+      shared_state, rect, visible_rect, needs_blending, mapped_resource6, false,
+      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
+      false, false, false, gfx::ProtectedVideoType::kHardwareProtected);
   stream_video_quad->is_stream_video = true;
 
   viz::TextureDrawQuad* texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  texture_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, mapped_resource1, false,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
+                       mapped_resource1, false, gfx::PointF(0.f, 0.f),
+                       gfx::PointF(1.f, 1.f), SkColors::kTransparent, false,
+                       false, false, gfx::ProtectedVideoType::kClear);
 
   viz::TextureDrawQuad* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, mapped_resource8, false,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
+      false, false, false, gfx::ProtectedVideoType::kClear);
 
   viz::TileDrawQuad* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
@@ -503,6 +498,28 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
                    mapped_plane_resources[1], mapped_plane_resources[2],
                    mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(),
                    0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, std::nullopt);
+}
+
+std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
+    viz::CompositorRenderPass* from_pass,
+    viz::AggregatedRenderPassId to_id,
+    gfx::ContentColorUsage content_usage) {
+  auto copy_pass = std::make_unique<viz::AggregatedRenderPass>(
+      from_pass->shared_quad_state_list.size(), from_pass->quad_list.size());
+  copy_pass->SetAll(to_id, from_pass->output_rect, from_pass->damage_rect,
+                    from_pass->transform_to_root_target, from_pass->filters,
+                    from_pass->backdrop_filters,
+                    from_pass->backdrop_filter_bounds, content_usage,
+                    from_pass->has_transparent_background,
+                    from_pass->cache_render_pass,
+                    from_pass->has_damage_from_contributing_content,
+                    from_pass->generate_mipmap);
+
+  copy_pass->shared_quad_state_list =
+      std::move(from_pass->shared_quad_state_list);
+  copy_pass->quad_list = std::move(from_pass->quad_list);
+
+  return copy_pass;
 }
 
 }  // namespace cc

@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/render_message_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/test/test_render_frame.h"
@@ -37,43 +36,22 @@ constexpr int32_t kFirstGeneratedRoutingId = 313337000;
 
 static const blink::UserAgentMetadata kUserAgentMetadata;
 
-class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
- public:
-  MockRenderMessageFilterImpl() = default;
-  ~MockRenderMessageFilterImpl() override = default;
-
-  void GenerateFrameRoutingID(
-      GenerateFrameRoutingIDCallback callback) override {
-    int routing_id;
-    blink::LocalFrameToken frame_token;
-    base::UnguessableToken devtools_frame_token;
-    blink::DocumentToken document_token;
-    RenderThread::Get()->GenerateFrameRoutingID(
-        routing_id, frame_token, devtools_frame_token, document_token);
-    std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
-                            document_token);
-  }
-
-  void HasGpuProcess(HasGpuProcessCallback callback) override {
-    std::move(callback).Run(false);
-  }
-};
-
 }  // namespace
 
 MockRenderThread::MockRenderThread()
-    : next_routing_id_(kFirstGeneratedRoutingId),
-      mock_render_message_filter_(new MockRenderMessageFilterImpl()) {
-}
+    : next_routing_id_(kFirstGeneratedRoutingId) {}
 
 MockRenderThread::~MockRenderThread() {
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   while (!filters_.empty()) {
     scoped_refptr<IPC::MessageFilter> filter = filters_.back();
     filters_.pop_back();
     filter->OnFilterRemoved();
   }
+#endif
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // Called by the Widget. Used to send messages to the browser.
 // We short-circuit the mechanism and handle the messages right here on this
 // class.
@@ -102,24 +80,8 @@ bool MockRenderThread::Send(IPC::Message* msg) {
   return true;
 }
 
-IPC::SyncChannel* MockRenderThread::GetChannel() {
-  return nullptr;
-}
-
-std::string MockRenderThread::GetLocale() {
-  return "en-US";
-}
-
 IPC::SyncMessageFilter* MockRenderThread::GetSyncMessageFilter() {
   return nullptr;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-MockRenderThread::GetIOTaskRunner() {
-  return io_task_runner_;
-}
-
-void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
 }
 
 void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
@@ -129,18 +91,6 @@ void MockRenderThread::AttachTaskRunnerToRoute(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
 
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
-
-bool MockRenderThread::GenerateFrameRoutingID(
-    int32_t& routing_id,
-    blink::LocalFrameToken& frame_token,
-    base::UnguessableToken& devtools_frame_token,
-    blink::DocumentToken& document_token) {
-  routing_id = GetNextRoutingID();
-  frame_token = blink::LocalFrameToken();
-  devtools_frame_token = base::UnguessableToken::Create();
-  document_token = blink::DocumentToken();
-  return true;
-}
 
 void MockRenderThread::AddFilter(IPC::MessageFilter* filter) {
   filter->OnFilterAdded(&sink());
@@ -159,6 +109,36 @@ void MockRenderThread::RemoveFilter(IPC::MessageFilter* filter) {
     }
   }
   NOTREACHED() << "filter to be removed not found";
+}
+
+#endif
+
+IPC::SyncChannel* MockRenderThread::GetChannel() {
+  return nullptr;
+}
+
+std::string MockRenderThread::GetLocale() {
+  return "en-US";
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+MockRenderThread::GetIOTaskRunner() {
+  return io_task_runner_;
+}
+
+void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
+}
+
+bool MockRenderThread::GenerateFrameRoutingID(
+    int32_t& routing_id,
+    blink::LocalFrameToken& frame_token,
+    base::UnguessableToken& devtools_frame_token,
+    blink::DocumentToken& document_token) {
+  routing_id = GetNextRoutingID();
+  frame_token = blink::LocalFrameToken();
+  devtools_frame_token = base::UnguessableToken::Create();
+  document_token = blink::DocumentToken();
+  return true;
 }
 
 void MockRenderThread::AddObserver(RenderThreadObserver* observer) {
@@ -241,6 +221,7 @@ void MockRenderThread::OnCreateChildFrame(
       child_frame_token, std::move(browser_interface_broker));
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
   for (auto& observer : observers_) {
     if (observer.OnControlMessageReceived(msg))
@@ -254,6 +235,7 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   sink_.OnMessageReceived(msg);
   return false;
 }
+#endif
 
 // The View expects to be returned a valid route_id different from its own.
 void MockRenderThread::OnCreateWindow(

@@ -39,6 +39,7 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   bool AllowCachedCopies() const override;
+  bool AllowUpdatesOnMeteredConnections() const override;
 
  private:
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>

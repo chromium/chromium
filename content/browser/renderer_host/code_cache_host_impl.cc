@@ -362,18 +362,18 @@ void CodeCacheHostImpl::OnReceiveCachedCode(
 // resource as secondary key. This function returns the origin lock of the
 // renderer that will be used as the secondary key for the code cache.
 // The secondary key is:
-// Case 0. absl::nullopt if the resource URL or origin lock have unsupported
+// Case 0. std::nullopt if the resource URL or origin lock have unsupported
 // schemes, or if they represent potentially dangerous combinations such as
 // WebUI code in an open-web page.
 // Case 1. an empty GURL if the render process is not locked to an origin. In
 // this case, code cache uses |resource_url| as the key.
-// Case 2. a absl::nullopt, if the origin lock is opaque (for ex: browser
+// Case 2. a std::nullopt, if the origin lock is opaque (for ex: browser
 // initiated navigation to a data: URL). In these cases, the code should not be
 // cached since the serialized value of opaque origins should not be used as a
 // key.
 // Case 3: origin_lock if the scheme of origin_lock is
 // Http/Https/chrome/chrome-untrusted.
-// Case 4. absl::nullopt otherwise.
+// Case 4. std::nullopt otherwise.
 std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
     const GURL& resource_url,
     int render_process_id,
@@ -405,9 +405,9 @@ std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
   // origin checks should always fail for opaque origins but the serialized
   // value of opaque origins does not ensure this.
   // NOTE: HasOpaqueOrigin() will return true if the ProcessLock lock url is
-  // invalid, leading to a return value of absl::nullopt.
+  // invalid, leading to a return value of std::nullopt.
   if (process_lock.HasOpaqueOrigin()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Case 3: process_lock_url is used to enfore site-isolation in code caches.

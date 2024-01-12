@@ -121,4 +121,8 @@ void LogServerIbanUnmaskLatency(base::TimeDelta latency, bool is_successful) {
   base::UmaHistogramTimes("Autofill.Iban.UnmaskIbanDuration", latency);
 }
 
+void LogServerIbanUnmaskStatus(bool is_successful) {
+  base::UmaHistogramBoolean("Autofill.Iban.UnmaskIbanResult", is_successful);
+}
+
 }  // namespace autofill::autofill_metrics

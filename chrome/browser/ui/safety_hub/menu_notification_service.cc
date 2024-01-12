@@ -94,6 +94,14 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
           base::Unretained(this)));
 }
 
+void SafetyHubMenuNotificationService::UpdateResultGetterForTesting(
+    safety_hub::SafetyHubModuleType type,
+    base::RepeatingCallback<
+        std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+        result_getter) {
+  module_info_map_[type]->result_getter = result_getter;
+}
+
 SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() {
   registrar_.RemoveAll();
 }
@@ -151,7 +159,8 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
   // as well.
   SaveNotificationsToPrefs();
   return MenuNotificationEntry(notification_to_show->GetNotificationCommandId(),
-                               notification_to_show->GetNotificationString());
+                               notification_to_show->GetNotificationString(),
+                               notification_to_show->GetModuleType());
 }
 
 std::optional<ResultMap>
@@ -234,23 +243,11 @@ void SafetyHubMenuNotificationService::DismissActiveNotification() {
   }
 }
 
-void SafetyHubMenuNotificationService::DismissPasswordNotification() {
-  // TODO(crbug.com/1443466): Uncomment the following lines in
-  // crrev.com/c/4982626.
-  // SafetyHubMenuNotification* notification =
-  //     module_info_map_.at(safety_hub::SafetyHubModuleType::PASSWORDS)
-  //         ->notification.get();
-  // if (notification->IsCurrentlyActive()) {
-  //   notification->Dismiss();
-  // }
-}
-
-std::optional<safety_hub::SafetyHubModuleType>
-SafetyHubMenuNotificationService::GetModuleOfActiveNotification() const {
-  for (auto const& item : module_info_map_) {
-    if (item.second->notification->IsCurrentlyActive()) {
-      return item.second->notification->GetModuleType();
-    }
+void SafetyHubMenuNotificationService::DismissActiveNotificationOfModule(
+    safety_hub::SafetyHubModuleType module) {
+  SafetyHubMenuNotification* notification =
+      module_info_map_.at(module)->notification.get();
+  if (notification->IsCurrentlyActive()) {
+    notification->Dismiss();
   }
-  return std::nullopt;
 }

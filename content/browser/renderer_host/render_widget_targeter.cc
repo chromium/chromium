@@ -54,7 +54,7 @@ RenderWidgetTargetResult::RenderWidgetTargetResult(
 RenderWidgetTargetResult::RenderWidgetTargetResult(
     RenderWidgetHostViewBase* in_view,
     bool in_should_query_view,
-    absl::optional<gfx::PointF> in_location,
+    std::optional<gfx::PointF> in_location,
     bool in_latched_target)
     : view(in_view),
       should_query_view(in_should_query_view),
@@ -92,7 +92,7 @@ RenderWidgetTargeter::TargetingRequest::~TargetingRequest() = default;
 
 void RenderWidgetTargeter::TargetingRequest::RunCallback(
     RenderWidgetHostViewBase* target,
-    absl::optional<gfx::PointF> point) {
+    std::optional<gfx::PointF> point) {
   if (!callback.is_null()) {
     std::move(callback).Run(target ? target->GetWeakPtr() : nullptr, point);
   }
@@ -370,7 +370,7 @@ void RenderWidgetTargeter::FoundFrameSinkId(
 
 void RenderWidgetTargeter::FoundTarget(
     RenderWidgetHostViewBase* target,
-    const absl::optional<gfx::PointF>& target_location,
+    const std::optional<gfx::PointF>& target_location,
     TargetingRequest* request) {
   DCHECK(request);
   // RenderWidgetHostViewMac can be deleted asynchronously, in which case the

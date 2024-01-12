@@ -39,8 +39,7 @@ class SecurityBlockingPageFactory {
       const GURL& request_url,
       int options_mask,
       const base::Time& time_triggered,
-      const GURL& support_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter) = 0;
+      const GURL& support_url) = 0;
 
   // Creates a captive portal blocking page.
   virtual std::unique_ptr<CaptivePortalBlockingPage>
@@ -48,7 +47,6 @@ class SecurityBlockingPageFactory {
       content::WebContents* web_contents,
       const GURL& request_url,
       const GURL& login_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       const net::SSLInfo& ssl_info,
       int cert_error) = 0;
 
@@ -59,8 +57,7 @@ class SecurityBlockingPageFactory {
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       const base::Time& time_triggered,
-      ssl_errors::ClockState clock_state,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter) = 0;
+      ssl_errors::ClockState clock_state) = 0;
 
   // Creates a man-in-the-middle software blocking page.
   virtual std::unique_ptr<MITMSoftwareBlockingPage>
@@ -68,7 +65,6 @@ class SecurityBlockingPageFactory {
       content::WebContents* web_contents,
       int cert_error,
       const GURL& request_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       const net::SSLInfo& ssl_info,
       const std::string& mitm_software_name) = 0;
 
@@ -78,7 +74,6 @@ class SecurityBlockingPageFactory {
       content::WebContents* web_contents,
       int cert_error,
       const GURL& request_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       const net::SSLInfo& ssl_info) = 0;
 
   virtual std::unique_ptr<security_interstitials::InsecureFormBlockingPage>

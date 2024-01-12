@@ -157,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
         std::move(fullscreen_callback_).Run();
     }
 
-    const raw_ptr<PresentationReceiverWindowView, ExperimentalAsh>
-        receiver_view_;
+    const raw_ptr<PresentationReceiverWindowView> receiver_view_;
     base::CallbackListSubscription subscription_;
     const AwaitType await_type_;
     base::OnceClosure fullscreen_callback_;

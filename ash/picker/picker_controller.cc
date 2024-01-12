@@ -5,15 +5,20 @@
 #include "ash/picker/picker_controller.h"
 
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace {
@@ -30,6 +35,9 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
     "\xE7\x2C\x99\xD7\x99\x89\xDB\xA5\x9D\x06\x4A\xED\xDF\xE5\x30\xA7\x8C\x76"
     "\x00\x89",
     base::kSHA1Length);
+
+// Time from when the insert is issued and when we give up inserting.
+constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
@@ -49,44 +57,18 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   return PickerFeatureKeyType::kNone;
 }
 
-class PickerViewDelegateImpl : public PickerViewDelegate {
- public:
-  explicit PickerViewDelegateImpl(PickerClient* client)
-      : client_(client),
-        should_paint_(MatchPickerFeatureKeyHash() ==
-                      PickerFeatureKeyType::kDev) {}
-
-  std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) override {
-    return client_->CreateWebView(params);
-  }
-
-  void StartSearch(const std::u16string& query,
-                   SearchResultsCallback callback) override {
-    // TODO(b/310088338): Do a real search.
-    callback.Run(PickerSearchResults({{
-        PickerSearchResults::Section(
-            u"Matching expressions",
-            {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
-    }}));
-  }
-
-  void InsertResult(const PickerSearchResult& result) override {}
-
-  bool ShouldPaint() override { return should_paint_; }
-
- private:
-  raw_ptr<PickerClient> client_ = nullptr;
-  bool should_paint_;
-};
-
 }  // namespace
 
-PickerController::PickerController() = default;
+PickerController::PickerController()
+    : should_paint_(MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kDev) {
+  if (auto* manager = ash::input_method::InputMethodManager::Get()) {
+    observation_.Observe(manager->GetImeKeyboard());
+  }
+}
 
 PickerController::~PickerController() {
-  // `widget_` depends on `client_`, which is only valid for the lifetime of
-  // this class. Destroy the widget synchronously to avoid a dangling pointer.
+  // `widget_` depends on `this`. Destroy the widget synchronously to avoid a
+  // dangling pointer.
   if (widget_) {
     widget_->CloseNow();
   }
@@ -102,12 +84,6 @@ bool PickerController::IsFeatureKeyMatched() {
 }
 
 void PickerController::SetClient(PickerClient* client) {
-  // The widget depends on `client_`, so destroy it synchronously to avoid a
-  // dangling pointer.
-  if (widget_) {
-    widget_->CloseNow();
-  }
-
   client_ = client;
 }
 
@@ -118,11 +94,67 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(
-        std::make_unique<PickerViewDelegateImpl>(client_),
-        trigger_event_timestamp);
+    widget_ = PickerView::CreateWidget(this, trigger_event_timestamp);
     widget_->Show();
   }
+}
+
+std::unique_ptr<AshWebView> PickerController::CreateWebView(
+    const AshWebView::InitParams& params) {
+  return client_->CreateWebView(params);
+}
+
+void PickerController::LoadAndDecodeGif(const GURL& url,
+                                        DecodeGifCallback callback) {
+  client_->DownloadGifToString(
+      url,
+      base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
+}
+
+void PickerController::GetResultsForCategory(PickerCategory category,
+                                             SearchResultsCallback callback) {
+  // TODO: b/316936620 - Get actual results for the category.
+  callback.Run(PickerSearchResults({{
+      PickerSearchResults::Section(u"Recently used",
+                                   {{PickerSearchResult(u"😊")}}),
+  }}));
+}
+
+void PickerController::StartSearch(const std::u16string& query,
+                                   std::optional<PickerCategory> category,
+                                   SearchResultsCallback callback) {
+  // TODO(b/310088338): Do a real search.
+  callback.Run(PickerSearchResults({{
+      PickerSearchResults::Section(
+          u"Matching expressions",
+          {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
+  }}));
+}
+
+void PickerController::InsertResultOnNextFocus(
+    const PickerSearchResult& result) {
+  if (!widget_) {
+    return;
+  }
+
+  ui::InputMethod* input_method = widget_->GetInputMethod();
+  if (input_method == nullptr) {
+    return;
+  }
+
+  // This cancels the previous request if there was one.
+  // TODO: b/316936944 - Actually insert a real result.
+  insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+      input_method, u"test", kInsertMediaTimeout);
+}
+
+bool PickerController::ShouldPaint() {
+  return should_paint_;
+}
+
+void PickerController::OnCapsLockChanged(bool enabled) {
+  // TODO: b/319301963 - Remove this behaviour once the experiment is over.
+  ToggleWidget();
 }
 
 }  // namespace ash

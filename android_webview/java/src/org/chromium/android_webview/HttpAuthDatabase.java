@@ -105,7 +105,11 @@ public class HttpAuthDatabase {
         } catch (SQLiteException e) {
             // try again by deleting the old db and create a new one
             if (context.deleteDatabase(databaseFile)) {
-                mDatabase = context.openOrCreateDatabase(databaseFile, 0, null);
+                try {
+                    mDatabase = context.openOrCreateDatabase(databaseFile, 0, null);
+                } catch (SQLiteException ex) {
+                    Log.e(LOGTAG, "Caught exception while trying init again", ex);
+                }
             }
         }
 

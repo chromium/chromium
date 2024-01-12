@@ -91,8 +91,7 @@ absl::StatusOr<ValueTransformation> GetValueRangeTransformation(
 }
 
 void GetRotatedSubRectToRectTransformMatrix(const RotatedRect& sub_rect,
-                                            int rect_width,
-                                            int rect_height,
+                                            int rect_width, int rect_height,
                                             bool flip_horizontally,
                                             std::array<float, 16>* matrix_ptr) {
   std::array<float, 16>& matrix = *matrix_ptr;
@@ -177,11 +176,8 @@ void GetRotatedSubRectToRectTransformMatrix(const RotatedRect& sub_rect,
 }
 
 void GetTransposedRotatedSubRectToRectTransformMatrix(
-    const RotatedRect& sub_rect,
-    int rect_width,
-    int rect_height,
-    bool flip_horizontally,
-    std::array<float, 16>* matrix_ptr) {
+    const RotatedRect& sub_rect, int rect_width, int rect_height,
+    bool flip_horizontally, std::array<float, 16>* matrix_ptr) {
   std::array<float, 16>& matrix = *matrix_ptr;
   // See comments in GetRotatedSubRectToRectTransformMatrix for detailed
   // calculations.

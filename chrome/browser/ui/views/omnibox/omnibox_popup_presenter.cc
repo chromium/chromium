@@ -162,5 +162,5 @@ void OmniboxPopupPresenter::ReleaseWidget(bool close) {
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
-BEGIN_METADATA(OmniboxPopupPresenter, views::WebView)
+BEGIN_METADATA(OmniboxPopupPresenter)
 END_METADATA

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -20,7 +21,6 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -47,7 +47,7 @@ class CONTENT_EXPORT StoredSource {
     kMaxValue = kReachedEventLevelAttributionLimit,
   };
 
-  static absl::optional<StoredSource> Create(
+  static std::optional<StoredSource> Create(
       CommonSourceInfo common_info,
       uint64_t source_event_id,
       attribution_reporting::DestinationSet,
@@ -58,7 +58,7 @@ class CONTENT_EXPORT StoredSource {
       attribution_reporting::MaxEventLevelReports,
       int64_t priority,
       attribution_reporting::FilterData,
-      absl::optional<uint64_t> debug_key,
+      std::optional<uint64_t> debug_key,
       attribution_reporting::AggregationKeys,
       AttributionLogic,
       ActiveState,
@@ -107,7 +107,7 @@ class CONTENT_EXPORT StoredSource {
     return filter_data_;
   }
 
-  absl::optional<uint64_t> debug_key() const { return debug_key_; }
+  std::optional<uint64_t> debug_key() const { return debug_key_; }
 
   const attribution_reporting::AggregationKeys& aggregation_keys() const {
     return aggregation_keys_;
@@ -159,7 +159,7 @@ class CONTENT_EXPORT StoredSource {
                attribution_reporting::MaxEventLevelReports,
                int64_t priority,
                attribution_reporting::FilterData,
-               absl::optional<uint64_t> debug_key,
+               std::optional<uint64_t> debug_key,
                attribution_reporting::AggregationKeys,
                AttributionLogic,
                ActiveState,
@@ -181,7 +181,7 @@ class CONTENT_EXPORT StoredSource {
   attribution_reporting::MaxEventLevelReports max_event_level_reports_;
   int64_t priority_;
   attribution_reporting::FilterData filter_data_;
-  absl::optional<uint64_t> debug_key_;
+  std::optional<uint64_t> debug_key_;
   attribution_reporting::AggregationKeys aggregation_keys_;
 
   AttributionLogic attribution_logic_;

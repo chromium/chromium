@@ -133,7 +133,7 @@ class ScopedLogIn {
     fake_user_manager_->LoginUser(account_id_);
   }
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager> fake_user_manager_;
   const AccountId account_id_;
 };
 
@@ -201,8 +201,7 @@ class ChromeArcUtilTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Owned by |profile_manager_|
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
-      nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
 };
 
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile) {

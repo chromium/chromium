@@ -9,6 +9,7 @@
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,57 +24,6 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
-
-namespace {
-
-std::u16string GetTextForModifier(ui::EventFlags modifier) {
-  switch (modifier) {
-    case ui::EF_SHIFT_DOWN:
-      return u"shift";
-    case ui::EF_CONTROL_DOWN:
-      return u"ctrl";
-    case ui::EF_ALT_DOWN:
-      return u"alt";
-    case ui::EF_COMMAND_DOWN:
-      return u"meta";
-  }
-  NOTREACHED();
-  return std::u16string();
-}
-
-std::u16string GetTextForDelimiter(TextAcceleratorDelimiter delimiter) {
-  // Note: Use a switch statement to perform string lookup if/when more
-  // delimiters are added to the TextAcceleratorDelimiter enum.
-  CHECK_EQ(delimiter, TextAcceleratorDelimiter::kPlusSign);
-  return u"+";
-}
-
-}  // namespace
-
-TextAcceleratorPart::TextAcceleratorPart(ui::EventFlags modifier) {
-  text = GetTextForModifier(modifier);
-  type = mojom::TextAcceleratorPartType::kModifier;
-}
-
-TextAcceleratorPart::TextAcceleratorPart(ui::KeyboardCode key_code) {
-  type = mojom::TextAcceleratorPartType::kKey;
-  keycode = key_code;
-}
-
-TextAcceleratorPart::TextAcceleratorPart(const std::u16string& plain_text) {
-  text = plain_text;
-  type = mojom::TextAcceleratorPartType::kPlainText;
-}
-
-TextAcceleratorPart::TextAcceleratorPart(TextAcceleratorDelimiter delimiter) {
-  text = GetTextForDelimiter(delimiter);
-  type = mojom::TextAcceleratorPartType::kDelimiter;
-}
-
-TextAcceleratorPart::TextAcceleratorPart(const TextAcceleratorPart&) = default;
-TextAcceleratorPart::~TextAcceleratorPart() = default;
-TextAcceleratorPart& TextAcceleratorPart::operator=(
-    const TextAcceleratorPart&) = default;
 
 // Constructor used for text-based layout accelerators.
 NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
@@ -1871,6 +1821,106 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSource::kAmbient)}});
 
   return *acceleratorLayoutMap;
+}
+
+// The following map are accelerators that will not appear in the app and cannot
+// be used as a custom accelerator. For example, if you have an accelerator
+// that has a complex text-based instruction that uses a particular accelerator
+// this list is useful to reserve those keys.
+const ReservedAcceleratorsMap& GetReservedAcceleratorsMap() {
+  static base::NoDestructor<ReservedAcceleratorsMap> reservedAcceleratorsMap({
+      // NonConfigurableActions::kAmbientCycleForwardMRU.
+      {ui::Accelerator(ui::VKEY_TAB, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU},
+      // NonConfigurableActions::kAmbientCycleBackwardMRU.
+      {ui::Accelerator(ui::VKEY_TAB, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU},
+      // The following are already included in the app as
+      // `NonConfigurableActions::kAmbientLaunchNumberedApp1.
+      {ui::Accelerator(ui::VKEY_1, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_2, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_3, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_4, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_5, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_6, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_7, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      {ui::Accelerator(ui::VKEY_8, ui::EF_ALT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
+      // The following are already included in the app as
+      // `NonConfigurableActions::kBrowserSelectTabByIndex`.
+      {ui::Accelerator(ui::VKEY_1, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_2, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_3, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_4, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_5, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_6, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_7, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      {ui::Accelerator(ui::VKEY_8, ui::EF_CONTROL_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
+      // The following are already included in the app as
+      // `NonConfigurableActions::kAmbientActivateIndexedDesk`.
+      {ui::Accelerator(ui::VKEY_1, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_3, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_5, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_7, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_8, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
+      {ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+                       ui::Accelerator::KeyState::PRESSED),
+       IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN},
+  });
+
+  return *reservedAcceleratorsMap;
 }
 
 std::optional<AcceleratorLayoutDetails> GetAcceleratorLayout(uint32_t id) {

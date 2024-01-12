@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../common/js/test_error_reporting.js';
+import {mockPluralStringProxy} from '../../common/js/unittest_util.js';
 
 import {PanelButton} from './xf_button.js';
 import {CircularProgress} from './xf_circular_progress.js';
@@ -18,6 +19,7 @@ let displayPanel: DisplayPanel;
  * Adds a xf-display-panel element to the test page.
  */
 export function setUpPage() {
+  mockPluralStringProxy();
   const displayPanelElement = document.createElement('xf-display-panel');
   displayPanelElement.setAttribute('id', 'test-xf-display-panel');
   document.body.appendChild(displayPanelElement);

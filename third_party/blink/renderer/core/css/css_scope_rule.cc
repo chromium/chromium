@@ -72,17 +72,21 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
   // Find enclosing style rule or @scope rule, whichever comes first:
   CSSNestingType nesting_type = CSSNestingType::kNone;
   StyleRule* parent_rule_for_nesting = nullptr;
+  bool is_within_scope = false;
   for (CSSRule* parent = parentRule(); parent; parent = parent->parentRule()) {
     if (const auto* style_rule = DynamicTo<CSSStyleRule>(parent)) {
-      nesting_type = CSSNestingType::kNesting;
-      parent_rule_for_nesting = style_rule->GetStyleRule();
-      break;
+      if (nesting_type == CSSNestingType::kNone) {
+        nesting_type = CSSNestingType::kNesting;
+        parent_rule_for_nesting = style_rule->GetStyleRule();
+      }
     }
     if (const auto* scope_rule = DynamicTo<CSSScopeRule>(parent)) {
-      nesting_type = CSSNestingType::kScope;
-      parent_rule_for_nesting =
-          scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting();
-      break;
+      if (nesting_type == CSSNestingType::kNone) {
+        nesting_type = CSSNestingType::kScope;
+        parent_rule_for_nesting =
+            scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting();
+      }
+      is_within_scope = true;
     }
   }
 
@@ -91,7 +95,8 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
       style_sheet ? style_sheet->Contents() : nullptr;
 
   GetStyleRuleScope().SetPreludeText(execution_context, value, nesting_type,
-                                     parent_rule_for_nesting, contents);
+                                     parent_rule_for_nesting, is_within_scope,
+                                     contents);
 }
 
 StyleRuleScope& CSSScopeRule::GetStyleRuleScope() {

@@ -477,20 +477,14 @@ void ClipboardMac::WriteText(base::StringPiece text) {
 }
 
 void ClipboardMac::WriteHTML(base::StringPiece markup,
-                             absl::optional<base::StringPiece> source_url) {
+                             absl::optional<base::StringPiece> /* source_url */,
+                             ClipboardContentType /* content_type */) {
   // We need to mark it as utf-8. (see crbug.com/11957)
   std::string html_fragment_str("<meta charset='utf-8'>");
   html_fragment_str.append(markup);
   NSString* html_fragment = base::SysUTF8ToNSString(html_fragment_str);
 
-  // TODO(avi): what about `source_url`?
   [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
-}
-
-void ClipboardMac::WriteUnsanitizedHTML(
-    base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
 }
 
 void ClipboardMac::WriteSvg(base::StringPiece markup) {
@@ -576,20 +570,18 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   if (!base::FeatureList::IsEnabled(features::kMacClipboardWriteImageWithPng)) {
-    NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-        bitmap, base::mac::GetSystemColorSpace());
+    NSImage* image = skia::SkBitmapToNSImage(bitmap);
     if (!image) {
-      NOTREACHED() << "SkBitmapToNSImageWithColorSpace failed";
+      NOTREACHED() << "SkBitmapToNSImage failed";
       return;
     }
     [pasteboard writeObjects:@[ image ]];
     return;
   }
 
-  NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRepWithColorSpace(
-      bitmap, base::mac::GetSystemColorSpace());
+  NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRep(bitmap);
   if (!image_rep) {
-    NOTREACHED() << "SkBitmapToNSBitmapImageRepWithColorSpace failed";
+    NOTREACHED() << "SkBitmapToNSBitmapImageRep failed";
     return;
   }
   // Attempt to format the image representation as a PNG, and write it directly

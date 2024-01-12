@@ -13,3 +13,4 @@
 
 See also:
 * [//build/README.md](../../README.md)
+* [NDK's Build System Maintainers Guide](https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md)

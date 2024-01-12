@@ -60,7 +60,7 @@ class CrostiniThrottleTest : public testing::Test {
       }
     }
 
-    raw_ptr<CrostiniThrottleTest, ExperimentalAsh> test_;
+    raw_ptr<CrostiniThrottleTest> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

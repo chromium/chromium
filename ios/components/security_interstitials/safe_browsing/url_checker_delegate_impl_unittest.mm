@@ -35,11 +35,10 @@ struct UnsafeResourceCallbackState {
 };
 // Function used as the callback for UnsafeResources.
 void PopulateCallbackState(UnsafeResourceCallbackState* state,
-                           bool proceed,
-                           bool show_interstitial) {
+                           UnsafeResource::UrlCheckResult result) {
   state->executed = true;
-  state->proceed = proceed;
-  state->show_interstitial = show_interstitial;
+  state->proceed = result.proceed;
+  state->show_interstitial = result.showed_interstitial;
 }
 }  // namespace
 

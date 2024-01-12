@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] orphan button with tab role
+  assert_equals: <button role="tab" data-testname="orphan button with tab role" data-expectedrole="button" class="ex">x</button> expected "button" but got "tab"
+Harness: the test ran to completion.

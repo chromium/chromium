@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -50,19 +52,34 @@ public final class SigninTestUtil {
 
     /** Signs the user into the given account. */
     public static void signin(CoreAccountInfo coreAccountInfo) {
-        CallbackHelper callbackHelper = new CallbackHelper();
+        signin(coreAccountInfo, /* waitForPrefsCommit= */ false);
+    }
+
+    /** Signs the user into the given account and wait for the sign-in prefs to be committed */
+    public static void signinAndWaitForPrefsCommit(CoreAccountInfo coreAccountInfo) {
+        signin(coreAccountInfo, /* waitForPrefsCommit= */ true);
+    }
+
+    private static void signin(CoreAccountInfo coreAccountInfo, boolean waitForPrefsCommit) {
+        CallbackHelper completionCallbackHelper = new CallbackHelper();
+        CallbackHelper prefsCommitCallbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
                                     .getSigninManager(Profile.getLastUsedRegularProfile());
                     signinManager.signin(
-                            AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                            coreAccountInfo,
                             SigninAccessPoint.UNKNOWN,
                             new SigninManager.SignInCallback() {
                                 @Override
                                 public void onSignInComplete() {
-                                    callbackHelper.notifyCalled();
+                                    completionCallbackHelper.notifyCalled();
+                                }
+
+                                @Override
+                                public void onPrefsCommitted() {
+                                    prefsCommitCallbackHelper.notifyCalled();
                                 }
 
                                 @Override
@@ -72,17 +89,16 @@ public final class SigninTestUtil {
                             });
                 });
         try {
-            callbackHelper.waitForFirst();
+            completionCallbackHelper.waitForFirst();
+            if (waitForPrefsCommit) {
+                prefsCommitCallbackHelper.waitForFirst();
+            }
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(
-                            coreAccountInfo,
-                            IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
     }
 
@@ -126,17 +142,17 @@ public final class SigninTestUtil {
         }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(
-                            coreAccountInfo,
-                            IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
                 });
     }
 
     /** Waits for the AccountTrackerService to seed system accounts. */
     static void seedAccounts() {
         ThreadUtils.assertOnBackgroundThread();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         CallbackHelper ch = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

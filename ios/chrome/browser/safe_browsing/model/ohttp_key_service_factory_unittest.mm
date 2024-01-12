@@ -26,25 +26,6 @@ class OhttpKeyServiceFactoryTest : public PlatformTest {
 
 // Checks that OhttpKeyServiceFactory returns a null for an
 // off-the-record browser state, but returns a non-null instance for a regular
-// browser state, when both hash-prefix real-time lookups and hash-real-time
-// over-Ohttp lookups are enabled.
-TEST_F(OhttpKeyServiceFactoryTest, BothFeaturesEnabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{safe_browsing::kHashRealTimeOverOhttp,
-                            safe_browsing::kHashPrefixRealTimeLookups},
-      /*disabled_features=*/{});
-  browser_state_ = TestChromeBrowserState::Builder().Build();
-
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
-
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
-}
-
-// Checks that OhttpKeyServiceFactory returns a null for an
-// off-the-record browser state, but returns a non-null instance for a regular
 // browser state, when hash-prefix real-time lookups are enabled.
 TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
   feature_list_.InitWithFeatures(
@@ -60,31 +41,13 @@ TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
   EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
 }
 
-// Checks that OhttpKeyServiceFactory returns a null for an
-// off-the-record browser state, but returns a non-null instance for a regular
-// browser state, when hash-real-time-lookups-over-Ohttp are enabled.
-TEST_F(OhttpKeyServiceFactoryTest, HashRealTimeOverOhttpEnabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{safe_browsing::kHashRealTimeOverOhttp},
-      /*disabled_features=*/{});
-  browser_state_ = TestChromeBrowserState::Builder().Build();
-
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
-
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
-}
-
 // Checks that OhttpKeyServiceFactory returns a null for both
-// off-the-record and regular browser states, when both hash-prefix real-time
-// lookups and hash-real-time-over-Ohttp lookups are disabled.
-TEST_F(OhttpKeyServiceFactoryTest, BothFeaturesDisabled) {
+// off-the-record and regular browser states, when hash-prefix real-time
+// lookups are disabled.
+TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsDisabled) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{safe_browsing::kHashRealTimeOverOhttp,
-                             safe_browsing::kHashPrefixRealTimeLookups});
+      /*disabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups});
   browser_state_ = TestChromeBrowserState::Builder().Build();
 
   // The factory should return null for an off-the-record browser state.

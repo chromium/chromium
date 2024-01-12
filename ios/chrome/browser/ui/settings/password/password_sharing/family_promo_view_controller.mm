@@ -6,50 +6,20 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_action_handler.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface FamilyPromoViewController () <UITextViewDelegate>
-
-// The action handler for interactions in this view controller.
-@property(nonatomic, weak) id<FamilyPromoActionHandler> actionHandler;
-
-// Range of the link in the `subtitleString`.
-@property(nonatomic, assign) NSRange subtitleLinkRange;
-
 @end
 
-@implementation FamilyPromoViewController
+@implementation FamilyPromoViewController {
+  // Range of the link in the `subtitleString`.
+  NSRange _subtitleLinkRange;
+}
 
 @dynamic actionHandler;
-
-- (instancetype)initWithActionHandler:
-    (id<FamilyPromoActionHandler>)actionHandler {
-  self = [super init];
-  if (!self) {
-    return nil;
-  }
-
-  self.actionHandler = actionHandler;
-  self.modalPresentationStyle = UIModalPresentationPageSheet;
-  self.sheetPresentationController.preferredCornerRadius = 20;
-  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-
-  if (@available(iOS 16, *)) {
-    self.sheetPresentationController.detents = @[
-      self.preferredHeightDetent,
-      UISheetPresentationControllerDetent.largeDetent,
-    ];
-  } else {
-    self.sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
-
-  return self;
-}
 
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"password_sharing_family_promo"];
@@ -60,6 +30,7 @@
   self.topAlignedLayout = YES;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON);
+  self.view.accessibilityIdentifier = kFamilyPromoViewID;
 
   [super viewDidLoad];
 }
@@ -73,9 +44,11 @@
   // Inherits the default styling already applied to `subtitle`.
   NSMutableAttributedString* newSubtitle = [[NSMutableAttributedString alloc]
       initWithAttributedString:subtitle.attributedText];
-  [newSubtitle addAttribute:NSLinkAttributeName
-                      value:@""
-                      range:self.subtitleLinkRange];
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : @"",
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+  };
+  [newSubtitle addAttributes:linkAttributes range:_subtitleLinkRange];
   subtitle.attributedText = newSubtitle;
 }
 
@@ -96,7 +69,7 @@
   StringWithTags stringWithTags = ParseStringWithLinks(subtitle);
   CHECK_EQ(stringWithTags.ranges.size(), 1u);
   self.subtitleString = stringWithTags.string;
-  self.subtitleLinkRange = stringWithTags.ranges[0];
+  _subtitleLinkRange = stringWithTags.ranges[0];
 }
 
 @end

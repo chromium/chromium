@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
+#include "media/media_buildflags.h"
 
 // TODO(frkoenig): put these into a common header
 #ifndef V4L2_PIX_FMT_AV1

@@ -23,7 +23,7 @@ class TestBubbleContentsWrapper
       public base::SupportsWeakPtr<TestBubbleContentsWrapper> {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(GURL(""), profile, 0, true, true) {}
+      : BubbleContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
   void ReloadWebContents() override {}
 
   base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {

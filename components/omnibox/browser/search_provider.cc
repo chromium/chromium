@@ -239,6 +239,14 @@ void SearchProvider::Start(const AutocompleteInput& input,
   // per-user models into memory.  Having a per-user model in memory allows the
   // suggest server to respond more quickly with personalized suggestions as the
   // user types.
+  //
+  // 2024-01 Adding a feature flag for experiment to ablate the warmup request.
+  if (base::FeatureList::IsEnabled(omnibox::kAblateSearchProviderWarmup) &&
+      (input.IsZeroSuggest() ||
+       input.type() == metrics::OmniboxInputType::EMPTY)) {
+    Stop(true, false);
+    return;
+  }
 
   keyword_input_ = input;
   const TemplateURL* keyword_provider =
@@ -278,7 +286,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   providers_.set(default_provider_keyword, keyword_provider_keyword);
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
+  if (input.IsZeroSuggest()) {
     // Don't display any suggestions for on-focus requests.
     ClearAllResults();
   } else if (input.text().empty()) {
@@ -302,7 +310,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   // Don't search the query history database for on-focus inputs; these inputs
   // should only be used to warm up the suggest server.
-  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
+  if (!input.IsZeroSuggest()) {
     DoHistoryQuery(minimal_changes);
     // Answers needs scored history results before any suggest query has been
     // started, since the query for answer-bearing results needs additional
@@ -419,8 +427,7 @@ void SearchProvider::OnURLLoadComplete(
   // that's left to ZeroSuggestProvider and friends.  Furthermore, it's not
   // clear if the suggest server will send back sensible results to the
   // request we're constructing here for on-focus inputs.
-  if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
-      request_succeeded) {
+  if (!input_.IsZeroSuggest() && request_succeeded) {
     absl::optional<base::Value::List> data =
         SearchSuggestionParser::DeserializeJsonData(
             SearchSuggestionParser::ExtractJsonData(source,
@@ -532,7 +539,7 @@ void SearchProvider::UpdateMatches() {
   // enforce constraints about inlinability in this case.  Indeed, most of
   // these steps would be bad, as they'd add a suggestion of some form, thus
   // opening the dropdown (which we do not want to happen).
-  if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
+  if (!input_.IsZeroSuggest()) {
     PersistTopSuggestions(&default_results_);
     PersistTopSuggestions(&keyword_results_);
     ConvertResultsToAutocompleteMatches();
@@ -924,9 +931,8 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
       ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartSuggestionsRequest(
           template_url,
-          input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
-              ? TemplateURLRef::SearchTermsArgs()
-              : search_term_args,
+          input.IsZeroSuggest() ? TemplateURLRef::SearchTermsArgs()
+                                : search_term_args,
           search_terms_data,
           base::BindOnce(&SearchProvider::OnURLLoadComplete,
                          base::Unretained(this)));

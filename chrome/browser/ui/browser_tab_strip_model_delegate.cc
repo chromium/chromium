@@ -269,8 +269,7 @@ void BrowserTabStripModelDelegate::CacheWebContents(
   if (!cache.CanCacheWebContents(dwc->id))
     return;
 
-  std::unique_ptr<content::WebContents> wc;
-  dwc->owned_contents.swap(wc);
+  std::unique_ptr<content::WebContents> wc = dwc->tab->ReplaceContents(nullptr);
   dwc->remove_reason = TabStripModelChange::RemoveReason::kCached;
   auto cached = std::make_pair(dwc->id, std::move(wc));
   cache.CacheWebContents(std::move(cached));

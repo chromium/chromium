@@ -181,7 +181,7 @@ void PlatformNotificationContextImpl::DoSyncNotificationData(
     return;
 
   // Reset |next_trigger_| to keep track of the next trigger timestamp.
-  next_trigger_ = absl::nullopt;
+  next_trigger_ = std::nullopt;
 
   // Iterate over all notifications and delete all expired ones.
   std::set<std::string> close_notification_ids;
@@ -369,13 +369,13 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
   InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins,
       this, std::move(origins), /* tag= */ std::string(),
-      /* is_shown_by_browser= */ absl::nullopt, std::move(callback)));
+      /* is_shown_by_browser= */ std::nullopt, std::move(callback)));
 }
 
 void PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins(
     std::set<GURL> origins,
     const std::string& tag,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     DeleteAllResultCallback callback,
     bool initialized) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -415,7 +415,7 @@ void PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins(
 
 void PlatformNotificationContextImpl::DeleteAllNotificationDataWithTag(
     const std::string& tag,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     const GURL& origin,
     DeleteAllResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -960,7 +960,7 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
 
   // Only store resources for notifications that will be scheduled.
   if (!CanTrigger(write_database_data))
-    write_database_data.notification_resources = absl::nullopt;
+    write_database_data.notification_resources = std::nullopt;
 
   NotificationDatabase::Status status =
       database_->WriteNotificationData(origin, write_database_data);

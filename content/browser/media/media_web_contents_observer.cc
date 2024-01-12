@@ -253,7 +253,7 @@ bool MediaWebContentsObserver::IsPictureInPictureAllowedForFullscreenVideo()
   return *picture_in_picture_allowed_in_fullscreen_;
 }
 
-const absl::optional<MediaPlayerId>&
+const std::optional<MediaPlayerId>&
 MediaWebContentsObserver::GetFullscreenVideoMediaPlayerId() const {
   return fullscreen_player_;
 }
@@ -413,7 +413,7 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnReceivedTranslatedDeviceId(
-        const absl::optional<std::string>& translated_id) {
+        const std::optional<std::string>& translated_id) {
   if (!translated_id)
     return;
 

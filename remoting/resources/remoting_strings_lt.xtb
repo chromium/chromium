@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Aptikta nesuderinama protokolo versija. Įsitikinkite, kad įdiegėte naujausios versijos programinę įrangą abiejuose kompiuteriuose ir bandykite dar kartą.</translation>
 <translation id="1008557486741366299">Ne dabar</translation>
 <translation id="1201402288615127009">Kitas</translation>
-<translation id="1296511125400541222">Autorių teisės „The Chromium Authors“, 2023 m. Visos teisės saugomos.</translation>
 <translation id="1297009705180977556">Klaida prisijungiant prie „<ph name="HOSTNAME" />“</translation>
 <translation id="1450760146488584666">Prašomas objektas neegzistuoja.</translation>
 <translation id="1480046233931937785">Titrai</translation>
@@ -89,7 +88,6 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="4808503597364150972">Įveskite „<ph name="HOSTNAME" />“ PIN kodą.</translation>
 <translation id="4812684235631257312">Priegloba</translation>
 <translation id="4867841927763172006">Siųsti „PrtScn“</translation>
-<translation id="4960795469833295568">Autorių teisės „Google LLC“, 2023 m. Visos teisės saugomos.</translation>
 <translation id="4974476491460646149">Nutrūko ryšys su „<ph name="HOSTNAME" />“</translation>
 <translation id="4985296110227979402">Pirmiausia turite nustatyti nuotolinę kompiuterio prieigą</translation>
 <translation id="4987330545941822761">„Chrome“ nuotolinio kompiuterio valdymo programa negali nustatyti naršyklės, kurią naudojant įrenginyje atidaromi URL. Pasirinkite iš toliau pateikto sąrašo.</translation>
@@ -154,6 +152,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="7693372326588366043">Atnaujinti prieglobų sąrašą</translation>
 <translation id="7714222945760997814">Pranešti apie tai</translation>
 <translation id="7868137160098754906">Įveskite nuotolinio kompiuterio PIN kodą.</translation>
+<translation id="7881455334687220899">Autorių teisės „The Chromium Authors“, 2024 m. Visos teisės saugomos.</translation>
 <translation id="7895403300744144251">Pagal nuotolinio kompiuterio saugos politiką neleidžiama prisijungti naudojant jūsų paskyrą.</translation>
 <translation id="7936528439960309876">Pritvirtinti dešinėje</translation>
 <translation id="7970576581263377361">Nepavyko autentifikuoti. Dar kartą prisijunkite prie „Chromium“.</translation>
@@ -185,6 +184,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="8747048596626351634">Sesija užstrigo arba jos nepavyko paleisti. Jei nuotoliniame kompiuteryje yra ~/.chrome-remote-desktop-session, įsitikinkite, kad jis paleidžia ilgai vykdomą priekinio plano procesą, pvz., darbalaukio aplinką ar langų tvarkytuvę.</translation>
 <translation id="8804164990146287819">Privatumo politika</translation>
 <translation id="8906511416443321782">Reikalinga prieiga prie mikrofono, kad būtų galima užfiksuoti garsą ir perduoti jį srautu į „Chrome“ nuotolinio kompiuterio valdymo klientą.</translation>
+<translation id="9042277333359847053">Autorių teisės „Google LLC“, 2024 m. Visos teisės saugomos.</translation>
 <translation id="9111855907838866522">Esate prisijungę prie nuotolinio įrenginio. Kad atidarytumėte meniu, palieskite ekraną keturiais pirštais.</translation>
 <translation id="9126115402994542723">Neprašyti įvesti PIN kodą dar kartą, kai šiuo įrenginiu bus jungiamasi prie šio prieglobos kompiuterio.</translation>
 <translation id="916856682307586697">Paleisti numatytąją „XSession“ sesiją</translation>

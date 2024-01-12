@@ -550,7 +550,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     auto& chromeos_data = web_app.chromeos_data().value();
     auto* mutable_chromeos_data = local_data->mutable_chromeos_data();
     mutable_chromeos_data->set_show_in_launcher(chromeos_data.show_in_launcher);
-    mutable_chromeos_data->set_show_in_search(chromeos_data.show_in_search);
+    mutable_chromeos_data->set_show_in_search_and_shelf(
+        chromeos_data.show_in_search_and_shelf);
     mutable_chromeos_data->set_show_in_management(
         chromeos_data.show_in_management);
     mutable_chromeos_data->set_is_disabled(chromeos_data.is_disabled);
@@ -1027,7 +1028,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_chromeos_data()) {
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = chromeos_data_proto.show_in_launcher();
-    chromeos_data->show_in_search = chromeos_data_proto.show_in_search();
+    chromeos_data->show_in_search_and_shelf =
+        chromeos_data_proto.show_in_search_and_shelf();
     chromeos_data->show_in_management =
         chromeos_data_proto.show_in_management();
     chromeos_data->is_disabled = chromeos_data_proto.is_disabled();
@@ -1163,6 +1165,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   apps::FileHandlers file_handlers;
   for (const auto& file_handler_proto : local_data.file_handlers()) {
+    if (!file_handler_proto.has_action() ||
+        !file_handler_proto.has_launch_type()) {
+      DLOG(ERROR) << "WebApp FileHandler proto parse error";
+      return nullptr;
+    }
     apps::FileHandler file_handler;
     file_handler.action = GURL(file_handler_proto.action());
 
@@ -1180,6 +1187,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         ProtoToLaunchType(file_handler_proto.launch_type());
 
     for (const auto& accept_entry_proto : file_handler_proto.accept()) {
+      if (!accept_entry_proto.has_mimetype()) {
+        DLOG(ERROR) << "WebApp FileHandler proto parse error for "
+                    << file_handler.action;
+        return nullptr;
+      }
       apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = accept_entry_proto.mimetype();
       for (const auto& file_extension : accept_entry_proto.file_extensions()) {
@@ -1207,8 +1219,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   web_app->SetFileHandlers(std::move(file_handlers));
 
   if (local_data.has_share_target()) {
-    apps::ShareTarget share_target;
     const ShareTarget& local_share_target = local_data.share_target();
+    if (!local_share_target.has_action() || !local_share_target.has_method() ||
+        !local_share_target.has_enctype() || !local_share_target.has_params()) {
+      DLOG(ERROR) << "WebApp proto Share Target parse error";
+      return nullptr;
+    }
+    apps::ShareTarget share_target;
+
     const ShareTargetParams& local_share_target_params =
         local_share_target.params();
 
@@ -1232,6 +1250,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
     for (const auto& share_target_params_file :
          local_share_target_params.files()) {
+      if (!share_target_params_file.has_name()) {
+        DLOG(ERROR) << "WebApp proto Share Target files parse error for "
+                    << share_target.action;
+        return nullptr;
+      }
       apps::ShareTarget::Files files_entry;
       files_entry.name = share_target_params_file.name();
       for (const auto& file_type : share_target_params_file.accept()) {
@@ -1253,6 +1276,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos;
   for (const auto& shortcut_info_proto :
        local_data.shortcuts_menu_item_infos()) {
+    if (!shortcut_info_proto.has_name() || !shortcut_info_proto.has_url()) {
+      DLOG(ERROR) << "WebApp proto Shortcut Menu Item Info parse error";
+      return nullptr;
+    }
     WebAppShortcutsMenuItemInfo shortcut_info;
     shortcut_info.name = base::UTF8ToUTF16(shortcut_info_proto.name());
     shortcut_info.url = GURL(shortcut_info_proto.url());
@@ -1342,6 +1369,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
   for (const auto& protocol_handler_proto : local_data.protocol_handlers()) {
+    if (!protocol_handler_proto.has_protocol() ||
+        !protocol_handler_proto.has_url()) {
+      DLOG(ERROR) << "WebApp proto Protocol Handler parse error";
+      return nullptr;
+    }
     apps::ProtocolHandlerInfo protocol_handler;
     protocol_handler.protocol = protocol_handler_proto.protocol();
     GURL protocol_handler_url(protocol_handler_proto.url());
@@ -1381,6 +1413,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   std::vector<apps::UrlHandlerInfo> url_handlers;
   for (const auto& url_handler_proto : local_data.url_handlers()) {
+    if (!url_handler_proto.has_origin() ||
+        !url_handler_proto.has_has_origin_wildcard()) {
+      DLOG(ERROR) << "WebApp Url Handler proto parse error";
+      return nullptr;
+    }
     apps::UrlHandlerInfo url_handler;
 
     url::Origin origin = url::Origin::Create(GURL(url_handler_proto.origin()));
@@ -1397,6 +1434,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   base::flat_set<ScopeExtensionInfo> scope_extensions;
   for (const auto& scope_extension_proto : local_data.scope_extensions()) {
+    if (!scope_extension_proto.has_origin() ||
+        !scope_extension_proto.has_has_origin_wildcard()) {
+      DLOG(ERROR) << "WebApp Scope Extension Info proto parse error";
+      return nullptr;
+    }
     ScopeExtensionInfo scope_extension;
 
     url::Origin origin =

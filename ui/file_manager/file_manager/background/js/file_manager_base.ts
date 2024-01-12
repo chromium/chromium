@@ -9,15 +9,14 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
 import {isInGuestMode} from '../../common/js/util.js';
 import {ARCHIVE_OPENED_EVENT_TYPE, Source, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeAlreadyMountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
 import {AppWindowWrapper} from './app_window_wrapper.js';
-import {CrostiniImpl} from './crostini.js';
+import {Crostini} from './crostini.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {FileOperationHandler} from './file_operation_handler.js';
-import {ProgressCenterImpl} from './progress_center.js';
+import {ProgressCenter} from './progress_center.js';
+import type {VolumeInfo} from './volume_info.js';
+import type {VolumeAlreadyMountedEvent, VolumeManager} from './volume_manager.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 
 /**
@@ -35,14 +34,14 @@ export class FileManagerBase {
   /**
    * Progress center of the background page.
    */
-  progressCenter: ProgressCenter = new ProgressCenterImpl();
+  progressCenter: ProgressCenter = new ProgressCenter();
 
   /**
    * Drive sync handler.
    */
   driveSyncHandler = new DriveSyncHandlerImpl(this.progressCenter);
 
-  crostini = new CrostiniImpl();
+  crostini = new Crostini();
 
   /**
    * String assets.

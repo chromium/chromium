@@ -61,7 +61,7 @@ export class FileListSelectionModel extends ListSelectionModel {
     // Look at the old state.
     const oldSelectedItemsCount = this.selectedIndexes.length;
     const newSelectedItemsCount =
-        this.selectedIndexes.filter(i => permutation[i] != -1).length;
+        this.selectedIndexes.filter(i => permutation[i] !== -1).length;
     // Call the superclass function.
     super.adjustToReordering(permutation);
     // Leave check-select mode if all items have been deleted.

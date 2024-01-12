@@ -355,7 +355,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   await sendTestMessage({name: 'useCellularNetwork'});
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await repeatUntil(() => {
-    return navigator.connection.type != 'cellular' ?
+    return navigator.connection.type !== 'cellular' ?
         pending(caller, 'Network state is not changed to cellular.') :
         null;
   });
@@ -845,7 +845,7 @@ testcase.driveEncryptionBadge = async () => {
       ['aria-labelledby', 'display', 'visibility']);
   const ariaLabelledBy = row.attributes['aria-labelledby'];
   const encryptedBadgeId = ariaLabelledBy.split(/ +/).filter(
-      (id) => id.indexOf('encrypted') != -1)[0];
+      (id) => id.indexOf('encrypted') !== -1)[0];
   chrome.test.assertTrue(
       encryptedBadgeId !== undefined,
       'no encrypted label found in aria for the encrypted file');

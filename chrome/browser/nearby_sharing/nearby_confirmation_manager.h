@@ -27,7 +27,7 @@ class NearbyConfirmationManager
   void Cancel(CancelCallback callback) override;
 
  private:
-  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_service_;
+  raw_ptr<NearbySharingService> nearby_service_;
   ShareTarget share_target_;
 };
 

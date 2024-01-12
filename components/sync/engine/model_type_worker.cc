@@ -843,13 +843,13 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   // |has_local_changes_state_|), in case the processor decided a local change
   // was not worth a nudge.
   scoped_refptr<GetLocalChangesRequest> request =
-      base::MakeRefCounted<GetLocalChangesRequest>(cancelation_signal_);
+      base::MakeRefCounted<GetLocalChangesRequest>();
   model_type_processor_->GetLocalChanges(
       max_entries,
       base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
-  request->WaitForResponseOrCancelation();
+  request->WaitForResponseOrCancelation(cancelation_signal_);
   CommitRequestDataList response;
-  if (!request->WasCancelled()) {
+  if (!cancelation_signal_->IsSignalled()) {
     response = request->ExtractResponse();
   }
   if (response.empty()) {
@@ -1465,10 +1465,8 @@ void ModelTypeWorker::EncryptSpecifics(
   }
 }
 
-GetLocalChangesRequest::GetLocalChangesRequest(
-    CancelationSignal* cancelation_signal)
-    : cancelation_signal_(cancelation_signal),
-      response_accepted_(base::WaitableEvent::ResetPolicy::MANUAL,
+GetLocalChangesRequest::GetLocalChangesRequest()
+    : response_accepted_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
 GetLocalChangesRequest::~GetLocalChangesRequest() = default;
@@ -1477,8 +1475,9 @@ void GetLocalChangesRequest::OnCancelationSignalReceived() {
   response_accepted_.Signal();
 }
 
-void GetLocalChangesRequest::WaitForResponseOrCancelation() {
-  if (!cancelation_signal_->TryRegisterHandler(this)) {
+void GetLocalChangesRequest::WaitForResponseOrCancelation(
+    CancelationSignal* cancelation_signal) {
+  if (!cancelation_signal->TryRegisterHandler(this)) {
     return;
   }
 
@@ -1487,17 +1486,13 @@ void GetLocalChangesRequest::WaitForResponseOrCancelation() {
     response_accepted_.Wait();
   }
 
-  cancelation_signal_->UnregisterHandler(this);
+  cancelation_signal->UnregisterHandler(this);
 }
 
 void GetLocalChangesRequest::SetResponse(
     CommitRequestDataList&& local_changes) {
   response_ = std::move(local_changes);
   response_accepted_.Signal();
-}
-
-bool GetLocalChangesRequest::WasCancelled() {
-  return cancelation_signal_->IsSignalled();
 }
 
 CommitRequestDataList&& GetLocalChangesRequest::ExtractResponse() {

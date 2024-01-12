@@ -133,7 +133,6 @@ void NearbyPresenceCredentialManagerImpl::Creator::
         std::unique_ptr<NearbyPresenceCredentialManager> credential_manager) {
   CHECK(credential_manager);
   CHECK(credential_manager->IsLocalDeviceRegistered());
-  CHECK(!Get()->credential_manager_under_initialization_);
 
   g_is_credential_manager_set_for_testing_ = true;
   Get()->credential_manager_under_initialization_ =

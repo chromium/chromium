@@ -21,6 +21,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
 
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -133,7 +134,7 @@ public class PlayerMediatorUnitTest {
         doReturn(TITLE).when(mPlaybackMetadata).title();
         doReturn(PUBLISHER).when(mPlaybackMetadata).publisher();
         mVoicesSupplier = new ObservableSupplierImpl<>();
-        mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a", "description")));
+        mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a")));
         mSelectedVoiceIdSupplier = new ObservableSupplierImpl<>();
         mSelectedVoiceIdSupplier.set("a");
         mHighlightingEnabledSupplier = new ObservableSupplierImpl<>();
@@ -151,6 +152,7 @@ public class PlayerMediatorUnitTest {
         doReturn(mPreviewPromise).when(mDelegate).previewVoice(any());
 
         mModel = Mockito.spy(new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build());
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, false);
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
         mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
     }
@@ -326,7 +328,7 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testOnVoiceSelected() {
-        PlaybackVoice voice = new PlaybackVoice("language", "voice", "description");
+        PlaybackVoice voice = new PlaybackVoice("language", "voice");
         mMediator.onVoiceSelected(voice);
         verify(mDelegate).setVoiceOverrideAndApplyToPlayback(eq(voice));
     }
@@ -361,8 +363,7 @@ public class PlayerMediatorUnitTest {
         MockPrefServiceHelper.setVoices(mPrefsNative, Map.of("es", "c"));
 
         // Setting the voice list here should trigger UI updates.
-        mVoicesSupplier.set(
-                List.of(new PlaybackVoice("es", "b", ""), new PlaybackVoice("es", "c", "")));
+        mVoicesSupplier.set(List.of(new PlaybackVoice("es", "b"), new PlaybackVoice("es", "c")));
 
         // Voice list is set in model.
         List<PlaybackVoice> voicesInModel = mModel.get(PlayerProperties.VOICES_LIST);
@@ -381,8 +382,7 @@ public class PlayerMediatorUnitTest {
     public void testObserveVoiceList_defaultVoiceSelection() {
         // Setting the voice list here should trigger UI updates. There's no voice ID
         // set for "es" so the first one should be displayed.
-        mVoicesSupplier.set(
-                List.of(new PlaybackVoice("es", "b", ""), new PlaybackVoice("es", "c", "")));
+        mVoicesSupplier.set(List.of(new PlaybackVoice("es", "b"), new PlaybackVoice("es", "c")));
         assertEquals("b", mModel.get(PlayerProperties.SELECTED_VOICE_ID));
     }
 
@@ -504,6 +504,26 @@ public class PlayerMediatorUnitTest {
         verify(mPlayerCoordinator).voiceMenuClosed();
         assertEquals(STOPPED, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
         verify(mPreviewPlayback).removeListener(eq(mPlaybackListenerCaptor.getValue()));
+    }
+
+    @Test
+    public void testNoStateUpdatesWhenHidden() {
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, true);
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        assertEquals(UNKNOWN, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        assertEquals(0.0f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
+
+        mPlaybackData.mState = PLAYING;
+
+        mPlaybackData.mAbsolutePositionNanos = POSITION_NS;
+        mPlaybackData.mTotalDurationNanos = DURATION_NS;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        assertEquals(0.0f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
+
+        assertEquals(UNKNOWN, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
     private void resetPlayback() {

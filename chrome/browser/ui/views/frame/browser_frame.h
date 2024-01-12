@@ -9,12 +9,9 @@
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/base/ui_base_types.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <optional>
@@ -44,7 +41,7 @@ namespace views {
 class Label;
 class MenuRunner;
 class View;
-}
+}  // namespace views
 
 enum class TabDragKind {
   // No drag is active.
@@ -68,12 +65,10 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
 
   ~BrowserFrame() override;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns which edges of the frame are tiled.
-  const ui::WindowTiledEdges& tiled_edges() const { return tiled_edges_; }
-  void set_tiled_edges(ui::WindowTiledEdges tiled_edges) {
-    tiled_edges_ = tiled_edges;
-  }
+#if BUILDFLAG(IS_LINUX)
+  // Returns whether the frame is in a tiled state.
+  bool tiled() const { return tiled_; }
+  void set_tiled(bool tiled) { tiled_ = tiled; }
 #endif
 
   // Initialize the frame (creates the underlying native window).
@@ -230,8 +225,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // contents for smoother dragging.
   TabDragKind tab_drag_kind_ = TabDragKind::kNone;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::WindowTiledEdges tiled_edges_;
+#if BUILDFLAG(IS_LINUX)
+  bool tiled_ = false;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

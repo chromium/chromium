@@ -16,7 +16,6 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
@@ -247,13 +246,8 @@ TEST_F(
       /*show_download_in_folder=*/true));
 }
 
-class SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled
+class SafeBrowsingServiceAntiPhishingTelemetryTest
     : public SafeBrowsingServiceTest {
- public:
-  SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled() {
-    feature_list_.InitAndEnableFeature(safe_browsing::kAntiPhishingTelemetry);
-  }
-
  protected:
   PhishySiteInteractionMap SetUpPhishyInteractionMap(
       int expected_click_occurrences,
@@ -289,12 +283,9 @@ class SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled
     }
     return new_map;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled,
+TEST_F(SafeBrowsingServiceAntiPhishingTelemetryTest,
        SendPhishyInteractionsReport_Success) {
   const int kExpectedClickEventCount = 5;
   const int kExpectedKeyEventCount = 2;

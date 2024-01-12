@@ -10,6 +10,10 @@
 
 class PrefService;
 
+namespace base {
+class FilePath;
+}
+
 namespace optimization_guide {
 
 class FakeOnDeviceModelComponentStateManagerDelegate;
@@ -30,6 +34,8 @@ class TestOnDeviceModelComponentStateManager {
   bool WasComponentUninstalled() const;
 
   void SetFreeDiskSpace(int64_t free_space_bytes);
+
+  void SetReady(const base::FilePath& install_dir);
 
   struct State;
 

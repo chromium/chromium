@@ -71,7 +71,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
     void SetWindowID(const std::string& window_id);
 
    private:
-    raw_ptr<CrosapiNewWindowDelegate, ExperimentalAsh> owner_;
+    raw_ptr<CrosapiNewWindowDelegate> owner_;
 
     // Observes windows launched after window tab-drop request.
     base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
@@ -97,7 +97,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
 
   // Not owned. Practically, this should point to ChromeNewWindowClient in
   // production.
-  const raw_ptr<ash::NewWindowDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ash::NewWindowDelegate> delegate_;
 
   std::unique_ptr<WindowObserver> window_observer_;
 };

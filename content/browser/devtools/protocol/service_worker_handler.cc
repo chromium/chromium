@@ -312,7 +312,7 @@ Response ServiceWorkerHandler::DeliverPushMessage(
   int64_t id = 0;
   if (!base::StringToInt64(registration_id, &id))
     return CreateInvalidVersionIdErrorResponse();
-  absl::optional<std::string> payload;
+  std::optional<std::string> payload;
   if (data.size() > 0)
     payload = data;
   browser_context_->DeliverPushMessage(GURL(origin), id,

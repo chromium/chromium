@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {AlbumsSubpageElement, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientThemeItemElement, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpageElement, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientThemeItemElement, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetGeolocationPermissionEnabledActionForAmbient, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -427,6 +427,129 @@ suite('AmbientSubpageElementTest', function() {
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
     assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
+  });
+
+  test(
+      'show warning in temperature section when system geolocation disabled',
+      async () => {
+        ambientSubpageElement = await displayMainSettings(
+            TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+            /*ambientModeEnabled=*/ true);
+
+        // Disable Privacy Hub feature flag. Geolocation content should not be
+        // shown.
+        loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: false});
+
+        const weatherUnit = ambientSubpageElement.shadowRoot!.querySelector(
+            'ambient-weather-unit');
+        assertTrue(!!weatherUnit);
+
+        // Check that temperature radio buttons are shown, no matter the
+        // geolocation permission value.
+        for (const geolocationEnabled of [true, false]) {
+          personalizationStore.data.ambient.geolocationPermissionEnabled =
+              geolocationEnabled;
+          personalizationStore.notifyObservers();
+          await waitAfterNextRender(ambientSubpageElement);
+
+          const temperatureUnitItems =
+              weatherUnit!.shadowRoot!.querySelectorAll<CrRadioButtonElement>(
+                  'cr-radio-button');
+          assertEquals(2, temperatureUnitItems!.length);
+
+          const geolocationWarningDiv =
+              weatherUnit!.shadowRoot!.getElementById('geolocationWarningDiv');
+          assertFalse(!!geolocationWarningDiv);
+        }
+        // Enable Privacy Hub feature flag.
+        loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+        for (const geolocationEnabled of [true, false]) {
+          personalizationStore.data.ambient.geolocationPermissionEnabled =
+              geolocationEnabled;
+          personalizationStore.notifyObservers();
+          await waitAfterNextRender(ambientSubpageElement);
+
+          const temperatureUnitItems =
+              weatherUnit!.shadowRoot!.querySelectorAll<CrRadioButtonElement>(
+                  'cr-radio-button');
+          const geolocationWarningDiv =
+              weatherUnit!.shadowRoot!.getElementById('geolocationWarningDiv');
+
+          // Geolocation warning div should only be shown when the geolocation
+          // permission is disabled.
+          if (geolocationEnabled) {
+            assertEquals(2, temperatureUnitItems!.length);
+            assertFalse(!!geolocationWarningDiv);
+          } else {
+            assertEquals(0, temperatureUnitItems!.length);
+            assertTrue(!!geolocationWarningDiv);
+          }
+        }
+      });
+
+  test('show Geolocation dialog and click allow', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const weatherUnit =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
+    assertTrue(!!weatherUnit);
+
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    // Disable geolocation and select Auto Schedule; This should show the
+    // warning message.
+    personalizationStore.data.ambient.geolocationPermissionEnabled = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    // Check warning message is present.
+    let warningElement =
+        weatherUnit!.shadowRoot!.getElementById('geolocationWarningDiv');
+    assertTrue(!!warningElement);
+
+    // Click the anchor to display the geolocation dialog.
+    const localizedLink = warningElement.querySelector('localized-link');
+    assertTrue(!!localizedLink);
+    const testDetail = {event: {preventDefault: () => {}}};
+    localizedLink.dispatchEvent(
+        new CustomEvent('link-clicked', {bubbles: false, detail: testDetail}));
+    flush();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    // Check dialog has popped up.
+    let geolocationDialog =
+        weatherUnit.shadowRoot!.getElementById('geolocationDialog');
+    assertTrue(!!geolocationDialog);
+    const confirmButton =
+        geolocationDialog.shadowRoot!.getElementById('confirmButton');
+    assertTrue(!!confirmButton);
+
+    // Confirm the dialog; this should enable the geolocation permission,
+    // resulting in both the dialog and warning text disappearing.
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(
+        AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED);
+    confirmButton.click();
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
+        SetGeolocationPermissionEnabledActionForAmbient;
+
+    // Check the geolocation permission value has updated.
+    assertTrue(action.enabled);
+    assertTrue(personalizationStore.data.ambient.geolocationPermissionEnabled);
+
+    // Check that both warning text and dialog has diappeared.
+    await waitAfterNextRender(ambientSubpageElement);
+    warningElement =
+        weatherUnit.shadowRoot!.getElementById('geolocationWarningDiv');
+    geolocationDialog =
+        weatherUnit.shadowRoot!.getElementById('geolocationDialog');
+    assertFalse(!!warningElement);
+    assertFalse(!!geolocationDialog);
   });
 
   test('duration is default to ten minutes', async () => {

@@ -35,8 +35,9 @@ namespace {
 struct ScopedHCriticalPolicySectionTraits {
   static HANDLE InvalidValue() { return nullptr; }
   static void Free(HANDLE handle) {
-    if (handle != InvalidValue())
+    if (handle != InvalidValue()) {
       ::LeaveCriticalPolicySection(handle);
+    }
   }
 };
 

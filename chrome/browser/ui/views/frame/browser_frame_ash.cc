@@ -67,7 +67,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   }
 
  private:
-  raw_ptr<Browser, ExperimentalAsh> browser_;  // not owned.
+  raw_ptr<Browser> browser_;  // not owned.
 };
 
 }  // namespace

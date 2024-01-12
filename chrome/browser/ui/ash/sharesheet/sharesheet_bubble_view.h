@@ -107,8 +107,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
   // Owns this class.
-  raw_ptr<::sharesheet::SharesheetServiceDelegator,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<::sharesheet::SharesheetServiceDelegator, DanglingUntriaged>
       delegator_;
   std::u16string active_target_;
   apps::IntentPtr intent_;
@@ -124,21 +123,21 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
 
   size_t keyboard_highlighted_target_ = 0;
 
-  raw_ptr<views::View, ExperimentalAsh> main_view_ = nullptr;
-  raw_ptr<SharesheetHeaderView, ExperimentalAsh> header_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> body_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> footer_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> default_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> expanded_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> share_action_view_ = nullptr;
+  raw_ptr<views::View> main_view_ = nullptr;
+  raw_ptr<SharesheetHeaderView> header_view_ = nullptr;
+  raw_ptr<views::View> body_view_ = nullptr;
+  raw_ptr<views::View> footer_view_ = nullptr;
+  raw_ptr<views::View> default_view_ = nullptr;
+  raw_ptr<views::View> expanded_view_ = nullptr;
+  raw_ptr<views::View> share_action_view_ = nullptr;
   // Separator that appears between the |header_view_| and the |body_view|.
-  raw_ptr<views::Separator, ExperimentalAsh> header_body_separator_ = nullptr;
+  raw_ptr<views::Separator> header_body_separator_ = nullptr;
   // Separator that appears between the |body_view| and the |footer_view_|.
-  raw_ptr<views::Separator, ExperimentalAsh> body_footer_separator_ = nullptr;
+  raw_ptr<views::Separator> body_footer_separator_ = nullptr;
   // Separator between the default_view and the expanded_view.
-  raw_ptr<views::Separator, ExperimentalAsh> expanded_view_separator_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> parent_view_ = nullptr;
-  raw_ptr<SharesheetExpandButton, ExperimentalAsh> expand_button_ = nullptr;
+  raw_ptr<views::Separator> expanded_view_separator_ = nullptr;
+  raw_ptr<views::View> parent_view_ = nullptr;
+  raw_ptr<SharesheetExpandButton> expand_button_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };

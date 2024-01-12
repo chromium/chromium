@@ -37,29 +37,15 @@ constexpr char kInvalidSpeechRecogntionOptions[] =
     "Invalid SpeechRecognitionOptions provided";
 
 void PopulateFilePaths(
-    const std::string* language,
     base::FilePath& binary_path,
     base::flat_map<std::string, base::FilePath>& config_paths) {
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  // TODO(crbug.com/1161569): Language should not be optional in
-  // PopulateFilePaths, as it will be required once we support multiple
-  // languages since the CrosSpeechRecognitionService supports several
-  // features at once. For now only US English is available.
-  LanguageCode language_code =
-      language ? GetLanguageCode(*language) : LanguageCode::kEnUs;
-  if (!soda_installer->IsSodaInstalled(language_code)) {
-    LOG(DFATAL) << "Instantiation of SODA requested with language "
-                << GetLanguageName(language_code)
-                << ", but either SODA or the requested language was not "
-                   "already installed";
-    return;
-  }
 
   binary_path = soda_installer->GetSodaBinaryPath();
-  // TODO(crbug.com/1161569): Populate config_paths with all language packs
-  // once the new language packs are available on ChromeOS.
-  config_paths[GetLanguageName(language_code)] =
-      soda_installer->GetLanguagePath(GetLanguageName(language_code));
+  for (const auto& language_code : soda_installer->InstalledLanguages()) {
+    config_paths[GetLanguageName(language_code)] =
+        soda_installer->GetLanguagePath(GetLanguageName(language_code));
+  }
 }
 
 }  // namespace
@@ -100,8 +86,7 @@ void CrosSpeechRecognitionService::BindRecognizer(
   std::string language_name = options->language
                                   ? options->language.value()
                                   : GetLanguageName(LanguageCode::kEnUs);
-  PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
-                    config_paths);
+  PopulateFilePaths(binary_path, config_paths);
 
   // TODO(crbug.com/1467525): Implement offensive word mask on ChromeOS so that
   // mask_offensive_words is not hard-coded.
@@ -120,8 +105,7 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
   if (!options->is_server_based) {
     base::FilePath binary_path;
     base::flat_map<std::string, base::FilePath> config_paths;
-    PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
-                      config_paths);
+    PopulateFilePaths(binary_path, config_paths);
 
     std::string language_name = options->language
                                     ? options->language.value()

@@ -266,7 +266,7 @@ class MediaDevicesDispatcherHostTest
               expected_set_capture_handle_config_->render_frame_id);
     EXPECT_EQ(config, expected_set_capture_handle_config_->config);
 
-    expected_set_capture_handle_config_ = absl::nullopt;
+    expected_set_capture_handle_config_ = std::nullopt;
   }
 
   void ExpectOnCaptureHandleConfigAccepted(
@@ -542,7 +542,7 @@ class MediaDevicesDispatcherHostTest
     int render_frame_id;
     blink::mojom::CaptureHandleConfigPtr config;
   };
-  absl::optional<ExpectedCaptureHandleConfig>
+  std::optional<ExpectedCaptureHandleConfig>
       expected_set_capture_handle_config_;
   std::vector<media::VideoCaptureFormat> expected_video_capture_formats_;
   RenderViewHostTestEnabler rvh_test_enabler_;

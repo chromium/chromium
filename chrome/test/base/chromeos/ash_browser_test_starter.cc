@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/test_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/common/content_switches.h"
@@ -208,8 +209,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   // Disable gpu sandbox in Lacros since it fails in Linux emulator environment.
   // See details in crbug/1483530.
   lacros_args.emplace_back("--disable-gpu-sandbox");
-  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
-                                  base::JoinString(lacros_args, "####"));
+  ash::standalone_browser::AddLacrosArguments(lacros_args, command_line);
 
   return true;
 }

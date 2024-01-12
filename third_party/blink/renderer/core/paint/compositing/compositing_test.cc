@@ -729,11 +729,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOfSolidColorLayer) {
   )HTML");
 
   auto* layer = CcLayersByDOMElementId(RootCcLayer(), "target")[0];
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(layer->IsSolidColorLayerForTesting());
-  } else {
-    EXPECT_FALSE(layer->IsSolidColorLayerForTesting());
-  }
+  EXPECT_TRUE(layer->IsSolidColorLayerForTesting());
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
   } else {
@@ -3047,17 +3043,8 @@ TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
 
   auto* snap_down = CcLayerByDOMElementId("snapDown");
   auto* snap_up = CcLayerByDOMElementId("snapUp");
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(snap_down->IsSolidColorLayerForTesting());
-    EXPECT_TRUE(snap_up->IsSolidColorLayerForTesting());
-  } else {
-    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(snap_down)
-                    ->GetRecordingSourceForTesting()
-                    ->is_solid_color());
-    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(snap_up)
-                    ->GetRecordingSourceForTesting()
-                    ->is_solid_color());
-  }
+  EXPECT_TRUE(snap_down->IsSolidColorLayerForTesting());
+  EXPECT_TRUE(snap_up->IsSolidColorLayerForTesting());
 }
 
 TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
@@ -3087,13 +3074,7 @@ TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
   Compositor().BeginFrame();
 
   auto* target = CcLayerByDOMElementId("target");
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
-    EXPECT_TRUE(target->IsSolidColorLayerForTesting());
-  } else {
-    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(target)
-                    ->GetRecordingSourceForTesting()
-                    ->is_solid_color());
-  }
+  EXPECT_TRUE(target->IsSolidColorLayerForTesting());
   EXPECT_NEAR(0.4, target->offset_to_transform_parent().x(), 0.001);
   EXPECT_NEAR(0.6, target->offset_to_transform_parent().y(), 0.001);
 }

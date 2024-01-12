@@ -421,8 +421,9 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   // In case of inline level content made of punctuation, we use
   // first_letter_text length instead of FirstLetterLength.
   if (IsParentInlineLayoutObject(first_letter_text) && length == 0 &&
-      first_letter_text->TextLength())
-    length = first_letter_text->TextLength();
+      first_letter_text->TransformedTextLength()) {
+    length = first_letter_text->TransformedTextLength();
+  }
 
   unsigned remaining_length = old_text.length() - length;
 

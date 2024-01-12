@@ -9,6 +9,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace ash {
+class VideoConferenceTrayController;
+}
+
 namespace ash::video_conference {
 class BubbleView;
 
@@ -17,7 +21,8 @@ class ASH_EXPORT SetCameraBackgroundView : public views::View {
   METADATA_HEADER(SetCameraBackgroundView, views::View)
 
  public:
-  explicit SetCameraBackgroundView(BubbleView* bubble_view);
+  SetCameraBackgroundView(BubbleView* bubble_view,
+                          VideoConferenceTrayController* controller);
   SetCameraBackgroundView(const SetCameraBackgroundView&) = delete;
   SetCameraBackgroundView& operator=(const SetCameraBackgroundView&) = delete;
   ~SetCameraBackgroundView() override = default;

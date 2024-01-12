@@ -43,7 +43,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // PairingFromSyncedDevice parses a `Pairing` from Sync's information about a
 // device. This is exposed for testing.
 std::unique_ptr<device::cablev2::Pairing> PairingFromSyncedDevice(
-    syncer::DeviceInfo* device,
+    const syncer::DeviceInfo* device,
     const base::Time& now);
 
 // KnownDevices reflects the browser's knowledge of known caBLEv2 devices.

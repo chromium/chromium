@@ -24,6 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -32,6 +33,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 
 namespace ash {
 
@@ -50,6 +53,7 @@ constexpr gfx::Insets kNudgeWithCloseButton_ButtonContainerInteriorMargin =
     gfx::Insets::TLBR(0, 0, 0, 12);
 
 constexpr float kNudgeCornerRadius = 24.0f;
+constexpr float kNudgePointyCornerRadius = 4.0f;
 
 // Label constants
 constexpr int kBodyLabelMaxLines = 3;
@@ -71,30 +75,77 @@ void AddPaddingView(views::View* parent, int width, int height) {
       ->SetPreferredSize(gfx::Size(width, height));
 }
 
-void SetupViewCornerRadius(views::View* view, int corner_radius) {
-  view->SetPaintToLayer();
-  view->layer()->SetFillsBoundsOpaquely(false);
-  view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+// Returns true if the provided arrow is located at a corner.
+bool CalculateIsCornerAnchored(views::BubbleBorder::Arrow arrow) {
+  switch (arrow) {
+    case views::BubbleBorder::Arrow::TOP_LEFT:
+    case views::BubbleBorder::Arrow::TOP_RIGHT:
+    case views::BubbleBorder::Arrow::BOTTOM_LEFT:
+    case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
+    case views::BubbleBorder::Arrow::LEFT_TOP:
+    case views::BubbleBorder::Arrow::RIGHT_TOP:
+    case views::BubbleBorder::Arrow::LEFT_BOTTOM:
+    case views::BubbleBorder::Arrow::RIGHT_BOTTOM:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Returns a `gfx::RoundedCornersF` object that has a single pointy corner which
+// is defined based on the nudge's position in relation to its anchor view.
+gfx::RoundedCornersF CalculatePointyAnchoredNudgeCorners(
+    views::View* nudge_view,
+    views::View* anchor_view) {
+  auto nudge_bounds = nudge_view->GetBoundsInScreen();
+  auto anchor_bounds = anchor_view->GetBoundsInScreen();
+
+  bool pointy_bottom = nudge_bounds.bottom() < anchor_bounds.bottom();
+  bool pointy_right = nudge_bounds.right() < anchor_bounds.right();
+
+  auto top_left_radius = !pointy_bottom && !pointy_right
+                             ? kNudgePointyCornerRadius
+                             : kNudgeCornerRadius;
+  auto top_right_radius = !pointy_bottom && pointy_right
+                              ? kNudgePointyCornerRadius
+                              : kNudgeCornerRadius;
+  auto bottom_right_radius = pointy_bottom && pointy_right
+                                 ? kNudgePointyCornerRadius
+                                 : kNudgeCornerRadius;
+  auto bottom_left_radius = pointy_bottom && !pointy_right
+                                ? kNudgePointyCornerRadius
+                                : kNudgeCornerRadius;
+
+  return gfx::RoundedCornersF(top_left_radius, top_right_radius,
+                              bottom_right_radius, bottom_left_radius);
 }
 
 }  // namespace
 
-SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
-  SetupViewCornerRadius(this, kNudgeCornerRadius);
+SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
+    : shadow_(SystemShadow::CreateShadowOnTextureLayer(
+          SystemShadow::Type::kElevation4)),
+      is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)) {
+  // Painted to layer so the view can be semi-transparent and set rounded
+  // corners.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   SetBackground(views::CreateThemedSolidBackground(
       nudge_data.background_color_id.value_or(kColorAshShieldAndBase80)));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kNudgeCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetNotifyEnterExitOnChild(true);
 
-  // Since nudges have a large corner radius, we use the shadow on texture
-  // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
-  shadow_ =
-      SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
-  shadow_->SetRoundedCornerRadius(kNudgeCornerRadius);
+  // Cache the anchor view when the nudge anchors by its corner to set a pointy
+  // corner based on the nudge's position in relation to this anchor view.
+  if (nudge_data.is_anchored() && is_corner_anchored_) {
+    anchor_view_tracker_ = std::make_unique<views::ViewTracker>();
+    anchor_view_tracker_->SetView(nudge_data.GetAnchorView());
+    SetNudgeRoundedCornerRadius(CalculatePointyAnchoredNudgeCorners(
+        /*nudge_view=*/this, anchor_view_tracker_->view()));
+  } else {
+    SetNudgeRoundedCornerRadius(gfx::RoundedCornersF(kNudgeCornerRadius));
+  }
 
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kNudgeInteriorMargin);
@@ -162,13 +213,17 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
             .SetID(VIEW_ID_SYSTEM_NUDGE_IMAGE_VIEW)
             .SetPreferredSize(gfx::Size(kImageViewSize, kImageViewSize))
             .SetImage(nudge_data.image_model)
+            // Painted to layer to set rounded corners.
+            .SetPaintToLayer()
             .Build());
     // Certain `ImageModels` do not have the ability to set their size in the
     // constructor, so instead we can do it here.
     if (nudge_data.fill_image_size) {
       image_view->SetImageSize(gfx::Size(kImageViewSize, kImageViewSize));
     }
-    SetupViewCornerRadius(image_view, kImageViewCornerRadius);
+    image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kImageViewCornerRadius));
 
     if (nudge_data.image_background_color_id) {
       image_view->SetBackground(views::CreateThemedSolidBackground(
@@ -326,12 +381,26 @@ void SystemNudgeView::OnWidgetBoundsChanged(views::Widget* widget,
                                             const gfx::Rect& new_bounds) {
   // `shadow_` should have the same bounds as the view's layer.
   shadow_->SetContentBounds(layer()->bounds());
+
+  if (anchor_view_tracker_ && anchor_view_tracker_->view() &&
+      is_corner_anchored_) {
+    SetNudgeRoundedCornerRadius(CalculatePointyAnchoredNudgeCorners(
+        /*nudge_view=*/this, anchor_view_tracker_->view()));
+  }
 }
 
 void SystemNudgeView::OnWidgetDestroying(views::Widget* widget) {
   if (widget && widget->HasObserver(this)) {
     widget->RemoveObserver(this);
   }
+}
+
+void SystemNudgeView::SetNudgeRoundedCornerRadius(
+    gfx::RoundedCornersF rounded_corners) {
+  layer()->SetRoundedCornerRadius(rounded_corners);
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      rounded_corners, views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  shadow_->SetRoundedCorners(rounded_corners);
 }
 
 void SystemNudgeView::HandleOnMouseHovered(const bool mouse_entered) {

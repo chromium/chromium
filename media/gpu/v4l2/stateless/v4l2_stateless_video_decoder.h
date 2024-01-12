@@ -139,9 +139,6 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // need to be queued up as there may not be free input buffers available.
   void ServiceDecodeRequestQueue();
 
-  // Clear all of the pending decode buffers.
-  void Flush(DecodeCB decode_cb);
-
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
   const scoped_refptr<StatelessDevice> device_;
@@ -151,7 +148,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   OutputCB output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // Hold the callback that came in with the EOS signal until the rest of the
-  // frames have finished decoding._;
+  // frames have finished decoding.
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // Video decoder used to parse stream headers by software.
@@ -182,6 +179,13 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   struct FrameID {};
   base::IdTypeU64<FrameID>::Generator frame_id_generator_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  // On an EOS the decoder must make sure that all the frames have made it
+  // through the queue. To do that the |last_frame_id_generated_| holds the id
+  // of the last input buffer while |last_frame_id_dequeued_| holds the id of
+  // the last output buffer.
+  uint64_t last_frame_id_generated_;
+  uint64_t last_frame_id_dequeued_;
 
   base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
 

@@ -121,9 +121,9 @@ WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 DocumentPictureInPictureWindowControllerImpl::GetOrigin() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
@@ -136,10 +136,10 @@ void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
   Close(/*should_pause_video=*/true);
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 DocumentPictureInPictureWindowControllerImpl::GetWindowBounds() {
   if (!child_contents_)
-    return absl::nullopt;
+    return std::nullopt;
   return child_contents_->GetContainerBounds();
 }
 

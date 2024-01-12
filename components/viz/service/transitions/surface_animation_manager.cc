@@ -111,7 +111,6 @@ void ReplaceSharedElementWithTexture(
 
   auto* texture_quad =
       target_render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
   texture_quad->SetNew(
       /*shared_quad_state=*/copied_quad_state,
       /*rect=*/shared_element_quad.rect,
@@ -122,7 +121,7 @@ void ReplaceSharedElementWithTexture(
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SkColors::kTransparent,
-      /*vertex_opacity=*/vertex_opacity, /*y_flipped=*/false,
+      /*y_flipped=*/false,
       /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
@@ -269,10 +268,6 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   if (!active_frame.metadata.has_shared_element_resources)
     return;
 
-  // A frame created by resolving ViewTransitionElementResourceIds to their
-  // corresponding static or live snapshot.
-  DCHECK(!surface->HasInterpolatedFrame())
-      << "Can not override interpolated frame";
   CompositorFrame resolved_frame;
   resolved_frame.metadata = active_frame.metadata.Clone();
   resolved_frame.resource_list = active_frame.resource_list;
@@ -303,7 +298,8 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
     resolved_frame.render_pass_list.push_back(std::move(pass_copy));
   }
 
-  surface->SetInterpolatedFrame(std::move(resolved_frame));
+  RefResources(resolved_frame.resource_list);
+  surface->SetActiveFrameForViewTransition(std::move(resolved_frame));
 }
 
 void SurfaceAnimationManager::CompleteSaveForTesting() {

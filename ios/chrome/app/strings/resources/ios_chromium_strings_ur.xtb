@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">‏Chromium آپ کا کیمرا استعمال نہیں کر سکتا ہے کیونکہ یہ کسی دوسری ایپلیکیشن کے زیر استعمال ہے</translation>
 <translation id="2784449251446768092">‏Chromium کی ترتیبات کا نظم کریں</translation>
 <translation id="2798503587425057129">‏Chromium کی پڑھنے کی فہرست کھولتا ہے۔</translation>
+<translation id="28276745681323897">‏آپ اس بات کا نظم کر سکتے ہیں کہ آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK" />Chromium کا کون سا ڈیٹا محفوظ کیا جائے<ph name="END_LINK" />۔
+
+آپ کے Chromium کے تجربے کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کرنے والی مزید ترتیبات کے لیے <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="2843571538056574338">‏آٹوفل کے لیے Chromium استعمال کریں</translation>
 <translation id="2918709798697875261">‏آپ کی تنظیم کا تقاضہ ہے کہ آپ Chromium سے سائن آؤٹ رہیں۔</translation>
 <translation id="2942241131342758843">‏لنکس کھولنے، ویجیٹس سے تلاش کرنے اور دیگر ایپس میں پاس ورڈز کو آٹو فل کرنے کیلئے، Chromium کا بطور ڈیفالٹ استعمال کریں</translation>
@@ -79,6 +82,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{‏یہ اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹ کے لیے استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}other{‏ایسا اس وقت ہوتا ہے جب Chromium {THRESHOLD} منٹوں تک استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}}</translation>
 <translation id="3472200483164753384">‏Chromium Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="3478750326643748149">‏"Chromium سے زیادہ سے زیادہ فائدہ اٹھائیں" کو چھپائیں</translation>
+<translation id="347967311580159871">‏آپ کے Chromium کے تجربے کو بہتر بنانے کے لیے ڈیٹا کا استعمال کرنے والی مزید ترتیبات کے لیے <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="3512168799938877162">‏آپ کے پاس ورڈ کا اشتراک نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور یقینی بنائیں کہ آپ Chromium میں سائن ان ہیں۔ پھر، دوبارہ کوشش کریں۔</translation>
 <translation id="3554027294407525061">‏Chromium میں براؤزنگ ڈیٹا صاف کریں۔</translation>
 <translation id="3567399274263440288">‏Chromium سے بھرپور فائدہ اٹھانے کے لیے اپنے Google اکاؤنٹ کے ساتھ Chromium میں سائن ان کریں۔</translation>

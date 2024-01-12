@@ -61,7 +61,7 @@ NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  absl::optional<PrerenderFinalStatus> cancel_reason;
+  std::optional<PrerenderFinalStatus> cancel_reason;
 
   if (!frame_tree_node->frame_tree().is_prerendering())
     return NavigationThrottle::PROCEED;

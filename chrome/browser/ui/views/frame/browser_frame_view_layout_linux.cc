@@ -37,7 +37,7 @@ gfx::Insets BrowserFrameViewLayoutLinux::MirroredFrameBorderInsets() const {
 gfx::Insets BrowserFrameViewLayoutLinux::GetInputInsets() const {
   bool showing_shadow = delegate_->ShouldDrawRestoredFrameShadow() &&
                         !delegate_->IsFrameCondensed();
-  return gfx::Insets(showing_shadow ? -kResizeBorder : 0);
+  return gfx::Insets(showing_shadow ? kResizeBorder : 0);
 }
 
 int BrowserFrameViewLayoutLinux::CaptionButtonY(views::FrameButton button_id,
@@ -53,10 +53,17 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
         OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets());
   }
 
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = delegate_->IsTiled();
+#else
+  const bool tiled = false;
+#endif
+  auto shadow_values =
+      tiled ? gfx::ShadowValues() : view_->GetShadowValues(true);
   return GetRestoredFrameBorderInsetsLinux(
       delegate_->ShouldDrawRestoredFrameShadow(),
-      OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(),
-      delegate_->GetTiledEdges(), view_->GetShadowValues(true), kResizeBorder);
+      OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(), shadow_values,
+      kResizeBorder);
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {

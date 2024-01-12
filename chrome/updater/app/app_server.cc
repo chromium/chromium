@@ -230,11 +230,13 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs,
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   if (!global_prefs->GetMigratedLegacyUpdaters()) {
-    if (!MigrateLegacyUpdaters(base::BindRepeating(
-            &PersistedData::RegisterApp,
-            base::MakeRefCounted<PersistedData>(
-                updater_scope(), global_prefs->GetPrefService(),
-                std::make_unique<ActivityDataService>(GetUpdaterScope()))))) {
+    if (!MigrateLegacyUpdaters(
+            updater_scope(),
+            base::BindRepeating(
+                &PersistedData::RegisterApp,
+                base::MakeRefCounted<PersistedData>(
+                    updater_scope(), global_prefs->GetPrefService(),
+                    std::make_unique<ActivityDataService>(updater_scope()))))) {
       return false;
     }
     global_prefs->SetMigratedLegacyUpdaters();

@@ -19,11 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -201,11 +201,10 @@ class TabListEditorCoordinator {
 
             // Note: The TabListEditorCoordinator is always created after native is
             // initialized.
-            assert LibraryLoader.getInstance().isInitialized();
-            mTabListCoordinator.initWithNative(null);
+            Profile regularProfile = regularTabModelSupplier.get().getProfile();
+            mTabListCoordinator.initWithNative(regularProfile, null);
             if (mMultiThumbnailCardProvider != null) {
-                mMultiThumbnailCardProvider.initWithNative(
-                        regularTabModelSupplier.get().getProfile());
+                mMultiThumbnailCardProvider.initWithNative(regularProfile);
             }
 
             mTabListCoordinator.registerItemType(

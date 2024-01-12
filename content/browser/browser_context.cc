@@ -213,7 +213,7 @@ void BrowserContext::DeliverPushMessage(
     const GURL& origin,
     int64_t service_worker_registration_id,
     const std::string& message_id,
-    absl::optional<std::string> payload,
+    std::optional<std::string> payload,
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingRouter::DeliverMessage(

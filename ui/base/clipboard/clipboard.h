@@ -446,11 +446,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WriteText(base::StringPiece text) = 0;
 
   virtual void WriteHTML(base::StringPiece markup,
-                         absl::optional<base::StringPiece> source_url) = 0;
-
-  virtual void WriteUnsanitizedHTML(
-      base::StringPiece markup,
-      absl::optional<base::StringPiece> source_url) = 0;
+                         absl::optional<base::StringPiece> source_url,
+                         ClipboardContentType content_type) = 0;
 
   virtual void WriteSvg(base::StringPiece markup) = 0;
 

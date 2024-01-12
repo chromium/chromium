@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.CetEnabled" enum="BooleanEnabled"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -148,16 +148,6 @@ chromium-metrics-reviews@google.com.
     the installer. Recorded when Chrome is launched from the taskbar, and the
     install was done after the installer started pinning Chrome to the taskbar
     for Windows 10+.
-  </summary>
-</histogram>
-
-<histogram name="Windows.Menu.Win11Style" enum="BooleanWin11MenuStyle"
-    expires_after="M97">
-  <owner>kylixrd@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Indicates whether Windows 11 style menus are used. Recorded on menu
-    configuration initialization.
   </summary>
 </histogram>
 

@@ -75,7 +75,7 @@ class LocalDataQueryHelperTest : public testing::Test {
 
     auto local_bookmark_client =
         std::make_unique<bookmarks::TestBookmarkClient>();
-    local_bookmark_client_ = local_bookmark_client.get();
+    local_managed_node_ = local_bookmark_client->EnableManagedNode();
     local_bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(
             std::move(local_bookmark_client));
@@ -150,10 +150,10 @@ class LocalDataQueryHelperTest : public testing::Test {
           password_manager::IsAccountStore{true});
 
   std::unique_ptr<bookmarks::BookmarkModel> local_bookmark_model_;
-  raw_ptr<bookmarks::TestBookmarkClient> local_bookmark_client_;
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
 
+  raw_ptr<bookmarks::BookmarkNode> local_managed_node_;
   BookmarkUndoService bookmark_undo_service_;  // Needed by BookmarkSyncService.
   sync_bookmarks::BookmarkSyncService local_bookmark_sync_service_;
   sync_bookmarks::BookmarkSyncService account_bookmark_sync_service_;
@@ -342,17 +342,15 @@ TEST_F(LocalDataQueryHelperTest, ShouldIgnoreManagedBookmarks) {
   //    |- url2(http://www.facebook.com)
   const bookmarks::BookmarkNode* bookmark_bar_node =
       local_bookmark_model_->bookmark_bar_node();
-  const bookmarks::BookmarkNode* managed_node =
-      local_bookmark_client_->EnableManagedNode();
 
   local_bookmark_model_->AddURL(bookmark_bar_node, /*index=*/0,
                                 base::UTF8ToUTF16(std::string("url1")),
                                 GURL("https://www.amazon.de"));
-  local_bookmark_model_->AddURL(managed_node, /*index=*/0,
+  local_bookmark_model_->AddURL(local_managed_node_, /*index=*/0,
                                 base::UTF8ToUTF16(std::string("url2")),
                                 GURL("https://www.facebook.com"));
   ASSERT_EQ(1u, bookmark_bar_node->children().size());
-  ASSERT_EQ(1u, managed_node->children().size());
+  ASSERT_EQ(1u, local_managed_node_->children().size());
 
   base::MockOnceCallback<void(
       std::map<syncer::ModelType, syncer::LocalDataDescription>)>
@@ -509,7 +507,7 @@ class LocalDataMigrationHelperTest : public testing::Test {
 
     auto local_bookmark_client =
         std::make_unique<bookmarks::TestBookmarkClient>();
-    local_bookmark_client_ = local_bookmark_client.get();
+    local_managed_node_ = local_bookmark_client->EnableManagedNode();
     local_bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(
             std::move(local_bookmark_client));
@@ -584,10 +582,10 @@ class LocalDataMigrationHelperTest : public testing::Test {
           password_manager::IsAccountStore{true});
 
   std::unique_ptr<bookmarks::BookmarkModel> local_bookmark_model_;
-  raw_ptr<bookmarks::TestBookmarkClient> local_bookmark_client_;
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
 
+  raw_ptr<bookmarks::BookmarkNode> local_managed_node_;
   BookmarkUndoService bookmark_undo_service_;  // Needed by BookmarkSyncService.
   sync_bookmarks::BookmarkSyncService local_bookmark_sync_service_;
   sync_bookmarks::BookmarkSyncService account_bookmark_sync_service_;
@@ -1073,13 +1071,11 @@ TEST_F(LocalDataMigrationHelperTest, ShouldIgnoreManagedBookmarks) {
   //    |- url2(http://www.facebook.com)
   const bookmarks::BookmarkNode* bookmark_bar_node =
       local_bookmark_model_->bookmark_bar_node();
-  const bookmarks::BookmarkNode* managed_node =
-      local_bookmark_client_->EnableManagedNode();
 
   local_bookmark_model_->AddURL(bookmark_bar_node, /*index=*/0,
                                 base::UTF8ToUTF16(std::string("url1")),
                                 GURL("https://www.amazon.de"));
-  local_bookmark_model_->AddURL(managed_node, /*index=*/0,
+  local_bookmark_model_->AddURL(local_managed_node_, /*index=*/0,
                                 base::UTF8ToUTF16(std::string("url2")),
                                 GURL("https://www.facebook.com"));
 

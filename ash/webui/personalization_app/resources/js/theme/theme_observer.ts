@@ -8,7 +8,7 @@ import {ColorScheme} from '../../color_scheme.mojom-webui.js';
 import {SampleColorScheme, ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setGeolocationPermissionEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -65,5 +65,10 @@ export class ThemeObserver implements ThemeObserverInterface {
   onStaticColorChanged(staticColor: SkColor): void {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setStaticColorAction(staticColor));
+  }
+
+  onGeolocationPermissionForSystemServicesChanged(enabled: boolean): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setGeolocationPermissionEnabledAction(enabled));
   }
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/metrics/shortcut_metrics.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
@@ -430,6 +431,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
 
   // Launch the shortcut if the shelf item is a shortcut to an app.
   if (IsAppServiceShortcut(profile_, app_id)) {
+    apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kShelf);
     proxy->LaunchShortcut(apps::ShortcutId(app_id), display_id);
     return;
   }

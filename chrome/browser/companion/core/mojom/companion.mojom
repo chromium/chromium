@@ -48,6 +48,9 @@ enum MethodType {
   // Method corresponding to `CompanionPage.RefreshCompanionPage`.
   kRefreshCompanionPage = 12,
 
+  // Method corresponding to `CompanionPage.ServerSideUrlFilterEvent`.
+  kServerSideUrlFilterEvent = 13,
+
   // Methods used in browser -> renderer communication.
   // Method corresponding to `CompanionPage.UpdateCompanionPage`.
   kUpdateCompanionPage = 31,
@@ -269,6 +272,10 @@ interface CompanionPageHandler {
 
   // Does a hard refresh of the companion page with new state.
   RefreshCompanionPage();
+
+  // For metrics only. Called to record that a URL was excluded from VQS
+  // triggering due to pXLQ or pornography signals from Diner.
+  OnServerSideUrlFilterEvent();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

@@ -8,7 +8,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
-GEN('#include "chrome/browser/ash/crostini/fake_crostini_features.h"');
 GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
@@ -17,7 +16,6 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
-GEN('#include "ui/base/ui_base_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
 var OSSettingsBrowserTest = class extends PolymerTest {
@@ -85,307 +83,13 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
 });
 
 [['AboutPage', 'os_about_page_tests.js'],
- ['ApnDetailDialog', 'apn_detail_dialog_test.js'],
  [
    'ApnSubpage', 'apn_subpage_tests.js',
    {enabled: ['ash::features::kApnRevamp']}
  ],
- [
-   'AppLanguageSelectionDialog',
-   'common/app_language_selection_dialog/app_language_selection_dialog_test.js'
- ],
- [
-   'AppLanguageSelectionItem',
-   'common/app_language_selection_dialog/app_language_selection_item_test.js'
- ],
- ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
- ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
- ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
- ['DateTimePage', 'date_time_page/date_time_page_test.js'],
- [
-   'DateTimePageDateTimeSettingsCard',
-   'date_time_page/date_time_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
- ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
- ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
- [
-   'DevicePageCustomizeButtonDropdownItem',
-   'device_page/customize_button_dropdown_item_test.js'
- ],
- [
-   'DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js', {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageCustomizeButtonSelect',
-   'device_page/customize_button_select_test.js'
- ],
- [
-   'DevicePageCustomizeButtonsSubsection',
-   'device_page/customize_buttons_subsection_test.js', {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageCustomizeMouseButtonsSubpage',
-   'device_page/customize_mouse_buttons_subpage_test.js', {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageCustomizePenButtonsSubpage',
-   'device_page/customize_pen_buttons_subpage_test.js', {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageCustomizeTabletButtonsSubpage',
-   'device_page/customize_tablet_buttons_subpage_test.js', {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageDisplayPage',
-   'device_page/display_page_test.js',
-   {
-     disabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'DevicePageDisplayPageRevamp',
-   'device_page/display_page_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'DevicePageDisplaySettingsMojoInterfaceProvider',
-   'device_page/display_settings_mojo_interface_provider_test.js'
- ],
- [
-   'DevicePageDragAndDropManager', 'device_page/drag_and_drop_manager_test.js',
-   {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'
- ],
- [
-   'DevicePageFakeInputDeviceSettingsProvider',
-   'device_page/fake_input_device_settings_provider_test.js'
- ],
- [
-   'DevicePageFKeyRow',
-   'device_page/fkey_row_test.js',
-   {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kAltClickAndSixPackCustomization',
-       'features::kSupportF11AndF12KeyShortcuts',
-     ],
-   },
- ],
- [
-   'DevicePageGraphicsTabletSubpage',
-   'device_page/graphics_tablet_subpage_test.js', {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
-     ],
-   }
- ],
- [
-   'DevicePageInputDeviceMojoInterfaceProvider',
-   'device_page/input_device_mojo_interface_provider_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'DevicePageKeyCombinationInputDialog',
-   'device_page/key_combination_input_dialog_test.js', {
-     enabled: [
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kInputDeviceSettingsSplit'
-     ]
-   }
- ],
- [
-   'DevicePageKeyboard', 'device_page/keyboard_test.js', {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
-     ],
-   }
- ],
- [
-   'DevicePageKeyboardSixPackKeyRow',
-   'device_page/keyboard_six_pack_key_row_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'DevicePagePerDeviceKeyboard',
-   'device_page/per_device_keyboard_test.js',
-   {
-     disabled: ['ash::features::kOsSettingsRevampWayfinding'],
-     enabled: ['ash::features::kInputDeviceSettingsSplit'],
-   },
- ],
- [
-   'DevicePagePerDeviceKeyboardRevamp',
-   'device_page/per_device_keyboard_test.js',
-   {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'DevicePagePerDeviceKeyboardRemapKeys',
-   'device_page/per_device_keyboard_remap_keys_test.js', {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kAltClickAndSixPackCustomization'
-     ]
-   }
- ],
- [
-   'DevicePagePerDeviceKeyboardSubsection',
-   'device_page/per_device_keyboard_subsection_test.js',
-   {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kAltClickAndSixPackCustomization'
-     ]
-   },
- ],
- [
-   'DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'DevicePagePerDeviceMouseSubsection',
-   'device_page/per_device_mouse_subsection_test.js', {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization',
-     ]
-   }
- ],
- [
-   'DevicePagePerDevicePointingStick',
-   'device_page/per_device_pointing_stick_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'DevicePagePerDevicePointingStickSubsection',
-   'device_page/per_device_pointing_stick_subsection_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
- ],
- [
-   'DevicePagePerDeviceTouchpad',
-   'device_page/per_device_touchpad_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
- ],
- [
-   'DevicePagePerDeviceTouchpadSubsection',
-   'device_page/per_device_touchpad_subsection_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'DevicePagePointers', 'device_page/pointers_test.js', {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
-     ],
-   }
- ],
- [
-   'DevicePagePower',
-   'device_page/power_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'DevicePagePowerRevamp',
-   'device_page/power_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'DevicePagePrintingSettingsCard',
-   'os_printing_page/printing_settings_card_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'DevicePageInputSettings',
-   'device_page/device_page_input_settings_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'DevicePageStorage',
-   'device_page/storage_test.js',
-   {
-     disabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
-     ],
-   },
- ],
- [
-   'DevicePageStorageRevamp',
-   'device_page/storage_test.js',
-   {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization',
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'DevicePageStylus', 'device_page/stylus_test.js', {
-     enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
-     ],
-   }
- ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
- ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
- ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
    'InternetPage', 'internet_page_tests.js', {
      enabled: [
@@ -395,146 +99,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
        'ash::features::kPasspointARCSupport',
      ]
    }
- ],
- [
-   'InternetPageCellularSetupDialog',
-   'internet_page/cellular_setup_dialog_test.js'
- ],
- [
-   'InternetPageEsimInstallErrorDialog',
-   'internet_page/esim_install_error_dialog_test.js'
- ],
- ['InternetPageEsimRenameDialog', 'internet_page/esim_rename_dialog_test.js'],
- [
-   'InternetPageHotspotConfigDialog',
-   'internet_page/hotspot_config_dialog_test.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
- [
-   'InternetPageHotspotSubpage',
-   'internet_page/hotspot_subpage_test.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
- [
-   'InternetPageHotspotSummaryItem',
-   'internet_page/hotspot_summary_item_test.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
- ['InternetPageInternetConfig', 'internet_page/internet_config_test.js'],
- [
-   'InternetPageInternetDetailMenu',
-   'internet_page/internet_detail_menu_test.js'
- ],
- [
-   'InternetPageInternetDetailSubpage',
-   'internet_page/internet_detail_subpage_test.js', {
-     enabled: [
-       'ash::features::kApnRevamp',
-       'ash::features::kPasspointARCSupport',
-       'ash::features::kPasspointSettings',
-     ]
-   }
- ],
- [
-   'InternetPageInternetKnownNetworksSubpage',
-   'internet_page/internet_known_networks_subpage_test.js', {
-     enabled: [
-       'ash::features::kPasspointARCSupport',
-       'ash::features::kPasspointSettings',
-     ]
-   }
- ],
- [
-   'InternetPageInternetSubpageMenu',
-   'internet_page/internet_subpage_menu_test.js'
- ],
- ['InternetPageInternetSubpage', 'internet_page/internet_subpage_test.js'],
- [
-   'InternetPageNetworkAlwaysOnVpn',
-   'internet_page/network_always_on_vpn_test.js'
- ],
- [
-   'InternetPageNetworkDeviceInfoDialog',
-   'internet_page/network_device_info_dialog_test.js'
- ],
- [
-   'InternetPageNetworkProxySection',
-   'internet_page/network_proxy_section_test.js'
- ],
- ['InternetPageNetworkSummary', 'internet_page/network_summary_test.js'],
- [
-   'InternetPageNetworkSummaryItem',
-   'internet_page/network_summary_item_test.js'
- ],
- [
-   'InternetPagePasspointSubpage', 'internet_page/passpoint_subpage_test.js', {
-     enabled: [
-       'ash::features::kPasspointARCSupport',
-       'ash::features::kPasspointSettings',
-     ]
-   }
- ],
- [
-   'InternetPagePasspointRemoveDialog',
-   'internet_page/passpoint_remove_dialog_test.js', {
-     enabled: [
-       'ash::features::kPasspointARCSupport',
-       'ash::features::kPasspointSettings',
-     ]
-   }
- ],
- [
-   'InternetPageSettingsTrafficCounters',
-   'internet_page/settings_traffic_counters_test.js'
- ],
- [
-   'InternetPageTetherConnectionDialog',
-   'internet_page/tether_connection_dialog_test.js'
- ],
- ['KerberosPage', 'kerberos_page/kerberos_page_test.js'],
- [
-   'KerberosPageKerberosAccountsSubpage',
-   'kerberos_page/kerberos_accounts_subpage_test.js',
- ],
- [
-   'KerberosPageKerberosAddAccountDialog',
-   'kerberos_page/kerberos_add_account_dialog_test.js',
- ],
- [
-   'KeyboardShortcutBanner',
-   'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
- ],
- ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
- [
-   'MainPageContainer',
-   'main_page_container/main_page_container_test.js',
-   {
-     disabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'MainPageContainerRevamp',
-   'main_page_container/main_page_container_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'MainPageContainerPageDisplayer',
-   'main_page_container/page_displayer_test.js',
- ],
- [
-   'MainPageContainerRouteNavigation',
-   'main_page_container/route_navigation_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
  ],
  [
    'MultidevicePage',
@@ -978,6 +542,16 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    'OsSearchPageSearchAndAssistantSettingsCard',
    'os_search_page/search_and_assistant_settings_card_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSearchPageSearchEngine',
+   'os_search_page/search_engine_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSearchPageSearchEngineRevamp',
+   'os_search_page/search_engine_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  [

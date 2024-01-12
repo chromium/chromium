@@ -208,7 +208,7 @@ void LocalFileSuggestionProvider::OnValidationComplete(
         FileSuggestionType::kLocalFile, result.path,
         app_list::GetJustificationString(result.info.last_accessed,
                                          result.info.last_modified),
-        result.score);
+        /*timestamp=*/absl::nullopt, result.score);
   }
 
   // Sort valid results high-to-low by score.

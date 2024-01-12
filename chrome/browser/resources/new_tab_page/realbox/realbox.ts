@@ -124,6 +124,12 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      realboxSteadyStateShadow: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23SteadyStateShadow'),
+        reflectToAttribute: true,
+      },
+
       //========================================================================
       // Private properties
       //========================================================================
@@ -233,6 +239,7 @@ export class RealboxElement extends PolymerElement {
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
   realboxChromeRefreshTheming: boolean;
+  realboxSteadyStateShadow: boolean;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;

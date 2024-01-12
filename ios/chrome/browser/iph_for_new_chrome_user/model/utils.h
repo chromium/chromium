@@ -11,10 +11,11 @@ class DeviceSwitcherResultDispatcher;
 
 namespace iph_for_new_chrome_user {
 
-// Returns eligibility of seeing the IPH for new chrome users.
-// The critieria: 1. device switcher classifies it as the first syncing device.
+// Returns eligibility of seeing the IPH for Safari Switcher for new chrome
+// users. The critieria: 1. device switcher classifies it as the first syncing
+// device.
 // 2. the time since FRE is within a certain range.
-bool IsUserEligible(
+bool IsUserNewSafariSwitcher(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher);
 
 }  // namespace iph_for_new_chrome_user

@@ -195,21 +195,27 @@ section below).
 ## Deleting dependencies
 
 gclient doesn't provide a way to delete dependencies. You can delete dependency
-by manually editing DEPS file. If git submodules are used, you will also need to
-remove it from git:
+by manually editing DEPS file and running the following to update git
+submodules:
 
 ```
-git rm --cache {dependency}
+export DEPENDENCY={dependency}
+git rm --cached "$DEPENDENCY"
+git config -f .gitmodules --remove-section "submodule.$DEPENDENCY"
+git add .gitmodules
 ```
 
-or using the example from the previous section:
+Using the example from the previous section:
 
 ```
-git rm --cache third_party/boringssl/src
+export DEPENDENCY=third_party/boringssl/src
+git rm --cached "$DEPENDENCY"
+git config -f .gitmodules --remove-section "submodule.$DEPENDENCY"
+git add .gitmodules
 ```
 
-Once git-rm is executed, you can proceed with committing your change. You should
-see change in DEPS, .gitmodule and {dependency}.
+Once the commands are executed, you can proceed with committing your change. You
+should see change in DEPS, .gitmodule and {dependency}.
 
 ## Regenerating git submodules
 

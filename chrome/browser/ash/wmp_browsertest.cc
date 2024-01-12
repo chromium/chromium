@@ -50,7 +50,7 @@ class ActiveWindowWaiter : public wm::ActivationChangeObserver {
 
  private:
   base::RunLoop run_loop_;
-  raw_ptr<aura::Window, ExperimentalAsh> found_window_ = nullptr;
+  raw_ptr<aura::Window> found_window_ = nullptr;
   base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
       observation_{this};
 };

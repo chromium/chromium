@@ -97,7 +97,11 @@ class MODULES_EXPORT NavigatorAuction final
   void updateAdInterestGroups();
   static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
   // TODO(crbug.com/1441988): Make `const AuctionAdConfig*` after rename.
-  ScriptPromise runAdAuction(ScriptState*, AuctionAdConfig*, ExceptionState&);
+  ScriptPromise runAdAuction(
+      ScriptState*,
+      AuctionAdConfig*,
+      ExceptionState&,
+      base::TimeTicks start_time = base::TimeTicks::Now());
   static ScriptPromise runAdAuction(ScriptState*,
                                     Navigator&,
                                     AuctionAdConfig*,
@@ -151,9 +155,11 @@ class MODULES_EXPORT NavigatorAuction final
       const Vector<std::pair<String, String>>& replacement,
       ExceptionState& exception_state);
 
-  ScriptPromise getInterestGroupAdAuctionData(ScriptState* script_state,
-                                              const AdAuctionDataConfig* config,
-                                              ExceptionState& exception_state);
+  ScriptPromise getInterestGroupAdAuctionData(
+      ScriptState* script_state,
+      const AdAuctionDataConfig* config,
+      ExceptionState& exception_state,
+      base::TimeTicks start_time = base::TimeTicks::Now());
   static ScriptPromise getInterestGroupAdAuctionData(
       ScriptState* script_state,
       Navigator& navigator,
@@ -262,6 +268,7 @@ class MODULES_EXPORT NavigatorAuction final
   void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
 
   void GetInterestGroupAdAuctionDataComplete(
+      base::TimeTicks start_time,
       ScriptPromiseResolver* resolver,
       mojo_base::BigBuffer request,
       const absl::optional<base::Uuid>& request_id,

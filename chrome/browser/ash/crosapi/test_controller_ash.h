@@ -142,6 +142,9 @@ class TestControllerAsh : public mojom::TestController,
       const std::optional<std::string>& url_override,
       SetAlmanacEndpointUrlForTestingCallback callback) override;
 
+  void IsToastShown(const std::string& toast_id,
+                    IsToastShownCallback callback) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppEntry} from '../common/js/files_app_entry_types.js';
 import {VolumeType} from '../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
-import {FileData, FileKey, State, Volume} from '../externs/ts/state.js';
 import {BaseStore} from '../lib/base_store.js';
 
 import {allEntriesSlice} from './ducks/all_entries.js';
@@ -20,6 +19,7 @@ import {preferencesSlice} from './ducks/preferences.js';
 import {searchSlice} from './ducks/search.js';
 import {uiEntriesSlice} from './ducks/ui_entries.js';
 import {volumesSlice} from './ducks/volumes.js';
+import type {FileData, FileKey, State, Volume} from './state.js';
 
 /**
  * Files app's Store type.

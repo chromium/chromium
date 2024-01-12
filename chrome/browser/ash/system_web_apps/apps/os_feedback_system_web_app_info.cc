@@ -105,7 +105,7 @@ bool OSFeedbackAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool OSFeedbackAppDelegate::ShouldShowInSearch() const {
+bool OSFeedbackAppDelegate::ShouldShowInSearchAndShelf() const {
   return IsUserFeedbackAllowed(profile());
 }
 

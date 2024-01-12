@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2784449251446768092">Manage Chromium Settings</translation>
 <translation id="2798503587425057129">Opens the Chromium reading list.</translation>
+<translation id="28276745681323897">You can <ph name="BEGIN_LINK" />manage what Chromium data is saved<ph name="END_LINK" /> in your Google Account.
+
+For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="2843571538056574338">Use Chromium for Autofill</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
@@ -79,6 +82,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
 <translation id="3478750326643748149">Hide 'Get the most out of Chromium'</translation>
+<translation id="347967311580159871">For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chromium. Then try again.</translation>
 <translation id="3554027294407525061">Clear browsing data in Chromium.</translation>
 <translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>

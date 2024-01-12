@@ -104,6 +104,8 @@ class BufferFormat {
   BufferFormat(const BufferFormat& other);
   ~BufferFormat();
 
+  std::string ToString() const;
+
   uint32_t NumPlanes() const { return planes.size(); }
   Fourcc fourcc;
   gfx::Size resolution;

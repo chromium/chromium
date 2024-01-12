@@ -1,3 +1,6 @@
+#!special-case-list-v1
+# TODO(https://crbug.com/1515966): update to glob patterns
+
 #############################################################################
 # UBSan ignorelist.
 

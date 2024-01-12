@@ -228,7 +228,7 @@ class HermesEuiccClientTest : public HermesClientTestBase {
  protected:
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
-  raw_ptr<HermesEuiccClient, DanglingUntriaged | ExperimentalAsh> client_;
+  raw_ptr<HermesEuiccClient, DanglingUntriaged> client_;
   TestHermesEuiccClientObserver test_observer_;
 };
 

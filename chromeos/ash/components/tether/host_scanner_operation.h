@@ -139,10 +139,9 @@ class HostScannerOperation : public MessageTransferOperation {
                       scoped_refptr<base::TaskRunner> test_task_runner);
   void RecordTetherAvailabilityResponseDuration(const std::string device_id);
 
-  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
-      tether_host_response_recorder_;
-  raw_ptr<ConnectionPreserver, ExperimentalAsh> connection_preserver_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
+  raw_ptr<ConnectionPreserver> connection_preserver_;
+  raw_ptr<base::Clock> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 

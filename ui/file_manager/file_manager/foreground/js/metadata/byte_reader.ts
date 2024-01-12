@@ -82,7 +82,7 @@ export class ByteReader {
 
     for (let i = 0; i < size; ++i) {
       const code = dataView.getUint8(pos + i);
-      if (code == 0) {
+      if (code === 0) {
         break;
       }
       codes.push(code);
@@ -113,7 +113,7 @@ export class ByteReader {
     let start = 0;
 
     if (bom) {
-      littleEndian = (dataView.getUint8(pos) == 0xFF);
+      littleEndian = (dataView.getUint8(pos) === 0xFF);
       start = 2;
     }
 
@@ -121,7 +121,7 @@ export class ByteReader {
 
     for (let i = start; i < size; i += 2) {
       const code = dataView.getUint16(pos + i, littleEndian);
-      if (code == 0) {
+      if (code === 0) {
         break;
       }
       codes.push(code);
@@ -256,7 +256,7 @@ export class ByteReader {
    * @param order Byte order. Either LITTLE_ENDIAN or BIG_ENDIAN.
    */
   setByteOrder(order: ByteOrder) {
-    this.littleEndian_ = order == ByteOrder.LITTLE_ENDIAN;
+    this.littleEndian_ = order === ByteOrder.LITTLE_ENDIAN;
   }
 
   /**
@@ -270,7 +270,7 @@ export class ByteReader {
    * @param end Maximum position to read from.
    */
   validateRead(size: number, end?: number) {
-    if (typeof end == 'undefined') {
+    if (typeof end === 'undefined') {
       end = this.view_.byteLength;
     }
 
@@ -291,7 +291,7 @@ export class ByteReader {
     const method = WIDTH_TO_DATA_VIEW_METHOD[width][signed ? 1 : 0];
 
     let rv;
-    if (method == 'getInt8' || method == 'getUint8') {
+    if (method === 'getInt8' || method === 'getUint8') {
       rv = this.view_[method](this.pos_);
     } else {
       rv = this.view_[method](this.pos_, this.littleEndian_);
@@ -416,9 +416,9 @@ export class ByteReader {
     end = end || this.view_.byteLength;
 
     let newPos;
-    if (seekStart == SeekOrigin.SEEK_CUR) {
+    if (seekStart === SeekOrigin.SEEK_CUR) {
       newPos = this.pos_ + pos;
-    } else if (seekStart == SeekOrigin.SEEK_END) {
+    } else if (seekStart === SeekOrigin.SEEK_END) {
       newPos = end + pos;
     } else {
       newPos = pos;
@@ -452,7 +452,7 @@ export class ByteReader {
    */
   popSeek() {
     const lastSeek = this.seekStack_.pop();
-    if (lastSeek != undefined) {
+    if (lastSeek !== undefined) {
       this.seek(lastSeek);
     }
   }

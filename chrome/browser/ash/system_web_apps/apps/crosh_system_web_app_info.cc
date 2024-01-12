@@ -49,7 +49,7 @@ Browser* CroshSystemAppDelegate::GetWindowForLaunch(Profile* profile,
   return nullptr;
 }
 
-bool CroshSystemAppDelegate::ShouldShowInSearch() const {
+bool CroshSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

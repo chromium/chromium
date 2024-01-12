@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_COOP_RELATED_GROUP_H_
 #define CONTENT_BROWSER_COOP_RELATED_GROUP_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -12,7 +13,6 @@
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -102,10 +102,10 @@ class CONTENT_EXPORT CoopRelatedGroup final
   // `GetOrCreateBrowsingInstanceForCoopPolicy` will create a new one if no
   // suitable BrowsingInstance exists in this group.
   scoped_refptr<BrowsingInstance> FindSuitableBrowsingInstanceForCoopPolicy(
-      const absl::optional<url::Origin>& common_coop_origin,
+      const std::optional<url::Origin>& common_coop_origin,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
   scoped_refptr<BrowsingInstance> GetOrCreateBrowsingInstanceForCoopPolicy(
-      const absl::optional<url::Origin>& common_coop_origin,
+      const std::optional<url::Origin>& common_coop_origin,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   // Tracks the number of WebContents currently in this CoopRelatedGroup.

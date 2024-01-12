@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_content.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
@@ -17,15 +18,25 @@ void RecordDownloadSource(ChromeDownloadSource source) {
                                 CHROME_DOWNLOAD_SOURCE_LAST_ENTRY);
 }
 
-void RecordDangerousDownloadWarningShown(
-    download::DownloadDangerType danger_type,
-    const base::FilePath& file_path,
-    bool is_https,
-    bool has_user_gesture) {
-  base::UmaHistogramEnumeration("Download.ShowedDownloadWarning", danger_type,
+void MaybeRecordDangerousDownloadWarningShown(DownloadUIModel& model) {
+  if (!model.IsDangerous()) {
+    return;
+  }
+  if (model.WasUIWarningShown()) {
+    return;
+  }
+  base::UmaHistogramEnumeration("Download.ShowedDownloadWarning",
+                                model.GetDangerType(),
                                 download::DOWNLOAD_DANGER_TYPE_MAX);
+#if !BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration("SBClientDownload.TailoredWarningType",
+                                model.GetTailoredWarningType());
+#endif  // BUILDFLAG(IS_ANDROID)
   safe_browsing::RecordDangerousDownloadWarningShown(
-      danger_type, file_path, is_https, has_user_gesture);
+      model.GetDangerType(), model.GetTargetFilePath(),
+      model.GetURL().SchemeIs(url::kHttpsScheme), model.HasUserGesture());
+
+  model.SetWasUIWarningShown(true);
 }
 
 void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,

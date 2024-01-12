@@ -2052,5 +2052,11 @@ message ChromeDeviceSettingsProto {
   optional ExtendedFkeysModifierProto extended_fkeys_modifier = 156;
   optional DeviceFlexHwDataForProductImprovementEnabledProto
       device_flex_hw_data_for_product_improvement_enabled = 157;
+  // New rules for device policies (see
+  // go/device-policy-generation-future-proofing):
+  // * All device policies should use common types (see
+  //   policy_common_definitions.proto).
+  // * Field names should be the policy name (no underscores).
+  // * Field ID should be the policy ID.
   optional BooleanPolicyProto DeviceHardwareVideoDecodingEnabled = 1185;
 }

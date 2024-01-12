@@ -572,7 +572,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     LOG_IF(WARNING, !success) << "Failed to connect to status updated signal.";
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> update_engine_proxy_;
+  raw_ptr<dbus::ObjectProxy> update_engine_proxy_;
   base::ObserverList<Observer>::Unchecked observers_;
   update_engine::StatusResult last_status_;
 

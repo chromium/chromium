@@ -8,6 +8,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/metrics/shortcut_metrics.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_context_menu.h"
@@ -129,6 +130,7 @@ void AppServiceShortcutItem::LoadIcon() {
 }
 
 void AppServiceShortcutItem::Activate(int event_flags) {
+  apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kLauncher);
   int64_t display_id = GetController()->GetAppListDisplayId();
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchShortcut(
       apps::ShortcutId(id()), display_id);

@@ -157,8 +157,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~FakeSelectFileDialog() override = default;
 
-  raw_ptr<ui::SelectFileDialog::FileTypeInfo, ExperimentalAsh>
-      expected_file_type_info_;
+  raw_ptr<ui::SelectFileDialog::FileTypeInfo> expected_file_type_info_;
 };
 
 // A factory associated with the artificial file picker.
@@ -183,8 +182,7 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       delete;
 
  private:
-  raw_ptr<ui::SelectFileDialog::FileTypeInfo, ExperimentalAsh>
-      expected_file_type_info_;
+  raw_ptr<ui::SelectFileDialog::FileTypeInfo> expected_file_type_info_;
 };
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -278,7 +276,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   base::RunLoop run_loop_;
   scoped_refptr<printing::TestPrintBackend> print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
   base::ScopedTempDir download_dir_;

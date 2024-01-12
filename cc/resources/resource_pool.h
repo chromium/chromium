@@ -99,9 +99,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // A base class to hold ownership of software backed PoolResources. Allows the
   // client to define destruction semantics.
-  class SoftwareBacking {
+  class CC_EXPORT SoftwareBacking {
    public:
-    virtual ~SoftwareBacking() = default;
+    SoftwareBacking();
+    virtual ~SoftwareBacking();
 
     // Dumps information about the memory backing the SoftwareBacking to |pmd|.
     // The memory usage is attributed to |buffer_dump_guid|.
@@ -118,6 +119,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // Mailbox
     viz::SharedBitmapId shared_bitmap_id;
 
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
   };
 

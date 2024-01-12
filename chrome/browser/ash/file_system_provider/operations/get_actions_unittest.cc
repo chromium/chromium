@@ -45,7 +45,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     const Actions& actions() const { return actions_; }
     base::File::Error result() const { return result_; }
@@ -55,12 +55,12 @@ class CallbackLogger {
     base::File::Error result_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnGetActions(const Actions& actions, base::File::Error result) {
     events_.push_back(std::make_unique<Event>(actions, result));
@@ -91,8 +91,8 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
 
 class FileSystemProviderOperationsGetActionsTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsGetActionsTest() {}
-  ~FileSystemProviderOperationsGetActionsTest() override {}
+  FileSystemProviderOperationsGetActionsTest() = default;
+  ~FileSystemProviderOperationsGetActionsTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

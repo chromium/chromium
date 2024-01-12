@@ -35,6 +35,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
@@ -436,8 +437,14 @@ void OptimizationGuideKeyedService::Initialize() {
             g_browser_process->local_state(),
             std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
     on_device_component_manager_->OnStartup();
-    if (base::FeatureList::IsEnabled(
-            optimization_guide::features::kLogOnDeviceMetricsOnStartup)) {
+    // With multiple profiles we only want to fetch the performance class once.
+    // This bool helps avoid fetching multiple times.
+    static bool performance_class_fetched = false;
+    if (!performance_class_fetched &&
+        (base::FeatureList::IsEnabled(
+             optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
+         optimization_guide::features::IsOnDeviceExecutionEnabled())) {
+      performance_class_fetched = true;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
@@ -738,6 +745,38 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForLogging(
   }
   return model_execution_features_controller_
       ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
+}
+
+bool OptimizationGuideKeyedService::ShouldShowExperimentalAIPromo() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(optimization_guide::features::internal::
+                                        kExperimentalAIIPHPromoRampUp)) {
+    return false;
+  }
+  // At least one of the two features should be visible to user in settings, and
+  // not currently enabled.
+  if (model_execution_features_controller_->IsSettingVisible(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION) &&
+      !model_execution_features_controller_
+           ->ShouldFeatureBeCurrentlyEnabledForUser(
+               optimization_guide::proto::ModelExecutionFeature::
+                   MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)) {
+    return true;
+  }
+  if (model_execution_features_controller_->IsSettingVisible(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH) &&
+      !model_execution_features_controller_
+           ->ShouldFeatureBeCurrentlyEnabledForUser(
+               optimization_guide::proto::ModelExecutionFeature::
+                   MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)) {
+    return true;
+  }
+  return false;
 }
 
 void OptimizationGuideKeyedService::AddModelExecutionSettingsEnabledObserver(

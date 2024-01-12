@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
@@ -144,7 +144,7 @@ class ConfigurationList : public base::RefCountedThreadSafe<ConfigurationList> {
   // Returns the lexicographically greatest flavor string that is prescribed by
   // any of the configurations. The caller must hold a reference to this
   // instance while using the returned string piece.
-  base::StringPiece lexicographically_greatest_ruleset_flavor() const {
+  std::string_view lexicographically_greatest_ruleset_flavor() const {
     return lexicographically_greatest_ruleset_flavor_;
   }
 
@@ -159,7 +159,7 @@ class ConfigurationList : public base::RefCountedThreadSafe<ConfigurationList> {
   ~ConfigurationList();
 
   const std::vector<Configuration> configs_by_decreasing_priority_;
-  const base::StringPiece lexicographically_greatest_ruleset_flavor_;
+  const std::string_view lexicographically_greatest_ruleset_flavor_;
 };
 
 // Retrieves all currently enabled subresource filtering configurations. The

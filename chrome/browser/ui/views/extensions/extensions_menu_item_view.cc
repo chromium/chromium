@@ -47,6 +47,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -334,12 +335,18 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   // label in the primary action button.
                   .SetBorder(views::CreateEmptyBorder(
                       gfx::Insets::VH(0, icon_label_spacing)))
-                  .SetTitleTextStyle(views::style::STYLE_BODY_5,
-                                     ui::kColorDialogBackground,
-                                     ui::kColorSysOnSurfaceSubtle)
                   .SetTooltipText(l10n_util::GetStringUTF16(
                       IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP))))
       .BuildChildren();
+
+  if (features::IsChromeRefresh2023()) {
+    primary_action_button_->SetTitleTextStyle(
+        views::style::STYLE_BODY_3_EMPHASIS, ui::kColorDialogBackground,
+        kColorExtensionsMenuText);
+    site_permissions_button_->SetTitleTextStyle(
+        views::style::STYLE_BODY_5, ui::kColorDialogBackground,
+        kColorExtensionsMenuSecondaryText);
+  }
 
   SetupContextMenuButton();
 }

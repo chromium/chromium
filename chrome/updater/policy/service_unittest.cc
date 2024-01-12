@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/policy/service.h"
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -15,7 +17,6 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
-#include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,8 +49,9 @@ class FakePolicyManager : public PolicyManagerInterface {
   }
   std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override {
-    if (!suppressed_times_.valid())
+    if (!suppressed_times_.valid()) {
       return std::nullopt;
+    }
 
     return suppressed_times_;
   }
@@ -84,8 +86,9 @@ class FakePolicyManager : public PolicyManagerInterface {
   std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const override {
     auto value = update_policies_.find(app_id);
-    if (value == update_policies_.end())
+    if (value == update_policies_.end()) {
       return std::nullopt;
+    }
     return value->second;
   }
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {

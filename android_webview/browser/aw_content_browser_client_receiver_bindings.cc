@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_content_browser_client.h"
-
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
+#include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
@@ -18,7 +18,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "content/public/browser/browser_associated_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_context.h"
@@ -107,6 +107,47 @@ void BindNetworkHintsHandler(
                                                        std::move(receiver));
 }
 
+// This class handles android_webview.mojom.RenderMessageFilter Mojo interface's
+// methods on IO thread.
+class AwContentsMessageFilter : public mojom::RenderMessageFilter {
+ public:
+  explicit AwContentsMessageFilter(int process_id);
+
+  AwContentsMessageFilter(const AwContentsMessageFilter&) = delete;
+  AwContentsMessageFilter& operator=(const AwContentsMessageFilter&) = delete;
+
+  // mojom::RenderMessageFilter overrides:
+  void SubFrameCreated(
+      const blink::LocalFrameToken& parent_frame_token,
+      const blink::LocalFrameToken& child_frame_token) override;
+
+  ~AwContentsMessageFilter() override;
+
+ private:
+  const int process_id_;
+};
+
+AwContentsMessageFilter::AwContentsMessageFilter(int process_id)
+    : process_id_(process_id) {}
+
+AwContentsMessageFilter::~AwContentsMessageFilter() = default;
+
+void AwContentsMessageFilter::SubFrameCreated(
+    const blink::LocalFrameToken& parent_frame_token,
+    const blink::LocalFrameToken& child_frame_token) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_frame_token,
+                                            child_frame_token);
+}
+
+void CreateRenderMessageFilter(
+    int rph_id,
+    mojo::PendingReceiver<mojom::RenderMessageFilter> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  mojo::MakeSelfOwnedReceiver(std::make_unique<AwContentsMessageFilter>(rph_id),
+                              std::move(receiver));
+}
+
 }  // anonymous namespace
 
 void AwContentBrowserClient::BindMediaServiceReceiver(
@@ -193,6 +234,11 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
       content::GetUIThreadTaskRunner({}));
+
+  // Add the RenderMessageFilter creation callback, the callbkack will happen on
+  // the IO thread.
+  registry->AddInterface<mojom::RenderMessageFilter>(base::BindRepeating(
+      &CreateRenderMessageFilter, render_process_host->GetID()));
 }
 
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(

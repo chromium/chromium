@@ -77,7 +77,6 @@
 <translation id="162175252992296058">Πορτογαλικά με πληκτρολόγιο Διεθνές ΗΠΑ</translation>
 <translation id="1629521517399325891">Το πιστοποιητικό χρήστη δεν είναι διαθέσιμο για έλεγχο ταυτότητας δικτύου.</translation>
 <translation id="1641780993263690097">Κινεζικά Pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> αρχεία γίνονται διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="164969095109328410">Συσκευή Chrome</translation>
 <translation id="1661207570040737402">Έχετε χρησιμοποιήσει όλο τον αποθηκευτικό χώρο του κοινού Drive στο Google Workspace.</translation>
 <translation id="1661867754829461514">Απουσιάζει το PIN </translation>
@@ -315,7 +314,6 @@
 <translation id="3475447146579922140">Υπολογιστικό φύλλο Google</translation>
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3486821258960016770">Μογγολικά</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> σφάλματα.</translation>
 <translation id="3509680540198371098">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="3511705761158917664">Προετοιμασία για συγχρονισμό <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="3522708245912499433">Πορτογαλικά</translation>
@@ -732,7 +730,6 @@
 <translation id="6503285896705205014">Η αντιγραφή <ph name="COUNT" /> αρχείων έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="6509122719576673235">Νορβηγικά</translation>
 <translation id="6528513914570774834">Επιτρέψτε σε άλλους χρήστες της συσκευής να χρησιμοποιούν αυτό το δίκτυο</translation>
-<translation id="653019979737152879">Συγχρονισμός <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Πρόσφατα</translation>
 <translation id="6558280019477628686">Παρουσιάστηκε σφάλμα. Ορισμένα στοιχεία ενδέχεται να μην έχουν διαγραφεί.</translation>
 <translation id="656398493051028875">Διαγραφή αρχείου "<ph name="FILENAME" />"…</translation>
@@ -870,7 +867,6 @@
 <translation id="7553492409867692754">Παραχωρήστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Είστε εκτός σύνδεσης. Ο συγχρονισμός αρχείων θα συνεχιστεί όταν συνδεθείτε στο διαδίκτυο</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
-<translation id="7592775719802218421">Το αρχείο <ph name="FILE_NAME" /> γίνεται διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="7600126690270271294">Σερβικά</translation>
 <translation id="7603724359189955920">Πλέγματα</translation>
 <translation id="7627790789328695202">Ωχ! Το αρχείο <ph name="FILE_NAME" /> υπάρχει ήδη. Μετονομάστε το και δοκιμάστε ξανά.</translation>
@@ -955,6 +951,7 @@
 <translation id="813913629614996137">Εκκίνηση…</translation>
 <translation id="8147028810663464959">Το εύρος χαρακτήρων είναι Πλήρες</translation>
 <translation id="8151638057146502721">Διαμόρφωση</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 σφάλμα.}other{# σφάλματα.}}</translation>
 <translation id="8154842056504218462">Επιλέχθηκαν όλες οι καταχωρίσεις.</translation>
 <translation id="8157684860301034423">Αποτυχία ανάκτησης των πληροφοριών της εφαρμογής.</translation>
 <translation id="8175731104491895765">Γαλλικά (Βέλγιο)</translation>
@@ -989,6 +986,7 @@
 <translation id="83651606385705612">Παραχωρήστε στο <ph name="VM_NAME" /> άδεια πρόσβασης στα αρχεία του φακέλου <ph name="FOLDER_NAME" />.</translation>
 <translation id="8372369524088641025">Εσφαλμένο κλειδί WEP</translation>
 <translation id="8372852072747894550">Ελληνικά</translation>
+<translation id="8377269993083688872">Διατάξεις μηνυμάτων ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="8386903983509584791">Η σάρωση ολοκληρώθηκε</translation>
 <translation id="8387733224523483503">Έγινε εξαγωγή του στοιχείου <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Διαστάσεις</translation>
@@ -1028,7 +1026,6 @@
 <translation id="8569764466147087991">Επιλέξτε αρχείο για άνοιγμα</translation>
 <translation id="8577897833047451336">Κροατικά</translation>
 <translation id="8578308463707544055">Ινδονησιακά</translation>
-<translation id="8579285237314169903">Γίνεται συγχρονισμός <ph name="NUMBER_OF_FILES" /> στοιχείων…</translation>
 <translation id="8600173386174225982">Η λίστα αρχείων έχει αλλάξει σε προβολή μικρογραφίας.</translation>
 <translation id="8601932370724196034">Αρχείο εικόνας Crostini</translation>
 <translation id="8609695766746872526">Ισλανδικά</translation>
@@ -1050,6 +1047,7 @@
 <translation id="8787254343425541995">Να επιτρέπονται οι διακομιστές μεσολάβησης για κοινόχρηστα δίκτυα</translation>
 <translation id="8790981080411996443">Άτομο που ποτίζει φυτά</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 προειδοποίηση.}other{# προειδοποιήσεις.}}</translation>
 <translation id="8808686172382650546">Γάτα</translation>
 <translation id="8810671769985673465">Αποτυχία συμπίεσης, υπάρχει το αρχείο: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Ισπανικά (Ισπανία)</translation>
@@ -1082,7 +1080,6 @@
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 προειδοποίηση.}other{<ph name="COUNT" /> προειδοποιήσεις.}}</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>

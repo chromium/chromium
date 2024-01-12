@@ -18,9 +18,9 @@
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/sharing/sharing_service.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
-#include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -46,7 +46,7 @@ class SharingUiController {
   // Title of the dialog.
   virtual std::u16string GetTitle(SharingDialogType dialog_type);
   // Called when user chooses a synced device to complete the task.
-  virtual void OnDeviceChosen(const syncer::DeviceInfo& device) = 0;
+  virtual void OnDeviceChosen(const SharingTargetDeviceInfo& device) = 0;
   // Called when user chooses a local app to complete the task.
   virtual void OnAppChosen(const SharingApp& app) = 0;
   virtual PageActionIconType GetIconType() = 0;
@@ -86,7 +86,7 @@ class SharingUiController {
       const absl::optional<url::Origin>& initiating_origin);
 
   // Gets the current list of devices that support the required feature.
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> GetDevices() const;
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> GetDevices() const;
 
   bool HasSendFailed() const;
 
@@ -114,7 +114,7 @@ class SharingUiController {
   // Shows an icon in the omnibox which will be removed when receiving a
   // response or when cancelling the request by calling the returned callback.
   base::OnceClosure SendMessageToDevice(
-      const syncer::DeviceInfo& device,
+      const SharingTargetDeviceInfo& device,
       absl::optional<base::TimeDelta> response_timeout,
       chrome_browser_sharing::SharingMessage sharing_message,
       absl::optional<SharingMessageSender::ResponseCallback> callback);

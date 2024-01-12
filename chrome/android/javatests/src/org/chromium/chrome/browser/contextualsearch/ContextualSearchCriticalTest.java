@@ -13,9 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -23,15 +20,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
@@ -52,11 +48,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled:  https://crbug.com/1058297
-    public void testResolveCausesOneLowPriorityRequest(@EnabledFeature int enabledFeature)
-            throws Exception {
-        mFakeServer.reset();
+    public void testResolveCausesOneLowPriorityRequest() throws Exception {
         simulateSlowResolveSearch("states");
 
         // We should not make a second-request until we get a good response from the first-request.
@@ -82,10 +75,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testPrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
-            throws Exception {
-        mFakeServer.reset();
+    public void testPrefetchFailoverRequestMadeAfterOpen() throws Exception {
         simulateSlowResolveSearch("states");
 
         // We should not make a SERP request until we get a good response from the resolve request.
@@ -110,9 +100,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
-    public void testResolveDisablePreload(@EnabledFeature int enabledFeature) throws Exception {
+    public void testResolveDisablePreload() throws Exception {
         simulateSlowResolveSearch("intelligence");
 
         assertSearchTermRequested();
@@ -131,9 +120,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled: crbug.com/765403
-    public void testSearchTermResolutionError(@EnabledFeature int enabledFeature) throws Exception {
+    public void testSearchTermResolutionError() throws Exception {
         simulateSlowResolveSearch("states");
         assertSearchTermRequested();
         fakeResponse(false, 403, "", "", "", false);
@@ -151,8 +139,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testResolveContentVisibility(@EnabledFeature int enabledFeature) throws Exception {
+    public void testResolveContentVisibility() throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch();
         assertWebContentsCreatedButNeverMadeVisible();
@@ -174,10 +161,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     // Previously disabled: http://crbug.com/1296677
-    public void testNonResolveContentVisibility(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testNonResolveContentVisibility() throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
         assertNoWebContents();
@@ -200,9 +185,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testResolveMultipleSwipeOnlyLoadsContentOnce() throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch("search");
         assertWebContentsCreatedButNeverMadeVisible();
@@ -237,9 +220,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testNonResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testNonResolveMultipleSwipeOnlyLoadsContentOnce() throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
         assertNoWebContents();
@@ -275,10 +256,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisabledTest(message = "crbug.com/1404658")
-    public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testChainedSearchCreatesNewContent() throws Exception {
         // This test depends on preloading the content - which is loaded and not made visible.
         // We only preload when the user has decided to accept the privacy opt-in.
         mPolicy.overrideDecidedStateForTesting(true);
@@ -319,9 +298,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testChainedSearchLoadsCorrectSearchTerm(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testChainedSearchLoadsCorrectSearchTerm() throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch("search");
         assertWebContentsCreatedButNeverMadeVisible();
@@ -367,8 +344,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     public void testChainedSearchContentVisibility() throws Exception {
         // Chained searches are tap-triggered very close to existing tap-triggered searches, which
         // we refer to as tap-near.
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch();
         assertWebContentsCreatedButNeverMadeVisible();
@@ -404,8 +379,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     public void testSeparateSearchContentVisibility() throws Exception {
         // Chained searches are tap-triggered very close to existing tap-triggered searches, which
         // we refer to as tap-near.
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch();
         assertWebContentsCreatedButNeverMadeVisible();
@@ -440,9 +413,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTapCloseRemovedFromHistory(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testTapCloseRemovedFromHistory() throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch("search");
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
@@ -462,10 +433,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    //  @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1184410")
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testTapExpandNotRemovedFromHistory(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testTapExpandNotRemovedFromHistory() throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
@@ -489,8 +457,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     public void testChainedTapsRemovedFromHistory() throws Exception {
         // Make sure we use tap for the simulateResolveSearch since only tap chains.
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch("search");
         String url1 = mFakeServer.getLoadedUrl();

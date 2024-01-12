@@ -18,13 +18,6 @@ BASE_FEATURE(kAutofillAcrossIframesIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_across_iframes_ios)
 
-// When enabled, address data will be verified and autocorrected in the
-// save/update prompt before saving an address profile. Relevant only if the
-// AutofillAddressProfileSavePrompt feature is enabled.
-BASE_FEATURE(kAutofillAddressProfileSavePromptAddressVerificationSupport,
-             "AutofillAddressProfileSavePromptAddressVerificationSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use the heuristic parser to detect unfillable numeric types in field labels
 // and grant the heuristic precedence over non-override server predictions.
 BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
@@ -38,6 +31,17 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
 // AutofillAddressProfileSavePrompt feature is enabled.
 BASE_FEATURE(kAutofillAddressProfileSavePromptNicknameSupport,
              "AutofillAddressProfileSavePromptNicknameSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature flag to control the displaying of an ongoing hats survey that
+// measures users perception of Autofill. Differently from other surveys,
+// the Autofill user perception survey will not have a specific target
+// number of answers where it will be fully stop, instead, it will run
+// indefinitely. A target number of full answers exists, but per quarter. The
+// goal is to have a go to place to understand how users are perceiving autofill
+// across quarters.
+BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
+             "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
@@ -344,6 +348,13 @@ BASE_FEATURE(kAutofillDetectRemovedFormControls,
              "AutofillDetectRemovedFormControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Indicates whether the platform requires support for the legacy dropdown for
+// datalists. This is enabled on WebView because the keyboard accessory is not
+// available.
+BASE_FEATURE(kAutofillLegacyDatalistDropdown,
+             "AutofillLegacyDatalistDropdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
 BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
@@ -378,29 +389,7 @@ const base::FeatureParam<bool> kAutofillConvergeToLonger{
 
 BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
              "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<PrecedenceOverAutocompleteScope>::Option
-    kPrecedenceOverAutocompleteScope[] = {
-        {PrecedenceOverAutocompleteScope::kNone, "none"},
-        {PrecedenceOverAutocompleteScope::kAddressLine1And2,
-         "address_line_1_and_2"},
-        {PrecedenceOverAutocompleteScope::kRecognized, "recognized"},
-        {PrecedenceOverAutocompleteScope::kSpecified, "specified"}};
-
-const base::FeatureParam<PrecedenceOverAutocompleteScope>
-    kAutofillHeuristicPrecedenceScopeOverAutocomplete{
-        &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
-        "AutofillHeuristicPrecedenceOverAutocompleteScope",
-        PrecedenceOverAutocompleteScope::kAddressLine1And2,
-        &kPrecedenceOverAutocompleteScope};
-
-const base::FeatureParam<PrecedenceOverAutocompleteScope>
-    kAutofillServerPrecedenceScopeOverAutocomplete{
-        &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
-        "AutofillServerPrecedenceOverAutocompleteScope",
-        PrecedenceOverAutocompleteScope::kNone,
-        &kPrecedenceOverAutocompleteScope};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the
@@ -459,13 +448,6 @@ BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill would not override the field values that were either
-// filled by Autofill or on page load.
-// TODO(crbug/1275649): Remove once experiment is finished.
-BASE_FEATURE(kAutofillPreventOverridingPrefilledValues,
-             "AutofillPreventOverridingPrefilledValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, use the parsing patterns from a JSON file for heuristics, rather
 // than the hardcoded ones from autofill_regex_constants.cc.
 // The specific pattern set is controlled by the
@@ -480,8 +462,9 @@ BASE_FEATURE(kAutofillParsingPatternProvider,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The specific pattern set is controlled by the `kAutofillParsingPatternActive`
-// parameter. One of "legacy", "default", "experimental", "nextgen". All other
-// values are equivalent to "default".
+// parameter. One of "default", "experimental", "nextgen".
+// This parameter is only supported in Chrome-branded builds. Non-Chrome branded
+// builds default to the legacy patterns.
 // TODO(crbug/1248339): Remove once experiment is finished.
 const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
     &kAutofillParsingPatternProvider, "prediction_source", "default"};
@@ -546,12 +529,6 @@ BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,
 // TODO(crbug/1117451): Remove once it works.
 BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
              "AutofillProbableFormSubmissionInBrowser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Removes setting-inaccessible field types from existing profiles on startup.
-// TODO(crbug.com/1300548): Cleanup when launched.
-BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
-             "AutofillRemoveInaccessibleProfileValuesOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls non-default Autofill API predictions. See crbug.com/1331322.

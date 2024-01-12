@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
 }
 
 // Tests that when the address manual fallback entry for the unclassified fields
-// is selected, suggestions are not triggered.
+// is selected, suggestions are triggered.
 IN_PROC_BROWSER_TEST_F(
     UnclassifiedFieldsTest,
     UnclassifiedFormShown_AddressFallbackTriggersSuggestion) {
@@ -613,8 +613,13 @@ IN_PROC_BROWSER_TEST_F(
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect that when the entry is selected, suggestions are not triggered.
-  EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
+  // Expect that when the entry is selected, suggestions are triggered.
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        form.fields[0].unique_renderer_id},
+          AutofillSuggestionTriggerSource::kManualFallbackAddress));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
 }

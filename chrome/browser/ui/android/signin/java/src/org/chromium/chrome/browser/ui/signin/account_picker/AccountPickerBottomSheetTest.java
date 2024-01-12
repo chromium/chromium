@@ -71,6 +71,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -129,12 +130,15 @@ public class AccountPickerBottomSheetTest {
 
     private AccountPickerBottomSheetCoordinator mCoordinator;
     private CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private CoreAccountInfo mCoreAccountInfo1;
+    private CoreAccountInfo mCoreAccountInfo2;
 
     @Before
     public void setUp() {
         when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.WEB_SIGNIN);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
+        mCoreAccountInfo1 =
+                mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mCoreAccountInfo2 = mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
         SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
     }
 
@@ -685,7 +689,7 @@ public class AccountPickerBottomSheetTest {
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(TEST_EMAIL1), any());
+                .signIn(eq(mCoreAccountInfo1), any());
         buildAndShowCollapsedBottomSheet();
 
         clickContinueButtonAndWaitForErrorSheet();
@@ -723,7 +727,7 @@ public class AccountPickerBottomSheetTest {
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(TEST_EMAIL1), any());
+                .signIn(eq(mCoreAccountInfo1), any());
         buildAndShowCollapsedBottomSheet();
 
         clickContinueButtonAndWaitForErrorSheet();
@@ -753,10 +757,10 @@ public class AccountPickerBottomSheetTest {
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(TEST_EMAIL1), any());
+                .signIn(eq(mCoreAccountInfo1), any());
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();
-        doNothing().when(mAccountPickerDelegateMock).signIn(eq(TEST_EMAIL1), any());
+        doNothing().when(mAccountPickerDelegateMock).signIn(eq(mCoreAccountInfo1), any());
 
         // Clicking on the |Try again| button should perform the sign-in again and opens the sign-in
         // in progress page.
@@ -776,7 +780,7 @@ public class AccountPickerBottomSheetTest {
                             return null;
                         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(TEST_EMAIL1), any());
+                .signIn(eq(mCoreAccountInfo1), any());
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();
 

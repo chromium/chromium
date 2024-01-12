@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
@@ -36,8 +37,6 @@
 namespace ash {
 namespace {
 
-constexpr int kFooterStartSpacing = 6;
-constexpr int kFooterVerticalSpacing = 7;
 constexpr int kSeeAllIconLabelSpacing = 6;
 
 class SeeAllButton : public views::LabelButton {
@@ -46,11 +45,20 @@ class SeeAllButton : public views::LabelButton {
  public:
   SeeAllButton(const std::u16string& see_all_accessible_name,
                base::RepeatingClosure on_see_all_pressed) {
-    SetText(l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL));
+    const bool stable_launch =
+        features::AreAnyGlanceablesTimeManagementViewsEnabled();
+    SetText(stable_launch
+                ? u""
+                : l10n_util::GetStringUTF16(
+                      IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL));
     SetCallback(std::move(on_see_all_pressed));
     SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+    if (stable_launch) {
+      // Explicitly set an empty border to replace the border created by default
+      // in LabelButton.
+      SetBorder(views::CreateEmptyBorder(0));
+    }
     SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
@@ -96,16 +104,19 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+    items_count_label_->SetText(l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL));
+  }
+
   see_all_button_ = AddChildView(std::make_unique<SeeAllButton>(
       see_all_accessible_name, on_see_all_pressed));
-
-  SetProperty(views::kMarginsKey,
-              gfx::Insets::TLBR(kFooterVerticalSpacing, kFooterStartSpacing,
-                                kFooterVerticalSpacing, 0));
 }
 
 void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
                                                  size_t total_items_count) {
+  // Glanceable tasks in stable launch doesn't show the item count.
+  CHECK(!features::AreAnyGlanceablesTimeManagementViewsEnabled());
   CHECK_LE(visible_items_count, total_items_count);
   items_count_label_->SetText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL,

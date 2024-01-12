@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -31,7 +32,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -134,7 +134,7 @@ class CONTENT_EXPORT AttributionManagerImpl
                  BrowsingDataFilterBuilder* filter_builder,
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
-  void SetDebugMode(absl::optional<bool> enabled,
+  void SetDebugMode(std::optional<bool> enabled,
                     base::OnceClosure done) override;
 
   void GetAllDataKeys(
@@ -197,16 +197,16 @@ class CONTENT_EXPORT AttributionManagerImpl
       bool is_debug_report,
       ReportSentCallback callback,
       AggregatableReportRequest,
-      absl::optional<AggregatableReport> assembled_report,
+      std::optional<AggregatableReport> assembled_report,
       AggregationService::AssemblyStatus);
   void MarkReportCompleted(AttributionReport::Id report_id);
 
   void OnSourceStored(const StorableSource& source,
-                      absl::optional<uint64_t> cleared_debug_key,
+                      std::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       StoreSourceResult result);
   void OnReportStored(const AttributionTrigger& trigger,
-                      absl::optional<uint64_t> cleared_debug_key,
+                      std::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       CreateReportResult result);
 
@@ -319,13 +319,13 @@ class CONTENT_EXPORT AttributionManagerImpl
 
 // Gets the delay for a report that has failed to be sent
 // `failed_send_attempts` times.
-// Returns `absl::nullopt` to indicate that no more attempts should be made.
+// Returns `std::nullopt` to indicate that no more attempts should be made.
 // Otherwise, the return value must be positive. `failed_send_attempts` is
 // guaranteed to be positive.
 //
 // Exposed here for testing.
 CONTENT_EXPORT
-absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
+std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
 
 }  // namespace content
 

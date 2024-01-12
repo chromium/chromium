@@ -19,6 +19,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/backup_util.h"
+#include "base/files/file_util.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -90,6 +91,7 @@ int Truncate(sqlite3_file* sqlite_file, sqlite3_int64 size)
 
 int Sync(sqlite3_file* sqlite_file, int flags)
 {
+  SCOPED_UMA_HISTOGRAM_TIMER("Sql.vfs.SyncTime");
   sqlite3_file* wrapped_file = GetWrappedFile(sqlite_file);
   return wrapped_file->pMethods->xSync(wrapped_file, flags);
 }
@@ -205,8 +207,10 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
     base::StringPiece file_name_string_piece(file_name);
     size_t dash_index = file_name_string_piece.rfind('-');
     if (dash_index != base::StringPiece::npos) {
-      base::StringPiece db_name(file_name, dash_index);
-      if (base::apple::GetBackupExclusion(base::FilePath(db_name))) {
+      base::FilePath database_file_path(
+          base::StringPiece(file_name, dash_index));
+      if (base::PathExists(database_file_path) &&
+          base::apple::GetBackupExclusion(database_file_path)) {
         base::apple::SetBackupExclusion(base::FilePath(file_name_string_piece));
       }
     }

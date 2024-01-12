@@ -30,7 +30,9 @@ void FakeVRDeviceProvider::RemoveDevice(mojom::XRDeviceId device_id) {
   devices_.erase(it);
 }
 
-void FakeVRDeviceProvider::Initialize(VRDeviceProviderClient* client) {
+void FakeVRDeviceProvider::Initialize(
+    VRDeviceProviderClient* client,
+    content::WebContents* initializing_web_contents) {
   client_ = client;
 
   for (std::unique_ptr<VRDeviceBase>& device : devices_) {

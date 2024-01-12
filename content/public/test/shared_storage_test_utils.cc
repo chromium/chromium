@@ -77,18 +77,18 @@ std::string SharedStorageOperationResultToString(OperationResult result) {
   return "None";
 }
 
-std::string OptionalStringToString(const absl::optional<std::string>& str) {
+std::string OptionalStringToString(const std::optional<std::string>& str) {
   return str.has_value() ? str.value() : "[[NULL]]";
 }
 
-std::string OptionalBoolToString(absl::optional<bool> opt_bool) {
+std::string OptionalBoolToString(std::optional<bool> opt_bool) {
   return opt_bool.has_value() ? (opt_bool.value() ? "true" : "false")
                               : "[[NULL]]";
 }
 
-absl::optional<bool> MojomToAbslOptionalBool(
+std::optional<bool> MojomToAbslOptionalBool(
     network::mojom::OptionalBool opt_bool) {
-  absl::optional<bool> converted;
+  std::optional<bool> converted;
   if (opt_bool == network::mojom::OptionalBool::kTrue) {
     converted = true;
   } else if (opt_bool == network::mojom::OptionalBool::kFalse) {
@@ -172,7 +172,7 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
 }
 
 network::mojom::OptionalBool AbslToMojomOptionalBool(
-    absl::optional<bool> opt_bool) {
+    std::optional<bool> opt_bool) {
   return opt_bool.has_value()
              ? (opt_bool.value() ? network::mojom::OptionalBool::kTrue
                                  : network::mojom::OptionalBool::kFalse)
@@ -185,7 +185,7 @@ SharedStorageWriteOperationAndResult::SetOperation(
     const url::Origin& request_origin,
     std::string key,
     std::string value,
-    absl::optional<bool> ignore_if_present,
+    std::optional<bool> ignore_if_present,
     OperationResult result) {
   return SharedStorageWriteOperationAndResult(
       request_origin, OperationType::kSet, std::move(key), std::move(value),
@@ -201,7 +201,7 @@ SharedStorageWriteOperationAndResult::AppendOperation(
     OperationResult result) {
   return SharedStorageWriteOperationAndResult(
       request_origin, OperationType::kAppend, std::move(key), std::move(value),
-      /*ignore_if_present=*/absl::nullopt, result);
+      /*ignore_if_present=*/std::nullopt, result);
 }
 
 // static
@@ -212,8 +212,8 @@ SharedStorageWriteOperationAndResult::DeleteOperation(
     OperationResult result) {
   return SharedStorageWriteOperationAndResult(
       request_origin, OperationType::kDelete, std::move(key),
-      /*value=*/absl::nullopt,
-      /*ignore_if_present=*/absl::nullopt, result);
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, result);
 }
 
 // static
@@ -223,17 +223,17 @@ SharedStorageWriteOperationAndResult::ClearOperation(
     OperationResult result) {
   return SharedStorageWriteOperationAndResult(
       request_origin, OperationType::kClear,
-      /*key=*/absl::nullopt,
-      /*value=*/absl::nullopt,
-      /*ignore_if_present=*/absl::nullopt, result);
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, result);
 }
 
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
     const url::Origin& request_origin,
     OperationType operation_type,
-    absl::optional<std::string> key,
-    absl::optional<std::string> value,
-    absl::optional<bool> ignore_if_present,
+    std::optional<std::string> key,
+    std::optional<std::string> value,
+    std::optional<bool> ignore_if_present,
     OperationResult result)
     : request_origin(request_origin),
       operation_type(operation_type),
@@ -245,8 +245,8 @@ SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
     const url::Origin& request_origin,
     OperationType operation_type,
-    absl::optional<std::string> key,
-    absl::optional<std::string> value,
+    std::optional<std::string> key,
+    std::optional<std::string> value,
     network::mojom::OptionalBool ignore_if_present,
     OperationResult result)
     : SharedStorageWriteOperationAndResult(

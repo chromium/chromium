@@ -317,9 +317,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Wraps provided dmabufs
   // (https://www.kernel.org/doc/html/latest/driver-api/dma-buf.html) with a
   // VideoFrame. The frame will take ownership of |dmabuf_fds|, and will
-  // automatically close() them on destruction. Callers can call
-  // media::DuplicateFDs() if they need to retain a copy of the FDs for
-  // themselves. Note that the FDs are consumed even in case of failure.
+  // automatically close() them on destruction. Callers can duplicate the file
+  // descriptors if they need to retain a copy of the FDs for themselves. Note
+  // that the FDs are consumed even in case of failure.
   // The image data is only accessible via dmabuf fds, which are usually passed
   // directly to a hardware device and/or to another process, or can also be
   // mapped via mmap() for CPU access.
@@ -594,18 +594,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const gpu::MailboxHolder& mailbox_holder(size_t texture_index) const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Returns a vector containing the backing DmaBufs for this frame. The number
-  // of returned DmaBufs will be equal or less than the number of planes of
+  // The number of DmaBufs will be equal or less than the number of planes of
   // the frame. If there are less, this means that the last FD contains the
-  // remaining planes.
-  // Note that the returned FDs are still owned by the VideoFrame. This means
-  // that the caller shall not close them, or use them after the VideoFrame is
-  // destroyed. For such use cases, use media::DuplicateFDs() to obtain your
-  // own copy of the FDs.
-  const std::vector<base::ScopedFD>& DmabufFds() const;
+  // remaining planes. Should be > 0 for STORAGE_DMABUFS.
+  size_t NumDmabufFds() const;
 
   // Returns true if |frame| has DmaBufs.
   bool HasDmaBufs() const;
+
+  // The returned FDs are still owned by the VideoFrame. This means that the
+  // caller shall not close them, or use them after the VideoFrame is destroyed.
+  // For such use cases, use dup() to obtain your own copy of the FDs.
+  const base::ScopedFD& GetDmabufFd(size_t i) const;
 
   // Returns true if both VideoFrames are backed by DMABUF memory and point
   // to the same set of DMABUFs, meaning that both frames use the same memory.
@@ -819,9 +819,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // the memory area represented by the last FD contains the remaining planes.
   // If a STORAGE_DMABUFS frame is wrapped into another, the wrapping frame
   // will get an extra reference to the FDs (i.e. no duplication is involved).
-  // This makes it possible to test whether two VideoFrame instances point to
-  // the same DMABUF memory by testing for
-  // (&vf1->DmabufFds() == &vf2->DmabufFds()).
   scoped_refptr<DmabufHolder> dmabuf_fds_;
 
   friend scoped_refptr<VideoFrame>

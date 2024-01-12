@@ -56,7 +56,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
   bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const override;
   bool IsInAppWindow(content::WebContents* web_contents) const override;
   const webapps::AppId* GetAppIdForWindow(
-      content::WebContents* web_contents) const override;
+      const content::WebContents* web_contents) const override;
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const absl::optional<webapps::AppId>& previous_app_id,
@@ -128,7 +128,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
-  void LaunchIsolatedWebAppInstaller(
+  void LaunchOrFocusIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
 
   void MaybeCreateEnableSupportedLinksInfobar(

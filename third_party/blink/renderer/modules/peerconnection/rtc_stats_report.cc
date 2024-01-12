@@ -1040,8 +1040,7 @@ class RTCStatsReportIterationSource final
       return false;
     }
     key = String::FromUTF8(rtc_stats->id());
-    value = ScriptValue(script_state->GetIsolate(),
-                        v8_stat->ToV8Value(script_state));
+    value = ScriptValue::From(script_state, v8_stat);
     return true;
   }
 
@@ -1078,8 +1077,7 @@ bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
   if (!v8_stats) {
     return false;
   }
-  value = ScriptValue(script_state->GetIsolate(),
-                      v8_stats->ToV8Value(script_state));
+  value = ScriptValue::From(script_state, v8_stats);
   return true;
 }
 

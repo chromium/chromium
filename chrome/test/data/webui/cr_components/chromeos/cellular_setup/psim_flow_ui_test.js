@@ -98,7 +98,8 @@ suite('CrComponentsPsimFlowUiTest', function() {
     cellularActivationDelegate =
         cellularSetupRemote.getLastActivationDelegate();
 
-    const provisioningPage = pSimPage.$$('#provisioningPage');
+    const provisioningPage =
+        pSimPage.shadowRoot.querySelector('#provisioningPage');
     assertTrue(!!provisioningPage);
     assertFalse(
         pSimPage.selectedPSimPageName_ === PSimPageName.provisioningPage);
@@ -222,7 +223,8 @@ suite('CrComponentsPsimFlowUiTest', function() {
     cellularActivationDelegate =
         cellularSetupRemote.getLastActivationDelegate();
 
-    const provisioningPage = pSimPage.$$('#provisioningPage');
+    const provisioningPage =
+        pSimPage.shadowRoot.querySelector('#provisioningPage');
     assertTrue(!!provisioningPage);
     assertFalse(
         pSimPage.selectedPSimPageName_ === PSimPageName.provisioningPage);
@@ -235,7 +237,8 @@ suite('CrComponentsPsimFlowUiTest', function() {
   });
 
   test('Portal error metric logged', () => {
-    const provisioningPage = pSimPage.$$('#provisioningPage');
+    const provisioningPage =
+        pSimPage.shadowRoot.querySelector('#provisioningPage');
     provisioningPage.fire('carrier-portal-result', false);
 
     endFlowAndVerifyResult(PSimSetupFlowResult.CANCELLED_PORTAL_ERROR);

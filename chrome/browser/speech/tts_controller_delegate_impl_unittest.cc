@@ -24,7 +24,7 @@ class MockTtsControllerDelegate : public TtsControllerDelegateImpl {
   MockTtsControllerDelegate() = default;
   ~MockTtsControllerDelegate() override = default;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
  private:
   const PrefService* GetPrefService(content::TtsUtterance* utterance) override {

@@ -24,7 +24,7 @@ class VcBackgroundUISystemAppDelegate : public SystemWebAppDelegate {
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
 };
 
 }  // namespace ash::vc_background_ui

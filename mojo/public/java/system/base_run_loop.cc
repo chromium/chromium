@@ -35,11 +35,6 @@ static void JNI_BaseRunLoop_RunUntilIdle(JNIEnv* env,
   base::RunLoop().RunUntilIdle();
 }
 
-static void JNI_BaseRunLoop_Quit(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jcaller) {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
 static void RunJavaRunnable(
     const base::android::ScopedJavaGlobalRef<jobject>& runnable_ref) {
   Java_BaseRunLoop_runRunnable(base::android::AttachCurrentThread(),

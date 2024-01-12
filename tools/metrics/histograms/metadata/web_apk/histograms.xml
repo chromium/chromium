@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.GooglePlayInstallResult"
-    enum="WebApkGooglePlayInstallResult" expires_after="2024-04-28">
+    enum="WebApkGooglePlayInstallResult" expires_after="2024-06-30">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallResult" enum="WebApkInstallResult"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>eirage@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.RequestTokenDurationV2" units="ms"
-    expires_after="2024-05-05">
+    expires_after="2024-07-07">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -157,13 +157,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Install.UserTheme" enum="WebApkUserTheme"
-    expires_after="2024-05-05">
-  <owner>johnwes@google.com</owner>
+<histogram name="WebApk.InstallPrompt.SegmentationResult"
+    enum="SegmentationResult" expires_after="2024-12-01">
+  <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
-    Records whether a user is using light theme or dark theme when installing a
-    WebAPK.
+    When Segmentation Platform returns the install prompt classification result,
+    record an enum for whether the result is invalid, show the prompt, or don't
+    show.
   </summary>
 </histogram>
 
@@ -173,16 +174,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records the error codes when a WebAPK is launched with network failures.
-  </summary>
-</histogram>
-
-<histogram name="WebApk.Launch.UserTheme" enum="WebApkUserTheme"
-    expires_after="2024-01-01">
-  <owner>johnwes@google.com</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records whether a user is using light theme or dark theme when launching a
-    WebAPK.
   </summary>
 </histogram>
 
@@ -222,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.ShellApkVersion2{WebApkDistributorType}" units="units"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -266,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Uninstall{WebApkDistributorType}" enum="BooleanHit"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -287,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.GooglePlayUpdateResult"
-    enum="WebApkGooglePlayInstallResult" expires_after="2024-04-28">
+    enum="WebApkGooglePlayInstallResult" expires_after="2024-06-30">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>

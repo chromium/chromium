@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) DeviceSettingsHost
   void reset_has_setting_changed();
 
  private:
-  const raw_ref<ServiceContext, ExperimentalAsh> context_;
+  const raw_ref<ServiceContext> context_;
 
   DeviceActions& device_actions();
   AssistantNotificationController& assistant_notification_controller();

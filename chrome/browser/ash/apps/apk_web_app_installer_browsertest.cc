@@ -291,9 +291,8 @@ class ApkWebAppInstallerBrowserTest
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
-  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
-      arc_app_list_prefs_ = nullptr;
-  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_prefs_ = nullptr;
+  raw_ptr<web_app::WebAppProvider> provider_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   base::RepeatingCallback<void(const webapps::AppId&)>
       app_uninstalled_callback_;
@@ -324,8 +323,7 @@ class ApkWebAppInstallerWithShelfControllerBrowserTest
   }
 
  protected:
-  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
-      shelf_controller_;
+  raw_ptr<ChromeShelfController, DanglingUntriaged> shelf_controller_;
 };
 
 // Test the full installation and uninstallation flow.

@@ -38,8 +38,9 @@
 // If there are 2 indicator views defined, then the first goes on the left and
 // the the second goes on the right, else only the right gets filled.
 class OverflowView : public views::View {
+  METADATA_HEADER(OverflowView, views::View)
+
  public:
-  METADATA_HEADER(OverflowView);
   OverflowView(std::unique_ptr<views::View> primary_view,
                std::unique_ptr<views::View> prefix_indicator_view,
                std::unique_ptr<views::View> postfix_indicator_view);

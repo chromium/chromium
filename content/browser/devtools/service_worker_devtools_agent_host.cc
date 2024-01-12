@@ -402,11 +402,11 @@ RenderProcessHost* ServiceWorkerDevToolsAgentHost::GetProcessHost() {
   return RenderProcessHost::FromID(worker_process_id_);
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string&) {
   if (!client_security_state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return client_security_state_->cross_origin_embedder_policy;
 }

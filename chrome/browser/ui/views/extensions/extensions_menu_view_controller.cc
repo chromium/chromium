@@ -164,8 +164,12 @@ bool CanUserCustomizeExtensionSiteAccess(
     return false;
   }
 
-  bool enterprise_forced_access = HasEnterpriseForcedAccess(extension, profile);
-  if (enterprise_forced_access) {
+  if (extension.permissions_data()->IsPolicyBlockedHost(url)) {
+    // Users can't customize the site access of policy-blocked sites.
+    return false;
+  }
+
+  if (HasEnterpriseForcedAccess(extension, profile)) {
     // Users can't customize the site access of enterprise-installed extensions.
     return false;
   }

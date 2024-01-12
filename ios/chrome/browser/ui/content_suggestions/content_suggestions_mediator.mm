@@ -13,6 +13,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
@@ -89,7 +91,9 @@
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
@@ -100,6 +104,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -110,6 +116,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
@@ -182,12 +189,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Whether the suggestions have been disabled by a policy.
 @property(nonatomic, assign)
     const PrefService::Preference* contentSuggestionsPolicyEnabled;
-
-// Most visited items from the MostVisitedSites service currently displayed.
-@property(nonatomic, strong)
-    NSMutableArray<ContentSuggestionsMostVisitedItem*>* mostVisitedItems;
-@property(nonatomic, strong)
-    NSArray<ContentSuggestionsMostVisitedActionItem*>* actionButtonItems;
 // Most visited items from the MostVisitedSites service (copied upon receiving
 // the callback). Those items are up to date with the model.
 @property(nonatomic, strong)
@@ -271,6 +272,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
   FaviconAttributesProvider* _mostVisitedAttributesProvider;
   std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;
+  // Most visited items from the MostVisitedSites service currently displayed.
+  MostVisitedTilesConfig* _mostVisitedConfig;
+  ShortcutsConfig* _shortcutsConfig;
 }
 
 #pragma mark - Public
@@ -864,6 +868,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     item.commandHandler = self;
     item.incognitoAvailable = self.incognitoAvailable;
     item.index = index;
+    item.menuProvider = self;
     DCHECK(index < kShortcutMinimumIndex);
     index++;
     [self.freshMostVisitedItems addObject:item];
@@ -884,7 +889,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       siteURL, _mostVisitedAttributesProvider,
       app_group::ContentWidgetFaviconsFolder());
 
-  for (ContentSuggestionsMostVisitedItem* item in self.mostVisitedItems) {
+  for (ContentSuggestionsMostVisitedItem* item in _mostVisitedConfig
+           .mostVisitedItems) {
     if (item.URL == siteURL) {
       FaviconCompletionHandler completion =
           _mostVisitedFetchFaviconCallbacks[siteURL];
@@ -914,6 +920,82 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)onForeignSessionsChanged {
   DCHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
   [self showTabResumptionTile];
+}
+
+#pragma mark - ContentSuggestionsMenuProvider
+
+- (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
+                                   (ContentSuggestionsMostVisitedItem*)item
+                                                      fromView:(UIView*)view {
+  __weak __typeof(self) weakSelf = self;
+
+  UIContextMenuActionProvider actionProvider = ^(
+      NSArray<UIMenuElement*>* suggestedActions) {
+    ContentSuggestionsMediator* strongSelf = weakSelf;
+    if (!strongSelf) {
+      // Return an empty menu.
+      return [UIMenu menuWithTitle:@"" children:@[]];
+    }
+
+    // Record that this context menu was shown to the user.
+    RecordMenuShown(kMenuScenarioHistogramMostVisitedEntry);
+
+    NSMutableArray<UIMenuElement*>* menuElements =
+        [[NSMutableArray alloc] init];
+
+    CGPoint centerPoint = [view.superview convertPoint:view.center toView:nil];
+
+    [menuElements
+        addObject:[strongSelf.actionFactory actionToOpenInNewTabWithBlock:^{
+          [weakSelf openNewTabWithMostVisitedItem:item
+                                        incognito:NO
+                                          atIndex:item.index
+                                        fromPoint:centerPoint];
+        }]];
+
+    UIAction* incognitoAction =
+        [strongSelf.actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+          [weakSelf openNewTabWithMostVisitedItem:item
+                                        incognito:YES
+                                          atIndex:item.index
+                                        fromPoint:centerPoint];
+        }];
+
+    if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+      // Disable the "Open in Incognito" option if the incognito mode is
+      // disabled.
+      incognitoAction.attributes = UIMenuElementAttributesDisabled;
+    }
+
+    [menuElements addObject:incognitoAction];
+
+    if (base::ios::IsMultipleScenesSupported()) {
+      UIAction* newWindowAction = [strongSelf.actionFactory
+          actionToOpenInNewWindowWithURL:item.URL
+                          activityOrigin:
+                              WindowActivityContentSuggestionsOrigin];
+      [menuElements addObject:newWindowAction];
+    }
+
+    CrURL* URL = [[CrURL alloc] initWithGURL:item.URL];
+    [menuElements addObject:[strongSelf.actionFactory actionToCopyURL:URL]];
+
+    [menuElements addObject:[strongSelf.actionFactory actionToShareWithBlock:^{
+                    [weakSelf.delegate shareURL:item.URL
+                                          title:item.title
+                                       fromView:view];
+                  }]];
+
+    [menuElements addObject:[strongSelf.actionFactory actionToRemoveWithBlock:^{
+                    [weakSelf removeMostVisited:item];
+                  }]];
+
+    return [UIMenu menuWithTitle:@"" children:menuElements];
+  };
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
 }
 
 #pragma mark - Private
@@ -1045,8 +1127,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count]) {
-    [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
+  if ([_mostVisitedConfig.mostVisitedItems count]) {
+    [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
   }
   if ([self shouldShowSetUpList]) {
     self.setUpList.delegate = self;
@@ -1070,7 +1152,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
   if ((IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
-    [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
+    _shortcutsConfig = [[ShortcutsConfig alloc] init];
+    _shortcutsConfig.shortcutItems = [self shortcutItems];
+    _shortcutsConfig.commandHandler = self;
+    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
   }
 
   if (IsSafetyCheckMagicStackEnabled() &&
@@ -1127,8 +1212,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                          std::move(freshMostVisitedSites));
   }
 
-  self.mostVisitedItems = self.freshMostVisitedItems;
-  [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
+  _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
+  _mostVisitedConfig.imageDataSource = self;
+  _mostVisitedConfig.commandHandler = self;
+  _mostVisitedConfig.mostVisitedItems = self.freshMostVisitedItems;
+  [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
   [self.delegate contentSuggestionsWasUpdated];
 }
 
@@ -1746,23 +1834,32 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   return YES;
 }
 
+- (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender {
+  ContentSuggestionsMostVisitedTileView* mostVisitedView =
+      static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
+  [self openMostVisitedItem:mostVisitedView.config
+                    atIndex:mostVisitedView.config.index];
+}
+
+- (void)shortcutsTapped:(UIGestureRecognizer*)sender {
+  ContentSuggestionsShortcutTileView* shortcutView =
+      static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
+  int index = static_cast<int>(shortcutView.config.index);
+  [self openMostVisitedItem:shortcutView.config atIndex:index];
+}
+
 #pragma mark - Properties
 
-- (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {
-  if (!_actionButtonItems) {
-    self.readingListItem = ReadingListActionItem();
-    self.readingListItem.count = self.readingListUnreadCount;
-    self.readingListItem.disabled = !self.readingListModelIsLoaded;
-    _actionButtonItems = @[
-      [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
-                                          : BookmarkActionItem(),
-      self.readingListItem, RecentTabsActionItem(), HistoryActionItem()
-    ];
-    for (ContentSuggestionsMostVisitedActionItem* item in _actionButtonItems) {
-      item.accessibilityTraits = UIAccessibilityTraitButton;
-    }
-  }
-  return _actionButtonItems;
+- (NSArray<ContentSuggestionsMostVisitedActionItem*>*)shortcutItems {
+  self.readingListItem = ReadingListActionItem();
+  self.readingListItem.count = self.readingListUnreadCount;
+  self.readingListItem.disabled = !self.readingListModelIsLoaded;
+  NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcuts = @[
+    [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
+                                        : BookmarkActionItem(),
+    self.readingListItem, RecentTabsActionItem(), HistoryActionItem()
+  ];
+  return shortcuts;
 }
 
 - (void)setCommandHandler:
@@ -1882,9 +1979,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   self.readingListUnreadCount = model->unread_size();
   self.readingListModelIsLoaded = model->loaded();
   if (self.readingListItem) {
-    self.readingListItem.count = self.readingListUnreadCount;
-    self.readingListItem.disabled = !self.readingListModelIsLoaded;
-    [self.consumer updateShortcutTileConfig:self.readingListItem];
+    _shortcutsConfig.shortcutItems = [self shortcutItems];
+    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
   }
 }
 

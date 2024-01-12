@@ -107,6 +107,8 @@
   E_CPONLY(kColorExtensionMenuPinButtonIconDisabled) \
   E_CPONLY(kColorExtensionsMenuHighlightedBackground) \
   E_CPONLY(kColorExtensionsToolbarControlsBackground) \
+  E_CPONLY(kColorExtensionsMenuText) \
+  E_CPONLY(kColorExtensionsMenuSecondaryText) \
   /* Feature Promo bubble colors. */ \
   E_CPONLY(kColorFeaturePromoBubbleBackground) \
   E_CPONLY(kColorFeaturePromoBubbleButtonBorder) \
@@ -383,7 +385,7 @@
   E_CPONLY(kColorRealboxResultsActionChipFocusOutline) \
   E_CPONLY(kColorRealboxResultsBackground) \
   E_CPONLY(kColorRealboxResultsBackgroundHovered) \
-  E_CPONLY(kColorRealboxResultsControlBackgroundHovered) \
+  E_CPONLY(kColorRealboxResultsButtonHover) \
   E_CPONLY(kColorRealboxResultsDimSelected) \
   E_CPONLY(kColorRealboxResultsFocusIndicator) \
   E_CPONLY(kColorRealboxResultsForeground) \
@@ -394,6 +396,8 @@
   E_CPONLY(kColorRealboxResultsUrl) \
   E_CPONLY(kColorRealboxResultsUrlSelected) \
   E_CPONLY(kColorRealboxSearchIconBackground) \
+  E_CPONLY(kColorRealboxSelectionBackground) \
+  E_CPONLY(kColorRealboxSelectionForeground) \
   E_CPONLY(kColorRealboxShadow) \
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
@@ -590,6 +594,10 @@
   E_CPONLY(kColorTabSearchCardBackground) \
   E_CPONLY(kColorTabSearchBackground) \
   E_CPONLY(kColorTabSearchDivider) \
+  E_CPONLY(kColorTabSearchImageTabContentBottom) \
+  E_CPONLY(kColorTabSearchImageTabContentTop) \
+  E_CPONLY(kColorTabSearchImageTabText) \
+  E_CPONLY(kColorTabSearchImageWindowFrame) \
   E_CPONLY(kColorTabSearchMediaIcon) \
   E_CPONLY(kColorTabSearchMediaRecordingIcon) \
   E_CPONLY(kColorTabSearchPrimaryForeground) \

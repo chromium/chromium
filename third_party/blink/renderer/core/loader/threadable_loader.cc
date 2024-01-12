@@ -33,8 +33,10 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -69,16 +71,20 @@ namespace {
 class DetachedClient final : public GarbageCollected<DetachedClient>,
                              public ThreadableLoaderClient {
  public:
-  explicit DetachedClient(ThreadableLoader* loader) : loader_(loader) {}
+  explicit DetachedClient(ThreadableLoader* loader)
+      : loader_(loader), detached_time_(base::TimeTicks::Now()) {}
   ~DetachedClient() override = default;
 
   void DidFinishLoading(uint64_t identifier) override {
+    LogKeepAliveDuration("Succeeded");
     self_keep_alive_.Clear();
   }
   void DidFail(uint64_t identifier, const ResourceError&) override {
+    LogKeepAliveDuration("Failed");
     self_keep_alive_.Clear();
   }
   void DidFailRedirectCheck(uint64_t identifier) override {
+    LogKeepAliveDuration("Failed");
     self_keep_alive_.Clear();
   }
   void Trace(Visitor* visitor) const override {
@@ -87,9 +93,22 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
   }
 
  private:
+  void LogKeepAliveDuration(const std::string& name) {
+    CHECK(name == "Succeeded" || name == "Failed");
+    base::TimeDelta duration_after_detached =
+        base::TimeTicks::Now() - detached_time_;
+    base::UmaHistogramMediumTimes(
+        "FetchKeepAlive.Renderer.DurationAfterDetached",
+        duration_after_detached);
+    base::UmaHistogramMediumTimes(
+        "FetchKeepAlive.Renderer.DurationAfterDetached." + name,
+        duration_after_detached);
+  }
+
   SelfKeepAlive<DetachedClient> self_keep_alive_{this};
   // Keep it alive.
   const Member<ThreadableLoader> loader_;
+  base::TimeTicks detached_time_;
 };
 
 }  // namespace

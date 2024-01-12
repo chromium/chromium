@@ -74,8 +74,8 @@ TestNavigationObserver::TestNavigationObserver(
     bool ignore_uncommitted_navigations)
     : TestNavigationObserver(web_contents,
                              expected_number_of_navigations,
-                             absl::nullopt /* target_url */,
-                             absl::nullopt /* target_error */,
+                             std::nullopt /* target_url */,
+                             std::nullopt /* target_error */,
                              quit_mode,
                              ignore_uncommitted_navigations) {}
 
@@ -95,7 +95,7 @@ TestNavigationObserver::TestNavigationObserver(
     bool ignore_uncommitted_navigations)
     : TestNavigationObserver(web_contents,
                              1 /* num_of_navigations */,
-                             absl::nullopt,
+                             std::nullopt,
                              expected_target_error,
                              quit_mode,
                              ignore_uncommitted_navigations) {}
@@ -107,7 +107,7 @@ TestNavigationObserver::TestNavigationObserver(
     : TestNavigationObserver(nullptr,
                              1 /* num_of_navigations */,
                              expected_target_url,
-                             absl::nullopt /* target_error */,
+                             std::nullopt /* target_error */,
                              quit_mode,
                              ignore_uncommitted_navigations) {}
 
@@ -158,15 +158,15 @@ void TestNavigationObserver::RegisterAsObserver(WebContents* web_contents) {
 TestNavigationObserver::TestNavigationObserver(
     WebContents* web_contents,
     int expected_number_of_navigations,
-    const absl::optional<GURL>& expected_target_url,
-    absl::optional<net::Error> expected_target_error,
+    const std::optional<GURL>& expected_target_url,
+    std::optional<net::Error> expected_target_error,
     MessageLoopRunner::QuitMode quit_mode,
     bool ignore_uncommitted_navigations)
     : wait_event_(WaitEvent::kLoadStopped),
       navigations_completed_(0),
       expected_number_of_navigations_(expected_number_of_navigations),
       expected_target_url_(expected_target_url),
-      expected_initial_url_(absl::nullopt),
+      expected_initial_url_(std::nullopt),
       expected_target_error_(expected_target_error),
       ignore_uncommitted_navigations_(ignore_uncommitted_navigations),
       last_navigation_succeeded_(false),

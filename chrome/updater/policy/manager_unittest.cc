@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/policy/manager.h"
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

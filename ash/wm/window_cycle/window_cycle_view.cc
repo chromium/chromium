@@ -24,6 +24,7 @@
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_mini_view.h"
+#include "ash/wm/wm_constants.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -240,13 +241,12 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                 no_recent_items_label_->font_list().GetFontSize())
             .DeriveWithWeight(gfx::Font::Weight::NORMAL));
     no_recent_items_label_->SetVisible(windows.empty());
-    no_recent_items_label_->SetPreferredSize(
-        gfx::Size(tab_slider_->GetPreferredSize().width() +
-                      2 * WindowCycleView::kInsideBorderHorizontalPaddingDp,
-                  WindowCycleItemView::kFixedPreviewHeightDp +
-                      WindowMiniView::kHeaderHeightDp +
-                      kMirrorContainerVerticalPaddingDp +
-                      kInsideBorderVerticalPaddingDp + 8));
+    no_recent_items_label_->SetPreferredSize(gfx::Size(
+        tab_slider_->GetPreferredSize().width() +
+            2 * WindowCycleView::kInsideBorderHorizontalPaddingDp,
+        WindowCycleItemView::kFixedPreviewHeightDp +
+            kWindowMiniViewHeaderHeight + kMirrorContainerVerticalPaddingDp +
+            kInsideBorderVerticalPaddingDp + 8));
   }
 
   for (aura::Window* window : windows) {

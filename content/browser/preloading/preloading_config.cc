@@ -130,7 +130,7 @@ void PreloadingConfig::ParseConfig() {
   }
   // Throughout parsing the config, if we fail to parse, we silently skip the
   // config and use the default values.
-  absl::optional<base::Value> config_value =
+  std::optional<base::Value> config_value =
       base::JSONReader::Read(kPreloadingConfigParam.Get());
   if (!config_value) {
     return;
@@ -210,11 +210,11 @@ PreloadingConfig::Key PreloadingConfig::Key::FromEnums(
 PreloadingConfig::Entry PreloadingConfig::Entry::FromDict(
     const base::Value::Dict* dict) {
   Entry entry;
-  absl::optional<bool> holdback = dict->FindBool("holdback");
+  std::optional<bool> holdback = dict->FindBool("holdback");
   if (holdback) {
     entry.holdback_ = *holdback;
   }
-  absl::optional<double> sampling_likelihood =
+  std::optional<double> sampling_likelihood =
       dict->FindDouble("sampling_likelihood");
   if (sampling_likelihood) {
     entry.sampling_likelihood_ = *sampling_likelihood;

@@ -633,7 +633,7 @@ void ReadingListModelImpl::MarkEntrySeenIfExists(const GURL& url) {
 
 bool ReadingListModelImpl::IsTrackingSyncMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return sync_bridge_.change_processor()->IsTrackingMetadata();
+  return sync_bridge_.IsTrackingMetadata();
 }
 
 // static

@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/job_task_source.h"
+#include "base/task/thread_pool/task_source.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -407,6 +408,7 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   }
   if (should_run_tasks)
     AfterRunTask(task_source->shutdown_behavior());
+
   const bool task_source_must_be_queued = task_source.DidProcessTask();
   // |task_source| should be reenqueued iff requested by DidProcessTask().
   if (task_source_must_be_queued)
@@ -450,8 +452,9 @@ void TaskTracker::RunTask(Task task,
 
   {
     DCHECK(environment.token.IsValid());
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(environment.token);
+    TaskScope task_scope(environment.token,
+                         /* is_thread_bound=*/task_source->execution_mode() ==
+                             TaskSourceExecutionMode::kSingleThread);
     ScopedSetTaskPriorityForCurrentThread
         scoped_set_task_priority_for_current_thread(traits.priority());
 
@@ -472,20 +475,21 @@ void TaskTracker::RunTask(Task task,
         sequenced_task_runner_current_default_handle;
     absl::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
         single_thread_task_runner_current_default_handle;
-    switch (task_source->execution_mode()) {
-      case TaskSourceExecutionMode::kJob:
-      case TaskSourceExecutionMode::kParallel:
-        break;
-      case TaskSourceExecutionMode::kSequenced:
-        DCHECK(task_source->task_runner());
-        sequenced_task_runner_current_default_handle.emplace(
-            static_cast<SequencedTaskRunner*>(task_source->task_runner()));
-        break;
-      case TaskSourceExecutionMode::kSingleThread:
-        DCHECK(task_source->task_runner());
-        single_thread_task_runner_current_default_handle.emplace(
-            static_cast<SingleThreadTaskRunner*>(task_source->task_runner()));
-        break;
+    if (environment.sequenced_task_runner) {
+      DCHECK_EQ(TaskSourceExecutionMode::kSequenced,
+                task_source->execution_mode());
+      sequenced_task_runner_current_default_handle.emplace(
+          environment.sequenced_task_runner.get());
+    } else if (environment.single_thread_task_runner) {
+      DCHECK_EQ(TaskSourceExecutionMode::kSingleThread,
+                task_source->execution_mode());
+      single_thread_task_runner_current_default_handle.emplace(
+          environment.single_thread_task_runner.get());
+    } else {
+      DCHECK_NE(TaskSourceExecutionMode::kSequenced,
+                task_source->execution_mode());
+      DCHECK_NE(TaskSourceExecutionMode::kSingleThread,
+                task_source->execution_mode());
     }
 
     RunTaskWithShutdownBehavior(task, traits, task_source, environment.token);

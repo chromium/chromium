@@ -11,12 +11,13 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_delegate.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -35,7 +36,7 @@ class LayerTreeFrameSinkHolder;
 // This class provides functionality for hosting a surface tree. The surface
 // tree is hosted in the |host_window_|.
 class SurfaceTreeHost : public SurfaceDelegate,
-                        public display::DisplayObserver,
+                        public display::DisplayManagerObserver,
                         public ui::LayerOwner::Observer,
                         public viz::ContextLostObserver {
  public:
@@ -139,9 +140,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetTopInset(int height) override {}
   SecurityDelegate* GetSecurityDelegate() override;
 
-  // display::DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
+  // display::DisplayManagerObserver:
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // viz::ContextLostObserver:
   void OnContextLost() override;
@@ -195,10 +196,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // It also updates `root_surface_origin_` accordingly to the origin.
   void UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
 
-  // Updates the host layer's opacity. This has to be called after root
-  // surface's resource is updated.
-  void UpdateHostLayerOpacity();
-
   bool client_submits_surfaces_in_pixel_coordinates() const {
     return client_submits_surfaces_in_pixel_coordinates_;
   }
@@ -249,6 +246,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // destroyed with the cancelled animation, so this method may return nullptr.
   virtual ui::Layer* GetCommitTargetLayer();
   virtual const ui::Layer* GetCommitTargetLayer() const;
+
+  int64_t output_display_id() const { return output_display_id_; }
 
   // The FrameSinkId associated with this.
   viz::FrameSinkId frame_sink_id_;
@@ -315,7 +314,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
 
-  display::ScopedDisplayObserver display_observer_{this};
+  base::ScopedObservation<display::DisplayManager,
+                          display::DisplayManagerObserver>
+      display_manager_observation_{this};
 
   // The display id for the output the surface is entered onto.
   int64_t output_display_id_ = display::kInvalidDisplayId;

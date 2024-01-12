@@ -7,6 +7,7 @@
 # path.
 
 declare appid=MockApp
+declare system=0
 declare company="Chromium"
 declare product_version="1.0.0.0"
 declare install=1
@@ -14,6 +15,9 @@ for i in "$@"; do
   case $i in
     --appid=*)
      appid="${i#*=}"
+     ;;
+    --system)
+     system=1
      ;;
     --company=*)
      company="${i#*=}"
@@ -31,9 +35,19 @@ done
 
 declare -r install_file="app.json"
 if [[ "${OSTYPE}" =~ ^"darwin" ]]; then
-  declare -r install_path="/Library/Application Support/${company}/${appid}"
+  if (( "${system}" == 1 )); then
+    declare -r install_path="/Library/Application Support/${company}/${appid}"
+  else
+    declare -r \
+        install_path="${HOME}/Library/Application Support/${company}/${appid}"
+  fi
 else
-  declare -r install_path="/opt/${company}/${appid}"
+  declare install_path="/opt/${company}/${appid}"
+  if (( "${system}" == 1 )); then
+    declare -r install_path="/opt/${company}/${appid}"
+  else
+    declare -r install_path="${HOME}/.local/${company}/${appid}"
+  fi
 fi
 
 if (( "${install}" == 1 )); then

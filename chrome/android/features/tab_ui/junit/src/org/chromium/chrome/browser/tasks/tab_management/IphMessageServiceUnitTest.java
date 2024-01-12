@@ -43,9 +43,8 @@ public class IphMessageServiceUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
-        mIphMessageService = new IphMessageService(mIphController);
+        mIphMessageService = new IphMessageService(mProfile, mIphController);
     }
 
     @Test

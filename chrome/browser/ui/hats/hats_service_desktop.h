@@ -44,7 +44,7 @@ class HatsServiceDesktop : public HatsService {
                       content::WebContents* web_contents,
                       const SurveyBitsData& product_specific_bits_data,
                       const SurveyStringData& product_specific_string_data,
-                      bool require_same_origin,
+                      NavigationBehaviour navigation_behaviour,
                       base::OnceClosure success_callback,
                       base::OnceClosure failure_callback,
                       absl::optional<std::string_view> supplied_trigger_id);
@@ -78,7 +78,7 @@ class HatsServiceDesktop : public HatsService {
     std::string trigger_;
     SurveyBitsData product_specific_bits_data_;
     SurveyStringData product_specific_string_data_;
-    bool require_same_origin_;
+    NavigationBehaviour navigation_behaviour_;
     base::OnceClosure success_callback_;
     base::OnceClosure failure_callback_;
     absl::optional<std::string_view> supplied_trigger_id_;
@@ -146,7 +146,7 @@ class HatsServiceDesktop : public HatsService {
       int timeout_ms,
       const SurveyBitsData& product_specific_bits_data = {},
       const SurveyStringData& product_specific_string_data = {},
-      bool require_same_origin = false,
+      NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
       const absl::optional<std::string_view>& supplied_trigger_id =

@@ -49,7 +49,7 @@ class ArcUserSessionService
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 };
 
 }  // namespace arc

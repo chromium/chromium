@@ -134,6 +134,22 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     });
   }
 
+  private clearPromoData_(e: CustomEvent) {
+    const id = e.detail;
+    this.featurePromoErrorMessage_ = '';
+
+    this.handler_.clearFeaturePromoData(id).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getFeaturePromos().then(({featurePromos}) => {
+          this.featurePromos_ = featurePromos;
+        });
+      }
+    });
+  }
+
   private promoFilter_(promo: FeaturePromoDemoPageInfo, filter: string) {
     return filter === '' || promo.displayTitle.toLowerCase().includes(filter) ||
         promo.displayDescription.toLowerCase().includes(filter) ||

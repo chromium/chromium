@@ -237,7 +237,7 @@ gfx::Size ScreenshotCapturedBubble::GetImageSize() {
                    scale_factor * image_.Height());
 }
 
-BEGIN_METADATA(ScreenshotCapturedBubble, LocationBarBubbleDelegateView)
+BEGIN_METADATA(ScreenshotCapturedBubble)
 END_METADATA
 
 }  // namespace sharing_hub

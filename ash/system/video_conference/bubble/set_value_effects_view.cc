@@ -106,8 +106,8 @@ SetValueEffectsView::SetValueEffectsView(
   layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  if (controller->effects_manager().HasSetValueEffects()) {
-    for (auto* effect : controller->effects_manager().GetSetValueEffects()) {
+  if (controller->GetEffectsManager().HasSetValueEffects()) {
+    for (auto* effect : controller->GetEffectsManager().GetSetValueEffects()) {
       // If the current state of `effect` has no value, it means the state of
       // the effect cannot be obtained. This can happen if the
       // `VcEffectsDelegate` hosting `effect` has encountered an error or is

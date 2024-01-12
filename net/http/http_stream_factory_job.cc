@@ -106,24 +106,25 @@ base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
   return dict;
 }
 
-HttpStreamFactory::Job::Job(Delegate* delegate,
-                            JobType job_type,
-                            HttpNetworkSession* session,
-                            const HttpRequestInfo& request_info,
-                            RequestPriority priority,
-                            const ProxyInfo& proxy_info,
-                            const SSLConfig& server_ssl_config,
-                            url::SchemeHostPort destination,
-                            GURL origin_url,
-                            NextProto alternative_protocol,
-                            quic::ParsedQuicVersion quic_version,
-                            bool is_websocket,
-                            bool enable_ip_based_pooling,
-                            NetLog* net_log)
+HttpStreamFactory::Job::Job(
+    Delegate* delegate,
+    JobType job_type,
+    HttpNetworkSession* session,
+    const HttpRequestInfo& request_info,
+    RequestPriority priority,
+    const ProxyInfo& proxy_info,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    url::SchemeHostPort destination,
+    GURL origin_url,
+    NextProto alternative_protocol,
+    quic::ParsedQuicVersion quic_version,
+    bool is_websocket,
+    bool enable_ip_based_pooling,
+    NetLog* net_log)
     : request_info_(request_info),
       priority_(priority),
       proxy_info_(proxy_info),
-      server_ssl_config_(server_ssl_config),
+      allowed_bad_certs_(allowed_bad_certs),
       net_log_(
           NetLogWithSource::Make(net_log, NetLogSourceType::HTTP_STREAM_JOB)),
       io_callback_(
@@ -177,14 +178,6 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   // `ProxyChain`, but the full `ProxyInfo` is passed back to
   // `HttpNetworkTransaction`, which consumes additional fields.
   DCHECK(!proxy_info_.is_empty());
-
-  // TODO(https://crbug.com/1498285):  Remove this and move
-  // `disable_cert_verification_network_fetches` handling down to the socket
-  // layer.
-  bool disable_cert_verification_network_fetches =
-      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-  server_ssl_config_.disable_cert_verification_network_fetches =
-      disable_cert_verification_network_fetches;
 
   // QUIC can only be spoken to servers, never to proxies.
   if (alternative_protocol == kProtoQUIC) {
@@ -495,7 +488,7 @@ void HttpStreamFactory::Job::OnStreamReadyCallback() {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnStreamReady(this, server_ssl_config_);
+  delegate_->OnStreamReady(this);
   // |this| may be deleted after this call.
 }
 
@@ -507,8 +500,8 @@ void HttpStreamFactory::Job::OnWebSocketHandshakeStreamReadyCallback() {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnWebSocketHandshakeStreamReady(
-      this, server_ssl_config_, proxy_info_, std::move(websocket_stream_));
+  delegate_->OnWebSocketHandshakeStreamReady(this, proxy_info_,
+                                             std::move(websocket_stream_));
   // |this| may be deleted after this call.
 }
 
@@ -517,8 +510,7 @@ void HttpStreamFactory::Job::OnBidirectionalStreamImplReadyCallback() {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnBidirectionalStreamImplReady(this, server_ssl_config_,
-                                            proxy_info_);
+  delegate_->OnBidirectionalStreamImplReady(this, proxy_info_);
   // |this| may be deleted after this call.
 }
 
@@ -528,7 +520,7 @@ void HttpStreamFactory::Job::OnStreamFailedCallback(int result) {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnStreamFailed(this, result, server_ssl_config_);
+  delegate_->OnStreamFailed(this, result);
   // |this| may be deleted after this call.
 }
 
@@ -541,7 +533,7 @@ void HttpStreamFactory::Job::OnCertificateErrorCallback(
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnCertificateError(this, result, server_ssl_config_, ssl_info);
+  delegate_->OnCertificateError(this, result, ssl_info);
   // |this| may be deleted after this call.
 }
 
@@ -560,8 +552,7 @@ void HttpStreamFactory::Job::OnNeedsProxyAuthCallback(
   // prevent being passed a new session while waiting on proxy auth credentials.
   spdy_session_request_.reset();
 
-  delegate_->OnNeedsProxyAuth(this, response, server_ssl_config_, proxy_info_,
-                              auth_controller);
+  delegate_->OnNeedsProxyAuth(this, response, proxy_info_, auth_controller);
   // |this| may be deleted after this call.
 }
 
@@ -571,7 +562,7 @@ void HttpStreamFactory::Job::OnNeedsClientAuthCallback(
   DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!spdy_session_request_);
 
-  delegate_->OnNeedsClientAuth(this, server_ssl_config_, cert_info);
+  delegate_->OnNeedsClientAuth(this, cert_info);
   // |this| may be deleted after this call.
 }
 
@@ -775,6 +766,17 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   DCHECK(proxy_info_.proxy_chain().IsValid());
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
+  SSLConfig server_ssl_config;
+  // TODO(https://crbug.com/1498285):  Remove this and move
+  // `disable_cert_verification_network_fetches` handling down to the socket
+  // layer.
+  bool disable_cert_verification_network_fetches =
+      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+  server_ssl_config.disable_cert_verification_network_fetches =
+      disable_cert_verification_network_fetches;
+
+  server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
+
   if (using_ssl_) {
     // Prior to HTTP/2 and SPDY, some servers use TLS renegotiation to request
     // TLS client authentication after the HTTP request was sent. Allow
@@ -785,24 +787,15 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     // server to request a renegotiation immediately before sending the
     // connection preface as waiting for the preface would cost the round trip
     // that False Start otherwise saves.
-    server_ssl_config_.renego_allowed_default = true;
-    server_ssl_config_.renego_allowed_for_protos.push_back(kProtoHTTP11);
+    server_ssl_config.renego_allowed_default = true;
+    server_ssl_config.renego_allowed_for_protos.push_back(kProtoHTTP11);
   }
 
-  // TODO(mmenke): This should be set in ClientSocketFactory. There's a bit of a
-  // problem, though. This is overwritten some ways down with "{kProtoHTTP11}"
-  // in the WebSocket case, and ProxyResolvingClientSocket leaves it empty, so
-  // there are three different values of this we want.
-  server_ssl_config_.alpn_protos = session_->GetAlpnProtos();
-  server_ssl_config_.application_settings = session_->GetApplicationSettings();
-
-  SSLConfig base_proxy_ssl_config;
-
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
-  server_ssl_config_.early_data_enabled = session_->params().enable_early_data;
+  server_ssl_config.early_data_enabled = session_->params().enable_early_data;
 
   if (using_quic_)
-    return DoInitConnectionImplQuic();
+    return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
 
   // Check first if there is a pushed stream matching the request, or an HTTP/2
   // connection this request can pool to.  If so, then go straight to using
@@ -865,14 +858,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     establishing_tunnel_ = !UsingHttpProxyWithoutTunnel();
   }
 
-  HttpServerProperties* http_server_properties =
-      session_->http_server_properties();
-  if (http_server_properties) {
-    http_server_properties->MaybeForceHTTP11(
-        url::SchemeHostPort(request_info_.url),
-        request_info_.network_anonymization_key, &server_ssl_config_);
-  }
-
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
@@ -885,8 +870,8 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config_, base_proxy_ssl_config,
-        request_info_.privacy_mode, request_info_.network_anonymization_key,
+        proxy_info_, server_ssl_config, request_info_.privacy_mode,
+        request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
         std::move(callback));
   }
@@ -897,33 +882,23 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   if (is_websocket_) {
     DCHECK(request_info_.socket_tag == SocketTag());
     DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
-    // Only offer HTTP/1.1 for WebSockets. Although RFC 8441 defines WebSockets
-    // over HTTP/2, a single WSS/HTTPS origin may support HTTP over HTTP/2
-    // without supporting WebSockets over HTTP/2. Offering HTTP/2 for a fresh
-    // connection would break such origins.
-    //
-    // However, still offer HTTP/1.1 rather than skipping ALPN entirely. While
-    // this will not change the application protocol (HTTP/1.1 is default), it
-    // provides hardens against cross-protocol attacks and allows for the False
-    // Start (RFC 7918) optimization.
-    SSLConfig websocket_server_ssl_config = server_ssl_config_;
-    websocket_server_ssl_config.alpn_protos = {kProtoHTTP11};
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, websocket_server_ssl_config, base_proxy_ssl_config,
-        request_info_.privacy_mode, request_info_.network_anonymization_key,
-        net_log_, connection_.get(), io_callback_, proxy_auth_callback);
+        proxy_info_, server_ssl_config, request_info_.privacy_mode,
+        request_info_.network_anonymization_key, net_log_, connection_.get(),
+        io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
-      server_ssl_config_, base_proxy_ssl_config, request_info_.privacy_mode,
+      server_ssl_config, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
       proxy_auth_callback);
 }
 
-int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
+int HttpStreamFactory::Job::DoInitConnectionImplQuic(
+    int server_cert_verifier_flags) {
   url::SchemeHostPort destination;
   GURL url(request_info_.url);
   int cert_verifier_flags;
@@ -948,7 +923,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   } else {
     DCHECK(using_ssl_);
     destination = destination_;
-    cert_verifier_flags = server_ssl_config_.GetCertVerifyFlags();
+    cert_verifier_flags = server_cert_verifier_flags;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
@@ -999,6 +974,8 @@ void HttpStreamFactory::Job::OnFailedOnDefaultNetwork(int result) {
 
 int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_JOB_INIT_CONNECTION);
+
+  establishing_tunnel_ = false;
 
   // No need to continue waiting for a session, once a connection is
   // established.
@@ -1107,28 +1084,11 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
     return OK;
   }
 
-  if (result < 0 && !ssl_started)
-    return ReconsiderProxyAfterError(result);
-
-  establishing_tunnel_ = false;
-
-  // Handle SSL errors below.
-  if (using_ssl_) {
-    DCHECK(ssl_started);
-    if (IsCertificateError(result)) {
-      SSLInfo ssl_info;
-      GetSSLInfo(&ssl_info);
-      if (ssl_info.cert) {
-        // Add the bad certificate to the set of allowed certificates in the
-        // SSL config object. This data structure will be consulted after
-        // calling RestartIgnoringLastError(). And the user will be asked
-        // interactively before RestartIgnoringLastError() is ever called.
-        server_ssl_config_.allowed_bad_certs.emplace_back(ssl_info.cert,
-                                                          ssl_info.cert_status);
-      }
+  if (result < 0) {
+    if (!ssl_started) {
+      return ReconsiderProxyAfterError(result);
     }
-    if (result < 0)
-      return result;
+    return result;
   }
 
   next_state_ = STATE_CREATE_STREAM;
@@ -1343,7 +1303,7 @@ HttpStreamFactory::JobFactory::CreateJob(
     const HttpRequestInfo& request_info,
     RequestPriority priority,
     const ProxyInfo& proxy_info,
-    const SSLConfig& server_ssl_config,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
     GURL origin_url,
     bool is_websocket,
@@ -1353,7 +1313,7 @@ HttpStreamFactory::JobFactory::CreateJob(
     quic::ParsedQuicVersion quic_version) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      server_ssl_config, std::move(destination), origin_url,
+      allowed_bad_certs, std::move(destination), origin_url,
       alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
       net_log);
 }

@@ -65,4 +65,9 @@ bool TestBrowsingDataModelDelegate::IsCookieDeletionDisabled(const GURL& url) {
   return false;
 }
 
+base::WeakPtr<BrowsingDataModel::Delegate>
+TestBrowsingDataModelDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace browsing_data

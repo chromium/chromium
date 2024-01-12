@@ -13,7 +13,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -1156,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // expected.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
                        TransitionToClamshellModeDuringAbortedFadeInAnimation) {
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       AcceleratorAction::kToggleAppList, {});
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   // Progress tablet mode animation to the end before item fade in animation
   // completes - this should hide the tablet mode app list and abort the fade in

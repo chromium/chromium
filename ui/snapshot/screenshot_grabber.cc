@@ -90,7 +90,7 @@ void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
 #endif
   ui::GrabWindowSnapshotAsyncPNG(
       window, rect,
-      base::BindOnce(&ScreenshotGrabber::GrabWindowSnapshotAsyncCallback,
+      base::BindOnce(&ScreenshotGrabber::GrabSnapshotImageCallback,
                      factory_.GetWeakPtr(), window_identifier, is_partial,
                      std::move(callback)));
 }
@@ -101,7 +101,7 @@ bool ScreenshotGrabber::CanTakeScreenshot() {
              base::Milliseconds(kScreenshotMinimumIntervalInMS);
 }
 
-void ScreenshotGrabber::GrabWindowSnapshotAsyncCallback(
+void ScreenshotGrabber::GrabSnapshotImageCallback(
     const std::string& window_identifier,
     bool is_partial,
     ScreenshotCallback callback,

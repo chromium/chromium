@@ -32,21 +32,6 @@ Font CreateVerticalUprightTestFont(const AtomicString& family_name,
 
 class FontTest : public FontTestBase {
  public:
-  Vector<int> GetExpandedRange(const String& text, bool ltr, int from, int to) {
-    FontDescription::VariantLigatures ligatures(
-        FontDescription::kEnabledLigaturesState);
-    Font font = CreateTestFont(
-        AtomicString("roboto"),
-        test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
-        100, &ligatures);
-
-    TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
-                     false);
-
-    font.ExpandRangeToIncludePartialGlyphs(text_run, &from, &to);
-    return Vector<int>({from, to});
-  }
-
   Font CreateFontWithOrientation(const Font& base_font,
                                  FontOrientation orientation) {
     FontDescription font_description = base_font.GetFontDescription();
@@ -174,24 +159,6 @@ TEST_F(FontTest, TextIntercepts) {
   for (auto text_intercept : text_intercepts) {
     EXPECT_GT(text_intercept.end_, text_intercept.begin_);
   }
-}
-
-TEST_F(FontTest, ExpandRange) {
-  // "ffi" is a ligature, therefore a single glyph. Any range that includes one
-  // of the letters must be expanded to all of them.
-  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 1), Vector<int>({0, 1}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 2), Vector<int>({0, 4}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 3, 4), Vector<int>({1, 4}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 4, 6), Vector<int>({4, 6}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 6, 7), Vector<int>({6, 7}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 9), Vector<int>({0, 9}));
-
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 1), Vector<int>({0, 1}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 2), Vector<int>({0, 2}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 3, 4), Vector<int>({3, 4}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 4, 6), Vector<int>({4, 8}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 6, 7), Vector<int>({5, 8}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 9), Vector<int>({0, 9}));
 }
 
 TEST_F(FontTest, TabWidthZero) {

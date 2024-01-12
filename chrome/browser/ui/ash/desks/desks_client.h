@@ -266,9 +266,9 @@ class DesksClient : public ash::SessionObserver {
 
   // Convenience pointer to ash::DesksController. Guaranteed to be not null for
   // the duration of `this`.
-  const raw_ptr<ash::DesksController, ExperimentalAsh> desks_controller_;
+  const raw_ptr<ash::DesksController> desks_controller_;
 
-  raw_ptr<Profile, ExperimentalAsh> active_profile_ = nullptr;
+  raw_ptr<Profile> active_profile_ = nullptr;
 
   // Maps launch id to a launch handler.
   std::map<int32_t, std::unique_ptr<DesksTemplatesAppLaunchHandler>>

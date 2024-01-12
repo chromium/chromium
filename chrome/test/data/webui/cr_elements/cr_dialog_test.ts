@@ -534,12 +534,88 @@ suite('cr-dialog', function() {
     });
   });
 
-  test('show on attach', () => {
+  test('show-on-attach', () => {
     document.body.innerHTML = getTrustedHTML`
       <cr-dialog show-on-attach>
         <div slot="title">title</div>
       </cr-dialog>`;
     const dialog = document.body.querySelector('cr-dialog')!;
+    assertTrue(dialog.showOnAttach);
+    assertTrue(dialog.open);
+  });
+
+  test('close-text', () => {
+    document.body.innerHTML = getTrustedHTML`
+      <cr-dialog close-text="foo">
+        <div slot="title">title</div>
+      </cr-dialog>`;
+    const dialog = document.body.querySelector('cr-dialog')!;
+    dialog.showModal();
+
+    assertEquals('foo', dialog.closeText);
+    assertEquals('foo', dialog.$.close.ariaLabel);
+    assertEquals('foo', dialog.$.close.getAttribute('aria-label'));
+
+    dialog.closeText = undefined;
+    assertEquals(null, dialog.$.close.ariaLabel);
+    assertFalse(dialog.$.close.hasAttribute('aria-label'));
+  });
+
+  // Test that when ignoreEnterKey is set, pressing "Enter" does not trigger the
+  // action button.
+  test('ignore-enter-key', () => {
+    document.body.innerHTML = getTrustedHTML`
+      <cr-dialog ignore-enter-key>
+        <div slot="title">title</div>
+        <div slot="body">
+          <button class="action-button">button</button>
+        </div>
+      </cr-dialog>`;
+    const dialog = document.body.querySelector('cr-dialog')!;
+    dialog.showModal();
+
+    assertTrue(dialog.ignoreEnterKey);
+
+    // MockInteractions triggers event listeners synchronously.
+    const actionButton =
+        document.body.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!actionButton);
+
+    let clickedCounter = 0;
+    actionButton.addEventListener('click', function() {
+      clickedCounter++;
+    });
+    pressEnter(dialog);
+
+    assertEquals(0, clickedCounter);
+  });
+
+  test('close on popstate', function() {
+    document.body.innerHTML = getTrustedHTML`
+      <cr-dialog>
+        <div slot="title">title</div>
+      </cr-dialog>`;
+    const dialog = document.body.querySelector('cr-dialog')!;
+    assertFalse(dialog.ignorePopstate);
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    window.dispatchEvent(new CustomEvent('popstate'));
+    assertFalse(dialog.open);
+  });
+
+  test('ignore-pop-state', () => {
+    document.body.innerHTML = getTrustedHTML`
+      <cr-dialog ignore-popstate>
+        <div slot="title">title</div>
+      </cr-dialog>`;
+    const dialog = document.body.querySelector('cr-dialog')!;
+    assertTrue(dialog.ignorePopstate);
+
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    window.dispatchEvent(new CustomEvent('popstate'));
     assertTrue(dialog.open);
   });
 });

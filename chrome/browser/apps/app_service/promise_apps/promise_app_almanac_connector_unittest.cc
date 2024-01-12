@@ -39,12 +39,9 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
     testing::Test::SetUp();
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_.get()));
+        url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_.get());
+    test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
     connector_ = std::make_unique<PromiseAppAlmanacConnector>(profile_.get());
     connector_->SetSkipApiKeyCheckForTesting(true);
   }

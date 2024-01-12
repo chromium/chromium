@@ -25,7 +25,7 @@ class MockIdentityRequestDialogController
 
   MOCK_METHOD8(ShowAccountsDialog,
                void(const std::string&,
-                    const absl::optional<std::string>&,
+                    const std::optional<std::string>&,
                     const std::vector<content::IdentityProviderData>&,
                     IdentityRequestAccount::SignInMode,
                     bool,
@@ -35,7 +35,7 @@ class MockIdentityRequestDialogController
   MOCK_METHOD0(DestructorCalled, void());
   MOCK_METHOD7(ShowFailureDialog,
                void(const std::string&,
-                    const absl::optional<std::string>&,
+                    const std::optional<std::string>&,
                     const std::string&,
                     const blink::mojom::RpContext& rp_context,
                     const content::IdentityProviderMetadata&,
@@ -43,11 +43,11 @@ class MockIdentityRequestDialogController
                     LoginToIdPCallback));
   MOCK_METHOD8(ShowErrorDialog,
                void(const std::string&,
-                    const absl::optional<std::string>&,
+                    const std::optional<std::string>&,
                     const std::string&,
                     const blink::mojom::RpContext& rp_context,
                     const content::IdentityProviderMetadata&,
-                    const absl::optional<IdentityCredentialTokenError>&,
+                    const std::optional<IdentityCredentialTokenError>&,
                     DismissCallback,
                     MoreDetailsCallback));
   MOCK_METHOD2(ShowModalDialog, WebContents*(const GURL&, DismissCallback));

@@ -174,7 +174,7 @@ TEST_F(EntropyStateTest, ClearPrefs) {
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
   prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, 4321);
-  prefs_.SetString(prefs::kMetricsLimitedEntropySource,
+  prefs_.SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
                    "00000000000000000000000000000001");
 
   EntropyState::ClearPrefs(&prefs_);
@@ -182,7 +182,8 @@ TEST_F(EntropyStateTest, ClearPrefs) {
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsLowEntropySource));
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsOldLowEntropySource));
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsPseudoLowEntropySource));
-  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsLimitedEntropySource));
+  EXPECT_TRUE(
+      prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
 }
 
 TEST_F(EntropyStateTest, SetExternalPrefs) {
@@ -203,7 +204,7 @@ TEST_F(EntropyStateTest, ClearPrefs) {
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
   prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, 4321);
-  prefs_.SetString(prefs::kMetricsLimitedEntropySource,
+  prefs_.SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
                    "00000000000000000000000000000001");
 
   EntropyState::ClearPrefs(&prefs_);
@@ -211,7 +212,8 @@ TEST_F(EntropyStateTest, ClearPrefs) {
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsLowEntropySource));
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsOldLowEntropySource));
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsPseudoLowEntropySource));
-  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsLimitedEntropySource));
+  EXPECT_FALSE(
+      prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
 }
 #endif
 
@@ -220,7 +222,7 @@ TEST_F(EntropyStateTest, ClearingPrefWillNotResetValuesDuringSession) {
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
   prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, 4321);
-  prefs_.SetString(prefs::kMetricsLimitedEntropySource,
+  prefs_.SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
                    "00000000000000000000000000000001");
   EntropyState entropy_state(&prefs_);
 
@@ -230,7 +232,7 @@ TEST_F(EntropyStateTest, ClearingPrefWillNotResetValuesDuringSession) {
   auto pseudo_low = entropy_state.GetPseudoLowEntropySource();
   auto high = entropy_state.GetHighEntropySource(
       "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEF");
-  auto limited = entropy_state.GetLimitedEntropySource();
+  auto limited = entropy_state.GetLimitedEntropyRandomizationSource();
 
   EntropyState::ClearPrefs(&prefs_);
 
@@ -240,45 +242,51 @@ TEST_F(EntropyStateTest, ClearingPrefWillNotResetValuesDuringSession) {
   EXPECT_EQ(pseudo_low, entropy_state.GetPseudoLowEntropySource());
   EXPECT_EQ(high, entropy_state.GetHighEntropySource(
                       "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEF"));
-  EXPECT_EQ(limited, entropy_state.GetLimitedEntropySource());
+  EXPECT_EQ(limited, entropy_state.GetLimitedEntropyRandomizationSource());
 }
 
-TEST_F(EntropyStateTest, GenerateLimitedEntropySourceWhenNotAvailable) {
-  // Pref for limited entropy source is unset.
-  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsLimitedEntropySource));
+TEST_F(EntropyStateTest,
+       GenerateLimitedEntropyRandomizationSourceWhenNotAvailable) {
+  // Pref for limited entropy randomization source is unset.
+  EXPECT_FALSE(
+      prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
 
-  // Generate a new limited entropy source.
+  // Generate a new limited entropy randomization source.
   EntropyState entropy_state(&prefs_);
-  entropy_state.GetLimitedEntropySource();
+  entropy_state.GetLimitedEntropyRandomizationSource();
 
   // There should be a generated value and it should be stored in prefs.
-  auto getter_value = entropy_state.GetLimitedEntropySource();
-  auto pref_value = prefs_.GetString(prefs::kMetricsLimitedEntropySource);
+  auto getter_value = entropy_state.GetLimitedEntropyRandomizationSource();
+  auto pref_value =
+      prefs_.GetString(prefs::kMetricsLimitedEntropyRandomizationSource);
   EXPECT_NE("", getter_value);
   EXPECT_EQ(getter_value, pref_value);
 }
 
-TEST_F(EntropyStateTest, LoadLimitedEntropySourceFromPref) {
-  // There is a previously generated limited entropy source stored in prefs.
+TEST_F(EntropyStateTest, LoadLimitedEntropyRandomizationSourceFromPref) {
+  // There is a previously generated limited entropy randomization source stored
+  // in prefs.
   auto* test_value = "00000000000000000000000000000001";
-  prefs_.SetString(prefs::kMetricsLimitedEntropySource, test_value);
+  prefs_.SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
+                   test_value);
 
   // This should load the previous value from prefs.
   EntropyState entropy_state(&prefs_);
-  entropy_state.GetLimitedEntropySource();
+  entropy_state.GetLimitedEntropyRandomizationSource();
 
   // Verify that the previous value was returned.
-  EXPECT_EQ(test_value, entropy_state.GetLimitedEntropySource());
+  EXPECT_EQ(test_value, entropy_state.GetLimitedEntropyRandomizationSource());
   // Verify that the value stored in prefs is not altered.
-  EXPECT_EQ(test_value, prefs_.GetString(prefs::kMetricsLimitedEntropySource));
+  EXPECT_EQ(test_value,
+            prefs_.GetString(prefs::kMetricsLimitedEntropyRandomizationSource));
 }
 
-TEST_F(EntropyStateTest, LimitedEntropySourceNotReset) {
+TEST_F(EntropyStateTest, LimitedEntropyRandomizationSourceNotReset) {
   EntropyState entropy_state(&prefs_);
 
-  // Attempts to generate the limited entropy source twice.
-  auto first_call_value = entropy_state.GetLimitedEntropySource();
-  auto second_call_value = entropy_state.GetLimitedEntropySource();
+  // Attempts to generate the limited entropy randomization source twice.
+  auto first_call_value = entropy_state.GetLimitedEntropyRandomizationSource();
+  auto second_call_value = entropy_state.GetLimitedEntropyRandomizationSource();
 
   // The generated value should not be empty.
   EXPECT_NE("", first_call_value);
@@ -286,43 +294,45 @@ TEST_F(EntropyStateTest, LimitedEntropySourceNotReset) {
   EXPECT_EQ(first_call_value, second_call_value);
 }
 
-TEST_F(EntropyStateTest, ResetLimitedEntropySourceThroughCmdLine) {
+TEST_F(EntropyStateTest, ResetLimitedEntropyRandomizationSourceThroughCmdLine) {
   // Setup a command line flag to reset the variations state.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(switches::kResetVariationState);
-  // ...and store a previously generated limited entropy source value
-  // in prefs.
+  // ...and store a previously generated limited entropy randomization source
+  // value in prefs.
   auto* test_value = "00000000000000000000000000000001";
-  prefs_.SetString(prefs::kMetricsLimitedEntropySource, test_value);
+  prefs_.SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
+                   test_value);
 
-  // Attempts to generate a limited entropy source value.
+  // Attempts to generate a limited entropy randomization source value.
   EntropyState entropy_state(&prefs_);
-  entropy_state.GetLimitedEntropySource();
+  entropy_state.GetLimitedEntropyRandomizationSource();
 
   // The generated value should not be the one in prefs initially.
-  EXPECT_NE(test_value, entropy_state.GetLimitedEntropySource());
+  EXPECT_NE(test_value, entropy_state.GetLimitedEntropyRandomizationSource());
   // There should be a new value, and the new value should overwrite the one in
   // prefs initially.
-  EXPECT_EQ(entropy_state.GetLimitedEntropySource(),
-            prefs_.GetString(prefs::kMetricsLimitedEntropySource));
+  EXPECT_EQ(entropy_state.GetLimitedEntropyRandomizationSource(),
+            prefs_.GetString(prefs::kMetricsLimitedEntropyRandomizationSource));
 }
 
-TEST_F(EntropyStateTest, ValidLimitedEntropySource) {
+TEST_F(EntropyStateTest, ValidLimitedEntropyRandomizationSource) {
   const char* test_values[] = {
       "00000000000000000000000000000001",
       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
       "0123456789ABCDEF0123456789ABCDEF",
   };
   for (auto* test_value : test_values) {
-    EXPECT_TRUE(EntropyState::IsValidLimitedEntropySource(test_value))
-        << "Expect EntropyState::IsValidLimitedEntropySource(" << test_value
-        << ") to be true.";
+    EXPECT_TRUE(
+        EntropyState::IsValidLimitedEntropyRandomizationSource(test_value))
+        << "Expect EntropyState::IsValidLimitedEntropyRandomizationSource("
+        << test_value << ") to be true.";
   }
 }
 
-TEST_F(EntropyStateTest, InvalidLimitedEntropySource) {
+TEST_F(EntropyStateTest, InvalidLimitedEntropyRandomizationSource) {
   const char* test_values[] = {
-      // The empty string is not a valid limited entropy source.
+      // The empty string is not a valid limited entropy randomization source.
       "",
       // A value with all zero is a not a valid `base::UnguessableToken`.
       "00000000000000000000000000000000",
@@ -334,9 +344,10 @@ TEST_F(EntropyStateTest, InvalidLimitedEntropySource) {
       "0123456789abcdef0123456789abcdef",
   };
   for (auto* test_value : test_values) {
-    EXPECT_FALSE(EntropyState::IsValidLimitedEntropySource(test_value))
-        << "Expect EntropyState::IsValidLimitedEntropySource(" << test_value
-        << ") to be false.";
+    EXPECT_FALSE(
+        EntropyState::IsValidLimitedEntropyRandomizationSource(test_value))
+        << "Expect EntropyState::IsValidLimitedEntropyRandomizationSource("
+        << test_value << ") to be false.";
   }
 }
 

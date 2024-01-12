@@ -10,7 +10,6 @@
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -119,8 +118,9 @@ struct FillFieldLogEvent {
   // Whether the field was autofilled during this fill operation. If a fill
   // operation did not change the value of a field because the old value
   // matches the filled value, this is still recorded as a
-  // was_autofilled = true.
-  OptionalBoolean was_autofilled = internal::IsRequired();
+  // was_autofilled = true before checking the iframe security policy.
+  OptionalBoolean was_autofilled_before_security_policy =
+      internal::IsRequired();
   // Whether the field had a value after this fill operation.
   OptionalBoolean had_value_after_filling = internal::IsRequired();
   // The `AutofillFillingMethod` used to fill the field. This represents the
@@ -128,6 +128,10 @@ struct FillFieldLogEvent {
   // may lead to a different set of fields being filled. These sets/groups can
   // be either the full form, a group of related fields or a single field.
   AutofillFillingMethod filling_method = AutofillFillingMethod::kNone;
+  // Records whether filling was ever prevented because of the cross c
+  // autofill security policy that applies to credit cards.
+  OptionalBoolean filling_prevented_by_iframe_security_policy =
+      OptionalBoolean::kUndefined;
 };
 
 bool AreCollapsible(const FillFieldLogEvent& event1,

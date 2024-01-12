@@ -594,13 +594,13 @@ MediaAppUIBrowserTest['CanFullscreenVideo'] = async () => {
 MediaAppUIBrowserTest['LoadVideoWithSubtitles'] = async () => {
   // Mock the send message call to prevent actual loading. We just want to see
   // what would be sent.
-  let secondMessageSent!: Promise<{messageId: number, data: {}}>;
-  const messageSent = new Promise<{messageId: number, data: {}}>(resolve => {
-    guestMessagePipe.sendMessage = (messageId: number, data: {}) => {
-      resolve({messageId, data});
+  let secondMessageSent!: Promise<{messageId: string, data: {}}>;
+  const messageSent = new Promise<{messageId: string, data: {}}>(resolve => {
+    guestMessagePipe.sendMessage = (messageType: string, message: {}) => {
+      resolve({messageId: messageType, data: message});
       secondMessageSent = new Promise(resolveAgain => {
-        guestMessagePipe.sendMessage = (messageId: number, data: {}) => {
-          resolveAgain({messageId, data});
+        guestMessagePipe.sendMessage = (messageType: string, message: {}) => {
+          resolveAgain({messageId: messageType, data: message});
           return Promise.resolve();
         };
       });
@@ -747,7 +747,7 @@ MediaAppUIBrowserTest['FilePickerValidateExtension'] = async () => {
 // Tests `MessagePipe.sendMessage()` properly propagates errors.
 MediaAppUIBrowserTest['CrossContextErrors'] = async () => {
   // Prevent the trusted context throwing errors resulting JS errors.
-  guestMessagePipe.logClientError = (error: {}) =>
+  guestMessagePipe.logClientError = (error: unknown) =>
       console.log(JSON.stringify(error));
   guestMessagePipe.rethrowErrors = false;
 
@@ -821,7 +821,7 @@ MediaAppUIBrowserTest['DeleteOriginalIPC'] = async () => {
   assertEquals(1, directory.files.length);
 
   // Prevent the trusted context throwing errors resulting JS errors.
-  guestMessagePipe.logClientError = (error: {}) =>
+  guestMessagePipe.logClientError = (error: unknown) =>
       console.log(JSON.stringify(error));
   guestMessagePipe.rethrowErrors = false;
   // Test it throws an error by simulating a failed directory change.
@@ -1112,7 +1112,7 @@ MediaAppUIBrowserTest['RenameOriginalIPC'] = async () => {
   simulateLosingAccessToDirectory();
 
   // Prevent the trusted context throwing errors resulting JS errors.
-  guestMessagePipe.logClientError = (error: {}) =>
+  guestMessagePipe.logClientError = (error: unknown) =>
       console.log(JSON.stringify(error));
   guestMessagePipe.rethrowErrors = false;
 
@@ -1146,27 +1146,29 @@ MediaAppUIBrowserTest['RequestSaveFileIPC'] = async () => {
   // Initially test with accept `empty`.
   let result = await sendTestMessage({simple: 'requestSaveFile'});
   let options = await chooseEntries;
+  let types = options.types!;
   let lastToken = `${[...tokenMap.keys()].slice(-1)[0]}`;
 
   // Check the token matches to confirm the ReceivedFile returned represents the
   // new file created on disk.
   assertMatch(result.testQueryResult, lastToken);
-  assertEquals(options.types.length, 1);
-  assertEquals(options.types[0]!.description, 'PNG');
-  assertDeepEquals(options.types[0]!.accept['image/png'], ['.png']);
+  assertEquals(types.length, 1);
+  assertEquals(types[0]!.description, 'PNG');
+  assertDeepEquals(types[0]!.accept['image/png'], ['.png']);
 
   chooseEntries = mockShowSaveFilePicker();
   result = await sendTestMessage(
       {simple: 'requestSaveFile', simpleArgs: {accept: ['PDF', 'PNG']}});
   options = await chooseEntries;
+  types = options.types!;
   lastToken = `${[...tokenMap.keys()].slice(-1)[0]}`;
 
   assertMatch(result.testQueryResult, lastToken);
-  assertEquals(options.types.length, 2);
-  assertEquals(options.types[0]!.description, 'PDF');
-  assertDeepEquals(options.types[0]!.accept['application/pdf'], ['.pdf']);
-  assertEquals(options.types[1]!.description, 'PNG');
-  assertDeepEquals(options.types[1]!.accept['image/png'], ['.png']);
+  assertEquals(types.length, 2);
+  assertEquals(types[0]!.description, 'PDF');
+  assertDeepEquals(types[0]!.accept['application/pdf'], ['.pdf']);
+  assertEquals(types[1]!.description, 'PNG');
+  assertDeepEquals(types[1]!.accept['image/png'], ['.png']);
 };
 
 // Tests the IPC behind the getExportFile method.
@@ -1180,20 +1182,21 @@ MediaAppUIBrowserTest['GetExportFileIPC'] = async () => {
   };
   const result = await sendTestMessage(message);
   const options = await chooseEntries;
+  const types = options.types!;
   const lastToken = `${[...tokenMap.keys()].slice(-1)[0]}`;
 
   assertMatch(result.testQueryResult, lastToken);
-  assertEquals(options.types.length, 3);
+  assertEquals(types.length, 3);
 
   // Contents and order of the `types` array should correspond.
-  assertEquals(options.types[0]!.description, 'PNG');
-  assertEquals(options.types[1]!.description, 'JPG');
-  assertEquals(options.types[2]!.description, 'WEBP');
-  assertDeepEquals(options.types[0]!.accept['image/png'], ['.png']);
-  assertDeepEquals(options.types[2]!.accept['image/webp'], ['.webp']);
+  assertEquals(types[0]!.description, 'PNG');
+  assertEquals(types[1]!.description, 'JPG');
+  assertEquals(types[2]!.description, 'WEBP');
+  assertDeepEquals(types[0]!.accept['image/png'], ['.png']);
+  assertDeepEquals(types[2]!.accept['image/webp'], ['.webp']);
 
   // jpg has a bunch of extensions.
-  assertEquals(options.types[1]!.accept['image/jpeg']!.length, 8);
+  assertEquals(types[1]!.accept['image/jpeg']!.length, 8);
 
   // The startIn option should be set to the opened file.
   assertEquals(options.startIn, directory.files[0]);
@@ -1251,7 +1254,7 @@ MediaAppUIBrowserTest['SaveAsIPC'] = async () => {
 MediaAppUIBrowserTest['SaveAsErrorHandling'] = async () => {
   // Prevent the trusted context from throwing errors which cause the test to
   // fail.
-  guestMessagePipe.logClientError = (error: {}) =>
+  guestMessagePipe.logClientError = (error: unknown) =>
       console.log(JSON.stringify(error));
   guestMessagePipe.rethrowErrors = false;
   const newFileHandle = new FakeFileSystemFileHandle('new_file.jpg');
@@ -1307,9 +1310,9 @@ MediaAppUIBrowserTest['OpenFilesWithFilePickerIPC'] = async () => {
   assertEquals(multiple, true);
   assertEquals(startIn, directory.files[0]);
   assertEquals(excludeAcceptAllOption, true);
-  assertEquals(types.length, 2);
-  assertEquals(types[0]!.description, 'Video Files');
-  assertEquals(types[1]!.description, 'Image Files');
+  assertEquals(types!.length, 2);
+  assertEquals(types![0]!.description, 'Video Files');
+  assertEquals(types![1]!.description, 'Image Files');
 
   testResponse = await sendTestMessage({simple: 'getAllFiles'});
   console.log(JSON.stringify(testResponse));
@@ -1336,9 +1339,9 @@ MediaAppUIBrowserTest['OpenFilesWithFilePickerIPC'] = async () => {
   // Spot-check the ALL_EX_TEXT filter key, which groups all extensions.
   simpleArgs.acceptTypeKeys = ['ALL_EX_TEXT'];
   await openFilesWithFilePickerWithSimpleArgs();
-  const extensions = lastPickerOptions.types[0]!.accept['*/*']!;
-  assertEquals(lastPickerOptions.types.length, 1);
-  assertEquals(lastPickerOptions.types[0]!.description, 'All');
+  const extensions = lastPickerOptions.types![0]!.accept['*/*']!;
+  assertEquals(lastPickerOptions.types!.length, 1);
+  assertEquals(lastPickerOptions.types![0]!.description, 'All');
   assertEquals(extensions.includes('.pdf'), true);
   assertEquals(extensions.includes('.jpeg'), true);
   assertEquals(extensions.includes('.avi'), true);

@@ -1,0 +1,181 @@
+<style include="common wallpaper sea-pen">
+  :host {
+    overflow: hidden;
+  }
+
+  iron-list {
+    width: 100%;
+  }
+
+  .thumbnail-item-container,
+  .thumbnail-placeholder-container {
+    box-sizing: border-box;
+    height: 240px;
+    overflow: hidden;
+    /* Subtract 0.5px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 2 - 0.5px);
+  }
+
+  .thumbnail-placeholder-container {
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+  }
+
+  .thumbnail-placeholder {
+    background-color: var(--personalization-app-grid-item-background-color);
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    height: 100%;
+  }
+
+  .feedback-icon-container {
+    align-items: flex-end;
+    bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    height: 48px;
+    position: absolute;
+    right: 10px;
+    visibility: hidden;
+    width: 88px;
+    z-index: 1;
+  }
+
+  .thumbnail-item-container:hover > .feedback-icon-container {
+    visibility: visible;
+  }
+
+  .feedback-icon-container-inner {
+    align-items: flex-end;
+    background-color: var(--cros-bg-color);
+    border-top-left-radius: 24px;
+    bottom: 0;
+    display: flex;
+    gap: 16px;
+    height: 36px;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    width: 76px;
+  }
+
+  div[class^="feedback-icon-container-shadow"] {
+    height: 12px;
+    overflow: hidden;
+    position: absolute;
+    width: 12px;
+  }
+
+  div[class^="feedback-icon-container-shadow"]::before {
+    border-bottom-right-radius: 100%;
+    bottom: 0;
+    box-shadow: 0px 12px 0px 12px var(--cros-bg-color);
+    content: '';
+    height: 100%;
+    position: absolute;
+    right: 0;
+    width: 100%;
+  }
+
+  .feedback-icon-container-shadow-left {
+    right: 76px;
+  }
+
+  .feedback-icon-container-shadow-top {
+    bottom: 36px;
+  }
+
+  .thumb-icon-button {
+    --cr-icon-button-size: 24px;
+    background-color: var(--cros-bg-color);
+    margin-inline: 0;
+  }
+
+  .error-container {
+    align-items: center;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  iron-icon[icon='personalization-shared-illo:network_error'] {
+    --iron-icon-width: 400px;
+    --iron-icon-height: 177px;
+    top: -24px;
+  }
+
+  .error-message {
+    font: var(--cros-body-1-font);
+    margin: 0 12px 0 12px;
+    max-width: 316px;
+    position: relative;
+    top: -12px;
+  }
+</style>
+<template is="dom-if" if="[[showError_]]" restamp>
+  <div class="error-container">
+    <!-- TODO(b/319171051): Add other error images when available. -->
+    <iron-icon icon="personalization-shared-illo:network_error"></iron-icon>
+    <p class="error-message">[[getErrorMessage_(thumbnailResponseStatusCode_)]]</p>
+  </div>
+</template>
+<template is="dom-if" if="[[!showError_]]" restamp>
+  <h2 class="wallpaper-collections-heading">
+    [[i18n('seaPenWallpaperPoweredByGoogle')]]
+  </h2>
+  <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
+    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
+      <template>
+        <div class="thumbnail-placeholder-container">
+          <sparkle-placeholder class="thumbnail-placeholder" index="[[index]]">
+          </sparkle-placeholder>
+        </div>
+      </template>
+    </iron-list>
+  </template>
+  <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
+    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
+      <template>
+        <div class="thumbnail-placeholder-container">
+          <div class="thumbnail-placeholder"></div>
+        </div>
+      </template>
+    </iron-list>
+  </template>
+  <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]">
+    <iron-list id="grid"
+        items="[[thumbnails_]]"
+        grid
+        role="listbox">
+      <template>
+        <div class="thumbnail-item-container">
+          <div class="feedback-icon-container">
+            <div class="feedback-icon-container-inner">
+              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-up"
+                  role="button" on-click="onClickThumbsUp_">
+              </cr-icon-button>
+              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-down"
+                  role="button" on-click="onClickThumbsDown_">
+              </cr-icon-button>
+            </div>
+            <div class="feedback-icon-container-shadow-left"></div>
+            <div class="feedback-icon-container-shadow-top"></div>
+          </div>
+          <wallpaper-grid-item
+              class="sea-pen-image"
+              index="[[index]]"
+              data-sea-pen-image
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              on-wallpaper-grid-item-selected="onThumbnailSelected_"
+              role="option"
+              selected="[[isThumbnailSelected_(item, pendingSelected_)]]"
+              src="[[item.image]]"
+              tabindex$="[[tabIndex]]">
+          </wallpaper-grid-item>
+        </div>
+      </template>
+    </iron-list>
+  </template>
+</template>

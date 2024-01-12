@@ -32,8 +32,8 @@ class DoNotDisturbControllerImpl : public DoNotDisturbController {
   void RequestNewDoNotDisturbState(bool enabled) override;
   bool CanRequestNewDndState() const override;
 
-  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
-  raw_ptr<UserActionRecorder, ExperimentalAsh> user_action_recorder_;
+  raw_ptr<MessageSender> message_sender_;
+  raw_ptr<UserActionRecorder> user_action_recorder_;
 
   bool is_dnd_enabled_ = false;
   bool can_request_new_dnd_state_ = false;

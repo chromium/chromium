@@ -65,7 +65,7 @@ class RenderFrameHostImplPpapiSupport : public mojom::PepperHost,
   void OpenChannelToPepperPlugin(
       const url::Origin& embedder_origin,
       const base::FilePath& path,
-      const absl::optional<url::Origin>& origin_lock,
+      const std::optional<url::Origin>& origin_lock,
       OpenChannelToPepperPluginCallback callback) override;
 
   // mojom::PepperHungDetectorHost overrides:

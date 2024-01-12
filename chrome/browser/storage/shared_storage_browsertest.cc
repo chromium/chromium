@@ -374,11 +374,6 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   virtual void FinishSetUp() { CHECK(https_server()->Start()); }
 
   void SetPrefs(bool enable_privacy_sandbox, bool allow_third_party_cookies) {
-    GetProfile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
-                                         enable_privacy_sandbox);
-    GetProfile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxManuallyControlledV2, enable_privacy_sandbox);
-
     GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
@@ -390,6 +385,9 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     // `PrivacySandboxDelegate::IsPrivacySandboxRestricted()` response returns
     // the negation of `enable_privacy_sandbox`.
     auto* privacy_sandbox_settings = GetPrivacySandboxSettings();
+    if (enable_privacy_sandbox) {
+      privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
+    }
     auto privacy_sandbox_delegate = std::make_unique<testing::NiceMock<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
     privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(

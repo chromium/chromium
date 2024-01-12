@@ -9,12 +9,13 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/to_vector.h"
-#include "chrome/browser/web_applications/commands/callback_command.h"
+#include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -935,19 +936,21 @@ TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {
       GenerateAppId(/*manifest_id_path=*/absl::nullopt, kWebAppUrl)};
 
   bool callback_command_run = false;
-  auto callback_command = std::make_unique<CallbackCommand<AppLock>>(
-      "", std::make_unique<AppLockDescription>(app_ids),
+  auto callback_command = std::make_unique<internal::CallbackCommand<AppLock>>(
+      "", AppLockDescription(app_ids),
       base::BindLambdaForTesting(
-          [&](AppLock&) { callback_command_run = true; }));
+          [&](AppLock&, base::Value::Dict&) { callback_command_run = true; }),
+      /*completion_callback=*/base::DoNothing());
 
   bool callback_command_2_run = false;
   base::RunLoop callback_runloop;
-  auto callback_command_2 = std::make_unique<CallbackCommand<AppLock>>(
-      "", std::make_unique<AppLockDescription>(app_ids),
-      base::BindLambdaForTesting([&](AppLock&) {
-        callback_command_2_run = true;
-        callback_runloop.Quit();
-      }));
+  auto callback_command_2 =
+      std::make_unique<internal::CallbackCommand<AppLock>>(
+          "", AppLockDescription(app_ids),
+          base::BindLambdaForTesting([&](AppLock&, base::Value::Dict&) {
+            callback_command_2_run = true;
+          }),
+          /*completion_callback=*/callback_runloop.QuitClosure());
 
   base::RunLoop run_loop;
   ExternallyManagedAppManager::InstallResult result;

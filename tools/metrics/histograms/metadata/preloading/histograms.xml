@@ -44,14 +44,9 @@ chromium-metrics-reviews@google.com.
   <variant name="DefaultSearchEngine"
       summary="When preloading is triggered from the default search engine
                suggest service."/>
-  <variant name="kLinkRel"
+  <variant name="LinkRel"
       summary="When preloading is triggered by the 'rel' keyword embedded in
                the link element."/>
-  <variant name="kUnspecified" summary=""/>
-  <variant name="kUrlPointerDownOnAnchor"
-      summary="When preloading is triggered by OnPointerDown."/>
-  <variant name="kUrlPointerHoverOnAnchor"
-      summary="When preloading is triggered by OnPointerHover."/>
   <variant name="MouseBackButton"
       summary="When a mouse down of a mouse back button is seen."/>
   <variant name="OmniboxDirectURLInput"
@@ -66,6 +61,11 @@ chromium-metrics-reviews@google.com.
       summary="When a pointerdown event happens on a HTTP/HTTPS anchor."/>
   <variant name="SpeculationRules"
       summary="When preloading is triggered by the speculation rules."/>
+  <variant name="Unspecified" summary=""/>
+  <variant name="UrlPointerDownOnAnchor"
+      summary="When preloading is triggered by OnPointerDown."/>
+  <variant name="UrlPointerHoverOnAnchor"
+      summary="When preloading is triggered by OnPointerHover."/>
 </variants>
 
 <variants name="PreloadingType">

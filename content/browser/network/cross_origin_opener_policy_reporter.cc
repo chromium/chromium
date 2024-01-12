@@ -191,7 +191,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
     const GURL& previous_url,
     bool same_origin_with_previous,
     bool is_report_only) {
-  const absl::optional<std::string>& endpoint =
+  const std::optional<std::string>& endpoint =
       is_report_only ? coop_.report_only_reporting_endpoint
                      : coop_.reporting_endpoint;
   if (!endpoint)
@@ -212,7 +212,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationAwayFromCOOPReport(
     bool is_current_source,
     bool same_origin_with_next,
     bool is_report_only) {
-  const absl::optional<std::string>& endpoint =
+  const std::optional<std::string>& endpoint =
       is_report_only ? coop_.report_only_reporting_endpoint
                      : coop_.reporting_endpoint;
   if (!endpoint)
@@ -279,7 +279,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
 
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, reporting_source_,
-      network_anonymization_key_, absl::nullopt, std::move(body));
+      network_anonymization_key_, std::nullopt, std::move(body));
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
@@ -293,7 +293,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, reporting_source_,
       network_anonymization_key_,
-      /*user_agent=*/absl::nullopt, std::move(body));
+      /*user_agent=*/std::nullopt, std::move(body));
 }
 
 }  // namespace content

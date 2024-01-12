@@ -92,7 +92,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
 
   void SetTextFragment(String, unsigned start, unsigned length);
 
-  void TransformText() override;
+  void TransformAndSecureOriginalText() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();

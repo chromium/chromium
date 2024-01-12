@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Увімкнути або вимкнути Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Не вдається ввійти в обліковий запис на Chromebook</translation>
 <translation id="2367972762794486313">Показати програми</translation>
+<translation id="2368828502825385061">Знайти</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2382875860893882175">Трансляцію зараз призупинено. Ви можете будь-коли продовжити або припинити її.</translation>
 <translation id="2386292613071805067">Вибрати все на сторінці</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">Трансляція</translation>
 <translation id="5546397813406633847">Відновити пароль</translation>
 <translation id="554893713779400387">Перемкнути диктування</translation>
+<translation id="5550417424894892620">Перетягніть файли на робочий стіл, щоб додати їх у сервіс <ph name="HOLDING_SPACE_TITLE" />. Ви не можете додавати файли на робочий стіл.</translation>
 <translation id="5551456515017410630">Відкрити або закрити календар</translation>
 <translation id="5551974246223970793">Під час пошуку на сторінці перейти до наступного збігу</translation>
 <translation id="5555639311269196631">Вимкнути точку доступу</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">Під’єднайте <ph name="DEVICE_NAME" /> до телефона</translation>
 <translation id="7026338066939101231">Понизити</translation>
 <translation id="7029814467594812963">Завершити сеанс</translation>
+<translation id="7031303610220416229">Переглянути всі завдання в Google Завданнях</translation>
 <translation id="7032161822340700104">Максимальна кількість шаблонів: 6. Щоб зберегти новий шаблон, видаліть старий.</translation>
 <translation id="7034025838182392395">Додаток <ph name="APP_NAME" /> хоче використовувати цей пристрій: <ph name="DEVICE_NAME" />. Увімкніть фізичний перемикач на пристрої (<ph name="DEVICE_NAME" />).</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8367948981300340152">Використовується <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Збережений робочий стіл, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Шукати "<ph name="TEXT" />"</translation>
 <translation id="8371779926711439835">Уперед на одну літеру</translation>
 <translation id="8371991222807690464">Ефективність периферійних пристроїв у режимі гостя може бути обмежена</translation>
 <translation id="8374601332003098278">Щоб записати частину екрана, натисніть клавішу Enter</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортуйте додатки за назвою чи кольором</translation>
 <translation id="8609384513243082612">Відкрити нову вкладку</translation>
+<translation id="8612216344243590325">Зберігайте важливі файли в сервісі <ph name="HOLDING_SPACE_TITLE" />, а не на комп’ютері. Для цього перетягніть файли сюди: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Сповіщення з додатків <ph name="APP_1_TITLE" /> і <ph name="APP_2_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="8619138598101195078">Зменшити гучність</translation>
 <translation id="8627191004499078455">Під’єднано до пристрою: <ph name="DEVICE_NAME" /></translation>

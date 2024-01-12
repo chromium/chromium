@@ -20,6 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -27,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -77,9 +79,9 @@ class PrefRegistrySyncable;
 // is a KeywordWebDataService, deletion is handled by KeywordWebDataService,
 // otherwise TemplateURLService handles deletion.
 
-class TemplateURLService : public WebDataServiceConsumer,
-                           public KeyedService,
-                           public syncer::SyncableService {
+class TemplateURLService final : public WebDataServiceConsumer,
+                                 public KeyedService,
+                                 public syncer::SyncableService {
  public:
   using QueryTerms = std::map<std::string, std::string>;
   using TemplateURLVector = TemplateURL::TemplateURLVector;
@@ -87,6 +89,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
   using OwnedTemplateURLDataVector =
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector;
+
+  static constexpr char kSiteSearchPolicyConflictCountHistogramName[] =
+      "Search.SiteSearchPolicyConflict";
+  static constexpr char
+      kSiteSearchPolicyHasConflictWithFeaturedHistogramName[] =
+          "Search.SiteSearchPolicyConflict.HasConflictWith.WithFeatured";
+  static constexpr char
+      kSiteSearchPolicyHasConflictWithNonFeaturedHistogramName[] =
+          "Search.SiteSearchPolicyConflict.HasConflictWith.WithNonFeatured";
 
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
@@ -110,6 +121,17 @@ class TemplateURLService : public WebDataServiceConsumer,
     std::u16string search_terms;
   };
 
+  // Values for an enumerated histogram used to track keyword conflicts between
+  // search engines created by the SiteSearchSettings policy and search engines
+  // the user manually edited. Keep in sync with `SiteSearchPolicyConflictType`
+  // in tools/metrics/histograms/enums.xml.
+  enum class SiteSearchPolicyConflictType {
+    kNone = 0,
+    kWithFeatured = 1,
+    kWithNonFeatured = 2,
+    kMaxValue = kWithNonFeatured,
+  };
+
   TemplateURLService(
       PrefService* prefs,
       std::unique_ptr<SearchTermsData> search_terms_data,
@@ -121,8 +143,16 @@ class TemplateURLService : public WebDataServiceConsumer,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 
-  // The following is for testing.
-  TemplateURLService(const Initializer* initializers, const int count);
+  // For testing only.
+  // DEPRECATED, prefer the constructor that takes a `PrefService`.
+  // TODO(crbug.com/1499181): Remove once all usage is cleaned up.
+  TemplateURLService(const Initializer* initializers, const size_t count);
+
+  // For testing only. `initializers` will be used to simulate having loaded
+  // some template URL data.
+  explicit TemplateURLService(
+      PrefService* prefs,
+      base::span<const TemplateURLService::Initializer> initializers = {});
 
   TemplateURLService(const TemplateURLService&) = delete;
   TemplateURLService& operator=(const TemplateURLService&) = delete;
@@ -256,6 +286,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   // with choice screen requirements.
   OwnedTemplateURLVector GetTemplateURLsForChoiceScreen();
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the list prepopulated template URLs for `country_code`.
+  // `country_code` is a two-character uppercase ISO 3166-1 country code.
+  // Usage restricted to Android. Other platforms should rely on the other
+  // functions that will return this data for the profile's current country.
+  OwnedTemplateURLDataVector GetTemplateURLsForCountry(
+      const std::string& country_code);
+#endif
+
   // Increment the usage count of a keyword.
   // Called when a URL is loaded that was generated from a keyword.
   void IncrementUsageCount(TemplateURL* url);
@@ -301,10 +340,16 @@ class TemplateURLService : public WebDataServiceConsumer,
   // controlled by an extension.
   bool CanMakeDefault(const TemplateURL* url) const;
 
-  // Set the default search provider.  |url| may be null.
+  // Set the default search provider. `url` may be null.
   // This will assert if the default search is managed; the UI should not be
   // invoking this method in that situation.
-  void SetUserSelectedDefaultSearchProvider(TemplateURL* url);
+  // `choice_made_location` indicates in which context the user made the
+  // selection, which will affect how some prefs are set and record additional
+  // metrics.
+  void SetUserSelectedDefaultSearchProvider(
+      TemplateURL* url,
+      search_engines::ChoiceMadeLocation choice_made_location =
+          search_engines::ChoiceMadeLocation::kOther);
 
   // Returns the default search provider. If the TemplateURLService hasn't been
   // loaded, the default search provider is pulled from preferences.
@@ -461,6 +506,7 @@ class TemplateURLService : public WebDataServiceConsumer,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // Processes a local TemplateURL change for Sync. |turl| is the TemplateURL
   // that has been modified, and |type| is the Sync ChangeType that took place.
@@ -477,6 +523,13 @@ class TemplateURLService : public WebDataServiceConsumer,
   // SearchEngineChoiceCountry. It might be different than what LocaleUtils
   // returns.
   bool IsEeaChoiceCountry();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether the version of the search engines settings screen showing
+  // additional search engine info should be shown.
+  // TODO(b/318824817): To be removed post-launch.
+  bool ShouldShowUpdatedSettings();
+#endif
 
   // Returns a SearchTermsData which can be used to call TemplateURL methods.
   const SearchTermsData& search_terms_data() const {
@@ -615,7 +668,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   // the keywords table has been fully loaded.
   class PreLoadingProviders;
 
-  void Init(const Initializer* initializers, int num_initializers);
+  void Init();
+
+  // Simulate a loaded `TemplateURLService`.
+  void ApplyInitializersForTesting(
+      base::span<const TemplateURLService::Initializer> initializers);
 
   // Removes |template_url| from various internal maps
   // (|keyword_to_turl_|, |guid_to_turl_|, |provider_map_|).
@@ -641,7 +698,7 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Applies site search changes and reports metrics if appropriate.
   void EnterpriseSiteSearchChanged(
-      OwnedTemplateURLDataVector&& site_search_engines);
+      OwnedTemplateURLDataVector&& policy_site_search_engines);
 
   // Applies a DSE change. May be called at startup or after transitioning to
   // the loaded state. Returns true if a change actually occurred.
@@ -651,7 +708,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Applies changes due to Enterprise policy `SiteSearchSettings`. Called after
   // transitioning to the loaded state.
   void ApplyEnterpriseSiteSearchChanges(
-      OwnedTemplateURLVector&& site_search_engines);
+      OwnedTemplateURLVector&& policy_site_search_engines);
 
   // Returns false if there is a TemplateURL that has a search url with the
   // specified host and that TemplateURL has been manually modified.
@@ -803,6 +860,12 @@ class TemplateURLService : public WebDataServiceConsumer,
   std::unique_ptr<EnterpriseSiteSearchManager> GetEnterpriseSiteSearchManager(
       PrefService* prefs);
 
+  // Logs a histogram to track keyword conflicts between search engines created
+  // by the SiteSearchSettings policy and search engines the user manually
+  // edited.
+  void LogSiteSearchPolicyConflict(
+      const OwnedTemplateURLVector& policy_site_search_engines);
+
   // ---------- Browser state related members ---------------------------------
   raw_ptr<PrefService> prefs_ = nullptr;
 
@@ -946,6 +1009,8 @@ class TemplateURLService : public WebDataServiceConsumer,
   // android.
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;
 #endif
+
+  base::WeakPtrFactory<TemplateURLService> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_H_

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -10,13 +12,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "content/browser/media/media_internals.h"
+#include "content/browser/renderer_host/media/media_stream_dispatcher_host.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/fuzzer/media_stream_dispatcher_host_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
@@ -27,18 +34,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "base/task/sequenced_task_runner.h"
-#include "content/browser/media/media_internals.h"
-#include "content/browser/renderer_host/media/media_stream_dispatcher_host.h"
-#include "content/browser/renderer_host/media/media_stream_manager.h"
-
-#include "content/test/fuzzer/media_stream_dispatcher_host_mojolpm_fuzzer.pb.h"
-
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-mojolpm.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 const char* kCmdline[] = {

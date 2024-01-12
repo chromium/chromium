@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
@@ -141,7 +140,6 @@ public class ToolbarPhone extends ToolbarLayout
     protected View mUrlActionContainer;
     protected ImageView mToolbarShadow;
     private OptionalButtonCoordinator mOptionalButtonCoordinator;
-    private boolean mOptionalButtonUsesTint;
     private boolean mShouldShowModernizeVisualUpdate;
 
     @ViewDebug.ExportedProperty(category = "chrome")
@@ -346,7 +344,7 @@ public class ToolbarPhone extends ToolbarLayout
                             getResources(),
                             R.dimen.home_surface_search_box_background_colorful_alpha);
             mHomeSurfaceLocationBarBackgroundColor =
-                    ColorUtils.setAlphaComponentWithFloatAlpha(
+                    ColorUtils.setAlphaComponentWithFloat(
                             SemanticColorUtils.getDefaultIconColorAccent1(context),
                             homeSurfaceLocationBarBackgroundColorAlpha);
         } else if (mIsSurfacePolishEnabled) {
@@ -1663,14 +1661,9 @@ public class ToolbarPhone extends ToolbarLayout
      *         toolbar.
      */
     private boolean shouldDrawLocationBar() {
-        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-            // The location bar should have alpha or clip+translation when its not supposed to be
-            // shown. Needs to be drawn during transitions, such as entering/exiting tab switcher.
-            return mLocationBarBackground != null;
-        } else {
-            return mLocationBarBackground != null
-                    && (mTabSwitcherState == STATIC_TAB || mTextureCaptureMode);
-        }
+        // The location bar should have alpha or clip+translation when its not supposed to be
+        // shown. Needs to be drawn during transitions, such as entering/exiting tab switcher.
+        return mLocationBarBackground != null;
     }
 
     private boolean drawLocationBar(Canvas canvas, long drawingTime) {
@@ -1968,7 +1961,7 @@ public class ToolbarPhone extends ToolbarLayout
             }
         }
 
-        if (mOptionalButtonCoordinator != null && mOptionalButtonUsesTint) {
+        if (mOptionalButtonCoordinator != null) {
             mOptionalButtonCoordinator.setIconForegroundColor(tint);
         }
 
@@ -2098,11 +2091,9 @@ public class ToolbarPhone extends ToolbarLayout
             updateViewsForTabSwitcherMode();
         }
 
-        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-            // Since mTabSwitcherState has changed, we need to also check if mVisualState should
-            // change.
-            updateVisualsForLocationBarState();
-        }
+        // Since mTabSwitcherState has changed, we need to also check if mVisualState should
+        // change.
+        updateVisualsForLocationBarState();
 
         updateButtonsTranslationY();
 
@@ -2907,6 +2898,9 @@ public class ToolbarPhone extends ToolbarLayout
             // Set the button's background to the same color as the URL bar background. This color
             // is only used when showing dynamic actions.
             mOptionalButtonCoordinator.setBackgroundColorFilter(mCurrentLocationBarColor);
+            // Set the button's foreground color to the same color as other toolbar icons. This
+            // color is not used on icons that don't support tinting (e.g. user profile pic).
+            mOptionalButtonCoordinator.setIconForegroundColor(getTint());
             mOptionalButtonCoordinator.setOnBeforeHideTransitionCallback(
                     () -> mLayoutLocationBarWithoutExtraButton = true);
 
@@ -2952,21 +2946,12 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     void updateOptionalButton(ButtonData buttonData) {
         mButtonData = buttonData;
-        ButtonSpec buttonSpec = mButtonData.getButtonSpec();
 
         if (mOptionalButtonCoordinator == null) {
             initializeOptionalButton();
         }
 
-        mOptionalButtonUsesTint = buttonSpec.getSupportsTinting();
-
         mOptionalButtonCoordinator.updateButton(buttonData);
-
-        if (mOptionalButtonUsesTint) {
-            mOptionalButtonCoordinator.setIconForegroundColor(getTint());
-        } else {
-            mOptionalButtonCoordinator.setIconForegroundColor(null);
-        }
     }
 
     @Override

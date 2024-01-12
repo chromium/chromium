@@ -93,7 +93,7 @@ JobTaskSourceOld::JobTaskSourceOld(
     RepeatingCallback<void(JobDelegate*)> worker_task,
     MaxConcurrencyCallback max_concurrency_callback,
     PooledTaskRunnerDelegate* delegate)
-    : JobTaskSource(traits, nullptr, TaskSourceExecutionMode::kJob),
+    : JobTaskSource(traits, TaskSourceExecutionMode::kJob),
       max_concurrency_callback_(std::move(max_concurrency_callback)),
       worker_task_(std::move(worker_task)),
       primary_task_(base::BindRepeating(
@@ -116,7 +116,7 @@ JobTaskSourceOld::~JobTaskSourceOld() {
 }
 
 ExecutionEnvironment JobTaskSourceOld::GetExecutionEnvironment() {
-  return {SequenceToken::Create(), nullptr};
+  return {SequenceToken::Create()};
 }
 
 void JobTaskSourceOld::WillEnqueue(int sequence_num, TaskAnnotator& annotator) {

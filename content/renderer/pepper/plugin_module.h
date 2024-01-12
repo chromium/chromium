@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,7 +24,6 @@
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 typedef void* NPIdentifier;
@@ -214,7 +214,7 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   static scoped_refptr<PluginModule> Create(
       RenderFrameImpl* render_frame,
       const WebPluginInfo& webplugin_info,
-      const absl::optional<url::Origin>& origin_lock,
+      const std::optional<url::Origin>& origin_lock,
       bool* pepper_plugin_was_registered,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

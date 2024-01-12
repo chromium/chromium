@@ -222,9 +222,8 @@ void ReadbackBufferWithBarrier(CommandRecorder* command_recorder,
 }
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
-                            std::string error_messages) {
-  return mojom::Error::New(error_code,
-                           kBackendName + std::move(error_messages));
+                            const std::string& error_message) {
+  return mojom::Error::New(error_code, kBackendName + error_message);
 }
 
 }  // namespace webnn::dml

@@ -145,9 +145,8 @@ void FtlServicesPlayground::OnSignInGaiaResponse(
     return;
   }
 
-  std::string registration_id_base64;
-  base::Base64Encode(registration_manager_->GetRegistrationId(),
-                     &registration_id_base64);
+  std::string registration_id_base64 =
+      base::Base64Encode(registration_manager_->GetRegistrationId());
   printf("Service signed in. registration_id(base64)=%s\n",
          registration_id_base64.c_str());
   std::move(on_done).Run();

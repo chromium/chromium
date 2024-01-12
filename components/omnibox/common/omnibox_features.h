@@ -45,7 +45,6 @@ BASE_DECLARE_FEATURE(kClobberTriggersSRPZeroSuggest);
 BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);
 BASE_DECLARE_FEATURE(kNormalizeSearchSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxOnClobberFocusTypeOnContent);
-BASE_DECLARE_FEATURE(kRealboxSecondaryZeroSuggest);
 BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 BASE_DECLARE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
@@ -164,6 +163,8 @@ BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
 
 // Kill switch for use of the new SQL recovery module in `ShortcutsDatabase`.
 BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
+
+BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
 
 }  // namespace omnibox
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -122,6 +123,7 @@ SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name,
                           ->SharedMainThreadRasterContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
+  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
 }
 
 SurfaceTreeHost::~SurfaceTreeHost() {
@@ -264,12 +266,20 @@ SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// display::DisplayObserver:
-void SurfaceTreeHost::OnDisplayMetricsChanged(const display::Display& display,
-                                              uint32_t changed_metrics) {
+// display::DisplayManagerObserver:
+
+void SurfaceTreeHost::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
   // The output of the surface may change when the primary display changes.
-  if (changed_metrics & DisplayObserver::DISPLAY_METRIC_PRIMARY)
+  const bool primary_changed = base::ranges::any_of(
+      configuration_change.display_metrics_changes,
+      [](const DisplayManagerObserver::DisplayMetricsChange& change) {
+        return change.changed_metrics &
+               display::DisplayObserver::DISPLAY_METRIC_PRIMARY;
+      });
+  if (primary_changed) {
     UpdateDisplayOnTree();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -346,9 +356,6 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
           ? absl::nullopt
           : absl::make_optional(GetScaleFactor()),
       &frame);
-
-  // Update after resource is updated.
-  UpdateHostLayerOpacity();
 
   std::vector<GLbyte*> sync_tokens;
   // We track previously verified tokens and set them to be verified to avoid
@@ -440,6 +447,14 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
   if (client_submits_surfaces_in_pixel_coordinates_) {
     SetScaleFactorTransform(GetScaleFactor());
   }
+  const bool fills_bounds_opaquely =
+      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
+      root_surface_->FillsBoundsOpaquely();
+  if (commit_target_layer == host_window_->layer()) {
+    host_window_->SetTransparent(!fills_bounds_opaquely);
+  } else if (commit_target_layer) {
+    commit_target_layer->SetFillsBoundsOpaquely(fills_bounds_opaquely);
+  }
 
   root_surface_origin_pixel_ = gfx::Point() - bounds.OffsetFromOrigin();
   gfx::Point root_surface_origin_dp =
@@ -455,22 +470,6 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     // Set DP origin to root surface.
     gfx::Rect updated_bounds(root_surface_origin_dp, window_bounds.size());
     root_surface_->window()->SetBounds(updated_bounds);
-  }
-}
-
-void SurfaceTreeHost::UpdateHostLayerOpacity() {
-  ui::Layer* commit_target_layer = GetCommitTargetLayer();
-
-  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-
-  const bool fills_bounds_opaquely =
-      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
-      root_surface_->FillsBoundsOpaquely();
-
-  if (commit_target_layer == host_window_->layer()) {
-    host_window_->SetTransparent(!fills_bounds_opaquely);
-  } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(fills_bounds_opaquely);
   }
 }
 

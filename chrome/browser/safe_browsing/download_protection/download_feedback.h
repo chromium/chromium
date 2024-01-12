@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
 
@@ -25,8 +25,8 @@ class DownloadFeedback {
   // when the DownloadFeedback is destructed.
   static std::unique_ptr<DownloadFeedback> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TaskRunner* file_task_runner,
       const base::FilePath& file_path,
+      uint64_t file_size,
       const std::string& ping_request,
       const std::string& ping_response);
 
@@ -67,8 +67,8 @@ class DownloadFeedbackFactory {
 
   virtual std::unique_ptr<DownloadFeedback> CreateDownloadFeedback(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TaskRunner* file_task_runner,
       const base::FilePath& file_path,
+      uint64_t file_size,
       const std::string& ping_request,
       const std::string& ping_response) = 0;
 };

@@ -137,7 +137,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
     return crx_info;
   }
 
-  raw_ptr<InstallLimiter, ExperimentalAsh> install_limiter_;
+  raw_ptr<InstallLimiter> install_limiter_;
   scoped_refptr<extensions::MockCrxInstaller> mock_installer_;
 };
 

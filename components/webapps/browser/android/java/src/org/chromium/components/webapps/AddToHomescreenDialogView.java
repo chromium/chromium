@@ -62,6 +62,7 @@ public class AddToHomescreenDialogView
     private View mProgressBarView;
     private ImageView mIconView;
 
+    private @AppType int mAppType;
     private boolean mCanSubmit;
 
     @VisibleForTesting
@@ -189,6 +190,7 @@ public class AddToHomescreenDialogView
     void setType(@AppType int type) {
         assert (type >= AppType.NATIVE && type <= AppType.SHORTCUT);
 
+        mAppType = type;
         mShortcutTitleInput.setVisibility(type == AppType.SHORTCUT ? View.VISIBLE : View.GONE);
         mAppLayout.setVisibility(type != AppType.SHORTCUT ? View.VISIBLE : View.GONE);
         mAppOriginView.setVisibility(type == AppType.WEBAPK ? View.VISIBLE : View.GONE);
@@ -252,7 +254,7 @@ public class AddToHomescreenDialogView
     public void onClick(PropertyModel model, int buttonType) {
         int dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-            mDelegate.onAddToHomescreen(mShortcutTitleInput.getText().toString());
+            mDelegate.onAddToHomescreen(mShortcutTitleInput.getText().toString(), mAppType);
             dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         }
         mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);

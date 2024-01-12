@@ -325,7 +325,7 @@ BrowserAccessibilityFuchsia::GetFuchsiaAttributes() const {
   }
 
   if (IsList()) {
-    absl::optional<int> size = GetSetSize();
+    std::optional<int> size = GetSetSize();
     if (size) {
       fuchsia_accessibility_semantics::SetAttributes list_attributes;
       list_attributes.size(*size);
@@ -334,7 +334,7 @@ BrowserAccessibilityFuchsia::GetFuchsiaAttributes() const {
   }
 
   if (IsListElement()) {
-    absl::optional<int> index = GetPosInSet();
+    std::optional<int> index = GetPosInSet();
     if (index) {
       fuchsia_accessibility_semantics::SetAttributes list_element_attributes;
       list_element_attributes.index(*index);

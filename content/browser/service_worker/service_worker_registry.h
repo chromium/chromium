@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_REGISTRY_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/containers/flat_set.h"
@@ -24,7 +25,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/storage_policy_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 
 namespace blink {
@@ -313,7 +313,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void Start();
   void FindRegistrationForIdInternal(
       int64_t registration_id,
-      const absl::optional<blink::StorageKey>& key,
+      const std::optional<blink::StorageKey>& key,
       FindRegistrationCallback callback);
   ServiceWorkerRegistration* FindInstallingRegistrationForClientUrl(
       const GURL& client_url,
@@ -340,7 +340,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // Looks up live registrations and returns an optional value which may contain
   // a "findable" registration. See the implementation of this method for
   // what "findable" means and when a registration is returned.
-  absl::optional<scoped_refptr<ServiceWorkerRegistration>>
+  std::optional<scoped_refptr<ServiceWorkerRegistration>>
   FindFromLiveRegistrationsForId(int64_t registration_id);
 
   void DoomUncommittedResources(const std::vector<int64_t>& resource_ids);
@@ -351,7 +351,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       FindRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       storage::mojom::ServiceWorkerFindRegistrationResultPtr result,
-      const absl::optional<std::vector<GURL>>& scopes);
+      const std::optional<std::vector<GURL>>& scopes);
   void RunFindRegistrationCallbacks(
       const GURL& client_url,
       const blink::StorageKey& key,
@@ -529,7 +529,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // ServiceWorkerStorage once QuotaManager gets mojofied.
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
-  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  std::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   // For finding registrations being installed or uninstalled.
   using RegistrationRefsById =

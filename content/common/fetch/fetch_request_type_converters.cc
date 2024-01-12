@@ -66,7 +66,7 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   // We put the request body data into |output->body| rather than
   // |output->blob|. The |blob| is used in cases without
   // network::ResourceRequest involved. See fetch_api_request.mojom.
-  // We leave |output->body| as absl::nullopt when |input.request_body| is
+  // We leave |output->body| as std::nullopt when |input.request_body| is
   // nullptr.
   if (input.request_body)
     output->body = input.request_body;

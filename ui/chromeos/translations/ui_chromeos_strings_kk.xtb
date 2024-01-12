@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Португал (АҚШ), халықаралық пернетақтасымен</translation>
 <translation id="1629521517399325891">Желі аутентификациясы үшін пайдаланушы сертификаты қолжетімді емес.</translation>
 <translation id="1641780993263690097">Қытай (пиньинь)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл офлайн режимде қолжетімді етілуде</translation>
 <translation id="164969095109328410">Chrome құрылғысы</translation>
 <translation id="1661207570040737402">Ортақ дискінің Google Workspace жадын толық пайдаландыңыз.</translation>
 <translation id="1661867754829461514">PIN жоқ</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google электрондық кестесі</translation>
 <translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3486821258960016770">Моңғол</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> элементті синхрондауға әзірленуде...</translation>
 <translation id="3522708245912499433">португал</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Әкімші саясаты <ph name="COUNT" /> файлды көшіруге тыйым салған.</translation>
 <translation id="6509122719576673235">норвег</translation>
 <translation id="6528513914570774834">Бұл құрылғының басқа пайдаланушыларына осы желіні пайдалануға рұқсат ету</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> синхрондалуда…</translation>
 <translation id="6549689063733911810">Соңғы</translation>
 <translation id="6558280019477628686">Қате пайда болды. Кейбір элементтер жойылмаған болуы мүмкін.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" жойылуда…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux қолданбаларына <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат беріңіз.</translation>
 <translation id="7555339735447658365">Қазіргі уақытта офлайнсыз. Сіз интернетке қосылған кезде файлды синхрондау жалғасады</translation>
 <translation id="7589661784326793847">Күте тұрыңыз</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы офлайн режимде қолжетімді етілуде</translation>
 <translation id="7600126690270271294">Серб</translation>
 <translation id="7603724359189955920">Торлар</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> бұрыннан бар. Оның атын өзгертіп, әрекетті қайталап көріңіз.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Дайындауда…</translation>
 <translation id="8147028810663464959">Таңба ені – толық</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 қате.}other{# қате.}}</translation>
 <translation id="8154842056504218462">Барлық жазба таңдалды.</translation>
 <translation id="8157684860301034423">Қолданба туралы ақпарат алынбады.</translation>
 <translation id="8175731104491895765">Француз (Бельгия)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> құрылғысының <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануына рұқсат беріңіз.</translation>
 <translation id="8372369524088641025">WEP кілті дұрыс емес</translation>
 <translation id="8372852072747894550">Грек</translation>
+<translation id="8377269993083688872">Электрондық хат тұрпаттары</translation>
 <translation id="8386903983509584791">Іздеу аяқталды</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> файлы шығарылды.</translation>
 <translation id="8395901698320285466">Өлшемдер</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Ашу үшін файлды таңдаңыз</translation>
 <translation id="8577897833047451336">Хорват</translation>
 <translation id="8578308463707544055">Индонезия</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> элемент синхрондалуда…</translation>
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
 <translation id="8609695766746872526">Исланд</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Ортақ желілерге арналған проксилерге рұқсат беру</translation>
 <translation id="8790981080411996443">Өсімдік суарып жатқан адам</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ескерту.}other{# ескерту}}</translation>
 <translation id="8808686172382650546">Мысық</translation>
 <translation id="8810671769985673465">Қысу орындалмады. Мына элемент бұрыннан бар: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Испан (Испания)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Басқа атау таңдаңыз.</translation>
 <translation id="9046895021617826162">Қосылмады</translation>
 <translation id="9065512565307033593">Растай алмасаңыз, желіге кіру мүмкіндігі өшіріледі.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ескерту.}other{<ph name="COUNT" /> ескерту.}}</translation>
 <translation id="908378762078012445">Орыс (фонетикалық AATSEEL пернетақтасымен)</translation>
 <translation id="9086302186042011942">Синхрондау</translation>
 <translation id="9099674669267916096">Бет саны</translation>

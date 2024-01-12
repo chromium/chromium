@@ -24,16 +24,19 @@
     padding: var(--padding_) 0;
   }
 
-  #consentHeading {
+  .close-button {
+    position: fixed;
+    --close-button-distance-from-edge: calc(20px -
+        ((var(--cr-icon-button-size) - var(--cr-icon-button-icon-size)) / 2));
+    inset-block-start: var(--close-button-distance-from-edge);
+    inset-inline-end: var(--close-button-distance-from-edge);
+  }
+
+  #firstRunHeading {
     display: flex;
     height: 48px;
     align-items: start;
     padding: 0 var(--padding_);
-  }
-
-  #closeButtonConsent {
-    /* Align with main app dialog close button. */
-    margin-block-start: -4px;
   }
 
   #freMsbbHeading {
@@ -43,7 +46,7 @@
     padding: 0 var(--padding_);
   }
 
-  #consentIconContainer {
+  #firstRunIconContainer {
     margin-inline-end: var(--gap-between-sections_);
     min-width: 48px;
     height: 48px;
@@ -58,26 +61,26 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    #consentIconContainer {
+    #firstRunIconContainer {
       background: linear-gradient(
           136deg,  rgb(8, 66, 160) 1.59%, rgb(15, 82, 35) 100%);
       color: rgb(194, 231, 255);
     }
   }
 
-  :host-context([chrome-refresh-2023]) #consentIconContainer {
+  :host-context([chrome-refresh-2023]) #firstRunIconContainer {
     background: linear-gradient(136deg,
         var(--color-sys-gradient-primary) 1.59%,
         var(--color-sys-gradient-tertiary) 100%);
     color: var(--color-compose-dialog-logo);
   }
 
-  #consentHeading iron-icon {
+  #firstRunHeading iron-icon {
     --iron-icon-width: 20px;
     --iron-icon-height: 20px;
   }
 
-  #consentContainer {
+  #firstRunContainer {
     color: var(--cr-secondary-text-color);
     font: inherit;
     font-size: 13px;
@@ -112,6 +115,7 @@
     line-height: 20px;
     margin: 0;
     margin-inline-end: auto;
+    padding-inline-end: 36px; /* From --cr-icon-button-size */
   }
 
   :host-context([chrome-refresh-2023]) h1 {
@@ -119,12 +123,12 @@
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
+    padding-inline-end: 32px; /* From --cr-icon-button-size */
   }
 
   cr-icon-button {
     --cr-icon-button-fill-color: var(--cr-secondary-text-color);
     margin: 0;
-    margin-inline-end: -6px;
   }
 
   :host-context([chrome-refresh-2023]) cr-icon-button {
@@ -132,8 +136,9 @@
   }
 
   #bodyAndFooter {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-areas: "body" "footer";
+    grid-auto-columns: 100%;
     gap: var(--gap-between-sections_);
     position: relative;
   }
@@ -142,8 +147,10 @@
     --results-background_: rgb(234, 240, 249);
     --scrollbar-width_: 4px;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+    grid-area: body;
+    display: grid;
+    grid-template-areas: "textarea" "bodyContent";
+    grid-auto-columns: 100%;
     gap: 8px;
     max-height: 220px;
     overflow: auto;
@@ -156,6 +163,11 @@
     #body {
       --results-background_: rgb(60, 64, 67);
     }
+  }
+
+  :host(:not([submitted_])) #body {
+    /* Non-submitted dialog has no bodyContent. */
+    grid-template-areas: "textarea";
   }
 
   :host-context([chrome-refresh-2023]) #body {
@@ -198,28 +210,54 @@
     background: var(--color-compose-dialog-scrollbar-thumb);
   }
 
+  :host([loading-indicator-shown_]) #bodyAndFooter {
+    /* There is no footer in the loading screen. */
+    grid-template-areas: "body";
+    height: 136px;
+  }
+
+  :host([loading-indicator-shown_]) #body {
+    /* When loading, the heights of contents within #body are in flux due to
+     * animations. Force the entire #body to be visible to prevent scrollbars
+     * from flickering, and remove scrollbar width from padding. */
+    overflow: visible;
+    padding-inline-end: 20px;
+  }
+
+  #textarea {
+    grid-area: textarea;
+  }
+
+  #loading,
+  .result-container {
+    grid-area: bodyContent;
+  }
+
   #loading {
     display: flex;
     border: solid 1px var(--results-background_);
     border-radius: 8px;
-    padding: 16px;
+    padding: 15px;
+    box-sizing: border-box;
+    height: 80px;
   }
 
-  #resultContainer {
+  .result-container {
     border-radius: 8px;
     padding: 16px;
+    box-sizing: border-box;
     background: var(--results-background_);
     color: var(--cr-primary-text-color);
     font-size: 12px;
     line-height: 20px;
   }
 
-  :host-context([chrome-refresh-2023]) #resultContainer {
+  :host-context([chrome-refresh-2023]) .result-container {
     color: var(--color-compose-dialog-result-foreground);
     line-height: 16px;
   }
 
-  #resultText {
+  .result-text {
     white-space: pre-wrap;
     word-wrap: break-word;
   }
@@ -229,6 +267,10 @@
     align-items: flex-end;
     gap: 8px;
     margin-block-start: 16px;
+  }
+
+  #resultFooter[inert], #resultOptions[inert] {
+    opacity: 0;
   }
 
   #resultOptions .md-select {
@@ -262,6 +304,7 @@
   }
 
   .footer {
+    grid-area: footer;
     align-items: center;
     display: flex;
     padding: 0 var(--padding_);
@@ -329,6 +372,7 @@
   }
 
   #editContainer compose-textarea {
+    --compose-textarea-input-height: 100%;
     flex: 1;
   }
 
@@ -351,41 +395,29 @@
   }
 </style>
 
-<div id="consentDialog" class="dialog" hidden="[[!showConsentDialog_]]">
-  <div id="consentHeading">
-    <div id="consentIconContainer">
+<div id="firstRunDialog" class="dialog" hidden="[[!showFirstRunDialog_]]">
+  <div id="firstRunHeading">
+    <div id="firstRunIconContainer">
       <iron-icon icon="compose:compose"></iron-icon>
     </div>
-    <h1>$i18n{consentTitle}</h1>
-    <cr-icon-button id="closeButtonConsent" iron-icon="cr:close"
-        on-click="onClose_" aria-label="$i18n{close}">
+    <h1>$i18n{firstRunTitle}</h1>
+    <cr-icon-button id="firstRunCloseButton" class="close-button"
+      iron-icon="cr:close" on-click="onClose_" aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
 
-  <div id="consentContainer">
-    <div id="consentTopText" on-click="onConsentTopTextClick_">
-      $i18nRaw{consentMainTop}
-    </div>
-    <div id="consentBottomText">
-      $i18n{consentMainBottom}
+  <div id="firstRunContainer">
+    <div id="firstRunTopText">$i18n{firstRunMainTop}</div>
+    <div id="firstRunMidText">$i18n{firstRunMainMid}</div>
+    <div id="firstRunBottomText" on-click="onFirstRunBottomTextClick_">
+      $i18nRaw{firstRunMainBottom}
     </div>
   </div>
 
-  <div id="consentFooter" class="footer" hidden="[[showDisclaimerFooter_]]">
-    <cr-button id="consentNoThanksButton" class="tonal-button"
-      on-click="onConsentNoThanksButtonClick_">
-      $i18n{consentNoButton}
-    </cr-button>
-    <cr-button id="consentYesButton" class="action-button"
-      on-click="onConsentYesButtonClick_">
-      $i18n{consentYesButton}
-    </cr-button>
-  </div>
-  <div id="disclaimerFooter" class="footer"
-    hidden="[[!showDisclaimerFooter_]]">
-    <cr-button id="disclaimerLetsGoButton" class="action-button"
-      on-click="onDisclaimerLetsGoButtonClick_">
-      $i18n{disclaimerLetsGoButton}
+  <div id="firstRunFooter" class="footer">
+    <cr-button id="firstRunLetsGoButton" class="action-button"
+      on-click="onfirstRunLetsGoButtonClick_">
+      $i18n{firstRunLetsGoButton}
     </cr-button>
   </div>
 </div>
@@ -394,11 +426,10 @@
 <div id="freMsbbDialog" class="dialog" hidden="[[!showMSBBDialog_]]">
   <div id="freMsbbHeading">
     <h1>$i18n{freMsbbTitle}</h1>
-    <cr-icon-button id="closeButtonMSBB" iron-icon="cr:close"
-      on-click="onClose_">
+    <cr-icon-button id="closeButtonMSBB" class="close-button"
+      iron-icon="cr:close" on-click="onClose_">
     </cr-icon-button>
   </div>
-
 
   <div id="freMsbbContainer">
     <div id="freMsbbText">
@@ -418,8 +449,8 @@
 <div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
   <div id="heading">
     <h1>$i18n{dialogTitle}</h1>
-    <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_"
-        aria-label="$i18n{close}">
+    <cr-icon-button id="closeButton" class="close-button" iron-icon="cr:close"
+      on-click="onClose_" aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
 
@@ -430,22 +461,29 @@
         on-edit-click="onEditClick_" input-params="[[inputParams_]]">
       </compose-textarea>
 
-      <div id="loading" hidden="[[!loading_]]">
+      <div id="loading"
+          hidden="[[!loadingIndicatorShown_]]">
         <cr-loading-gradient>
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="51">
             <clipPath>
               <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
-              <rect x="0" y="16" width="100%" height="10.8333" rx="4"></rect>
-              <rect x="0" y="32" width="75%" height="11" rx="4"></rect>
+              <rect x="0" y="20" width="100%" height="10.8333" rx="4"></rect>
+              <rect x="0" y="40" width="75%" height="11" rx="4"></rect>
             </clipPath>
           </svg>
         </cr-loading-gradient>
       </div>
-
-      <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
-        <div id="resultText">[[getTrimmedResult_(response_.result)]]</div>
-
-        <div id="resultOptions">
+      <div id="resultContainer" class="result-container"
+          hidden="[[!hasPartialOrCompleteResponse_(response_,
+              partialResponse_)]]">
+        <div class="result-text"
+            hidden="[[hasPartialResponse_(partialResponse_)]]"
+            >[[getTrimmedResult_(response_.result)]]</div>
+        <div id="partialResultText" class="result-text"
+            hidden="[[!hasPartialResponse_(partialResponse_)]]"
+            >[[getTrimmedPartialResult_(partialResponse_)]]</div>
+        <div id="resultOptions"
+            inert$="[[hasPartialResponse_(partialResponse_)]]">
           <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
               aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
             <template is="dom-repeat" items="[[lengthOptions_]]">
@@ -492,10 +530,16 @@
     </div>
 
     <div id="resultFooter" class="footer"
-      hidden="[[!hasSuccessfulResponse_(response_)]]">
+        hidden$="[[!hasSuccessfulResponse_(response_)]]"
+        inert$="[[hasPartialResponse_(partialResponse_)]]">
       <div class="footer-text">
         <div on-click="onFooterClick_">
-          $i18nRaw{resultFooter}
+          <b id="onDeviceUsedFooter"
+              hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{onDeviceUsedFooter}
+
+          </b>
+          <span inner-h-t-m-l="[[getResultFooterText_()]]"></span>
         </div>
         <cr-feedback-buttons
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"
@@ -508,7 +552,7 @@
     </div>
 
     <div id="errorFooter" class="footer"
-      hidden="[[!hasFailedResponse_(response_)]]">
+        hidden="[[!hasFailedResponse_(response_)]]">
       <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
     </div>
 

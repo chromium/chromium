@@ -52,7 +52,7 @@ class NearbyInternalsContactHandler
   // manager.
   void HandleDownloadContacts(const base::Value::List& args);
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<NearbyShareContactManager,
                           NearbyShareContactManager::Observer>
       observation_{this};

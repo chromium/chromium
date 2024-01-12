@@ -72,10 +72,7 @@ std::string NetworkID::ToString() const {
   if (!network_id_proto.SerializeToString(&serialized_network_id))
     return "";
 
-  std::string base64_encoded;
-  base::Base64Encode(serialized_network_id, &base64_encoded);
-
-  return base64_encoded;
+  return base::Base64Encode(serialized_network_id);
 }
 
 }  // namespace net::nqe::internal

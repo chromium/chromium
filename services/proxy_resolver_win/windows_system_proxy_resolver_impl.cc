@@ -25,12 +25,12 @@ namespace proxy_resolver_win {
 
 namespace {
 
-bool GetProxyServerFromWinHttpResultEntry(
+bool GetProxyChainFromWinHttpResultEntry(
     const WINHTTP_PROXY_RESULT_ENTRY& result_entry,
-    net::ProxyServer* out_proxy_server) {
+    net::ProxyChain* out_proxy_chain) {
   // TODO(https://crbug.com/1032820): Include net logs for proxy bypass
   if (!result_entry.fProxy) {
-    *out_proxy_server = net::ProxyServer::Direct();
+    *out_proxy_chain = net::ProxyChain::Direct();
     return true;
   }
 
@@ -87,7 +87,7 @@ bool GetProxyServerFromWinHttpResultEntry(
     return false;
 
   net::HostPortPair host_and_port(host, result_entry.ProxyPort);
-  *out_proxy_server = net::ProxyServer(scheme, host_and_port);
+  *out_proxy_chain = net::ProxyChain(scheme, host_and_port);
   return true;
 }
 
@@ -306,10 +306,10 @@ void WindowsSystemProxyResolverImpl::Request::GetProxyResultForCallback() {
   // Translate the results for ProxyInfo.
   net::ProxyList proxy_list;
   for (DWORD i = 0u; i < proxy_result.cEntries; ++i) {
-    net::ProxyServer proxy_server;
-    if (GetProxyServerFromWinHttpResultEntry(proxy_result.pEntries[i],
-                                             &proxy_server)) {
-      proxy_list.AddProxyServer(proxy_server);
+    net::ProxyChain proxy_chain;
+    if (GetProxyChainFromWinHttpResultEntry(proxy_result.pEntries[i],
+                                            &proxy_chain)) {
+      proxy_list.AddProxyChain(proxy_chain);
     }
   }
 

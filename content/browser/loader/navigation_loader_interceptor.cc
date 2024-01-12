@@ -8,9 +8,9 @@
 
 namespace content {
 
-absl::optional<SubresourceLoaderParams>
+std::optional<SubresourceLoaderParams>
 NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(

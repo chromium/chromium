@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -288,13 +289,19 @@
 
 - (void)downloadManagerViewControllerDidStartDownload:
     (UIViewController*)controller {
-  if (_downloadTask->GetErrorCode() != net::OK) {
-    base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
-    _unopenedDownloads.Add(_downloadTask);
+  [self tryDownload];
+}
+
+- (void)downloadManagerViewControllerDidRetry:(UIViewController*)controller {
+  UploadTask* uploadTask = _mediator.GetUploadTask();
+  if (uploadTask && uploadTask->GetError() != nil) {
+    // If there is an upload task which failed, retry the upload.
+    base::RecordAction(base::UserMetricsAction("MobileDownloadRetryUpload"));
+    uploadTask->Start();
+    return;
   }
-  _mediator.StartDownloading();
+  // Otherwise retry download.
+  [self tryDownload];
 }
 
 - (void)downloadManagerViewControllerDidStartDownloadToDrive:
@@ -338,6 +345,18 @@
 }
 
 #pragma mark - Private
+
+// Attempts to start the current download task, either for the first time or
+// after one or several previously failed attempts.
+- (void)tryDownload {
+  if (_downloadTask->GetErrorCode() != net::OK) {
+    base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
+    _unopenedDownloads.Add(_downloadTask);
+  }
+  _mediator.StartDownloading();
+}
 
 - (void)stopStoreKitCoordinator {
   [_storeKitCoordinator stop];

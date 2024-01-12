@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
-
 #include <algorithm>
 #include <memory>
 
@@ -12,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +18,7 @@
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 #include "gpu/command_buffer/service/decoder_client.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
@@ -2629,6 +2628,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
   std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
 
+  size_t prev_byte_size = 0;
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
     auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
     auto plane_size =
@@ -2638,6 +2638,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
                           SkAlphaType::kPremul_SkAlphaType, nullptr);
 
     if (row_bytes[plane] < src_info.minRowBytes()) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_VALUE,
                   "row_bytes must be >= "
                   "SkImageInfo::minRowBytes() for source image.");
@@ -2646,15 +2647,17 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
     size_t byte_size = src_info.computeByteSize(row_bytes[plane]);
     if (byte_size > UINT32_MAX) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_VALUE,
                   "Cannot request a memory chunk larger than UINT32_MAX bytes");
       return error::kOutOfBounds;
     }
     if (plane > 0 &&
-        plane_offsets[plane] < plane_offsets[plane - 1] + byte_size) {
+        plane_offsets[plane] < plane_offsets[plane - 1] + prev_byte_size) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_VALUE,
                   "plane_offsets[plane] must be >= plane_offsets[plane "
-                  "- 1] + byte_size");
+                  "- 1] + prev_byte_size");
       return error::kOutOfBounds;
     }
 
@@ -2663,12 +2666,14 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
     void* pixel_data = GetSharedMemoryAs<void*>(
         shm_id, shm_offset + plane_offsets[plane], byte_size);
     if (!pixel_data) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_OPERATION, "Couldn't retrieve pixel data.");
       return error::kNoError;
     }
 
     // Create an SkPixmap for the plane.
     pixmaps[plane] = SkPixmap(src_info, pixel_data, row_bytes[plane]);
+    prev_byte_size = byte_size;
   }
 
   // Try a direct texture upload without using SkSurface.

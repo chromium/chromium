@@ -121,8 +121,8 @@ ArcUsbHostPermissionManager* ArcUsbHostPermissionManager::GetForBrowserContext(
 }
 
 // static
-ArcUsbHostPermissionManager* ArcUsbHostPermissionManager::Create(
-    content::BrowserContext* context) {
+std::unique_ptr<ArcUsbHostPermissionManager>
+ArcUsbHostPermissionManager::Create(content::BrowserContext* context) {
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(context);
   // TODO(lgcheng): Change this to DCHECK(arc_app_list_prefs) after clear the
   // browsertest workflow.
@@ -134,7 +134,7 @@ ArcUsbHostPermissionManager* ArcUsbHostPermissionManager::Create(
   if (!arc_usb_host_bridge)
     return nullptr;
 
-  return new ArcUsbHostPermissionManager(
+  return std::make_unique<ArcUsbHostPermissionManager>(
       static_cast<Profile*>(context), arc_app_list_prefs, arc_usb_host_bridge);
 }
 

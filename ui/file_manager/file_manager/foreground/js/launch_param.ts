@@ -4,7 +4,7 @@
 
 import type {FilesAppState, TypeList} from '../../common/js/files_app_state.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
-import {DialogType} from '../../externs/ts/state.js';
+import {DialogType} from '../../state/state.js';
 
 /**
  * Parsed options used to launch a new Files app window.

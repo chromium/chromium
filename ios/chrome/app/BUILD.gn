@@ -346,6 +346,21 @@ source_set("first_run_app_state_agent") {
   ]
 }
 
+source_set("docking_promo_app_agent") {
+  sources = [
+    "docking_promo_app_agent.h",
+    "docking_promo_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
 source_set("post_restore_app_agent") {
   sources = [
     "post_restore_app_agent.h",
@@ -370,6 +385,7 @@ source_set("search_engine_choice_app_agent") {
     "search_engine_choice_app_agent.mm",
   ]
   deps = [
+    ":tests_hook",
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/application_delegate:app_state_header",
@@ -382,6 +398,7 @@ source_set("search_engine_choice_app_agent") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/ui/search_engine_choice",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
@@ -442,6 +459,7 @@ source_set("app_internal") {
     ":app",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
+    ":docking_promo_app_agent",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
     ":feed_app_agent",
@@ -572,6 +590,7 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/third_party/material_components_ios",
+    "//ios/web/common:features",
     "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",

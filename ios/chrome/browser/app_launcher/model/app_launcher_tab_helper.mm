@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -148,6 +149,8 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
         delegate_->LaunchAppForTabHelper(
             this, url,
             base::BindOnce(&AppLauncherTabHelper::OnAppLaunchCompleted,
+                           weak_factory_.GetWeakPtr()),
+            base::BindOnce(&AppLauncherTabHelper::AppNoLongerInactive,
                            weak_factory_.GetWeakPtr()));
       }
       return;
@@ -182,6 +185,8 @@ void AppLauncherTabHelper::OnShowAppLaunchAlertDone(const GURL& url,
   delegate_->LaunchAppForTabHelper(
       this, url,
       base::BindOnce(&AppLauncherTabHelper::OnAppLaunchTried,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&AppLauncherTabHelper::AppNoLongerInactive,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -200,6 +205,21 @@ void AppLauncherTabHelper::ShowFailureAlertDone(bool user_allowed) {
 }
 
 void AppLauncherTabHelper::OnAppLaunchCompleted(bool success) {
+  if (success && !base::FeatureList::IsEnabled(
+                     kInactiveNavigationAfterAppLaunchKillSwitch)) {
+    return;
+  }
+  LaunchAppRequestCompleted();
+}
+
+void AppLauncherTabHelper::AppNoLongerInactive() {
+  if (!base::FeatureList::IsEnabled(
+          kInactiveNavigationAfterAppLaunchKillSwitch)) {
+    LaunchAppRequestCompleted();
+  }
+}
+
+void AppLauncherTabHelper::LaunchAppRequestCompleted() {
   is_app_launch_request_pending_ = false;
   is_prompt_active_ = false;
 
@@ -273,15 +293,23 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
     return {PolicyDecision::Cancel(), kNoAppLaunchRequest};
   }
 
+  // Disallow launching Chrome from within Chrome, as there are no good use
+  // cases for this but allowing it opens the door to abuse.
+  bool is_chrome_launch_attempt = HasChromeAppScheme(request_url);
+  UMA_HISTOGRAM_BOOLEAN("IOS.AppLauncher.AppURLHasChromeLaunchScheme",
+                        is_chrome_launch_attempt);
+  if (is_chrome_launch_attempt) {
+    return {PolicyDecision::Cancel(), kNoAppLaunchRequest};
+  }
+
   ExternalURLRequestStatus request_status =
       ExternalURLRequestStatus::kMainFrameRequestAllowed;
   // TODO(crbug.com/852489): Check if the source frame should also be
   // considered.
   if (!request_info.target_frame_is_main) {
     request_status = ExternalURLRequestStatus::kSubFrameRequestAllowed;
-    // Don't allow navigations from iframe to apps if there is no user gesture
-    // or the URL scheme is for Chrome app.
-    if (!request_info.has_user_gesture || HasChromeAppScheme(request_url)) {
+    // Don't allow navigations from iframe to apps if there is no user gesture.
+    if (!request_info.has_user_gesture) {
       request_status = ExternalURLRequestStatus::kSubFrameRequestBlocked;
     }
   }

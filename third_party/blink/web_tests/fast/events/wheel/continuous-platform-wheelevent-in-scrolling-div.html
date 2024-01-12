@@ -1,12 +1,30 @@
 <!DOCTYPE html>
+<style>
+  #overflow {
+    border: 2px solid black;
+    overflow: auto;
+    height: 200px;
+    width: 200px;
+  }
+  .block {
+    height: 200px;
+    width: 400px;
+  }
+  .block:nth-child(even) {
+    background-color: red;
+  }
+  .block:nth-child(odd) {
+    background-color: green;
+  }
+</style>
 <script src='../../../resources/gesture-util.js'></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
-<div id="overflow" style="border:2px solid black;overflow:auto;height:200px;width:200px;">
-    <div style="background-color:red;height:200px;width:400px;"></div>
-    <div style="background-color:green;height:200px;width:400px;"></div>
-    <div style="background-color:red;height:200px;width:400px;"></div>
+<div id="overflow">
+    <div class="block"></div>
+    <div class="block"></div>
+    <div class="block"></div>
 </div>
 
 <script>
@@ -28,27 +46,27 @@ const { x: expectedScrollLeft, y: expectedScrollTop } = calculateExpectedScroll(
 );
 
 function mousewheelHandler(e) {
-    last_event = e;
+  last_event = e;
 }
 
 promise_test(async () => {
-    await smoothScroll(SCROLL_LEFT, 100, 110, SOURCE, 'right', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
-    await waitForAnimationEndTimeBased(() => {
-      return overflowElement.scrollLeft;
-    });
-    assert_approx_equals(overflowElement.scrollLeft, Math.round(expectedScrollLeft * 100) / 100, 0.001);
-    assert_equals(last_event.wheelDeltaX, -Math.floor(EXPECTED_WHEEL_DELTA_X));
-    assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_X));
+  await gestureScroll(() => {
+    return smoothScroll(SCROLL_LEFT, 100, 110, SOURCE, 'right', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
+  }, overflowElement);
+  assert_approx_equals(overflowElement.scrollLeft, Math.round(expectedScrollLeft * 100) / 100, 0.001);
+  assert_equals(last_event.wheelDeltaX, -Math.floor(EXPECTED_WHEEL_DELTA_X));
+  assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_X));
 
-    last_event = null;
+  last_event = null;
 
-    await smoothScroll(SCROLL_TOP, 100, 110, SOURCE, 'down', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
-    await waitForAnimationEndTimeBased(() => {
-      return overflowElement.scrollTop;
-    });
-    assert_approx_equals(overflowElement.scrollTop, Math.round(expectedScrollTop * 100) / 100, 0.001);
-    assert_equals(last_event.wheelDeltaY, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
-    assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
-}, 'This test checks the wheel delta value of wheel events, which should be the number of ticks multiplies the legacy mouse wheel tick multiplier.');
+  await gestureScroll(() => {
+    return smoothScroll(SCROLL_TOP, 100, 110, SOURCE, 'down', SPEED_INSTANT,
+                        !isPercentBasedScrollingEnabled());
+  }, overflowElement);
+  assert_approx_equals(overflowElement.scrollTop, Math.round(expectedScrollTop * 100) / 100, 0.001);
+  assert_equals(last_event.wheelDeltaY, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
+  assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
+}, 'This test checks the wheel delta value of wheel events, which should be ' +
+   'the number of ticks multiplies the legacy mouse wheel tick multiplier.');
 
 </script>

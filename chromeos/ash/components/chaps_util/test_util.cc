@@ -5,15 +5,18 @@
 #include "chromeos/ash/components/chaps_util/test_util.h"
 
 #include <pk11pub.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
 #include "crypto/nss_key_util.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
 

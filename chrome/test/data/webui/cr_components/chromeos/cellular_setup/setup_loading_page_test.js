@@ -18,19 +18,23 @@ suite('CrComponentsSetupLoadingPageTest', function() {
     document.body.appendChild(setupLoadingPage);
     flush();
 
-    basePage = setupLoadingPage.$$('base-page');
+    basePage = setupLoadingPage.shadowRoot.querySelector('base-page');
     assertTrue(!!basePage);
   });
 
   test('Loading animation and error graphic shown correctly', function() {
     setupLoadingPage.isSimDetectError = false;
     flush();
-    assertTrue(!!setupLoadingPage.$$('#animationContainer'));
-    assertTrue(setupLoadingPage.$$('#simDetectError').hidden);
+    assertTrue(
+        !!setupLoadingPage.shadowRoot.querySelector('#animationContainer'));
+    assertTrue(
+        setupLoadingPage.shadowRoot.querySelector('#simDetectError').hidden);
 
     setupLoadingPage.isSimDetectError = true;
     flush();
-    assertFalse(!!setupLoadingPage.$$('#animationContainer'));
-    assertFalse(setupLoadingPage.$$('#simDetectError').hidden);
+    assertFalse(
+        !!setupLoadingPage.shadowRoot.querySelector('#animationContainer'));
+    assertFalse(
+        setupLoadingPage.shadowRoot.querySelector('#simDetectError').hidden);
   });
 });

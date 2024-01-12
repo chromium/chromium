@@ -2,11 +2,7 @@
   :host {
     background: var(--emoji-picker-container-color);
     border-radius: 8px;
-    /*
-     * TODO(b/263055563): Remove --cr-elevation reference once jelly is fully
-     * launched.
-     */
-    box-shadow: var(--cros-elevation-2-shadow, --cr-elevation-2);
+    box-shadow: var(--cros-elevation-2-shadow);
     display: grid;
     grid-template-columns: max-content max-content max-content;
     grid-template-rows: max-content max-content;
@@ -110,10 +106,12 @@
 
 <div id="grid-variants">
   <div id="fakeFocusTarget" tabindex="-1"></div>
-  <template is="dom-repeat" items="[[variantRows]]" as="row">
+  <template is="dom-repeat" items="[[computeVariantRows(showBaseEmoji, variants)]]" as="row">
     <div class="variant-row">
       <template is="dom-repeat" items="[[row]]" as="emoji">
-        <emoji-button emoji="[[emoji.string]]" variant base="[[baseEmoji]]"
+        <emoji-button emoji="[[emoji.string]]" variant tone="[[emoji.tone]]"
+          gender="[[emoji.gender]]" base="[[baseEmoji]]"
+          grouped-tone="[[groupedTone]]" grouped-gender="[[groupedGender]]"
           all-variants="[[variants]]" tooltip="[[tooltip]]">
         </emoji-button>
       </template>

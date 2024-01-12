@@ -422,8 +422,6 @@ bool DownloadToolbarButtonView::OpenMostSpecificDialog(
 
   // Open the more specific security subpage if it has one.
   if (row && row->info().has_subpage()) {
-    // TODO(b:279794441): Add warning action event for this warning being shown
-    // from a notification.
     OpenSecurityDialog(content_id);
   }
   return row != nullptr;
@@ -603,11 +601,6 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
             ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
-  // If the IPH is showing, close it to avoid showing the download dialog over
-  // it.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHDownloadToolbarButtonFeature);
-
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       this, views::BubbleBorder::TOP_RIGHT);
   bubble_delegate->SetTitle(
@@ -724,14 +717,6 @@ void DownloadToolbarButtonView::OnPartialViewClosed() {
     return;
   }
 #endif
-
-  if (download::ShouldSuppressDownloadBubbleIph(
-          browser_->profile()->GetOriginalProfile())) {
-    return;
-  }
-
-  browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHDownloadToolbarButtonFeature);
 }
 
 void DownloadToolbarButtonView::DeactivateAutoClose() {

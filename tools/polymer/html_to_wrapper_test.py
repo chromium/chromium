@@ -84,6 +84,12 @@ class HtmlToWrapperTest(unittest.TestCase):
                    'html_to_wrapper/expected/foo_lit.html.ts',
                    template='detect')
 
+  def testHtmlToWrapperLitElement_WithImports(self):
+    self._run_test('html_to_wrapper/foo_lit_with_imports.html',
+                   'html_to_wrapper/foo_lit_with_imports.html.ts',
+                   'html_to_wrapper/expected/foo_lit_with_imports.html.ts',
+                   template='lit')
+
   def testHtmlToWrapperNativeElement(self):
     self._run_test('html_to_wrapper/foo_native.html',
                    'html_to_wrapper/foo_native.html.ts',

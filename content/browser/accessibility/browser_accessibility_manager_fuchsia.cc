@@ -135,7 +135,7 @@ void BrowserAccessibilityManagerFuchsia::OnHitTestResult(
   if (!GetAccessibilityBridge())
     return;
 
-  absl::optional<uint32_t> hit_result_id;
+  std::optional<uint32_t> hit_result_id;
 
   if (node) {
     BrowserAccessibilityFuchsia* hit_result =

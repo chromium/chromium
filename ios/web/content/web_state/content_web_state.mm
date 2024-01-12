@@ -503,7 +503,7 @@ bool ContentWebState::CanTakeSnapshot() const {
   return false;
 }
 
-void ContentWebState::TakeSnapshot(const gfx::RectF& rect,
+void ContentWebState::TakeSnapshot(const CGRect rect,
                                    SnapshotCallback callback) {}
 
 void ContentWebState::CreateFullPagePdf(base::OnceCallback<void(NSData*)>) {}

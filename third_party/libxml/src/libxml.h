@@ -38,11 +38,6 @@
   #define SYSCONFDIR "/etc"
 #endif
 
-#ifdef WITH_TRIO
-  #define TRIO_REPLACE_STDIO
-  #include "trio.h"
-#endif
-
 #if !defined(_WIN32) && \
     !defined(__CYGWIN__) && \
     (defined(__clang__) || \
@@ -53,7 +48,7 @@
 #endif
 
 #if defined(__clang__) || \
-    (defined(__GNUC__) && (__GNUC__ >= 8))
+    (defined(__GNUC__) && (__GNUC__ >= 8) && !defined(__EDG__))
   #define ATTRIBUTE_NO_SANITIZE(arg) __attribute__((no_sanitize(arg)))
 #else
   #define ATTRIBUTE_NO_SANITIZE(arg)

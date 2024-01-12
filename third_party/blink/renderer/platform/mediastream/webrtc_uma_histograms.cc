@@ -10,11 +10,6 @@
 
 namespace blink {
 
-void LogUserMediaRequestWithNoResult(MediaStreamRequestState state) {
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.UserMediaRequest.NoResultState", state,
-                            NUM_MEDIA_STREAM_REQUEST_WITH_NO_RESULT);
-}
-
 void LogUserMediaRequestResult(mojom::blink::MediaStreamRequestResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "WebRTC.UserMediaRequest.Result2", result,

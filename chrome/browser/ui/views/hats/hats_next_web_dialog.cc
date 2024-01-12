@@ -52,8 +52,9 @@ constexpr gfx::Size HatsNextWebDialog::kMaxSize;
 
 // WebView which contains the WebContents displaying the HaTS Next survey.
 class HatsNextWebDialog::HatsWebView : public views::WebView {
+  METADATA_HEADER(HatsWebView, views::WebView)
+
  public:
-  METADATA_HEADER(HatsWebView);
   HatsWebView(content::BrowserContext* browser_context,
               Browser* browser,
               HatsNextWebDialog* dialog)
@@ -388,6 +389,6 @@ bool HatsNextWebDialog::IsWaitingForSurveyForTesting() {
   return loading_timer_.IsRunning();
 }
 
-BEGIN_METADATA(HatsNextWebDialog, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HatsNextWebDialog)
 ADD_READONLY_PROPERTY_METADATA(GURL, ParameterizedHatsURL)
 END_METADATA

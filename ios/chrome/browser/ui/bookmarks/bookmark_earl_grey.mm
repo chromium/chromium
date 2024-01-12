@@ -66,6 +66,10 @@ const GURL GetFrenchUrl() {
       [BookmarkEarlGreyAppInterface waitForBookmarkModelsLoaded]);
 }
 
+- (void)commitPendingWrite {
+  [BookmarkEarlGreyAppInterface commitPendingWrite];
+}
+
 #pragma mark - Common Helpers
 
 - (void)verifyBookmarksWithTitle:(NSString*)title

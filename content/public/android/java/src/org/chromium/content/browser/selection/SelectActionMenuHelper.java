@@ -24,6 +24,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
@@ -255,9 +256,9 @@ public class SelectActionMenuHelper {
         menuItemBuilders.add(cut(delegate.canCut()));
         menuItemBuilders.add(copy(delegate.canCopy()));
         menuItemBuilders.add(paste(delegate.canPaste()));
-        menuItemBuilders.add(share(delegate.canShare()));
+        menuItemBuilders.add(share(context, delegate.canShare()));
         menuItemBuilders.add(selectAll(delegate.canSelectAll()));
-        menuItemBuilders.add(webSearch(delegate.canWebSearch()));
+        menuItemBuilders.add(webSearch(context, delegate.canWebSearch()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             menuItemBuilders.add(pasteAsPlainText(context, delegate.canPasteAsPlainText()));
         }
@@ -461,8 +462,11 @@ public class SelectActionMenuHelper {
                 .setIsIconTintable(true);
     }
 
-    private static SelectionMenuItem.Builder share(boolean isEnabled) {
-        return new SelectionMenuItem.Builder(R.string.actionbar_share)
+    private static SelectionMenuItem.Builder share(@Nullable Context context, boolean isEnabled) {
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+        }
+        return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
                 .setId(R.id.select_action_menu_share)
                 .setIconAttr(android.R.attr.actionModeShareDrawable)
                 .setOrderInCategory(DefaultItemOrder.SHARE)
@@ -502,8 +506,12 @@ public class SelectActionMenuHelper {
         return builder;
     }
 
-    private static SelectionMenuItem.Builder webSearch(boolean isEnabled) {
-        return new SelectionMenuItem.Builder(R.string.actionbar_web_search)
+    private static SelectionMenuItem.Builder webSearch(
+            @Nullable Context context, boolean isEnabled) {
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+        }
+        return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_web_search))
                 .setId(R.id.select_action_menu_web_search)
                 .setIconAttr(android.R.attr.actionModeWebSearchDrawable)
                 .setOrderInCategory(DefaultItemOrder.WEB_SEARCH)

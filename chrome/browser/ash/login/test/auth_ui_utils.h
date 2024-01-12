@@ -17,6 +17,8 @@ class AccountId;
 
 namespace ash::test {
 
+class LocalAuthenticationDialogActor;
+
 class FullScreenAuthSurface {
  public:
   FullScreenAuthSurface();
@@ -24,6 +26,9 @@ class FullScreenAuthSurface {
 
   virtual void SelectUserPod(const AccountId& account_id) = 0;
   virtual void AddNewUser() = 0;
+
+  virtual std::unique_ptr<LocalAuthenticationDialogActor>
+  WaitForLocalAuthenticationDialog() = 0;
 };
 
 class OobePageActor {
@@ -89,6 +94,16 @@ class PasswordUpdatedPageActor : public OobePageActor {
   void ConfirmPasswordUpdate();
 };
 
+class LocalAuthenticationDialogActor {
+ public:
+  LocalAuthenticationDialogActor();
+  ~LocalAuthenticationDialogActor();
+
+  bool IsVisible();
+  void CancelDialog();
+  void SubmitPassword(const std::string& password);
+};
+
 std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
 
 [[nodiscard]] std::unique_ptr<GaiaPageActor> AwaitGaiaSigninUI();
@@ -132,6 +147,10 @@ void RecoveryPasswordUpdatedProceedAction();
 std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter();
 void RecoveryErrorExpectFallback();
 void RecoveryErrorFallbackAction();
+
+std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter();
+
+std::unique_ptr<test::TestConditionWaiter> LocalAuthenticationDialogWaiter();
 
 }  // namespace ash::test
 

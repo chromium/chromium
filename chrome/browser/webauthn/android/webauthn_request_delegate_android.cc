@@ -112,8 +112,8 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
           this, !hybrid_callback_.is_null()),
       WebAuthnCredManDelegateFactory::GetFactory(web_contents())
           ->GetRequestDelegate(frame_host),
-      base::AsWeakPtr(
-          ContentPasswordManagerDriver::GetForRenderFrameHost(frame_host)));
+      ContentPasswordManagerDriver::GetForRenderFrameHost(frame_host)
+          ->AsWeakPtrImpl());
 }
 
 void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(

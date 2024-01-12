@@ -266,12 +266,6 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   // adjust timeout, contrary to what the spec requires crbug.com/1108877.
   IncrementNestingLevel();
 
-  // Step 11:
-  // Note: The implementation uses >= instead of >, contrary to what the spec
-  // requires crbug.com/1108877.
-  int max_nesting_level = features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
-                              ? features::GetMaxUnthrottledTimeoutNestingLevel()
-                              : kMaxTimerNestingLevel;
   // A timer with a long timeout probably doesn't need to run at a precise time,
   // so allow some leeway on it. On the other hand, a timer with a short timeout
   // may need to run on time to deliver the best user experience.
@@ -280,7 +274,10 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   bool precise = (timeout < kMaxHighResolutionInterval) ||
                  scheduler::IsAlignWakeUpsDisabledForProcess();
 
-  if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval) {
+  // Step 11:
+  // Note: The implementation uses >= instead of >, contrary to what the spec
+  // requires crbug.com/1108877.
+  if (nesting_level_ >= kMaxTimerNestingLevel && timeout < kMinimumInterval) {
     timeout = kMinimumInterval;
   }
 
@@ -290,7 +287,7 @@ DOMTimer::DOMTimer(ExecutionContext& context,
     task_type = TaskType::kJavascriptTimerDelayedHighNesting;
   } else if (timeout.is_zero()) {
     task_type = TaskType::kJavascriptTimerImmediate;
-    DCHECK_LT(nesting_level_, max_nesting_level);
+    DCHECK_LT(nesting_level_, kMaxTimerNestingLevel);
   } else {
     task_type = TaskType::kJavascriptTimerDelayedLowNesting;
   }
@@ -361,7 +358,7 @@ void DOMTimer::Fired() {
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
   probe::InvokeCallback invoke_probe(
-      context,
+      action_->GetScriptState(),
       is_interval ? "TimerHandler:setInterval" : "TimerHandler:setTimeout",
       action_->CallbackFunction());
   probe::AsyncTask async_task(context, &async_task_context_,
@@ -376,15 +373,11 @@ void DOMTimer::Fired() {
     // adjust timeout, contrary to what the spec requires crbug.com/1108877.
     IncrementNestingLevel();
 
+    // Step 11:
     // Make adjustments when the nesting level becomes >= |kMaxNestingLevel|.
     // Note: The implementation uses >= instead of >, contrary to what the spec
     // requires crbug.com/1108877.
-    int max_nesting_level =
-        features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
-            ? features::GetMaxUnthrottledTimeoutNestingLevel()
-            : kMaxTimerNestingLevel;
-    // Step 11:
-    if (nesting_level_ == max_nesting_level &&
+    if (nesting_level_ == kMaxTimerNestingLevel &&
         RepeatInterval() < kMinimumInterval) {
       AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
     }
@@ -395,7 +388,7 @@ void DOMTimer::Fired() {
           context->GetTaskRunner(TaskType::kJavascriptTimerDelayedHighNesting));
     }
 
-    DCHECK(nesting_level_ < max_nesting_level ||
+    DCHECK(nesting_level_ < kMaxTimerNestingLevel ||
            RepeatInterval() >= kMinimumInterval);
 
     // No access to member variables after this point, it can delete the timer.

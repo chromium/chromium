@@ -2994,8 +2994,6 @@ bool HTMLElement::MatchesReadWritePseudoClass() const {
 void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
   if (!IsSpatialNavigationEnabled(GetDocument().GetFrame()) || !SupportsFocus())
     return;
-  if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled())
-    return;
   GetDocument().UpdateStyleAndLayoutTree();
   // if the element is a text form control (like <input type=text> or
   // <textarea>) or has contentEditable attribute on, we should enter a space or
@@ -3170,6 +3168,11 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   if (is_new_auto) {
     CalculateAndAdjustAutoDirectionality(this);
   } else {
+    if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
+      CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+      ClearDirAutoInheritsFromParent();
+    }
+
     absl::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;

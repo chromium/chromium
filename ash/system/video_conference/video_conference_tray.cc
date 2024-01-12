@@ -301,7 +301,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
                                     weak_ptr_factory_.GetWeakPtr())));
 
   VideoConferenceTrayController::Get()->AddObserver(this);
-  VideoConferenceTrayController::Get()->effects_manager().AddObserver(this);
+  VideoConferenceTrayController::Get()->GetEffectsManager().AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 
   // Update visibility of the tray and all child icons and indicators. If this
@@ -317,7 +317,8 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
 
 VideoConferenceTray::~VideoConferenceTray() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  VideoConferenceTrayController::Get()->effects_manager().RemoveObserver(this);
+  VideoConferenceTrayController::Get()->GetEffectsManager().RemoveObserver(
+      this);
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 

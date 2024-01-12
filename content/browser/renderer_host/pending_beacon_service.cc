@@ -58,7 +58,7 @@ void PendingBeaconService::SendBeacons(
     auto resource_request = beacon->GenerateResourceRequest();
     // SimpleURLLoader doesn't support bytes and file request body. We need to
     // call AttachStringForUpload and AttachFileForUpload instead in such cases.
-    absl::optional<network::DataElement> element;
+    std::optional<network::DataElement> element;
     if (resource_request->request_body) {
       auto& elements = *resource_request->request_body->elements_mutable();
       DCHECK_EQ(elements.size(), 1u);

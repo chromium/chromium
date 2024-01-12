@@ -28,7 +28,7 @@ class FamilyUserParentalControlMetrics
   void OnNewDay() override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   bool first_report_on_current_device_ = false;
 };
 }  // namespace ash

@@ -38,7 +38,7 @@ class BruschettaMountProvider : public guest_os::GuestOsMountProvider {
   FRIEND_TEST_ALL_PREFIXES(BruschettaMountProviderTest,
                            TestPrepareLaunchFailure);
   void OnRunning(PrepareCallback callback, BruschettaResult result);
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   guest_os::GuestId guest_id_;
   base::CallbackListSubscription unmount_subscription_;
   base::WeakPtrFactory<BruschettaMountProvider> weak_ptr_factory_{this};

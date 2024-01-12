@@ -18,41 +18,29 @@ namespace focus_mode_util {
 
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
+constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(6);
 
-enum class TimeFormatType {
-  // Times formatted with `kDigital` type include seconds, minutes, and hours
-  // in a numeric width, without removing leading zeros. Used in the labels
-  // under the progress bar in the countdown view, for example "4:30".
-  kDigital,
-  // Times formatted with `kFull` type include seconds, minutes, and hours in
-  // short width. Used in the time remaining timer in the countdown view, for
-  // example "4 min, 30 sec".
-  kFull,
-  // Times formatted with `kMinutesOnly` type include hours only when focus is
-  // active, and minutes in a short width. Used in the time remaining display
-  // in the detailed view, for example "4 min".
-  kMinutesOnly,
-};
+// The amount of time to extend the focus session duration by during a currently
+// active focus session.
+constexpr base::TimeDelta kExtendDuration = base::Minutes(10);
 
 // Adaptation of `base::TimeDurationFormat`. This helper function
 // takes a `TimeDelta` and returns the time formatted according to
-// `format_type`. See `TimeFormatType` for more details.
-// `TimeFormatType::kDigital` removes the hour if it is a leading zero. For
-// example "0:30", "4:30", "1:04:30".
-// `TimeFormatType::kFull` removes the hour if it is a leading zero and the
-// minute if it is a leading zero. For example "30 sec", "4 min, 30 sec", "1
-// hr, 4 min, 30 sec". When focus is active:
-//   `TimeFormatType::kMinutesOnly` removes the seconds and removes the hour
-//   when it is a leading zero. For example "0 min", "4 min", "1 hr, 4 min".
-// When focus is not active:
-//   `TimeFormatType::kMinutesOnly` removes the seconds and the hour. For
-//   example "0 min", "4 min", "64 min".
+// `digital_format`.
+// Passing `true` for `digital_format` returns `duration_to_format` in a numeric
+//   width, excluding the hour if it is a leading zero. For example "0:30",
+//   "4:30", "1:04:30".
+// Passing `false` for `digital_format` returns the time in a short width
+//   including hours only when nonzero and focus mode is active, minutes when
+//   not a leading zero, and seconds only when `duration_to_format` is less than
+//   a minute. For example when focus mode is active "30 sec", "4 min", "1 hr, 4
+//   min", and when focus mode is not active "30 sec", "4 min", "64 min".
 // All examples were for times of 30 seconds, 4 minutes and 30 seconds, and 1
 // hour 4 minutes and 30 seconds.
 // Returns a default formatted string in cases where formatting the time
 // duration returns an error.
 ASH_EXPORT std::u16string GetDurationString(base::TimeDelta duration_to_format,
-                                            TimeFormatType format_type);
+                                            bool digital_format);
 
 // Returns a string of `end_time` formatted with the correct clock type. For
 // example: "5:10 PM" for 12-hour clock, "17:10" for 24-hour clock.

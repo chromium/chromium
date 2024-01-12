@@ -5,13 +5,13 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORE_SOURCE_RESULT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORE_SOURCE_RESULT_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/store_source_result_internal.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -37,8 +37,8 @@ class CONTENT_EXPORT StoreSourceResult {
   struct ProhibitedByBrowserPolicy {};
 
   struct SuccessNoised {
-    absl::optional<base::Time> min_fake_report_time;
-    explicit SuccessNoised(absl::optional<base::Time> min_fake_report_time)
+    std::optional<base::Time> min_fake_report_time;
+    explicit SuccessNoised(std::optional<base::Time> min_fake_report_time)
         : min_fake_report_time(min_fake_report_time) {}
   };
 

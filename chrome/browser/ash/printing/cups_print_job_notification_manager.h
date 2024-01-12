@@ -54,8 +54,8 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
   void UpdateNotification(base::WeakPtr<CupsPrintJob> job);
 
   PrintJobNotificationMap notification_map_;
-  raw_ptr<CupsPrintJobManager, ExperimentalAsh> print_job_manager_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<CupsPrintJobManager> print_job_manager_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace ash

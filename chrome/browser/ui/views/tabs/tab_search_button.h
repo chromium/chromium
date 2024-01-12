@@ -16,8 +16,9 @@ class TabStripController;
 // NewTabButton with the appropriate icon and will be used to anchor the
 // Tab Search bubble.
 class TabSearchButton : public TabStripControlButton {
+  METADATA_HEADER(TabSearchButton, TabStripControlButton)
+
  public:
-  METADATA_HEADER(TabSearchButton);
   TabSearchButton(TabStripController* tab_strip_controller, Edge flat_edge);
   TabSearchButton(const TabSearchButton&) = delete;
   TabSearchButton& operator=(const TabSearchButton&) = delete;
@@ -35,7 +36,6 @@ class TabSearchButton : public TabStripControlButton {
   int GetFlatCornerRadius() const override;
 
  private:
-
   std::unique_ptr<TabSearchBubbleHost> tab_search_bubble_host_;
 };
 

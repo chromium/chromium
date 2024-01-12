@@ -49,7 +49,7 @@ FocusManager::~FocusManager() {
 }
 
 bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
-  const int key_code = event.key_code();
+  const ui::KeyboardCode key_code = event.key_code();
 
   if (event.type() != ui::ET_KEY_PRESSED && event.type() != ui::ET_KEY_RELEASED)
     return false;

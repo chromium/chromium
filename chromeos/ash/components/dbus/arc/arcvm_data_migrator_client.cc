@@ -155,7 +155,7 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
   }
 
   base::ObserverList<Observer> observers_;
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
   base::WeakPtrFactory<ArcVmDataMigratorClientImpl> weak_ptr_factory_{this};
 };
 

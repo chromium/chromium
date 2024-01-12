@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -37,9 +38,6 @@ class WebContents;
 
 namespace web_app {
 
-class AppLock;
-class AppLockDescription;
-class LockDescription;
 class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
@@ -76,7 +74,8 @@ using IsolatedWebAppUpdatePrepareAndStoreCommandResult =
 // update, and, on success, persisting the information about the pending update
 // into the Web App database.
 class IsolatedWebAppUpdatePrepareAndStoreCommand
-    : public WebAppCommandTemplate<AppLock> {
+    : public WebAppCommand<AppLock,
+                           IsolatedWebAppUpdatePrepareAndStoreCommandResult> {
  public:
   class UpdateInfo {
    public:
@@ -130,11 +129,9 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   ~IsolatedWebAppUpdatePrepareAndStoreCommand() override;
 
-  // WebAppCommandTemplate<AppLock>:
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnShutdown() override;
 
  private:
   void ReportFailure(base::StringPiece message);
@@ -199,9 +196,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
-  base::Value::Dict debug_log_;
 
   UpdateInfo source_update_info_;
   IsolatedWebAppUrlInfo url_info_;
@@ -213,9 +208,6 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
-
-  base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
-      callback_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 

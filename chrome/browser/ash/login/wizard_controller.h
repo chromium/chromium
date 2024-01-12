@@ -149,10 +149,6 @@ class WizardController : public OobeUI::Observer {
   // Skips any enrollment prompts that may be normally shown.
   static void SkipEnrollmentPromptsForTesting();
 
-  // Returns true if OOBE is operating under the Zero-Touch Hands-Off
-  // Enrollment flow.
-  static bool IsZeroTouchHandsOffOobeFlow();
-
   // Returns true if the onboarding flow can be resumed from `screen_id`.
   static bool IsResumablePostLoginScreen(OobeScreenId screen_id);
 
@@ -573,13 +569,12 @@ class WizardController : public OobeUI::Observer {
   // So it should be safe to store the pointers.
   base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
 
-  raw_ptr<WizardContext, ExperimentalAsh> wizard_context_;
+  raw_ptr<WizardContext> wizard_context_;
 
   static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
-  raw_ptr<BaseScreen, DanglingUntriaged | ExperimentalAsh> current_screen_ =
-      nullptr;
+  raw_ptr<BaseScreen, DanglingUntriaged> current_screen_ = nullptr;
 
   // True if full OOBE flow should be shown.
   bool is_out_of_box_ = false;

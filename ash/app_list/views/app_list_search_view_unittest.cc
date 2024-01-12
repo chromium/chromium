@@ -27,6 +27,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -91,7 +92,7 @@ class AppListSearchViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     if (test_under_tablet_) {
-      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      ash::TabletModeControllerTestApi().EnterTabletMode();
     }
   }
 

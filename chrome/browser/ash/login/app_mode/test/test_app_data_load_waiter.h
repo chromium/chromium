@@ -47,7 +47,7 @@ class TestAppDataLoadWaiter : public KioskAppManagerObserver {
   bool IsAppDataLoaded();
 
   std::unique_ptr<base::RunLoop> runner_;
-  raw_ptr<KioskChromeAppManager, ExperimentalAsh> manager_;
+  raw_ptr<KioskChromeAppManager> manager_;
   WaitType wait_type_;
   bool loaded_;
   bool quit_;

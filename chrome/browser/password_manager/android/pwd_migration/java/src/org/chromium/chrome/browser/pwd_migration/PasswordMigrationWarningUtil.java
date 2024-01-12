@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import android.content.Context;
 
-import org.chromium.components.version_info.VersionInfo;
+import org.chromium.base.version_info.VersionInfo;
 
 /** Provides helper methods for the password migration warning. */
 public class PasswordMigrationWarningUtil {

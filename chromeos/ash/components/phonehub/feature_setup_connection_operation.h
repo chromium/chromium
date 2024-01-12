@@ -71,7 +71,7 @@ class FeatureSetupConnectionOperation {
   void NotifyFeatureSetupConnectionStatusChanged(Status new_status);
 
   std::optional<Status> current_status_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
   base::OnceClosure destructor_callback_;
 };
 

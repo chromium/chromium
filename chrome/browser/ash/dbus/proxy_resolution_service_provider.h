@@ -119,8 +119,7 @@ class ProxyResolutionServiceProvider
 
   scoped_refptr<dbus::ExportedObject> exported_object_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_thread_;
-  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh>
-      network_context_for_test_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_for_test_ = nullptr;
   bool use_network_context_for_test_ = false;
 
   // A transient NetworkAnonymizationKey used for all requests. This prevents

@@ -341,6 +341,8 @@ declare global {
       export function setKeyboardListener(enabled: boolean, capture: boolean):
           void;
 
+      export function setSelectToSpeakFocus(bounds: ScreenRect): void;
+
       export function darkenScreen(darken: boolean): void;
 
       export function forwardKeyEventsToSwitchAccess(shouldForward: boolean):
@@ -424,6 +426,9 @@ declare global {
       type IsLacrosPrimaryCallback = (result: boolean) => void;
       export function isLacrosPrimary(callback: IsLacrosPrimaryCallback): void;
 
+      export function getDisplayBounds(
+          callback: (screens: ScreenRect[]) => void): void;
+
       export function showToast(type: ToastType): void;
 
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
@@ -436,6 +441,9 @@ declare global {
       export const onTwoFingerTouchStop: ChromeEvent<() => void>;
 
       export const onSelectToSpeakContextMenuClicked: ChromeEvent<() => void>;
+
+      export const onSelectToSpeakFocusChanged:
+          ChromeEvent<(bounds: ScreenRect) => void>;
 
       export const onSelectToSpeakStateChangeRequested: ChromeEvent<() => void>;
 

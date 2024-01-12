@@ -76,55 +76,69 @@ namespace partition_alloc::internal::base {
 template <typename T>
 class NoDestructor {
  public:
-  static_assert(
-      !std::is_trivially_destructible_v<T>,
-      "T is trivially destructible; please use a function-local static "
-      "of type T directly instead");
-
-  // Not constexpr; just write static constexpr T x = ...; if the value should
-  // be a constexpr.
   template <typename... Args>
-  explicit NoDestructor(Args&&... args) {
-    new (storage_) T(std::forward<Args>(args)...);
-  }
+  constexpr explicit NoDestructor(Args&&... args)
+      : storage_(std::forward<Args>(args)...) {}
 
   // Allows copy and move construction of the contained type, to allow
   // construction from an initializer list, e.g. for std::vector.
-  explicit NoDestructor(const T& x) { new (storage_) T(x); }
-  explicit NoDestructor(T&& x) { new (storage_) T(std::move(x)); }
+  explicit NoDestructor(const T& x) : storage_(x) {}
+  explicit NoDestructor(T&& x) : storage_(std::move(x)) {}
 
   NoDestructor(const NoDestructor&) = delete;
   NoDestructor& operator=(const NoDestructor&) = delete;
 
   ~NoDestructor() = default;
 
-  const T& operator*() const { return *get(); }
-  T& operator*() { return *get(); }
+  const T& operator*() const { return *storage_.get()(); }
+  T& operator*() { return *storage_.get(); }
 
-  const T* operator->() const { return get(); }
-  T* operator->() { return get(); }
+  const T* operator->() const { return storage_.get()(); }
+  T* operator->() { return storage_.get(); }
 
-  const T* get() const { return reinterpret_cast<const T*>(storage_); }
-  T* get() { return reinterpret_cast<T*>(storage_); }
+  const T* get() const { return storage_.get(); }
+  T* get() { return storage_.get(); }
 
  private:
-  alignas(T) char storage_[sizeof(T)];
+  // Do not friend this. This is an implementation detail.
+  class DirectStorage {
+   public:
+    template <typename... Args>
+    constexpr explicit DirectStorage(Args&&... args)
+        : storage_(std::forward<Args>(args)...) {}
 
-#if defined(LEAK_SANITIZER)
-  // TODO(https://crbug.com/812277): This is a hack to work around the fact
-  // that LSan doesn't seem to treat NoDestructor as a root for reachability
-  // analysis. This means that code like this:
-  //   static base::NoDestructor<std::vector<int>> v({1, 2, 3});
-  // is considered a leak. Using the standard leak sanitizer annotations to
-  // suppress leaks doesn't work: std::vector is implicitly constructed before
-  // calling the base::NoDestructor constructor.
-  //
-  // Unfortunately, I haven't been able to demonstrate this issue in simpler
-  // reproductions: until that's resolved, hold an explicit pointer to the
-  // placement-new'd object in leak sanitizer mode to help LSan realize that
-  // objects allocated by the contained type are still reachable.
-  T* storage_ptr_ = reinterpret_cast<T*>(storage_);
-#endif  // defined(LEAK_SANITIZER)
+    const T* get() const { return &storage_; }
+    T* get() { return &storage_; }
+
+   private:
+    T storage_;
+  };
+
+  // Do not friend this. This is an implementation detail.
+  class PlacementStorage {
+   public:
+    template <typename... Args>
+    explicit PlacementStorage(Args&&... args) {
+      new (storage_) T(std::forward<Args>(args)...);
+    }
+
+    const T* get() const {
+      return const_cast<PlacementStorage*>(this)->storage();
+    }
+    T* get() { return reinterpret_cast<T*>(storage_); }
+
+   private:
+    alignas(T) char storage_[sizeof(T)];
+  };
+
+  // C++20 provides a constexpr `std::construct_at`, so in theory, both branches
+  // could use PlacementStorage. There are some advantages to providing
+  // `DirectStorage` though; it can avoid the need to have runtime once-init
+  // tracking at all.
+  std::conditional_t<std::is_trivially_destructible_v<T>,
+                     DirectStorage,
+                     PlacementStorage>
+      storage_;
 };
 
 }  // namespace partition_alloc::internal::base

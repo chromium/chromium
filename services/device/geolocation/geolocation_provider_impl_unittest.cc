@@ -51,7 +51,6 @@ class AsyncMockGeolocationObserver : public MockGeolocationObserver {
  public:
   void OnLocationUpdate(const mojom::GeopositionResult& result) override {
     MockGeolocationObserver::OnLocationUpdate(result);
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 };
 
@@ -206,18 +205,22 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
   first_position.accuracy = 56;
   first_position.timestamp = base::Time::Now();
 
-  AsyncMockGeolocationObserver first_observer;
-  GeolocationProviderImpl::LocationUpdateCallback first_callback =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&first_observer));
-  EXPECT_CALL(first_observer,
-              OnLocationUpdate(GeopositionResultEq(*first_result)));
-  base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(first_callback, false);
-  SendMockLocation(*first_result);
-  base::RunLoop().Run();
+  {
+    base::RunLoop run_loop;
 
-  subscription = {};
+    AsyncMockGeolocationObserver first_observer;
+    GeolocationProviderImpl::LocationUpdateCallback first_callback =
+        base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
+                            base::Unretained(&first_observer));
+    EXPECT_CALL(first_observer,
+                OnLocationUpdate(GeopositionResultEq(*first_result)))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    base::CallbackListSubscription subscription =
+        provider()->AddLocationUpdateCallback(first_callback, false);
+    SendMockLocation(*first_result);
+    run_loop.Run();
+    subscription = {};
+  }
 
   auto second_result =
       mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
@@ -227,25 +230,28 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
   second_position.accuracy = 56;
   second_position.timestamp = base::Time::Now();
 
-  AsyncMockGeolocationObserver second_observer;
+  {
+    base::RunLoop run_loop;
+    AsyncMockGeolocationObserver second_observer;
+    // After adding a second observer, check that no unexpected position update
+    // is sent.
+    EXPECT_CALL(second_observer, OnLocationUpdate(testing::_)).Times(0);
+    GeolocationProviderImpl::LocationUpdateCallback second_callback =
+        base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
+                            base::Unretained(&second_observer));
+    base::CallbackListSubscription subscription2 =
+        provider()->AddLocationUpdateCallback(second_callback, false);
+    run_loop.RunUntilIdle();
 
-  // After adding a second observer, check that no unexpected position update
-  // is sent.
-  EXPECT_CALL(second_observer, OnLocationUpdate(testing::_)).Times(0);
-  GeolocationProviderImpl::LocationUpdateCallback second_callback =
-      base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
-                          base::Unretained(&second_observer));
-  base::CallbackListSubscription subscription2 =
-      provider()->AddLocationUpdateCallback(second_callback, false);
-  base::RunLoop().RunUntilIdle();
+    // The second observer should receive the new position now.
+    EXPECT_CALL(second_observer,
+                OnLocationUpdate(GeopositionResultEq(*second_result)))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    SendMockLocation(*second_result);
+    run_loop.Run();
+    subscription2 = {};
+  }
 
-  // The second observer should receive the new position now.
-  EXPECT_CALL(second_observer,
-              OnLocationUpdate(GeopositionResultEq(*second_result)));
-  SendMockLocation(*second_result);
-  base::RunLoop().Run();
-
-  subscription2 = {};
   EXPECT_FALSE(ProvidersStarted());
 }
 
@@ -424,7 +430,7 @@ TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
-
+  base::RunLoop loop;
   // Add a subscription so the provider will be started.
   SetFakeArbitrator();
   base::CallbackListSubscription subscription =
@@ -443,7 +449,7 @@ TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
   // Call OnInternalsUpdated. The observer is not notified.
   EXPECT_CALL(observer, OnDiagnosticsChanged).Times(0);
   provider()->SimulateInternalsUpdatedForTesting();
-  base::RunLoop().RunUntilIdle();
+  loop.RunUntilIdle();
 
   observer.Disconnect();
 }

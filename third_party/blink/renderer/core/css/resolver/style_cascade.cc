@@ -1077,35 +1077,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     }
   }
 
-  // Useful for debugging crashes.
-  StringBuilder builder;
-  builder.Append(property.GetPropertyName());
-  builder.Append(":");
-  for (unsigned i = 0; i < parsed_properties_count; ++i) {
-    const CSSProperty& longhand = CSSProperty::Get(parsed_properties[i].Id());
-    builder.Append(" ");
-    builder.Append(longhand.GetPropertyName());
-  }
-
-  // Append the value before resolving...
-  builder.Append(" (from \"");
-  CSSVariableReferenceValue* shorthand_value = value.ShorthandValue();
-  builder.Append(shorthand_value->CustomCSSText());
-  builder.Append("\" becoming \"");
-
-  // ...and after.
-  TokenSequence sequence;
-  CSSTokenizer tokenizer(shorthand_value->VariableDataValue()->OriginalText());
-  CSSParserTokenStream stream(tokenizer);
-  ResolveTokensInto(stream, resolver, &tokenizer, sequence);
-  builder.Append(sequence.OriginalText());
-  builder.Append("\")");
-
-  // TODO(crbug.com/1423568): Remove once bug has been tracked down.
-  SCOPED_CRASH_KEY_STRING1024("css_substitution_error", "properties",
-                              builder.ToString().Utf8());
-
-  DUMP_WILL_BE_NOTREACHED_NORETURN() << builder.ToString();
+  NOTREACHED();
   return cssvalue::CSSUnsetValue::Create();
 }
 

@@ -273,9 +273,20 @@ public class HubLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testShowWithNoPane() {
+    public void testShowWithNoSelectedPane() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.FADE_IN);
         verify(mTabContentManager).cacheTabThumbnail(any());
+        verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowWithIncognitoPane() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
+        show(LayoutType.BROWSING, true, HubLayoutAnimationType.FADE_IN);
+        verify(mTabContentManager).cacheTabThumbnail(any());
+        verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
     }
 
     @Test

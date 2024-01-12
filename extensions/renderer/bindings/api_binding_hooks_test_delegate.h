@@ -7,9 +7,9 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8.h"
 
@@ -46,7 +46,7 @@ class APIBindingHooksTestDelegate : public APIBindingHooksDelegate {
                                    v8::Local<v8::Object>)>;
 
   // Adds a custom |handler| for the method with the given |name|.
-  void AddHandler(base::StringPiece name, RequestHandler handler);
+  void AddHandler(std::string_view name, RequestHandler handler);
 
   // Creates events with the given factory.
   void SetCustomEvent(CustomEventFactory custom_event);

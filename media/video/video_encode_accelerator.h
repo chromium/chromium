@@ -140,6 +140,7 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   base::TimeDelta timestamp;
   int32_t qp = -1;
 
+  bool dropped_frame() const;
   bool end_of_picture() const;
   absl::optional<uint8_t> spatial_idx() const;
 
@@ -418,6 +419,12 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   //  |framerate| is the requested new framerate, in frames per second.
   //  |size| is the requested new input visible frame size. Clients can request
   //  frame size change only when there is no pending frame in the encoder.
+  // Note:
+  // Implementation must call |RequireBitstreamBuffers| when frame size changes,
+  // even existing buffer can be reused. This is a workaround for
+  // |VideoEncodeAcceleratorAdapter| to know when reconfigure is done. This
+  // requirement can be removed once |RequestEncodingParametersChange| has a
+  // callback.
   virtual void RequestEncodingParametersChange(
       const Bitrate& bitrate,
       uint32_t framerate,
@@ -431,6 +438,12 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   //  |framerate| is the requested new framerate, in frames per second.
   //  |size| is the requested new input visible frame size. Clients can request
   //  frame size change only when there is no pending frame in the encoder.
+  // Note:
+  // Implementation must call |RequireBitstreamBuffers| when frame size changes,
+  // even existing buffer can be reused. This is a workaround for
+  // |VideoEncodeAcceleratorAdapter| to know when reconfigure is done. This
+  // requirement can be removed once |RequestEncodingParametersChange| has a
+  // callback.
   virtual void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate,
       uint32_t framerate,

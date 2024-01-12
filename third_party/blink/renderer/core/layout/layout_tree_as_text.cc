@@ -713,8 +713,7 @@ static void WriteCounterValuesFromChildren(WTF::TextStream& stream,
       if (!is_first_counter)
         stream << " ";
       is_first_counter = false;
-      String str(To<LayoutText>(child)->GetText());
-      stream << str;
+      stream << To<LayoutText>(child)->TransformedText();
     }
   }
 }

@@ -63,7 +63,7 @@ async function getExecutedTask(appId, expectedCount = 1) {
   await repeatUntil(async () => {
     const executeTaskCount = await remoteCall.callRemoteTestUtil(
         'staticFakeCounter', appId, ['chrome.fileManagerPrivate.executeTask']);
-    if (executeTaskCount == expectedCount) {
+    if (executeTaskCount === expectedCount) {
       return true;
     }
     chrome.test.assertTrue(executeTaskCount < expectedCount);
@@ -152,9 +152,9 @@ testcase.uploadToDriveRequiresUploadOfficeToCloudEnabled = async () => {
   // instead (QuickOffice or generic task).
   const taskDescriptor = await getExecutedTask(appId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == openDocWithDriveDescriptor().actionId);
+      taskDescriptor.actionId === openDocWithDriveDescriptor().actionId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == openDocWithDriveDescriptor().actionId);
+      taskDescriptor.actionId === openDocWithDriveDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(

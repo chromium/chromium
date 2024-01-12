@@ -13,7 +13,7 @@
   --cr-icon-button-focus-outline-color:
       var(--color-realbox-results-icon-focused-outline);
   --cr-icon-button-hover-background-color:
-      var(--color-realbox-results-control-background-hovered);
+      var(--color-realbox-results-button-hover);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;

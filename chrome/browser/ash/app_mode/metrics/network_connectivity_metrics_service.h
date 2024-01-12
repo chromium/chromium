@@ -46,11 +46,11 @@ class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
   // Report a number of network connectivity drops during the previous session.
   void ReportPreviousSessionNetworkDrops();
 
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
   bool is_online_;
   int network_drops_ = 0;
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 };
 
 }  // namespace ash

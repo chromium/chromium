@@ -6,16 +6,17 @@
 #define GIN_TEST_V8_TEST_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
+#include "gin/public/isolate_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-locker.h"
 #include "v8/include/v8-persistent-handle.h"
 
 namespace gin {
-
-class IsolateHolder;
 
 // V8Test is a simple harness for testing interactions with V8. V8Test doesn't
 // have any dependencies on Gin's module system.
@@ -32,8 +33,10 @@ class V8Test : public testing::Test {
  protected:
   // This is used during SetUp() to initialize instance_.
   virtual std::unique_ptr<IsolateHolder> CreateIsolateHolder() const;
+  virtual gin::IsolateHolder::AccessMode AccessMode() const;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IsolateHolder> instance_;
+  std::optional<v8::Locker> locker_;
   v8::Persistent<v8::Context> context_;
 };
 

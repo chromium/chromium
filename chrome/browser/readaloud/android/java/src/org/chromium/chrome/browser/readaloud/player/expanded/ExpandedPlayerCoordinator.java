@@ -31,9 +31,10 @@ public class ExpandedPlayerCoordinator {
                 @Override
                 public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                     if (mTrackedContent == mSheetContent && newContent != mSheetContent) {
-                        mMediator.setOptionSheetPending(false);
                         mMediator.setVisibility(VisibilityState.GONE);
+                        mMediator.setShowMiniPlayerOnDismiss(true);
                     }
+
                     mTrackedContent = newContent;
                 }
 
@@ -52,7 +53,8 @@ public class ExpandedPlayerCoordinator {
                         mSheetContent.notifySheetClosed(closingSheet);
                         // If we're dismissing for a reason other than showing a menu sheet, notify
                         // about closing.
-                        if (closingSheet == mSheetContent && !mMediator.getOptionSheetPending()) {
+                        if (closingSheet == mSheetContent
+                                && mMediator.getShowMiniPlayerOnDismiss()) {
                             InteractionHandler handler =
                                     mModel.get(PlayerProperties.INTERACTION_HANDLER);
                             if (handler != null) {
@@ -102,6 +104,7 @@ public class ExpandedPlayerCoordinator {
 
     public void dismiss() {
         if (mMediator != null) {
+            mMediator.setShowMiniPlayerOnDismiss(false);
             mMediator.dismiss();
         }
     }

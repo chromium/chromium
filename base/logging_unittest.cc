@@ -669,6 +669,11 @@ TEST_F(LoggingTest, DebugLoggingReleaseBehavior) {
 }
 
 TEST_F(LoggingTest, NestedLogAssertHandlers) {
+  if (LOGGING_DFATAL != LOGGING_FATAL) {
+    GTEST_SKIP() << "Test relies on DFATAL being FATAL for "
+                    "NestedLogAssertHandlers to fire.";
+  }
+
   ::testing::InSequence dummy;
   ::testing::StrictMock<MockLogAssertHandler> handler_a, handler_b;
 
@@ -692,17 +697,16 @@ TEST_F(LoggingTest, NestedLogAssertHandlers) {
   logging::ScopedLogAssertHandler scoped_handler_a(base::BindRepeating(
       &MockLogAssertHandler::HandleLogAssert, base::Unretained(&handler_a)));
 
-  // Using LOG(FATAL) rather than CHECK(false) here since log messages aren't
-  // preserved for CHECKs in official builds.
-  LOG(FATAL) << "First assert must be caught by handler_a";
+  // Using LOG(DFATAL) rather than LOG(FATAL) as the latter is not cancellable.
+  LOG(DFATAL) << "First assert must be caught by handler_a";
 
   {
     logging::ScopedLogAssertHandler scoped_handler_b(base::BindRepeating(
         &MockLogAssertHandler::HandleLogAssert, base::Unretained(&handler_b)));
-    LOG(FATAL) << "Second assert must be caught by handler_b";
+    LOG(DFATAL) << "Second assert must be caught by handler_b";
   }
 
-  LOG(FATAL) << "Last assert must be caught by handler_a again";
+  LOG(DFATAL) << "Last assert must be caught by handler_a again";
 }
 
 // Test that defining an operator<< for a type in a namespace doesn't prevent

@@ -24,6 +24,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/mac/setup/keystone.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -36,11 +38,63 @@ namespace {
 constexpr base::FilePath::CharType kZipExePath[] =
     FILE_PATH_LITERAL("/usr/bin/unzip");
 
+constexpr base::FilePath::CharType kGkToolPath[] =
+    FILE_PATH_LITERAL("/usr/bin/gktool");
+
 base::FilePath ExecutableFolderPath() {
   return base::FilePath(
              base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"));
+}
+
+// Recursively remove quarantine attributes on the path. Emits a log message
+// if it fails.
+bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
+  bool success = base::mac::RemoveQuarantineAttribute(updater_bundle_path);
+  base::FileEnumerator file_enumerator(
+      base::FilePath(updater_bundle_path), true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath name = file_enumerator.Next(); !name.empty();
+       name = file_enumerator.Next()) {
+    success = base::mac::RemoveQuarantineAttribute(name) && success;
+  }
+
+  VLOG_IF(0, !success) << "Failed to remove quarantine attributes from "
+                       << updater_bundle_path;
+  return success;
+}
+
+// On supported versions of macOS, scan the specified bundle with Gatekeeper
+// so it won't pop up a user-visible "Verifying..." box for the duration of
+// the scan when an executable in the bundle is later launched for the first
+// time. On unsupported macOS versions, this does nothing and returns 0.
+//
+// On supported macOS versions, this returns the return code from `gktool`.
+// If attempting to launch `gktool` fails, this returns -1.
+int PrewarmGatekeeperIfSupported(const base::FilePath& bundle_path) {
+  // gktool is only available on macOS 14 and later.
+  if (@available(macOS 14, *)) {
+    base::FilePath tool_path(kGkToolPath);
+    base::CommandLine command(tool_path);
+    command.AppendArg("scan");
+    command.AppendArg(bundle_path.value());
+
+    std::string output;
+    int exit_code = -1;
+    if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
+      VLOG(0) << "Something went wrong trying to run gktool from "
+              << kGkToolPath;
+      return -1;
+    }
+
+    VLOG_IF(0, exit_code) << "gktool returned " << exit_code;
+    VLOG_IF(0, exit_code) << "gktool output: " << output;
+
+    return exit_code;
+  }
+  return 0;
 }
 
 }  // namespace
@@ -162,15 +216,17 @@ std::optional<base::FilePath> GetExecutableFolderPathForVersion(
     const base::Version& version) {
   std::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, version);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->Append(ExecutableFolderPath());
 }
 
 std::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->Append(
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}));
 }
@@ -182,8 +238,9 @@ base::FilePath GetExecutableRelativePath() {
 
 std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetLibraryFolderPath(scope);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
       .Append(FILE_PATH_LITERAL(KEYSTONE_NAME));
 }
@@ -210,8 +267,9 @@ bool ConfirmFilePermissions(const base::FilePath& root_path,
 
     // If file path is real directory and not a link, recurse into it.
     if (file_info.is_directory && !base::IsLink(path)) {
-      if (!ConfirmFilePermissions(path, kPermissionsMask))
+      if (!ConfirmFilePermissions(path, kPermissionsMask)) {
         return false;
+      }
     }
   }
 
@@ -249,17 +307,13 @@ std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
              : std::nullopt;
 }
 
-bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
-  bool success = base::mac::RemoveQuarantineAttribute(updater_bundle_path);
-  base::FileEnumerator file_enumerator(
-      base::FilePath(updater_bundle_path), true,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-  for (base::FilePath name = file_enumerator.Next(); !name.empty();
-       name = file_enumerator.Next()) {
-    success = base::mac::RemoveQuarantineAttribute(name) && success;
-  }
-  return success;
+bool PrepareToRunBundle(const base::FilePath& bundle_path) {
+  // Do not return early. Cleaning up attributes and prewarming Gatekeeper
+  // avoids popups visible to the user, but we must continue to try to update
+  // even if these fail, so we should do as much of the prep as we can.
+  bool dequarantine_ok = RemoveQuarantineAttributes(bundle_path);
+  bool prewarm_ok = PrewarmGatekeeperIfSupported(bundle_path) == 0;
+  return prewarm_ok && dequarantine_ok;
 }
 
 std::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
@@ -306,6 +360,14 @@ std::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
     return std::nullopt;
   }
   return base::SysCFStringRefToUTF8(value);
+}
+
+bool MigrateLegacyUpdaters(
+    UpdaterScope scope,
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback) {
+  return MigrateKeystoneApps(GetKeystoneFolderPath(scope).value(),
+                             register_callback);
 }
 
 }  // namespace updater

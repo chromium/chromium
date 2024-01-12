@@ -111,8 +111,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   void DoShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
   void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
-  raw_ptr<NearbyDependenciesProvider, ExperimentalAsh>
-      nearby_dependencies_provider_;
+  raw_ptr<NearbyDependenciesProvider> nearby_dependencies_provider_;
   std::unique_ptr<base::OneShotTimer> shutdown_debounce_timer_;
   base::RepeatingCallback<mojo::PendingRemote<sharing::mojom::Sharing>()>
       sharing_binder_;

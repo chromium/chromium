@@ -97,7 +97,7 @@ class PopupPixelTest : public UiBrowserTest,
   void WaitForUserDismissal() override {}
 
   void TearDownOnMainThread() override {
-    EXPECT_CALL(controller_, ViewDestroyed());
+    EXPECT_CALL(controller_, ViewDestroyed);
     view_ = nullptr;
     UiBrowserTest::TearDownOnMainThread();
   }

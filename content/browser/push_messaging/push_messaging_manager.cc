@@ -4,6 +4,7 @@
 
 #include "content/browser/push_messaging/push_messaging_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -135,7 +135,7 @@ struct PushMessagingManager::RegisterData {
 
   blink::StorageKey requesting_storage_key{};
   int64_t service_worker_registration_id{0};
-  absl::optional<std::string> existing_subscription_id;
+  std::optional<std::string> existing_subscription_id;
   blink::mojom::PushSubscriptionOptionsPtr options;
   SubscribeCallback callback;
 
@@ -396,7 +396,7 @@ void PushMessagingManager::DidRegister(
     RegisterData data,
     const std::string& push_subscription_id,
     const GURL& endpoint,
-    const absl::optional<base::Time>& expiration_time,
+    const std::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
@@ -429,7 +429,7 @@ void PushMessagingManager::PersistRegistration(
     RegisterData data,
     const std::string& push_subscription_id,
     const GURL& endpoint,
-    const absl::optional<base::Time>& expiration_time,
+    const std::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
@@ -452,7 +452,7 @@ void PushMessagingManager::PersistRegistration(
 void PushMessagingManager::DidPersistRegistration(
     RegisterData data,
     const GURL& endpoint,
-    const absl::optional<base::Time>& expiration_time,
+    const std::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus push_registration_status,
@@ -480,7 +480,7 @@ void PushMessagingManager::SendSubscriptionSuccess(
     RegisterData data,
     blink::mojom::PushRegistrationStatus status,
     const GURL& endpoint,
-    const absl::optional<base::Time>& expiration_time,
+    const std::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -576,12 +576,12 @@ void PushMessagingManager::DidUnregister(
     case blink::mojom::PushUnregistrationStatus::PENDING_SERVICE_ERROR:
       std::move(callback).Run(blink::mojom::PushErrorType::NONE,
                               true /* did_unsubscribe */,
-                              absl::nullopt /* error_message */);
+                              std::nullopt /* error_message */);
       break;
     case blink::mojom::PushUnregistrationStatus::SUCCESS_WAS_NOT_REGISTERED:
       std::move(callback).Run(blink::mojom::PushErrorType::NONE,
                               false /* did_unsubscribe */,
-                              absl::nullopt /* error_message */);
+                              std::nullopt /* error_message */);
       break;
     case blink::mojom::PushUnregistrationStatus::NO_SERVICE_WORKER:
     case blink::mojom::PushUnregistrationStatus::SERVICE_NOT_AVAILABLE:
@@ -719,7 +719,7 @@ void PushMessagingManager::GetSubscriptionDidGetInfo(
     const std::string& application_server_key,
     bool is_valid,
     const GURL& endpoint,
-    const absl::optional<base::Time>& expiration_time,
+    const std::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -791,8 +791,8 @@ void PushMessagingManager::GetSubscriptionInfo(
   if (!push_service) {
     std::move(callback).Run(
         false /* is_valid */, GURL::EmptyGURL() /* endpoint */,
-        absl::nullopt /* expiration_time */,
-        std::vector<uint8_t>() /* p256dh */, std::vector<uint8_t>() /* auth */);
+        std::nullopt /* expiration_time */, std::vector<uint8_t>() /* p256dh */,
+        std::vector<uint8_t>() /* auth */);
     return;
   }
 

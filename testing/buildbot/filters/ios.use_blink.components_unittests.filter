@@ -1,9 +1,11 @@
 # TODO(crbug.com/1427365): remove lines as more tests are supported on the platform.
 
-# TODO(crbug.com/1505584): currently fail with use_blink.
+# TODO(crbug.com/1505584): currently fail with use_blink due to spinning up on
+# an unexpected thread.
 -AutofillAcrossIframesTest.FeatureDisabled
 -AutofillAcrossIframesTest.NoChildFrames
 -AutofillAcrossIframesTest.WithChildFrames
+-AutofillAcrossIframesTest.Resolve
 
 # TODO(crbug.com/1505321): Test currently fails on iOS blink.
 -AutofillAgentTests.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs

@@ -317,6 +317,13 @@ BASE_FEATURE(kForcingSoftwareIncludes360,
              "ForcingSoftwareIncludes360",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Avoids large latencies to build up by dropping frames when the number of
+// frames that are sent to a hardware video encoder reaches a certain limit.
+// See b/298660336 for details.
+BASE_FEATURE(kVideoEncoderLimitsFramesInEncoder,
+             "VideoEncoderLimitsFramesInEncoder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -630,6 +637,10 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                                  // than what is requested by
                                  // VEA::RequireBitstreamBuffers().
     kOutputBufferCount = 3,
+    kMaxFramesInEncoder = 15,  // Max number of frames the encoder is allowed
+                               // to hold before dropping input frames.
+                               // Avoids large delay buildups.
+                               // See b/298660336 for details.
   };
 
   // Perform encoding on an input frame from the input queue.
@@ -718,7 +729,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // The number of frames that are sent to a hardware video encoder by Encode()
   // and the encoder holds them.
-  size_t frames_in_encoder_count_ = 0;
+  size_t frames_in_encoder_count_{0};
 
   // Input buffers ready to be filled with input from Encode().  As a LIFO since
   // we don't care about ordering.
@@ -897,6 +908,24 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     return;
   }
 
+  // Avoid large latencies to build up by dropping frames when the number of
+  // frames that are sent to a hardware video encoder reaches a certain limit.
+  // `frames_in_encoder_count_` is reduced by `BitstreamBufferReady` when
+  // the first spatial layer of a frame has been encoded.
+  // Killswitch: blink::features::VideoEncoderLimitsFramesInEncoder.
+  if (base::FeatureList::IsEnabled(
+          features::kVideoEncoderLimitsFramesInEncoder) &&
+      frames_in_encoder_count_ >= kMaxFramesInEncoder) {
+    CHECK_EQ(frames_in_encoder_count_, kMaxFramesInEncoder);
+    DVLOG(1) << "VAE drops the input frame to reduce latency";
+    base::AutoLock lock(lock_);
+    if (encoded_image_callback_) {
+      encoded_image_callback_->OnDroppedFrame(
+          webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
+    }
+    return;
+  }
+
   if (use_native_input_) {
     DCHECK(pending_frames_.empty());
     EncodeOneFrameWithNativeInput(std::move(frame_chunk));
@@ -1071,6 +1100,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                "bitstream_buffer_id", bitstream_buffer_id);
   DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id
            << ", payload_size=" << metadata.payload_size_bytes
+           << ", end_of_picture=" << metadata.end_of_picture()
            << ", key_frame=" << metadata.key_frame
            << ", timestamp ms=" << metadata.timestamp.InMicroseconds();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1569,6 +1599,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   pending_output_buffers_.clear();
 
   frames_in_encoder_count_++;
+  DVLOG(3) << "frames_in_encoder_count=" << frames_in_encoder_count_;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
 }
 
@@ -1628,6 +1659,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   pending_output_buffers_.clear();
 
   frames_in_encoder_count_++;
+  DVLOG(3) << "frames_in_encoder_count=" << frames_in_encoder_count_;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
 }
 

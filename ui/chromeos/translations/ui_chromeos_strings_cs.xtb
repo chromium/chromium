@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugalština s klávesnicí USA – mezinárodní</translation>
 <translation id="1629521517399325891">Certifikát uživatele pro síťové ověření není k dispozici.</translation>
 <translation id="1641780993263690097">čínština (pchin-jin)</translation>
-<translation id="1646019627374511909">Zpřístupňování <ph name="NUMBER_OF_ITEMS" /> souborů offline</translation>
 <translation id="164969095109328410">Zařízení Chrome</translation>
 <translation id="1661207570040737402">Zaplnili jste celé své úložiště Google Workspace na sdíleném disku.</translation>
 <translation id="1661867754829461514">Chybí kód PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Tabulka Google</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3486821258960016770">mongolština</translation>
-<translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Příprava na synchronizaci položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">portugalština</translation>
@@ -718,7 +716,6 @@
 <translation id="6503285896705205014">Kopírování souborů (<ph name="COUNT" />) je blokováno zásadami administrátora</translation>
 <translation id="6509122719576673235">norština</translation>
 <translation id="6528513914570774834">Povolit ostatním uživatelům tohoto zařízení používat tuto síť</translation>
-<translation id="653019979737152879">Synchronizace souboru <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Poslední</translation>
 <translation id="6558280019477628686">Došlo k chybě. Některé položky možná nebyly smazány.</translation>
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>
@@ -852,7 +849,6 @@
 <translation id="7553492409867692754">Udělujete linuxovým aplikacím oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Momentálně jste offline. Synchronizace souborů bude pokračovat, až budete připojeni k internetu.</translation>
 <translation id="7589661784326793847">Chvilku strpení</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> se zpřístupňuje pro použití offline</translation>
 <translation id="7600126690270271294">srbština</translation>
 <translation id="7603724359189955920">Mřížky</translation>
 <translation id="7627790789328695202">Jejda, soubor <ph name="FILE_NAME" /> již existuje. Přejmenujte jej a zkuste to znovu.</translation>
@@ -936,6 +932,7 @@
 <translation id="813913629614996137">Probíhá inicializace...</translation>
 <translation id="8147028810663464959">Šířka znaků je Plná</translation>
 <translation id="8151638057146502721">Konfigurovat</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 chyba.}few{# chyby.}many{# chyby.}other{# chyb.}}</translation>
 <translation id="8154842056504218462">Vybrali jste všechny položky.</translation>
 <translation id="8157684860301034423">Informace o aplikaci se nepodařilo načíst.</translation>
 <translation id="8175731104491895765">francouzština (Belgie)</translation>
@@ -969,6 +966,7 @@
 <translation id="83651606385705612">Udělit nástroji <ph name="VM_NAME" /> oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Chybný klíč WEP</translation>
 <translation id="8372852072747894550">řečtina</translation>
+<translation id="8377269993083688872">Rozvržení e‑mailů</translation>
 <translation id="8386903983509584791">Vyhledávání je dokončeno</translation>
 <translation id="8387733224523483503">Soubor <ph name="FILE_NAME" /> byl rozbalen.</translation>
 <translation id="8395901698320285466">Rozměry</translation>
@@ -1007,7 +1005,6 @@
 <translation id="8569764466147087991">Vyberte soubor, který chcete otevřít</translation>
 <translation id="8577897833047451336">chorvatština</translation>
 <translation id="8578308463707544055">indonéština</translation>
-<translation id="8579285237314169903">Synchronizace <ph name="NUMBER_OF_FILES" /> položek...</translation>
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
 <translation id="8609695766746872526">islandština</translation>
@@ -1028,6 +1025,7 @@
 <translation id="8787254343425541995">Povolit proxy servery u sdílených sítí</translation>
 <translation id="8790981080411996443">Člověk zalévající rostliny</translation>
 <translation id="8798099450830957504">Výchozí</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 upozornění.}few{# upozornění.}many{# upozornění.}other{# upozornění.}}</translation>
 <translation id="8808686172382650546">Kočka</translation>
 <translation id="8810671769985673465">Komprimace se nezdařila, položka existuje: <ph name="FILE_NAME" /></translation>
 <translation id="8813284582615685103">španělština (Španělsko)</translation>
@@ -1058,7 +1056,6 @@
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="9046895021617826162">Připojení selhalo</translation>
 <translation id="9065512565307033593">Pokud se vám nepodaří provést ověření, bude vám zakázán přístup k síti.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 upozornění.}few{<ph name="COUNT" /> upozornění.}many{<ph name="COUNT" /> upozornění.}other{<ph name="COUNT" /> upozornění.}}</translation>
 <translation id="908378762078012445">ruština s fonetickou klávesnicí AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9099674669267916096">Počet stránek</translation>

@@ -6,6 +6,7 @@
 
 #include "base/token.h"
 
+HistoryEntry::HistoryEntry() = default;
 HistoryEntry::HistoryEntry(const base::Token& id) : id(id) {}
 HistoryEntry::HistoryEntry(const HistoryEntry&) = default;
 HistoryEntry::HistoryEntry(HistoryEntry&&) = default;
@@ -13,3 +14,8 @@ HistoryEntry::~HistoryEntry() = default;
 
 HistoryEntry& HistoryEntry::operator=(const HistoryEntry&) = default;
 HistoryEntry& HistoryEntry::operator=(HistoryEntry&&) = default;
+bool HistoryEntry::operator==(const HistoryEntry& rhs) const {
+  return this->id.ToString() == rhs.id.ToString() &&
+         this->subject == rhs.subject && this->style == rhs.style &&
+         this->mood == rhs.mood;
+}

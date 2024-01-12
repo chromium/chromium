@@ -118,7 +118,7 @@ export class NavPreviousLineMacro extends RepeatableKeyPressMacro {
 
 /** Macro to navigate to the next line. */
 export class NavNextLineMacro extends RepeatableKeyPressMacro {
-  /** @param {number=} repeat The number of lines to move. */
+  /** @param repeat The number of lines to move. */
   constructor(inputController: InputController, repeat: number = 1) {
     super(
         MacroName.NAV_NEXT_LINE, repeat,
@@ -158,7 +158,6 @@ export class PasteTextMacro extends RepeatableKeyPressMacro {
 
 /** Macro to cut selected text. */
 export class CutSelectedTextMacro extends RepeatableKeyPressMacro {
-  /** @param {!InputController} inputController */
   constructor(inputController: InputController) {
     super(
         MacroName.CUT_SELECTED_TEXT, /*repeat=*/ 1,
@@ -362,7 +361,7 @@ export class SelectNextChar extends RepeatableKeyPressMacro {
 
 /** Macro to select the previous character in the input field. */
 export class SelectPrevChar extends RepeatableKeyPressMacro {
-  /** @param {number=} repeat The number of previous characters to select. */
+  /** @param repeat The number of previous characters to select. */
   constructor(inputController: InputController, repeat = 1) {
     super(
         MacroName.SELECT_PREV_CHAR, repeat,

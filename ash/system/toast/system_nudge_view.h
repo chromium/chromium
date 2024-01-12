@@ -13,8 +13,13 @@
 
 namespace views {
 class ImageButton;
+class ViewTracker;
 class Widget;
 }  // namespace views
+
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace ash {
 
@@ -30,7 +35,7 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
  public:
   METADATA_HEADER(SystemNudgeView);
 
-  SystemNudgeView(AnchoredNudgeData& nudge_data);
+  SystemNudgeView(const AnchoredNudgeData& nudge_data);
   SystemNudgeView(const SystemNudgeView&) = delete;
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;
   ~SystemNudgeView() override;
@@ -50,7 +55,15 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   // Owned by the views hierarchy.
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 
+  std::unique_ptr<views::ViewTracker> anchor_view_tracker_;
+
   std::unique_ptr<SystemShadow> shadow_;
+
+  // Used to determine if the nudge will draw a pointy corner.
+  const bool is_corner_anchored_;
+
+  // Sets the corner radius for the nudge view, shadow and highlight border.
+  void SetNudgeRoundedCornerRadius(gfx::RoundedCornersF rounded_corners);
 
   // Handles mouse enter/exit events to either show or hide `close_button_`.
   void HandleOnMouseHovered(const bool mouse_entered);

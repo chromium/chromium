@@ -121,9 +121,20 @@ source_set("common") {
     "input/gesture_event_queue.h",
     "input/gesture_event_stream_validator.cc",
     "input/gesture_event_stream_validator.h",
+    "input/input_disposition_handler.h",
     "input/input_event_ack_state.cc",
     "input/input_event_stream_validator.cc",
     "input/input_event_stream_validator.h",
+    "input/input_router.h",
+    "input/input_router_client.h",
+    "input/input_router_config_helper.cc",
+    "input/input_router_config_helper.h",
+    "input/input_router_impl.cc",
+    "input/input_router_impl.h",
+    "input/mouse_wheel_event_queue.cc",
+    "input/mouse_wheel_event_queue.h",
+    "input/passthrough_touch_event_queue.cc",
+    "input/passthrough_touch_event_queue.h",
     "input/synthetic_gesture.cc",
     "input/synthetic_gesture.h",
     "input/synthetic_gesture_controller.cc",
@@ -169,8 +180,14 @@ source_set("common") {
     "input/synthetic_touchscreen_pinch_gesture.h",
     "input/tap_suppression_controller.cc",
     "input/tap_suppression_controller.h",
+    "input/timeout_monitor.cc",
+    "input/timeout_monitor.h",
+    "input/touch_action_filter.cc",
+    "input/touch_action_filter.h",
     "input/touch_event_stream_validator.cc",
     "input/touch_event_stream_validator.h",
+    "input/touch_timeout_handler.cc",
+    "input/touch_timeout_handler.h",
     "input/touchpad_pinch_event_queue.cc",
     "input/touchpad_pinch_event_queue.h",
     "input/touchpad_tap_suppression_controller.cc",
@@ -182,6 +199,7 @@ source_set("common") {
     "media/cdm_info.cc",
     "mojo_core_library_support.cc",
     "mojo_core_library_support.h",
+    "native_web_keyboard_event_aura.cc",
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
@@ -294,6 +312,7 @@ source_set("common") {
     "//ui/base/ime",
     "//ui/color",
     "//ui/display",
+    "//ui/events:gesture_detection",
     "//ui/events/blink",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -346,6 +365,9 @@ source_set("common") {
       "android/sync_compositor_statics.h",
       "cursors/webcursor_android.cc",
       "font_list_android.cc",
+      "input/web_input_event_builders_android.cc",
+      "input/web_input_event_builders_android.h",
+      "native_web_keyboard_event_android.cc",
     ]
 
     if (use_seccomp_bpf) {
@@ -355,15 +377,23 @@ source_set("common") {
 
   if (is_ios) {
     # TOOD: Create ios file instead of stealing android
-    sources += [ "cursors/webcursor_android.cc" ]
+    sources += [
+      "cursors/webcursor_android.cc",
+      "input/web_input_event_builders_ios.h",
+      "input/web_input_event_builders_ios.mm",
+      "native_web_keyboard_event_ios.mm",
+    ]
   }
 
   if (is_mac) {
     sources += [
+      "input/web_input_event_builders_mac.h",
+      "input/web_input_event_builders_mac.mm",
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
       "mac/task_port_policy.cc",
       "mac/task_port_policy.h",
+      "native_web_keyboard_event_mac.mm",
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
   }
@@ -403,7 +433,10 @@ source_set("common") {
   if (use_aura) {
     deps += [ "//ui/wm" ]
   } else {
-    sources -= [ "cursors/webcursor_aura.cc" ]
+    sources -= [
+      "cursors/webcursor_aura.cc",
+      "native_web_keyboard_event_aura.cc",
+    ]
   }
 
   if (is_linux || is_chromeos) {

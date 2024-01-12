@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) SuspendUnmountManager
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Callback passed to DiskMountManager holds weak pointers of this.
-  const raw_ptr<DiskMountManager, ExperimentalAsh> disk_mount_manager_;
+  const raw_ptr<DiskMountManager> disk_mount_manager_;
 
   // The paths that the manager currently tries to unmount for suspend.
   std::set<std::string> unmounting_paths_;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_FRAME_HOST_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_FRAME_HOST_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -444,7 +444,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //
   // TODO(crbug/1098283): Remove the nullopt scenario by creating the token in
   // CreateChildFrame() or similar.
-  virtual absl::optional<base::UnguessableToken> GetEmbeddingToken() = 0;
+  virtual std::optional<base::UnguessableToken> GetEmbeddingToken() = 0;
 
   // Returns the assigned name of the frame, the name of the iframe tag
   // declaring it. For example, <iframe name="framename">[...]</iframe>. It is
@@ -457,7 +457,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the size of the frame in the viewport. The frame may not be aware
   // of its size.
-  virtual const absl::optional<gfx::Size>& GetFrameSize() = 0;
+  virtual const std::optional<gfx::Size>& GetFrameSize() = 0;
 
   // Returns the distance from this frame to its main frame.
   virtual size_t GetFrameDepth() = 0;
@@ -1028,7 +1028,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // to contain HTTP(s) URLs, but may be cross-origin. Should not be considered
   // trustworthy.
   virtual void GetCanonicalUrl(
-      base::OnceCallback<void(const absl::optional<GURL>&)> callback) = 0;
+      base::OnceCallback<void(const std::optional<GURL>&)> callback) = 0;
 
   // Fetch the OpenGraph metadata from the renderer process. The returned data
   // has only been validated as follows:

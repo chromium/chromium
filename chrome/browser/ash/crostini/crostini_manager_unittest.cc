@@ -235,18 +235,15 @@ class CrostiniManagerTest : public testing::Test {
   CrostiniManager* crostini_manager() { return crostini_manager_; }
   const guest_os::GuestId& container_id() { return container_id_; }
 
-  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
-      fake_cicerone_client_;
-  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
-      fake_concierge_client_;
-  raw_ptr<ash::FakeAnomalyDetectorClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
+  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
+  raw_ptr<ash::FakeAnomalyDetectorClient, DanglingUntriaged>
       fake_anomaly_detector_client_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<CrostiniManager, DanglingUntriaged | ExperimentalAsh>
-      crostini_manager_;
+  raw_ptr<CrostiniManager, DanglingUntriaged> crostini_manager_;
   const guest_os::GuestId container_id_ =
       guest_os::GuestId(kCrostiniDefaultVmType, kVmName, kContainerName);
   device::FakeUsbDeviceManager fake_usb_manager_;
@@ -798,8 +795,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   const CrostiniManager::RestartId uninitialized_id_ =
       CrostiniManager::kUninitializedRestartId;
 
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
-      disk_mount_manager_mock_;
+  raw_ptr<ash::disks::MockDiskMountManager> disk_mount_manager_mock_;
   base::HistogramTester histogram_tester_{};
 
   base::RepeatingCallback<void(mojom::InstallerState)> on_stage_started_ =
@@ -2323,7 +2319,7 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
   }
 
   std::unique_ptr<AnsibleManagementTestHelper> ansible_management_test_helper_;
-  raw_ptr<MockAnsibleManagementService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockAnsibleManagementService, DanglingUntriaged>
       mock_ansible_management_service_;
 };
 

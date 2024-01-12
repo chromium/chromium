@@ -16,13 +16,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/ash/app_mode/certificate_manager_dialog.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
+#include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -44,6 +45,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash {
@@ -348,8 +350,12 @@ void ErrorScreen::DefaultHideCallback() {
 void ErrorScreen::OnConfigureCerts() {
   gfx::NativeWindow native_window =
       LoginDisplayHost::default_host()->GetNativeWindow();
-  CertificateManagerDialog* dialog =
-      new CertificateManagerDialog(GetAppProfile(), native_window);
+  LoginWebDialog* dialog = new LoginWebDialog(
+      GetAppProfile(), native_window,
+      l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE),
+      GURL(chrome::kChromeUICertificateManagerDialogURL));
+  // The width matches the Settings UI width.
+  dialog->set_dialog_size(gfx::Size{640, 480});
   dialog->Show();
 }
 

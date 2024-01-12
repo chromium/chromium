@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 
 namespace cryptohome {
@@ -18,6 +18,50 @@ namespace cryptohome {
 namespace {
 
 using ::ash::ChallengeResponseKey;
+
+KnowledgeFactorHashAlgorithm ConvertHashTypeToProto(
+    KnowledgeFactorHashAlgorithmWrapper algorithm) {
+  using Algorithm = KnowledgeFactorHashAlgorithmWrapper;
+  switch (algorithm) {
+    case Algorithm::kSha256TopHalf:
+      return KnowledgeFactorHashAlgorithm::HASH_TYPE_SHA256_TOP_HALF;
+    case Algorithm::kPbkdf2Aes2561234:
+      return KnowledgeFactorHashAlgorithm::HASH_TYPE_PBKDF2_AES256_1234;
+  }
+}
+
+void ConvertKnowledgeFactorHashInfoToProto(
+    const KnowledgeFactorHashInfo& hash_info,
+    user_data_auth::KnowledgeFactorHashInfo& hash_info_proto) {
+  hash_info_proto.set_algorithm(ConvertHashTypeToProto(hash_info.algorithm));
+  hash_info_proto.set_salt(hash_info.salt);
+}
+
+PasswordMetadata ParsePasswordMetadata(
+    const user_data_auth::AuthFactor& proto) {
+  std::optional<KnowledgeFactorHashInfo> hash_info;
+  if (proto.has_password_metadata() &&
+      proto.password_metadata().has_hash_info()) {
+    const user_data_auth::KnowledgeFactorHashInfo& hash_info_proto =
+        proto.password_metadata().hash_info();
+    DCHECK_EQ(hash_info_proto.algorithm(),
+              KnowledgeFactorHashAlgorithm::HASH_TYPE_SHA256_TOP_HALF);
+    return PasswordMetadata::Create(SystemSalt(hash_info_proto.salt()));
+  }
+  return PasswordMetadata::CreateWithoutSalt();
+}
+
+PinMetadata ParsePinMetadata(const user_data_auth::AuthFactor& proto) {
+  std::optional<KnowledgeFactorHashInfo> hash_info;
+  if (proto.has_pin_metadata() && proto.pin_metadata().has_hash_info()) {
+    const user_data_auth::KnowledgeFactorHashInfo& hash_info_proto =
+        proto.pin_metadata().hash_info();
+    DCHECK_EQ(hash_info_proto.algorithm(),
+              KnowledgeFactorHashAlgorithm::HASH_TYPE_PBKDF2_AES256_1234);
+    return PinMetadata::Create(PinSalt(hash_info_proto.salt()));
+  }
+  return PinMetadata::CreateWithoutSalt();
+}
 
 }  // namespace
 
@@ -132,12 +176,26 @@ void SerializeAuthFactor(const AuthFactor& factor,
   }
 
   switch (factor.ref().type()) {
-    case AuthFactorType::kPassword:
-      out_proto->mutable_password_metadata();
+    case AuthFactorType::kPassword: {
+      user_data_auth::PasswordMetadata& password_metadata_proto =
+          *out_proto->mutable_password_metadata();
+      if (factor.GetPasswordMetadata().hash_info().has_value()) {
+        ConvertKnowledgeFactorHashInfoToProto(
+            *factor.GetPasswordMetadata().hash_info(),
+            *password_metadata_proto.mutable_hash_info());
+      }
       break;
-    case AuthFactorType::kPin:
-      out_proto->mutable_pin_metadata();
+    }
+    case AuthFactorType::kPin: {
+      user_data_auth::PinMetadata& pin_metadata_proto =
+          *out_proto->mutable_pin_metadata();
+      if (factor.GetPinMetadata().hash_info().has_value()) {
+        ConvertKnowledgeFactorHashInfoToProto(
+            *factor.GetPinMetadata().hash_info(),
+            *pin_metadata_proto.mutable_hash_info());
+      }
       break;
+    }
     case AuthFactorType::kRecovery:
       out_proto->mutable_cryptohome_recovery_metadata()->set_mediator_pub_key(
           factor.GetCryptohomeRecoveryMetadata().mediator_pub_key);
@@ -183,11 +241,11 @@ void SerializeAuthInput(const AuthFactorRef& ref,
         proto_input->set_recovery_response(recovery_auth.recovery_data);
       } else {
         const auto& recovery_creation = auth_input.GetRecoveryCreationInput();
-        const bool result = base::HexStringToString(
-            recovery_creation.pub_key, proto_input->mutable_mediator_pub_key());
-        CHECK(result);
+        proto_input->set_mediator_pub_key(recovery_creation.pub_key);
         proto_input->set_user_gaia_id(recovery_creation.user_gaia_id);
         proto_input->set_device_user_id(recovery_creation.device_user_id);
+        proto_input->set_ensure_fresh_recovery_id(
+            recovery_creation.ensure_fresh_recovery_id);
       }
     } break;
     case AuthFactorType::kKiosk:
@@ -257,8 +315,11 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
 
   // Ignore is_active_for_login for now
   switch (type) {
-    case AuthFactorType::kPassword:
-      return AuthFactor(std::move(ref), std::move(common_metadata));
+    case AuthFactorType::kPassword: {
+      auto password_metadata = ParsePasswordMetadata(proto);
+      return AuthFactor(std::move(ref), std::move(common_metadata),
+                        std::move(password_metadata));
+    }
     case AuthFactorType::kRecovery: {
       if (!proto.has_cryptohome_recovery_metadata()) {
         return AuthFactor(std::move(ref), std::move(common_metadata));
@@ -273,9 +334,10 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
       return AuthFactor(std::move(ref), std::move(common_metadata));
     case AuthFactorType::kPin: {
       DCHECK(proto.has_pin_metadata());
+      auto pin_metadata = ParsePinMetadata(proto);
       PinStatus pin_status{proto.pin_metadata().auth_locked()};
       return AuthFactor(std::move(ref), std::move(common_metadata),
-                        std::move(pin_status));
+                        std::move(pin_metadata), std::move(pin_status));
     }
     case AuthFactorType::kSmartCard: {
       DCHECK(proto.has_smart_card_metadata());

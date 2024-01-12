@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -21,17 +22,17 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
 /** Root coordinator of the Hub. */
-public class HubCoordinator implements BackPressHandler {
+public class HubCoordinator implements PaneHubController, BackPressHandler {
     private static final Integer START_SURFACE_LAYOUT_TYPE =
             Integer.valueOf(LayoutType.START_SURFACE);
 
     private final @NonNull FrameLayout mContainerView;
     private final @NonNull View mMainHubParent;
+    private final @NonNull PaneManager mPaneManager;
     private final @NonNull HubToolbarCoordinator mHubToolbarCoordinator;
     private final @NonNull HubPaneHostCoordinator mHubPaneHostCoordinator;
     private final @NonNull HubLayoutController mHubLayoutController;
     private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
-    private final @NonNull ObservableSupplier<Pane> mFocusedPaneSupplier;
 
     /**
      * Generic callback that invokes {@link #updateHandleBackPressSupplier()}. This can be cast to
@@ -40,7 +41,7 @@ public class HubCoordinator implements BackPressHandler {
     private final @NonNull Callback<Object> mBackPressStateChangeCallback;
 
     /**
-     * Warning: {@link mFocusedPaneSupplier#get()} may return null if no pane is focused or {@link
+     * Warning: {@link #getFocusedPane()} may return null if no pane is focused or {@link
      * Pane#getHandleBackPressChangedSupplier()} contains null.
      */
     private final @NonNull TransitiveObservableSupplier<Pane, Boolean>
@@ -64,10 +65,11 @@ public class HubCoordinator implements BackPressHandler {
             @NonNull ObservableSupplier<Tab> currentTabSupplier) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
-        mFocusedPaneSupplier = paneManager.getFocusedPaneSupplier();
+        mPaneManager = paneManager;
         mFocusedPaneHandleBackPressSupplier =
                 new TransitiveObservableSupplier<>(
-                        mFocusedPaneSupplier, p -> p.getHandleBackPressChangedSupplier());
+                        paneManager.getFocusedPaneSupplier(),
+                        p -> p.getHandleBackPressChangedSupplier());
         mFocusedPaneHandleBackPressSupplier.addObserver(
                 castCallback(mBackPressStateChangeCallback));
 
@@ -122,7 +124,7 @@ public class HubCoordinator implements BackPressHandler {
     @Override
     public @BackPressResult int handleBackPress() {
         if (Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
-                && mFocusedPaneSupplier.get().handleBackPress() == BackPressResult.SUCCESS) {
+                && getFocusedPane().handleBackPress() == BackPressResult.SUCCESS) {
             return BackPressResult.SUCCESS;
         }
 
@@ -149,6 +151,20 @@ public class HubCoordinator implements BackPressHandler {
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressSupplier;
+    }
+
+    @Override
+    public void selectTabAndHideHub(int tabId) {
+        mHubLayoutController.selectTabAndHideHubLayout(tabId);
+    }
+
+    @Override
+    public void focusPane(@PaneId int paneId) {
+        mPaneManager.focusPane(paneId);
+    }
+
+    private @Nullable Pane getFocusedPane() {
+        return mPaneManager.getFocusedPaneSupplier().get();
     }
 
     private boolean startSurfaceHandlesBackpress() {

@@ -85,6 +85,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
         mCoordinator.show();
         mCoordinator.dismiss();
         verify(mMediator, times(1)).dismiss();
+        verify(mMediator).setShowMiniPlayerOnDismiss(eq(false));
     }
 
     @Test
@@ -110,8 +111,8 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnSheetClosed_OptionsSheetWillOpen() {
-        when(mMediator.getOptionSheetPending()).thenReturn(true);
+    public void testOnSheetClosed_dontShowMiniPlayer() {
+        when(mMediator.getShowMiniPlayerOnDismiss()).thenReturn(false);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.NONE);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
@@ -119,8 +120,8 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnSheetClosed_onlyMainSheet() {
-        when(mMediator.getOptionSheetPending()).thenReturn(false);
+    public void testOnSheetClosed_showMiniPlayer() {
+        when(mMediator.getShowMiniPlayerOnDismiss()).thenReturn(true);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.BACK_PRESS);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
@@ -186,7 +187,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
     public void testBindVoiceList() {
         doReturn(mVoiceMenu).when(mSheetContent).getVoiceMenu();
 
-        var voices = List.of(new PlaybackVoice("en", "a", ""));
+        var voices = List.of(new PlaybackVoice("en", "a"));
         mModel.set(PlayerProperties.VOICES_LIST, voices);
 
         verify(mVoiceMenu).setVoices(eq(voices));

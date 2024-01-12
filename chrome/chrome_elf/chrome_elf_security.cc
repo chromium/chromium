@@ -4,11 +4,13 @@
 
 #include "chrome/chrome_elf/chrome_elf_security.h"
 
-#include <windows.h>
+// clang-format off
+#include <windows.h> // Must be included before versionhelpers.h
+#include <versionhelpers.h>
+// clang-format on
 
 #include <assert.h>
 #include <ntstatus.h>
-#include <versionhelpers.h>  // windows.h must be before
 
 #include "base/check.h"
 #include "base/file_version_info.h"

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/make_credential_request_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace device {
@@ -170,12 +170,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   void DispatchGetAssertionRequest(
       const std::string& authenticator_id,
-      absl::optional<std::vector<uint8_t>> credential_id);
+      std::optional<std::vector<uint8_t>> credential_id);
 
   // Callback to handle the async response from a U2fDevice.
   void OnRegisterResponse(
       device::MakeCredentialStatus status_code,
-      absl::optional<device::AuthenticatorMakeCredentialResponse> response_data,
+      std::optional<device::AuthenticatorMakeCredentialResponse> response_data,
       const device::FidoAuthenticator* authenticator);
 
   // Callback to complete the registration process once a decision about
@@ -188,12 +188,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // Callback to handle the async response from a U2fDevice.
   void OnSignResponse(
       device::GetAssertionStatus status_code,
-      absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
+      std::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
           response_data,
       device::FidoAuthenticator* authenticator);
 
   // Begins a timeout at the beginning of a request.
-  void BeginRequestTimeout(absl::optional<base::TimeDelta> timeout);
+  void BeginRequestTimeout(std::optional<base::TimeDelta> timeout);
 
   // Runs when timer expires and cancels all issued requests to a U2fDevice.
   void OnTimeout();

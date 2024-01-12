@@ -101,6 +101,6 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       // false.
       base::BindRepeating([](const GURL& url) { return false; }),
       std::make_unique<FilterDelegateImpl>(),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(),
+      std::make_unique<SupervisedUserServicePlatformDelegate>(browser_state),
       supervised_user::ShouldShowFirstTimeBanner(browser_state));
 }

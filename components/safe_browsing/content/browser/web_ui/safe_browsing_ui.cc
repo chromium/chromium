@@ -1389,62 +1389,6 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
   return client_properties_dict;
 }
 
-base::Value::Dict SerializeHashRealTimeExperimentDetails(
-    const ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails&
-        details) {
-  base::Value::Dict dict;
-  auto serialize_threat_type =
-      [](ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-             ExperimentThreatType threat_type) -> std::string {
-    switch (threat_type) {
-      case ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-          SAFE_OR_OTHER:
-        return "SAFE_OR_OTHER";
-      case ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-          MALWARE:
-        return "MALWARE";
-      case ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-          PHISHING:
-        return "PHISHING";
-      case ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-          UNWANTED:
-        return "UNWANTED";
-      case ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-          BILLING:
-        return "BILLING";
-      default:
-        NOTREACHED();
-        return "NOTREACHED";
-    }
-  };
-  // Hash database details:
-  dict.Set("hash_database_threat_type",
-           serialize_threat_type(details.hash_database_threat_type()));
-  // Hash real-time details:
-  dict.Set(
-      "hash_realtime_threat_type",
-      serialize_threat_type(details.hash_realtime_details().threat_type()));
-  dict.Set("hash_realtime_matched_global_cache",
-           details.hash_realtime_details().matched_global_cache());
-  if (details.hash_realtime_details()
-          .has_locally_cached_results_threat_type()) {
-    dict.Set("hash_realtime_locally_cached_results_threat_type",
-             serialize_threat_type(details.hash_realtime_details()
-                                       .locally_cached_results_threat_type()));
-  }
-  // URL real-time details:
-  dict.Set("url_realtime_threat_type",
-           serialize_threat_type(details.url_realtime_details().threat_type()));
-  dict.Set("url_realtime_matched_global_cache",
-           details.url_realtime_details().matched_global_cache());
-  if (details.url_realtime_details().has_locally_cached_results_threat_type()) {
-    dict.Set("url_realtime_locally_cached_results_threat_type",
-             serialize_threat_type(details.url_realtime_details()
-                                       .locally_cached_results_threat_type()));
-  }
-  return dict;
-}
-
 std::string UrlRequestDestinationToString(
     const ClientSafeBrowsingReportRequest::UrlRequestDestination&
         request_destination) {
@@ -1529,6 +1473,10 @@ base::Value::Dict SerializeDownloadWarningAction(
     case ClientSafeBrowsingReportRequest::DownloadWarningAction::
         DOWNLOAD_PROMPT:
       surface = "DOWNLOAD_PROMPT";
+      break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        DOWNLOAD_NOTIFICATION:
+      surface = "DOWNLOAD_NOTIFICATION";
       break;
   }
   action_dict.Set("surface", surface);
@@ -1632,9 +1580,6 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::BLOCKED_AD_POPUP:
         report_type = "BLOCKED_AD_POPUP";
         break;
-      case ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT:
-        report_type = "HASH_PREFIX_REAL_TIME_EXPERIMENT";
-        break;
       case ClientSafeBrowsingReportRequest::PHISHY_SITE_INTERACTIONS:
         report_type = "PHISHY_SITE_INTERACTIONS";
         break;
@@ -1642,6 +1587,7 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
         report_type = "WARNING_SHOWN";
         break;
       case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE:
+      case ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT:
         // Deprecated!
         NOTREACHED();
         report_type = "";
@@ -1710,11 +1656,6 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
   }
   report_request.Set("download_warning_actions",
                      std::move(download_warning_action_list));
-  if (report.has_hash_real_time_experiment_details()) {
-    report_request.Set("hash_real_time_experiment_details",
-                       SerializeHashRealTimeExperimentDetails(
-                           report.hash_real_time_experiment_details()));
-  }
   if (report.has_url_request_destination()) {
     report_request.Set(
         "url_request_destination",

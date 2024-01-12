@@ -718,6 +718,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       </message>
       <message name="IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Account Settings and Google Services settings.">
         You can <ph name="BEGIN_LINK">BEGIN_LINK</ph>manage what Chrome data is saved<ph name="END_LINK">END_LINK</ph> in your Google Account.
+
 For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY_PROXY" desc="Friendlier summary for Privacy Safe Browsing standard protection mode.">

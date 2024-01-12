@@ -316,7 +316,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // if transparency is unsupported and the frame should be rendered opaque.
   // The returned object is not owned by the caller and will remain alive until
   // the process ends.
-  virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) = 0;
+  virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+                                                      bool tiled) = 0;
 
  protected:
   LinuxUiTheme();

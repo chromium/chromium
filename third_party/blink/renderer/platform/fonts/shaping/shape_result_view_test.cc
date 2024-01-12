@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 #include <unicode/uscript.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -13,8 +14,10 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -31,6 +34,41 @@ class ShapeResultViewTest : public FontTestBase {
   FontDescription font_description;
   Font font;
 };
+
+TEST_F(ShapeResultViewTest, ExpandRange) {
+  auto GetExpandedRange = [](const String& text, bool ltr, unsigned from,
+                             unsigned to) -> Vector<unsigned> {
+    FontDescription::VariantLigatures ligatures(
+        FontDescription::kEnabledLigaturesState);
+    Font font = test::CreateTestFont(
+        AtomicString("roboto"),
+        test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
+        100, &ligatures);
+
+    HarfBuzzShaper shaper(text);
+    scoped_refptr<const ShapeResultView> shape_result = ShapeResultView::Create(
+        shaper.Shape(&font, ltr ? TextDirection::kLtr : TextDirection::kRtl)
+            .get());
+    shape_result->ExpandRangeToIncludePartialGlyphs(&from, &to);
+    return Vector<unsigned>({from, to});
+  };
+
+  // "ffi" is a ligature, therefore a single glyph. Any range that includes one
+  // of the letters must be expanded to all of them.
+  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 1), Vector({0u, 1u}));
+  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 2), Vector({0u, 4u}));
+  EXPECT_EQ(GetExpandedRange("efficient", true, 3, 4), Vector({1u, 4u}));
+  EXPECT_EQ(GetExpandedRange("efficient", true, 4, 6), Vector({4u, 6u}));
+  EXPECT_EQ(GetExpandedRange("efficient", true, 6, 7), Vector({6u, 7u}));
+  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 9), Vector({0u, 9u}));
+
+  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 1), Vector({0u, 1u}));
+  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 2), Vector({0u, 2u}));
+  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 3, 4), Vector({3u, 4u}));
+  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 4, 6), Vector({4u, 8u}));
+  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 6, 7), Vector({5u, 8u}));
+  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 9), Vector({0u, 9u}));
+}
 
 // http://crbug.com/1221008
 TEST_F(ShapeResultViewTest,

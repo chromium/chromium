@@ -40,8 +40,7 @@ class HelpAppUiDelegateTest : public BrowserWithTestWindowTest {
   content::WebUI* web_ui() { return web_ui_.get(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<ChromeHelpAppUIDelegate> delegate_;
 };

@@ -53,9 +53,9 @@ class AppResult : public ChromeSearchResult, public AppContextMenuDelegate {
   }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   const std::string app_id_;
-  raw_ptr<AppListControllerDelegate, ExperimentalAsh> controller_;
+  raw_ptr<AppListControllerDelegate> controller_;
 
   base::WeakPtrFactory<AppResult> weak_ptr_factory_{this};
 };

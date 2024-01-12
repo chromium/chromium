@@ -108,7 +108,7 @@ bool AppendFileRefToBody(PP_Instance instance,
     default:
       NOTREACHED();
   }
-  absl::optional<base::Time> optional_modified_time;
+  std::optional<base::Time> optional_modified_time;
   if (expected_last_modified_time != 0)
     optional_modified_time =
         base::Time::FromSecondsSinceUnixEpoch(expected_last_modified_time);

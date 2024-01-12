@@ -31,7 +31,7 @@ class BruschettaTerminalProviderTest : public testing::Test {
   }
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  raw_ptr<FakeBruschettaLauncher, ExperimentalAsh> launcher_;
+  raw_ptr<FakeBruschettaLauncher> launcher_;
   base::RunLoop run_loop_;
 };
 

@@ -81,6 +81,8 @@ static xmlMutex xmlDictMutex;
  * xmlInitializeDict:
  *
  * DEPRECATED: Alias for xmlInitParser.
+ *
+ * Returns 0.
  */
 int
 xmlInitializeDict(void) {
@@ -89,7 +91,7 @@ xmlInitializeDict(void) {
 }
 
 /**
- * xmlInitializeDict:
+ * xmlInitDictInternal:
  *
  * Initialize mutex.
  */
@@ -499,6 +501,10 @@ xmlDictHashQName(unsigned seed, const xmlChar *prefix, const xmlChar *name,
 
     HASH_FINISH(h1, h2);
 
+    /*
+     * Always set the upper bit of hash values since 0 means an unoccupied
+     * bucket.
+     */
     return(h2 | MAX_HASH_SIZE);
 }
 
@@ -506,6 +512,21 @@ unsigned
 xmlDictComputeHash(const xmlDict *dict, const xmlChar *string) {
     size_t len;
     return(xmlDictHashName(dict->seed, string, SIZE_MAX, &len));
+}
+
+#define HASH_ROL31(x,n) ((x) << (n) | ((x) & 0x7FFFFFFF) >> (31 - (n)))
+
+ATTRIBUTE_NO_SANITIZE_INTEGER
+unsigned
+xmlDictCombineHash(unsigned v1, unsigned v2) {
+    /*
+     * The upper bit of hash values is always set, so we have to operate on
+     * 31-bit hashes here.
+     */
+    v1 ^= v2;
+    v1 += HASH_ROL31(v2, 5);
+
+    return((v1 & 0xFFFFFFFF) | 0x80000000);
 }
 
 /**
@@ -888,8 +909,8 @@ static xmlMutex xmlRngMutex;
 static unsigned globalRngState[2];
 
 #ifdef XML_THREAD_LOCAL
-XML_THREAD_LOCAL static int localRngInitialized = 0;
-XML_THREAD_LOCAL static unsigned localRngState[2];
+static XML_THREAD_LOCAL int localRngInitialized = 0;
+static XML_THREAD_LOCAL unsigned localRngState[2];
 #endif
 
 ATTRIBUTE_NO_SANITIZE_INTEGER
@@ -902,9 +923,9 @@ xmlInitRandom(void) {
     /* TODO: Get seed values from system PRNG */
 
     globalRngState[0] = (unsigned) time(NULL) ^
-                        HASH_ROL((unsigned) (size_t) &xmlInitRandom, 8);
-    globalRngState[1] = HASH_ROL((unsigned) (size_t) &xmlRngMutex, 16) ^
-                        HASH_ROL((unsigned) (size_t) &var, 24);
+                        HASH_ROL((unsigned) ((size_t) &xmlInitRandom & 0xFFFFFFFF), 8);
+    globalRngState[1] = HASH_ROL((unsigned) ((size_t) &xmlRngMutex & 0xFFFFFFFF), 16) ^
+                        HASH_ROL((unsigned) ((size_t) &var & 0xFFFFFFFF), 24);
 }
 
 void

@@ -112,7 +112,7 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
     std::move(callback).Run(std::move(fd));
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<ArcAppfuseProviderClientImpl> weak_ptr_factory_{this};
 };

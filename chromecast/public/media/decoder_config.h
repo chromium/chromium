@@ -132,7 +132,6 @@ enum VideoProfile : int {
   kVP9Profile2,
   kVP9Profile3,
   kDolbyVisionProfile0,
-  kDolbyVisionProfile4,
   kDolbyVisionProfile5,
   kDolbyVisionProfile7,
   kHEVCMain,

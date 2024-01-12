@@ -219,6 +219,5 @@ GetFileSystemAccessRestorePermissionDialogForTesting(  // IN-TEST
       request, std::move(callback), web_contents);
 }
 
-BEGIN_METADATA(FileSystemAccessRestorePermissionBubbleView,
-               LocationBarBubbleDelegateView)
+BEGIN_METADATA(FileSystemAccessRestorePermissionBubbleView)
 END_METADATA

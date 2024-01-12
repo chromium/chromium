@@ -380,7 +380,7 @@ class AppListSyncableService::ModelUpdaterObserver
     owner_->UpdateSyncItem(item);
   }
 
-  const raw_ptr<AppListSyncableService, ExperimentalAsh> owner_;
+  const raw_ptr<AppListSyncableService> owner_;
   std::string adding_item_id_;
 
   // Whether the observer should handle model updated updates. The value is
@@ -1434,6 +1434,10 @@ std::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
   HandleUpdateFinished(false /* clean_up_after_init_sync */);
 
   return std::nullopt;
+}
+
+base::WeakPtr<syncer::SyncableService> AppListSyncableService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AppListSyncableService::Shutdown() {

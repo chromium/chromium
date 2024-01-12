@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "content/public/utility/content_utility_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace variations {
@@ -48,9 +48,9 @@ class MockContentMainDelegate : public ContentBrowserTestShellMainDelegate {
  public:
   using Super = ContentBrowserTestShellMainDelegate;
 
-  MOCK_METHOD(absl::optional<int>, MockBasicStartupComplete, ());
-  absl::optional<int> BasicStartupComplete() override {
-    absl::optional<int> result = MockBasicStartupComplete();
+  MOCK_METHOD(std::optional<int>, MockBasicStartupComplete, ());
+  std::optional<int> BasicStartupComplete() override {
+    std::optional<int> result = MockBasicStartupComplete();
     // Check for early exit code.
     if (result.has_value())
       return result;
@@ -96,9 +96,9 @@ class MockContentMainDelegate : public ContentBrowserTestShellMainDelegate {
     return Super::ShouldLockSchemeRegistry();
   }
 
-  MOCK_METHOD(absl::optional<int>, MockPreBrowserMain, ());
-  absl::optional<int> PreBrowserMain() override {
-    absl::optional<int> result = MockPreBrowserMain();
+  MOCK_METHOD(std::optional<int>, MockPreBrowserMain, ());
+  std::optional<int> PreBrowserMain() override {
+    std::optional<int> result = MockPreBrowserMain();
     // Check for early exit code.
     if (result.has_value())
       return result;
@@ -118,9 +118,9 @@ class MockContentMainDelegate : public ContentBrowserTestShellMainDelegate {
     return Super::CreateVariationsIdsProvider();
   }
 
-  MOCK_METHOD(absl::optional<int>, MockPostEarlyInitialization, (InvokedIn));
-  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override {
-    absl::optional<int> result = MockPostEarlyInitialization(invoked_in);
+  MOCK_METHOD(std::optional<int>, MockPostEarlyInitialization, (InvokedIn));
+  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override {
+    std::optional<int> result = MockPostEarlyInitialization(invoked_in);
     // Check for early exit code.
     if (result.has_value())
       return result;
@@ -218,7 +218,7 @@ class ContentMainRunnerImplBrowserTest : public ContentBrowserTest {
         .WillOnce(DoAll(
             // Test the starting state of ContentMainRunnerImpl.
             Invoke(this, &Self::TestBasicStartupComplete),
-            Return(absl::nullopt)));
+            Return(std::nullopt)));
     EXPECT_CALL(mock_delegate_, MockCreateContentBrowserClient());
     EXPECT_CALL(mock_delegate_, MockPreSandboxStartup());
     EXPECT_CALL(mock_delegate_, MockSandboxInitialized(kBrowserProcessType));
@@ -229,11 +229,11 @@ class ContentMainRunnerImplBrowserTest : public ContentBrowserTest {
                 ShouldInitializeMojo(InvokedInMatcher(kBrowserProcessType)))
         .WillOnce(Return(true));
     EXPECT_CALL(mock_delegate_, MockPreBrowserMain())
-        .WillOnce(Return(absl::nullopt));
+        .WillOnce(Return(std::nullopt));
     EXPECT_CALL(mock_delegate_, MockPostEarlyInitialization(
                                     InvokedInMatcher(kBrowserProcessType)))
         .WillOnce(DoAll(Invoke(this, &Self::TestPostEarlyInitialization),
-                        Return(absl::nullopt)));
+                        Return(std::nullopt)));
     EXPECT_CALL(mock_delegate_, MockRunProcess(kBrowserProcessType, _));
 #if !BUILDFLAG(IS_ANDROID)
     // Android never calls ProcessExiting, since it leaks its ContentMainRunner

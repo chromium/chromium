@@ -1313,7 +1313,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(num_stream_ignore_ui_gains);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> cras_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> cras_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Note: This should remain the last member so it'll be destroyed and

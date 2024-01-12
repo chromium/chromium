@@ -21,13 +21,21 @@ PermissionPromptBubble::PermissionPromptBubble(
   LocationBarView* lbv = GetLocationBarView();
   if (lbv && lbv->IsDrawn() &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
-    lbv->chip_controller()->InitializePermissionPrompt(
+    lbv->GetChipController()->InitializePermissionPrompt(
         delegate->GetWeakPtr(),
         base::BindOnce(&PermissionPromptBubble::ShowBubble,
                        weak_factory_.GetWeakPtr()));
   } else {
     ShowBubble();
   }
+
+  web_modal::WebContentsModalDialogManager* const modal_dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  CHECK(modal_dialog_manager);
+  modal_dialog_activated_subscription_ =
+      modal_dialog_manager->AddOnDialogActivatedCallback(
+          base::BindRepeating(&PermissionPromptBubble::OnModalDialogActivated,
+                              weak_factory_.GetWeakPtr()));
 }
 
 PermissionPromptBubble::~PermissionPromptBubble() {
@@ -86,6 +94,11 @@ std::optional<gfx::Rect> PermissionPromptBubble::GetViewBoundsInScreen() const {
              : std::nullopt;
 }
 
+void PermissionPromptBubble::OnModalDialogActivated() {
+  GetPromptBubble()->AsDialogDelegate()->TriggerInputProtection(
+      /*force_early=*/true);
+}
+
 bool PermissionPromptBubble::UpdateAnchor() {
   bool was_browser_changed = UpdateBrowser();
   // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
@@ -114,7 +127,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
 
     if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen() &&
         !lbv->IsEditingOrEmpty()) {
-      auto* chip_controller = lbv->chip_controller();
+      auto* chip_controller = lbv->GetChipController();
       chip_controller->InitializePermissionPrompt(delegate()->GetWeakPtr());
     }
   }

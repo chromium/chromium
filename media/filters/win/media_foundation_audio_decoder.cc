@@ -38,6 +38,11 @@ bool CodecSupportsFloatOutput(AudioCodec codec) {
     return true;
   }
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+  if (codec == AudioCodec::kAC4) {
+    return true;
+  }
+#endif
   return false;
 }
 
@@ -62,6 +67,10 @@ bool CodecSupportsFormat(const AudioDecoderConfig& config,
   if ((config.codec() == AudioCodec::kAC3 ||
        config.codec() == AudioCodec::kEAC3) &&
       config.samples_per_second() == static_cast<int>(format.nSamplesPerSec)) {
+    return true;
+  }
+
+  if (config.codec() == AudioCodec::kAC4) {
     return true;
   }
 
@@ -93,6 +102,10 @@ absl::optional<MFT_REGISTER_TYPE_INFO> GetTypeInfo(
       }
       [[fallthrough]];
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    case AudioCodec::kAC4:
+      return MFT_REGISTER_TYPE_INFO{MFMediaType_Audio, MFAudioFormat_Dolby_AC4};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
     default:
       return absl::nullopt;
   }
@@ -123,6 +136,9 @@ bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
   RETURN_ON_HR_FAILURE(
       sample->SetSampleTime(input.timestamp().InNanoseconds() / 100),
       "Failed to set input timestamp", false);
+  RETURN_ON_HR_FAILURE(
+      sample->SetSampleDuration(input.duration().InNanoseconds() / 100),
+      "Failed to set input duration", false);
   return true;
 }
 

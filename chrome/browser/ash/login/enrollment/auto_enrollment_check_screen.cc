@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -208,21 +210,13 @@ bool AutoEnrollmentCheckScreen::ShowAutoEnrollmentState(
     return false;
   }
 
-  const policy::AutoEnrollmentLegacyError error =
-      policy::AutoEnrollmentErrorToLegacyError(
-          new_auto_enrollment_state.error());
-  switch (error) {
-    case policy::AutoEnrollmentLegacyError::kServerError:
-      if (!ShouldBlockOnServerError())
-        return false;
-
-      // Fall to the same behavior like any connection error if the device is
-      // enrolled.
-      [[fallthrough]];
-    case policy::AutoEnrollmentLegacyError::kConnectionError:
-      ShowErrorScreen(NetworkError::ERROR_STATE_OFFLINE);
-      return true;
+  // Do not  show connection error screen if the error is not blocking.
+  if (!IsBlockingError(new_auto_enrollment_state.error())) {
+    return false;
   }
+
+  ShowErrorScreen(NetworkError::ERROR_STATE_OFFLINE);
+  return true;
 }
 
 void AutoEnrollmentCheckScreen::ShowErrorScreen(
@@ -282,21 +276,37 @@ bool AutoEnrollmentCheckScreen::IsCompleted() const {
     return true;
   }
 
-  const policy::AutoEnrollmentLegacyError error =
-      policy::AutoEnrollmentErrorToLegacyError(state.error());
-  switch (error) {
-    case policy::AutoEnrollmentLegacyError::kConnectionError:
-      return false;
-    case policy::AutoEnrollmentLegacyError::kServerError:
-      // Server errors should block OOBE for enrolled devices.
-      return !ShouldBlockOnServerError();
-  }
-  NOTREACHED();
-  return false;
+  // Error is considered compliting if it is not blocking.
+  return !IsBlockingError(state.error());
 }
 
 void AutoEnrollmentCheckScreen::OnConnectRequested() {
   auto_enrollment_controller_->Retry();
+}
+
+bool AutoEnrollmentCheckScreen::IsBlockingError(
+    const policy::AutoEnrollmentError& error) const {
+  // Connection errors are always blocking. Server errors are blocking for FRE
+  // devices.
+  return std::visit(
+      base::Overloaded{
+          [](policy::AutoEnrollmentSafeguardTimeoutError) { return true; },
+          [](policy::AutoEnrollmentSystemClockSyncError) { return true; },
+          [this](const policy::AutoEnrollmentDMServerError& error) {
+            return error.network_error.has_value() ? true
+                                                   : ShouldBlockOnServerError();
+          },
+          [this](policy::AutoEnrollmentStateAvailabilityResponseError error) {
+            return ShouldBlockOnServerError();
+          },
+          [this](policy::AutoEnrollmentPsmError) {
+            return ShouldBlockOnServerError();
+          },
+          [this](policy::AutoEnrollmentStateRetrievalResponseError) {
+            return ShouldBlockOnServerError();
+          },
+      },
+      error);
 }
 
 bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {

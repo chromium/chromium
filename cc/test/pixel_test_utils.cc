@@ -33,7 +33,7 @@ std::string GetPNGDataUrl(const SkBitmap& bitmap) {
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_data);
   std::string data_url;
   data_url.insert(data_url.end(), png_data.begin(), png_data.end());
-  base::Base64Encode(data_url, &data_url);
+  data_url = base::Base64Encode(data_url);
   data_url.insert(0, "data:image/png;base64,");
 
   return data_url;

@@ -5,6 +5,7 @@
 module webnn.mojom;
 
 import "components/ml/webnn/features.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
 
 enum PowerPreference {
@@ -21,24 +22,6 @@ enum PowerPreference {
 struct CreateContextOptions {
   // The power preference for power consumption.
   PowerPreference power_preference;
-};
-
-// Error message that can be exposed to JS for debugging use. It should be used
-// in a union as a return value that represents expected<result, error>, or
-// used on its own if the operation has no expected return result.
-struct Error {
-  // Error code maps to DOMException code.
-  enum Code {
-    // Internal error from backend.
-    kUnknownError,
-    // The configuration (e.g. platform, parameters, methods, etc.) is not
-    // supported.
-    kNotSupportedError,
-  };
-
-  Code error_code;
-  // Specific error message.
-  string error_message;
 };
 
 // Represents the return value of `WebNNContext::CreateGraph()`. Let it be

@@ -12,6 +12,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
@@ -76,17 +77,20 @@ views::View* AddHorizontalUiElements(
     views::View* container,
     const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements);
 
-// Creates a child view using FillLayout in the container. Uses |view| as the
-// child view if it's specified, otherwise creates a new view.
-// Returns the child view.
-views::View* AddFillLayoutChildView(
-    views::View* container,
-    std::unique_ptr<views::View> view = std::make_unique<views::View>());
+// Creates a vertical FlexLayoutView with |kViewSpacingMargins| spacing.
+std::unique_ptr<views::BoxLayoutView> CreateVerticalBoxLayoutView();
 
-// Creates a horizontal FlexLayoutView with |kViewSpacingMargins| spacing.
-std::unique_ptr<views::FlexLayoutView> CreateHorizontalLayoutView();
+// Creates a horizontal BoxLayoutView with |kContentSingleSpacing| spacing.
+// These BoxLayoutViews are used as horizontal container views of the rich card
+// `content_view_`.
+std::unique_ptr<views::BoxLayoutView> CreateHorizontalBoxLayoutView();
 
-// Creates a separator view with |kContentDoubleSpacing| vertical margins.
+// Creates a horizontal FlexLayoutView with |kContentSingleSpacing| spacing.
+// These FlexLayoutViews are used as container views *within* a BoxLayout
+// container view.
+std::unique_ptr<views::FlexLayoutView> CreateHorizontalFlexLayoutView();
+
+// Creates a separator view with |kContentSingleSpacing| vertical margins.
 std::unique_ptr<views::Separator> CreateSeparatorView();
 
 // Creates an image button view with the specified arguments.

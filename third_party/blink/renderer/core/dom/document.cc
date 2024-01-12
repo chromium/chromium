@@ -68,6 +68,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -262,6 +263,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -4010,6 +4012,10 @@ bool Document::CheckCompletedInternal() {
     }
   }
 
+  if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
+    lcpp->OnOutermostMainFrameDocumentLoad();
+  }
+
   return true;
 }
 
@@ -5467,9 +5473,6 @@ void Document::NotifyFocusedElementChanged(Element* old_focused_element,
     GetFrame()->Client()->FocusedElementChanged(new_focused_element);
 
     GetPage()->GetChromeClient().SetKeyboardFocusURL(new_focused_element);
-
-    if (GetSettings()->GetSpatialNavigationEnabled())
-      GetPage()->GetSpatialNavigationController().FocusedNodeChanged(this);
   }
 
   blink::NotifyPriorityScrollAnchorStatusChanged(old_focused_element,
@@ -5862,6 +5865,26 @@ void Document::EnqueueSnapChangingEvent(
       SnapEvent::Create(event_type_names::kSnapchanging, snap_targets);
   snapchanging_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
+}
+
+void Document::EnqueueMoveEvent() {
+  CHECK(
+      RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled());
+
+  auto display_mode = GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
+  bool is_app_window = !(display_mode == mojom::blink::DisplayMode::kBrowser ||
+                         display_mode == mojom::blink::DisplayMode::kUndefined);
+
+  if (!(IsInWebAppScope() && is_app_window) &&
+      !GetFrame()->GetPage()->GetChromeClient().IsPopup()) {
+    return;
+  }
+
+  Event* event = Event::Create(event_type_names::kMove);
+  event->SetTarget(domWindow());
+
+  // TODO(crbug.com/1515101): When launching AWC, requires spec work.
+  scripted_animation_controller_->EnqueuePerFrameEvent(event);
 }
 
 void Document::EnqueueResizeEvent() {
@@ -7729,6 +7752,25 @@ absl::optional<Color> Document::ThemeColor() {
   return absl::nullopt;
 }
 
+void Document::UpdateAppTitle() {
+  auto* root_element = documentElement();
+  if (!root_element) {
+    return;
+  }
+
+  for (HTMLMetaElement& meta_element :
+       Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
+    if (EqualIgnoringASCIICase(meta_element.GetName(), "app-title")) {
+      GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(
+          meta_element.Content().GetString());
+      return;
+    }
+  }
+
+  // Handle case of meta tag being removed by setting app title to empty string.
+  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(String(""));
+}
+
 void Document::ColorSchemeMetaChanged() {
   const CSSValue* color_scheme = nullptr;
   if (auto* root_element = documentElement()) {
@@ -9235,18 +9277,6 @@ void Document::RunPostPrerenderingActivationSteps() {
   for (auto& callback : post_prerendering_activation_callbacks_)
     std::move(callback).Run();
   post_prerendering_activation_callbacks_.clear();
-}
-
-void Document::AddLCPPredictedCallback(LCPCallback callback) {
-  lcp_predicted_callbacks_.push_back(std::move(callback));
-}
-
-void Document::RunLCPPredictedCallbacks(const Element& lcp_element) {
-  Vector<LCPCallback> callbacks;
-  callbacks.swap(lcp_predicted_callbacks_);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(lcp_element);
-  }
 }
 
 bool Document::InStyleRecalc() const {

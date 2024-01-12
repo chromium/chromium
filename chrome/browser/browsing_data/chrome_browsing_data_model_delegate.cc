@@ -219,6 +219,11 @@ bool ChromeBrowsingDataModelDelegate::IsCookieDeletionDisabled(
   return false;
 }
 
+base::WeakPtr<BrowsingDataModel::Delegate>
+ChromeBrowsingDataModelDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys(
     base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
     std::vector<DelegateEntry> entries) {

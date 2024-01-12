@@ -51,6 +51,11 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_USB_DEVICES,
   routes.SITE_SETTINGS_VR,
 
+  // WEB_PRINTING is currently only supported on ChromeOS.
+  // <if expr="is_chromeos">
+  routes.SITE_SETTINGS_WEB_PRINTING,
+  // </if>
+
   // TODO(crbug.com/1128902) After restructure add coverage for elements on
   // routes which depend on flags being enabled.
   // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
@@ -265,24 +270,6 @@ suite(`PrivacySandbox`, function() {
         privacySandboxLinkRow.label);
   });
 
-  test('privacySandboxRowSublabel', async function() {
-    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
-    assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
-    const privacySandboxLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#privacySandboxLinkRow')!;
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('adPrivacyLinkRowSubLabel'),
-        privacySandboxLinkRow.subLabel);
-
-    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', false);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('adPrivacyLinkRowSubLabel'),
-        privacySandboxLinkRow.subLabel);
-  });
-
   test('privacySandboxNotExternalLink', function() {
     const privacySandboxLinkRow =
         page.shadowRoot!.querySelector<CrLinkRowElement>(
@@ -306,6 +293,12 @@ suite(`PrivacySandbox`, function() {
     await flushTasks();
     assertEquals(
         routes.PRIVACY_SANDBOX, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('WebPrintingNotShown', function () {
+  test('navigateToWebPrinting', function () {
+    assertThrows(() => Router.getInstance().navigateTo(routes.SITE_SETTINGS_WEB_PRINTING));
   });
 });
 

@@ -33,13 +33,6 @@ GFX_EXPORT NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
 // Converts to NSImage from given ImageSkia.
 GFX_EXPORT NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
 
-// TODO(https://crbug.com/1495334): Remove callers to this function.
-inline NSImage* NSImageFromImageSkiaWithColorSpace(
-    const gfx::ImageSkia& image_skia,
-    CGColorSpaceRef color_space) {
-  return NSImageFromImageSkia(image_skia);
-}
-
 }  // namespace gfx
 
 #endif  // UI_GFX_IMAGE_IMAGE_SKIA_UTIL_MAC_H_

@@ -255,7 +255,7 @@ bool TestWebContents::CrossProcessNavigationPending() {
 
 bool TestWebContents::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
+    const std::optional<blink::FrameToken>& opener_frame_token,
     RenderFrameProxyHost* proxy_host) {
   const auto proxy_routing_id =
       proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
@@ -383,7 +383,8 @@ void TestWebContents::SaveFrameWithHeaders(
     const Referrer& referrer,
     const std::string& headers,
     const std::u16string& suggested_filename,
-    RenderFrameHost* rfh) {
+    RenderFrameHost* rfh,
+    bool is_subresource) {
   save_frame_headers_ = headers;
   suggested_filename_ = suggested_filename;
 }
@@ -428,7 +429,7 @@ bool TestWebContents::IsBackForwardCacheSupported() {
   return back_forward_cache_supported_;
 }
 
-const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+const std::optional<blink::mojom::PictureInPictureWindowOptions>&
 TestWebContents::GetPictureInPictureOptions() const {
   if (picture_in_picture_options_.has_value()) {
     return picture_in_picture_options_;
@@ -449,8 +450,8 @@ int TestWebContents::AddPrerender(const GURL& url) {
       rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
       rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),
       rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/absl::nullopt,
-      /*prerender_navigation_handle_callback=*/absl::nullopt));
+      /*url_match_predicate=*/std::nullopt,
+      /*prerender_navigation_handle_callback=*/std::nullopt));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
@@ -534,7 +535,7 @@ base::TimeTicks TestWebContents::GetTabSwitchStartTime() {
 }
 
 void TestWebContents::SetPictureInPictureOptions(
-    absl::optional<blink::mojom::PictureInPictureWindowOptions> options) {
+    std::optional<blink::mojom::PictureInPictureWindowOptions> options) {
   picture_in_picture_options_ = options;
 }
 

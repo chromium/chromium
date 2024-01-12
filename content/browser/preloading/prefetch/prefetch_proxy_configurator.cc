@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
@@ -24,6 +25,10 @@ std::unique_ptr<PrefetchProxyConfigurator>
 PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
     const GURL& proxy_url,
     const std::string& api_key) {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchProxy)) {
+    return nullptr;
+  }
+
   if (!proxy_url.is_valid())
     return nullptr;
 
@@ -111,7 +116,7 @@ void PrefetchProxyConfigurator::OnFallback(const net::ProxyChain& bad_chain,
   base::UmaHistogramSparse("PrefetchProxy.Proxy.Fallback.NetError",
                            std::abs(net_error));
 
-  OnTunnelProxyConnectionError(absl::nullopt);
+  OnTunnelProxyConnectionError(std::nullopt);
 }
 
 void PrefetchProxyConfigurator::OnTunnelHeadersReceived(
@@ -142,7 +147,7 @@ void PrefetchProxyConfigurator::OnTunnelHeadersReceived(
     }
   }
 
-  OnTunnelProxyConnectionError(absl::nullopt);
+  OnTunnelProxyConnectionError(std::nullopt);
 }
 
 bool PrefetchProxyConfigurator::IsPrefetchProxyAvailable() const {
@@ -154,7 +159,7 @@ bool PrefetchProxyConfigurator::IsPrefetchProxyAvailable() const {
 }
 
 void PrefetchProxyConfigurator::OnTunnelProxyConnectionError(
-    absl::optional<base::TimeDelta> retry_after) {
+    std::optional<base::TimeDelta> retry_after) {
   base::Time retry_proxy_at;
   if (retry_after) {
     retry_proxy_at = clock_->Now() + *retry_after;

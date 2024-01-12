@@ -49,6 +49,7 @@ include_rules = [
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
   "+components/strings",
+  "+components/tpcd",
   "+components/tracing/common",
   "+components/translate/core/common",
   "+components/url_formatter",

@@ -103,10 +103,8 @@ EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::Run() {
 void EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::OnChallengedKey(
     const ash::attestation::TpmChallengeKeyResult& result) {
   if (result.IsSuccess()) {
-    std::string encoded_response;
-    base::Base64Encode(result.challenge_response, &encoded_response);
-    Respond(ArgumentList(
-        api_epkp::ChallengeMachineKey::Results::Create(encoded_response)));
+    Respond(ArgumentList(api_epkp::ChallengeMachineKey::Results::Create(
+        base::Base64Encode(result.challenge_response))));
   } else {
     Respond(Error(result.GetErrorMessage()));
   }
@@ -147,10 +145,8 @@ EnterprisePlatformKeysPrivateChallengeUserKeyFunction::Run() {
 void EnterprisePlatformKeysPrivateChallengeUserKeyFunction::OnChallengedKey(
     const ash::attestation::TpmChallengeKeyResult& result) {
   if (result.IsSuccess()) {
-    std::string encoded_response;
-    base::Base64Encode(result.challenge_response, &encoded_response);
-    Respond(ArgumentList(
-        api_epkp::ChallengeUserKey::Results::Create(encoded_response)));
+    Respond(ArgumentList(api_epkp::ChallengeUserKey::Results::Create(
+        base::Base64Encode(result.challenge_response))));
   } else {
     Respond(Error(result.GetErrorMessage()));
   }

@@ -28,9 +28,9 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/float/float_controller.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/wm_constants.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -70,6 +70,8 @@ constexpr int kShortcutViewBorderHeight = 3;
 constexpr int kShortcutViewHeight = 20;
 constexpr int kShortcutViewIconSize = 14;
 constexpr int kShortcutViewDistanceFromBottom = 4;
+
+bool g_force_show_desk_profiles_button = false;
 
 gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   gfx::Point origin = screen_rect.origin();
@@ -140,7 +142,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
   preview_focus_ring->SetOutsetFocusRingDisabled(true);
   views::InstallRoundRectHighlightPathGenerator(
-      desk_preview_, gfx::Insets(kFocusRingHaloInset), kPreviewFocusRingRadius);
+      desk_preview_, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
+      kPreviewFocusRingRadius);
 
   preview_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const DeskMiniView* mini_view, const views::View* view) {
@@ -183,6 +186,19 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
         }
       },
       base::Unretained(this)));
+
+  // Only show profile avatar button when there is more than one profile logged
+  // in.
+  auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
+  if (chromeos::features::IsDeskProfilesEnabled() &&
+      (g_force_show_desk_profiles_button ||
+       (desk_profile_delegate &&
+        desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
+    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
+        base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
+                            base::Unretained(this)),
+        desk));
+  }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
       desks_controller->GetCombineDesksTargetName(desk_),
@@ -238,16 +254,6 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
     desk_shortcut_view_->SetVisible(false);
     desk_shortcut_view_->SetCanProcessEventsWithinSubtree(false);
   }
-  // Only show profile avatar button when there is more than one profile logged
-  // in.
-  auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
-  if (chromeos::features::IsDeskProfilesEnabled() && desk_profile_delegate &&
-      desk_profile_delegate->GetProfilesSnapshot().size() > 1) {
-    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
-        base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
-                            base::Unretained(this)),
-        desk));
-  }
 
   UpdateDeskButtonVisibility();
 }
@@ -279,6 +285,8 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
 
   auto* controller = DesksController::Get();
 
+  bool desk_profile_button_is_focused =
+      desk_profile_button_ && desk_profile_button_->HasFocus();
   // Don't show desk buttons when hovered while the dragged window is on
   // the desk bar view.
   // For switch access, setting desk buttons to visible allows users to
@@ -289,7 +297,8 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       (IsMouseHovered() || force_show_desk_buttons_ ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning() ||
        (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
-        (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus())));
+        (desk_preview_->HasFocus() || desk_profile_button_is_focused ||
+         desk_action_view_->ChildHasFocus())));
 
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
@@ -441,7 +450,6 @@ void DeskMiniView::MaybeCloseContextMenu() {
 
 void DeskMiniView::OnDeskProfilesButtonPressed() {
   desk_profile_button_->RequestFocus();
-  // TODO(shidi): Implement desk avatar context menu.
 }
 
 void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
@@ -744,6 +752,12 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   // Only when the new desk name has been committed is when we can update the
   // desks restore prefs.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+}
+
+// static
+base::AutoReset<bool>
+DeskMiniView::SetShouldShowDeskProfilesButtonForTesting() {
+  return base::AutoReset<bool>(&g_force_show_desk_profiles_button, true);
 }
 
 void DeskMiniView::OnContextMenuClosed() {

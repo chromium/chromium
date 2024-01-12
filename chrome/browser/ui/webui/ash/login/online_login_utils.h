@@ -177,8 +177,7 @@ class GaiaCookieRetriever : public network::mojom::CookieChangeListener {
 
   std::string signin_partition_name_;
 
-  raw_ptr<login::SigninPartitionManager, ExperimentalAsh>
-      signin_partition_manager_;
+  raw_ptr<login::SigninPartitionManager> signin_partition_manager_;
 
   // Connection to the CookieManager that signals when the GAIA cookies change.
   mojo::Receiver<network::mojom::CookieChangeListener> oauth_code_listener_{

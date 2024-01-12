@@ -62,7 +62,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
-            TabSwitcherMediator.ResetHandler resetHandler,
+            TabSwitcherResetHandler resetHandler,
             TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
@@ -163,7 +163,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // TODO(crbug/1418690): Consider inlining these behaviors in their respective
             // constructors if possible.
             mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
-            mTabListCoordinator.initWithNative(null);
+            mTabListCoordinator.initWithNative(mRegularTabModelSupplier.get().getProfile(), null);
         }
     }
 

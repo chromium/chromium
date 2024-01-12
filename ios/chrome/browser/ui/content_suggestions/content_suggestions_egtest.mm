@@ -192,6 +192,7 @@ void TapMoreButtonIfVisible() {
           ":" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" + "0";
     }
     config.additional_args.push_back(enable_magic_stack_segmentation_arg);
+    config.features_disabled.push_back(kContentPushNotifications);
   } else {
     config.features_disabled.push_back(kMagicStack);
   }

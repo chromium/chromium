@@ -16,7 +16,7 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/i18n/rtl.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -324,8 +324,6 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithRTL) {
 TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
   Shelf* shelf = GetPrimaryShelf();
   HotseatWidget* hotseat = shelf->hotseat_widget();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   display::Display primary_display = GetPrimaryDisplay();
   gfx::Rect display_bounds = primary_display.bounds();
   int shelf_size = ShelfConfig::Get()->shelf_size();
@@ -342,7 +340,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   // Test that the nudge updates its baseline when the hotseat is shown.
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
   EXPECT_EQ(nudge_bounds.bottom(),
@@ -575,28 +573,44 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelf) {
 
   // Set shelf alignment to the left.
   Shelf* shelf = GetPrimaryShelf();
-  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
-  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+  EXPECT_EQ(shelf->alignment(), ShelfAlignment::kBottom);
+  EXPECT_EQ(shelf->GetVisibilityState(), SHELF_VISIBLE);
   shelf->SetAlignment(ShelfAlignment::kLeft);
 
   // Show a nudge, expect its arrow to be aligned with left shelf.
   GetAnchoredNudgeManager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudge(id));
-  EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_CENTER,
-            GetShownNudge(id)->arrow());
+  EXPECT_EQ(GetShownNudge(id)->arrow(),
+            views::BubbleBorder::Arrow::LEFT_BOTTOM);
 
   // Cancel the nudge, and show a new nudge with bottom shelf alignment.
   GetAnchoredNudgeManager()->Cancel(id);
   shelf->SetAlignment(ShelfAlignment::kBottom);
   GetAnchoredNudgeManager()->Show(nudge_data);
-  EXPECT_EQ(views::BubbleBorder::Arrow::BOTTOM_CENTER,
-            GetShownNudge(id)->arrow());
+  EXPECT_EQ(GetShownNudge(id)->arrow(),
+            views::BubbleBorder::Arrow::BOTTOM_RIGHT);
 
   // Change the shelf alignment to the right while the nudge is still open,
   // nudge arrow should be updated.
   shelf->SetAlignment(ShelfAlignment::kRight);
-  EXPECT_EQ(views::BubbleBorder::Arrow::RIGHT_CENTER,
-            GetShownNudge(id)->arrow());
+  EXPECT_EQ(GetShownNudge(id)->arrow(),
+            views::BubbleBorder::Arrow::RIGHT_BOTTOM);
+
+  // Cancel the nudge and create a new nudge with an arrow that is not
+  // corner-anchored.
+  GetAnchoredNudgeManager()->Cancel(id);
+  nudge_data.arrow = views::BubbleBorder::Arrow::LEFT_CENTER;
+  GetAnchoredNudgeManager()->Show(nudge_data);
+
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(GetShownNudge(id)->arrow(),
+            views::BubbleBorder::Arrow::LEFT_CENTER);
+  shelf->SetAlignment(ShelfAlignment::kBottom);
+  EXPECT_EQ(GetShownNudge(id)->arrow(),
+            views::BubbleBorder::Arrow::BOTTOM_CENTER);
+  shelf->SetAlignment(ShelfAlignment::kRight);
+  EXPECT_EQ(GetShownNudge(id)->arrow(),
+            views::BubbleBorder::Arrow::RIGHT_CENTER);
 }
 
 // Tests that a nudge that is anchored to the shelf is not affected by shelf
@@ -623,14 +637,14 @@ TEST_F(AnchoredNudgeManagerImplTest,
   // Show a nudge, expect its arrow to be aligned with left shelf.
   GetAnchoredNudgeManager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudge(id));
-  EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_CENTER,
+  EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_BOTTOM,
             GetShownNudge(id)->arrow());
 
   // Test that changing the shelf alignment on the secondary display does not
   // affect the nudge's arrow, since the nudge lives in the primary display.
   secondary_root_window_controller->shelf()->SetAlignment(
       ShelfAlignment::kBottom);
-  EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_CENTER,
+  EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_BOTTOM,
             GetShownNudge(id)->arrow());
 }
 

@@ -15,7 +15,7 @@ using QuicheMockLogImpl = base::test::MockLog;
 #define EXPECT_QUICHE_LOG_CALL_IMPL(log) EXPECT_CALL(log, Log(_, _, _, _, _))
 
 #define EXPECT_QUICHE_LOG_CALL_CONTAINS_IMPL(log, level, content) \
-  EXPECT_CALL(log,                                                \
-              Log(logging::LOG_##level, _, _, _, testing::HasSubstr(content)))
+  EXPECT_CALL(log, Log(logging::LOGGING_##level, _, _, _,         \
+                       testing::HasSubstr(content)))
 
 #endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_MOCK_LOG_IMPL_H_

@@ -29,6 +29,7 @@
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/android/gurl_android.h"
 
@@ -190,6 +191,9 @@ class BookmarkBridge : public ProfileObserver,
                        const base::android::JavaParamRef<jobjectArray>& j_tags,
                        jint type,
                        jint max_results);
+  std::vector<const bookmarks::BookmarkNode*> SearchBookmarksImpl(
+      power_bookmarks::PowerBookmarkQueryFields& query,
+      int max_results);
 
   void GetBookmarksOfType(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& j_list,

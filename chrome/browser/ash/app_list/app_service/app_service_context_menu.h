@@ -81,7 +81,7 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   // Caches the app shortcut items.
   std::unique_ptr<apps::AppShortcutItems> app_shortcut_items_;
 
-  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
+  const raw_ptr<apps::AppServiceProxy> proxy_;
 
   // String id for the `LAUNCH_NEW` menu item tracked so the menu icon and label
   // can be changed dynamically after the app launch type changes using the

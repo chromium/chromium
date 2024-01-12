@@ -131,6 +131,11 @@ MockPasswordReuseDetectorConsumer::MockPasswordReuseDetectorConsumer() =
 MockPasswordReuseDetectorConsumer::~MockPasswordReuseDetectorConsumer() =
     default;
 
+base::WeakPtr<PasswordReuseDetectorConsumer>
+MockPasswordReuseDetectorConsumer::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 PasswordHashDataMatcher::PasswordHashDataMatcher(
     std::optional<PasswordHashData> expected)
     : expected_(expected) {}

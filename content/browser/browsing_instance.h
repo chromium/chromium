@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
@@ -20,7 +22,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -124,7 +125,7 @@ class CONTENT_EXPORT BrowsingInstance final
       bool is_fenced,
       bool is_fixed_storage_partition,
       const scoped_refptr<CoopRelatedGroup>& coop_related_group,
-      absl::optional<url::Origin> common_coop_origin);
+      std::optional<url::Origin> common_coop_origin);
 
   ~BrowsingInstance();
 
@@ -269,7 +270,7 @@ class CONTENT_EXPORT BrowsingInstance final
 
   SiteInstanceImpl* default_site_instance() { return default_site_instance_; }
 
-  const absl::optional<url::Origin>& common_coop_origin() const {
+  const std::optional<url::Origin>& common_coop_origin() const {
     return common_coop_origin_;
   }
 
@@ -326,7 +327,7 @@ class CONTENT_EXPORT BrowsingInstance final
   //
   // See crbug.com/1212266 for more context on why we track the
   // StoragePartitionConfig here.
-  absl::optional<StoragePartitionConfig> storage_partition_config_;
+  std::optional<StoragePartitionConfig> storage_partition_config_;
 
   // The CoopRelatedGroup this BrowsingInstance belongs to. BrowsingInstances in
   // the same CoopRelatedGroup have limited window proxy access to each other.
@@ -354,7 +355,7 @@ class CONTENT_EXPORT BrowsingInstance final
   // TODO(https://crbug.com/1385827): This assumes that popups opened from
   // cross-origin iframes are opened with no-opener. Once COOP inheritance for
   // those cases is figured out, change the mentions of origin to "COOP origin".
-  absl::optional<url::Origin> common_coop_origin_;
+  std::optional<url::Origin> common_coop_origin_;
 
   // Set to true if the StoragePartition should be preserved across future
   // navigations in the frames belonging to this BrowsingInstance. For <webview>

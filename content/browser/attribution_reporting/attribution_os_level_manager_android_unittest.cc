@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,7 +24,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -51,10 +51,10 @@ TEST_F(AttributionOsLevelManagerAndroidTest, GetMeasurementStatusTimeMetric) {
 TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
   const struct {
     const char* desc;
-    absl::optional<AttributionInputEvent> input_event;
+    std::optional<AttributionInputEvent> input_event;
     bool should_use_os_web_source;
   } kTestCases[] = {
-      {"trigger", absl::nullopt, false},
+      {"trigger", std::nullopt, false},
       {"os-source", AttributionInputEvent(), false},
       {"web-source", AttributionInputEvent(), true},
   };

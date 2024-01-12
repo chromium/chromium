@@ -19,6 +19,7 @@ const AtomicString& {{entry|symbol}} = reinterpret_cast<AtomicString*>(&{{suffix
 {% endfor %}
 
 void Init{{suffix}}() {
+{% if entries %}
   static bool is_loaded = false;
   if (is_loaded) return;
   is_loaded = true;
@@ -40,6 +41,7 @@ void Init{{suffix}}() {
     void* address = reinterpret_cast<AtomicString*>(&{{suffix|lower}}names_storage) + i;
     new (address) AtomicString(impl);
   }
+{% endif %}
 }
 
 }  // namespace {{namespace}}

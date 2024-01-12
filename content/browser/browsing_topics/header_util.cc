@@ -46,7 +46,7 @@ std::string DeriveTopicsHeaderValue(
     const std::vector<blink::mojom::EpochTopicPtr>& topics,
     int num_versions_in_epochs) {
   net::structured_headers::List header_list;
-  absl::optional<std::string> last_version;
+  std::optional<std::string> last_version;
   std::vector<net::structured_headers::ParameterizedItem> cur_topics;
 
   // Build up the header without the padding parameter.
@@ -135,7 +135,7 @@ std::string DeriveTopicsHeaderValue(
                  base::StrCat({"P", std::string(padding_needed, '0')}),
                  net::structured_headers::Item::kTokenType)}}));
 
-  absl::optional<std::string> serialized_header =
+  std::optional<std::string> serialized_header =
       net::structured_headers::SerializeList(header_list);
   CHECK(serialized_header);
 

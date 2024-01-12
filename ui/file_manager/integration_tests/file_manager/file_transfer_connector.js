@@ -466,7 +466,7 @@ async function setupForFileTransferConnector(
 function getCurrentEntries(entries, directory) {
   return entries.filter(entry => {
     const parent = entry.targetPath.split('/').slice(0, -1);
-    return parent.length == directory.length &&
+    return parent.length === directory.length &&
         parent.every((value, index) => value === directory[index]);
   });
 }
@@ -503,7 +503,7 @@ async function verifyDirectoryRecursively(
   }
 
   // 3. After the recursion ends, navigate back to the root directory.
-  if (currentSubDirectory.length == 0) {
+  if (currentSubDirectory.length === 0) {
     // Go back to the root directory.
     await directoryTree.navigateToPath(rootDirectory);
   }

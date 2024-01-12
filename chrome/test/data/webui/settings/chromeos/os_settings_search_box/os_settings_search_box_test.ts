@@ -737,7 +737,8 @@ suite('<os-settings-search-box>', () => {
     test(
         'feedback button does not appear when search result exists',
         async () => {
-          settingsSearchHandler.setFakeResults(['assistant']);
+          settingsSearchHandler.setFakeResults(
+              [fakeSettingsResult('assistant')]);
           await simulateSearch('a');
           assertTrue(dropDown.opened);
           assertEquals(1, searchBox.get('searchResults_').length);
@@ -787,7 +788,7 @@ suite('<os-settings-search-box>', () => {
     test(
         'feedback button does not appear when searching for only whitespace',
         async () => {
-          settingsSearchHandler.setFakeResults(['']);
+          settingsSearchHandler.setFakeResults([fakeSettingsResult('')]);
           await simulateSearch('    ');
           const noSearchResult =
               searchBox.shadowRoot!.querySelector('#noSearchResultsContainer');

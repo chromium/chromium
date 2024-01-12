@@ -43,7 +43,6 @@ class QueryBuilderUnittest(unittest.TestCase):
         'hardware_accelerated_feature':
         'hardware_accelerated_feature_integration_test',
         'info_collection': 'info_collection_test',
-        'mediapipe': 'mediapipe_integration_test',
         'noop_sleep': 'noop_sleep_integration_test',
         'pixel': 'pixel_integration_test',
         'power': 'power_measurement_integration_test',

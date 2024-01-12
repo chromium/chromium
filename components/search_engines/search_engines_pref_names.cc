@@ -26,7 +26,7 @@ const char kSyncedDefaultSearchProviderGUID[] =
 
 // Whether this profile should potentially show the search engine choice
 // dialog before the user can proceed. Actual eligiblity is still determined
-// by the `SearchEngineChoiceService`.
+// by the `SearchEngineChoiceDialogService`.
 // Note that this has effect only if the `kSearchEngineChoiceTrigger` feature
 // is enabled and if its `kSearchEngineChoiceTriggerForTaggedProfilesOnly`
 // param is set to `true`.

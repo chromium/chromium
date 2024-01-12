@@ -192,8 +192,7 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
   EmbeddedTestServerSetupMixin embedded_test_server_mixin_{
       &mixin_host_, &embedded_test_server_};
 
-  raw_ptr<const extensions::Extension, DanglingUntriaged | ExperimentalAsh>
-      extension;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension;
 
   std::unique_ptr<InSessionPasswordChangeManager> password_change_manager_;
 };

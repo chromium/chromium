@@ -122,15 +122,24 @@ class ComponentInstallerPolicy {
   // storage overhead is valued higher than the cost of performing a full update
   // at the expected cadence, disabling cached copies is a reasonable choice.
   virtual bool AllowCachedCopies() const;
+
+  // Returns true if the component should not update over metered connections.
+  // Defaults to |true|. This only controls whether updates are accepted: if the
+  // network type changes from unmetered to metered during a download, there is
+  // no guarantee that the transfer will be suspended or cancelled.
+  virtual bool AllowUpdatesOnMeteredConnections() const;
 };
 
 // Defines the installer for Chrome components. The behavior of this class is
 // controlled by an instance of ComponentInstallerPolicy, at construction time.
 class ComponentInstaller final : public update_client::CrxInstaller {
  public:
-  ComponentInstaller(
+  // Tasks will be done with a priority of |task_priority|. Some components may
+  // affect user-visible features, hence a default of USER_VISIBLE.
+  explicit ComponentInstaller(
       std::unique_ptr<ComponentInstallerPolicy> installer_policy,
-      scoped_refptr<update_client::ActionHandler> action_handler = nullptr);
+      scoped_refptr<update_client::ActionHandler> action_handler = nullptr,
+      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
 
   ComponentInstaller(const ComponentInstaller&) = delete;
   ComponentInstaller& operator=(const ComponentInstaller&) = delete;
@@ -139,24 +148,14 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   // |cus| provides the registration logic.
   // The passed |callback| will be called once the initial check for installed
   // versions is done and the component has been registered.
-  // Registration tasks will be done with a priority of |task_priority|. Some
-  // components may affect user-visible features, hence a default of
-  // USER_VISIBLE.
-  void Register(
-      ComponentUpdateService* cus,
-      base::OnceClosure callback,
-      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
+  void Register(ComponentUpdateService* cus, base::OnceClosure callback);
 
   // Registers the component for update checks and installs.
   // |register_callback| is called to do the registration.
   // |callback| is called when registration finishes.
-  // Registration tasks will be done with a priority of |task_priority|. Some
-  // components may affect user-visible features, hence a default of
-  // USER_VISIBLE.
   void Register(
       RegisterCallback register_callback,
       base::OnceClosure callback,
-      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE,
       const base::Version& registered_version = base::Version(kNullVersion));
 
   // Overrides from update_client::CrxInstaller.
@@ -231,8 +230,8 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   std::unique_ptr<ComponentInstallerPolicy> installer_policy_;
   scoped_refptr<update_client::ActionHandler> action_handler_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Posts responses back to the main thread.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 

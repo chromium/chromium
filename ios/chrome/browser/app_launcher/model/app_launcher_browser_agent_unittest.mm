@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 
 #import <UIKit/UIKit.h>
+
 #import <map>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/app_launcher_overlay.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -23,6 +26,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -32,16 +36,51 @@
 using app_launcher_overlays::AllowAppLaunchResponse;
 using app_launcher_overlays::AppLaunchConfirmationRequest;
 
+// A Fake AppLauncherTabHelper that allows to retrieve delegate and call
+// directly AppLauncherTabHelperDelegate methods.
+class FakeAppLauncherTabHelper : public AppLauncherTabHelper {
+ public:
+  explicit FakeAppLauncherTabHelper(web::WebState* web_state,
+                                    AppLauncherAbuseDetector* abuse_detector,
+                                    bool incognito)
+      : AppLauncherTabHelper(web_state, abuse_detector, incognito) {}
+
+  static void CreateForWebState(web::WebState* web_state,
+                                AppLauncherAbuseDetector* abuse_detector,
+                                bool incognito) {
+    web_state->SetUserData(UserDataKey(),
+                           std::make_unique<FakeAppLauncherTabHelper>(
+                               web_state, abuse_detector, incognito));
+  }
+
+  void SetDelegate(AppLauncherTabHelperDelegate* delegate) override {
+    AppLauncherTabHelper::SetDelegate(delegate);
+    delegate_ = delegate;
+  }
+
+  AppLauncherTabHelperDelegate* delegate() { return delegate_; }
+
+ private:
+  AppLauncherTabHelperDelegate* delegate_;
+};
+
 // Test fixture for AppLauncherBrowserAgent.
 class AppLauncherBrowserAgentTest : public PlatformTest {
  protected:
   AppLauncherBrowserAgentTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_->GetSceneState().activationLevel =
+        SceneActivationLevelForegroundActive;
     AppLauncherBrowserAgent::CreateForBrowser(browser_.get());
     application_ = OCMClassMock([UIApplication class]);
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
+
   ~AppLauncherBrowserAgentTest() override {
     [application_ stopMocking];
     browser_->GetWebStateList()->CloseAllWebStates(
@@ -51,6 +90,14 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   // Returns the AppLauncherBrowserAgent.
   AppLauncherBrowserAgent* browser_agent() {
     return AppLauncherBrowserAgent::FromBrowser(browser_.get());
+  }
+
+  // Returns the AppLauncherTabHelperDelegate.
+  AppLauncherTabHelperDelegate* GetTabHelperDelegate(web::WebState* web_state) {
+    FakeAppLauncherTabHelper* fake_tab_helper =
+        static_cast<FakeAppLauncherTabHelper*>(
+            AppLauncherTabHelper::FromWebState(web_state));
+    return fake_tab_helper->delegate();
   }
 
   // Adds a WebState to `browser_` using `opener`.  The WebState's session
@@ -75,15 +122,15 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     FakeAppLauncherAbuseDetector* abuse_detector =
         [[FakeAppLauncherAbuseDetector alloc] init];
     abuse_detectors_[web_state] = abuse_detector;
-    AppLauncherTabHelper::CreateForWebState(web_state, abuse_detector,
-                                            incognito);
-    app_lancher_tab_helper_browser_presentation_provider_ = OCMProtocolMock(
+    FakeAppLauncherTabHelper::CreateForWebState(web_state, abuse_detector,
+                                                incognito);
+    app_launcher_tab_helper_browser_presentation_provider_ = OCMProtocolMock(
         @protocol(AppLauncherTabHelperBrowserPresentationProvider));
-    [[[app_lancher_tab_helper_browser_presentation_provider_ stub]
+    [[[app_launcher_tab_helper_browser_presentation_provider_ stub]
         andReturnValue:@NO] isBrowserPresentingUI];
     AppLauncherTabHelper::FromWebState(web_state)
         ->SetBrowserPresentationProvider(
-            app_lancher_tab_helper_browser_presentation_provider_);
+            app_launcher_tab_helper_browser_presentation_provider_);
 
     // Insert the WebState into the Browser's WebStateList.
     int index = browser_->GetWebStateList()->count();
@@ -113,10 +160,12 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  AppState* app_state_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::map<web::WebState*, FakeAppLauncherAbuseDetector*> abuse_detectors_;
   id application_ = nil;
-  id app_lancher_tab_helper_browser_presentation_provider_ = nil;
+  id app_launcher_tab_helper_browser_presentation_provider_ = nil;
 };
 
 // Tests that the browser agent shows an alert for app store URLs.
@@ -375,4 +424,73 @@ TEST_F(AppLauncherBrowserAgentTest, NoUserInteractionRequestShowsAlert) {
 
   // Verify that the application attempts to open the URL.
   [application_ verify];
+}
+
+// Tests that completion is called on scene state activation
+TEST_F(AppLauncherBrowserAgentTest, CompletionCalledOnSceneActivation) {
+  const GURL kAppUrl("some-app://1234");
+
+  web::WebState* web_state =
+      AddWebState(/*opener=*/nullptr, /*nav_item_count=*/1);
+  AppLauncherTabHelperDelegate* delegate = GetTabHelperDelegate(web_state);
+
+  OCMExpect([application_ openURL:net::NSURLWithGURL(kAppUrl)
+                          options:@{}
+                completionHandler:[OCMArg checkWithBlock:^(void (
+                                      ^completionHandler)(BOOL success)) {
+                  completionHandler(YES);
+                  return YES;
+                }]]);
+
+  __block bool completion_called = false;
+  __block bool back_to_app_called = false;
+  delegate->LaunchAppForTabHelper(AppLauncherTabHelper::FromWebState(web_state),
+                                  kAppUrl, base::BindOnce(^(bool) {
+                                    completion_called = true;
+                                  }),
+                                  base::BindOnce(^() {
+                                    back_to_app_called = true;
+                                  }));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(completion_called);
+  EXPECT_FALSE(back_to_app_called);
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  EXPECT_FALSE(back_to_app_called);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_TRUE(back_to_app_called);
+}
+
+// Tests that back to app completion is not called after an application launch
+// failure.
+TEST_F(AppLauncherBrowserAgentTest, CompletionCalledOnCompletionOnFailure) {
+  const GURL kAppUrl("some-app://1234");
+
+  web::WebState* web_state =
+      AddWebState(/*opener=*/nullptr, /*nav_item_count=*/1);
+  AppLauncherTabHelperDelegate* delegate = GetTabHelperDelegate(web_state);
+
+  OCMExpect([application_ openURL:net::NSURLWithGURL(kAppUrl)
+                          options:@{}
+                completionHandler:[OCMArg checkWithBlock:^(void (
+                                      ^completionHandler)(BOOL success)) {
+                  completionHandler(NO);
+                  return YES;
+                }]]);
+
+  __block bool completion_called = false;
+  __block bool back_to_app_called = false;
+  delegate->LaunchAppForTabHelper(AppLauncherTabHelper::FromWebState(web_state),
+                                  kAppUrl, base::BindOnce(^(bool) {
+                                    completion_called = true;
+                                  }),
+                                  base::BindOnce(^() {
+                                    back_to_app_called = true;
+                                  }));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(completion_called);
+  EXPECT_FALSE(back_to_app_called);
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  EXPECT_FALSE(back_to_app_called);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_FALSE(back_to_app_called);
 }

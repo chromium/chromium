@@ -285,8 +285,8 @@ std::ostream& operator<<(std::ostream& os, const int test_case) {
 
 class LegalMessageLineTest : public ::testing::TestWithParam<int> {
  public:
-  LegalMessageLineTest() {}
-  ~LegalMessageLineTest() override {}
+  LegalMessageLineTest() = default;
+  ~LegalMessageLineTest() override = default;
 };
 
 // Verifies that legal message parsing is correct.

@@ -5,6 +5,7 @@
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import type {VolumeManager} from '../background/js/volume_manager.js';
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
 import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
@@ -12,8 +13,6 @@ import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {RootTypesForUMA, VolumeType} from '../common/js/volume_manager_types.js';
-import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, SearchLocation, State} from '../externs/ts/state.js';
-import type {VolumeManager} from '../externs/volume_manager.js';
 import {ICON_TYPES} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
 import {Command} from '../foreground/js/ui/command.js';
@@ -24,6 +23,7 @@ import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
+import {type AndroidApp, type CurrentDirectory, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
 import {getEntry, getFileData, getStore, getVolume, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
@@ -522,7 +522,7 @@ export class DirectoryTreeContainer {
     if (!volumeData) {
       return;
     }
-    if (volumeData.volumeType == VolumeType.GUEST_OS) {
+    if (volumeData.volumeType === VolumeType.GUEST_OS) {
       element.setAttribute(
           'volume-type-for-testing', vmTypeToIconName(volumeData.vmType));
     } else {
@@ -604,9 +604,21 @@ export class DirectoryTreeContainer {
       element.expanded = true;
       return;
     }
-    // Only read the sub entries when it's the top level item (navigation root).
-    // For other items, its children will be read when it's expanded.
-    if (navigationRoot && navigationRoot.type !== NavigationType.SHORTCUT) {
+    // Check if we need to read sub directories to check directory children or
+    // not, we are doing this to see if we need to show expand icon or not.
+    let shouldCheckDirectoryChildren: boolean;
+    if (navigationRoot) {
+      // For navigation root items, we always check except for Shortcut items.
+      shouldCheckDirectoryChildren =
+          navigationRoot.type !== NavigationType.SHORTCUT;
+    } else {
+      // For other items, we only check if it's parent is expanded. Usually
+      // non-root item's children directory will be checked when expanded, but
+      // volume could be added when it's already expanded (e.g. Crostini/Android
+      // can be mounted when MyFiles is expanded).
+      shouldCheckDirectoryChildren = !!(element.parentItem?.expanded);
+    }
+    if (shouldCheckDirectoryChildren) {
       this.store_.dispatch(readSubDirectoriesToCheckDirectoryChildren(entry));
     }
   }

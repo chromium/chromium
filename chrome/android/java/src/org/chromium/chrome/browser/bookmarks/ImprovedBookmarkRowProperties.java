@@ -90,6 +90,9 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey IS_LOCAL_BOOKMARK =
+            new WritableBooleanPropertyKey();
+
     // Folder-specific properties.
     public static final WritableIntPropertyKey FOLDER_START_AREA_BACKGROUND_COLOR =
             new WritableIntPropertyKey();
@@ -122,6 +125,7 @@ public class ImprovedBookmarkRowProperties {
         END_IMAGE_VISIBILITY,
         END_IMAGE_RES,
         CONTENT_DESCRIPTION,
+        IS_LOCAL_BOOKMARK,
         FOLDER_START_AREA_BACKGROUND_COLOR,
         FOLDER_START_ICON_TINT,
         FOLDER_START_ICON_DRAWABLE,

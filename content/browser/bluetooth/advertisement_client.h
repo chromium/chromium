@@ -113,7 +113,7 @@ class WebBluetoothServiceImpl::ScanningClient
  private:
   void AddFilteredDeviceToPrompt(
       const std::string& device_id,
-      const absl::optional<std::string>& device_name) {
+      const std::optional<std::string>& device_name) {
     bool should_update_name = device_name.has_value();
     std::u16string device_name_for_display =
         base::UTF8ToUTF16(device_name.value_or(""));

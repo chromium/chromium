@@ -469,10 +469,6 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_NO_MACHINE_IDENTIFICATION,
                 /*retry=*/false);
       return;
-    case policy::EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
-      ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_ACTIVE_DIRECTORY_POLICY_FETCH,
-                /*retry=*/false);
-      return;
     case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_ERROR_SAVE_DEVICE_CONFIGURATION,
                 /*retry=*/false);

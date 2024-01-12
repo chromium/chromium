@@ -25,9 +25,15 @@ namespace {
 
 constexpr int kBubbleAnchorViewSizeDp = 100;
 
-class AnchorView : public views::View,
-                   public base::SupportsWeakPtr<AnchorView> {
+class AnchorView final : public views::View {
+ public:
+  base::WeakPtr<AnchorView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
   METADATA_HEADER(AnchorView, views::View)
+  base::WeakPtrFactory<AnchorView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(AnchorView)

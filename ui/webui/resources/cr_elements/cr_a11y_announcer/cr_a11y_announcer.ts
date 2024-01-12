@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CustomElement} from '//resources/js/custom_element.js';
 
 import {getTemplate} from './cr_a11y_announcer.html.js';
 
@@ -50,20 +50,19 @@ export function getInstance(container: HTMLElement = document.body):
   return instance;
 }
 
-export class CrA11yAnnouncerElement extends PolymerElement {
+export class CrA11yAnnouncerElement extends CustomElement {
   static get is() {
     return 'cr-a11y-announcer';
   }
 
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
   private currentTimeout_: number|null = null;
   private messages_: string[] = [];
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     if (this.currentTimeout_ !== null) {
       clearTimeout(this.currentTimeout_);
       this.currentTimeout_ = null;

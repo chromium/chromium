@@ -72,9 +72,6 @@
 /* Have shl_load based dso */
 /* #undef HAVE_SHLLOAD */
 
-/* Define to 1 if you have the `snprintf' function. */
-#define HAVE_SNPRINTF 1
-
 /* Define to 1 if you have the `stat' function. */
 #define HAVE_STAT 1
 
@@ -117,17 +114,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Whether va_copy() is available */
-#define HAVE_VA_COPY 1
-
-/* Define to 1 if you have the `vsnprintf' function. */
-#define HAVE_VSNPRINTF 1
-
 /* Define to 1 if you have the <zlib.h> header file. */
 /* #undef HAVE_ZLIB_H */
-
-/* Whether __va_copy() is available */
-/* #undef HAVE___VA_COPY */
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
@@ -142,7 +130,7 @@
 #define PACKAGE_NAME "libxml2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libxml2 2.12.0"
+#define PACKAGE_STRING "libxml2 2.13.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libxml2"
@@ -151,7 +139,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.12.0"
+#define PACKAGE_VERSION "2.13.0"
 
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
@@ -161,11 +149,8 @@
 /* Support for IPv6 */
 /* #undef SUPPORT_IP6 */
 
-/* Define if va_list is an array type */
-#define VA_LIST_IS_ARRAY 1
-
 /* Version number of package */
-#define VERSION "2.12.0"
+#define VERSION "2.13.0"
 
 /* Determine what socket length (socklen_t) data type is */
 /* #undef XML_SOCKLEN_T */

@@ -73,8 +73,8 @@ class AttestationCertificatesSyncerImpl : public AttestationCertificatesSyncer {
   void StartTimer(base::TimeDelta timeout);
   base::TimeDelta CalculateTimeToRegeneration();
 
-  raw_ptr<CryptAuthScheduler, ExperimentalAsh> cryptauth_scheduler_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<CryptAuthScheduler> cryptauth_scheduler_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   AttestationCertificatesSyncer::GetAttestationCertificatesFunction
       get_attestation_certificates_function_;
   base::Time last_update_time_;

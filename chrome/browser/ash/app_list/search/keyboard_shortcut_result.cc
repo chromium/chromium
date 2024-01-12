@@ -556,9 +556,9 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                double relevance)
     : profile_(profile) {
   set_id(base::StrCat({kKeyboardShortcutScheme,
-                       base::NumberToString(data.description_message_id)}));
+                       base::NumberToString(data.description_message_id())}));
   set_relevance(relevance);
-  SetTitle(data.description);
+  SetTitle(data.description());
   SetResultType(ResultType::kKeyboardShortcut);
   SetMetricsType(ash::KEYBOARD_SHORTCUT);
   SetDisplayType(DisplayType::kList);
@@ -572,26 +572,26 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);
 
-  // Process |data.keyboard_shortcut_codes| to create:
+  // Process |data.keyboard_shortcut_codes()| to create:
   //   1. A vector of information for the KSV text.
   //   2. The accessible name.
 
   std::vector<std::u16string> replacement_strings;
   std::vector<std::u16string> accessible_names;
-  const size_t shortcut_key_codes_size = data.shortcut_key_codes.size();
+  const size_t shortcut_key_codes_size = data.shortcut_key_codes().size();
   replacement_strings.reserve(shortcut_key_codes_size);
   accessible_names.reserve(shortcut_key_codes_size);
   bool has_invalid_dom_key = false;
 
-  for (ui::KeyboardCode key_code : data.shortcut_key_codes) {
+  for (ui::KeyboardCode key_code : data.shortcut_key_codes()) {
     // Get the string for the |DomKey|.
     std::u16string dom_key_string = ash::GetStringForKeyboardCode(key_code);
 
     // See ash/shortcut_viewer/views/keyboard_shortcut_item_view.cc for details
     // on why this is necessary.
     const bool dont_remap_position =
-        data.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_PLUS ||
-        data.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS;
+        data.description_message_id() == IDS_KSV_DESCRIPTION_IDC_ZOOM_PLUS ||
+        data.description_message_id() == IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS;
     if (dont_remap_position) {
       dom_key_string = ash::GetStringForKeyboardCode(
           key_code, /*remap_positional_key=*/false);
@@ -619,8 +619,8 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
     // |shortcut_message_id| should never be used if the shortcut is not
     // supported on the current keyboard layout.
     shortcut_message_id = -1;
-  } else if (data.shortcut_message_id) {
-    shortcut_message_id = *data.shortcut_message_id;
+  } else if (data.shortcut_message_id()) {
+    shortcut_message_id = *data.shortcut_message_id();
   } else {
     // Automatically determine the shortcut message based on the number of
     // replacement strings.
@@ -659,10 +659,10 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
     accessible_string = l10n_util::GetStringFUTF16(
         shortcut_message_id, accessible_names, /*offsets=*/nullptr);
     text_vector = CreateTextVectorFromTemplateString(
-        template_string, replacement_strings, data.shortcut_key_codes);
+        template_string, replacement_strings, data.shortcut_key_codes());
   }
 
-  SetAccessibleName(data.description + u", " + details() + u", " +
+  SetAccessibleName(data.description() + u", " + details() + u", " +
                     accessible_string);
   SetKeyboardShortcutTextVector(text_vector);
 }

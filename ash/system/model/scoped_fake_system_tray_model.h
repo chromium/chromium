@@ -10,6 +10,7 @@
 
 namespace ash {
 
+class FakeSystemTrayModel;
 class SystemTrayModel;
 
 // Creates a fake `SystemTrayModel` and use that fake instance to be the
@@ -25,14 +26,14 @@ class ASH_EXPORT ScopedFakeSystemTrayModel {
 
   ~ScopedFakeSystemTrayModel();
 
-  SystemTrayModel* fake_model() { return fake_model_; }
+  FakeSystemTrayModel* fake_model() { return fake_model_; }
 
  private:
   static ScopedFakeSystemTrayModel* instance_;
 
   std::unique_ptr<SystemTrayModel> real_system_tray_model_instance_;
 
-  raw_ptr<SystemTrayModel> fake_model_ = nullptr;
+  raw_ptr<FakeSystemTrayModel> fake_model_ = nullptr;
 };
 
 }  // namespace ash

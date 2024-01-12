@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -15,21 +16,26 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace app_list {
 
 namespace {
 
 using ::ash::string_matching::TokenizedString;
-using ::std::remove_if;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
@@ -47,7 +53,7 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
   std::vector<std::pair<KeyboardShortcutData, double>> candidates;
   for (const auto& shortcut : shortcut_data) {
     double relevance = KeyboardShortcutResult::CalculateRelevance(
-        tokenized_query, shortcut.description);
+        tokenized_query, shortcut.description());
     if (relevance > kResultRelevanceThreshold) {
       candidates.push_back(std::make_pair(shortcut, relevance));
     }
@@ -58,19 +64,19 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
 // Remove disabled shortcuts and leave enabled ones only.
 void RemoveDisabledShortcuts(
     ash::shortcut_customization::mojom::SearchResultPtr& search_result) {
-  search_result->accelerator_infos.erase(
-      remove_if(search_result->accelerator_infos.begin(),
-                search_result->accelerator_infos.end(),
-                [](const auto& x) {
-                  return x->state != ash::mojom::AcceleratorState::kEnabled;
-                }),
-      search_result->accelerator_infos.end());
+  std::erase_if(search_result->accelerator_infos, [](const auto& x) {
+    return x->state != ash::mojom::AcceleratorState::kEnabled;
+  });
 }
 
 }  // namespace
 
-KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
-    : SearchProvider(ControlCategory::kHelp), profile_(profile) {
+KeyboardShortcutProvider::KeyboardShortcutProvider(
+    Profile* profile,
+    std::unique_ptr<ManateeCache> manatee_cache)
+    : SearchProvider(ControlCategory::kHelp),
+      profile_(profile),
+      manatee_cache_(std::move(manatee_cache)) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -89,6 +95,19 @@ KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
 
 void KeyboardShortcutProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (search_features::isLauncherManateeForKeyboardShortcutsEnabled() &&
+      !is_embeddings_set_) {
+    std::vector<std::string> descriptions;
+    for (const auto& shortcut : shortcut_data_) {
+      descriptions.push_back(base::UTF16ToUTF8(shortcut.description()));
+    }
+
+    manatee_cache_->RegisterCallback(base::BindOnce(
+        &KeyboardShortcutProvider::OnManateeShortcutsResponseCallback,
+        base::Unretained(this)));
+    manatee_cache_->UrlLoader(descriptions);
+  }
 
   // Cancel all previous searches.
   weak_factory_.InvalidateWeakPtrs();
@@ -121,6 +140,17 @@ void KeyboardShortcutProvider::StopQuery() {
 
 ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
   return ash::AppListSearchResultType::kKeyboardShortcut;
+}
+
+// Assumes that |shortcut_data_| has not changed since
+// initialisation.
+void KeyboardShortcutProvider::OnManateeShortcutsResponseCallback(
+    std::vector<std::vector<double>>& reply) {
+  CHECK_EQ(shortcut_data_.size(), reply.size());
+  for (size_t i = 0; i < reply.size(); ++i) {
+    shortcut_data_[i].SetEmbedding(reply[i]);
+  }
+  is_embeddings_set_ = true;
 }
 
 void KeyboardShortcutProvider::ProcessShortcutList() {

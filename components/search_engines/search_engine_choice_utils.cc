@@ -45,6 +45,8 @@ void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
   }
 }
 
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+      BUILDFLAG(CHROME_FOR_TESTING))
 // The choice screen should be shown if the `DefaultSearchProviderEnabled`
 // policy is not set, or set to true and the
 // `DefaultSearchProviderSearchURL` policy is not set.
@@ -70,6 +72,7 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
   }
   return false;
 }
+#endif
 
 SearchEngineType GetDefaultSearchEngineType(
     TemplateURLService& template_url_service) {
@@ -160,10 +163,16 @@ bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
 }
 
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
-  return IsChoiceScreenFlagEnabled(ChoicePromo::kAny) &&
-         IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&profile_prefs));
+#if BUILDFLAG(IS_IOS)
+  // TODO(b/318820137): There should not be a dependency on the country here.
+  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&profile_prefs))) {
+    return false;
+  }
+#endif
+  return IsChoiceScreenFlagEnabled(ChoicePromo::kAny);
 }
 
+#if BUILDFLAG(IS_IOS)
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service) {
@@ -179,11 +188,17 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
   RecordChoiceScreenProfileInitCondition(condition);
   return condition == SearchEngineChoiceScreenConditions::kEligible;
 }
+#endif
 
 SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     const policy::PolicyService& policy_service,
     const ProfileProperties& profile_properties,
     const TemplateURLService& template_url_service) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  // TODO(b/319050536): Remove the function declaration on these platforms.
+  return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
+#else
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
@@ -236,11 +251,17 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
   }
 
   return SearchEngineChoiceScreenConditions::kEligible;
+#endif
 }
 
 SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
     const PrefService& profile_prefs,
     const TemplateURLService& template_url_service) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  // TODO(b/319050536): Remove the function declaration on these platforms.
+  return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
+#else
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service.IsExtensionControlledDefaultSearch()) {
     return SearchEngineChoiceScreenConditions::kExtensionControlled;
@@ -271,6 +292,7 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
   }
 
   return SearchEngineChoiceScreenConditions::kEligible;
+#endif
 }
 
 int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
@@ -316,6 +338,12 @@ void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
 void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location,
                       TemplateURLService* template_url_service) {
+  if (choice_location == ChoiceMadeLocation::kOther) {
+    // This is called from a path not resulting from a fully featured search
+    // engine choice screen, so skip recoding associated choice data.
+    return;
+  }
+
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return;
   }

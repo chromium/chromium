@@ -77,6 +77,18 @@ ClientPermissionState GetClientPermissionState(
   }
 }
 
+BOOL IsMobileNotificationsEnabledForAnyClient(const std::string& gaia_id,
+                                              PrefService* pref_service) {
+  static std::vector<PushNotificationClientId> client_ids =
+      PushNotificationClientManager::GetClients();
+  for (PushNotificationClientId client_id : client_ids) {
+    if (GetMobileNotificationPermissionStatusForClient(client_id, gaia_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 BOOL GetMobileNotificationPermissionStatusForClient(
     PushNotificationClientId client_id,
     const std::string& gaia_id) {

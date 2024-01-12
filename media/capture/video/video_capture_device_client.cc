@@ -232,12 +232,10 @@ class BufferPoolBufferHandleProvider
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
-    VideoCaptureBufferType target_buffer_type,
     std::unique_ptr<VideoFrameReceiver> receiver,
     scoped_refptr<VideoCaptureBufferPool> buffer_pool,
     VideoCaptureJpegDecoderFactoryCB optional_jpeg_decoder_factory_callback)
-    : target_buffer_type_(target_buffer_type),
-      receiver_(std::move(receiver)),
+    : receiver_(std::move(receiver)),
       optional_jpeg_decoder_factory_callback_(
           std::move(optional_jpeg_decoder_factory_callback)),
       buffer_pool_(std::move(buffer_pool)),
@@ -248,13 +246,11 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 }
 #else
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
-    VideoCaptureBufferType target_buffer_type,
     std::unique_ptr<VideoFrameReceiver> receiver,
     scoped_refptr<VideoCaptureBufferPool> buffer_pool,
     mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
         video_effects_manager)
-    : target_buffer_type_(target_buffer_type),
-      receiver_(std::move(receiver)),
+    : receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),
       last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN),
       mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -626,21 +622,9 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   CHECK_NE(VideoCaptureBufferPool::kInvalidId, buffer_id);
 
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
-    VideoCaptureBufferType target_buffer_type = target_buffer_type_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    // If MediaFoundationD3D11VideoCapture or VideoCaptureDeviceAVFoundation
-    // fails to produce NV12 as is expected on these platforms when the target
-    // buffer type is `kGpuMemoryBuffer`, a shared memory buffer may be sent
-    // instead.
-    if (target_buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
-        pixel_format != PIXEL_FORMAT_NV12
-#if BUILDFLAG(IS_MAC)
-        && base::FeatureList::IsEnabled(kFallbackToSharedMemoryIfNotNv12OnMac)
-#endif
-    ) {
-      target_buffer_type = VideoCaptureBufferType::kSharedMemory;
-    }
-#endif
+    const VideoCaptureBufferType target_buffer_type =
+        buffer_pool_->GetBufferType(buffer_id);
+
     media::mojom::VideoBufferHandlePtr buffer_handle;
     switch (target_buffer_type) {
       case VideoCaptureBufferType::kSharedMemory:
@@ -648,8 +632,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
             buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
         break;
       case VideoCaptureBufferType::kMailboxHolder:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
       case VideoCaptureBufferType::kGpuMemoryBuffer:
         buffer_handle =
             media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(

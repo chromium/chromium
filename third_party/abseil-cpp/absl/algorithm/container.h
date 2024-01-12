@@ -774,6 +774,36 @@ void c_shuffle(RandomAccessContainer& c, UniformRandomBitGenerator&& gen) {
                std::forward<UniformRandomBitGenerator>(gen));
 }
 
+// c_sample()
+//
+// Container-based version of the <algorithm> `std::sample()` function to
+// randomly sample elements from the container without replacement using a
+// `gen()` uniform random number generator and write them to an iterator range.
+template <typename C, typename OutputIterator, typename Distance,
+          typename UniformRandomBitGenerator>
+OutputIterator c_sample(const C& c, OutputIterator result, Distance n,
+                        UniformRandomBitGenerator&& gen) {
+#if defined(__cpp_lib_sample) && __cpp_lib_sample >= 201603L
+  return std::sample(container_algorithm_internal::c_begin(c),
+                     container_algorithm_internal::c_end(c), result, n,
+                     std::forward<UniformRandomBitGenerator>(gen));
+#else
+  // Fall back to a stable selection-sampling implementation.
+  auto first = container_algorithm_internal::c_begin(c);
+  Distance unsampled_elements = c_distance(c);
+  n = (std::min)(n, unsampled_elements);
+  for (; n != 0; ++first) {
+    Distance r =
+        std::uniform_int_distribution<Distance>(0, --unsampled_elements)(gen);
+    if (r < n) {
+      *result++ = *first;
+      --n;
+    }
+  }
+  return result;
+#endif
+}
+
 //------------------------------------------------------------------------------
 // <algorithm> Partition functions
 //------------------------------------------------------------------------------

@@ -40,8 +40,8 @@ public class FrameMetricsStore {
     private final ArrayList<Integer> mNumMissedVsyncs = new ArrayList<>();
     // Stores the timestamp (nanoseconds) of the most recent frame metric as a scenario started.
     // Zero if no FrameMetrics have been received.
-    private final HashMap<Integer, Long> mScenarioPreviousFrameTimestampNs = new HashMap<>();
-    private final HashMap<Integer, Long> mPendingStartTimestampNs = new HashMap<>();
+    private final HashMap<JankScenario, Long> mScenarioPreviousFrameTimestampNs = new HashMap<>();
+    private final HashMap<JankScenario, Long> mPendingStartTimestampNs = new HashMap<>();
 
     public FrameMetricsStore() {
         // Add 0 to mTimestampNS array. This simplifies handling edge case when starting a scenario
@@ -56,27 +56,27 @@ public class FrameMetricsStore {
 
     // Convert an enum value to string to use as an UMA histogram name, changes to strings should be
     // reflected in android/histograms.xml and base/android/jank_
-    public static String scenarioToString(@JankScenario int scenario) {
+    public static String scenarioToString(@JankScenario.Type int scenario) {
         switch (scenario) {
-            case JankScenario.PERIODIC_REPORTING:
+            case JankScenario.Type.PERIODIC_REPORTING:
                 return "Total";
-            case JankScenario.OMNIBOX_FOCUS:
+            case JankScenario.Type.OMNIBOX_FOCUS:
                 return "OmniboxFocus";
-            case JankScenario.NEW_TAB_PAGE:
+            case JankScenario.Type.NEW_TAB_PAGE:
                 return "NewTabPage";
-            case JankScenario.STARTUP:
+            case JankScenario.Type.STARTUP:
                 return "Startup";
-            case JankScenario.TAB_SWITCHER:
+            case JankScenario.Type.TAB_SWITCHER:
                 return "TabSwitcher";
-            case JankScenario.OPEN_LINK_IN_NEW_TAB:
+            case JankScenario.Type.OPEN_LINK_IN_NEW_TAB:
                 return "OpenLinkInNewTab";
-            case JankScenario.START_SURFACE_HOMEPAGE:
+            case JankScenario.Type.START_SURFACE_HOMEPAGE:
                 return "StartSurfaceHomepage";
-            case JankScenario.START_SURFACE_TAB_SWITCHER:
+            case JankScenario.Type.START_SURFACE_TAB_SWITCHER:
                 return "StartSurfaceTabSwitcher";
-            case JankScenario.FEED_SCROLLING:
+            case JankScenario.Type.FEED_SCROLLING:
                 return "FeedScrolling";
-            case JankScenario.WEBVIEW_SCROLLING:
+            case JankScenario.Type.WEBVIEW_SCROLLING:
                 return "WebviewScrolling";
             default:
                 throw new IllegalArgumentException("Invalid scenario value");
@@ -88,6 +88,7 @@ public class FrameMetricsStore {
      * checking.
      */
     void initialize() {
+        assert mThreadChecker == null;
         mThreadChecker = new ThreadChecker();
     }
 
@@ -101,9 +102,9 @@ public class FrameMetricsStore {
     }
 
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
-    void startTrackingScenario(@JankScenario int scenario) {
+    void startTrackingScenario(JankScenario scenario) {
         try (TraceEvent e =
-                TraceEvent.scoped("startTrackingScenario: " + scenarioToString(scenario))) {
+                TraceEvent.scoped("startTrackingScenario: " + scenarioToString(scenario.type()))) {
             mThreadChecker.assertOnValidThread();
             // Ignore multiple calls to startTrackingScenario without corresponding
             // stopTrackingScenario calls.
@@ -114,7 +115,8 @@ public class FrameMetricsStore {
             }
             // Make a unique ID for each scenario for tracing.
             TraceEvent.startAsync(
-                    "JankCUJ:" + scenarioToString(scenario), TRACE_EVENT_TRACK_ID + scenario);
+                    "JankCUJ:" + scenarioToString(scenario.type()),
+                    TRACE_EVENT_TRACK_ID + scenario.type());
             // Scenarios are tracked based on the latest stored timestamp to allow fast lookups
             // (find index of [timestamp] vs find first index that's >= [timestamp]).
             Long startingTimestamp = mTimestampsNs.get(mTimestampsNs.size() - 1);
@@ -127,20 +129,21 @@ public class FrameMetricsStore {
         return mMaxTimestamp > endScenarioTimeNs;
     }
 
-    JankMetrics stopTrackingScenario(@JankScenario int scenario) {
+    JankMetrics stopTrackingScenario(JankScenario scenario) {
         return stopTrackingScenario(scenario, -1);
     }
 
     // The string added is a static string.
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
-    JankMetrics stopTrackingScenario(@JankScenario int scenario, long endScenarioTimeNs) {
+    JankMetrics stopTrackingScenario(JankScenario scenario, long endScenarioTimeNs) {
         try (TraceEvent e =
                 TraceEvent.scoped(
-                        "finishTrackingScenario: " + scenarioToString(scenario),
+                        "finishTrackingScenario: " + scenarioToString(scenario.type()),
                         Long.toString(endScenarioTimeNs))) {
             mThreadChecker.assertOnValidThread();
             TraceEvent.finishAsync(
-                    "JankCUJ:" + scenarioToString(scenario), TRACE_EVENT_TRACK_ID + scenario);
+                    "JankCUJ:" + scenarioToString(scenario.type()),
+                    TRACE_EVENT_TRACK_ID + scenario.type());
             // Get the timestamp of the latest frame before startTrackingScenario was called. This
             // can be null if tracking never started for scenario, or 0L if tracking started when no
             // frames were stored.

@@ -224,10 +224,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   std::unique_ptr<WizardController> wizard_controller_;
 
   // Container of the screen we are displaying.
-  raw_ptr<views::Widget, ExperimentalAsh> login_window_ = nullptr;
+  raw_ptr<views::Widget> login_window_ = nullptr;
 
   // Container of the view we are displaying.
-  raw_ptr<WebUILoginView, ExperimentalAsh> login_view_ = nullptr;
+  raw_ptr<WebUILoginView> login_view_ = nullptr;
 
   // Stores status area current visibility to be applied once login WebUI
   // is shown.

@@ -4,8 +4,6 @@
  * See Copyright for the status of this software.
  *
  * daniel@veillard.com
- *
- * 14 Nov 2000 ht - for VMS, truncated name of long functions to under 32 char
  */
 
 #define IN_LIBXML

@@ -88,7 +88,6 @@ public class SignOutDialogTest {
         mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
@@ -278,6 +277,7 @@ public class SignOutDialogTest {
                 () -> {
                     SignOutDialogCoordinator.show(
                             mActivityTestRule.getActivity(),
+                            mProfile,
                             mActivityTestRule.getActivity().getModalDialogManager(),
                             mListenerMock,
                             ActionType.CLEAR_PRIMARY_ACCOUNT,

@@ -166,7 +166,7 @@ inline constexpr char16_t kCityRe[] =
     u"|^시[^도·・]|시[·・]?군[·・]?구"                   // ko-KR
     u"|kota|kabupaten";                                  // id
 inline constexpr char16_t kStateRe[] =
-    u"(?<!(united|hist|history).?)state|county|region|province"
+    u"(?<!(united|hist|history).?)state|region|province"
     u"|county|principality"  // en-UK
     u"|都道府県"             // ja-JP
     u"|estado|provincia"     // pt-BR, pt-PT
@@ -181,8 +181,9 @@ inline constexpr char16_t kStateRe[] =
     u"|provinci";                                                     // id
 
 inline constexpr char16_t kOverflowRe[] =
-    u"complemento"               // pt-BR, pt-PT
-    u"|informações adicionais";  // pt-BR
+    u"complemento"              // pt-BR, pt-PT
+    u"|informações adicionais"  // pt-BR
+    u"|adresszusatz";           // de-DE
 
 inline constexpr char16_t kOverflowAndLandmarkRe[] =
     u"complement and reference"  // en (but could be generic)

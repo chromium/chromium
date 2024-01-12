@@ -250,7 +250,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   std::unique_ptr<base::OneShotTimer> engine_start_timer_;
 
   // Used to listen for pref changes to allow or disallow signin.
-  PrefChangeRegistrar profile_pref_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> profile_pref_registrar_;
 
   // Manages observer lifetimes.
   base::ScopedObservation<signin::IdentityManager,

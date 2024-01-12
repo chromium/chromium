@@ -124,8 +124,9 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
     const std::vector<PolicyValidationResult>& validation_results) {
   VLOG(1) << __func__;
 
-  if (result == DMClient::RequestResult::kSuccess)
+  if (result == DMClient::RequestResult::kSuccess) {
     return CreateDMPolicyManager(override_is_managed_device_);
+  }
 
   for (const auto& validation_result : validation_results) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -136,10 +137,11 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
                 server_url_, policy_service_proxy_configuration_),
             GetDefaultDMStorage(), validation_result,
             base::BindOnce([](DMClient::RequestResult result) {
-              if (result != DMClient::RequestResult::kSuccess)
+              if (result != DMClient::RequestResult::kSuccess) {
                 LOG(WARNING)
                     << "DMClient::ReportPolicyValidationErrors failed: "
                     << result;
+              }
             })));
   }
 

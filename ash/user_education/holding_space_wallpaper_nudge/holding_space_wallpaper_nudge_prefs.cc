@@ -27,6 +27,8 @@ constexpr char kNudgeShownCountCounterfactual[] =
     "ash.holding_space.wallpaper_nudge.shown_count_counterfactual";
 constexpr char kNudgeShownCount[] =
     "ash.holding_space.wallpaper_nudge.shown_count";
+constexpr char kUserEligibleForNudge[] =
+    "ash.holding_space.wallpaper_nudge.user_eligible";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -58,6 +60,16 @@ uint64_t GetNudgeShownCount(PrefService* prefs) {
   return prefs->GetUint64(GetNudgeCountPrefName());
 }
 
+std::optional<bool> GetUserEligibility(PrefService* prefs) {
+  auto* pref = prefs->FindPreference(kUserEligibleForNudge);
+
+  if (pref->IsDefaultValue()) {
+    return std::nullopt;
+  }
+
+  return pref->GetValue()->GetBool();
+}
+
 void MarkNudgeShown(PrefService* prefs) {
   CHECK(features::IsHoldingSpaceWallpaperNudgeEnabled());
   prefs->SetTime(GetNudgeTimePrefName(), base::Time::Now());
@@ -65,10 +77,21 @@ void MarkNudgeShown(PrefService* prefs) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kUserEligibleForNudge, false);
   registry->RegisterTimePref(kLastTimeNudgeShownCounterfactual, base::Time());
   registry->RegisterTimePref(kLastTimeNudgeShown, base::Time());
   registry->RegisterUint64Pref(kNudgeShownCountCounterfactual, 0u);
   registry->RegisterUint64Pref(kNudgeShownCount, 0u);
+}
+
+bool SetUserEligibility(PrefService* prefs, bool eligible) {
+  auto* pref = prefs->FindPreference(kUserEligibleForNudge);
+  if (!pref->IsDefaultValue()) {
+    return false;
+  }
+
+  prefs->SetBoolean(kUserEligibleForNudge, eligible);
+  return true;
 }
 
 }  // namespace ash::holding_space_wallpaper_nudge_prefs

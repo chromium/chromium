@@ -500,7 +500,7 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
                                  bool minimal_changes) {
   TRACE_EVENT0("omnibox", "HistoryFuzzyProvider::Start");
   matches_.clear();
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+  if (input.IsZeroSuggest() ||
       input.type() == metrics::OmniboxInputType::EMPTY) {
     return;
   }
@@ -520,9 +520,6 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
   if (autocomplete_input_.cursor_position() ==
       autocomplete_input_.text().length()) {
     DoAutocomplete();
-    for (AutocompleteMatch& match : matches_) {
-      match.provider = this;
-    }
   }
 }
 
@@ -617,10 +614,10 @@ void HistoryFuzzyProvider::DoAutocomplete() {
                         matches_.begin() + provider_max_matches_,
                         matches_.end(), AutocompleteMatch::MoreRelevant);
       for (size_t i = provider_max_matches_; i < matches_.size(); i++) {
-        DCHECK(matches_[i].provider == history_quick_provider ||
-               matches_[i].provider == bookmark_provider)
+        DCHECK(matches_[i].provider.get() == history_quick_provider ||
+               matches_[i].provider.get() == bookmark_provider)
             << matches_[i].provider->GetName();
-        if (matches_[i].provider == history_quick_provider) {
+        if (matches_[i].provider.get() == history_quick_provider) {
           count_history_quick--;
         } else {
           count_bookmark--;
@@ -673,6 +670,8 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
   // input, so clear them to prevent the ml model assigning an
   // artificially high confidence to this suggestion.
   match.scoring_signals.reset();
+
+  match.provider = this;
 
   return 1;
 }

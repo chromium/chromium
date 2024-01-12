@@ -30,10 +30,13 @@ const std::optional<std::string> GetDefaultMicName(
 
 }  // namespace
 
-MicCoordinator::MicCoordinator(views::View& parent_view, bool needs_borders)
+MicCoordinator::MicCoordinator(views::View& parent_view,
+                               bool needs_borders,
+                               const std::vector<std::string>& eligible_mic_ids)
     : mic_mediator_(
           base::BindRepeating(&MicCoordinator::OnAudioSourceInfosReceived,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      eligible_mic_ids_(eligible_mic_ids) {
   auto* mic_view = parent_view.AddChildView(std::make_unique<MediaView>());
   mic_view_tracker_.SetView(mic_view);
   // Safe to use base::Unretained() because `this` owns / outlives
@@ -70,6 +73,10 @@ void MicCoordinator::OnAudioSourceInfosReceived(
   for (const auto& device_info : device_infos) {
     if (device_info.unique_id ==
         media::AudioDeviceDescription::kDefaultDeviceId) {
+      continue;
+    }
+    if (!eligible_mic_ids_.empty() &&
+        !eligible_mic_ids_.contains(device_info.unique_id)) {
       continue;
     }
     bool is_default =

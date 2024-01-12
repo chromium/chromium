@@ -12,10 +12,13 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "sql/database.h"
@@ -72,7 +75,7 @@ bool InitTables(sql::Database* db) {
 // depending on the operation broken.  This table has large rows, which will use
 // overflow pages, so it is possible (though unlikely) that a chain could fit
 // together and yield a row with errors.
-void FixTopSitesTable(sql::Database* db, int version) {
+void FixTopSitesTable(sql::Database& db) {
   // Enforce invariant that url_rank>=0 forms a contiguous series.
   // TODO(shess): I have not found an UPDATE+SUBSELECT method of managing this.
   // It can be done with a temporary table and a subselect, but doing it
@@ -82,11 +85,11 @@ void FixTopSitesTable(sql::Database* db, int version) {
       "SELECT url_rank,rowid FROM top_sites "
       "WHERE url_rank<>-1 "
       "ORDER BY url_rank";
-  sql::Statement select_statement(db->GetUniqueStatement(kByRankSql));
+  sql::Statement select_statement(db.GetUniqueStatement(kByRankSql));
 
   static constexpr char kAdjustRankSql[] =
       "UPDATE top_sites SET url_rank=? WHERE rowid=?";
-  sql::Statement update_statement(db->GetUniqueStatement(kAdjustRankSql));
+  sql::Statement update_statement(db.GetUniqueStatement(kAdjustRankSql));
 
   // Update any rows where `next_rank` doesn't match `url_rank`.
   int next_rank = 0;
@@ -106,7 +109,7 @@ void FixTopSitesTable(sql::Database* db, int version) {
 // constraints.
 void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   // NOTE(shess): If the version changes, review this code.
-  DCHECK_EQ(5, kVersionNumber);
+  static_assert(kVersionNumber == 5);
 
   std::unique_ptr<sql::Recovery> recovery =
       sql::Recovery::BeginRecoverDatabase(db, db_path);
@@ -140,8 +143,7 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
     return;
   }
 
-  // TODO(shess): Inline this?
-  FixTopSitesTable(recovery->db(), version);
+  FixTopSitesTable(*recovery->db());
 
   std::ignore = sql::Recovery::Recovered(std::move(recovery));
 }
@@ -154,7 +156,45 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  // Attempt to recover corrupt databases.
+  // TODO(https://crbug.com/1513464): Simplify this code as soon as we're
+  // confident that we can remove sql::Recovery.
+  if (base::FeatureList::IsEnabled(
+          kTopSitesDatabaseUseBuiltInRecoveryIfSupported) &&
+      sql::BuiltInRecovery::ShouldAttemptRecovery(db_.get(), extended_error)) {
+    bool recovery_was_attempted = sql::BuiltInRecovery::RecoverIfPossible(
+        db_.get(), extended_error,
+        sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
+        &kTopSitesDatabaseUseBuiltInRecoveryIfSupported);
+    if (!recovery_was_attempted) {
+      LOG(ERROR)
+          << "Recovery should have been attempted if the checks above passed.";
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+    // Recovery was attempted. The database handle has been poisoned and the
+    // error callback has been reset.
+
+    // Since the database was recovered from corruption, it's possible that some
+    // data in the newly recovered database is incorrect. When re-opening the
+    // database, we should attempt to fix any broken constraints.
+    //
+    // Unlike below when using sql::Recovery, which runs `FixTopSitesTable()` on
+    // the recovered copy of the database before overwriting the original
+    // (corrupted) database, here we defer the fix-up logic to after we've
+    // re-opened the database and all the other checks in the Init() method
+    // (version, schema, etc) pass.
+    //
+    // Note that recovery is only run when we detect corruption, but undetected
+    // corruption can happen at any time. We could consider running
+    // `FixTopSitesTable()` every time the database is opened, but in most cases
+    // that would be a (possibly expensive) no-op.
+    needs_fixing_up_ = true;
+
+    // Signal the test-expectation framework that the error was handled.
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
+    return;
+  }
+
   if (sql::Recovery::ShouldRecover(extended_error)) {
     // Prevent reentrant calls.
     db_->reset_error_callback();
@@ -172,21 +212,6 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
     return;
   }
 
-  // TODO(shess): This database's error histograms look like:
-  // 84% SQLITE_CORRUPT, SQLITE_CANTOPEN, SQLITE_NOTADB
-  //  7% SQLITE_ERROR
-  //  6% SQLITE_IOERR variants
-  //  2% SQLITE_READONLY
-  // .4% SQLITE_FULL
-  // nominal SQLITE_TOBIG, SQLITE_AUTH, and SQLITE_BUSY.  In the case of
-  // thumbnail_database.cc, as soon as the recovery code landed, SQLITE_IOERR
-  // shot to leadership.  If the I/O error is system-level, there is probably no
-  // hope, but if it is restricted to something about the database file, it is
-  // possible that the recovery code could be brought to bear.  In fact, it is
-  // possible that running recovery would be a reasonable default when errors
-  // are seen.
-
-  // The default handling is to assert on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error))
     DLOG(FATAL) << db_->GetErrorMessage();
 }
@@ -305,6 +330,15 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   // Version check.
   if (meta_table.GetVersionNumber() != kVersionNumber)
     return false;
+
+  // Attempt to fix up the table if recovery was attempted when opening.
+  if (needs_fixing_up_) {
+    CHECK(base::FeatureList::IsEnabled(
+        kTopSitesDatabaseUseBuiltInRecoveryIfSupported));
+
+    FixTopSitesTable(*db_);
+    needs_fixing_up_ = false;
+  }
 
   // Initialization is complete.
   return transaction.Commit();

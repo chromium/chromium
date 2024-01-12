@@ -59,11 +59,11 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
 
  private:
   // A window which can be used for testing.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
 
   // Owned by |user_manager_enabler_|.
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
+      nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

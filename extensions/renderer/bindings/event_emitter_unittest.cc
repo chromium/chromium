@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/event_emitter.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -76,7 +78,7 @@ TEST_F(EventEmitterUnittest, TestDispatchMethod) {
       FunctionFromString(context, kAddListener);
 
   auto add_listener = [context, v8_event,
-                       add_listener_function](base::StringPiece listener) {
+                       add_listener_function](std::string_view listener) {
     v8::Local<v8::Function> listener_function =
         FunctionFromString(context, listener);
     v8::Local<v8::Value> args[] = {v8_event, listener_function};

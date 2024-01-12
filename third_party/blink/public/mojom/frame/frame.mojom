@@ -244,18 +244,6 @@ interface LocalFrameHost {
   // longer fullscreen. |options| is only provided if |is_fullscreen == true|.
   FullscreenStateChanged(bool is_fullscreen, FullscreenOptions? options);
 
-  // Request browser to maximize window. Link to I2P:
-  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  Maximize();
-
-  // Request browser to minimize window. Link to I2P:
-  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  Minimize();
-
-  // Request browser to restore window. Link to I2P:
-  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  Restore();
-
   // Register a new handler for URL requests with the given scheme. |scheme|
   // and |url| are provided directly from javascript. See
   // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
@@ -410,6 +398,11 @@ interface LocalFrameHost {
   // initial empty document (and in some tests).
   UpdateTitle(mojo_base.mojom.String16? title,
               mojo_base.mojom.TextDirection title_direction);
+
+  // Updates the app title for a document. If non-empty, a web app displayed in an app
+  // window may use this string instead of the regular title.
+  // See https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  UpdateAppTitle(mojo_base.mojom.String16 app_title);
 
   // Indicates that the user activation state in the current frame has been
   // updated, so the replicated states need to be synced (in the browser process
@@ -1235,6 +1228,18 @@ interface LocalMainFrameHost {
   // document of a main frame. After this, it is no longer safe to show a
   // pending navigation's URL, because a URL spoof is possible.
   DidAccessInitialMainDocument();
+
+  // Request browser to maximize window. Link to I2P:
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  Maximize();
+
+  // Request browser to minimize window. Link to I2P:
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  Minimize();
+
+  // Request browser to restore window. Link to I2P:
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  Restore();
 
   // Set the browser window to resizable or not. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ

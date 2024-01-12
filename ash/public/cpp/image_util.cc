@@ -149,7 +149,7 @@ void DecodeImageData(DecodeImageCallback callback,
     return;
   }
   data_decoder::DecodeImageIsolated(
-      base::as_bytes(base::make_span(data)), codec,
+      base::as_byte_span(data), codec,
       /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ToImageSkia, std::move(callback)));
@@ -165,8 +165,8 @@ void DecodeAnimationData(DecodeAnimationCallback callback,
   // `kMaxImageSizeInBytes` will have their resolution downscaled instead of
   // simply failing to decode.
   data_decoder::DecodeAnimationIsolated(
-      base::as_bytes(base::make_span(data)), /*shrink_to_fit=*/true,
-      kMaxImageSizeInBytes, base::BindOnce(&ToFrames, std::move(callback)));
+      base::as_byte_span(data), /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
+      base::BindOnce(&ToFrames, std::move(callback)));
 }
 
 }  // namespace image_util

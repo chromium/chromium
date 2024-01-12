@@ -81,7 +81,7 @@ class TestCertResolveObserver : public ClientCertResolver::Observer {
 
  private:
   bool changed_network_properties_;
-  raw_ptr<ClientCertResolver, ExperimentalAsh> cert_resolver_;
+  raw_ptr<ClientCertResolver> cert_resolver_;
 };
 
 class TestNetworkConnectionHandler : public NetworkConnectionHandler {

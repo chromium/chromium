@@ -48,8 +48,6 @@ bool IsKioskSession() {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return true;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -91,6 +89,8 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   CreateAndAddTrustedAppDataSource(web_ui, window_counter_);
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+  // Add a handler to provide pluralized strings.
+  web_ui->AddMessageHandler(delegate_->GetPluralStringHandler());
 }
 
 void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,

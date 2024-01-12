@@ -76,8 +76,8 @@ void MockMediaRouteProvider::TerminateRouteSuccess(
   std::move(cb).Run(std::string(), mojom::RouteRequestResultCode::OK);
 }
 
-void MockMediaRouteProvider::CreateMediaRouteControllerSuccess(
-    CreateMediaRouteControllerCallback& cb) const {
+void MockMediaRouteProvider::BindMediaControllerSuccess(
+    BindMediaControllerCallback& cb) const {
   std::move(cb).Run(true);
 }
 

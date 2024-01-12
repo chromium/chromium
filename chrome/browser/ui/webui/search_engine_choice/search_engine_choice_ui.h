@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -42,7 +42,7 @@ class SearchEngineChoiceUI
   // The callbacks may be empty.
   void Initialize(base::OnceClosure display_dialog_callback,
                   base::OnceClosure on_choice_made_callback,
-                  SearchEngineChoiceService::EntryPoint entry_point);
+                  SearchEngineChoiceDialogService::EntryPoint entry_point);
 
  private:
   // search_engine_choice::mojom::PageHandlerFactory:
@@ -70,7 +70,7 @@ class SearchEngineChoiceUI
   base::OnceClosure on_choice_made_callback_;
 
   // The view in which the UI is rendered.
-  SearchEngineChoiceService::EntryPoint entry_point_;
+  SearchEngineChoiceDialogService::EntryPoint entry_point_;
   const raw_ref<Profile> profile_;
   base::WeakPtrFactory<SearchEngineChoiceUI> weak_ptr_factory_{this};
 

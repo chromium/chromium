@@ -44,6 +44,13 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT void DisableJvmForTesting();
 JNI_ZERO_COMPONENT_BUILD_EXPORT void SetExceptionHandler(
     void (*callback)(JNIEnv*));
 
+// Returns true if an exception is pending in the provided JNIEnv*.
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool HasException(JNIEnv* env);
+
+// If an exception is pending in the provided JNIEnv*, this function clears it
+// and returns true.
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool ClearException(JNIEnv* env);
+
 // If there's any pending exception, this function will call the set exception
 // handler, or if none are set, it will fatally LOG.
 JNI_ZERO_COMPONENT_BUILD_EXPORT void CheckException(JNIEnv* env);

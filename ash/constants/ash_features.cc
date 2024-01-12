@@ -286,6 +286,11 @@ BASE_FEATURE(kBluetoothFixA2dpPacketSize,
              "BluetoothFixA2dpPacketSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Bluetooth Disconnect Warning feature.
+BASE_FEATURE(kBluetoothDisconnectWarning,
+             "BluetoothDisconnectWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Bluetooth Quality Report feature.
 BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
@@ -762,12 +767,6 @@ BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables loading debug daemon logs for feedback in parallel to reduce client
-// side wait time.
-BASE_FEATURE(kEnableGetDebugdLogsInParallel,
-             "EnableGetDebugdLogsInParallel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables setting the device hostname.
 BASE_FEATURE(kEnableHostnameSetting,
              "EnableHostnameSetting",
@@ -942,11 +941,6 @@ BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              "ExperimentalRgbKeyboardPatterns",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the System Web App (SWA) of Face ML.
-// This app needs both CrOS and hardware support (Face Auth Camera and System
-// Face Auth Service), therefore we only enable it on these eligible devices.
-BASE_FEATURE(kFaceMLApp, "FaceMLApp", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 BASE_FEATURE(kFamilyLinkOnSchoolDevice,
@@ -1095,7 +1089,7 @@ BASE_FEATURE(kFeatureManagementTimeOfDayWallpaper,
 // user first login.
 BASE_FEATURE(kFederatedService,
              "FederatedService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the federated service to schedule tasks. If disabled, federated
 // service works as a simple example receiver and storage.
@@ -1104,7 +1098,7 @@ BASE_FEATURE(kFederatedService,
 // much resources while example storage is supposed to be cheap and safe.
 BASE_FEATURE(kFederatedServiceScheduleTasks,
              "FederatedServiceScheduleTasks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the federated strings service.
 BASE_FEATURE(kFederatedStringsService,
@@ -1116,6 +1110,7 @@ BASE_FEATURE(kFederatedStringsServiceScheduleTasks,
              "FederatedStringsServiceScheduleTasks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the scheduling of timezone code federated analytics tasks.
 BASE_FEATURE(kFederatedTimezoneCodePhh,
              "FederatedTimezoneCodePhh",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1123,6 +1118,11 @@ BASE_FEATURE(kFederatedTimezoneCodePhh,
 // Enables scheduling of launcher query federated analytics tasks.
 BASE_FEATURE(kFederatedLauncherQueryAnalyticsTask,
              "FederatedLauncherQueryAnalyticsTask",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables scheduling of launcher query federated analytics version 2 tasks.
+BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
+             "FederatedLauncherQueryAnalyticsVersion2Task",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables experimental UI features in Files app.
@@ -1138,7 +1138,7 @@ BASE_FEATURE(kFilesConflictDialog,
 // Enables new directory tree implementation in files.
 BASE_FEATURE(kFilesNewDirectoryTree,
              "FilesNewDirectoryTree",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables local image search by query in the Files app.
 BASE_FEATURE(kFilesLocalImageSearch,
@@ -1278,9 +1278,15 @@ BASE_FEATURE(kGlanceablesV2ErrorMessage,
              "GlanceablesV2ErrorMessage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the updated version of time management glanceables.
-BASE_FEATURE(kGlanceablesTimeManagementStableLaunch,
-             "GlanceablesTimeManagementStableLaunch",
+// Enables Classroom Student Glanceable on time management surface for stable
+// launch.
+BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentView,
+             "GlanceablesTimeManagementClassroomStudentView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Tasks Glanceable on time management surface for stable launch.
+BASE_FEATURE(kGlanceablesTimeManagementTasksView,
+             "GlanceablesTimeManagementTasksView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables logging new Gaia account creation event.
@@ -1435,7 +1441,7 @@ BASE_FEATURE(kHoldingSpaceCameraAppIntegration,
 // Enables Photoshop Web integration with holding space.
 BASE_FEATURE(kHoldingSpacePhotoshopWebIntegration,
              "HoldingSpacePhotoshopWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables holding space icon to be permanently displayed with extended file
 // expiration to increase predictability of the feature.
@@ -1470,9 +1476,14 @@ const base::FeatureParam<bool>
 // Ignores the rate limiting of holding space wallpaper nudge so that it will
 // show every time a user drags a file over the wallpaper. Enabling this flag
 // does nothing unless `kHoldingSpaceWallpaperNudge` is also enabled.
-BASE_FEATURE(kHoldingSpaceWallpaperNudgeIgnoreRateLimiting,
-             "HoldingSpaceWallpaperNudgeIgnoreRateLimiting",
+BASE_FEATURE(kHoldingSpaceWallpaperNudgeForceEligibility,
+             "HoldingSpaceWallpaperNudgeForceEligibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool>
+    kHoldingSpaceWallpaperNudgeForceEligibilityRateAcceleratedLimitingEnabled{
+        &kHoldingSpaceWallpaperNudgeForceEligibility,
+        "accelerated-rate-limiting-enabled", false};
 
 BASE_FEATURE(kHomeButtonQuickAppAccess,
              "HomeButtonQuickAppAccess",
@@ -1496,6 +1507,12 @@ BASE_FEATURE(kSameAppWindowCycle,
 BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables message to notify users of apps that previously opened in the browser
+// are now opening in standalone windows.
+BASE_FEATURE(kStandaloneWindowMigrationUx,
+             "StandaloneWindowMigrationUx",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to start AssistantAudioDecoder service on demand (at query
 // response time).
@@ -1864,6 +1881,12 @@ BASE_FEATURE(kSysUiDownloadsIntegrationV2,
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, "NightLight", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Extracts controller logic from child views of `NotificationCenterView` to
+// place it in a new `NotificationCenterController` class.
+BASE_FEATURE(kNotificationCenterController,
+             "NotificationCenterController",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabled notification expansion animation.
 BASE_FEATURE(kNotificationExpansionAnimation,
              "NotificationExpansionAnimation",
@@ -1975,6 +1998,11 @@ BASE_FEATURE(kOobeQuickStart,
 // Enables or disables search customizable shortcuts in launcher.
 BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              "SearchCustomizableShortcutsInLauncher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables shortcut customization logging.
+BASE_FEATURE(kEnableShortcutCustomizationLogging,
+             "EnableShortcutCustomizationLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables sending feedback for Orca.
@@ -2397,6 +2425,9 @@ BASE_FEATURE(kScreenSaverDuration,
 
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureManagementSeaPen,
+             "FeatureManagementSeaPen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sea pen text input feature in the personalization app.
 BASE_FEATURE(kSeaPenTextInput,
@@ -2586,16 +2617,6 @@ BASE_FEATURE(kStylusBatteryStatus,
              "StylusBatteryStatus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the System Extensions platform.
-BASE_FEATURE(kSystemExtensions,
-             "SystemExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables the managed device health service System Extensions type.
-BASE_FEATURE(kSystemExtensionsManagedDeviceHealthServices,
-             "SystemExtensionsManagedDeviceHealthServices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables using the system input engine for physical typing in
 // Japanese.
 BASE_FEATURE(kSystemJapanesePhysicalTyping,
@@ -2654,6 +2675,11 @@ BASE_FEATURE(kTerminalAlternativeEmulator,
 // Enables Terminal System App to load from Downloads for developer testing.
 // Only works in dev and canary channels.
 BASE_FEATURE(kTerminalDev, "TerminalDev", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables experimental feature for resizing tiling windows.
+BASE_FEATURE(kTilingWindowResize,
+             "TilingWindowResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables time of day screen saver.
 BASE_FEATURE(kTimeOfDayScreenSaver,
@@ -2958,7 +2984,7 @@ BASE_FEATURE(kInputMethodKoreanRightAltKeyDownFix,
 // Enables peripheral customization to be split per device.
 BASE_FEATURE(kPeripheralCustomization,
              "PeripheralCustomization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable peripheral notification to notify users when a input device is
 // connected to the user's chromebook for the first time.
@@ -3159,6 +3185,10 @@ bool IsBirchFeatureEnabled() {
   return base::FeatureList::IsEnabled(kBirchFeature);
 }
 
+bool IsBluetoothDisconnectWarningEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothDisconnectWarning);
+}
+
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
 }
@@ -3325,10 +3355,6 @@ bool IsExperimentalRgbKeyboardPatternsEnabled() {
 
 bool IsExternalKeyboardInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableExternalKeyboardsInDiagnostics);
-}
-
-bool IsFaceMLSwaEnabled() {
-  return base::FeatureList::IsEnabled(kFaceMLApp);
 }
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
@@ -3506,15 +3532,26 @@ bool IsGlanceablesV2ClassroomTeacherViewEnabled() {
 }
 
 bool IsGlanceablesV2CalendarViewEnabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesV2CalendarView);
+  return base::FeatureList::IsEnabled(kGlanceablesV2CalendarView) ||
+         AreAnyGlanceablesTimeManagementViewsEnabled();
 }
 
 bool IsGlanceablesV2ErrorMessageEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2ErrorMessage);
 }
 
-bool IsGlanceablesTimeManagementStableLaunchEnabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementStableLaunch);
+bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
+  return base::FeatureList::IsEnabled(
+      kGlanceablesTimeManagementClassroomStudentView);
+}
+
+bool IsGlanceablesTimeManagementTasksViewEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
+}
+
+bool AreAnyGlanceablesTimeManagementViewsEnabled() {
+  return IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
+         IsGlanceablesTimeManagementTasksViewEnabled();
 }
 
 bool IsHibernateEnabled() {
@@ -3563,10 +3600,16 @@ bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() {
          kHoldingSpaceWallpaperNudgeEnabledCounterfactually.Get();
 }
 
-bool IsHoldingSpaceWallpaperNudgeRateLimitingEnabled() {
+bool IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled() {
+  return IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() &&
+         kHoldingSpaceWallpaperNudgeForceEligibilityRateAcceleratedLimitingEnabled
+             .Get();
+}
+
+bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() {
   return IsHoldingSpaceWallpaperNudgeEnabled() &&
-         !base::FeatureList::IsEnabled(
-             kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
+         base::FeatureList::IsEnabled(
+             kHoldingSpaceWallpaperNudgeForceEligibility);
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {
@@ -3597,6 +3640,11 @@ bool IsScreenSaverDurationEnabled() {
 bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection) &&
          switches::HasHps();
+}
+
+bool IsStandaloneWindowMigrationUxEnabled() {
+  return base::FeatureList::IsEnabled(kStandaloneWindowMigrationUx) &&
+         base::FeatureList::IsEnabled(chromeos::features::kCrosShortstand);
 }
 
 bool IsStartAssistantAudioDecoderOnDemandEnabled() {
@@ -3819,6 +3867,10 @@ bool IsSuppressTextMessagesEnabled() {
 
 bool IsSysUiDownloadsIntegrationV2Enabled() {
   return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);
+}
+
+bool IsNotificationCenterControllerEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationCenterController);
 }
 
 bool IsNotificationExpansionAnimationEnabled() {
@@ -4158,7 +4210,8 @@ bool IsScalableIphClientConfigEnabled() {
 }
 
 bool IsSeaPenEnabled() {
-  return base::FeatureList::IsEnabled(kSeaPen);
+  return base::FeatureList::IsEnabled(kSeaPen) &&
+         base::FeatureList::IsEnabled(kFeatureManagementSeaPen);
 }
 
 bool IsSeaPenTextInputEnabled() {
@@ -4171,7 +4224,8 @@ bool IsSeparateNetworkIconsEnabled() {
 }
 
 bool IsSeparateWebAppShortcutBadgeIconEnabled() {
-  return base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
+  return chromeos::features::IsCrosShortstandEnabled() ||
+         base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
 }
 
 bool IsSettingsAppNotificationSettingsEnabled() {
@@ -4247,6 +4301,10 @@ bool IsStylusBatteryStatusEnabled() {
 
 bool IsTetheringExperimentalFunctionalityEnabled() {
   return base::FeatureList::IsEnabled(kTetheringExperimentalFunctionality);
+}
+
+bool IsTilingWindowResizeEnabled() {
+  return base::FeatureList::IsEnabled(kTilingWindowResize);
 }
 
 bool IsTimeOfDayScreenSaverEnabled() {
@@ -4393,6 +4451,10 @@ bool ShouldArcFileTasksUseAppService() {
 
 bool isSearchCustomizableShortcutsInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
+}
+
+bool IsShortcutCustomizationLoggingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableShortcutCustomizationLogging);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

@@ -77,18 +77,13 @@ a[href] {
   color: var(--cr-link-color);
 }
 
-/* For elements that are simple out-links but don't look like anchors. */
-.inherit-color {
-  color: inherit !important;
+settings-toggle-button.primary-toggle {
+  color: var(--cros-sys-on_surface_variant);
+  font: var(--cros-button-2-font);
 }
 
-.primary-toggle {
-  color: var(--cr-secondary-text-color);
-  font-weight: 500;
-}
-
-.primary-toggle[checked] {
-  color: var(--google-blue-500);
+settings-toggle-button.primary-toggle[checked] {
+  color: var(--cros-sys-primary);
 }
 
 collapse-radio-button,
@@ -115,10 +110,6 @@ cr-radio-group {
  * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=1108514#c5) */
 .no-min-width {
   min-width: 0;
-}
-
-.header-aligned-button {
-  margin-top: 12px;  /* Align cr-button with <h2>. */
 }
 
 .link-wrapper {
@@ -337,12 +328,6 @@ iron-list,
   margin: 0;
 }
 
-.column-header {
-  color: var(--cr-secondary-text-color);
-  font-size: inherit;
-  font-weight: 400;
-}
-
 /* Error message that appears in a toast to indicate the success or
  * failure of an operation. An example is when adding a printer. */
 .error-message {
@@ -352,13 +337,6 @@ iron-list,
   padding-top: 15px;
   text-align: center;
   white-space: normal;
-}
-
-/* URLs should always be displayed using a LTR embedding - see
- * https://url.spec.whatwg.org/#url-rendering. */
-.url-directionality {
-  direction: ltr;
-  unicode-bidi: embed;
 }
 
 /* Override dialog title font specified in cros_color_overrides.css */

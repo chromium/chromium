@@ -32,7 +32,7 @@ namespace signed_exchange_utils {
 
 namespace {
 constexpr char kLoadResultHistogram[] = "SignedExchange.LoadResult2";
-absl::optional<base::Time> g_verification_time_for_testing;
+std::optional<base::Time> g_verification_time_for_testing;
 }  // namespace
 
 void RecordLoadResultHistogram(SignedExchangeLoadResult result) {
@@ -42,7 +42,7 @@ void RecordLoadResultHistogram(SignedExchangeLoadResult result) {
 void ReportErrorAndTraceEvent(
     SignedExchangeDevToolsProxy* devtools_proxy,
     const std::string& error_message,
-    absl::optional<SignedExchangeError::FieldIndexPair> error_field) {
+    std::optional<SignedExchangeError::FieldIndexPair> error_field) {
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                        "SignedExchangeError", TRACE_EVENT_SCOPE_THREAD, "error",
                        error_message);
@@ -84,7 +84,7 @@ bool ShouldHandleAsSignedHTTPExchange(
   return true;
 }
 
-absl::optional<SignedExchangeVersion> GetSignedExchangeVersion(
+std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
     const std::string& content_type) {
   // https://wicg.github.io/webpackage/loading.html#signed-exchange-version
   // Step 1. Let mimeType be the supplied MIME type of response. [spec text]
@@ -96,7 +96,7 @@ absl::optional<SignedExchangeVersion> GetSignedExchangeVersion(
   const std::string essence = base::ToLowerASCII(base::TrimWhitespaceASCII(
       content_type.substr(0, semicolon), base::TRIM_ALL));
   if (essence != "application/signed-exchange")
-    return absl::nullopt;
+    return std::nullopt;
 
   // Step 4.Let params be mimeType's parameters. [spec text]
   std::map<std::string, std::string> params;
@@ -108,17 +108,17 @@ absl::optional<SignedExchangeVersion> GetSignedExchangeVersion(
       params[base::ToLowerASCII(name)] = parser.value();
     }
     if (!parser.valid())
-      return absl::nullopt;
+      return std::nullopt;
   }
   // Step 5. If params["v"] exists, return it. Otherwise, return undefined.
   //        [spec text]
   auto iter = params.find("v");
   if (iter != params.end()) {
     if (iter->second == "b3")
-      return absl::make_optional(SignedExchangeVersion::kB3);
-    return absl::make_optional(SignedExchangeVersion::kUnknown);
+      return std::make_optional(SignedExchangeVersion::kB3);
+    return std::make_optional(SignedExchangeVersion::kUnknown);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 SignedExchangeLoadResult GetLoadResultFromSignatureVerifierResult(
@@ -273,7 +273,7 @@ base::Time GetVerificationTime() {
 }
 
 void SetVerificationTimeForTesting(
-    absl::optional<base::Time> verification_time_for_testing) {
+    std::optional<base::Time> verification_time_for_testing) {
   g_verification_time_for_testing = verification_time_for_testing;
 }
 

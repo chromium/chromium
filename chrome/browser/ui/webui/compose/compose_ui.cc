@@ -38,20 +38,24 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {
       {"close", IDS_CLOSE},
-      {"consentTitle", IDS_COMPOSE_CONSENT_TITLE},
-      {"consentMainTop", IDS_COMPOSE_CONSENT_MAIN_TOP},
-      {"consentMainBottom", IDS_COMPOSE_CONSENT_MAIN_BOTTOM},
-      {"consentNoButton", IDS_COMPOSE_CONSENT_NO_BUTTON},
-      {"consentYesButton", IDS_COMPOSE_CONSENT_YES_BUTTON},
       {"freMsbbTitle", IDS_COMPOSE_FRE_MSBB_TITLE},
       {"freMsbbMain", IDS_COMPOSE_FRE_MSBB_MAIN},
       {"freMsbbSettingsButton", IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON},
+      {"firstRunTitle", IDS_COMPOSE_FRE_TITLE},
+      {"firstRunMainTop", IDS_COMPOSE_FRE_MAIN_TOP},
+      {"firstRunMainMid", IDS_COMPOSE_FRE_MAIN_MID},
+      {"firstRunMainBottom", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
+      {"firstRunLetsGoButton", IDS_COMPOSE_FRE_LETS_GO_BUTTON},
       {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
-      {"disclaimerLetsGoButton", IDS_COMPOSE_DISCLAIMER_BUTTON},
-      {"inputPlaceholder", IDS_COMPOSE_INPUT_PLACEHOLDER},
-      {"inputFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
+      {"inputPlaceholderTitle", IDS_COMPOSE_INPUT_PLACEHOLDER_TITLE},
+      {"inputPlaceholderLine1", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1},
+      {"inputPlaceholderLine2", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_2},
+      {"inputPlaceholderLine3", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3},
+      {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
-      {"resultFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
+      {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
+      {"resultFooter", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
+      {"dogfoodFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
       {"replaceButton", IDS_COMPOSE_REPLACE_BUTTON},
       {"lengthMenuTitle", IDS_COMPOSE_MENU_LENGTH_TITLE},
@@ -65,7 +69,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
       {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
       {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
-      {"errorPermissionDenied", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorPermissionDenied", IDS_COMPOSE_ERROR_PERMISSION_DENIED},
       {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
       {"editButton", IDS_COMPOSE_EDIT},
       {"editCancelButton", IDS_CANCEL},
@@ -79,6 +83,10 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
   source->AddBoolean("enableAnimations",
                      base::FeatureList::IsEnabled(
                          compose::features::kEnableComposeWebUIAnimations));
+  source->AddBoolean(
+      "enableOnDeviceDogfoodFooter",
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeOnDeviceDogfoodFooter));
 }
 
 ComposeUI::~ComposeUI() = default;

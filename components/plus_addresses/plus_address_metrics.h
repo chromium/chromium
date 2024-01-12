@@ -30,6 +30,12 @@ class PlusAddressMetrics {
     kMaxValue = kCreateNewPlusAddressChosen,
   };
 
+  enum class PlusAddressModalCompletionStatus {
+    kModalCanceled = 0,
+    kModalConfirmed = 1,
+    kMaxValue = kModalConfirmed,
+  };
+
   // As of now, the class is intended to be stateless and static; do not allow
   // construction.
   PlusAddressMetrics() = delete;
@@ -38,7 +44,10 @@ class PlusAddressMetrics {
 
   // Log plus address creation modal events.
   static void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event);
-
+  // Log plus address creation modal/bottom sheet shown duration for each
+  // `status`.
+  static void RecordModalShownDuration(PlusAddressModalCompletionStatus status,
+                                       base::TimeDelta modal_shown_duration);
   // Log plus address autofill suggestion events.
   static void RecordAutofillSuggestionEvent(
       PlusAddressAutofillSuggestionEvent
@@ -58,6 +67,8 @@ class PlusAddressMetrics {
   static void RecordNetworkRequestOauthError(GoogleServiceAuthError error);
   static std::string PlusAddressNetworkRequestTypeToString(
       PlusAddressNetworkRequestType type);
+  static std::string PlusAddressModalCompletionStatusToString(
+      PlusAddressModalCompletionStatus status);
 };
 }  // namespace plus_addresses
 

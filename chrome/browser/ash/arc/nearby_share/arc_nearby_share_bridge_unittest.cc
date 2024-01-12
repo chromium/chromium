@@ -41,7 +41,7 @@ class ArcNearbyShareBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeNearbyShareInstance nearby_share_instance_;
   TestingProfile profile_;
-  raw_ptr<ArcNearbyShareBridge, ExperimentalAsh> bridge_ = nullptr;
+  raw_ptr<ArcNearbyShareBridge> bridge_ = nullptr;
 };
 
 TEST_F(ArcNearbyShareBridgeTest, ConstructDestruct) {}

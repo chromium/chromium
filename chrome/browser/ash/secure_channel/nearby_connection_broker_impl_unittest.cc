@@ -427,7 +427,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
   std::unique_ptr<NearbyConnectionBroker> broker_;
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer> mock_timer_ = nullptr;
 
   base::OnceClosure on_connected_closure_;
   base::OnceClosure on_disconnected_closure_;

@@ -83,7 +83,7 @@ bool DeepScanningFailureModalDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-BEGIN_METADATA(DeepScanningFailureModalDialog, views::DialogDelegateView)
+BEGIN_METADATA(DeepScanningFailureModalDialog)
 END_METADATA
 
 }  // namespace safe_browsing

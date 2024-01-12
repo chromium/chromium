@@ -28,11 +28,13 @@ NSString* const kAlternateDiscoverFeedServerURL =
     @"AlternateDiscoverFeedServerURL";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
+NSString* const kSearchEngineForceEnabled = @"SearchEngineForceEnabled";
 NSString* const kUpgradePromoForceEnabled = @"UpgradePromoForceEnabled";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
+NSString* const kFirstRunRecency = @"FirstRunRecency";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
     @"ForceExperienceForDeviceSwitcher";
 NSString* const kSafetyCheckUpdateChromeStateOverride =
@@ -61,6 +63,11 @@ namespace experimental_flags {
 bool AlwaysDisplayFirstRun() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kFirstRunForceEnabled];
+}
+
+bool AlwaysDisplaySearchEngineChoice() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kSearchEngineForceEnabled];
 }
 
 bool AlwaysDisplayUpgradePromo() {
@@ -199,6 +206,15 @@ std::optional<int> GetSafetyCheckWeakPasswordsCount() {
   }
 
   return weakPasswordsCount;
+}
+
+std::optional<int> GetFirstRunRecency() {
+  int first_run_recency =
+      [[NSUserDefaults standardUserDefaults] integerForKey:kFirstRunRecency];
+  if (first_run_recency == 0) {
+    return std::nullopt;
+  }
+  return first_run_recency;
 }
 
 std::optional<int> GetSafetyCheckReusedPasswordsCount() {

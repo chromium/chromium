@@ -89,7 +89,7 @@ TransactionalLevelDBDatabase::~TransactionalLevelDBDatabase() {
       this);
 }
 
-leveldb::Status TransactionalLevelDBDatabase::Put(const std::string_view& key,
+leveldb::Status TransactionalLevelDBDatabase::Put(std::string_view key,
                                                   std::string* value) {
   leveldb::WriteOptions write_options;
   write_options.sync = kSyncWrites;
@@ -101,8 +101,7 @@ leveldb::Status TransactionalLevelDBDatabase::Put(const std::string_view& key,
   return s;
 }
 
-leveldb::Status TransactionalLevelDBDatabase::Remove(
-    const std::string_view& key) {
+leveldb::Status TransactionalLevelDBDatabase::Remove(std::string_view key) {
   leveldb::WriteOptions write_options;
   write_options.sync = kSyncWrites;
 
@@ -113,7 +112,7 @@ leveldb::Status TransactionalLevelDBDatabase::Remove(
   return s;
 }
 
-leveldb::Status TransactionalLevelDBDatabase::Get(const std::string_view& key,
+leveldb::Status TransactionalLevelDBDatabase::Get(std::string_view key,
                                                   std::string* value,
                                                   bool* found) {
   *found = false;
@@ -185,8 +184,8 @@ TransactionalLevelDBDatabase::CreateIterator(
       std::move(snapshot));
 }
 
-void TransactionalLevelDBDatabase::Compact(const std::string_view& start,
-                                           const std::string_view& stop) {
+void TransactionalLevelDBDatabase::Compact(std::string_view start,
+                                           std::string_view stop) {
   TRACE_EVENT0("leveldb", "LevelDBDatabase::Compact");
   const leveldb::Slice start_slice = leveldb_env::MakeSlice(start);
   const leveldb::Slice stop_slice = leveldb_env::MakeSlice(stop);

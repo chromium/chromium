@@ -14,6 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppLanguageSelectionDialogEntryPoint} from '../common/app_language_selection_dialog/app_language_selection_dialog.js';
 import {AppManagementBrowserProxy} from '../common/app_management/browser_proxy.js';
 import {AppMap} from '../common/app_management/store.js';
 import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
@@ -74,7 +75,7 @@ export class OsSettingsAppLanguagesPageElement extends
 
     this.watch(
         'appList_',
-        state => this.computeAppsSupportingPerAppLanguage(state.apps));
+        state => this.computeAppsSupportingPerAppLanguage_(state.apps));
     this.updateFromStore();
   }
 
@@ -173,7 +174,7 @@ export class OsSettingsAppLanguagesPageElement extends
   /**
    * Only show apps supporting per-app-language, and sort ascending.
    */
-  private computeAppsSupportingPerAppLanguage(apps: AppMap): App[] {
+  private computeAppsSupportingPerAppLanguage_(apps: AppMap): App[] {
     const filteredApps: App[] = Object.values(apps).filter(app => {
       return app.supportedLocales.length > 0;
     });
@@ -183,6 +184,10 @@ export class OsSettingsAppLanguagesPageElement extends
       assert(b!.title);
       return alphabeticalSort(a.title, b.title);
     });
+  }
+
+  private getDialogEntryPoint_(): AppLanguageSelectionDialogEntryPoint {
+    return AppLanguageSelectionDialogEntryPoint.LANGUAGES_PAGE;
   }
 }
 

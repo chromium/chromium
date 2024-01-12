@@ -2,84 +2,86 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
-
-#include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "build/branding_buildflags.h"
-#include "components/grit/components_scaled_resources.h"
-#include "content/public/browser/web_ui_data_source.h"
-
+#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 // This code is generated
 // using`tools/search_engine_choice/generate_search_engine_icons.py`. Don't
 // modify it manually.
 
-void AddGeneratedIconResources(content::WebUIDataSource* source,
-                               const std::string& directory) {
-  CHECK(source);
-  CHECK_EQ(directory.back(), '/');
+namespace {
+
+constexpr auto kSearchEngineIconPathMap =
+    base::MakeFixedFlatMap<std::u16string_view, std::string_view>(
+        {{u"bing.com", "chrome://theme/IDR_BING_COM_PNG"},
+         {u"search.brave.com", "chrome://theme/IDR_SEARCH_BRAVE_COM_PNG"},
+         {u"duckduckgo.com", "chrome://theme/IDR_DUCKDUCKGO_COM_PNG"},
+         {u"ecosia.org", "chrome://theme/IDR_ECOSIA_ORG_PNG"},
+         {u"karmasearch.org", "chrome://theme/IDR_KARMASEARCH_ORG_PNG"},
+         {u"lilo.org", "chrome://theme/IDR_LILO_ORG_PNG"},
+         {u"mail.ru", "chrome://theme/IDR_MAIL_RU_PNG"},
+         {u"mojeek.com", "chrome://theme/IDR_MOJEEK_COM_PNG"},
+         {u"nona.de", "chrome://theme/IDR_NONA_DE_PNG"},
+         {u"panda-search.org", "chrome://theme/IDR_PANDA_SEARCH_ORG_PNG"},
+         {u"quendu.com", "chrome://theme/IDR_QUENDU_COM_PNG"},
+         {u"qwant.com", "chrome://theme/IDR_QWANT_COM_PNG"},
+         {u"seznam.cz", "chrome://theme/IDR_SEZNAM_CZ_PNG"},
+         {u"seznam.sk", "chrome://theme/IDR_SEZNAM_SK_PNG"},
+         {u"yahoo.com", "chrome://theme/IDR_YAHOO_COM_PNG"},
+         {u"ar.yahoo.com", "chrome://theme/IDR_AR_YAHOO_COM_PNG"},
+         {u"at.yahoo.com", "chrome://theme/IDR_AT_YAHOO_COM_PNG"},
+         {u"au.yahoo.com", "chrome://theme/IDR_AU_YAHOO_COM_PNG"},
+         {u"br.yahoo.com", "chrome://theme/IDR_BR_YAHOO_COM_PNG"},
+         {u"ca.yahoo.com", "chrome://theme/IDR_CA_YAHOO_COM_PNG"},
+         {u"ch.yahoo.com", "chrome://theme/IDR_CH_YAHOO_COM_PNG"},
+         {u"cl.yahoo.com", "chrome://theme/IDR_CL_YAHOO_COM_PNG"},
+         {u"co.yahoo.com", "chrome://theme/IDR_CO_YAHOO_COM_PNG"},
+         {u"de.yahoo.com", "chrome://theme/IDR_DE_YAHOO_COM_PNG"},
+         {u"dk.yahoo.com", "chrome://theme/IDR_DK_YAHOO_COM_PNG"},
+         {u"es.yahoo.com", "chrome://theme/IDR_ES_YAHOO_COM_PNG"},
+         {u"fi.yahoo.com", "chrome://theme/IDR_FI_YAHOO_COM_PNG"},
+         {u"fr.yahoo.com", "chrome://theme/IDR_FR_YAHOO_COM_PNG"},
+         {u"hk.yahoo.com", "chrome://theme/IDR_HK_YAHOO_COM_PNG"},
+         {u"id.yahoo.com", "chrome://theme/IDR_ID_YAHOO_COM_PNG"},
+         {u"in.yahoo.com", "chrome://theme/IDR_IN_YAHOO_COM_PNG"},
+         {u"yahoo.co.jp", "chrome://theme/IDR_YAHOO_CO_JP_PNG"},
+         {u"mx.yahoo.com", "chrome://theme/IDR_MX_YAHOO_COM_PNG"},
+         {u"malaysia.yahoo.com", "chrome://theme/IDR_MALAYSIA_YAHOO_COM_PNG"},
+         {u"nl.yahoo.com", "chrome://theme/IDR_NL_YAHOO_COM_PNG"},
+         {u"nz.yahoo.com", "chrome://theme/IDR_NZ_YAHOO_COM_PNG"},
+         {u"pe.yahoo.com", "chrome://theme/IDR_PE_YAHOO_COM_PNG"},
+         {u"ph.yahoo.com", "chrome://theme/IDR_PH_YAHOO_COM_PNG"},
+         {u"se.yahoo.com", "chrome://theme/IDR_SE_YAHOO_COM_PNG"},
+         {u"sg.yahoo.com", "chrome://theme/IDR_SG_YAHOO_COM_PNG"},
+         {u"th.yahoo.com", "chrome://theme/IDR_TH_YAHOO_COM_PNG"},
+         {u"tr.yahoo.com", "chrome://theme/IDR_TR_YAHOO_COM_PNG"},
+         {u"tw.yahoo.com", "chrome://theme/IDR_TW_YAHOO_COM_PNG"},
+         {u"uk.yahoo.com", "chrome://theme/IDR_UK_YAHOO_COM_PNG"},
+         {u"yandex.by", "chrome://theme/IDR_YANDEX_BY_PNG"},
+         {u"yandex.com", "chrome://theme/IDR_YANDEX_COM_PNG"},
+         {u"yandex.kz", "chrome://theme/IDR_YANDEX_KZ_PNG"},
+         {u"yandex.ru", "chrome://theme/IDR_YANDEX_RU_PNG"},
+         {u"yandex.com.tr", "chrome://theme/IDR_YANDEX_COM_TR_PNG"},
+         {u"yep.com", "chrome://theme/IDR_YEP_COM_PNG"},
+         {u"info.com", "chrome://theme/IDR_INFO_COM_PNG"},
+         {u"metager.de", "chrome://theme/IDR_METAGER_DE_PNG"},
+         {u"oceanhero.today", "chrome://theme/IDR_OCEANHERO_TODAY_PNG"},
+         {u"privacywall.org", "chrome://theme/IDR_PRIVACYWALL_ORG_PNG"},
+         {u"google.com",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath(directory + "google_com.png", IDR_GOOGLE_COM_PNG);
+          "chrome://theme/IDR_GOOGLE_COM_PNG"
+#else
+          "chrome://theme/IDR_DEFAULT_FAVICON"
 #endif
-  source->AddResourcePath(directory + "bing_com.png", IDR_BING_COM_PNG);
-  source->AddResourcePath(directory + "search_brave_com.png",
-                          IDR_SEARCH_BRAVE_COM_PNG);
-  source->AddResourcePath(directory + "duckduckgo_com.png",
-                          IDR_DUCKDUCKGO_COM_PNG);
-  source->AddResourcePath(directory + "ecosia_org.png", IDR_ECOSIA_ORG_PNG);
-  source->AddResourcePath(directory + "karmasearch_org.png",
-                          IDR_KARMASEARCH_ORG_PNG);
-  source->AddResourcePath(directory + "lilo_org.png", IDR_LILO_ORG_PNG);
-  source->AddResourcePath(directory + "mail_ru.png", IDR_MAIL_RU_PNG);
-  source->AddResourcePath(directory + "mojeek_com.png", IDR_MOJEEK_COM_PNG);
-  source->AddResourcePath(directory + "nona_de.png", IDR_NONA_DE_PNG);
-  source->AddResourcePath(directory + "panda_search_org.png",
-                          IDR_PANDA_SEARCH_ORG_PNG);
-  source->AddResourcePath(directory + "quendu_com.png", IDR_QUENDU_COM_PNG);
-  source->AddResourcePath(directory + "qwant_com.png", IDR_QWANT_COM_PNG);
-  source->AddResourcePath(directory + "seznam_cz.png", IDR_SEZNAM_CZ_PNG);
-  source->AddResourcePath(directory + "seznam_sk.png", IDR_SEZNAM_SK_PNG);
-  source->AddResourcePath(directory + "yahoo_com.png", IDR_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "ar_yahoo_com.png", IDR_AR_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "at_yahoo_com.png", IDR_AT_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "au_yahoo_com.png", IDR_AU_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "br_yahoo_com.png", IDR_BR_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "ca_yahoo_com.png", IDR_CA_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "ch_yahoo_com.png", IDR_CH_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "cl_yahoo_com.png", IDR_CL_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "co_yahoo_com.png", IDR_CO_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "de_yahoo_com.png", IDR_DE_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "dk_yahoo_com.png", IDR_DK_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "es_yahoo_com.png", IDR_ES_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "fi_yahoo_com.png", IDR_FI_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "fr_yahoo_com.png", IDR_FR_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "hk_yahoo_com.png", IDR_HK_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "id_yahoo_com.png", IDR_ID_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "in_yahoo_com.png", IDR_IN_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "yahoo_co_jp.png", IDR_YAHOO_CO_JP_PNG);
-  source->AddResourcePath(directory + "mx_yahoo_com.png", IDR_MX_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "malaysia_yahoo_com.png",
-                          IDR_MALAYSIA_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "nl_yahoo_com.png", IDR_NL_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "nz_yahoo_com.png", IDR_NZ_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "pe_yahoo_com.png", IDR_PE_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "ph_yahoo_com.png", IDR_PH_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "se_yahoo_com.png", IDR_SE_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "sg_yahoo_com.png", IDR_SG_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "th_yahoo_com.png", IDR_TH_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "tr_yahoo_com.png", IDR_TR_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "tw_yahoo_com.png", IDR_TW_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "uk_yahoo_com.png", IDR_UK_YAHOO_COM_PNG);
-  source->AddResourcePath(directory + "yandex_by.png", IDR_YANDEX_BY_PNG);
-  source->AddResourcePath(directory + "yandex_com.png", IDR_YANDEX_COM_PNG);
-  source->AddResourcePath(directory + "yandex_kz.png", IDR_YANDEX_KZ_PNG);
-  source->AddResourcePath(directory + "yandex_ru.png", IDR_YANDEX_RU_PNG);
-  source->AddResourcePath(directory + "yandex_com_tr.png",
-                          IDR_YANDEX_COM_TR_PNG);
-  source->AddResourcePath(directory + "yep_com.png", IDR_YEP_COM_PNG);
-  source->AddResourcePath(directory + "info_com.png", IDR_INFO_COM_PNG);
-  source->AddResourcePath(directory + "metager_de.png", IDR_METAGER_DE_PNG);
-  source->AddResourcePath(directory + "oceanhero_today.png",
-                          IDR_OCEANHERO_TODAY_PNG);
-  source->AddResourcePath(directory + "privacywall_org.png",
-                          IDR_PRIVACYWALL_ORG_PNG);
+         }});
+
+}  // namespace
+
+std::string_view GetSearchEngineGeneratedIconPath(
+    const std::u16string& engine_keyword) {
+  const base::fixed_flat_map<std::u16string_view, std::string_view,
+                             kSearchEngineIconPathMap.size()>::const_iterator
+      iterator = kSearchEngineIconPathMap.find(engine_keyword);
+  return iterator == kSearchEngineIconPathMap.cend() ? std::string_view()
+                                                     : iterator->second;
 }

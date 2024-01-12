@@ -284,8 +284,6 @@ message ClientToServerMessage {
   reserved 6;
   reserved "authenticate";
 
-  reserved 9;
-
   // Opaque server-provided ID representing an "epoch" of the server-side data.
   // Clients must hand this opaque ID back to the server as part of all requests
   // within the same sync session (i.e. for all requests to the server except
@@ -293,9 +291,9 @@ message ClientToServerMessage {
   // ClientToServerResponse.store_birthday for more details about its lifetime.
   optional string store_birthday = 7;
 
-  // The client sets this if it detects a sync issue. The server will tell it
-  // if it should perform a refresh.
-  optional bool sync_problem_detected = 8 [default = false];
+  reserved 8;
+  reserved "sync_problem_detected";
+  reserved 9;
 
   // Client side state information for debugging purpose.
   // This is only sent on the first getupdates of every sync cycle,

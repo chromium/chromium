@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+
+namespace views {
+class UniqueWidgetPtr;
+}  // namespace views
+
+namespace chromeos::mahi {
+
+// A bubble style view to show Mahi Menu.
+class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
+ public:
+  METADATA_HEADER(MahiMenuView);
+
+  MahiMenuView();
+
+  MahiMenuView(const MahiMenuView&) = delete;
+  MahiMenuView& operator=(const MahiMenuView&) = delete;
+
+  ~MahiMenuView() override;
+
+  // Creates a menu widget that contains a `MahiMenuView`, configured with the
+  // given `anchor_view_bounds`.
+  static views::UniqueWidgetPtr CreateWidget(
+      const gfx::Rect& anchor_view_bounds);
+
+  // Updates the bounds of the view according to the given `anchor_view_bounds`.
+  void UpdateBounds(const gfx::Rect& anchor_view_bounds);
+
+ private:
+  // Button callback.
+  void OnSummaryButtonPressed();
+
+  base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
+};
+
+}  // namespace chromeos::mahi
+
+#endif  // CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_

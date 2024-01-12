@@ -389,15 +389,49 @@ PermissionsPolicy::PermissionsPolicy(
 PermissionsPolicy::~PermissionsPolicy() = default;
 
 // static
-std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
+std::unique_ptr<PermissionsPolicy>
+PermissionsPolicy::CreateFlexibleForFencedFrame(
+    const PermissionsPolicy* parent_policy,
+    const ParsedPermissionsPolicy& container_policy,
+    const url::Origin& subframe_origin) {
+  return CreateFlexibleForFencedFrame(
+      parent_policy, container_policy, subframe_origin,
+      GetPermissionsPolicyFeatureList(subframe_origin));
+}
+
+// static
+std::unique_ptr<PermissionsPolicy>
+PermissionsPolicy::CreateFlexibleForFencedFrame(
+    const PermissionsPolicy* parent_policy,
+    const ParsedPermissionsPolicy& container_policy,
+    const url::Origin& subframe_origin,
+    const PermissionsPolicyFeatureList& features) {
+  auto new_policy = std::unique_ptr<PermissionsPolicy>(
+      new PermissionsPolicy(subframe_origin, features));
+  for (const auto& feature : features) {
+    if (base::Contains(kFencedFrameAllowedFeatures, feature.first)) {
+      new_policy->inherited_policies_[feature.first] =
+          new_policy->InheritedValueForFeature(parent_policy, feature,
+                                               container_policy);
+    } else {
+      new_policy->inherited_policies_[feature.first] = false;
+    }
+  }
+  return new_policy;
+}
+
+// static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
     base::span<const blink::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
-  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(origin),
-                              effective_enabled_permissions);
+  return CreateFixedForFencedFrame(origin,
+                                   GetPermissionsPolicyFeatureList(origin),
+                                   effective_enabled_permissions);
 }
 
-std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
+// static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features,
     base::span<const blink::mojom::PermissionsPolicyFeature>

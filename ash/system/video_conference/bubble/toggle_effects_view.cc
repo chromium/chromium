@@ -190,13 +190,17 @@ ToggleEffectsButton::ToggleEffectsButton(
           gfx::Insets::TLBR(kButtonVerticalPadding, kButtonHorizontalPadding,
                             kButtonVerticalPadding, kButtonHorizontalPadding));
 
-  // This makes the view the expand or contract to occupy any available space.
-  SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded));
+  // If VcDlcUi is enabled then the button's preferred size and flex properties
+  // are controlled externally to the button rather than by the button itself.
+  if (!features::IsVcDlcUiEnabled()) {
+    // This makes the view the expand or contract to occupy any available space.
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kUnbounded));
 
-  SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
+    SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
+  }
 
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kButtonCornerRadius);
@@ -291,8 +295,9 @@ ToggleEffectsView::ToggleEffectsView(
                   gfx::Insets::TLBR(0, 0, kButtonContainerSpacing, 0));
 
   // The effects manager provides the toggle effects in rows.
+  auto& effects_manager = controller->GetEffectsManager();
   const VideoConferenceTrayEffectsManager::EffectDataTable tile_rows =
-      controller->effects_manager().GetToggleEffectButtonTable();
+      effects_manager.GetToggleEffectButtonTable();
   for (auto& row : tile_rows) {
     // Each row is its own view, with its own layout.
     std::unique_ptr<views::View> row_view = std::make_unique<views::View>();
@@ -321,20 +326,47 @@ ToggleEffectsView::ToggleEffectsView(
       // `current_state` can only be a `bool` for a toggle effect.
       bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
+
+      // The button should either be a `FeatureTile` or a `ToggleEffectsButton`,
+      // depending on the following logic.
+      std::unique_ptr<views::View> button;
       if (ash::features::IsVcDlcUiEnabled()) {
+        // If VcDlcUi is enabled then first try to see if the button should be a
+        // `FeatureTile` by determining if there is a tile controller for the
+        // VC effect.
         auto* tile_controller =
-            controller->effects_manager().GetUiControllerForEffectId(
-                tile->id());
+            effects_manager.GetUiControllerForEffectId(tile->id());
         if (tile_controller) {
-          row_view->AddChildView(tile_controller->CreateTile());
-          continue;
+          button = tile_controller->CreateTile();
         }
       }
-      row_view->AddChildView(std::make_unique<ToggleEffectsButton>(
-          state->button_callback(), state->icon(), toggle_state,
-          state->label_text(), state->accessible_name_id(),
-          tile->container_id(), tile->id(),
-          /*num_button_per_row=*/row.size()));
+      if (!button) {
+        // If there was no tile controller or if VcDlcUi is not enabled, then
+        // the button should be a `ToggleEffectsButton`.
+        button = std::make_unique<ToggleEffectsButton>(
+            state->button_callback(), state->icon(), toggle_state,
+            state->label_text(), state->accessible_name_id(),
+            tile->container_id(), tile->id(),
+            /*num_button_per_row=*/row.size());
+      }
+
+      // If VcDlcUi is enabled then the button's preferred size and flex
+      // properties are controlled externally to the button rather than by the
+      // button itself.
+      if (ash::features::IsVcDlcUiEnabled()) {
+        // Set the preferred width to 0 so that the container (`row_view`) can
+        // equally distribute its full width among all its child buttons.
+        button->SetPreferredSize(gfx::Size(0, kButtonHeight));
+
+        // Allow the button to expand or contract to whatever size is available
+        // for it.
+        button->SetProperty(views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                views::MinimumFlexSizeRule::kScaleToMinimum,
+                                views::MaximumFlexSizeRule::kUnbounded));
+      }
+
+      row_view->AddChildView(std::move(button));
     }
 
     // Add the row as a child, now that it's fully populated,

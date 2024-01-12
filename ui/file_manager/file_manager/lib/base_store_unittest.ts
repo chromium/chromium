@@ -5,6 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
+import type {GetActionFactoryPayload} from '../common/js/util.js';
 
 import type {ActionsProducerGen} from './actions_producer.js';
 import {BaseStore, Slice} from './base_store.js';
@@ -194,7 +195,7 @@ export async function testStoreActionsProducer(done: () => void) {
 
   store.dispatch(actionsProducerSuccess('attempt 1'));
 
-  await waitUntil(() => dispatchedActions.length == 4);
+  await waitUntil(() => dispatchedActions.length === 4);
 
   done();
 }
@@ -212,7 +213,7 @@ export async function testStoreActionsProducerEmpty(done: () => void) {
   store.dispatch(producesEmpty('trying empty #1'));
 
   // The AP issues 2 non-empty actions and 1 empty between those.
-  await waitUntil(() => dispatchedActions.length == 2);
+  await waitUntil(() => dispatchedActions.length === 2);
 
   done();
 }
@@ -233,7 +234,7 @@ export async function testStoreActionsProducerError(done: () => void) {
   store.dispatch(actionsProducerSuccess('attempt 2'));
 
   // 4 actions from each Success producer.
-  await waitUntil(() => dispatchedActions.length == 8);
+  await waitUntil(() => dispatchedActions.length === 8);
 
   done();
 }
@@ -290,7 +291,7 @@ export function testSliceReducerSplitting() {
 
   slice2.addReducer(
       doThing.type,
-      (state: TestState, payload: typeof doThing.PAYLOAD) =>
+      (state: TestState, payload: GetActionFactoryPayload<typeof doThing>) =>
           ({...state, numVisitors: state.numVisitors! + payload * 2}));
 
   const store = new BaseStore<TestState>({}, [slice1, slice2]);

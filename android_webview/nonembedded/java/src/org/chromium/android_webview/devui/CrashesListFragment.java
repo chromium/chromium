@@ -49,8 +49,8 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -63,8 +63,8 @@ public class CrashesListFragment extends DevUiBaseFragment {
     private static final String TAG = "WebViewDevTools";
 
     public static final String CRASH_BUG_DIALOG_MESSAGE =
-            "This crash has already been reported to our crash system. "
-                    + "Do you want to share more information, such as steps to reproduce the crash?";
+            "This crash has already been reported to our crash system. Do you want to share more"
+                    + " information, such as steps to reproduce the crash?";
     public static final String NO_WIFI_DIALOG_MESSAGE =
             "You are connected to a metered network or cellular data." + " Do you want to proceed?";
     public static final String CRASH_COLLECTION_DISABLED_ERROR_MESSAGE =

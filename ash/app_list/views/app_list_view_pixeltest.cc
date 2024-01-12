@@ -13,6 +13,7 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -256,7 +257,7 @@ TEST_P(AppListViewPixelRTLTest, KeyboardShortcutSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_ks_search_results", /*revision_number=*/2,
+      "bubble_launcher_ks_search_results", /*revision_number=*/3,
       GetAppListTestHelper()->GetBubbleView()));
 }
 
@@ -315,9 +316,11 @@ class AppListViewLauncherSearchIphTest
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(
         IsTabletMode(GetParam()));
 
-    AppListTestHelper* test_helper = GetAppListTestHelper();
-    test_helper->ShowAppList();
-    // TODO(b/280356293): Fix the test.
+    // Set a testing text so that the pixel test can compare.
+    LauncherSearchIphView::SetChipTextForTesting(u"chip");
+
+    GetAppListTestHelper()->search_model()->SetWouldTriggerLauncherSearchIph(
+        true);
   }
 
  private:
@@ -331,26 +334,20 @@ INSTANTIATE_TEST_SUITE_P(RTL,
                                           testing::Bool()),
                          &GenerateTestSuffix);
 
-// TODO(http://b/280356293): RTL.rtl_light_clamshell is flaky.
-TEST_P(AppListViewLauncherSearchIphTest, DISABLED_Basic) {
+TEST_P(AppListViewLauncherSearchIphTest, Basic) {
+  GetAppListTestHelper()->ShowAppList();
   raw_ptr<SearchBoxView> search_box_view =
       GetAppListTestHelper()->GetSearchBoxView();
+  ASSERT_TRUE(search_box_view);
+  LeftClickOn(search_box_view->assistant_button());
 
-  // The search box needs to be active in tablet mode for IPH to be shown.
-  if (IsTabletMode(GetParam())) {
-    raw_ptr<ui::test::EventGenerator> event_generator = GetEventGenerator();
-    event_generator->MoveMouseToInHost(
-        search_box_view->GetBoundsInScreen().CenterPoint());
-    event_generator->ClickLeftButton();
-  }
-
-  ASSERT_TRUE(search_box_view->GetIphView());
-  ViewDrawnWaiter view_drawn_waiter;
-  view_drawn_waiter.Wait(search_box_view->GetIphView());
+  auto* const iph_view = search_box_view->GetIphView();
+  ASSERT_TRUE(iph_view);
+  ViewDrawnWaiter().Wait(iph_view);
 
   UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "launcher_search_iph", /*revision_number=*/2, search_box_view));
+      "launcher_search_iph", /*revision_number=*/4, search_box_view));
 }
 
 class AppListViewTabletPixelTest
@@ -462,13 +459,13 @@ class AppListViewAssistantZeroStateTest
         feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
     AssistantAshTestBase::SetUp();
-    SetNumberOfSessionsWhereOnboardingShown(
-        assistant::ui::kOnboardingMaxSessionsShown);
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
         IsDarkMode(GetParam()));
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(
         IsTabletMode(GetParam()));
-    ShowAssistantUi();
+
+    // Set a testing text so that the pixel test can compare.
+    LauncherSearchIphView::SetChipTextForTesting(u"chip");
   }
 
  private:
@@ -482,13 +479,16 @@ INSTANTIATE_TEST_SUITE_P(RTL,
                                           /*IsTabletMode=*/testing::Bool()),
                          &GenerateTestSuffix);
 
-TEST_P(AppListViewAssistantZeroStateTest, DISABLED_Basic) {
-  // Wait layout.
-  base::RunLoop().RunUntilIdle();
+TEST_P(AppListViewAssistantZeroStateTest, Basic) {
+  ShowAssistantUi();
+
+  auto* const assistant_page_view = page_view();
+  ViewDrawnWaiter().Wait(
+      assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "app_list_view_assistant_zero_state", 5,
-      page_view()->GetViewByID(AssistantViewID::kZeroStateView)));
+      "app_list_view_assistant_zero_state", 7,
+      assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 
 }  // namespace ash

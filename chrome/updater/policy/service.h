@@ -43,8 +43,9 @@ class PolicyStatus {
   void AddPolicyIfNeeded(bool is_managed,
                          const std::string& source,
                          const T& policy) {
-    if (conflict_policy_)
+    if (conflict_policy_) {
       return;  // We already have enough policies.
+    }
 
     if (!effective_policy_ && is_managed) {
       effective_policy_ = std::make_optional<Entry>(source, policy);

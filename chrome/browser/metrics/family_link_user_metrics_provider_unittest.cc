@@ -196,3 +196,17 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       supervised_user::LogSegment::kMixedProfile,
       /*expected_count=*/0);
 }
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       SignedOutProfileLoggedAsUnsupervised) {
+  test_profile_manager()->CreateTestingProfile(
+      kTestProfile, IdentityTestEnvironmentProfileAdaptor::
+                        GetIdentityTestEnvironmentFactories());
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectBucketCount(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kUnsupervised,
+      /*expected_count=*/1);
+}

@@ -412,7 +412,8 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     return Difference::kDescendantAffecting;
   }
   if (old_style.Display() != new_style.Display() &&
-      old_style.BlockifiesChildren() != new_style.BlockifiesChildren()) {
+      (old_style.BlockifiesChildren() != new_style.BlockifiesChildren() ||
+       old_style.InlinifiesChildren() != new_style.InlinifiesChildren())) {
     return Difference::kDescendantAffecting;
   }
   // TODO(crbug.com/1213888): Only recalc affected descendants.
@@ -577,28 +578,38 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
          InheritedVariablesEqual(o);
 }
 
-bool ComputedStyle::HighlightPseudoElementStylesDependOnFontMetrics() const {
+bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
   const StyleHighlightData& highlight_data = HighlightData();
   if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasFontRelativeUnits()) {
+      (highlight_data.Selection()->HasFontRelativeUnits() ||
+       highlight_data.Selection()->HasContainerRelativeUnits() ||
+       highlight_data.Selection()->HasLogicalDirectionRelativeUnits())) {
     return true;
   }
   if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasFontRelativeUnits()) {
+      (highlight_data.TargetText()->HasFontRelativeUnits() ||
+       highlight_data.TargetText()->HasContainerRelativeUnits() ||
+       highlight_data.TargetText()->HasLogicalDirectionRelativeUnits())) {
     return true;
   }
   if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasFontRelativeUnits()) {
+      (highlight_data.SpellingError()->HasFontRelativeUnits() ||
+       highlight_data.SpellingError()->HasContainerRelativeUnits() ||
+       highlight_data.SpellingError()->HasLogicalDirectionRelativeUnits())) {
     return true;
   }
   if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasFontRelativeUnits()) {
+      (highlight_data.GrammarError()->HasFontRelativeUnits() ||
+       highlight_data.GrammarError()->HasContainerRelativeUnits() ||
+       highlight_data.GrammarError()->HasLogicalDirectionRelativeUnits())) {
     return true;
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
   for (auto custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasFontRelativeUnits()) {
+    if (custom_highlight.value->HasFontRelativeUnits() ||
+        custom_highlight.value->HasContainerRelativeUnits() ||
+        custom_highlight.value->HasLogicalDirectionRelativeUnits()) {
       return true;
     }
   }
@@ -726,7 +737,9 @@ bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
 }
 
 bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
-  // This is a fast check that only looks if the data structures are shared.
+  // We use a by-value check that is a bit more expensive than
+  // pointer comparison, but yields many more full MPC hits,
+  // so it generally makes up for it.
   return ComputedStyleBase::InheritedDataShared(other);
 }
 

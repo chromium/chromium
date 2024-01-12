@@ -5,10 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -140,13 +141,13 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // to avoid situations where users may make bad decisions based on incorrect
   // contextual information (due to content or widgets overlaying the exclusion
   // area)
-  virtual absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+  virtual std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       WebContents* web_contents) const;
 
   // Returns whether permission can be overridden.
   virtual bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const absl::optional<url::Origin>& origin);
+      const std::optional<url::Origin>& origin);
 };
 
 }  // namespace content

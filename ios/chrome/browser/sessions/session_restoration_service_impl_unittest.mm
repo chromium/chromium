@@ -310,8 +310,7 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     service_ = std::make_unique<SessionRestorationServiceImpl>(
         kSaveDelay, /*enable_pinned_web_states=*/true,
         browser_state_->GetStatePath(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        /*tab_restore_service=*/nullptr);
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   ~SessionRestorationServiceImplTest() override { service_->Shutdown(); }
@@ -849,8 +848,7 @@ TEST_F(SessionRestorationServiceImplTest, RecordHistograms) {
     WaitForSessionSaveComplete();
 
     // Check that the time spent to record the session was logged.
-    histogram_tester.ExpectTotalCount(
-        "Session.WebStates.SavingTimeOnMainThread", 1);
+    histogram_tester.ExpectTotalCount(kSessionHistogramSavingTime, 1);
 
     // Disconnect the Browser before destroying it.
     service()->Disconnect(&browser);
@@ -867,8 +865,7 @@ TEST_F(SessionRestorationServiceImplTest, RecordHistograms) {
   // Check that the expected content was loaded.
   EXPECT_EQ(browser.GetWebStateList()->count(),
             static_cast<int>(std::size(kURLs)));
-  histogram_tester.ExpectTotalCount("Session.WebStates.LoadingTimeOnMainThread",
-                                    1);
+  histogram_tester.ExpectTotalCount(kSessionHistogramLoadingTime, 1);
 
   // Disconnect the Browser before destroying it.
   service()->Disconnect(&browser);

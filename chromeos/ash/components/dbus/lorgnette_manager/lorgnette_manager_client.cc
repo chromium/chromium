@@ -1031,7 +1031,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         << "::" << signal_name << " signal.";
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> lorgnette_daemon_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> lorgnette_daemon_proxy_ = nullptr;
 
   // Map from scan UUIDs to ScanDataReader and callbacks for reporting scan
   // progress and completion.

@@ -47,8 +47,7 @@ class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
   void Init(dbus::Bus* bus) override;
 
  private:
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> wilco_dtc_supportd_proxy_ =
-      nullptr;
+  raw_ptr<dbus::ObjectProxy> wilco_dtc_supportd_proxy_ = nullptr;
 
   base::WeakPtrFactory<WilcoDtcSupportdClientImpl> weak_ptr_factory_{this};
 };

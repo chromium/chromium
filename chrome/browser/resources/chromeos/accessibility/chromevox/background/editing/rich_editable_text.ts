@@ -40,7 +40,7 @@ import StateType = chrome.automation.StateType;
  * A |ChromeVoxEditableTextBase| that implements text editing feedback
  * for automation tree text fields using anchor and focus selection.
  */
-export class AutomationRichEditableText extends AutomationEditableText {
+export class RichEditableText extends AutomationEditableText {
   private startLine_?: EditableLine;
   private endLine_?: EditableLine;
   private line_?: EditableLine;
@@ -165,7 +165,8 @@ export class AutomationRichEditableText extends AutomationEditableText {
     // CommandHandler). We use the speech end callback to trigger additional
     // speech.
     // Also, skip speech based on the predicate.
-    if (ChromeVoxState.instance.isReadingContinuously ||
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (ChromeVoxState.instance!.isReadingContinuously ||
         AutomationPredicate.shouldOnlyOutputSelectionChangeInBraille(
             this.node_)) {
       this.updateIntraLineState_(cur);
@@ -584,7 +585,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
   override changed(evt: TextChangeEvent): void {
     // This path does not use the Output module to synthesize speech.
     Output.forceModeForNextSpeechUtterance(undefined);
-    AutomationEditableText.prototype.changed.call(this, evt);
+    ChromeVoxEditableTextBase.prototype.changed.call(this, evt);
   }
 
   private updateIntraLineState_(cur: EditableLine): void {

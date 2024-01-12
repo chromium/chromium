@@ -122,7 +122,7 @@ void PushMessagingRouter::DeliverMessage(
     const GURL& origin,
     int64_t service_worker_registration_id,
     const std::string& message_id,
-    absl::optional<std::string> payload,
+    std::optional<std::string> payload,
     PushEventCallback deliver_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartServiceWorkerForDispatch(
@@ -135,7 +135,7 @@ void PushMessagingRouter::DeliverMessage(
 // static
 void PushMessagingRouter::DeliverMessageToWorker(
     const std::string& message_id,
-    absl::optional<std::string> payload,
+    std::optional<std::string> payload,
     PushEventCallback deliver_message_callback,
     scoped_refptr<ServiceWorkerVersion> service_worker,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,

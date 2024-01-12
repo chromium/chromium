@@ -60,15 +60,15 @@ namespace blink {
 // static
 std::unique_ptr<SkImageGenerator>
 DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
+  // This image generator is used only by code in Skia, which in practice means
+  // out of process printing deserialization (MSKP) and a few odds and ends.
+  // Blink side code uses DecodingImageGenerator::Create directly instead.
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromSkData(std::move(data));
-  // We just need the size of the image, so we have to temporarily create an
-  // ImageDecoder. Since we only need the size, the premul, high bit depth and
-  // gamma settings don't really matter.
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       segment_reader, data_complete, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore,
+      ImageDecoder::kDefaultBitDepth, ColorBehavior::kTag,
       Platform::GetMaxDecodedImageBytes());
   if (!decoder || !decoder->IsSizeAvailable())
     return nullptr;

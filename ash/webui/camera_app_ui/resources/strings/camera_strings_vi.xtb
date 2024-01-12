@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Xoay phải</translation>
 <translation id="3081586908890909590">Chuyển sang quay video</translation>
 <translation id="313467653172006084">30 khung hình/giây</translation>
+<translation id="3158534262962737808">Kết nối với "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3240426699337459095">Đã sao chép đường liên kết</translation>
 <translation id="3354465018370944241">Cài đặt ảnh</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Tỷ lệ khung hình ảnh</translation>
 <translation id="5057360777601936059">Máy ảnh của bạn hiện chưa sẵn sàng.
         Vui lòng kiểm tra xem máy ảnh có được kết nối đúng cách không.</translation>
+<translation id="5157591164390831335">Đã phát hiện URL.</translation>
 <translation id="5163387177077603948">Đang di chuyển theo hướng sang phải</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Góc trên cùng bên trái của tài liệu</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Cảm ơn bạn đã cung cấp ý kiến phản hồi về ứng dụng Máy ảnh.
 
 Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc video, vui lòng đính kèm ví dụ về ảnh hoặc video và mô tả vấn đề bạn gặp phải. (Ví dụ: ảnh quá tối hoặc chủ thể trong ảnh không nét.)</translation>
+<translation id="6519884562954018934">Kết nối với <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6617916774429601017">Hiện mọi độ phân giải</translation>
 <translation id="6631515515009660915">Tắt gương</translation>
@@ -158,6 +161,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8711011893539266636">Bật/tắt micrô. Chế độ tắt tiếng đang bật</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8732462232047530626">Xem trước siêu dữ liệu</translation>
+<translation id="874854738381978209">Đã phát hiện mạng Wi-Fi.</translation>
 <translation id="8815966864175525708">Chuyển sang chụp ảnh chân dung</translation>
 <translation id="8828441885228359828">Tiếp tục quay</translation>
 <translation id="8870695351537079478">Không thể bắt đầu quay</translation>

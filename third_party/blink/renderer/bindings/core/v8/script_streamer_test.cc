@@ -84,11 +84,14 @@ class TestResourceClient final : public GarbageCollected<TestResourceClient>,
 // the two should probably share the same class.
 class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const ResourceRequest& request,
+      const network::ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      BackForwardCacheLoaderHelper*) override {
+      BackForwardCacheLoaderHelper*,
+      const absl::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
   }
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
@@ -640,7 +643,10 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
 }
 
-TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
+// TODO(crbug.com/1515152) Re-enable when the source of the hard-crashes has
+// been addressed.
+TEST_F(ScriptStreamingTest,
+       DISABLED_ProduceLocalCompileHintsForStreamedScript) {
   // Test that we can produce local compile hints when a script is streamed.
   base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
   V8TestingScope scope;

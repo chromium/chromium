@@ -37,8 +37,7 @@ class IdleActionWarningObserver : public chromeos::PowerManagerClient::Observer,
 
   void HideDialogIfPresent();
 
-  raw_ptr<IdleActionWarningDialogView, ExperimentalAsh> warning_dialog_ =
-      nullptr;  // Not owned.
+  raw_ptr<IdleActionWarningDialogView> warning_dialog_ = nullptr;  // Not owned.
 
   // Used to derive the correct idle action (IdleActionAC/IdleActionBattery).
   bool on_battery_power_ = false;

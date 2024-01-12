@@ -282,8 +282,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
         window_dragging_state == WindowDraggingState::kFromFloat ||
         split_view_controller->InSplitViewMode();
     const bool can_dragged_window_be_snapped =
-        dragged_window_ &&
-        split_view_controller->CanSnapWindow(dragged_window_);
+        dragged_window_ && split_view_controller->CanSnapWindow(
+                               dragged_window_, chromeos::kDefaultSnapRatio);
     if (!previews_only) {
       left_rotated_view_->OnWindowDraggingStateChanged(
           window_dragging_state, previous_window_dragging_state_,

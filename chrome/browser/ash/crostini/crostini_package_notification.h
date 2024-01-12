@@ -110,8 +110,8 @@ class CrostiniPackageNotification
   base::TimeTicks running_start_time_;
 
   // These notifications are owned by the package service.
-  raw_ptr<CrostiniPackageService, ExperimentalAsh> package_service_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<CrostiniPackageService> package_service_;
+  raw_ptr<Profile> profile_;
   const NotificationSettings notification_settings_;
 
   std::unique_ptr<message_center::Notification> notification_;

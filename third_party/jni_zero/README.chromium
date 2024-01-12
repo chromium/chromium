@@ -1,6 +1,6 @@
 Name: JNI Zero
 Short Name: jni_zero
-URL: https://chromium.googlesource.com/chromium/src/+/master/third_party/jni_zero
+URL: https://chromium.googlesource.com/chromium/src/+/main/third_party/jni_zero
 Version: 0
 License: BSD
 License File: LICENSE

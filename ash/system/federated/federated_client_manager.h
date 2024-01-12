@@ -20,8 +20,17 @@ using chromeos::federated::mojom::ExamplePtr;
 
 // Utility class for clients of the Federated Service in ash-chrome.
 //
+// Usage:
+//
+// Clients should own an instance of FederatedClientManager.
+// TODO(b/289140140): Link to an example.
+//
+// To send an example to Federated Service storage:
+// 1) Check service availability via the appropriate Is...ServiceAvailable()
+// method.
+// 2) Report the example via the appropriate Report...() method.
+//
 // TODO(b/289140140): UMA metrics.
-// TODO(b/289140140): Expand documentation.
 class ASH_EXPORT FederatedClientManager {
  public:
   FederatedClientManager();
@@ -38,18 +47,26 @@ class ASH_EXPORT FederatedClientManager {
   // Faked (and successful) ash interactions will occur instead.
   static void UseFakeAshInteractionForTest();
 
-  // TODO expand and tidy documentation
-  // Methods for generic clients:
-  // Whether the Federated Service is available. TODO update
-  // optional to call before ReportExample
+  // ***** Methods for generic clients *****
+
+  // Whether the Federated Service is available.
+  // It is recommended (but not necessary) for clients to call this before each
+  // attempt to call |ReportExample()|.
   bool IsFederatedServiceAvailable() const;
+  // Reports an example to Federated Service storage.
+  // If the Federated Service is not available, this method is effectively a
+  // no-op.
   void ReportExample(const std::string& client_name, ExamplePtr example);
 
-  // Methods for Federated Strings Service clients:
-  // Whether the Federated Strings Service is available. TODO update
-  // optional to call
-  // TODO(b/289140140): Link to documentation when available.
+  // ***** Methods for Federated Strings Service clients *****
+
+  // Whether the Federated Strings Service is available.
+  // It is recommended (but not necessary) for clients to call this before each
+  // attempt to call |ReportStringViaStringsService()|.
   bool IsFederatedStringsServiceAvailable() const;
+  // Reports a Strings Service example to Federated Service storage.
+  // If the Federated Service is not available, this method is effectively a
+  // no-op.
   void ReportStringViaStringsService(const std::string& client_name,
                                      const std::string& client_string);
 

@@ -5,10 +5,11 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppLanguageSelectionDialogElement, AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
+import {AppLanguageSelectionDialogEntryPoint, AppManagementStore, CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
 import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -37,8 +38,10 @@ suite('<app-language-selection-dialog>', () => {
   let fakeHandler: FakePageHandler;
   let searchField: CrSearchFieldElement;
   let confirmButton: CrButtonElement;
+  let metrics: MetricsTracker;
 
   setup(async () => {
+    metrics = fakeMetricsPrivate();
     appLanguageSelectionDialog =
         document.createElement('app-language-selection-dialog');
 
@@ -52,11 +55,14 @@ suite('<app-language-selection-dialog>', () => {
 
   async function addDialog(
       arcConfig: AppConfig, appId: string,
-      lastSetAppLocalePref: chrome.settingsPrivate.PrefObject =
-          defaultPref): Promise<void> {
+      lastSetAppLocalePref: chrome.settingsPrivate.PrefObject = defaultPref,
+      entryPoint: AppLanguageSelectionDialogEntryPoint =
+          AppLanguageSelectionDialogEntryPoint.APPS_MANAGEMENT_PAGE):
+      Promise<void> {
     const arcApp: App = await fakeHandler.addApp(appId, arcConfig);
     await fakeHandler.flushPipesForTesting();
     appLanguageSelectionDialog.app = arcApp;
+    appLanguageSelectionDialog.entryPoint = entryPoint;
     appLanguageSelectionDialog.prefs = {
       arc: {last_set_app_locale: lastSetAppLocalePref},
     };
@@ -371,7 +377,7 @@ suite('<app-language-selection-dialog>', () => {
       });
 
   test(
-      'Confirm selection, selectedLocale should move to test locale',
+      'Confirm selection, selectedLocale should be set to test locale',
       async () => {
         const appId = 'confirm-selection';
         const testLocaleTag = 'testLocaleTag';
@@ -399,6 +405,79 @@ suite('<app-language-selection-dialog>', () => {
 
         const app = AppManagementStore.getInstance().data.apps[appId];
         assertEquals(testLocaleTag, app!.selectedLocale!.localeTag);
+      });
+
+  test(
+      'Open dialog from AppsManagementPage and confirm selection, ' +
+          'metrics recorded',
+      async () => {
+        const appId = 'open-dialog-from-apps-management-page';
+        const testLocaleTag = 'testLocaleTag';
+        const testDisplayName = 'testDisplayName';
+        const arcOptions: AppConfig = {
+          type: AppType.kArc,
+          supportedLocales: [{
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          }],
+        };
+        await addDialog(
+            arcOptions, appId, defaultPref,
+            AppLanguageSelectionDialogEntryPoint.APPS_MANAGEMENT_PAGE);
+
+        const filteredItems = getFilteredItems();
+        assertEquals(1, filteredItems.length);
+        filteredItems[0]!.shadowRoot!.querySelector<HTMLElement>(
+                                         listItemId)!.click();
+        // Test language should be selected.
+        assertLanguageItem(
+            filteredItems, /* idx= */ 0, testDisplayName,
+            /* isSelected= */ true, ListType.FILTERED);
+        confirmButton.click();
+        await fakeHandler.flushPipesForTesting();
+
+        assertEquals(
+            1,
+            metrics.count(
+                'Arc.AppLanguageSwitch.AppsManagementPage.TargetLanguage',
+                testLocaleTag));
+      });
+  test(
+      'Open dialog from LanguagesPage and confirm selection, ' +
+          'metrics recorded',
+      async () => {
+        const appId = 'open-dialog-from-languages-page';
+        const testLocaleTag = 'testLocaleTag';
+        const testDisplayName = 'testDisplayName';
+        const arcOptions: AppConfig = {
+          type: AppType.kArc,
+          supportedLocales: [{
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          }],
+        };
+        await addDialog(
+            arcOptions, appId, defaultPref,
+            AppLanguageSelectionDialogEntryPoint.LANGUAGES_PAGE);
+
+        const filteredItems = getFilteredItems();
+        assertEquals(1, filteredItems.length);
+        filteredItems[0]!.shadowRoot!.querySelector<HTMLElement>(
+                                         listItemId)!.click();
+        // Test language should be selected.
+        assertLanguageItem(
+            filteredItems, /* idx= */ 0, testDisplayName,
+            /* isSelected= */ true, ListType.FILTERED);
+        confirmButton.click();
+        await fakeHandler.flushPipesForTesting();
+
+        assertEquals(
+            1,
+            metrics.count(
+                'Arc.AppLanguageSwitch.LanguagesPage.TargetLanguage',
+                testLocaleTag));
       });
 
   test(

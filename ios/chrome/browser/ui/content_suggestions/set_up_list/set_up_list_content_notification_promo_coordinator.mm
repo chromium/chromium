@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
-#import "ios/chrome/browser/push_notification/model/notifications_alert_presenter.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -22,6 +21,8 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_view_controller.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -68,6 +69,7 @@ using base::UserMetricsAction;
                                         animated:YES
                                       completion:nil];
   _viewController.presentationController.delegate = self;
+  [self logHistogramForEvent:ContentNotificationSetUpListPromoEvent::kShown];
 }
 
 - (void)stop {
@@ -85,6 +87,8 @@ using base::UserMetricsAction;
     };
   }
   [_viewController dismissViewControllerAnimated:YES completion:completion];
+  [self
+      logHistogramForEvent:ContentNotificationSetUpListPromoEvent::kDismissed];
   _viewController = nil;
   self.delegate = nil;
 }
@@ -105,6 +109,7 @@ using base::UserMetricsAction;
       GetApplicationContext()->GetPushNotificationService();
   service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
                          true);
+  _markItemComplete = YES;
 
   __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
   [PushNotificationUtil requestPushNotificationPermission:^(
@@ -114,6 +119,13 @@ using base::UserMetricsAction;
       // is displayed on the main thread.
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf presentPushNotificationPermissionAlert];
+        [weakSelf logHistogramForEvent:ContentNotificationSetUpListPromoEvent::
+                                           kPromptShown];
+      });
+    } else if (!error && granted) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
+        [weakSelf.delegate setUpListContentNotificationPromoDidFinish];
       });
     } else {
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -121,8 +133,6 @@ using base::UserMetricsAction;
       });
     }
   }];
-
-  _markItemComplete = YES;
 }
 
 - (void)didTapSecondaryActionButton {
@@ -169,6 +179,11 @@ using base::UserMetricsAction;
       addItemWithTitle:cancelTitle
                 action:^{
                   [weakSelf
+                      logHistogramForPromptAction:
+                          ContentNotificationPromptAction::kNoThanksTapped];
+                  RecordAction(UserMetricsAction(
+                      "ContentNotifications.Promo.Prompt.NoThanksTapped"));
+                  [weakSelf
                           .delegate setUpListContentNotificationPromoDidFinish];
                 }
                  style:UIAlertActionStyleCancel];
@@ -179,6 +194,11 @@ using base::UserMetricsAction;
                                 openURL:[NSURL URLWithString:settingURL]
                                 options:{}
                       completionHandler:nil];
+                  [weakSelf
+                      logHistogramForPromptAction:
+                          ContentNotificationPromptAction::kGoToSettingsTapped];
+                  RecordAction(UserMetricsAction(
+                      "ContentNotifications.Promo.Prompt.GoToSettingsTapped"));
                   [weakSelf
                           .delegate setUpListContentNotificationPromoDidFinish];
                 }
@@ -198,6 +218,14 @@ using base::UserMetricsAction;
 - (void)logHistogramForAction:(ContentNotificationSetUpListPromoAction)action {
   UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Action",
                           action);
+}
+
+- (void)logHistogramForPromptAction:(ContentNotificationPromptAction)action {
+  UmaHistogramEnumeration("ContentNotifications.Promo.Prompt.Action", action);
+}
+
+- (void)logHistogramForEvent:(ContentNotificationSetUpListPromoEvent)event {
+  UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Event", event);
 }
 
 #pragma mark - Private

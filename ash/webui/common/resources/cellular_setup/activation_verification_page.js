@@ -11,14 +11,30 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './activation_verification_page.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'activation-verification-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ActivationVerificationPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
-});
+/** @polymer */
+class ActivationVerificationPageElement extends
+    ActivationVerificationPageElementBase {
+  static get is() {
+    return 'activation-verification-page';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+}
+
+customElements.define(
+    ActivationVerificationPageElement.is, ActivationVerificationPageElement);

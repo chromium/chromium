@@ -75,7 +75,7 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
   // Initialize WMHelper to create ARC ghost window handler.
   std::unique_ptr<exo::WMHelper> wm_helper_;

@@ -99,8 +99,7 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
       credentials_manager_observation_{this};
 
   // Not owned.
-  raw_ptr<KerberosCredentialsManager, ExperimentalAsh>
-      kerberos_credentials_manager_;
+  raw_ptr<KerberosCredentialsManager> kerberos_credentials_manager_;
 
   base::WeakPtrFactory<KerberosAccountsHandler> weak_factory_{this};
 };

@@ -27,8 +27,15 @@
 #include "content/shell/common/shell_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/renderer_host/legacy_render_widget_host_win.h"
+#endif
 
 namespace content {
 namespace {
@@ -91,7 +98,26 @@ class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
   bool HasChildPopup() const {
     return GetRenderWidgetHostView()->popup_child_host_view_;
   }
+
+#if BUILDFLAG(IS_WIN)
+  LegacyRenderWidgetHostHWND* GetLegacyRenderWidgetHostHWND() const {
+    return GetRenderWidgetHostView()->legacy_render_widget_host_HWND_;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 };
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest, AuraWindowLookup) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  aura::Window* window = GetRenderWidgetHostView()->GetNativeView();
+  ASSERT_TRUE(GetLegacyRenderWidgetHostHWND());
+  HWND hwnd = GetLegacyRenderWidgetHostHWND()->hwnd();
+  EXPECT_TRUE(hwnd);
+  auto* window_tree_host = aura::WindowTreeHost::GetForAcceleratedWidget(hwnd);
+  EXPECT_TRUE(window_tree_host);
+  EXPECT_EQ(window->GetHost(), window_tree_host);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
@@ -577,8 +603,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
   // TODO(b/204006085): Remove this sleep call and replace with polling.
   GiveItSomeTime();
 
-  absl::optional<gfx::Rect> control_bounds;
-  absl::optional<gfx::Rect> selection_bounds;
+  std::optional<gfx::Rect> control_bounds;
+  std::optional<gfx::Rect> selection_bounds;
   GetRenderWidgetHostView()->GetActiveTextInputControlLayoutBounds(
       &control_bounds, &selection_bounds);
 

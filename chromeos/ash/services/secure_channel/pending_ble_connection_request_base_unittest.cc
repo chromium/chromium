@@ -105,7 +105,7 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
   }
 
  private:
-  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged>
       fake_client_connection_parameters_;
   std::unique_ptr<FakePendingConnectionRequestDelegate>
       fake_pending_connection_request_delegate_;

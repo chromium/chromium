@@ -18,6 +18,8 @@
 // These should gradually replace values in view_ids.h.
 // Please keep this list alphabetized.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kAnonymizedUrlCollectionPersonalizationSettingId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAutofillStandaloneCvcSuggestionElementId);
@@ -50,6 +52,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceInsightsChipElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBookmarkViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingChipElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kReadLaterSidePanelWebViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kReloadButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavePasswordComboboxElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupBarElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSavedTabGroupButtonElementId);

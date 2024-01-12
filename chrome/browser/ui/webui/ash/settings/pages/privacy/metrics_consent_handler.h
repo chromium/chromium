@@ -56,11 +56,9 @@ class MetricsConsentHandler : public ::settings::SettingsPageUIHandler {
   // device metrics consent.
   bool ShouldUseUserConsent() const;
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ptr<metrics::MetricsService, DanglingUntriaged | ExperimentalAsh>
-      metrics_service_;
-  const raw_ptr<user_manager::UserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<metrics::MetricsService, DanglingUntriaged> metrics_service_;
+  const raw_ptr<user_manager::UserManager, DanglingUntriaged> user_manager_;
 
   // Used for callbacks.
   base::WeakPtrFactory<MetricsConsentHandler> weak_ptr_factory_{this};

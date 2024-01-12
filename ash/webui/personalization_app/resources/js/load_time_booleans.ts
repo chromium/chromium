@@ -55,3 +55,7 @@ export function isTimeOfDayWallpaperForcedAutoScheduleEnabled() {
   return loadTimeData.getBoolean(
       'isTimeOfDayWallpaperForcedAutoScheduleEnabled');
 }
+
+export function isCrosPrivacyHubLocationEnabled() {
+  return loadTimeData.getBoolean('isCrosPrivacyHubLocationEnabled');
+}

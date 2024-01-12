@@ -51,6 +51,7 @@ public class ReadAloudPrefs {
         if (language == null || language.isEmpty() || voiceId == null || voiceId.isEmpty()) {
             return;
         }
+        ReadAloudMetrics.recordVoiceChanged(voiceId);
         ReadAloudPrefsJni.get().setVoice(prefs, language, voiceId);
     }
 
@@ -72,6 +73,9 @@ public class ReadAloudPrefs {
      * @param speed Playback speed to store.
      */
     public static void setSpeed(PrefService prefs, float speed) {
+        if (speed != getSpeed(prefs)) {
+            ReadAloudMetrics.recordSpeedChange(speed);
+        }
         prefs.setDouble(SPEED_PATH, (double) speed);
     }
 
@@ -94,7 +98,12 @@ public class ReadAloudPrefs {
      * @param enabled True if highlighting should happen if available, false otherwise.
      */
     public static void setHighlightingEnabled(PrefService prefs, boolean enabled) {
-        prefs.setBoolean(HIGHLIGHTING_ENABLED_PATH, enabled);
+        // setHighlightingEnabled is called on every session start. This checks that the value has
+        // changed to prevent redundant metric recording at session start.
+        if (enabled != isHighlightingEnabled(prefs)) {
+            ReadAloudMetrics.recordHighlightingEnabledChanged(enabled);
+            prefs.setBoolean(HIGHLIGHTING_ENABLED_PATH, enabled);
+        }
     }
 
     @NativeMethods

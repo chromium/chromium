@@ -1350,25 +1350,25 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
   base::HistogramTester histogram_tester;
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-
+  // When the user chooses to fill a specific field, we only log this metric for
+  // fields that were classified as address. This is because otherwise the user
+  // had not choice but to select field-by-field filling.
   if (params.target_metric ==
       autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling) {
+    get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+    external_delegate().DidAcceptSuggestion(suggestion,
+                                            SuggestionPosition{.row = 0});
     // An unclassified field should not produce this metric.
     histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
                                         params.target_metric, 0);
 
-    FieldPrediction prediction;
-    prediction.set_type(FieldType::NAME_FIRST);
-    get_triggering_autofill_field()->set_server_predictions({prediction});
-
+    get_triggering_autofill_field()->SetTypeTo(AutofillType(NAME_FIRST));
     // Now the field is classified as an address field and should produce the
     // metric.
-    external_delegate().DidAcceptSuggestion(suggestion,
-                                            SuggestionPosition{.row = 0});
   }
 
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
   histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
                                       params.target_metric, 1);
 }
@@ -1639,7 +1639,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       server_card.guid(), CREDIT_CARD_NUMBER);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  manager().OnFormsSeen({queried_form_}, {});
 
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
       .WillOnce(
@@ -1663,7 +1662,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       server_card.guid(), CREDIT_CARD_NUMBER);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  manager().OnFormsSeen({queried_form_}, {});
 
   const CreditCard unlocked_card = test::GetFullServerCard();
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
@@ -1685,6 +1683,142 @@ TEST_F(AutofillExternalDelegateUnitTest,
           PopupItemId::kCreditCardFieldByFieldFilling));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_ManualFallback_CreditCardForm_Preview) {
+  const CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  pdm().AddCreditCard(enrolled_card);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry,
+                                     /*main_text_value=*/u"Virtual credit card",
+                                     Suggestion::Guid(enrolled_card.guid()));
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  manager().OnFormsSeen({form}, {});
+  external_delegate().OnQuery(
+      form, form.fields[0], gfx::RectF(),
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
+                             mojom::ActionPersistence::kPreview,
+                             Property(&FormData::global_id, form.global_id()),
+                             Property(&FormFieldData::global_id,
+                                      form.fields[0].global_id()),
+                             _, _));
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+
+  external_delegate().DidSelectSuggestion(suggestion);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_ManualFallback_NonCreditCardForm_NoPreview) {
+  const CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  pdm().AddCreditCard(enrolled_card);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry,
+                                     /*main_text_value=*/u"Virtual credit card",
+                                     Suggestion::Guid(enrolled_card.guid()));
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+
+  external_delegate().DidSelectSuggestion(suggestion);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_ManualFallback_CreditCardForm_FullFormFilling) {
+  const CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  pdm().AddCreditCard(enrolled_card);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry,
+                                     /*main_text_value=*/u"Virtual credit card",
+                                     Suggestion::Guid(enrolled_card.guid()));
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  manager().OnFormsSeen({form}, {});
+  external_delegate().OnQuery(
+      form, form.fields[0], gfx::RectF(),
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+
+  const CreditCard unlocked_card = test::GetFullServerCard();
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
+                             mojom::ActionPersistence::kFill,
+                             Property(&FormData::global_id, form.global_id()),
+                             Property(&FormFieldData::global_id,
+                                      form.fields[0].global_id()),
+                             _, _));
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_ManualFallback_FetchingFails) {
+  const CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  pdm().AddCreditCard(enrolled_card);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry,
+                                     /*main_text_value=*/u"Virtual credit card",
+                                     Suggestion::Guid(enrolled_card.guid()));
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(
+          [&enrolled_card](
+              const CreditCard* credit_card,
+              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
+            CreditCard expected_card =
+                CreditCard::CreateVirtualCard(enrolled_card);
+            EXPECT_EQ(*credit_card, expected_card);
+            std::move(callback).Run(
+                /*result=*/CreditCardFetchResult::kTransientError,
+                /*credit_card=*/nullptr);
+          });
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       VirtualCreditCard_ManualFallback_FetchingSucceeds) {
+  const CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  pdm().AddCreditCard(enrolled_card);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kVirtualCreditCardEntry,
+                                     /*main_text_value=*/u"Virtual credit card",
+                                     Suggestion::Guid(enrolled_card.guid()));
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
+
+  const CreditCard unlocked_card = test::GetFullServerCard();
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(
+          [&unlocked_card, &enrolled_card](
+              const CreditCard* credit_card,
+              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
+            CreditCard expected_card =
+                CreditCard::CreateVirtualCard(enrolled_card);
+            EXPECT_EQ(*credit_card, expected_card);
+            std::move(callback).Run(
+                /*result=*/CreditCardFetchResult::kSuccess,
+                /*credit_card=*/&unlocked_card);
+          });
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
 }
 
 // Test parameter data for asserting that the expected set of field types

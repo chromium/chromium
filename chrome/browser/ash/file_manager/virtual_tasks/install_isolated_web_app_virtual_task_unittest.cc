@@ -33,7 +33,7 @@ namespace file_manager::file_tasks {
 class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
  public:
   MOCK_METHOD(void,
-              LaunchIsolatedWebAppInstaller,
+              LaunchOrFocusIsolatedWebAppInstaller,
               (const base::FilePath&),
               (override));
 };
@@ -88,7 +88,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
 
     return ExecuteVirtualTask(
         &profile_, {kFileManagerSwaAppId, TASK_TYPE_WEB_APP, task_.id()},
-        file_system_urls, /*modal_parent=*/nullptr);
+        file_system_urls);
   }
 
  private:
@@ -129,19 +129,19 @@ TEST_F(InstallIsolatedWebAppVirtualTaskTest, TaskNotRunIfNoFiles) {
 }
 
 TEST_F(InstallIsolatedWebAppVirtualTaskTest, SingleFile) {
-  EXPECT_CALL(ui_manager(),
-              LaunchIsolatedWebAppInstaller(base::FilePath("/bundle.swbn")));
+  EXPECT_CALL(ui_manager(), LaunchOrFocusIsolatedWebAppInstaller(
+                                base::FilePath("/bundle.swbn")));
 
   EXPECT_TRUE(ExecuteTask({GURL("file:///bundle.swbn")}));
 }
 
 TEST_F(InstallIsolatedWebAppVirtualTaskTest, MultipleFiles) {
-  EXPECT_CALL(ui_manager(),
-              LaunchIsolatedWebAppInstaller(base::FilePath("/bundle1.swbn")));
-  EXPECT_CALL(ui_manager(),
-              LaunchIsolatedWebAppInstaller(base::FilePath("/bundle3.SWBN")));
-  EXPECT_CALL(ui_manager(),
-              LaunchIsolatedWebAppInstaller(base::FilePath("/bundle4.SwBn")));
+  EXPECT_CALL(ui_manager(), LaunchOrFocusIsolatedWebAppInstaller(
+                                base::FilePath("/bundle1.swbn")));
+  EXPECT_CALL(ui_manager(), LaunchOrFocusIsolatedWebAppInstaller(
+                                base::FilePath("/bundle3.SWBN")));
+  EXPECT_CALL(ui_manager(), LaunchOrFocusIsolatedWebAppInstaller(
+                                base::FilePath("/bundle4.SwBn")));
 
   EXPECT_TRUE(ExecuteTask({
       GURL("file:///bundle1.swbn"),

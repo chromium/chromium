@@ -67,7 +67,7 @@ class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
   }
 
   // D-Bus proxy for the CdmFactoryDaemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<CdmFactoryDaemonClientImpl> weak_factory_{this};
 };

@@ -373,7 +373,7 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
 
   // We should only track committed navigations for the main frame so ignore new
   // document elements in the main frame.
-  if (render_frame()->IsMainFrame()) {
+  if (IsMainFrame()) {
     return;
   }
 
@@ -400,7 +400,7 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
   page_timing_metrics_sender_ = std::make_unique<PageTimingMetricsSender>(
       CreatePageTimingSender(true /* limited_sending_mode */), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
-      /* initial_request=*/nullptr);
+      /* initial_request=*/nullptr, /* is_main_frame=*/false);
 
   OnMetricsSenderCreated();
 }
@@ -418,7 +418,7 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
   page_timing_metrics_sender_ = std::make_unique<PageTimingMetricsSender>(
       CreatePageTimingSender(false /* limited_sending_mode*/), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
-      std::move(provisional_frame_resource_data_use_));
+      std::move(provisional_frame_resource_data_use_), IsMainFrame());
 
   OnMetricsSenderCreated();
 }
@@ -482,7 +482,7 @@ MetricsRenderFrameObserver::Timing::operator=(Timing&&) = default;
 void MetricsRenderFrameObserver::UpdateResourceMetadata(int request_id) {
   DCHECK(page_timing_metrics_sender_);
 
-  bool is_main_frame_resource = render_frame()->IsMainFrame();
+  bool is_main_frame_resource = IsMainFrame();
 
   if (provisional_frame_resource_data_use_ &&
       provisional_frame_resource_data_use_->resource_id() == request_id) {
@@ -787,6 +787,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   blink::LargestContentfulPaintDetailsForReporting
       largest_contentful_paint_details =
           perf.LargestContentfulDetailsForMetrics();
+  monotonic_timing.frame_largest_contentful_paint =
+      largest_contentful_paint_details.merged_unclamped_paint_time;
 
   if (largest_contentful_paint_details.image_paint_size > 0) {
     timing->paint_timing->largest_contentful_paint->largest_image_paint_size =
@@ -945,6 +947,10 @@ bool MetricsRenderFrameObserver::HasNoRenderFrame() const {
   bool no_frame = !render_frame() || !render_frame()->GetWebFrame();
   DCHECK(!no_frame);
   return no_frame;
+}
+
+bool MetricsRenderFrameObserver::IsMainFrame() const {
+  return render_frame()->IsMainFrame();
 }
 
 void MetricsRenderFrameObserver::OnDestruct() {

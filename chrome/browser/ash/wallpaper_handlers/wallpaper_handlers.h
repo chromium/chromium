@@ -221,10 +221,10 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
                        absl::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Supplies `token_fetcher_` with `profile_`'s GAIA account information.
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

@@ -83,7 +83,7 @@ size_t BlobSideDataLength(blink::mojom::Blob* actual_blob) {
   base::RunLoop run_loop;
   actual_blob->ReadSideData(base::BindOnce(
       [](size_t* result, base::OnceClosure continuation,
-         const absl::optional<mojo_base::BigBuffer> data) {
+         const std::optional<mojo_base::BigBuffer> data) {
         *result = data ? data->size() : 0;
         std::move(continuation).Run();
       },
@@ -263,7 +263,7 @@ RequestHandlerForBigWorkerScript(const net::test_server::HttpRequest& request) {
 // |coep|.
 std::unique_ptr<net::test_server::HttpResponse>
 RequestHandlerForWorkerScriptWithCoep(
-    absl::optional<network::mojom::CrossOriginEmbedderPolicyValue> coep,
+    std::optional<network::mojom::CrossOriginEmbedderPolicyValue> coep,
     const net::test_server::HttpRequest& request) {
   static int counter = 0;
   if (request.relative_url != "/service_worker/generated")
@@ -613,7 +613,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   }
 
   void Store(base::OnceClosure done,
-             absl::optional<blink::ServiceWorkerStatusCode>* result,
+             std::optional<blink::ServiceWorkerStatusCode>* result,
              int64_t version_id) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
   }
@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, TimeoutStartingWorker) {
   SetUpRegistration("/service_worker/while_true_worker.js");
 
   // Start a worker, waiting until the script is loaded.
-  absl::optional<blink::ServiceWorkerStatusCode> status;
+  std::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop start_run_loop;
   base::RunLoop load_run_loop;
   WaitForLoaded wait_for_load(load_run_loop.QuitClosure());
@@ -1514,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
     base::RunLoop run_loop;
     auto callback = [&run_loop, value_out, error_out](
                         base::Value value,
-                        const absl::optional<std::string>& error) {
+                        const std::optional<std::string>& error) {
       *value_out = std::move(value);
       *error_out = error.value_or("<no error>");
       run_loop.Quit();

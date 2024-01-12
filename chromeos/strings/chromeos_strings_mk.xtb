@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">Разгледајте го новото дигитално списание за создавачи на Chromebook</translation>
 <translation id="1270369111467284986">Можеби е откриен портал за проверка</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
+<translation id="1300115153046603471">APN е од стандарден и тип <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Се ажурира (завршено е <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минути</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">почетна страница на прелистувач</translation>
 <translation id="1526389707933164996">Анимација за штедачот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
-<translation id="1539242642795599947">APN е од стандарден и тип за приложување.</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
 <translation id="1561927818299383735">боја на заднинско осветлување</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">Слика при најавување</translation>
 <translation id="2640549051766135490">Избран е албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">овозможете или вклучете/исклучете диктирање</translation>
+<translation id="2656001153562991489">Ексклузивно за Chromebook Plus</translation>
 <translation id="267442004702508783">освежи</translation>
 <translation id="268270014981824665">затемнување на тастатурата</translation>
 <translation id="2712812801627182647">Клуч за TLS-проверка</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описот е задолжителен</translation>
+<translation id="386280020966669610">Инспирирај ме</translation>
 <translation id="3865289341173661845">Содржини за помош не се достапни.</translation>
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -405,6 +407,7 @@
 <translation id="4060260348856573701">Нов APN</translation>
 <translation id="4093865285251893588">Профилна слика</translation>
 <translation id="409427325554347132">Зачувај детали од тестот</translation>
+<translation id="409469431304488632">Експеримент</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Изберете го албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Подлога за допир со USB</translation>
@@ -440,10 +443,12 @@
 <translation id="4289849978083912975">Приказ на слајдови</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
+<translation id="4310735698903592804">Неодамнешни тапети овозможени од Google AI</translation>
 <translation id="4333390807948134856">Копчето <ph name="KEY_NAME" /> е притиснато</translation>
 <translation id="4354430579665871434">копче</translation>
 <translation id="4361257691546579041">APN е од стандарден тип.</translation>
 <translation id="437294888293595148">Ресетирај ги сите кратенки</translation>
+<translation id="4376423484621194274">Вашиот администратор не дозволува затворање на <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Не е извршена</translation>
 <translation id="4378551569595875038">Се поврзува…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -552,6 +557,7 @@
 <translation id="5088172560898466307">Име на хостот на серверот</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Слични:</translation>
 <translation id="5137451382116112100">Цел екран</translation>
 <translation id="5142961317498132443">Проверка</translation>
 <translation id="5145081769226915336">Да се вклучи „Темен режим“ автоматски?</translation>
@@ -613,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Скенирај пак</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
-<translation id="5584044598279886848">Не може да се оневозможи или отстрани оваа APN. Уверете се дека овозможените приложени APN се оневозможени или отстранети.</translation>
 <translation id="5600027863942488546">Копчето <ph name="KEY_NAME" /> е тестирано</translation>
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5649768706273821470">Слушај</translation>
@@ -644,6 +649,7 @@
 <translation id="5843706793424741864">Фаренхајтови</translation>
 <translation id="584953448295717128">APN е откриено автоматски.</translation>
 <translation id="5849570051105887917">Код на оператор на почетна страница</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Албум од уметничката галерија</translation>
 <translation id="5859969039821714932">Кратенката не е достапна. Притиснете нова кратенка без <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -659,12 +665,12 @@
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
+<translation id="593880865674747800">Создајте повеќе во овој стил</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="594552776027197022">Генерирај случаен пар клучеви</translation>
 <translation id="5946538341867151940">Сѐ уште не сте поврзани. Ако вашиот мобилен оператор препорачува приспособено APN, внесете ги податоците за APN така што ќе изберете „+ Нова APN“</translation>
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
 <translation id="5984145644188835034">Стандарден тапет</translation>
-<translation id="6001235009374883388">APN е од тип за приложување.</translation>
 <translation id="6017514345406065928">Зелена</translation>
 <translation id="6019566113895157499">Кратенки од тастатура</translation>
 <translation id="6034694447310538551">Овозможете автоматско месечно ресетирање</translation>
@@ -682,6 +688,7 @@
 <translation id="6104112872696127344">Скенирањето е откажано</translation>
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
+<translation id="6108952804512516814">Создај со AI</translation>
 <translation id="6112878310391905610">Администратори управуваат со поставкава</translation>
 <translation id="6113701710518389813">Стрелка нагоре</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> други албуми</translation>
@@ -750,6 +757,7 @@
 <translation id="6526200165918397681">Совпаѓање со тапетот</translation>
 <translation id="6527081081771465939">Непознат безбедносен протокол за Wi-Fi</translation>
 <translation id="6535178685492749208">Офлајн сте. Повратните информации ќе се испратат подоцна.</translation>
+<translation id="6557784757915238407">APN е од тип <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Со рамна плоча</translation>
 <translation id="6560196641871357166">Енергичен</translation>
 <translation id="6564646048574748301">Неуспешно - печатачот е недостапен</translation>
@@ -809,6 +817,7 @@
 <translation id="7059230779847288458">Се полни, <ph name="TIME_VALUE" /> до полна</translation>
 <translation id="7066538517128343186">копче <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подгответе го уредот</translation>
+<translation id="7076851914315147928">Изберете тапет</translation>
 <translation id="708426984172631313">СОПРЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Неуспешно - Авторизацијата не успеа</translation>
@@ -862,6 +871,7 @@
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Не може да се оневозможи или отстрани ова APN. Уверете се дека овозможените APN од тип <ph name="ATTACH" /> се оневозможени или отстранети.</translation>
 <translation id="7458970041932198923">Поврзете се на мрежа и повторно вчитајте ја страницата за да ги прегледате и поставите аватарите.</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
@@ -913,9 +923,11 @@
 <translation id="7799817062559422778">Светол режим</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7819831665603418705">Користете шаблон</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7841134249932030522">Овозможи темен режим</translation>
 <translation id="7846634333498149051">Тастатура</translation>
+<translation id="7850847810298646851">Тапет овозможен од Google AI</translation>
 <translation id="7856267634822906833">Допирен екран со Bluetooth</translation>
 <translation id="7869143217755017858">Оневозможи темен режим</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -958,7 +970,6 @@
 <translation id="8151185429379586178">Програмерски алатки</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Прикачи</translation>
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8208861521865154048">Поволности</translation>
 <translation id="8226628635270268143">Изберете ги омилените фотографии и албуми</translation>
@@ -976,6 +987,7 @@
 <translation id="8318753676953949627">Нема слики</translation>
 <translation id="8329018942023753850">апликација „Калкулатор“</translation>
 <translation id="8336739000755212683">Променете ја сликата за сметката на уредот</translation>
+<translation id="8339024191194156249">Дознајте повеќе за автоматското стартување</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> или <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8349826889576450703">стартер</translation>

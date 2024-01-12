@@ -260,6 +260,7 @@ source_set("test_support") {
     "//ui/events",
     "//ui/events:test_support",
     "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/views",
   ]

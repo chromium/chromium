@@ -98,6 +98,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/filetype/filetype_gmap.svg",
     "foreground/images/filetype/filetype_gsheet.svg",
     "foreground/images/filetype/filetype_gsite.svg",
+    "foreground/images/filetype/filetype_gmaillayout.svg",
     "foreground/images/filetype/filetype_gslides.svg",
     "foreground/images/filetype/filetype_gtable.svg",
     "foreground/images/filetype/filetype_image.svg",

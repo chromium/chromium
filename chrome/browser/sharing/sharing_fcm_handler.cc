@@ -166,7 +166,7 @@ SharingFCMHandler::GetServerChannel(
 
 SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
     const chrome_browser_sharing::SharingMessage& original_message) {
-  auto device_info =
+  const syncer::DeviceInfo* device_info =
       device_info_tracker_->GetDeviceInfo(original_message.sender_guid());
   if (!device_info)
     return SharingDevicePlatform::kUnknown;

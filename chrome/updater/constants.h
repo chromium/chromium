@@ -168,6 +168,10 @@ extern const char kEnterpriseSwitch[];
 // Specifies that no UI should be shown.
 extern const char kSilentSwitch[];
 
+// The "alwayslaunchcmd" switch specifies that launch commands are to be run
+// unconditionally, even for silent modes.
+extern const char kAlwaysLaunchCmdSwitch[];
+
 // Specifies the handoff request argument. On Windows, the request may
 // be from legacy updaters which pass the argument in the format of
 // `/handoff <install-args-details>`. Manual argument parsing is needed for that

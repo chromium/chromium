@@ -219,16 +219,16 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       JSON.stringify(document.querySelector($1).getBoundingClientRect());
     )JS",
                                          query));
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         base::JSONReader::Read(result.ExtractString());
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
     const base::Value::Dict& dict = value->GetDict();
-    absl::optional<double> x = dict.FindDouble("x");
-    absl::optional<double> y = dict.FindDouble("y");
-    absl::optional<double> width = dict.FindDouble("width");
-    absl::optional<double> height = dict.FindDouble("height");
+    std::optional<double> x = dict.FindDouble("x");
+    std::optional<double> y = dict.FindDouble("y");
+    std::optional<double> width = dict.FindDouble("width");
+    std::optional<double> height = dict.FindDouble("height");
 
     CHECK(x);
     CHECK(y);
@@ -270,19 +270,19 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
         pageTop: visualViewport.pageTop});
     )JS");
 
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         base::JSONReader::Read(result.ExtractString());
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
     const base::Value::Dict& dict = value->GetDict();
-    absl::optional<double> offset_left = dict.FindDouble("offsetLeft");
-    absl::optional<double> offset_top = dict.FindDouble("offsetTop");
-    absl::optional<double> width = dict.FindDouble("width");
-    absl::optional<double> height = dict.FindDouble("height");
-    absl::optional<double> scale = dict.FindDouble("scale");
-    absl::optional<double> page_left = dict.FindDouble("pageLeft");
-    absl::optional<double> page_top = dict.FindDouble("pageTop");
+    std::optional<double> offset_left = dict.FindDouble("offsetLeft");
+    std::optional<double> offset_top = dict.FindDouble("offsetTop");
+    std::optional<double> width = dict.FindDouble("width");
+    std::optional<double> height = dict.FindDouble("height");
+    std::optional<double> scale = dict.FindDouble("scale");
+    std::optional<double> page_left = dict.FindDouble("pageLeft");
+    std::optional<double> page_top = dict.FindDouble("pageTop");
 
     CHECK(offset_left);
     CHECK(offset_top);

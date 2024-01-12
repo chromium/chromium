@@ -4,10 +4,11 @@
 
 #include "chrome/installer/setup/setup_main.h"
 
-// Must be before msi.h.
-#include <windows.h>
-
+// clang-format off
+#include <windows.h> // Must be included before msi.h.
 #include <msi.h>
+// clang-format on
+
 #include <psapi.h>
 #include <shellapi.h>
 #include <shlobj.h>

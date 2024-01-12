@@ -219,7 +219,7 @@ void SmbFileSystem::Configure(storage::AsyncFileUtil::StatusCallback callback) {
 
 base::WeakPtr<file_system_provider::ProvidedFileSystemInterface>
 SmbFileSystem::GetWeakPtr() {
-  return AsWeakPtr();
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 std::unique_ptr<file_system_provider::ScopedUserInteraction>

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
@@ -251,8 +252,10 @@ void AppShimController::PreInitFeatureState(
   // FeatureList was set yet at all (i.e. check-fail).
   base::FeatureList::SetEarlyAccessInstance(
       std::move(feature_list),
-      {"DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
-       "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters"});
+      {"AppShimLaunchChromeSilently",
+       "DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
+       "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
+       "UseAdHocSigningForWebAppShims"});
 }
 
 // static
@@ -372,9 +375,16 @@ bool AppShimController::FindOrLaunchChrome() {
     }
   }
 
+  const bool silent_chrome_launch =
+      base::FeatureList::IsEnabled(features::kAppShimLaunchChromeSilently);
+  if (silent_chrome_launch) {
+    browser_command_line.AppendSwitch(switches::kNoStartupWindow);
+  }
+
   base::mac::LaunchApplication(
       chrome_bundle_path, browser_command_line, /*url_specs=*/{},
-      {.create_new_instance = true},
+      {.create_new_instance = true,
+       .hidden_in_background = silent_chrome_launch},
       base::BindOnce(
           [](AppShimController* shim_controller, NSRunningApplication* app,
              NSError* error) {

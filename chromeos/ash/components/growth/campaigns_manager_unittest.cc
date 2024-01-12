@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
@@ -31,36 +32,34 @@ namespace {
 
 constexpr char kValidCampaignsFileTemplate[] = R"(
     {
-      "reactiveCampaigns": {
-        "0": [
-          // Invalid targeting.
-          {
-            "id": 1,
-            "targetings": [
-              []
-            ],
-            "payload": {}
-          },
-          "Invalid campaign",
-          {
-            "id": 3,
-            "targetings": [
-              {
-                %s
-              }
-            ],
-            "payload": {
-              "demoModeApp": {
-                "attractionLoop": {
-                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
-                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
-                }
+      "0": [
+        // Invalid targeting.
+        {
+          "id": 1,
+          "targetings": [
+            []
+          ],
+          "payload": {}
+        },
+        "Invalid campaign",
+        {
+          "id": 3,
+          "studyId":1,
+          "targetings": [
+            {
+              %s
+            }
+          ],
+          "payload": {
+            "demoModeApp": {
+              "attractionLoop": {
+                "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                "videoSrcLang2": "/asset/peripherals_lang2.mp4"
               }
             }
           }
-        ]
-      },
-      "proactiveCampaigns": {}
+        }
+      ]
     }
 )";
 
@@ -89,6 +88,9 @@ inline constexpr char kCampaignsComponentReadDurationHistogram[] =
 
 inline constexpr char kCampaignMatchDurationHistogram[] =
     "Ash.Growth.CampaignsManager.MatchDuration";
+
+inline constexpr char kGetCampaignBySlotHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot";
 
 // testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
 // gmock action template to invoke base::OnceCallback. `k` is the k-th argument
@@ -261,6 +263,8 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
       /*retailer_id=*/"bby",
       /*country=*/"US");
 
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -276,6 +280,10 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
+
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
@@ -289,7 +297,8 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
       /*country=*/"US");
-
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
   // Verify that the campaign is selected if there is no demo mode targeting.
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -306,7 +315,8 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
       /*country=*/"US");
-
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
   // Verify that the campaign is selected if there is not in demo mode.
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -317,6 +327,8 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
 // user prefs are not available.
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
+  base::HistogramTester histogram_tester;
+
   LoadComponentAndVerifyLoadComplete(
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
@@ -329,6 +341,9 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
       /*country=*/"US");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/0);
 }
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotGamingDevice) {

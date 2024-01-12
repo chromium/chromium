@@ -35,7 +35,9 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kReadAnythingLocalSidePanel}, {});
+        {features::kReadAnything, features::kReadAnythingLocalSidePanel,
+         features::kReadAnythingWebUIToolbar},
+        {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
@@ -155,16 +157,6 @@ TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
 TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
   AddObserver(&coordinator_observer_);
   EXPECT_CALL(coordinator_observer_, OnCoordinatorDestroyed()).Times(1);
-}
-
-TEST_F(ReadAnythingCoordinatorTest, ActivateCalled_ShowAndCloseSidePanel) {
-  AddObserver(&coordinator_observer_);
-
-  EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
-  side_panel_coordinator_->Show(SidePanelEntry::Id::kReadAnything);
-
-  EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
-  side_panel_coordinator_->Close();
 }
 
 TEST_F(ReadAnythingCoordinatorTest,

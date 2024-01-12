@@ -79,18 +79,17 @@ void AppendQuad(const viz::TransferableResource& resource,
   viz::TextureDrawQuad* texture_quad =
       render_pass_out.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
 
-  static constexpr float kVertexOpacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   gfx::RectF uv_crop(quad_rect);
   uv_crop.Scale(1.f / buffer_size.width(), 1.f / buffer_size.height());
 
-  texture_quad->SetNew(
-      quad_state, quad_rect, quad_rect,
-      /*needs_blending=*/true, resource.id,
-      /*premultiplied=*/true, uv_crop.origin(), uv_crop.bottom_right(),
-      SkColors::kTransparent, kVertexOpacity,
-      /*flipped=*/false,
-      /*nearest=*/false,
-      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                       /*needs_blending=*/true, resource.id,
+                       /*premultiplied=*/true, uv_crop.origin(),
+                       uv_crop.bottom_right(), SkColors::kTransparent,
+                       /*flipped=*/false,
+                       /*nearest=*/false,
+                       /*secure_output=*/false,
+                       gfx::ProtectedVideoType::kClear);
 
   texture_quad->set_resource_size_in_pixels(resource.size);
 }

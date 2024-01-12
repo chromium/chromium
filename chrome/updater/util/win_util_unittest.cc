@@ -145,8 +145,9 @@ TEST(WinUtil, ShellExecuteAndWait) {
 TEST(WinUtil, RunElevated) {
   // TODO(crbug.com/1314521): Click on UAC prompts in Updater tests that require
   // elevation
-  if (!::IsUserAnAdmin())
+  if (!::IsUserAnAdmin()) {
     return;
+  }
 
   const base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
@@ -156,8 +157,9 @@ TEST(WinUtil, RunElevated) {
 }
 
 TEST(WinUtil, RunDeElevated_Exe) {
-  if (!::IsUserAnAdmin() || !IsUACOn())
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
     return;
+  }
 
   // Create a shared event to be waited for in this process and signaled in the
   // test process to confirm that the test process is running at medium

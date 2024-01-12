@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -61,7 +62,6 @@
 #include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-shared.h"
@@ -368,7 +368,7 @@ class StorageHandler::SharedStorageObserver
   void OnUrnUuidGenerated(const GURL& urn_uuid) override {}
 
   void OnConfigPopulated(
-      const absl::optional<FencedFrameConfig>& config) override {}
+      const std::optional<FencedFrameConfig>& config) override {}
 
  private:
   raw_ptr<StorageHandler> const owner_;
@@ -641,7 +641,7 @@ void StorageHandler::ClearDataForStorageKey(
         Response::InvalidParams("No valid storage type specified"));
   }
 
-  absl::optional<blink::StorageKey> key =
+  std::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
   if (!key) {
     return callback->sendFailure(
@@ -701,8 +701,8 @@ void StorageHandler::OverrideQuotaForOrigin(
 
   quota_override_handle_->OverrideQuotaForStorageKey(
       blink::StorageKey::CreateFirstParty(origin),
-      quota_size.has_value() ? absl::make_optional(quota_size.value())
-                             : absl::nullopt,
+      quota_size.has_value() ? std::make_optional(quota_size.value())
+                             : std::nullopt,
       base::BindOnce(&OverrideQuotaForOriginCallback::sendSuccess,
                      std::move(callback)));
 }
@@ -730,7 +730,7 @@ Response StorageHandler::TrackCacheStorageForStorageKey(
     return Response::InternalError();
   }
 
-  absl::optional<blink::StorageKey> key =
+  std::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
   if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
@@ -763,7 +763,7 @@ Response StorageHandler::UntrackCacheStorageForStorageKey(
     return Response::InternalError();
   }
 
-  absl::optional<blink::StorageKey> key =
+  std::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
   if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
@@ -796,7 +796,7 @@ Response StorageHandler::TrackIndexedDBForStorageKey(
     return Response::InternalError();
   }
 
-  absl::optional<blink::StorageKey> key =
+  std::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
   if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
@@ -829,7 +829,7 @@ Response StorageHandler::UntrackIndexedDBForStorageKey(
     return Response::InternalError();
   }
 
-  absl::optional<blink::StorageKey> key =
+  std::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
   if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
@@ -1060,13 +1060,13 @@ void StorageHandler::OnInterestGroupAccessed(
 namespace {
 void SendGetInterestGroup(
     std::unique_ptr<StorageHandler::GetInterestGroupDetailsCallback> callback,
-    absl::optional<StorageInterestGroup> storage_group) {
+    std::optional<SingleStorageInterestGroup> storage_group) {
   if (!storage_group) {
     callback->sendFailure(Response::ServerError("Interest group not found"));
     return;
   }
 
-  const blink::InterestGroup& group = storage_group->interest_group;
+  const blink::InterestGroup& group = storage_group.value()->interest_group;
   auto trusted_bidding_signals_keys =
       std::make_unique<protocol::Array<std::string>>();
   if (group.trusted_bidding_signals_keys) {
@@ -1105,7 +1105,7 @@ void SendGetInterestGroup(
           .SetOwnerOrigin(group.owner.Serialize())
           .SetName(group.name)
           .SetExpirationTime(group.expiry.InSecondsFSinceUnixEpoch())
-          .SetJoiningOrigin(storage_group->joining_origin.Serialize())
+          .SetJoiningOrigin(storage_group.value()->joining_origin.Serialize())
           .SetTrustedBiddingSignalsKeys(std::move(trusted_bidding_signals_keys))
           .SetAds(std::move(ads))
           .SetAdComponents(std::move(ad_components))
@@ -1675,7 +1675,7 @@ void StorageHandler::ResetAttributionReporting() {
     return;
   }
 
-  manager->SetDebugMode(/*enabled=*/absl::nullopt, base::DoNothing());
+  manager->SetDebugMode(/*enabled=*/std::nullopt, base::DoNothing());
 }
 
 namespace {
@@ -2035,7 +2035,7 @@ ToSourceRegistrationTimeConfig(
 void StorageHandler::OnSourceHandled(
     const StorableSource& source,
     base::Time source_time,
-    absl::optional<uint64_t> cleared_debug_key,
+    std::optional<uint64_t> cleared_debug_key,
     attribution_reporting::mojom::StoreSourceResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -2081,10 +2081,9 @@ void StorageHandler::OnSourceHandled(
       std::move(out_source), ToSourceRegistrationResult(result));
 }
 
-void StorageHandler::OnTriggerHandled(
-    const AttributionTrigger& trigger,
-    absl::optional<uint64_t> cleared_debug_key,
-    const CreateReportResult& result) {
+void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
+                                      std::optional<uint64_t> cleared_debug_key,
+                                      const CreateReportResult& result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   const auto& registration = trigger.registration();

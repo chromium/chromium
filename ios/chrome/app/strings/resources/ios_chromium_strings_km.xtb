@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">គន្លឹះ Chromium</translation>
 <translation id="2168108852149185974">កម្មវិធីបន្ថែមមួយចំនួនអាចធ្វើឲ្យ Chromium គាំង។ សូមលុបការដំឡើង៖</translation>
 <translation id="2178608107313874732">Chromium មិនអាចប្រើកាមេរ៉ារបស់អ្នកបានទេឥឡូវនេះ</translation>
-<translation id="219374086636266276">អ្នកអាច<ph name="BEGIN_LINK" />គ្រប់គ្រងទិន្នន័យ Chromium ណាខ្លះដែលត្រូវបានរក្សាទុក<ph name="END_LINK" />នៅក្នុងគណនី Google របស់អ្នក។
-សម្រាប់ការកំណត់ច្រើនទៀតដែលប្រើទិន្នន័យដើម្បីកែលម្អបទពិសោធប្រើប្រាស់ Chromium របស់អ្នក សូមចូលទៅកាន់<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>
 <translation id="2195025571279539885">តើអ្នកចង់ឲ្យ Chromium ផ្តល់ជូននូវការបកប្រែទំព័រ <ph name="LANGUAGE_NAME" /> ចេញពីគេហទំព័រនេះដែរឬទេនៅពេលក្រោយ?</translation>
 <translation id="2218146227246548550">ស្ថាប័នរបស់អ្នក​តម្រូវឱ្យអ្នកចូលគណនី ដើម្បីប្រើ Chromium។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">បច្ចុប្បន្ន អាសយដ្ឋាននេះ​ត្រូវបាន​រក្សាទុក​ទៅក្នុង Chromium។ ដើម្បីប្រើវា​នៅលើ​ផលិតផល Google នានា សូមរក្សាទុកវា​នៅក្នុង​គណនី Google របស់អ្នក <ph name="USER_EMAIL" />។</translation>
@@ -65,6 +63,9 @@
 <translation id="2730884209570016437">Chromium មិនអាចប្រើកាមេរ៉ារបស់អ្នកបានទេ ដោយសារវាកំពុងត្រូវបានប្រើដោយកម្មវិធីផ្សេងទៀត</translation>
 <translation id="2784449251446768092">គ្រប់គ្រង​ការកំណត់ Chromium</translation>
 <translation id="2798503587425057129">បើក​បញ្ជីអាន Chromium។</translation>
+<translation id="28276745681323897">អ្នកអាច<ph name="BEGIN_LINK" />គ្រប់គ្រងទិន្នន័យ Chromium ដែលត្រូវបានរក្សាទុក<ph name="END_LINK" />នៅក្នុងគណនី Google របស់អ្នក។
+
+សម្រាប់ការកំណត់ច្រើនទៀតដែលប្រើទិន្នន័យដើម្បីកែលម្អបទពិសោធប្រើប្រាស់ Chromium របស់អ្នក សូមចូលទៅកាន់<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>
 <translation id="2843571538056574338">ប្រើ Chromium សម្រាប់​ការបំពេញ​ស្វ័យប្រវត្តិ</translation>
 <translation id="2918709798697875261">ស្ថាប័នរបស់អ្នក​តម្រូវឱ្យអ្នក​នៅបន្តចេញពីគណនី​នៅលើ Chromium។</translation>
 <translation id="2942241131342758843">ប្រើ Chromium តាមលំនាំដើម ដើម្បីបើកតំណ ស្វែងរក​ពីធាតុក្រាហ្វិក និងបំពេញ​ពាក្យសម្ងាត់ដោយស្វ័យ​ប្រវត្តិនៅក្នុងកម្មវិធី​ផ្សេងទៀត</translation>

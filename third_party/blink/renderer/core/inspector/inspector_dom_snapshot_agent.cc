@@ -699,7 +699,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
   }
 
   String text = layout_object->IsText()
-                    ? To<LayoutText>(layout_object)->GetText()
+                    ? To<LayoutText>(layout_object)->TransformedText()
                     : String();
   layout_tree_snapshot->getText()->emplace_back(AddString(text));
 

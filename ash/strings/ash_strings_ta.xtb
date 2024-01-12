@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">வைஃபையை இயக்கு/முடக்கு. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Chromebookகில் உள்நுழைய முடியவில்லை</translation>
 <translation id="2367972762794486313">பயன்பாடுகளைக் காட்டு</translation>
+<translation id="2368828502825385061">கண்டறி</translation>
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
 <translation id="2382875860893882175">அலைபரப்பு தற்போது இடைநிறுத்தப்பட்டுள்ளது. அலைபரப்பை எப்போது வேண்டுமானாலும் மீண்டும் தொடங்கலாம் அல்லது நிறுத்தலாம்.</translation>
 <translation id="2386292613071805067">பக்கத்தில் உள்ள அனைத்தையும் தேர்ந்தெடுக்கும்</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">அலைபரப்பு</translation>
 <translation id="5546397813406633847">கடவுச்சொல்லை மீட்டெடு</translation>
 <translation id="554893713779400387">சொல்வதை எழுதுவதை நிலைமாற்று</translation>
+<translation id="5550417424894892620">ஃபைல்களை <ph name="HOLDING_SPACE_TITLE" /> இல் சேர்க்க அவற்றை டெஸ்க்டாப்பில் இழுத்து விடவும். டெஸ்க்டாப்பில் ஃபைல்களைச் சேர்க்க முடியாது.</translation>
 <translation id="5551456515017410630">கேலெண்டரைத் திற/மூடுக</translation>
 <translation id="5551974246223970793">ஒரு பக்கத்தைத் தேடும்போது தேடலுக்கான அடுத்த பொருத்தத்திற்குச் செல்</translation>
 <translation id="5555639311269196631">ஹாட்ஸ்பாட்டை முடக்குதல்</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">உங்கள் <ph name="DEVICE_NAME" />ஐ ஃபோனுடன் இணைக்கவும்</translation>
 <translation id="7026338066939101231">குறை</translation>
 <translation id="7029814467594812963">அமர்விலிருந்து வெளியேறவும்</translation>
+<translation id="7031303610220416229">Google Tasksஸில் அனைத்து பணிகளையும் பார்க்கலாம்</translation>
 <translation id="7032161822340700104">ஆறு டெம்ப்ளேட்டுகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க, ஒரு டெம்ப்ளேட்டை அகற்றவும்.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் <ph name="DEVICE_NAME" /> ஐப் பயன்படுத்த விரும்புகிறது. உங்கள் சாதனத்தின் <ph name="DEVICE_NAME" /> சுவிட்ச்சை இயக்கவும்.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google அசிஸ்டண்ட்</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> உபயோகத்தில் உள்ளது.</translation>
 <translation id="8369166482916924789">சேமிக்கப்பட்ட டெஸ்க், <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> என்பதைத் தேடும்</translation>
 <translation id="8371779926711439835">எழுத்து வாரியாக முன்செல்</translation>
 <translation id="8371991222807690464">கெஸ்ட் பயன்முறையில் சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="8374601332003098278">பகுதியளவு திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">பெயர் அல்லது வண்ணத்தின்படி ஆப்ஸை வரிசைப்படுத்துங்கள்</translation>
 <translation id="8609384513243082612">புதிய தாவலைத் திறக்கும்</translation>
+<translation id="8612216344243590325">முக்கியமான ஃபைல்களை டெஸ்க்டாப்பிற்குப் பதிலாக <ph name="HOLDING_SPACE_TITLE" /> இல் வைக்கலாம். அதற்கு ஃபைல்களை <ph name="HOLDING_SPACE_TITLE" />க்கு இழுக்கவும்.</translation>
 <translation id="8614517853887502247">பார்ப்பதற்கான கட்டுப்பாடு இயக்கத்தில் உள்ளதால் <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ஆகியவற்றின் அறிவிப்புகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="8619138598101195078">ஒலியளவைக் குறை</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> உடன் இணைக்கப்பட்டுள்ளது</translation>

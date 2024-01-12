@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
@@ -111,8 +112,8 @@ class InferenceState {
 // input_side_packet.
 //
 // The input and output streams are TensorFlow tensors labeled by tags. The tags
-// for the streams are matched to feeds and fetchs in a TensorFlow session using
-// a named_signature.generic_signature in the ModelManifest. The
+// for the streams are matched to feeds and fetches in a TensorFlow session
+// using a named_signature.generic_signature in the ModelManifest. The
 // generic_signature is used as key-value pairs between the MediaPipe tag and
 // the TensorFlow tensor. The signature_name in the options proto determines
 // which named_signature is used. The keys in the generic_signature must be
@@ -128,7 +129,7 @@ class InferenceState {
 // addition. Once batch_size inputs have been provided, the batch will be run
 // and the output tensors sent out on the output streams with timestamps
 // corresponding to the input stream packets. Setting the batch_size to 1
-// completely disables batching, but is indepdent of add_batch_dim_to_tensors.
+// completely disables batching, but is independent of add_batch_dim_to_tensors.
 //
 // The TensorFlowInferenceCalculator also support feeding states recurrently for
 // RNNs and LSTMs. Simply set the recurrent_tag_pair options to define the
@@ -579,7 +580,7 @@ class TensorFlowInferenceCalculator : public CalculatorBase {
 
     absl::WriterMutexLock l(&mutex_);
     // Set that we want to split on each index of the 0th dimension.
-    std::vector<tf::int64> split_vector(
+    std::vector<int64_t> split_vector(
         options_.pad_to_batch_size()
             ? options_.batch_size()
             : inference_state->batch_timestamps_.size(),

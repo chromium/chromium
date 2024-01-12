@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/component_updater/android/component_loader_policy.h"
 
 #include <fcntl.h>
@@ -25,6 +24,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -180,10 +180,9 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {
   base::RunLoop run_loop;
   auto* android_policy =
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
-          base::BindOnce(
-              [](const base::Version& version,
-                 base::flat_map<std::string, base::ScopedFD>& fd_map,
-                 base::Value::Dict manifest) { FAIL(); }),
+          base::BindOnce([](const base::Version& version,
+                            base::flat_map<std::string, base::ScopedFD>& fd_map,
+                            base::Value::Dict manifest) { FAIL(); }),
           base::BindLambdaForTesting([&](ComponentLoadResult error) {
             ASSERT_EQ(error, ComponentLoadResult::kMissingManifest);
             run_loop.Quit();
@@ -209,10 +208,9 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidVersion) {
   base::RunLoop run_loop;
   auto* android_policy =
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
-          base::BindOnce(
-              [](const base::Version& version,
-                 base::flat_map<std::string, base::ScopedFD>& fd_map,
-                 base::Value::Dict manifest) { FAIL(); }),
+          base::BindOnce([](const base::Version& version,
+                            base::flat_map<std::string, base::ScopedFD>& fd_map,
+                            base::Value::Dict manifest) { FAIL(); }),
           base::BindLambdaForTesting([&](ComponentLoadResult error) {
             ASSERT_EQ(error, ComponentLoadResult::kInvalidVersion);
             run_loop.Quit();
@@ -237,10 +235,9 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidManifest) {
   base::RunLoop run_loop;
   auto* android_policy =
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
-          base::BindOnce(
-              [](const base::Version& version,
-                 base::flat_map<std::string, base::ScopedFD>& fd_map,
-                 base::Value::Dict manifest) { FAIL(); }),
+          base::BindOnce([](const base::Version& version,
+                            base::flat_map<std::string, base::ScopedFD>& fd_map,
+                            base::Value::Dict manifest) { FAIL(); }),
           base::BindLambdaForTesting([&](ComponentLoadResult error) {
             ASSERT_EQ(error, ComponentLoadResult::kMalformedManifest);
             run_loop.Quit();

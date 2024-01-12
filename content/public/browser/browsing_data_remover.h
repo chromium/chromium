@@ -6,11 +6,11 @@
 #define CONTENT_PUBLIC_BROWSER_BROWSING_DATA_REMOVER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 class SpecialStoragePolicy;
@@ -281,7 +281,7 @@ class BrowsingDataRemover {
   virtual const base::Time& GetLastUsedBeginTimeForTesting() = 0;
   virtual uint64_t GetLastUsedRemovalMaskForTesting() = 0;
   virtual uint64_t GetLastUsedOriginTypeMaskForTesting() = 0;
-  virtual absl::optional<StoragePartitionConfig>
+  virtual std::optional<StoragePartitionConfig>
   GetLastUsedStoragePartitionConfigForTesting() = 0;
   virtual uint64_t GetPendingTaskCountForTesting() = 0;
 };

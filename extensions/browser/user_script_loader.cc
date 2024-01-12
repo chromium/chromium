@@ -61,8 +61,8 @@ bool AreScriptsUnique(const UserScriptList& scripts) {
 #endif  // DCHECK_IS_ON()
 
 // Helper function to parse greasesmonkey headers
-bool GetDeclarationValue(const std::string_view& line,
-                         const std::string_view& prefix,
+bool GetDeclarationValue(std::string_view line,
+                         std::string_view prefix,
                          std::string* value) {
   std::string_view::size_type index = line.find(prefix);
   if (index == std::string_view::npos) {
@@ -95,7 +95,7 @@ bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
 }  // namespace
 
 // static
-bool UserScriptLoader::ParseMetadataHeader(const std::string_view& script_text,
+bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
                                            UserScript* script) {
   // http://wiki.greasespot.net/Metadata_block
   std::string_view line;

@@ -210,7 +210,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<DateTray, DanglingUntriaged | ExperimentalAsh> date_tray_;
+  raw_ptr<DateTray, DanglingUntriaged> date_tray_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
@@ -486,7 +486,7 @@ class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
 
  private:
   base::test::ScopedFeatureList features_{
-      features::kGlanceablesTimeManagementStableLaunch};
+      features::kGlanceablesTimeManagementTasksView};
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, AddTaskItem) {

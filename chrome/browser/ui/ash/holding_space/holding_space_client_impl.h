@@ -43,7 +43,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   void UnpinItems(const std::vector<const HoldingSpaceItem*>& items) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<HoldingSpaceClientImpl> weak_factory_{this};
 };

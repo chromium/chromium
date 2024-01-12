@@ -336,8 +336,8 @@ class BrowserAppShelfControllerBrowserTest
     return SelectResult{action_taken, std::move(app_menu_items)};
   }
 
-  raw_ptr<apps::BrowserAppInstanceRegistry, DanglingUntriaged | ExperimentalAsh>
-      registry_{nullptr};
+  raw_ptr<apps::BrowserAppInstanceRegistry, DanglingUntriaged> registry_{
+      nullptr};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {

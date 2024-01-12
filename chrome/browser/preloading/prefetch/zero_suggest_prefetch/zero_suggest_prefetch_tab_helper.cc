@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -63,12 +63,12 @@ void ZeroSuggestPrefetchTabHelper::StartPrefetch() {
     return;
   }
 
-  auto* omnibox_edit_model = omnibox_view->model();
-  if (!omnibox_edit_model) {
+  auto* omnibox_controller = omnibox_view->controller();
+  if (!omnibox_controller) {
     return;
   }
 
-  omnibox_edit_model->StartPrefetch();
+  omnibox_controller->StartZeroSuggestPrefetch();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZeroSuggestPrefetchTabHelper);

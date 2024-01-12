@@ -326,7 +326,7 @@
       },
       {
         "name": "getManifest",
-        "description": "Returns details about the app or extension from the manifest. The object returned is a serialization of the full <a href=\"manifest.html\">manifest file</a>.",
+        "description": "Returns details about the app or extension from the manifest. The object returned is a serialization of the full <a href=\"reference/manifest\">manifest file</a>.",
         "type": "function",
         "nocompile": true,
         "parameters": [],
@@ -434,9 +434,9 @@
         "name": "connect",
         "type": "function",
         "nocompile": true,
-        "description": "Attempts to connect listeners within an extension/app (such as the background page), or other extensions/apps. This is useful for content scripts connecting to their extension processes, inter-app/extension communication, and <a href=\"manifest/externally_connectable.html\">web messaging</a>. Note that this does not connect to any listeners in a content script. Extensions may connect to content scripts embedded in tabs via $(ref:tabs.connect).",
+        "description": "Attempts to connect listeners within an extension/app (such as the background page), or other extensions/apps. This is useful for content scripts connecting to their extension processes, inter-app/extension communication, and <a href=\"/docs/extensions/manifest/externally_connectable\">web messaging</a>. Note that this does not connect to any listeners in a content script. Extensions may connect to content scripts embedded in tabs via $(ref:tabs.connect).",
         "parameters": [
-          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension or app to connect to. If omitted, a connection will be attempted with your own extension. Required if sending messages from a web page for <a href=\"manifest/externally_connectable.html\">web messaging</a>."},
+          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension or app to connect to. If omitted, a connection will be attempted with your own extension. Required if sending messages from a web page for <a href=\"/docs/extensions/reference/manifest/externally-connectable\">web messaging</a>."},
           {
             "type": "object",
             "name": "connectInfo",
@@ -456,7 +456,7 @@
         "name": "connectNative",
         "type": "function",
         "nocompile": true,
-        "description": "Connects to a native application in the host machine. See <a href=\"nativeMessaging\">Native Messaging</a> for more information.",
+        "description": "Connects to a native application in the host machine. See <a href=\"develop/concepts/native-messaging\">Native Messaging</a> for more information.",
         "parameters": [
           {
             "type": "string",
@@ -476,7 +476,7 @@
         "allowAmbiguousOptionalArguments": true,
         "description": "Sends a single message to event listeners within your extension/app or a different extension/app. Similar to $(ref:runtime.connect) but only sends a single message, with an optional response. If sending to your extension, the $(ref:runtime.onMessage) event will be fired in every frame of your extension (except for the sender's frame), or $(ref:runtime.onMessageExternal), if a different extension. Note that extensions cannot send messages to content scripts using this method. To send messages to content scripts, use $(ref:tabs.sendMessage).",
         "parameters": [
-          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension/app to send the message to. If omitted, the message will be sent to your own extension/app. Required if sending messages from a web page for <a href=\"manifest/externally_connectable.html\">web messaging</a>."},
+          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension/app to send the message to. If omitted, the message will be sent to your own extension/app. Required if sending messages from a web page for <a href=\"/docs/extensions/manifest/externally_connectable\">web messaging</a>."},
           { "type": "any", "name": "message", "description": "The message to send. This message should be a JSON-ifiable object." },
           {
             "type": "object",
@@ -679,14 +679,13 @@
         "name": "onConnectExternal",
         "type": "function",
         "nocompile": true,
-        "description": "Fired when a connection is made from another extension (by $(ref:runtime.connect)).",
+        "description": "Fired when a connection is made from another extension (by $(ref:runtime.connect)), or from an externally connectable web site.",
         "parameters": [
           {"$ref": "Port", "name": "port"}
         ]
       },
       {
         "name": "onUserScriptConnect",
-        "nodoc": true,
         "type": "function",
         "nocompile": true,
         "options": { "unmanaged": true },
@@ -742,7 +741,6 @@
       },
       {
         "name": "onUserScriptMessage",
-        "nodoc": true,
         "type": "function",
         "nocompile": true,
         "options": { "unmanaged": true },

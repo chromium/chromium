@@ -496,6 +496,10 @@ absl::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
   return absl::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> DeleteDirectiveHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void DeleteDirectiveHandler::FinishProcessing(
     PostProcessingAction post_processing_action,
     const syncer::SyncDataList& delete_directives) {

@@ -92,6 +92,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
     VideoCodec video_codec = VideoCodec::kUnknown;
     VideoPipelineInfo video_pipeline_info;
     AudioPipelineInfo audio_pipeline_info;
+    std::optional<PipelineStatusCodes> start_status_;
     PipelineStatusCodes last_pipeline_status = PIPELINE_OK;
   };
 
@@ -105,6 +106,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void Initialize(bool is_mse,
                   mojom::MediaURLScheme url_scheme,
                   mojom::MediaStreamType media_stream_type) override;
+  void OnStarted(const PipelineStatus& status) override;
   void OnError(const PipelineStatus& status) override;
   void OnFallback(const PipelineStatus& status) override;
   void SetAudioPipelineInfo(const AudioPipelineInfo& info) override;

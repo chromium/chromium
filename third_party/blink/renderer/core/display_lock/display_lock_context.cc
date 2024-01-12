@@ -581,7 +581,7 @@ void DisplayLockContext::Unlock() {
   // We also need to notify the AX cache (if it exists) to update the childrens
   // of |element_| in the AX cache.
   if (auto* ax_cache = element_->GetDocument().ExistingAXObjectCache()) {
-    ax_cache->SubtreeIsAttached(element_);
+    ax_cache->RemoveSubtreeWhenSafe(element_);
   }
 
   // Schedule ContentVisibilityAutoStateChange event if needed.

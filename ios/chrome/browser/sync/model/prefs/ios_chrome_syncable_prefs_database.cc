@@ -47,9 +47,10 @@ enum {
 
 const auto& SyncablePreferences() {
   // iOS specific list of syncable preferences.
+  // TODO(crbug.com/1512537): Convert to MakeFixedFlatMap().
   static const auto kIOSChromeSyncablePrefsAllowlist =
-      base::MakeFixedFlatMap<base::StringPiece,
-                             sync_preferences::SyncablePrefMetadata>({
+      base::MakeFixedFlatMapNonConsteval<
+          base::StringPiece, sync_preferences::SyncablePrefMetadata>({
           {prefs::kArticlesForYouEnabled,
            {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
             sync_preferences::PrefSensitivity::kNone,

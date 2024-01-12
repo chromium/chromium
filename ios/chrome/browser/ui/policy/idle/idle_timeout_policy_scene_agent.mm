@@ -18,10 +18,12 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/policy/idle/idle_timeout_launch_screen_view_controller.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -72,6 +74,12 @@
 
   // The actions that will run on idle timeout.
   enterprise_idle::ActionSet _actions;
+
+  // An extended launch screen that shows on start-up or re-foreground. The
+  // windows shows on top of the browser to block the user from navigating when
+  // data is cleared, and to hide the triggered UI changes when tabs are closed
+  // or the user is signed out.
+  UIWindow* _launchScreenWindow;
 }
 
 - (instancetype)
@@ -121,6 +129,8 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  // Show or remove the launch screen based on the scene activation level.
+  [self handleExtendedLaunchScreenWindowForSceneActivationLevel:level];
   // Monitor the scene activation level to consider showing the idle timeout
   // snackbar when the scene becomes active and in the foreground. This is
   // needed because the scene state might not be foregrounded yet when
@@ -138,21 +148,34 @@
 }
 
 - (void)onIdleTimeoutOnStartup {
+  CHECK(_idleService->IsIdleTimeoutPolicySet());
   // Any window can display the snackbar after actions run on startup or
   // reforeground. The differentiating factor in this case will be which scene
   // enters foreground first.
   _pendingDisplayingSnackbar = YES;
-  _actions =
-      enterprise_idle::GetActionSet([self prefService], [self authService]);
-  // TODO(b/301676922): Show loading window if data will be cleared.
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          _mainBrowser->GetBrowserState());
+  PrefService* prefService = _mainBrowser->GetBrowserState()->GetPrefs();
+  _actions = enterprise_idle::GetActionSet(prefService, authService);
+  [self showExtendedLaunchScreenWindow];
 }
 
 - (void)onIdleTimeoutActionsCompleted {
+  [self maybeDismissExtendedLaunchScreenWindowIfDisplayed];
   [self maybeShowPostActionSnackbar];
 }
 
 - (void)onApplicationWillEnterBackground {
+  CHECK(_idleService->IsIdleTimeoutPolicySet());
   [self stopIdleTimeoutConfirmationCoordinator];
+  // When the app is moving to the background -> Show the launch screen. This
+  // needs to be done now instead of when we are sure the app will be idle on
+  // foreground. The reason is when the app is reforegrounded, there is a second
+  // when the initial snapshot of the UI is shown. The screen will be removed on
+  // reforeground if it is not actually needed (i.e. the browser has not timed
+  // out).
+  [self showExtendedLaunchScreenWindow];
 }
 
 #pragma mark - IdleTimeoutConfirmationCoordinatorDelegate
@@ -206,6 +229,10 @@
 
 // Shows the actions ran snackbar using the snackbar command.
 - (void)maybeShowPostActionSnackbar {
+  if ([self isLaunchScreenDisplayed]) {
+    // The snackbar will show after the launch screen is hidden.
+    return;
+  }
   if (![self isUIAvailableToShowSnackbar]) {
     return;
   }
@@ -213,7 +240,7 @@
   if (!_idleService->ShouldIdleTimeoutSnackbarBePresented()) {
     // Returns if the snackbar is no longer needed and has been handled by
     // another agent which has set the flag to false.  This flag check is
-    // important for the case when the actions run on startup/refreground where
+    // important for the case when the actions run on startup/reforeground where
     // `onIdleTimeoutActionsCompleted` may be called before
     // `transitionedToActivationLevel` to foreground.
     return;
@@ -303,6 +330,87 @@
     [_idleTimeoutConfirmationCoordinator stop];
     _idleTimeoutConfirmationCoordinator = nil;
   }
+}
+
+- (void)showExtendedLaunchScreenWindow {
+  // Return if the window is already displayed. This happens when the app has
+  // been backgrounded with the policy set then re-foregrounded, in which case
+  // the app has the launch screen window on re-foregrounded.
+  if ([self isLaunchScreenDisplayed]) {
+    return;
+  }
+
+  IdleTimeoutLaunchScreenViewController* _launchScreenController =
+      [[IdleTimeoutLaunchScreenViewController alloc] init];
+  _launchScreenWindow =
+      [[UIWindow alloc] initWithWindowScene:self.sceneState.scene];
+  // The blocker is above everything, including the alerts, but below the status
+  // bar.
+  _launchScreenWindow.windowLevel = UIWindowLevelStatusBar - 1;
+  _launchScreenWindow.rootViewController = _launchScreenController;
+  [_launchScreenWindow makeKeyAndVisible];
+  [self scheduleLaunchScreenDismissal];
+}
+
+- (void)maybeDismissExtendedLaunchScreenWindowIfDisplayed {
+  if (!_actions.close) {
+    // Dismiss right away if tabs will not be closing, which is often delayed.
+    [self dismissExtendedLaunchScreenWindowIfDisplayed];
+    return;
+  }
+
+  // Remove after 2 more seconds to give the UI enough time to update behind the
+  // screen after actions have run. If the screen is dimssed right away, the
+  // tabs will be seen closing.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf dismissExtendedLaunchScreenWindowIfDisplayed];
+        [weakSelf maybeShowPostActionSnackbar];
+      }),
+      base::Seconds(1));
+}
+
+- (void)dismissExtendedLaunchScreenWindowIfDisplayed {
+  if (![self isLaunchScreenDisplayed]) {
+    // Nothing needs to be done here, so we can return.
+    return;
+  }
+
+  _launchScreenWindow = nil;
+  [self.sceneState.window makeKeyAndVisible];
+}
+
+- (BOOL)isLaunchScreenDisplayed {
+  return _launchScreenWindow != nil;
+}
+
+- (void)handleExtendedLaunchScreenWindowForSceneActivationLevel:
+    (SceneActivationLevel)level {
+  // When the backgrounded app is moving back to the foreground -> dismiss the
+  // launch screen if the browser did not timeout. Otherwise keep it, and it
+  // will be dismissed later when the service completes running the idle
+  // actions, or when it has exceeded 5 seconds.
+  bool isReforegroundedWithLaunchScreen =
+      (level == SceneActivationLevelForegroundInactive) && _launchScreenWindow;
+  if (isReforegroundedWithLaunchScreen) {
+    if (!_idleService->IsIdleAfterPreviouslyBeingActive()) {
+      [self dismissExtendedLaunchScreenWindowIfDisplayed];
+    } else {
+      [self scheduleLaunchScreenDismissal];
+    }
+  }
+}
+
+- (void)scheduleLaunchScreenDismissal {
+  // Set a deadline for the dismissal of the launch screen so the user never
+  // waits indefinitely.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf dismissExtendedLaunchScreenWindowIfDisplayed];
+      }),
+      base::Seconds(5));
 }
 
 @end

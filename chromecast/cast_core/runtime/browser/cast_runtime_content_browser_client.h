@@ -55,7 +55,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override;
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override;
 
  protected:
   void InitializeCoreComponents(CastWebService* web_service);

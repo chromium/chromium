@@ -272,7 +272,13 @@ TEST_P(AudioInputTest, CreateAndClose) {
 }
 
 // Test create, open and close of an AudioInputStream without recording audio.
-TEST_P(AudioInputTest, OpenAndClose) {
+// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_OpenAndClose DISABLED_OpenAndClose
+#else
+#define MAYBE_OpenAndClose OpenAndClose
+#endif
+TEST_P(AudioInputTest, MAYBE_OpenAndClose) {
   if (should_use_aaudio_ && !aaudio_is_supported_) {
     return;
   }
@@ -283,7 +289,13 @@ TEST_P(AudioInputTest, OpenAndClose) {
 }
 
 // Test create, open, stop and close of an AudioInputStream without recording.
-TEST_P(AudioInputTest, OpenStopAndClose) {
+// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_OpenStopAndClose DISABLED_OpenStopAndClose
+#else
+#define MAYBE_OpenStopAndClose OpenStopAndClose
+#endif
+TEST_P(AudioInputTest, MAYBE_OpenStopAndClose) {
   if (should_use_aaudio_ && !aaudio_is_supported_) {
     return;
   }

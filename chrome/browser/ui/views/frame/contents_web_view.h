@@ -24,9 +24,9 @@ class LayerTreeOwner;
 class ContentsWebView
     : public views::WebView,
       public WebContentsCloseHandlerDelegate {
- public:
-  METADATA_HEADER(ContentsWebView);
+  METADATA_HEADER(ContentsWebView, views::WebView)
 
+ public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContentsWebViewElementId);
 
   explicit ContentsWebView(content::BrowserContext* browser_context);

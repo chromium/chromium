@@ -343,7 +343,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   base::RepeatingClosure user_activity_callback_;
 
   // Clock to use to calculate time ticks. Used for ArcTimer related APIs.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // If set then |StartArcTimer| returns failure.
   bool simulate_start_arc_timer_failure_ = false;

@@ -43,7 +43,7 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   LayoutUnit ComputeSubgridIntrinsicBlockSize(
       const GridSizingSubtree& sizing_subtree) const;
-  MinMaxSizesResult ComputeSubgridMinMaxSizes(
+  MinMaxSizes ComputeSubgridMinMaxSizes(
       const GridSizingSubtree& sizing_subtree) const;
 
   // Computes the containing block rect of out of flow items from stored data in

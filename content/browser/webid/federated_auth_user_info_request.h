@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -75,7 +75,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
 
   void Complete(
       blink::mojom::RequestUserInfoStatus status,
-      absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
+      std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
       FederatedAuthUserInfoRequestResult request_status);
 
   void CompleteWithError(FederatedAuthUserInfoRequestResult error);

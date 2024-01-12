@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
+#import "ios/web/public/web_state.h"
 
 @implementation BaseGridCoordinator {
   // Mutator that handle toolbars changes.
@@ -17,6 +19,8 @@
   __weak id<GridMediatorDelegate> _gridMediatorDelegate;
   // Tab Groups Coordinator used to display the tab group UI;
   TabGroupCoordinator* _tabGroupCoordinator;
+  // Handles the creation of a new tab group.
+  CreateTabGroupCoordinator* _tabGroupCreator;
 }
 
 #pragma mark - Public
@@ -83,6 +87,26 @@
 - (void)hideTabGroup {
   [_tabGroupCoordinator stop];
   _tabGroupCoordinator = nil;
+}
+
+- (void)showTabGroupCreationForTabs:(std::set<web::WebStateID>&)identifiers {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a tab group outside the Tab Groups "
+         "experiment.";
+  CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
+                              "creation process is still running.";
+  // TODO(crbug.com/1501837): Replace base view controller by view controller
+  // when the base grid coordinator will have access to the grid view
+  // controller.
+  _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  [_tabGroupCreator start];
+}
+
+- (void)hideTabGroupCreation {
+  [_tabGroupCreator stop];
+  _tabGroupCreator = nil;
 }
 
 @end

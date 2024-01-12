@@ -14,6 +14,10 @@
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace cast_receiver {
 
 class UrlRewriteRulesProvider;
@@ -55,7 +59,7 @@ class WrappingURLLoaderThrottleProvider
   std::unique_ptr<blink::URLLoaderThrottleProvider> Clone() override;
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-      const blink::WebURLRequest& request) override;
+      const network::ResourceRequest& request) override;
   void SetOnline(bool is_online) override;
 
  private:

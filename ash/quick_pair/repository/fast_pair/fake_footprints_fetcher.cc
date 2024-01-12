@@ -51,7 +51,7 @@ void FakeFootprintsFetcher::AddUserFastPairInfo(
   }
 
   account_key_to_info_map_[base::HexEncode(
-      base::as_bytes(base::make_span(info.device().account_key())))] = info;
+      base::as_byte_span(info.device().account_key()))] = info;
   std::move(callback).Run(add_user_result_);
 }
 

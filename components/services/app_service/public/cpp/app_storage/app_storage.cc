@@ -67,8 +67,8 @@ void AppStorage::OnAppUpdate(const AppUpdate& update) {
   MaybeSaveAppInfo();
 }
 
-void AppStorage::OnAppsInitialized(const std::vector<AppPtr>& deltas,
-                                   apps::AppType app_type) {
+void AppStorage::OnAppTypePublishing(const std::vector<AppPtr>& deltas,
+                                     apps::AppType app_type) {
   // If OnApps is in progress for the apps saved in the AppStorage file,
   // we can skip it, because `deltas` is come from the AppStorage file.
   if (onapps_in_progress_) {
@@ -115,13 +115,11 @@ void AppStorage::OnGetAppInfoData(base::OnceCallback<void()> callback,
   if (app_info) {
     onapps_in_progress_ = true;
 
-    app_registry_cache_->OnApps(std::move(app_info->apps), AppType::kUnknown,
-                                /*should_notify_initialized=*/false);
+    app_registry_cache_->OnApps(std::move(app_info->apps));
 
     // Init app types.
     for (auto app_type : app_info->app_types) {
-      app_registry_cache_->OnApps(std::vector<AppPtr>(), app_type,
-                                  /*should_notify_initialized=*/true);
+      app_registry_cache_->InitApps(app_type);
     }
 
     onapps_in_progress_ = false;

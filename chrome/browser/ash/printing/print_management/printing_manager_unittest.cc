@@ -67,7 +67,7 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
   }
 
  private:
-  raw_ptr<base::RunLoop, ExperimentalAsh> runner_;
+  raw_ptr<base::RunLoop> runner_;
 };
 
 void WaitForURLsDeletedNotification(history::HistoryService* history_service) {

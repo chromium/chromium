@@ -84,7 +84,7 @@ void DecoderBufferValidator::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
   const BitstreamBufferMetadata& metadata = bitstream->metadata;
-  if (metadata.payload_size_bytes == 0) {
+  if (bitstream->metadata.dropped_frame()) {
     if (metadata.key_frame) {
       LOG(ERROR) << "Don't drop key frame";
       num_errors_++;

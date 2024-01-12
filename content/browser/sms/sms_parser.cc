@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/sms/sms_parser.h"
+
+#include <optional>
 #include <string>
 #include <utility>
 
-#include "content/browser/sms/sms_parser.h"
-
 #include "base/strings/string_piece.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 #include "url/origin.h"

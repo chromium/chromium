@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
-#include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -118,16 +117,6 @@ void LogQualityMetrics(
       perfect_filling = false;
     }
 
-    // If the field was identified by heuristic or server predictions as a
-    // street name or a house number, log the value of the autocomplete
-    // attribute that was used to represent the field.
-    if (IsStreetNameOrHouseNumberType(field->server_type()) ||
-        IsStreetNameOrHouseNumberType(field->heuristic_type())) {
-      autofill_metrics::
-          LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
-              *field);
-    }
-
     // Field filling statistics that are only emitted if the form was submitted
     // but independent of the existence of a possible type.
     if (observed_submission) {
@@ -136,39 +125,6 @@ void LogQualityMetrics(
       if (field->is_autofilled || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, form_structure, *field);
-        // To emit the StreetNameOrHouseNumberPrecedenceCorrectness metric, we
-        // should check if the feature
-        // `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete` had an
-        // effect on the current field. This lambda takes care of that.
-        auto precedence_feature_had_effect = [](const AutofillField& field) {
-          // When server override happens, `ComputedType()` isn't called and
-          // hence the feature's logic doesn't apply.
-          bool no_server_override =
-              !field.server_type_prediction_is_override() ||
-              field.server_type() == NO_SERVER_DATA;
-          // When the autocomplete attribute is unspecified, it is
-          // unconditionally overridden, regardless of the feature.
-          bool specified_autocomplete =
-              field.html_type() != HtmlFieldType::kUnspecified;
-          // We are not interested in cases where the autocomplete attribute
-          // agrees with server or heuristic predictions, since in that case
-          // precedence wouldn't change the behavior of the program.
-          bool autocomplete_disagree_with_type =
-              field.Type().GetStorableType() !=
-              AutofillType(field.html_type()).GetStorableType();
-          // The feature is only active for street name and house number types.
-          bool is_street_name_or_house_number =
-              IsStreetNameOrHouseNumberType(field.Type().GetStorableType());
-
-          return no_server_override && specified_autocomplete &&
-                 autocomplete_disagree_with_type &&
-                 is_street_name_or_house_number;
-        };
-        if (precedence_feature_had_effect(*field)) {
-          autofill_metrics::
-              LogEditedAutofilledFieldWithStreetNameOrHouseNumberPrecedenceAtSubmission(
-                  *field);
-        }
       }
 
       // For any field that belongs to either an address or a credit card form,
@@ -360,7 +316,7 @@ void LogQualityMetrics(
       // submitted a blank form.
       if (!interaction_time.is_null()) {
         // Submission should always chronologically follow interaction.
-        DCHECK(submission_time > interaction_time);
+        DCHECK_GE(submission_time, interaction_time);
         base::TimeDelta elapsed = submission_time - interaction_time;
         AutofillMetrics::LogFormFillDurationFromInteraction(
             form_structure.GetFormTypes(), did_autofill_some_possible_fields,
@@ -375,7 +331,7 @@ void LogQualityMetrics(
         AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(elapsed);
       }
       if (!interaction_time.is_null()) {
-        DCHECK(submission_time > interaction_time);
+        DCHECK_GE(submission_time, interaction_time);
         base::TimeDelta elapsed = submission_time - interaction_time;
         AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
             elapsed);

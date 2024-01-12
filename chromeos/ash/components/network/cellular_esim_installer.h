@@ -197,15 +197,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& service_path,
       const std::string& error_name);
 
-  raw_ptr<CellularConnectionHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CellularConnectionHandler, DanglingUntriaged>
       cellular_connection_handler_;
-  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;
+  raw_ptr<CellularInhibitor> cellular_inhibitor_;
 
-  raw_ptr<NetworkConnectionHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkConnectionHandler, DanglingUntriaged>
       network_connection_handler_;
-  raw_ptr<NetworkProfileHandler, DanglingUntriaged | ExperimentalAsh>
-      network_profile_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkProfileHandler, DanglingUntriaged> network_profile_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 
   // Maps profile dbus paths to unique pointer of InhibitLocks that are
   // pending to uninhibit.

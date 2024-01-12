@@ -41,11 +41,14 @@ class SharedMemoryBufferTracker final : public VideoCaptureBufferTracker {
                            VideoPixelFormat format,
                            const mojom::PlaneStridesPtr& strides) override;
 
-  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override;
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override;
-  std::unique_ptr<VideoCaptureBufferHandle> GetMemoryMappedAccess() override;
-  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
   uint32_t GetMemorySizeInBytes() override;
+
+  std::unique_ptr<VideoCaptureBufferHandle> GetMemoryMappedAccess() override;
+
+  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+
+  VideoCaptureBufferType GetBufferType() override;
 
  private:
   base::UnsafeSharedMemoryRegion region_;

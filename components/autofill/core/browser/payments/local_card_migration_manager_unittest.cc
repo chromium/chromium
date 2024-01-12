@@ -80,15 +80,14 @@ class LocalCardMigrationManagerTest : public testing::Test {
         &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     local_card_migration_manager_ = new TestLocalCardMigrationManager(
-        autofill_driver_.get(), &autofill_client_, payments_network_interface_,
-        &personal_data());
+        autofill_driver_.get(), &autofill_client_, &personal_data());
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
     autofill::TestFormDataImporter* test_form_data_importer =
         new TestFormDataImporter(
-            &autofill_client_, payments_network_interface_,
+            &autofill_client_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
             /*iban_save_manager=*/nullptr, &personal_data(), "en-US",
             std::unique_ptr<LocalCardMigrationManager>(

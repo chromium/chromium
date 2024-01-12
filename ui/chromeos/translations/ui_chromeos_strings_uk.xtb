@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Португальська, міжнародна розкладка США</translation>
 <translation id="1629521517399325891">Сертифікат користувача недоступний для автентифікації в мережі.</translation>
 <translation id="1641780993263690097">Китайська, піньїнь</translation>
-<translation id="1646019627374511909">Файли (<ph name="NUMBER_OF_ITEMS" />) завантажуються на пристрій</translation>
 <translation id="164969095109328410">Пристрій Chrome</translation>
 <translation id="1661207570040737402">Спільний диск Google Workspace заповнено.</translation>
 <translation id="1661867754829461514">Відсутній PIN-код</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Таблиці Google</translation>
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3486821258960016770">Монгольська</translation>
-<translation id="3495304270784461826">Помилок: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="3511705761158917664">Підготовка до синхронізації файлів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальська</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Адміністратор заборонив копіювати файли (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">Норвезька</translation>
 <translation id="6528513914570774834">Надати іншим користувачам цього пристрою доступ до цієї мережі</translation>
-<translation id="653019979737152879">Синхронізація файлу <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Останні</translation>
 <translation id="6558280019477628686">Сталася помилка. Можливо, не всі елементи було видалено.</translation>
 <translation id="656398493051028875">Видалення файлу "<ph name="FILENAME" />"…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Надати додаткам Linux доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Зараз ви не в мережі. Синхронізація файлів відновиться, коли пристрій підключиться до Інтернету.</translation>
 <translation id="7589661784326793847">Зачекайте</translation>
-<translation id="7592775719802218421">Файл "<ph name="FILE_NAME" />" завантажується на пристрій</translation>
 <translation id="7600126690270271294">Сербська</translation>
 <translation id="7603724359189955920">Сітка</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" вже існує. Перейменуйте його та повторіть спробу.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8147028810663464959">Ширина символів – повна</translation>
 <translation id="8151638057146502721">Налаштувати</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 помилка.}one{# помилка.}few{# помилки.}many{# помилок.}other{# помилки.}}</translation>
 <translation id="8154842056504218462">Вибрано всі елементи.</translation>
 <translation id="8157684860301034423">Не вдалось отримати інформацію про додаток.</translation>
 <translation id="8175731104491895765">Французька (Бельгія)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Ви надаєте <ph name="VM_NAME" /> дозвіл на доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8372369524088641025">Поганий WEP-ключ</translation>
 <translation id="8372852072747894550">Грецька</translation>
+<translation id="8377269993083688872">Шаблони листів</translation>
 <translation id="8386903983509584791">Сканування завершено</translation>
 <translation id="8387733224523483503">Видобуто файл "<ph name="FILE_NAME" />".</translation>
 <translation id="8395901698320285466">Розміри</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Виберіть файл, який потрібно відкрити</translation>
 <translation id="8577897833047451336">Хорватська</translation>
 <translation id="8578308463707544055">Індонезійська</translation>
-<translation id="8579285237314169903">Синхронізація стількох елементів: <ph name="NUMBER_OF_FILES" />…</translation>
 <translation id="8600173386174225982">Список файлів тепер відображається у вигляді ескізів.</translation>
 <translation id="8601932370724196034">Файл зображення Crostini</translation>
 <translation id="8609695766746872526">Ісландська</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Дозволити проксі-сервери для спільних мереж</translation>
 <translation id="8790981080411996443">Людина, яка поливає квіти</translation>
 <translation id="8798099450830957504">За умовчанням</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 попередження.}one{# попередження.}few{# попередження.}many{# попереджень.}other{# попередження.}}</translation>
 <translation id="8808686172382650546">Кіт</translation>
 <translation id="8810671769985673465">Не вдалося заархівувати, елемент існує: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Іспанська (Іспанія)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Виберіть іншу назву.</translation>
 <translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="9065512565307033593">Якщо ви не пройдете цю перевірку, вам буде закрито доступ до мережі.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 попередження.}one{<ph name="COUNT" /> попередження.}few{<ph name="COUNT" /> попередження.}many{<ph name="COUNT" /> попереджень.}other{<ph name="COUNT" /> попередження.}}</translation>
 <translation id="908378762078012445">Російська, фонетична розкладка AATSEEL</translation>
 <translation id="9086302186042011942">Синхронізація</translation>
 <translation id="9099674669267916096">Кількість сторінок</translation>

@@ -920,8 +920,6 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
             kHEVCProfileHighThroughputScreenExtended;
       case ::media::VideoCodecProfile::DOLBYVISION_PROFILE0:
         return media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile0;
-      case ::media::VideoCodecProfile::DOLBYVISION_PROFILE4:
-        return media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile4;
       case ::media::VideoCodecProfile::DOLBYVISION_PROFILE5:
         return media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile5;
       case ::media::VideoCodecProfile::DOLBYVISION_PROFILE7:
@@ -1080,9 +1078,9 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
       case media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile0:
         *output = ::media::VideoCodecProfile::DOLBYVISION_PROFILE0;
         return true;
-      case media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile4:
-        *output = ::media::VideoCodecProfile::DOLBYVISION_PROFILE4;
-        return true;
+      case media::stable::mojom::VideoCodecProfile::
+          kDeprecatedDolbyVisionProfile4:
+        return false;
       case media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile5:
         *output = ::media::VideoCodecProfile::DOLBYVISION_PROFILE5;
         return true;

@@ -56,7 +56,7 @@ class CrostiniAppWindow::IconLoader : public AppServiceAppIconLoader,
 
  private:
   const Mode mode_;
-  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  const raw_ptr<views::Widget> widget_;
 };
 
 CrostiniAppWindow::CrostiniAppWindow(Profile* profile,

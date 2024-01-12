@@ -102,9 +102,13 @@ export const MainPageMixin = dedupingMixin(
           MainPageMixinInterface {
         private lastScrollTop_: number = 0;
 
+        /**
+         * The scroller is derived from the #container ancestor element.
+         */
         private get scroller_(): HTMLElement {
           const hostEl = (this.getRootNode() as ShadowRoot).host;
-          return castExists(hostEl ? hostEl.parentElement : document.body);
+          return castExists(
+              hostEl ? hostEl.closest('#container') : document.body);
         }
 
         /**

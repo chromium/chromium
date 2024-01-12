@@ -29,9 +29,6 @@ class AppServerPosix : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapInNewVersion() override;
-  bool MigrateLegacyUpdaters(
-      base::RepeatingCallback<void(const RegistrationRequest&)>
-          register_callback) override;
   void RepairUpdater(UpdaterScope scope, bool is_internal) override;
   void UninstallSelf() override;
   void Uninitialize() override;

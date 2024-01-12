@@ -22,6 +22,9 @@ _LEGACY_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-compound-suite"
 _LEGACY_MATRIX_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-matrix-compound-suite")
 _LEGACY_MATRIX_CONFIG = nodes.create_scoped_node_type("legacy-matrix-config", _LEGACY_MATRIX_COMPOUND_SUITE.kind)
 
+_COMPILE_TARGET = nodes.create_unscoped_node_type("compile-target")
+TARGET_BUNDLE = nodes.create_unscoped_node_type("bundle", allow_unnamed = True)
+
 def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
     """The details for a test provided by the test's binary.
 
@@ -41,6 +44,9 @@ def _binary_test_config(*, results_handler = None, merge = None, resultdb = None
         merge = merge,
         resultdb = resultdb,
     )
+
+def _create_compile_target(*, name):
+    _COMPILE_TARGET.add(name)
 
 def _create_binary(
         *,
@@ -66,6 +72,10 @@ def _create_binary(
         test_config = test_config,
     ))
     graph.add_edge(keys.project(), binary_key)
+
+    _create_compile_target(
+        name = name,
+    )
 
 def _basic_suite_test_config(
         *,
@@ -102,7 +112,49 @@ def _create_legacy_test(*, name, basic_suite_test_config):
         basic_suite_test_config = basic_suite_test_config,
     ))
 
-def _compile_target(*, name, label, skip_usage_check = False):
+def _create_bundle(*, name, additional_compile_targets = [], targets = [], builder_group = None, test_spec_by_name = {}, modifications_by_name = {}):
+    key = TARGET_BUNDLE.add(name, props = dict(
+        builder_group = builder_group,
+        additional_compile_targets = set(additional_compile_targets),
+        test_spec_by_name = test_spec_by_name,
+        modifications_by_name = modifications_by_name,
+    ))
+
+    # We won't actually traverse the edge for compile targets, but adding the
+    # edge ensures that the compile target has been declared
+    for t in additional_compile_targets:
+        graph.add_edge(key, _COMPILE_TARGET.key(t))
+    for t in targets:
+        graph.add_edge(key, TARGET_BUNDLE.key(t))
+    return key
+
+def _create_test_target(*, name, spec_type, spec_value):
+    return _create_bundle(
+        name = name,
+        test_spec_by_name = {
+            name: struct(
+                spec_type = spec_type,
+                spec_value = spec_value,
+            ),
+        },
+    )
+
+def _spec_type(*, finalize):
+    return struct(
+        finalize = finalize,
+    )
+
+# TODO: crbug.com/1420012 - Update the handling of unimplemented test types so
+# that more context is provided about where the error is resulting from
+def _unimplemented_target_type(type_name):
+    def unimplemented():
+        fail("support for {} targets is not yet implemented".format(type_name))
+
+    return _spec_type(
+        finalize = (lambda name, spec: unimplemented()),
+    )
+
+def _compile_target(*, name, label = None, skip_usage_check = False):
     """Define a compile target to use in targets specs.
 
     A compile target provides a mapping to any ninja target that will
@@ -114,6 +166,19 @@ def _compile_target(*, name, label, skip_usage_check = False):
         skip_usage_check: Disables checking that the target is actually
             referenced in a targets spec for some builder.
     """
+
+    # The all target is a special ninja target that doesn't map to a GN label
+    # and so we don't create an entry in gn_isolate_map.pyl
+    if name == "all":
+        if label != None:
+            fail("label should not be set for compile target all")
+        _create_compile_target(
+            name = name,
+        )
+        return
+
+    if label == None:
+        fail("label must be set in compile_target {}".format(name))
     _create_binary(
         name = name,
         type = "additional_compile_target",
@@ -311,6 +376,11 @@ def _gpu_telemetry_test(
             mixins = mixins,
         ),
     )
+    _create_test_target(
+        name = name,
+        spec_type = _unimplemented_target_type("gpu_telemetry_test"),
+        spec_value = None,
+    )
 
 def _gtest_test(*, name, binary = None, mixins = None, args = None):
     """Define a gtest-based test.
@@ -341,6 +411,12 @@ def _gtest_test(*, name, binary = None, mixins = None, args = None):
     # Make sure that the binary actually exists
     graph.add_edge(key, _TARGET_BINARY.key(binary or name))
 
+    _create_test_target(
+        name = name,
+        spec_type = _unimplemented_target_type("gtest_test"),
+        spec_value = None,
+    )
+
 def _isolated_script_test(*, name, binary = None, mixins = None, args = None):
     """Define an isolated script test.
 
@@ -369,6 +445,12 @@ def _isolated_script_test(*, name, binary = None, mixins = None, args = None):
 
     # Make sure that the binary actually exists
     graph.add_edge(key, _TARGET_BINARY.key(binary or name))
+
+    _create_test_target(
+        name = name,
+        spec_type = _unimplemented_target_type("isolated_script_test"),
+        spec_value = None,
+    )
 
 def _junit_test(*, name, label, skip_usage_check = False):
     """Define a junit test.
@@ -400,6 +482,16 @@ def _junit_test(*, name, label, skip_usage_check = False):
         basic_suite_test_config = _basic_suite_test_config(),
     )
 
+    _create_test_target(
+        name = name,
+        spec_type = _unimplemented_target_type("junit_test"),
+        spec_value = None,
+    )
+
+_script_test_target_type = _spec_type(
+    finalize = (lambda name, spec: ("scripts", name, spec)),
+)
+
 def _script_test(*, name, script):
     """Define a script test.
 
@@ -417,6 +509,15 @@ def _script_test(*, name, script):
     _create_legacy_test(
         name = name,
         basic_suite_test_config = _basic_suite_test_config(
+            script = script,
+        ),
+    )
+
+    _create_test_target(
+        name = name,
+        spec_type = _script_test_target_type,
+        spec_value = dict(
+            name = name,
             script = script,
         ),
     )
@@ -790,6 +891,22 @@ def _variant(
 
     graph.add_edge(keys.project(), key)
 
+def _bundle(*, name = None, additional_compile_targets = None, targets = None):
+    """Define a targets bundle.
+
+    A bundle is a grouping of targets to build and test.
+
+    Args:
+        name: The name of the bundle.
+        targets: A list of targets, bundles or legacy basic suites to
+            include in the bundle.
+    """
+    return graph.keyset(_create_bundle(
+        name = name,
+        additional_compile_targets = args.listify(additional_compile_targets),
+        targets = args.listify(targets),
+    ))
+
 def _legacy_basic_suite(*, name, tests):
     """Define a basic suite.
 
@@ -876,6 +993,8 @@ def _legacy_compound_suite(*, name, basic_suites):
     for s in basic_suites:
         graph.add_edge(key, _LEGACY_BASIC_SUITE.key(s))
 
+    # TODO: crbug.com/1420012 - Make compound suites usable as bundles
+
 def _legacy_matrix_compound_suite(*, name, basic_suites):
     """Define a matrix compound suite.
 
@@ -911,6 +1030,8 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
             graph.add_edge(matrix_config_key, _TARGET_MIXIN.key(m))
         for v in config.variants:
             graph.add_edge(matrix_config_key, _TARGET_VARIANT.key(v))
+
+    # TODO: crbug.com/1420012 - Make matrix compound suites usable as bundles
 
 def _legacy_matrix_config(*, mixins = [], variants = []):
     """Define the matrix details for a basic suite.
@@ -954,6 +1075,7 @@ targets = struct(
     compile_target = _compile_target,
 
     # Functions for declaring bundles
+    bundle = _bundle,
     legacy_basic_suite = _legacy_basic_suite,
     legacy_test_config = _legacy_test_config,
     legacy_compound_suite = _legacy_compound_suite,

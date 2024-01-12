@@ -37,8 +37,11 @@ static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
 #endif
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-
+// Since the free list pointer and ref-count can share slot at the same time in
+// the "previous slot" mode, make sure that the smallest bucket can fit both.
+// TODO(crbug.com/1511221): Allow in the "same slot" mode. It should work just
+// fine, because it's either-or. A slot never hosts both at the same time.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 namespace {
 // The smallest bucket that is actually used. Note that the smallest request is
 // 1 (if it's 0, it gets patched to 1), and ref-count gets added to it.
@@ -57,8 +60,7 @@ static_assert(kSmallestUsedBucket >=
               "Need enough space for freelist entries and the ref-count in the "
               "smallest *used* slot");
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
-
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 using PartitionFreelistEntry = EncodedNextFreelistEntry;
 

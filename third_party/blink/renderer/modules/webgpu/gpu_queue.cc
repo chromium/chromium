@@ -781,7 +781,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   // due to alpha type has been dropped. Disable that
   // upload path if the image is not texture backed, OOP-R is disabled and image
   // alpha type is unpremultiplied.
-  if (!base::FeatureList::IsEnabled(features::kCanvasOopRasterization) &&
+  if (!features::IsCanvasOopRasterizationEnabled() &&
       !image->IsTextureBacked() && !image->IsPremultiplied()) {
     use_webgpu_mailbox_texture = false;
   }

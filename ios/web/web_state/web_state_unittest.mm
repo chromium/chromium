@@ -34,8 +34,6 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
-#import "ui/gfx/geometry/rect_f.h"
-#import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_unittest_util.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -159,21 +157,19 @@ TEST_F(WebStateTest, Snapshot) {
   CGRect rect = [web_state()->GetView() bounds];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
   web_state()->TakeSnapshot(
-      gfx::RectF(rect), base::BindRepeating(^(const gfx::Image& snapshot) {
-        ASSERT_FALSE(snapshot.IsEmpty());
-        EXPECT_GT(snapshot.Width(), 0);
-        EXPECT_GT(snapshot.Height(), 0);
-        int red_pixel_x = (snapshot.Width() / 2) - 10;
-        int white_pixel_x = (snapshot.Width() / 2) + 10;
+      rect, base::BindRepeating(^(UIImage* snapshot) {
+        ASSERT_FALSE(!snapshot);
+        EXPECT_GT(snapshot.size.width, 0);
+        EXPECT_GT(snapshot.size.height, 0);
+        int red_pixel_x = (snapshot.size.width / 2) - 10;
+        int white_pixel_x = (snapshot.size.width / 2) + 10;
         // Test a pixel on the left (red) side.
         gfx::test::CheckColors(
-            gfx::test::GetPlatformImageColor(
-                gfx::test::ToPlatformType(snapshot), red_pixel_x, 50),
+            gfx::test::GetPlatformImageColor(snapshot, red_pixel_x, 50),
             SK_ColorRED);
         // Test a pixel on the right (white) side.
         gfx::test::CheckColors(
-            gfx::test::GetPlatformImageColor(
-                gfx::test::ToPlatformType(snapshot), white_pixel_x, 50),
+            gfx::test::GetPlatformImageColor(snapshot, white_pixel_x, 50),
             SK_ColorWHITE);
         snapshot_complete = true;
       }));

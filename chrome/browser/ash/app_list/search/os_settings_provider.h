@@ -50,7 +50,7 @@ class OsSettingsResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   const std::string url_path_;
 };
 
@@ -118,9 +118,9 @@ class OsSettingsProvider : public SearchProvider,
   float min_score_ = 0.4f;
   float min_score_for_alternates_ = 0.4f;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<ash::settings::SearchHandler, ExperimentalAsh> search_handler_;
-  raw_ptr<const ash::settings::Hierarchy, ExperimentalAsh> hierarchy_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<ash::settings::SearchHandler> search_handler_;
+  raw_ptr<const ash::settings::Hierarchy> hierarchy_;
   ui::ImageModel icon_;
 
   // Last query. It is reset when view is closed.

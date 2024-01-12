@@ -85,7 +85,7 @@ void EntropyState::ClearPrefs(PrefService* local_state) {
   local_state->ClearPref(prefs::kMetricsLowEntropySource);
   local_state->ClearPref(prefs::kMetricsOldLowEntropySource);
   local_state->ClearPref(prefs::kMetricsPseudoLowEntropySource);
-  local_state->ClearPref(prefs::kMetricsLimitedEntropySource);
+  local_state->ClearPref(prefs::kMetricsLimitedEntropyRandomizationSource);
 #endif
 }
 
@@ -97,7 +97,7 @@ void EntropyState::RegisterPrefs(PrefRegistrySimple* registry) {
                                 kLowEntropySourceNotSet);
   registry->RegisterIntegerPref(prefs::kMetricsPseudoLowEntropySource,
                                 kLowEntropySourceNotSet);
-  registry->RegisterStringPref(prefs::kMetricsLimitedEntropySource,
+  registry->RegisterStringPref(prefs::kMetricsLimitedEntropyRandomizationSource,
                                std::string());
 }
 
@@ -164,47 +164,48 @@ int EntropyState::GetOldLowEntropySource() {
   return old_low_entropy_source_;
 }
 
-std::string EntropyState::GenerateLimitedEntropySource() {
+std::string EntropyState::GenerateLimitedEntropyRandomizationSource() {
   // Uses a cryptographically strong random source to generate a random 128 bit
   // value. The value cannot be all zeros.
   auto token = base::UnguessableToken::Create().ToString();
-  DCHECK(IsValidLimitedEntropySource(token));
+  DCHECK(IsValidLimitedEntropyRandomizationSource(token));
   return token;
 }
 
-std::string_view EntropyState::GetLimitedEntropySource() {
-  UpdateLimitedEntropySource();
-  return limited_entropy_source_;
+std::string_view EntropyState::GetLimitedEntropyRandomizationSource() {
+  UpdateLimitedEntropyRandomizationSource();
+  return limited_entropy_randomization_source_;
 }
 
-void EntropyState::UpdateLimitedEntropySource() {
-  // The default value for limited entropy source is an empty string.
-  // If it's not empty, it must have been set during this session and an update
-  // is not needed.
-  if (!limited_entropy_source_.empty()) {
+void EntropyState::UpdateLimitedEntropyRandomizationSource() {
+  // The default value for limited entropy randomization source is an empty
+  // string. If it's not empty, it must have been set during this session and an
+  // update is not needed.
+  if (!limited_entropy_randomization_source_.empty()) {
     return;
   }
 
-  auto* pref_name = prefs::kMetricsLimitedEntropySource;
+  auto* pref_name = prefs::kMetricsLimitedEntropyRandomizationSource;
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   // Load the previously set value from prefs, unless the reset variations state
   // command line flag is given.
   if (!command_line->HasSwitch(switches::kResetVariationState)) {
     auto pref_value = local_state_->GetString(pref_name);
-    if (IsValidLimitedEntropySource(pref_value)) {
-      limited_entropy_source_ = pref_value;
+    if (IsValidLimitedEntropyRandomizationSource(pref_value)) {
+      limited_entropy_randomization_source_ = pref_value;
     }
   }
 
   // If a previously set value is not found, or if the the reset variations
   // state command line flag is given, generate a new value and store it into
   // prefs.
-  if (limited_entropy_source_.empty()) {
-    limited_entropy_source_ = GenerateLimitedEntropySource();
-    local_state_->SetString(pref_name, limited_entropy_source_);
+  if (limited_entropy_randomization_source_.empty()) {
+    limited_entropy_randomization_source_ =
+        GenerateLimitedEntropyRandomizationSource();
+    local_state_->SetString(pref_name, limited_entropy_randomization_source_);
   }
 
-  CHECK(!limited_entropy_source_.empty());
+  CHECK(!limited_entropy_randomization_source_.empty());
 }
 
 void EntropyState::UpdateLowEntropySources() {
@@ -275,7 +276,8 @@ bool EntropyState::IsValidLowEntropySource(int value) {
 }
 
 // static
-bool EntropyState::IsValidLimitedEntropySource(std::string_view value) {
+bool EntropyState::IsValidLimitedEntropyRandomizationSource(
+    std::string_view value) {
   if (value.empty()) {
     return false;
   }

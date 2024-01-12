@@ -94,7 +94,7 @@ class ArcFileSystemBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   FakeFileSystemInstance fake_file_system_;
   ArcBridgeService arc_bridge_service_;
@@ -259,7 +259,7 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
 
   // Requested number of bytes are written to the pipe.
   std::vector<char> buf(kTestFileSize);
-  ASSERT_TRUE(base::ReadFromFD(pipe_read_end.get(), buf.data(), buf.size()));
+  ASSERT_TRUE(base::ReadFromFD(pipe_read_end.get(), buf));
 
   // ID is released.
   EXPECT_TRUE(arc_file_system_bridge_->HandleIdReleased(kId));

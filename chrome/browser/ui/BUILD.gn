@@ -17,6 +17,7 @@ import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/lens/features.gni")
+import("//components/metrics/generate_histograms_variants_allowlist.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
@@ -30,6 +31,13 @@ import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
+
+generate_histograms_variants_allowlist("webui_name_variants") {
+  namespace = "views_metrics"
+  input_xml_file = "//tools/metrics/histograms/metadata/page/histograms.xml"
+  output_file = "webui_name_variants.h"
+  allow_list_name = "WebUIName"
+}
 
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
@@ -754,6 +762,7 @@ static_library("ui") {
 
   if (is_chromeos) {
     sources += [
+      "chromeos/window_pin_util.h",
       "webui/dlp_internals/dlp_internals_page_handler.cc",
       "webui/dlp_internals/dlp_internals_page_handler.h",
       "webui/dlp_internals/dlp_internals_ui.cc",
@@ -798,6 +807,8 @@ static_library("ui") {
       "android/autofill/autofill_save_card_bottom_sheet_bridge.h",
       "android/autofill/autofill_save_card_delegate_android.cc",
       "android/autofill/autofill_save_card_delegate_android.h",
+      "android/autofill/autofill_save_iban_bottom_sheet_bridge.cc",
+      "android/autofill/autofill_save_iban_bottom_sheet_bridge.h",
       "android/autofill/autofill_save_iban_delegate.cc",
       "android/autofill/autofill_save_iban_delegate.h",
       "android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.cc",
@@ -1787,7 +1798,6 @@ static_library("ui") {
       "webui/sanitized_image_source.cc",
       "webui/sanitized_image_source.h",
       "webui/search_engine_choice/generated_icon_utils.cc",
-      "webui/search_engine_choice/icon_utils.cc",
       "webui/search_engine_choice/icon_utils.h",
       "webui/search_engine_choice/search_engine_choice_handler.cc",
       "webui/search_engine_choice/search_engine_choice_handler.h",
@@ -1968,6 +1978,8 @@ static_library("ui") {
         "webui/media_router/cast_feedback_ui.h",
         "webui/password_manager/promo_cards/access_on_any_device_promo.cc",
         "webui/password_manager/promo_cards/access_on_any_device_promo.h",
+        "webui/password_manager/promo_cards/move_passwords_promo.cc",
+        "webui/password_manager/promo_cards/move_passwords_promo.h",
         "webui/password_manager/promo_cards/password_checkup_promo.cc",
         "webui/password_manager/promo_cards/password_checkup_promo.h",
         "webui/password_manager/promo_cards/password_manager_shortcut_promo.cc",
@@ -2415,6 +2427,8 @@ static_library("ui") {
       "../ash/app_list/search/local_image_search/search_utils.h",
       "../ash/app_list/search/local_image_search/sql_database.cc",
       "../ash/app_list/search/local_image_search/sql_database.h",
+      "../ash/app_list/search/manatee/manatee_cache.cc",
+      "../ash/app_list/search/manatee/manatee_cache.h",
       "../ash/app_list/search/omnibox/omnibox_answer_result.cc",
       "../ash/app_list/search/omnibox/omnibox_answer_result.h",
       "../ash/app_list/search/omnibox/omnibox_lacros_provider.cc",
@@ -2468,6 +2482,8 @@ static_library("ui") {
       "../ash/app_list/search/search_controller.h",
       "../ash/app_list/search/search_controller_factory.cc",
       "../ash/app_list/search/search_controller_factory.h",
+      "../ash/app_list/search/search_engine.cc",
+      "../ash/app_list/search/search_engine.h",
       "../ash/app_list/search/search_features.cc",
       "../ash/app_list/search/search_features.h",
       "../ash/app_list/search/search_metrics_manager.cc",
@@ -2837,6 +2853,10 @@ static_library("ui") {
       "ash/shelf/extension_shelf_context_menu.h",
       "ash/shelf/extension_uninstaller.cc",
       "ash/shelf/extension_uninstaller.h",
+      "ash/shelf/isolated_web_app_installer_context_menu.cc",
+      "ash/shelf/isolated_web_app_installer_context_menu.h",
+      "ash/shelf/isolated_web_app_installer_shelf_item_controller.cc",
+      "ash/shelf/isolated_web_app_installer_shelf_item_controller.h",
       "ash/shelf/lacros_app_window.cc",
       "ash/shelf/lacros_app_window.h",
       "ash/shelf/lacros_shelf_item_controller.h",
@@ -2858,6 +2878,8 @@ static_library("ui") {
       "ash/shelf/standalone_browser_extension_app_context_menu.h",
       "ash/shelf/standalone_browser_extension_app_shelf_item_controller.cc",
       "ash/shelf/standalone_browser_extension_app_shelf_item_controller.h",
+      "ash/shelf/standalone_window_migration_nudge_util.cc",
+      "ash/shelf/standalone_window_migration_nudge_util.h",
       "ash/system_sounds_delegate_impl.cc",
       "ash/system_sounds_delegate_impl.h",
       "ash/system_tray_client_impl.cc",
@@ -2878,8 +2900,7 @@ static_library("ui") {
       "ash/vpn_list_forwarder.h",
       "ash/wallpaper_controller_client_impl.cc",
       "ash/wallpaper_controller_client_impl.h",
-      "ash/window_pin_util.cc",
-      "ash/window_pin_util.h",
+      "ash/window_pin_util_ash.cc",
       "ash/window_properties.cc",
       "ash/window_properties.h",
       "browser_commands_chromeos.cc",
@@ -3006,6 +3027,8 @@ static_library("ui") {
       "webui/ash/cellular_setup/mobile_setup_ui.h",
       "webui/ash/certificate_manager_dialog_ui.cc",
       "webui/ash/certificate_manager_dialog_ui.h",
+      "webui/ash/cloud_upload/automated_mount_error_notification.cc",
+      "webui/ash/cloud_upload/automated_mount_error_notification.h",
       "webui/ash/cloud_upload/cloud_open_metrics.cc",
       "webui/ash/cloud_upload/cloud_open_metrics.h",
       "webui/ash/cloud_upload/cloud_upload_dialog.cc",
@@ -3557,6 +3580,8 @@ static_library("ui") {
       "webui/ash/sys_internals/sys_internals_ui.h",
       "webui/ash/system_web_dialog_delegate.cc",
       "webui/ash/system_web_dialog_delegate.h",
+      "webui/ash/system_web_dialog_view.cc",
+      "webui/ash/system_web_dialog_view.h",
       "webui/ash/user_image_source.cc",
       "webui/ash/user_image_source.h",
       "webui/ash/vc_tray_tester/vc_tray_tester_ui.cc",
@@ -3643,7 +3668,6 @@ static_library("ui") {
       "//ash/webui/demo_mode_app_ui",
       "//ash/webui/diagnostics_ui",
       "//ash/webui/eche_app_ui",
-      "//ash/webui/face_ml_app_ui",
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/files_internals",
       "//ash/webui/firmware_update_ui",
@@ -3668,7 +3692,6 @@ static_library("ui") {
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
       "//ash/webui/system_apps/public:system_web_app_type",
-      "//ash/webui/system_extensions_internals_ui",
       "//ash/webui/web_applications",
       "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",
@@ -3684,7 +3707,6 @@ static_library("ui") {
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
-      "//chrome/browser/ash/video_conference",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
@@ -3972,6 +3994,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",
+      "//chrome/browser/ui/views/mahi",
       "//chromeos/components/kiosk",
       "//chromeos/components/security_token_pin",
       "//chromeos/constants",
@@ -4488,7 +4511,6 @@ static_library("ui") {
     deps += [
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
-      "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
       "//components/remote_cocoa/app_shim",
@@ -4726,6 +4748,8 @@ static_library("ui") {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
+      "views/media_preview/active_devices_media_coordinator.cc",
+      "views/media_preview/active_devices_media_coordinator.h",
       "views/media_preview/camera_preview/camera_coordinator.cc",
       "views/media_preview/camera_preview/camera_coordinator.h",
       "views/media_preview/camera_preview/camera_mediator.cc",
@@ -4878,6 +4902,8 @@ static_library("ui") {
       "side_panel/history_clusters/history_clusters_side_panel_controller_utils.h",
       "side_panel/history_clusters/history_clusters_tab_helper.cc",
       "side_panel/history_clusters/history_clusters_tab_helper.h",
+      "side_panel/performance_controls/performance_side_panel_model.cc",
+      "side_panel/performance_controls/performance_side_panel_model.h",
       "side_panel/read_anything/read_anything_side_panel_controller_utils.h",
       "side_panel/read_anything/read_anything_side_panel_navigation_throttle.h",
       "side_panel/read_anything/read_anything_tab_helper.cc",
@@ -4886,6 +4912,8 @@ static_library("ui") {
       "side_panel/side_panel_entry_id.h",
       "side_panel/side_panel_entry_key.cc",
       "side_panel/side_panel_entry_key.h",
+      "side_panel/side_panel_model.cc",
+      "side_panel/side_panel_model.h",
       "side_panel/side_panel_prefs.cc",
       "side_panel/side_panel_prefs.h",
       "side_panel/side_panel_ui.cc",
@@ -5254,8 +5282,12 @@ static_library("ui") {
       "views/extensions/extensions_toolbar_button.h",
       "views/extensions/extensions_toolbar_container.cc",
       "views/extensions/extensions_toolbar_container.h",
+      "views/extensions/extensions_toolbar_container_view_controller.cc",
+      "views/extensions/extensions_toolbar_container_view_controller.h",
       "views/extensions/extensions_toolbar_controls.cc",
       "views/extensions/extensions_toolbar_controls.h",
+      "views/extensions/extensions_toolbar_coordinator.cc",
+      "views/extensions/extensions_toolbar_coordinator.h",
       "views/extensions/reload_page_dialog.cc",
       "views/file_system_access/file_system_access_dangerous_file_dialog.cc",
       "views/file_system_access/file_system_access_dangerous_file_dialog.h",
@@ -5654,6 +5686,12 @@ static_library("ui") {
       "views/performance_controls/memory_saver_chip_view.h",
       "views/performance_controls/memory_saver_resource_view.cc",
       "views/performance_controls/memory_saver_resource_view.h",
+      "views/permissions/chip/permission_dashboard_controller.cc",
+      "views/permissions/chip/permission_dashboard_controller.h",
+      "views/permissions/chip/permission_dashboard_layout.cc",
+      "views/permissions/chip/permission_dashboard_layout.h",
+      "views/permissions/chip/permission_dashboard_view.cc",
+      "views/permissions/chip/permission_dashboard_view.h",
       "views/permissions/chip_controller.cc",
       "views/permissions/chip_controller.h",
       "views/permissions/chooser_bubble_ui.cc",
@@ -5830,6 +5868,8 @@ static_library("ui") {
       "views/side_panel/side_panel_entry_observer.h",
       "views/side_panel/side_panel_header.cc",
       "views/side_panel/side_panel_header.h",
+      "views/side_panel/side_panel_model_host.cc",
+      "views/side_panel/side_panel_model_host.h",
       "views/side_panel/side_panel_registry.cc",
       "views/side_panel/side_panel_registry.h",
       "views/side_panel/side_panel_registry_observer.h",
@@ -6159,7 +6199,10 @@ static_library("ui") {
       "window_name_prompt/window_name_prompt.cc",
     ]
 
+    sources += get_target_outputs(":webui_name_variants")
+
     deps += [
+      ":webui_name_variants",
       "side_search:side_search_tab_data_proto",
       "//base",
       "//chrome/browser/apps:icon_standardizer",

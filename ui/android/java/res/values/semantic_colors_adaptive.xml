@@ -118,4 +118,12 @@ found in the LICENSE file.
     <color name="drag_shadow_outline_color">@color/baseline_neutral_variant_90_alpha_20</color>
     <color name="gm3_baseline_surface_container">@color/gm3_baseline_surface_container_light</color>
     <color name="gm3_baseline_surface">@color/gm3_baseline_surface_light</color>
+
+    <!-- Menu colors -->
+    <color name="menu_bg_color">@color/gm3_baseline_surface_container</color>
+    <color name="menu_list_item_icon_color">@color/baseline_neutral_variant_30</color>
+    <color name="menu_list_item_icon_color_disabled">@color/baseline_neutral_10</color>
+    <color name="menu_list_item_text_color">@color/baseline_neutral_10</color>
+    <color name="menu_list_item_text_color_disabled">@color/baseline_neutral_10</color>
+    <color name="menu_list_item_divider_color">@color/baseline_neutral_variant_90</color>
 </resources>

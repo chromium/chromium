@@ -1,11 +1,11 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.ac by autoheader.  */
-
-/* Define if __attribute__((destructor)) is accepted */
+/* A form that will not confuse apibuild.py */
 #cmakedefine ATTRIBUTE_DESTRUCTOR @ATTRIBUTE_DESTRUCTOR@
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #cmakedefine HAVE_ARPA_INET_H 1
+
+/* Define if __attribute__((destructor)) is accepted */
+#cmakedefine HAVE_ATTRIBUTE_DESTRUCTOR 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine HAVE_DLFCN_H 1
@@ -57,7 +57,7 @@
 /* Define to 1 if you have the <poll.h> header file. */
 #cmakedefine HAVE_POLL_H 1
 
-/* Define if <pthread.h> is there */
+/* Define to 1 if you have the <pthread.h> header file. */
 #cmakedefine HAVE_PTHREAD_H 1
 
 /* Have shl_load based dso */
@@ -90,50 +90,20 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
 
-/* Whether va_copy() is available */
-#cmakedefine HAVE_VA_COPY 1
-
 /* Define to 1 if you have the <zlib.h> header file. */
 #cmakedefine HAVE_ZLIB_H 1
 
-/* Whether __va_copy() is available */
-#cmakedefine HAVE___VA_COPY 1
-
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
-#cmakedefine LT_OBJDIR "@LT_OBJDIR@"
-
-/* Name of package */
-#define PACKAGE "@PACKAGE@"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "@PACKAGE_NAME@"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "@PACKAGE_STRING@"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "@PACKAGE_TARNAME@"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL "@PACKAGE_URL@"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "@PACKAGE_VERSION@"
-
 /* Support for IPv6 */
 #cmakedefine SUPPORT_IP6 1
-
-/* Define if va_list is an array type */
-#cmakedefine VA_LIST_IS_ARRAY 1
 
 /* Version number of package */
 #cmakedefine VERSION "@VERSION@"
 
 /* Determine what socket length (socklen_t) data type is */
 #cmakedefine XML_SOCKLEN_T @XML_SOCKLEN_T@
+
+/* TLS specifier */
+#cmakedefine XML_THREAD_LOCAL @XML_THREAD_LOCAL@
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the

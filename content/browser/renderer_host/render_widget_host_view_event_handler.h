@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_EVENT_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
@@ -14,7 +15,6 @@
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/common/content_export.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/scoped_keyboard_hook.h"
@@ -153,7 +153,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   void UnlockMouse();
 
   // Start/Stop processing of future system keyboard events.
-  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes);
+  bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes);
   void UnlockKeyboard();
   bool IsKeyboardLocked() const;
 
@@ -300,7 +300,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // of the window when it reaches the window borders to avoid it going outside.
   // This value is used to differentiate between these synthetic mouse move
   // events vs. normal mouse move events.
-  absl::optional<gfx::Point> synthetic_move_position_;
+  std::optional<gfx::Point> synthetic_move_position_;
 
   bool enable_consolidated_movement_;
 

@@ -61,9 +61,9 @@ class InternetHandler
 
   base::Value::List device_names_without_notifications_;
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  raw_ptr<tether::GmsCoreNotificationsStateTracker, ExperimentalAsh>
+  raw_ptr<tether::GmsCoreNotificationsStateTracker>
       gms_core_notifications_state_tracker_;
 };
 

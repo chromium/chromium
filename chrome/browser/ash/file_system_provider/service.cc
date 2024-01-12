@@ -47,7 +47,7 @@ Service::Service(Profile* profile,
   extension_registry_->AddObserver(this);
 }
 
-Service::~Service() {}
+Service::~Service() = default;
 
 // static
 Service* Service::Get(content::BrowserContext* context) {

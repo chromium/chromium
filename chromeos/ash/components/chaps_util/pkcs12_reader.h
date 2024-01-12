@@ -5,17 +5,20 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
 
-#include <cstdint>
+#include <nss/certt.h>
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include <nss/certt.h>
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
-#include "crypto/scoped_nss_types.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 
 namespace chromeos {
 
@@ -43,22 +46,20 @@ enum class Pkcs12ReaderStatusCode {
   kPkcs12LabelCreationFailed = 19,
   kPkcs12FindCertsWithSubjectFailed = 20,
   kPkcs12NoValidCertificatesFound = 21,
-  kPkcs12ErrorDuringExistingCertConversion = 22,
-  kPkcs12NoNicknamesWasExtracted = 23,
-  kPkcs12CanNotExtractDefaultLabelFromCert = 24,
-  kPkcs12CanNotDecodeRawCert = 25,
-  kPkcs12ReachedMaxAttemptForUniqueness = 26,
-  kPkcs12MissedNickname = 27,
-  kMissedSlotInfo = 28,
-  kPkcs12NotSupportedKeyType = 29,
-  kPkcs12CNExtractionFailed = 30,
-  kPkcs12EcKeyExtractionFailed = 31,
-  kPkcs12CkaIdExtractionFailed = 32,
-  kPublicKeyExtractionFailed = 33,
-  kRsaKeyExtractionFailed = 34,
-  kRsaModulusExtractionFailed = 35,
-  kPkcs12RsaModulusEmpty = 36,
-  kPkcs12PKeyMissed = 37,
+  kPkcs12NoNicknamesWasExtracted = 22,
+  kPkcs12ReachedMaxAttemptForUniqueness = 23,
+  kPkcs12MissedNickname = 24,
+  kMissedSlotInfo = 25,
+  kPkcs12NotSupportedKeyType = 26,
+  kPkcs12CNExtractionFailed = 27,
+  kEcKeyExtractionFailed = 28,
+  kRsaCkaIdExtractionFailed = 29,
+  kPKeyExtractionFailed = 30,
+  kRsaKeyExtractionFailed = 31,
+  kPkcs12RsaModulusEmpty = 32,
+  kEcKeyBytesEmpty = 33,
+  kEcCkaIdExtractionFailed = 34,
+  kPkeyComparisonFailure = 35,
 };
 
 enum class Pkcs12ReaderCertSearchType {
@@ -79,9 +80,6 @@ struct COMPONENT_EXPORT(CHAPS_UTIL) KeyData {
   KeyData& operator=(KeyData&&) = default;
   ~KeyData();
   bssl::UniquePtr<EVP_PKEY> key;
-  std::vector<uint8_t> rsa_key_modulus_bytes;
-  std::vector<uint8_t> ec_key_public_bytes;
-  std::vector<uint8_t> common_name;
   std::vector<uint8_t> cka_id_value;
 };
 
@@ -89,7 +87,7 @@ struct COMPONENT_EXPORT(CHAPS_UTIL) KeyData {
 // for storing keys and certificates in Chaps.
 class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
  public:
-  Pkcs12Reader() = default;
+  Pkcs12Reader();
 
   virtual ~Pkcs12Reader() = default;
 
@@ -179,14 +177,13 @@ class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
       int der_cert_len,
       bssl::UniquePtr<X509>& x509) const;
 
- private:
-  // Calculate (`modulus`) for RSA key extracted from (`pkey`).
+  // Check if certificate (`cert`) is present in specific 'slot'.
   // Returns status code.
-  virtual Pkcs12ReaderStatusCode GetRsaModulus(
-      const bssl::UniquePtr<EVP_PKEY>& pkey,
-      std::vector<uint8_t>& modulus) const;
+  virtual Pkcs12ReaderStatusCode IsCertInSlot(
+      PK11SlotInfo* slot,
+      const scoped_refptr<net::X509Certificate>& cert,
+      bool& is_cert_present) const;
 };
-
 }  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_

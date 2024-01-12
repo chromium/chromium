@@ -138,6 +138,7 @@ source_set("base") {
     "channel_mixer.h",
     "channel_mixing_matrix.cc",
     "channel_mixing_matrix.h",
+    "codec_worker_impl.h",
     "color_plane_layout.cc",
     "color_plane_layout.h",
     "container_names.cc",
@@ -329,6 +330,8 @@ source_set("base") {
     "video_aspect_ratio.h",
     "video_bitrate_allocation.cc",
     "video_bitrate_allocation.h",
+    "video_codec_string_parsers.cc",
+    "video_codec_string_parsers.h",
     "video_codecs.cc",
     "video_codecs.h",
     "video_color_space.cc",
@@ -422,6 +425,14 @@ source_set("base") {
     deps += [ "//third_party/libvpx" ]
   }
 
+  if (enable_libaom) {
+    sources += [
+      "libaom_thread_wrapper.cc",
+      "libaom_thread_wrapper.h",
+    ]
+    deps += [ "//third_party/libaom" ]
+  }
+
   if (is_linux && !is_castos) {
     sources += [ "user_input_monitor_linux.cc" ]
   } else if (is_mac) {
@@ -439,14 +450,6 @@ source_set("base") {
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-
-  # Note: should also work on is_posix || is_fuchsia
-  if (is_linux || is_chromeos) {
-    sources += [
-      "scopedfd_helper.cc",
-      "scopedfd_helper.h",
-    ]
   }
 
   if (is_win) {
@@ -634,7 +637,7 @@ source_set("unit_tests") {
     "vector_math_unittest.cc",
     "video_aspect_ratio_unittest.cc",
     "video_bitrate_allocation_unittest.cc",
-    "video_codecs_unittest.cc",
+    "video_codec_string_parsers_unittest.cc",
     "video_color_space_unittest.cc",
     "video_decoder_config_unittest.cc",
     "video_frame_layout_unittest.cc",

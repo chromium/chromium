@@ -126,8 +126,7 @@ class SessionManagerOperation {
   // Extracts status and device settings from the validator and reports them.
   void ReportValidatorStatus(policy::DeviceCloudPolicyValidator* validator);
 
-  raw_ptr<SessionManagerClient, ExperimentalAsh> session_manager_client_ =
-      nullptr;
+  raw_ptr<SessionManagerClient> session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Callback callback_;

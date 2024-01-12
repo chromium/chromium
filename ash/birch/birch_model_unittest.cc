@@ -4,6 +4,9 @@
 
 #include "ash/birch/birch_model.h"
 
+#include <optional>
+
+#include "ash/birch/birch_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
@@ -55,10 +58,30 @@ TEST_F(BirchModelTest, AddItemNotifiesObservers) {
   TestModelObserver observer;
   EXPECT_EQ(observer.item_changed_count(), 0);
 
-  model->AddItem(std::make_unique<BirchItem>("item 1"));
-  model->AddItem(std::make_unique<BirchItem>("item 2"));
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 2"), std::nullopt);
 
-  // Adding items should notify that items have changed twice.
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  // Adding items should notify observers that items have changed once.
+  EXPECT_EQ(observer.item_changed_count(), 1);
+
+  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 2"), std::nullopt);
+
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  // Setting the file suggest items to a list with the same items, should not
+  // trigger an item change.
+  EXPECT_EQ(observer.item_changed_count(), 1);
+
+  file_item_list.emplace_back(base::FilePath("test path 3"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 4"), std::nullopt);
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  // Adding different items should notify observers that items have changed
+  // again.
   EXPECT_EQ(observer.item_changed_count(), 2);
 }
 

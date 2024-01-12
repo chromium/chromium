@@ -4,6 +4,8 @@
 
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 
+#include <string_view>
+
 #include "base/test/values_test_util.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/extension_builder.h"
@@ -19,7 +21,7 @@ namespace {
 
 // Returns the SerializedUserScript object from the given `json` blob.
 // Note: this will crash if `json` doesn't parse to a valid script.
-SerializedUserScript SerializedScriptFromJson(base::StringPiece json) {
+SerializedUserScript SerializedScriptFromJson(std::string_view json) {
   base::Value value = base::test::ParseJson(json);
   std::optional<SerializedUserScript> serialized_script =
       SerializedUserScript::FromValue(value);

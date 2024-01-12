@@ -85,5 +85,5 @@ void SidePanelRoundedCorner::OnThemeChanged() {
   View::OnThemeChanged();
 }
 
-BEGIN_METADATA(SidePanelRoundedCorner, views::View)
+BEGIN_METADATA(SidePanelRoundedCorner)
 END_METADATA

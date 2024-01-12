@@ -124,9 +124,9 @@ class PluginVmInstaller : public KeyedService,
   };
 
   explicit PluginVmInstaller(Profile* profile);
-
   PluginVmInstaller(const PluginVmInstaller&) = delete;
   PluginVmInstaller& operator=(const PluginVmInstaller&) = delete;
+  ~PluginVmInstaller() override;
 
   // Start the installation. Progress updates will be sent to the observer.
   // Returns a FailureReason if the installation couldn't be started.
@@ -182,8 +182,6 @@ class PluginVmInstaller : public KeyedService,
     kInstalling,
     kCancelling,
   };
-
-  ~PluginVmInstaller() override;
 
   // The entire installation flow!
 
@@ -270,10 +268,9 @@ class PluginVmInstaller : public KeyedService,
 
   device::mojom::WakeLock* GetWakeLock();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<Observer, DanglingUntriaged | ExperimentalAsh> observer_ = nullptr;
-  raw_ptr<download::BackgroundDownloadService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Observer, DanglingUntriaged> observer_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService, DanglingUntriaged>
       download_service_ = nullptr;
   State state_ = State::kIdle;
   InstallingState installing_state_ = InstallingState::kInactive;

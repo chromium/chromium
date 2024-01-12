@@ -140,7 +140,8 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                                     false,
                                     0,
                                     false,
-                                    0);
+                                    0,
+                                    false);
                     when(mBookmarkModel.getBookmarkById(BOOKMARK_ID_ROOT))
                             .thenReturn(rootBookmarkItem);
 
@@ -228,7 +229,8 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                         false,
                         0,
                         false,
-                        0);
+                        0,
+                        false);
         when(mBookmarkModel.getBookmarkById(bookmarkId)).thenReturn(bookmarkItem);
     }
 

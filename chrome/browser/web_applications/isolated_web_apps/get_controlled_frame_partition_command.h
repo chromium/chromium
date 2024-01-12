@@ -26,14 +26,14 @@ class AppLock;
 // Runs |callback| with the StoragePartitionConfig that should be used for a
 // <controlledframe> with the given |partition_name|, and registers the
 // StoragePartition with the web_app system if needed.
-base::Value GetControlledFramePartitionWithLock(
-    Profile* profile,
-    const IsolatedWebAppUrlInfo& url_info,
-    const std::string& partition_name,
-    bool in_memory,
-    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
-        callback,
-    AppLock& lock);
+
+absl::optional<content::StoragePartitionConfig>
+GetControlledFramePartitionWithLock(Profile* profile,
+                                    const IsolatedWebAppUrlInfo& url_info,
+                                    const std::string& partition_name,
+                                    bool in_memory,
+                                    AppLock& lock,
+                                    base::Value::Dict& debug_info);
 
 }  // namespace web_app
 

@@ -116,7 +116,7 @@ void InterestGroupKAnonymityManager::RegisterIDAsJoined(
 
 void InterestGroupKAnonymityManager::OnGotLastReportedTime(
     std::string key,
-    absl::optional<base::Time> last_update_time) {
+    std::optional<base::Time> last_update_time) {
   KAnonymityServiceDelegate* k_anonymity_service =
       k_anonymity_service_callback_.Run();
   if (!k_anonymity_service) {

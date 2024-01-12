@@ -208,7 +208,6 @@ suite('InternetPage', function() {
       internetAddWiFi: 'internetAddWiFi',
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
-      isApnRevampEnabled: false,
     });
 
     mojoApi_ = new FakeNetworkConfig();

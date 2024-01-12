@@ -4,14 +4,16 @@
 
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 
+#import "base/files/file_util.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/legacy_session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_migration.h"
@@ -22,8 +24,7 @@
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
+// TODO(crbug.com/1504753): Remove once the feature has launched.
 #import "ios/web/common/features.h"
 
 namespace {
@@ -58,13 +59,8 @@ SessionStorageMigrationStatus GetSessionStorageMigrationStatusPref(
     case base::to_underlying(SessionStorageMigrationStatus::kFailure):
       return SessionStorageMigrationStatus::kFailure;
 
-    case base::to_underlying(
-        SessionStorageMigrationStatus::kInProgressToLegacy):
-      return SessionStorageMigrationStatus::kInProgressToLegacy;
-
-    case base::to_underlying(
-        SessionStorageMigrationStatus::kInProgressToOptimized):
-      return SessionStorageMigrationStatus::kInProgressToOptimized;
+    case base::to_underlying(SessionStorageMigrationStatus::kInProgress):
+      return SessionStorageMigrationStatus::kInProgress;
 
     default:
       return SessionStorageMigrationStatus::kUnkown;
@@ -84,11 +80,116 @@ bool IsSessionStorageInRequestedFormat(
   }
 }
 
+// Converts `requested_format` to SessionStorageFormat according to the
+// status of the migration operation.
+SessionStorageFormat SessionStorageFormatFromRequestedFormat(
+    RequestedStorageFormat requested_format,
+    ios::sessions::MigrationStatus status) {
+  switch (status) {
+    case ios::sessions::MigrationStatus::kSuccess:
+      return requested_format == RequestedStorageFormat::kLegacy
+                 ? SessionStorageFormat::kLegacy
+                 : SessionStorageFormat::kOptimized;
+
+    case ios::sessions::MigrationStatus::kFailure:
+      return requested_format != RequestedStorageFormat::kLegacy
+                 ? SessionStorageFormat::kLegacy
+                 : SessionStorageFormat::kOptimized;
+  }
+}
+
+// Store the session storage format `storage_format` metric.
+void RecordSessionStorageFormatMetric(SessionStorageFormat storage_format) {
+  base::UmaHistogramEnumeration(
+      kSessionHistogramStorageFormat,
+      storage_format == SessionStorageFormat::kLegacy
+          ? SessionHistogramStorageFormat::kLegacy
+          : SessionHistogramStorageFormat::kOptimized);
+}
+
+// Store the session storage format `storage_format` and the migration
+// status `migration_status` metrics.
+void RecordSessionStorageFormatAndMigrationStatusMetrics(
+    SessionStorageFormat storage_format,
+    SessionStorageMigrationStatus migration_status) {
+  RecordSessionStorageFormatMetric(storage_format);
+
+  SessionHistogramStorageMigrationStatus histogram_status;
+  switch (migration_status) {
+    case SessionStorageMigrationStatus::kSuccess:
+      histogram_status = SessionHistogramStorageMigrationStatus::kSuccess;
+      break;
+
+    case SessionStorageMigrationStatus::kFailure:
+      histogram_status = SessionHistogramStorageMigrationStatus::kFailure;
+      break;
+
+    case SessionStorageMigrationStatus::kInProgress:
+      histogram_status = SessionHistogramStorageMigrationStatus::kInterrupted;
+      break;
+
+    case SessionStorageMigrationStatus::kUnkown:
+      NOTREACHED_NORETURN();
+  }
+
+  base::UmaHistogramEnumeration(kSessionHistogramStorageMigrationStatus,
+                                histogram_status);
+}
+
+// Store the session storage format `storage_format` and the migration
+// status `migration_status` to `pref_service`.
+void RecordSessionStorageFormatAndMigrationStatus(
+    PrefService* pref_service,
+    SessionStorageFormat storage_format,
+    SessionStorageMigrationStatus migration_status) {
+  pref_service->SetInteger(kSessionStorageFormatPref,
+                           base::to_underlying(storage_format));
+
+  pref_service->SetInteger(kSessionStorageMigrationStatusPref,
+                           base::to_underlying(migration_status));
+}
+
+// Detects the storage format for session at `path`. If no existing storage
+// is found, return that the storage corresponds to `requested_format`.
+SessionStorageFormat DetectStorageFormat(
+    const base::FilePath& path,
+    RequestedStorageFormat requested_format) {
+  if (base::DirectoryExists(path.Append(kSessionRestorationDirname))) {
+    return SessionStorageFormat::kOptimized;
+  }
+
+  if (base::DirectoryExists(path.Append(kLegacySessionsDirname))) {
+    return SessionStorageFormat::kLegacy;
+  }
+
+  return SessionStorageFormatFromRequestedFormat(
+      requested_format, ios::sessions::MigrationStatus::kSuccess);
+}
+
+// Invoked when the session storage format has been detected.
+void OnStorageFormatDetected(
+    base::WeakPtr<ChromeBrowserState> weak_browser_state,
+    base::OnceClosure closure,
+    SessionStorageFormat storage_format) {
+  ChromeBrowserState* browser_state = weak_browser_state.get();
+  if (!browser_state) {
+    return;
+  }
+
+  RecordSessionStorageFormatAndMigrationStatus(
+      browser_state->GetPrefs(), storage_format,
+      SessionStorageMigrationStatus::kSuccess);
+
+  RecordSessionStorageFormatMetric(storage_format);
+
+  std::move(closure).Run();
+}
+
 // Invoked when the session migration completes.
 void OnSessionMigrationDone(
     base::WeakPtr<ChromeBrowserState> weak_browser_state,
     RequestedStorageFormat requested_format,
-    base::Time migration_start,
+    base::TimeTicks migration_start,
     base::OnceClosure closure,
     ios::sessions::MigrationStatus status) {
   ChromeBrowserState* browser_state = weak_browser_state.get();
@@ -96,26 +197,22 @@ void OnSessionMigrationDone(
     return;
   }
 
-  PrefService* prefs = browser_state->GetPrefs();
-  if (status == ios::sessions::MigrationStatus::kSuccess) {
-    prefs->SetInteger(
-        kSessionStorageFormatPref,
-        base::to_underlying(requested_format == RequestedStorageFormat::kLegacy
-                                ? SessionStorageFormat::kLegacy
-                                : SessionStorageFormat::kOptimized));
-    prefs->SetInteger(
-        kSessionStorageMigrationStatusPref,
-        base::to_underlying(SessionStorageMigrationStatus::kSuccess));
-  } else {
-    prefs->SetInteger(
-        kSessionStorageFormatPref,
-        base::to_underlying(requested_format == RequestedStorageFormat::kLegacy
-                                ? SessionStorageFormat::kOptimized
-                                : SessionStorageFormat::kLegacy));
-    prefs->SetInteger(
-        kSessionStorageMigrationStatusPref,
-        base::to_underlying(SessionStorageMigrationStatus::kFailure));
-  }
+  const SessionStorageMigrationStatus migration_status =
+      status == ios::sessions::MigrationStatus::kSuccess
+          ? SessionStorageMigrationStatus::kSuccess
+          : SessionStorageMigrationStatus::kFailure;
+
+  const SessionStorageFormat storage_format =
+      SessionStorageFormatFromRequestedFormat(requested_format, status);
+
+  RecordSessionStorageFormatAndMigrationStatus(
+      browser_state->GetPrefs(), storage_format, migration_status);
+
+  RecordSessionStorageFormatAndMigrationStatusMetrics(storage_format,
+                                                      migration_status);
+
+  base::UmaHistogramTimes(kSessionHistogramStorageMigrationTiming,
+                          base::TimeTicks::Now() - migration_start);
 
   std::move(closure).Run();
 }
@@ -141,7 +238,6 @@ SessionRestorationServiceFactory::SessionRestorationServiceFactory()
           "SessionRestorationService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(WebSessionStateCacheFactory::GetInstance());
-  DependsOn(IOSChromeTabRestoreServiceFactory::GetInstance());
 }
 
 void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
@@ -152,64 +248,73 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
   DCHECK(!GetServiceForBrowserState(browser_state, false));
 
   PrefService* const prefs = browser_state->GetPrefs();
+  const SessionStorageMigrationStatus status =
+      GetSessionStorageMigrationStatusPref(prefs);
 
-  // If the storage is already in the requested format, there is nothing
-  // to do. Mark the migration as successful (to allow switching back to
-  // the other format at a later point in time) and skip the migration.
-  // Do not record any metric since migration was not attempted.
+  // Nothing to do, the storage is already in the requested format.
   const SessionStorageFormat format = GetSessionStorageFormatPref(prefs);
   if (IsSessionStorageInRequestedFormat(format, requested_format)) {
-    prefs->SetInteger(
-        kSessionStorageMigrationStatusPref,
-        base::to_underlying(SessionStorageMigrationStatus::kSuccess));
+    // It is possible for status to not be "success" if the flag controlling
+    // `requested_format` changed between invocation. In that case migration
+    // would have been attempted in the previous run and failed. If this is
+    // the case, then reset the status to "success" to allow attempting the
+    // migration if the flag is flipped again in the future.
+    if (status != SessionStorageMigrationStatus::kSuccess) {
+      RecordSessionStorageFormatAndMigrationStatus(
+          prefs, format, SessionStorageMigrationStatus::kSuccess);
+    }
+
+    RecordSessionStorageFormatAndMigrationStatusMetrics(
+        format, SessionStorageMigrationStatus::kSuccess);
 
     return std::move(closure).Run();
   }
 
-  const SessionStorageMigrationStatus status =
-      GetSessionStorageMigrationStatusPref(prefs);
+  // If the format is unknown, do not try to migrate, instead detect which
+  // format is used and stay on the existing format. The migration will be
+  // attempted on next application restart if necessary.
+  if (format == SessionStorageFormat::kUnknown) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock{}},
+        base::BindOnce(&DetectStorageFormat, browser_state->GetStatePath(),
+                       requested_format),
+        base::BindOnce(&OnStorageFormatDetected, browser_state->AsWeakPtr(),
+                       std::move(closure)));
+    return;
+  }
+
+  // The status should only be "unknown" on the first run, or when upgrading
+  // from M-121 or earlier. In both case, the format would also be "unknown"
+  // and the storage format detection logic called which will set the status
+  // to "success". This means that neither the format nor the status can be
+  // "unknown" when reaching this point.
+  DCHECK_NE(format, SessionStorageFormat::kUnknown);
+  DCHECK_NE(status, SessionStorageMigrationStatus::kUnkown);
+
   switch (status) {
-    // The application crashed during the previous migration attempt. Record
-    // the failure, update the storage format (it has to be the opposite of
-    // the requested format otherwise the migration would have been a succes)
-    // and skip the migration.
-    case SessionStorageMigrationStatus::kInProgressToLegacy:
-    case SessionStorageMigrationStatus::kInProgressToOptimized:
-      prefs->SetInteger(
-          kSessionStorageMigrationStatusPref,
-          base::to_underlying(SessionStorageMigrationStatus::kFailure));
-      prefs->SetInteger(
-          kSessionStorageFormatPref,
-          status == SessionStorageMigrationStatus::kInProgressToLegacy
-              ? base::to_underlying(SessionStorageFormat::kOptimized)
-              : base::to_underlying(SessionStorageFormat::kLegacy));
-      return std::move(closure).Run();
-
-    // The previous migration attempt was a failure, do not retry.
+    // The previous attempt either failed, or was interrupted (either by the
+    // user or due to a crash). In either case, do not attempt the migration
+    // again.
+    case SessionStorageMigrationStatus::kInProgress:
     case SessionStorageMigrationStatus::kFailure:
+      RecordSessionStorageFormatAndMigrationStatusMetrics(format, status);
+
       return std::move(closure).Run();
 
-    // If the previous migration attemtp was a success, then the format of
-    // the storage has to be known (the requested format of that migration).
+    // The status must be "success" by this point, and the format different
+    // from the requested format. Schedule a migration.
     case SessionStorageMigrationStatus::kSuccess:
-      DCHECK_NE(format, SessionStorageFormat::kUnknown);
       break;
 
-    // If the migration status is unknown, then it is the first time this
-    // code is invoked, the format of the storage must be unknown too.
     case SessionStorageMigrationStatus::kUnkown:
-      DCHECK_EQ(format, SessionStorageFormat::kUnknown);
-      break;
+      NOTREACHED_NORETURN();
   }
 
   // The migration is required. Update the migration status to "in progress"
   // and start the asynchronous migration on a background sequence.
   prefs->SetInteger(
       kSessionStorageMigrationStatusPref,
-      base::to_underlying(
-          requested_format == StorageFormat::kLegacy
-              ? SessionStorageMigrationStatus::kInProgressToLegacy
-              : SessionStorageMigrationStatus::kInProgressToOptimized));
+      base::to_underlying(SessionStorageMigrationStatus::kInProgress));
 
   // Migrate all session in `browser_state`'s and OTR state paths.
   std::vector<base::FilePath> paths = {
@@ -224,7 +329,8 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
                          : &ios::sessions::MigrateSessionsInPathsToOptimized,
                      std::move(paths)),
       base::BindOnce(&OnSessionMigrationDone, browser_state->AsWeakPtr(),
-                     requested_format, base::Time::Now(), std::move(closure)));
+                     requested_format, base::TimeTicks::Now(),
+                     std::move(closure)));
 }
 
 SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;
@@ -243,22 +349,33 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
 
   const base::FilePath storage_path = browser_state->GetStatePath();
 
+  SessionStorageFormat format =
+      GetSessionStorageFormatPref(browser_state->GetPrefs());
+
+  // During unit tests, it is the method MigrateSessionStorageFormat(...)
+  // will not be called before the service is created and the preference
+  // will have its default value of `SessionStorageFormat::kUnknown`. Use
+  // the feature flag to select which implementation to use.
+  if (format == SessionStorageFormat::kUnknown) {
+    format = web::features::UseSessionSerializationOptimizations()
+                 ? SessionStorageFormat::kOptimized
+                 : SessionStorageFormat::kLegacy;
+  }
+
   // If the optimised session restoration format is not enabled, create a
   // LegacySessionRestorationService instance which wraps the legacy API.
-  if (!web::features::UseSessionSerializationOptimizations()) {
+  if (format == SessionStorageFormat::kLegacy) {
     SessionServiceIOS* session_service_ios =
         [[SessionServiceIOS alloc] initWithSaveDelay:kSaveDelay
                                           taskRunner:task_runner];
 
     return std::make_unique<LegacySessionRestorationService>(
         IsPinnedTabsEnabled(), storage_path, session_service_ios,
-        WebSessionStateCacheFactory::GetForBrowserState(browser_state),
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
+        WebSessionStateCacheFactory::GetForBrowserState(browser_state));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
-      kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner,
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
+      kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner);
 }
 
 web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(

@@ -56,24 +56,6 @@ inline constexpr char kPrivacySandboxM1Restricted[] =
 inline constexpr char kPrivacySandboxApisEnabled[] =
     "privacy_sandbox.apis_enabled";
 
-// Un-synced boolean pref. This is a replacement for the synced preference
-// above. It performs the exact same functionality, but is unsynced. This
-// preference is only consulted when the kPrivacySandboxSettings4 feature is
-// disabled.
-inline constexpr char kPrivacySandboxApisEnabledV2[] =
-    "privacy_sandbox.apis_enabled_v2";
-
-// Un-synced boolean pref. This is a replacement for the synced preference
-// above. It it set to true when the user manually toggles the setting on the
-// updated settings page.
-inline constexpr char kPrivacySandboxManuallyControlledV2[] =
-    "privacy_sandbox.manually_controlled_v2";
-
-// Boolean that indicates whether the privacy sandbox desktop page at
-// chrome://settings/privacySandbox has been viewed.
-inline constexpr char kPrivacySandboxPageViewed[] =
-    "privacy_sandbox.page_viewed";
-
 // The point in time from which history is eligible to be used when calculating
 // a user's Topics API topics.
 inline constexpr char kPrivacySandboxTopicsDataAccessibleSince[] =

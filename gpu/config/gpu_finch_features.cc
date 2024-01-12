@@ -219,13 +219,6 @@ BASE_FEATURE(kDisableVideoOverlayIfMoving,
 BASE_FEATURE(kNoUndamagedOverlayPromotion,
              "NoUndamagedOverlayPromotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use a DCompPresenter as the root surface, instead of a
-// DirectCompositionSurfaceWin. DCompPresenter is surface-less and the actual
-// allocation of the root surface will be owned by DirectRenderer.
-BASE_FEATURE(kDCompPresenter,
-             "DCompPresenter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
@@ -320,7 +313,7 @@ const base::FeatureParam<std::string> kWebGPUUnsafeFeatures{
 const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
     &kWebGPUService, "UnsafeWGSLFeatures", ""};
 
-BASE_FEATURE(kWebGPUUseDXC, "WebGPUUseDXC2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebGPUUseDXC, "WebGPUUseDXC2", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebGPUUseTintIR,
              "WebGPUUseTintIR",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -563,6 +556,12 @@ bool IsDrDcEnabled() {
     return false;
   }
 
+  // DrDc is not supported with Graphite-Dawn yet.
+  // TODO(crbug.com/1505023): Add DrDc support with Graphite
+  if (IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
+    return false;
+  }
+
   // DrDc is supported on android MediaPlayer and MCVD path only when
   // AImageReader is enabled. Also DrDc requires AImageReader max size to be
   // at least 2 for each gpu thread. Hence DrDc is disabled on devices which has
@@ -654,7 +653,7 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
     return true;
   }
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
   // Disallow Graphite from being enabled via the base::Feature on
   // not-yet-supported platforms to avoid users experiencing undefined behavior,
   // including behavior that might prevent them from being able to return to
@@ -733,6 +732,10 @@ bool EnablePruneOldTransferCacheEntries() {
          base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
 }
 
+bool IsCanvasOopRasterizationEnabled() {
+  return base::FeatureList::IsEnabled(kCanvasOopRasterization);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool IsAImageReaderEnabled() {
   // Device Hammer_Energy_2 seems to be very crash with image reader during
@@ -746,7 +749,7 @@ bool IsAImageReaderEnabled() {
   }
 
   return base::FeatureList::IsEnabled(kAImageReader) &&
-         base::android::AndroidImageReader::GetInstance().IsSupported();
+         base::android::EnableAndroidImageReader();
 }
 
 bool IsAndroidSurfaceControlEnabled() {

@@ -969,7 +969,7 @@ IN_PROC_BROWSER_TEST_P(
       current_frame_host()->NotRestoredReasonsForTesting(),
       MatchesNotRestoredReasons(
           blink::mojom::BFCacheBlocked::kYes,
-          /*id=*/absl::nullopt, /*name=*/absl::nullopt, /*src=*/absl::nullopt,
+          /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/std::nullopt,
           MatchesSameOriginDetails(
               /*url=*/url_a_no_store.spec(),
               /*reasons=*/{"MainResourceHasCacheControlNoStore"},
@@ -1028,7 +1028,7 @@ class CookieDisabledContentBrowserClient
       content::BrowserContext& browser_context,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const net::CookieSettingOverrides overrides) override {
     return is_cookie_enabled_;
   }

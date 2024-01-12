@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
-import {AndroidApp, State} from '../../externs/ts/state.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
+import type {AndroidApp, State} from '../../state/state.js';
 
 /**
  * @fileoverview Android apps slice of the store.

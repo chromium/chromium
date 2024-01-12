@@ -234,7 +234,7 @@ GetAllForUrlWithoutRefAndQueryForTesting(
 // On parse errors, send No-Vary-Search parsing errors in DevTools console.
 // The method will test if there are errors/warning that the developer
 // needs to know about, and if there are send them to the DevTools console.
-absl::optional<net::HttpNoVarySearchData> ProcessHead(
+std::optional<net::HttpNoVarySearchData> ProcessHead(
     const network::mojom::URLResponseHead& head,
     const GURL& url,
     RenderFrameHost* rfh);

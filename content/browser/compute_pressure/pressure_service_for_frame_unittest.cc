@@ -38,31 +38,6 @@ using device::mojom::PressureUpdate;
 
 namespace {
 
-// Synchronous proxy to a device::mojom::PressureManager.
-class PressureManagerSync {
- public:
-  explicit PressureManagerSync(device::mojom::PressureManager* manager)
-      : manager_(raw_ref<device::mojom::PressureManager>::from_ptr(manager)) {}
-  ~PressureManagerSync() = default;
-
-  PressureManagerSync(const PressureManagerSync&) = delete;
-  PressureManagerSync& operator=(const PressureManagerSync&) = delete;
-
-  PressureStatus AddClient(
-      mojo::PendingRemote<device::mojom::PressureClient> client,
-      PressureSource source) {
-    base::test::TestFuture<PressureStatus> future;
-    manager_->AddClient(std::move(client), source, future.GetCallback());
-    return future.Get();
-  }
-
- private:
-  // The reference is immutable, so accessing it is thread-safe. The referenced
-  // device::mojom::PressureManager implementation is called synchronously,
-  // so it's acceptable to rely on its own thread-safety checks.
-  const raw_ref<device::mojom::PressureManager, DanglingUntriaged> manager_;
-};
-
 // Test double for PressureClient that records all updates.
 class FakePressureClient : public device::mojom::PressureClient {
  public:
@@ -153,7 +128,6 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
-    pressure_manager_sync_.reset();
     pressure_manager_overrider_.reset();
     task_environment()->RunUntilIdle();
 
@@ -169,8 +143,6 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
         rfh->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
     broker->GetInterface(pressure_manager_.BindNewPipeAndPassReceiver());
-    pressure_manager_sync_ =
-        std::make_unique<PressureManagerSync>(pressure_manager_.get());
     // Focus on the page and frame to make HasImplicitFocus() return true
     // by default.
     rfh->GetRenderWidgetHost()->Focus();
@@ -178,20 +150,28 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
     task_environment()->RunUntilIdle();
   }
 
+  PressureStatus AddPressureClient(
+      mojo::PendingRemote<device::mojom::PressureClient> client,
+      PressureSource source) {
+    base::test::TestFuture<PressureStatus> future;
+    pressure_manager_->AddClient(std::move(client), source,
+                                 future.GetCallback());
+    return future.Get();
+  }
+
  protected:
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
   const GURL kInsecureUrl{"http://example.com/compute_pressure.html"};
 
   mojo::Remote<device::mojom::PressureManager> pressure_manager_;
-  std::unique_ptr<PressureManagerSync> pressure_manager_sync_;
   std::unique_ptr<device::ScopedPressureManagerOverrider>
       pressure_manager_overrider_;
 };
 
 TEST_F(PressureServiceForFrameTest, AddClient) {
   FakePressureClient client;
-  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                              PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
+                              PressureSource::kCpu),
             PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
@@ -206,8 +186,8 @@ TEST_F(PressureServiceForFrameTest, AddClientNotSupported) {
   pressure_manager_overrider_->set_is_supported(false);
 
   FakePressureClient client;
-  EXPECT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                              PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
+                              PressureSource::kCpu),
             PressureStatus::kNotSupported);
 
   const auto& pressure_client =
@@ -219,8 +199,8 @@ TEST_F(PressureServiceForFrameTest, AddClientNotSupported) {
 
 TEST_F(PressureServiceForFrameTest, AddClientTwice) {
   FakePressureClient client1;
-  ASSERT_EQ(pressure_manager_sync_->AddClient(
-                client1.BindNewPipeAndPassRemote(), PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client1.BindNewPipeAndPassRemote(),
+                              PressureSource::kCpu),
             PressureStatus::kOk);
 
   // Simulate the renderer calling AddClient twice for the same PressureSource
@@ -240,8 +220,8 @@ TEST_F(PressureServiceForFrameTest, AddClientTwice) {
 
 TEST_F(PressureServiceForFrameTest, DisconnectFromBlink) {
   FakePressureClient client;
-  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                              PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
+                              PressureSource::kCpu),
             PressureStatus::kOk);
 
   // Simulate the renderer disconnecting and wait for the PressureServiceImpl

@@ -22,8 +22,9 @@ class MemorySaverChipView : public PageActionIconView,
                             public MemorySaverBubbleObserver,
                             public performance_manager::user_tuning::
                                 UserPerformanceTuningManager::Observer {
+  METADATA_HEADER(MemorySaverChipView, PageActionIconView)
+
  public:
-  METADATA_HEADER(MemorySaverChipView);
   // The number of times a user should see the expanded chip.
   static constexpr int kChipAnimationCount = 3;
 

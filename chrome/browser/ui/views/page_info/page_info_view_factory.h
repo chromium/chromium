@@ -160,7 +160,8 @@ class PageInfoViewFactory {
       base::OnceClosure initialized_callback);
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreatePermissionPageView(
-      ContentSettingsType type);
+      ContentSettingsType type,
+      content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
 

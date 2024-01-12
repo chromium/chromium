@@ -18,7 +18,7 @@ import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_prox
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './privacy_sandbox_page.html.js';
 
@@ -29,7 +29,7 @@ export interface SettingsPrivacySandboxPageElement {
 }
 
 const SettingsPrivacySandboxPageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPrivacySandboxPageElement extends
     SettingsPrivacySandboxPageElementBase {
@@ -68,11 +68,11 @@ export class SettingsPrivacySandboxPageElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
-
-    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-        TrustSafetyInteraction.OPENED_AD_PRIVACY);
+  override currentRouteChanged(newRoute: Route) {
+    if (newRoute === routes.PRIVACY_SANDBOX) {
+      HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+          TrustSafetyInteraction.OPENED_AD_PRIVACY);
+    }
   }
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {

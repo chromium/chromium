@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "content/common/content_export.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/gl/gpu_preference.h"
 
@@ -71,7 +71,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
-      const absl::optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
+      const std::optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
 #if BUILDFLAG(IS_WIN)
   void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
   void UpdateDx12Info(uint32_t d3d12_feature_level);
@@ -91,7 +91,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void UpdateDawnInfo(const std::vector<std::string>& dawn_info_list);
 
   void UpdateGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info,
-                            const absl::optional<gpu::GpuFeatureInfo>&
+                            const std::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& process_info);
   void UpdateMojoMediaVideoDecoderCapabilities(
@@ -281,7 +281,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // Order of gpu process fallback states, used as a stack.
   std::vector<gpu::GpuMode> fallback_modes_;
 
-  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 
   // Used to tell if the gpu was disabled by an explicit call to
   // DisableHardwareAcceleration(), rather than by fallback.

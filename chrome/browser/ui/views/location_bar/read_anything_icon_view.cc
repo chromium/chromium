@@ -103,5 +103,5 @@ void ReadAnythingIconView::OnActivePageDistillable(bool distillable) {
   }
 }
 
-BEGIN_METADATA(ReadAnythingIconView, PageActionIconView)
+BEGIN_METADATA(ReadAnythingIconView)
 END_METADATA

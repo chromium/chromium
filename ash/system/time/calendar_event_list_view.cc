@@ -193,6 +193,20 @@ void CalendarEventListView::Layout() {
     gradient_helper_->UpdateGradientMask();
   }
 
+  // If `CalendarEventListItemView` or the join button is focused, do not scroll
+  // to the current or next event. Otherwise `scroll_view_` won't scroll with
+  // the focus change.
+  if (GetFocusManager() && GetFocusManager()->GetFocusedView()) {
+    const auto focused_view_class_name =
+        std::string_view(GetFocusManager()->GetFocusedView()->GetClassName());
+    if (focused_view_class_name ==
+            std::string_view(CalendarEventListItemView::kViewClassName) ||
+        focused_view_class_name ==
+            std::string_view(PillButton::kViewClassName)) {
+      return;
+    }
+  }
+
   const std::optional<base::Time> selected_date =
       calendar_view_controller_->selected_date();
 

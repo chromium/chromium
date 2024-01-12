@@ -29,7 +29,7 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
   void FinalizeUnlock(bool success) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash

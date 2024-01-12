@@ -120,7 +120,7 @@ class DeviceSectionTest : public testing::Test {
   ash::settings::SearchTagRegistry search_tag_registry_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   FakeCupsPrintersManager printers_manager_;
 };
 

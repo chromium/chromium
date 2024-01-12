@@ -177,7 +177,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from SurfaceTreeHost:
   void DidReceiveCompositorFrameAck() override;
 
-  // Overridden from SurfaceDelegate:
+  // ShellSurfaceBase:
   bool IsInputEnabled(Surface* surface) const override;
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override;
@@ -187,6 +187,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void UnsetPip() override;
   void SetFloatToLocation(
       chromeos::FloatStartLocation float_start_location) override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMaximize() const override;
@@ -206,10 +208,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowAddedToRootWindow(aura::Window* window) override;
-
-  // Overridden from display::DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
 
   // Overridden from ui::CompositorLockClient:
   void CompositorLockTimedOut() override;

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MockFileSystem} from '../../common/js/mock_entry.js';
-import {State} from '../../externs/ts/state.js';
+import type {State} from '../../state/state.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState} from '../store.js';

@@ -4,9 +4,10 @@
 
 #include "content/browser/interest_group/subresource_url_builder.h"
 
+#include <optional>
+
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -25,7 +26,7 @@ blink::DirectFromSellerSignalsSubresource CreateSubresource(
 }
 
 TEST(SubresourceUrlBuilderTest, NoSignals) {
-  SubresourceUrlBuilder builder(absl::nullopt);
+  SubresourceUrlBuilder builder(std::nullopt);
   EXPECT_FALSE(builder.seller_signals());
   EXPECT_FALSE(builder.auction_signals());
   EXPECT_EQ(0u, builder.per_buyer_signals().size());

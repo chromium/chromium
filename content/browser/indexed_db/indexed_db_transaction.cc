@@ -143,9 +143,13 @@ IndexedDBTransaction::IndexedDBTransaction(
   if (database_) {
     database_->TransactionCreated();
 
-    for (const PartitionedLockManager::PartitionedLockRequest& lock_request :
-         database_->BuildLockRequestsFromTransaction(this)) {
-      lock_ids_.insert(lock_request.lock_id);
+    if (mode_ == blink::mojom::IDBTransactionMode::VersionChange) {
+      lock_ids_.insert(GetDatabaseLockId(database_->name()));
+    } else {
+      for (const PartitionedLockManager::PartitionedLockRequest& lock_request :
+           BuildLockRequests()) {
+        lock_ids_.insert(lock_request.lock_id);
+      }
     }
   }
 
@@ -790,6 +794,26 @@ void IndexedDBTransaction::CloseOpenCursors() {
   open_cursors_.clear();
   for (auto* cursor : open_cursors)
     cursor->Close();
+}
+
+std::vector<PartitionedLockManager::PartitionedLockRequest>
+IndexedDBTransaction::BuildLockRequests() const {
+  // Locks for version change transactions are covered by `ConnectionRequest`.
+  DCHECK_NE(mode(), blink::mojom::IDBTransactionMode::VersionChange);
+  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
+  lock_requests.reserve(1 + scope().size());
+  lock_requests.emplace_back(GetDatabaseLockId(database_->name()),
+                             PartitionedLockManager::LockType::kShared);
+  const auto object_store_lock_type =
+      mode() == blink::mojom::IDBTransactionMode::ReadOnly
+          ? PartitionedLockManager::LockType::kShared
+          : PartitionedLockManager::LockType::kExclusive;
+  for (int64_t object_store : scope()) {
+    lock_requests.emplace_back(
+        GetObjectStoreLockId(database_->id(), object_store),
+        object_store_lock_type);
+  }
+  return lock_requests;
 }
 
 }  // namespace content

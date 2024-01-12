@@ -773,31 +773,28 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
   }
 
   base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
-      get_app_states_callback =
-          base::BindPostTask(
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(),
-                   base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-              base::BindOnce(
-                  [](Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback> callback,
-                     const std::vector<UpdateService::AppState>& app_states) {
-                    // Converts `app_states` into a `SAFEARRAY` of `IDispatch`
-                    // and calls `IUpdaterAppStatesCallback::Run` with the
-                    // resulting `VARIANT`.
-                    base::win::VariantVector updater_app_states;
-                    for (const auto& app_state : app_states) {
-                      Microsoft::WRL::ComPtr<IDispatch> dispatch;
-                      CHECK(SUCCEEDED(
-                          MakeAndInitializeComObject<UpdaterAppStateImpl>(
-                              dispatch, app_state)));
-                      updater_app_states.Insert<VT_DISPATCH>(dispatch.Get());
-                    }
-                    base::win::ScopedVariant variant;
-                    variant.Reset(
-                        updater_app_states.ReleaseAsSafearrayVariant());
-                    callback->Run(variant);
-                  },
-                  Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback>(callback)));
+      get_app_states_callback = base::BindPostTask(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+          base::BindOnce(
+              [](Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback> callback,
+                 const std::vector<UpdateService::AppState>& app_states) {
+                // Converts `app_states` into a `SAFEARRAY` of `IDispatch`
+                // and calls `IUpdaterAppStatesCallback::Run` with the
+                // resulting `VARIANT`.
+                base::win::VariantVector updater_app_states;
+                for (const auto& app_state : app_states) {
+                  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+                  CHECK(
+                      SUCCEEDED(MakeAndInitializeComObject<UpdaterAppStateImpl>(
+                          dispatch, app_state)));
+                  updater_app_states.Insert<VT_DISPATCH>(dispatch.Get());
+                }
+                base::win::ScopedVariant variant;
+                variant.Reset(updater_app_states.ReleaseAsSafearrayVariant());
+                callback->Run(variant);
+              },
+              Microsoft::WRL::ComPtr<IUpdaterAppStatesCallback>(callback)));
   AppServerWin::PostRpcTask(base::BindOnce(
       [](base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
              get_app_states_callback) {

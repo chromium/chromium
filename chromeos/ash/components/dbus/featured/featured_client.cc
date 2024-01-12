@@ -191,7 +191,7 @@ class FeaturedClientImpl : public FeaturedClient {
   // Watches for early-boot trial files written to `expected_dir_`.
   std::unique_ptr<base::FilePathWatcher> watcher_;
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> featured_service_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> featured_service_proxy_ = nullptr;
 
   // Sequence runner that an post tasks that may block.
   scoped_refptr<base::SequencedTaskRunner> file_listener_task_runner_ =

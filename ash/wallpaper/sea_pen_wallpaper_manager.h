@@ -35,11 +35,13 @@ class ASH_EXPORT SeaPenWallpaperManager {
   // `ImageSkia` on decoding failure.
   void DecodeAndSaveSeaPenImage(const SeaPenImage& sea_pen_image,
                                 const base::FilePath& wallpaper_dir,
+                                const std::string& query_info,
                                 DecodeAndSaveSeaPenImageCallback callback);
 
  private:
   void SaveSeaPenImage(uint32_t sea_pen_image_id,
                        const base::FilePath& wallpaper_dir,
+                       const std::string& query_info,
                        DecodeAndSaveSeaPenImageCallback callback,
                        const gfx::ImageSkia& image_skia);
 

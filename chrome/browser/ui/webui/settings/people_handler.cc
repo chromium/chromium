@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/people_handler.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -42,6 +43,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
@@ -323,8 +325,9 @@ void PeopleHandler::RegisterMessages() {
 
 void PeopleHandler::OnJavascriptAllowed() {
   PrefService* prefs = profile_->GetPrefs();
-  profile_pref_registrar_.Init(prefs);
-  profile_pref_registrar_.Add(
+  profile_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  profile_pref_registrar_->Init(prefs);
+  profile_pref_registrar_->Add(
       prefs::kSigninAllowed,
       base::BindRepeating(&PeopleHandler::UpdateSyncStatus,
                           base::Unretained(this)));
@@ -343,7 +346,7 @@ void PeopleHandler::OnJavascriptAllowed() {
 }
 
 void PeopleHandler::OnJavascriptDisallowed() {
-  profile_pref_registrar_.RemoveAll();
+  profile_pref_registrar_.reset();
   identity_manager_observation_.Reset();
   sync_service_observation_.Reset();
 }

@@ -96,7 +96,8 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
 
         for (uintptr_t slot_idx = 0; slot_idx < kSlotsPerSlotSpan; ++slot_idx) {
           auto slot_start = slot_span_start + slot_idx * kSlotSize;
-          internal::PartitionRefCountPointer(slot_start)->InitalizeForGwpAsan();
+          internal::PartitionRefCountPointer(slot_start, kSlotSize)
+              ->InitalizeForGwpAsan();
           size_t global_slot_idx = (slot_start - super_page_span_start -
                                     kSuperPageGwpAsanSlotAreaBeginOffset) /
                                    kSlotSize;
@@ -119,7 +120,9 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
 
 // static
 bool GwpAsanSupport::CanReuse(uintptr_t slot_start) {
-  return internal::PartitionRefCountPointer(slot_start)->CanBeReusedByGwpAsan();
+  const size_t kSlotSize = 2 * internal::SystemPageSize();
+  return internal::PartitionRefCountPointer(slot_start, kSlotSize)
+      ->CanBeReusedByGwpAsan();
 }
 
 }  // namespace partition_alloc

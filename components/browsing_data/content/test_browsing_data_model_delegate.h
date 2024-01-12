@@ -5,14 +5,16 @@
 #ifndef COMPONENTS_BROWSING_DATA_CONTENT_TEST_BROWSING_DATA_MODEL_DELEGATE_H_
 #define COMPONENTS_BROWSING_DATA_CONTENT_TEST_BROWSING_DATA_MODEL_DELEGATE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 
 namespace browsing_data {
 
-class TestBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
+class TestBrowsingDataModelDelegate final : public BrowsingDataModel::Delegate {
  public:
   enum class StorageType {
-    kTestDelegateType = (int)BrowsingDataModel::StorageType::kLastType + 1,
+    kTestDelegateType =
+        static_cast<int>(BrowsingDataModel::StorageType::kLastType) + 1,
     kTestDelegateTypePartitioned,
   };
 
@@ -32,10 +34,12 @@ class TestBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
   bool IsCookieDeletionDisabled(const GURL& url) override;
+  base::WeakPtr<BrowsingDataModel::Delegate> AsWeakPtr() override;
 
  private:
   std::map<BrowsingDataModel::DataKey, BrowsingDataModel::StorageTypeSet>
       delegated_entries;
+  base::WeakPtrFactory<TestBrowsingDataModelDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace browsing_data

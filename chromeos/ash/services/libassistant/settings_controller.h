@@ -70,7 +70,7 @@ class SettingsController : public AssistantClientObserver,
 
   // Set in |OnAssistantClientCreated| and unset in
   // |OnDestroyingAssistantClient|.
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
   std::optional<bool> hotword_enabled_;
   std::optional<bool> spoken_feedback_enabled_;

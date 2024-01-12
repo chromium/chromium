@@ -24,8 +24,8 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
-#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
-#include "components/autofill/core/browser/webdata/autocomplete_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -432,9 +432,9 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfiles(profile_source,
                                                                  &profiles);
-  return std::unique_ptr<WDTypedResult>(
-      new WDResult<std::vector<std::unique_ptr<AutofillProfile>>>(
-          AUTOFILL_PROFILES_RESULT, std::move(profiles)));
+  return std::make_unique<
+      WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
+      AUTOFILL_PROFILES_RESULT, std::move(profiles));
 }
 
 std::unique_ptr<WDTypedResult>
@@ -446,8 +446,7 @@ AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(
   int value =
       AutocompleteTable::FromWebDatabase(db)->GetCountOfValuesContainedBetween(
           begin, end);
-  return std::unique_ptr<WDTypedResult>(
-      new WDResult<int>(AUTOFILL_VALUE_RESULT, value));
+  return std::make_unique<WDResult<int>>(AUTOFILL_VALUE_RESULT, value);
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::UpdateAutocompleteEntries(
@@ -569,9 +568,8 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetCreditCards(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<CreditCard>> credit_cards;
   PaymentsAutofillTable::FromWebDatabase(db)->GetCreditCards(&credit_cards);
-  return std::unique_ptr<WDTypedResult>(
-      new WDResult<std::vector<std::unique_ptr<CreditCard>>>(
-          AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards)));
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<CreditCard>>>>(
+      AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards));
 }
 
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetServerCreditCards(
@@ -580,9 +578,8 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetServerCreditCards(
   std::vector<std::unique_ptr<CreditCard>> credit_cards;
   PaymentsAutofillTable::FromWebDatabase(db)->GetServerCreditCards(
       credit_cards);
-  return std::unique_ptr<WDTypedResult>(
-      new WDResult<std::vector<std::unique_ptr<CreditCard>>>(
-          AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards)));
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<CreditCard>>>>(
+      AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::UnmaskServerCreditCard(

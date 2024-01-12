@@ -70,10 +70,4 @@ void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
   }
 }
 
-bool IsTransparentBackgroundSupported() {
-  return x11::Connection::Get()
-      ->GetOrCreateVisualManager()
-      .ArgbVisualAvailable();
-}
-
 }  // namespace ui

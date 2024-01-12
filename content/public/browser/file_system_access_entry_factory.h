@@ -77,10 +77,10 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
       UserAction user_action) = 0;
 
   // Resolve a FileSystemAccessTransferToken to its FileSystemURL. Invokes the
-  // callback with a absl::nullopt if the token isn't valid or can't be found
+  // callback with a std::nullopt if the token isn't valid or can't be found
   // (e.g. a compromised renderer crafts an invalid token).
   using ResolveTransferTokenCallback =
-      base::OnceCallback<void(absl::optional<storage::FileSystemURL>)>;
+      base::OnceCallback<void(std::optional<storage::FileSystemURL>)>;
   virtual void ResolveTransferToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
           transfer_token,

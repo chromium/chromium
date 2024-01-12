@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
@@ -83,11 +84,13 @@ BASE_EXPORT double BitsToOpenEndedUnitInterval(uint64_t bits);
 // [0, 1). Thread-safe.
 BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 
-// Fills |output_length| bytes of |output| with random data. Thread-safe.
+// Fills `output` with random data. Thread-safe.
 //
 // Although implementations are required to use a cryptographically secure
 // random number source, code outside of base/ that relies on this should use
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
+BASE_EXPORT void RandBytes(span<uint8_t> output);
+// TODO(https://crbug.com/1490484): Migrate callers to the span version.
 BASE_EXPORT void RandBytes(void* output, size_t output_length);
 
 // Creates a vector of `length` bytes, fills it with random data, and returns

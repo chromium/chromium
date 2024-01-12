@@ -831,12 +831,12 @@ in the main function:
 
 ```cpp
 // This initializes and starts ThreadPoolInstance with default params.
-base::ThreadPoolInstance::CreateAndStartWithDefaultParams(“process_name”);
+base::ThreadPoolInstance::CreateAndStartWithDefaultParams("process_name");
 // The base/task/thread_pool.h API can now be used with base::ThreadPool trait.
 // Tasks will be scheduled as they are posted.
 
 // This initializes ThreadPoolInstance.
-base::ThreadPoolInstance::Create(“process_name”);
+base::ThreadPoolInstance::Create("process_name");
 // The base/task/thread_pool.h API can now be used with base::ThreadPool trait. No
 // threads will be created and no tasks will be scheduled until after Start() is
 // called.

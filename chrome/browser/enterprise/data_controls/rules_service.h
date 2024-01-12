@@ -10,6 +10,7 @@
 #include "components/enterprise/data_controls/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/clipboard_types.h"
 
 namespace base {
 template <typename T>
@@ -25,12 +26,9 @@ class RulesService : public KeyedService {
   ~RulesService() override;
 
   Verdict GetPrintVerdict(const GURL& printed_page_url) const;
-
-  // TODO(b/307291932): Once crrev.com/c/5054488 lands, implement this method.
-  // Verdict GetPasteVerdict(
-  //     const content::ClipboardEndpoint& source,
-  //     const content::ClipboardEndpoint& destination,
-  //     const content::ClipboardMetadata& metadata);
+  Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
+                          const content::ClipboardEndpoint& destination,
+                          const content::ClipboardMetadata& metadata) const;
 
  protected:
   friend class RulesServiceFactory;

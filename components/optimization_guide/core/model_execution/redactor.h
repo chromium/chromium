@@ -18,6 +18,7 @@ class RE2;
 
 namespace optimization_guide {
 
+// This structure matches the proto (RedactRule), see it for details.
 struct Rule {
   Rule();
   Rule(const Rule& r);
@@ -25,8 +26,10 @@ struct Rule {
 
   std::string regex;
   proto::RedactBehavior behavior;
-  // If supplied, replaces the matching string.
   std::optional<std::string> replacement_string;
+  std::optional<int> matching_group;
+  std::optional<int> min_pattern_length;
+  std::optional<int> max_pattern_length;
 };
 
 enum RedactResult {
@@ -48,23 +51,27 @@ class Redactor {
   RedactResult Redact(const std::string& input, std::string& output) const;
 
  private:
-  struct RuleImpl {
-    RuleImpl();
-    ~RuleImpl();
+  struct CachedRule {
+    CachedRule();
+    ~CachedRule();
+
+    Rule rule;
     std::unique_ptr<re2::RE2> re;
-    proto::RedactBehavior behavior;
-    std::optional<std::string> replacement_string;
   };
 
-  std::string GetReplacementString(const RuleImpl& rule,
-                                   std::string_view match) const;
+  static std::string GetReplacementString(const Rule& rule,
+                                          std::string_view match);
 
   // Processes a single regex, applying any redactions to `output`.
-  RedactResult ProcessRule(const RuleImpl& rule,
+  RedactResult ProcessRule(const CachedRule& cached_rule,
                            const std::string& input,
                            std::string& output) const;
 
-  std::vector<std::unique_ptr<RuleImpl>> rules_;
+  // Returns true if a match should be considered valid.
+  static bool IsValidMatchForRule(const Rule& rule,
+                                  const std::string_view& match);
+
+  std::vector<std::unique_ptr<CachedRule>> rules_;
 };
 
 }  // namespace optimization_guide

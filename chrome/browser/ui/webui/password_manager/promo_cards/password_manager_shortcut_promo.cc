@@ -8,6 +8,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -35,7 +36,7 @@ password_manager::PromoCardType PasswordManagerShortcutPromo::GetPromoCardType()
 }
 
 bool PasswordManagerShortcutPromo::ShouldShowPromo() const {
-  if (is_shortcut_installed_) {
+  if (is_shortcut_installed_ || !web_app::AreWebAppsEnabled(profile_)) {
     return false;
   }
 

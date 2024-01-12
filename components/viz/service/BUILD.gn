@@ -15,12 +15,34 @@ import("//third_party/jni_zero/jni_zero.gni")
 config("viz_service_implementation") {
 }
 
-viz_component("service") {
+source_set("viz_service_export") {
+  sources = [ "viz_service_export.h" ]
+}
+
+static_library("viz_debugger") {
   sources = [
     "debugger/rwlock.cc",
     "debugger/rwlock.h",
     "debugger/viz_debugger.cc",
     "debugger/viz_debugger.h",
+  ]
+
+  defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
+
+  deps = [
+    ":viz_service_export",
+    "//base",
+    "//components/viz/common:buildflags",
+    "//components/viz/service/debugger/mojom",
+    "//mojo/public/cpp/bindings",
+    "//skia",
+    "//skia:skia_core_public_headers",
+    "//ui/gfx/geometry",
+  ]
+}
+
+viz_component("service") {
+  sources = [
     "display/aggregated_frame.cc",
     "display/aggregated_frame.h",
     "display/bsp_tree.cc",
@@ -227,7 +249,6 @@ viz_component("service") {
     "transitions/surface_animation_manager.h",
     "transitions/transferable_resource_tracker.cc",
     "transitions/transferable_resource_tracker.h",
-    "viz_service_export.h",
   ]
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
@@ -269,6 +290,8 @@ viz_component("service") {
   ]
 
   public_deps = [
+    ":viz_debugger",
+    ":viz_service_export",
     "//base",
     "//cc",
     "//cc/animation",
@@ -545,6 +568,7 @@ viz_source_set("unit_tests") {
 
   deps = [
     ":service",
+    ":viz_debugger",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",

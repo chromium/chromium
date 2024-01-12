@@ -54,20 +54,19 @@ class DeviceSensorBrowserTest : public ContentBrowserTest {
         base::NullCallback());
   }
 
-  void DelayAndQuit(base::TimeDelta delay) {
-    base::PlatformThread::Sleep(delay);
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
-
   void WaitForAlertDialogAndQuitAfterDelay(base::TimeDelta delay) {
     ShellJavaScriptDialogManager* dialog_manager =
         static_cast<ShellJavaScriptDialogManager*>(
             shell()->GetJavaScriptDialogManager(shell()->web_contents()));
 
-    scoped_refptr<MessageLoopRunner> runner = new MessageLoopRunner();
+    base::RunLoop run_loop;
     dialog_manager->set_dialog_request_callback(base::BindOnce(
-        &DeviceSensorBrowserTest::DelayAndQuit, base::Unretained(this), delay));
-    runner->Run();
+        [](base::TimeDelta delay, base::OnceClosure quit_closure) {
+          base::PlatformThread::Sleep(delay);
+          std::move(quit_closure).Run();
+        },
+        delay, run_loop.QuitWhenIdleClosure()));
+    run_loop.Run();
   }
 
   std::unique_ptr<FakeSensorProvider> sensor_provider_;
@@ -210,7 +209,6 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, MotionNullTest) {
   EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
 }
 
-// Disabled due to flakiness: https://crbug.com/783891
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
                        MotionOnlySomeSensorsAreAvailableTest) {
   // The test page registers an event handler for motion events and

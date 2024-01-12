@@ -38,8 +38,9 @@ const int kScrollAreaHeight = 192;
 
 // This container has the right Layout() impl to use within a ScrollView.
 class ScrollableView : public views::View {
+  METADATA_HEADER(ScrollableView, views::View)
+
  public:
-  METADATA_HEADER(ScrollableView);
   ScrollableView() = default;
   ScrollableView(const ScrollableView&) = delete;
   ScrollableView& operator=(const ScrollableView&) = delete;
@@ -61,7 +62,7 @@ void ScrollableView::Layout() {
   views::View::Layout();
 }
 
-BEGIN_METADATA(ScrollableView, views::View)
+BEGIN_METADATA(ScrollableView)
 END_METADATA
 
 }  // namespace

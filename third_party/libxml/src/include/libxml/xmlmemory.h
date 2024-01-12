@@ -72,11 +72,11 @@ typedef char *(*xmlStrdupFunc)(const char *str);
 /** DOC_DISABLE */
 #ifdef LIBXML_THREAD_ALLOC_ENABLED
   #define XML_GLOBALS_ALLOC \
-    XML_OP(xmlMalloc, xmlMallocFunc, XML_EMPTY) \
-    XML_OP(xmlMallocAtomic, xmlMallocFunc, XML_EMPTY) \
-    XML_OP(xmlRealloc, xmlReallocFunc, XML_EMPTY) \
-    XML_OP(xmlFree, xmlFreeFunc, XML_EMPTY) \
-    XML_OP(xmlMemStrdup, xmlStrdupFunc, XML_EMPTY)
+    XML_OP(xmlMalloc, xmlMallocFunc, XML_NO_ATTR) \
+    XML_OP(xmlMallocAtomic, xmlMallocFunc, XML_NO_ATTR) \
+    XML_OP(xmlRealloc, xmlReallocFunc, XML_NO_ATTR) \
+    XML_OP(xmlFree, xmlFreeFunc, XML_NO_ATTR) \
+    XML_OP(xmlMemStrdup, xmlStrdupFunc, XML_NO_ATTR)
   #define XML_OP XML_DECLARE_GLOBAL
     XML_GLOBALS_ALLOC
   #undef XML_OP

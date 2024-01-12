@@ -23,8 +23,9 @@ struct SharingHubAction;
 // the content being shared.
 class SharingHubBubbleViewImpl : public SharingHubBubbleView,
                                  public LocationBarBubbleDelegateView {
+  METADATA_HEADER(SharingHubBubbleViewImpl, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(SharingHubBubbleViewImpl);
   // Bubble will be anchored to |anchor_view|.
   SharingHubBubbleViewImpl(views::View* anchor_view,
                            share::ShareAttempt attempt,

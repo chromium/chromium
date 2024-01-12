@@ -733,9 +733,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      secondary_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> primary_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> secondary_profile_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;
   base::FilePath crostini_mount_point_;

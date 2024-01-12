@@ -95,7 +95,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   mojo::Remote<mojom::DevicePairingDelegate> delegate_;
   mojo::Remote<mojom::KeyEnteredHandler> key_entered_handler_;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 
   // Client callback set in PairDevice(), to be invoked once pairing has
   // finished.

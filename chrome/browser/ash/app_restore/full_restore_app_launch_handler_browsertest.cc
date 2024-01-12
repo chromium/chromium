@@ -279,6 +279,9 @@ class FullRestoreAppLaunchHandlerBrowserTest
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
+    Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->SetLoginFinishedReportedForTesting();
   }
 
   void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {
@@ -1602,8 +1605,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
  protected:
-  raw_ptr<app_restore::ArcAppQueueRestoreHandler,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<app_restore::ArcAppQueueRestoreHandler, DanglingUntriaged>
       arc_app_queue_restore_handler_ = nullptr;
   AppRestoreArcTestHelper arc_helper_;
 
@@ -2771,6 +2773,13 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
 
   ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override {
     OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
+  }
+
+  void SetUpOnMainThread() override {
+    SystemWebAppIntegrationTest::SetUpOnMainThread();
+    Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->SetLoginFinishedReportedForTesting();
   }
 
   Browser* LaunchSystemWebApp(const GURL& gurl,

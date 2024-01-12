@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugisiska med internationellt tangentbord för USA</translation>
 <translation id="1629521517399325891">Användarcertifikatet är inte tillgängligt för nätverksautentisering.</translation>
 <translation id="1641780993263690097">kinesiska (pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer görs tillgängliga offline</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
 <translation id="1661207570040737402">Du har använt allt ditt lagringsutrymme på den delade Google Workspace-enheten.</translation>
 <translation id="1661867754829461514">Pinkod saknas</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Kalkylark i Google Dokument</translation>
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3486821258960016770">mongoliska</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fel.</translation>
 <translation id="3509680540198371098">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3511705761158917664">Förbereder synkronisering av <ph name="NUMBER_OF_ITEMS" /> objekt …</translation>
 <translation id="3522708245912499433">portugisiska</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Möjligheten att kopiera <ph name="COUNT" /> filer blockeras av administratörspolicyn</translation>
 <translation id="6509122719576673235">norska</translation>
 <translation id="6528513914570774834">Tillåt att andra användare på den här enheten kan använda det här nätverket</translation>
-<translation id="653019979737152879">Synkroniserar <ph name="FILE_NAME" /> ...</translation>
 <translation id="6549689063733911810">Senaste</translation>
 <translation id="6558280019477628686">Ett fel uppstod. Vissa objekt kanske inte har raderats.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> tas bort ...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Ge Linux-appar behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du är offline för närvarande. Filsynkroniseringen återupptas när du ansluter till internet.</translation>
 <translation id="7589661784326793847">Ett ögonblick</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> görs tillgänglig offline</translation>
 <translation id="7600126690270271294">serbiska</translation>
 <translation id="7603724359189955920">Rutnät</translation>
 <translation id="7627790789328695202">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Byt namn på filen och försök igen.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8147028810663464959">Teckenbredden är full</translation>
 <translation id="8151638057146502721">Konfigurera</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fel.}other{# fel.}}</translation>
 <translation id="8154842056504218462">Alla poster har markerats.</translation>
 <translation id="8157684860301034423">Det gick inte att hämta information om appen.</translation>
 <translation id="8175731104491895765">franska (Belgien)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Ge <ph name="VM_NAME" /> behörighet att komma åt filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Felaktig WEP-nyckel</translation>
 <translation id="8372852072747894550">grekiska</translation>
+<translation id="8377269993083688872">E-postlayouter</translation>
 <translation id="8386903983509584791">Sökningen har slutförts</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> har extraherats.</translation>
 <translation id="8395901698320285466">Dimensioner</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Välj fil att öppna</translation>
 <translation id="8577897833047451336">kroatiska</translation>
 <translation id="8578308463707544055">indonesiska</translation>
-<translation id="8579285237314169903">Synkroniserar <ph name="NUMBER_OF_FILES" /> objekt ...</translation>
 <translation id="8600173386174225982">Fillistan har ändrats till miniatyrvy.</translation>
 <translation id="8601932370724196034">Bildfil för Crostini</translation>
 <translation id="8609695766746872526">isländska</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Tillåt proxyservrar för delade nätverk</translation>
 <translation id="8790981080411996443">Person som vattnar blommor</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 varning.}other{# varningar.}}</translation>
 <translation id="8808686172382650546">Katt</translation>
 <translation id="8810671769985673465">Det gick inte att komprimera. Objektet finns: <ph name="FILE_NAME" /></translation>
 <translation id="8813284582615685103">spanska (Spanien)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Välj ett annat namn.</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 varning.}other{<ph name="COUNT" /> varningar.}}</translation>
 <translation id="908378762078012445">ryskt fonetiskt tangentbord (AATSEEL)</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9099674669267916096">Sidantal</translation>

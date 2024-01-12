@@ -5,11 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PAGE_H_
 #define CONTENT_PUBLIC_BROWSER_PAGE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
@@ -63,7 +64,7 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
 
   // The GURL for the page's web application manifest.
   // See https://w3c.github.io/manifest/#web-application-manifest
-  virtual const absl::optional<GURL>& GetManifestUrl() const = 0;
+  virtual const std::optional<GURL>& GetManifestUrl() const = 0;
 
   // The callback invoked when the renderer responds to a request for the main
   // frame document's manifest. The url will be empty if the document specifies
@@ -102,10 +103,10 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // Test version of `PageImpl::SetResizable` to allow tests outside of
   // //content to simulate the value normally set by the
   // window.setResizable(bool) API.
-  virtual void SetResizableForTesting(absl::optional<bool> resizable) = 0;
-  // Returns the value set by `window.setResizable(bool)` API or `absl::nullopt`
+  virtual void SetResizableForTesting(std::optional<bool> resizable) = 0;
+  // Returns the value set by `window.setResizable(bool)` API or `std::nullopt`
   // if unset which can override `BrowserView::CanResize`.
-  virtual absl::optional<bool> GetResizable() = 0;
+  virtual std::optional<bool> GetResizable() = 0;
 
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's

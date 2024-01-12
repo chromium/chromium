@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -128,6 +127,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
 
+    private @Nullable Profile mProfile;
     private @Nullable TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
     private @Nullable TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
@@ -202,7 +202,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     }
 
     /** Post-native initialization. */
-    public void initWithNative() {
+    public void initWithNative(@NonNull Profile profile) {
+        assert profile != null;
+        mProfile = profile;
         if (mMode != TabListCoordinator.TabListMode.GRID) return;
 
         if (ChromeFeatureList.sArchiveTabService.isEnabled()) {
@@ -211,6 +213,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             mTabSuggestionMessageService =
                     new TabSuggestionMessageService(
                             mContext,
+                            profile,
                             mCurrentTabModelFilterSupplier,
                             mTabListEditorControllerSupplier::get);
             mTabSuggestionsOrchestrator.addObserver(mTabSuggestionMessageService);
@@ -219,7 +222,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         mTabGridIphDialogCoordinator =
                 new TabGridIphDialogCoordinator(mContext, mContainer, mModalDialogManager);
-        IphMessageService iphMessageService = new IphMessageService(mTabGridIphDialogCoordinator);
+        IphMessageService iphMessageService =
+                new IphMessageService(profile, mTabGridIphDialogCoordinator);
         mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
@@ -228,7 +232,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             mIncognitoReauthPromoMessageService =
                     new IncognitoReauthPromoMessageService(
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
-                            Profile.getLastUsedRegularProfile(),
+                            profile,
                             mContext,
                             ChromeSharedPreferences.getInstance(),
                             mIncognitoReauthManager,
@@ -255,8 +259,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         removeAllAppendedMessage();
         if (tabCount > 0) {
             if (mPriceMessageService != null
-                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
-                            Profile.getLastUsedRegularProfile())) {
+                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile)) {
                 mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
             }
             appendMessagesTo(tabCount);
@@ -281,8 +284,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     @Override
     public void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData) {
         if (mPriceMessageService == null
-                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
-                        Profile.getLastUsedRegularProfile())
+                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile)
                 || mMessageCardProviderCoordinator.isMessageShown(
                         MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME)) {
             return;
@@ -367,8 +369,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     }
 
     private void mayAddIncognitoReauthPromoCard(PropertyModel model) {
-        if (mIncognitoReauthPromoMessageService.isIncognitoReauthPromoMessageEnabled(
-                Profile.getLastUsedRegularProfile())) {
+        if (mIncognitoReauthPromoMessageService.isIncognitoReauthPromoMessageEnabled(mProfile)) {
             mTabListCoordinator.addSpecialListItemToEnd(TabProperties.UiType.LARGE_MESSAGE, model);
             mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         }
@@ -450,12 +451,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
                 MessageCardViewBinder::bind);
 
-        if (shouldRegisterLargeMessageItemType()) {
-            tabListCoordinator.registerItemType(
-                    TabProperties.UiType.LARGE_MESSAGE,
-                    new LayoutViewBuilder(R.layout.large_message_card_item),
-                    LargeMessageCardViewBinder::bind);
-        }
+        tabListCoordinator.registerItemType(
+                TabProperties.UiType.LARGE_MESSAGE,
+                new LayoutViewBuilder(R.layout.large_message_card_item),
+                LargeMessageCardViewBinder::bind);
 
         if (ChromeFeatureList.sArchiveTabService.isEnabled()) {
             tabListCoordinator.registerItemType(
@@ -471,22 +470,15 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
     }
 
-    private boolean shouldRegisterLargeMessageItemType() {
-        if (ProfileManager.isInitialized()
-                && PriceTrackingFeatures.isPriceTrackingEnabled(
-                        Profile.getLastUsedRegularProfile())) {
-            return true;
-        }
-        return IncognitoReauthManager.isIncognitoReauthFeatureAvailable();
-    }
-
     private void setUpPriceTracking() {
-        if (PriceTrackingFeatures.isPriceTrackingEnabled(Profile.getLastUsedRegularProfile())) {
+        assert mProfile != null;
+        if (PriceTrackingFeatures.isPriceTrackingEnabled(mProfile)) {
             PriceDropNotificationManager notificationManager =
                     PriceDropNotificationManagerFactory.create();
             if (mPriceMessageService == null) {
                 mPriceMessageService =
                         new PriceMessageService(
+                                mProfile,
                                 mTabListCoordinator,
                                 mPriceWelcomeMessageReviewActionProvider,
                                 notificationManager);

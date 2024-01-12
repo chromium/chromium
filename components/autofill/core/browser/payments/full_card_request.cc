@@ -18,11 +18,11 @@
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -113,10 +113,10 @@ void FullCardRequest::GetFullCardImpl(
 
   // Only one request can be active at a time. If the member variable
   // |result_delegate_| is already set, then immediately reject the new request
-  // through the method parameter |result_delegate_|.
+  // through the method parameter |result_delegate|.
   if (result_delegate_) {
-    result_delegate_->OnFullCardRequestFailed(card_type,
-                                              FailureType::GENERIC_FAILURE);
+    result_delegate->OnFullCardRequestFailed(card_type,
+                                             FailureType::GENERIC_FAILURE);
     return;
   }
   result_delegate_ = result_delegate;
@@ -182,7 +182,7 @@ void FullCardRequest::GetFullCardImpl(
   }
 
   if (should_unmask_card_) {
-    autofill_client_->LoadRiskData(
+    autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
         base::BindOnce(&FullCardRequest::OnDidGetUnmaskRiskData,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -259,7 +259,7 @@ void FullCardRequest::OnDidGetUnmaskRiskData(const std::string& risk_data) {
 }
 
 void FullCardRequest::SendUnmaskCardRequest() {
-  real_pan_request_timestamp_ = AutofillTickClock::NowTicks();
+  real_pan_request_timestamp_ = base::TimeTicks::Now();
   payments_network_interface_->UnmaskCard(
       *request_, base::BindOnce(&FullCardRequest::OnDidGetRealPan,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -285,11 +285,11 @@ void FullCardRequest::OnDidGetRealPan(
   AutofillClient::PaymentsRpcCardType card_type = response_details.card_type;
   if (!request_->user_response.cvc.empty()) {
     AutofillMetrics::LogRealPanDuration(
-        AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result,
+        base::TimeTicks::Now() - real_pan_request_timestamp_, result,
         card_type);
   } else if (request_->fido_assertion_info.has_value()) {
     autofill_metrics::LogCardUnmaskDurationAfterWebauthn(
-        AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result,
+        base::TimeTicks::Now() - real_pan_request_timestamp_, result,
         card_type);
   }
 

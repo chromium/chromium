@@ -38,7 +38,7 @@
 #include "ash/test/test_ash_web_view.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -398,7 +398,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
 
 TEST_F(AmbientControllerTest,
        CloseAmbientScreenUponPowerButtonClickInTabletMode) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();

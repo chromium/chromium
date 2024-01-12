@@ -57,12 +57,10 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
                                      base::OnceClosure success_callback,
                                      StringErrorCallback error_callback);
 
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<NetworkConfigurationRemover, ExperimentalAsh>
-      network_configuration_remover_;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<NetworkConfigurationRemover> network_configuration_remover_;
 
   base::WeakPtrFactory<WifiHotspotDisconnectorImpl> weak_ptr_factory_{this};
 };

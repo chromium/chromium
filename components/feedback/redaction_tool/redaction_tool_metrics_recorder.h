@@ -25,9 +25,27 @@ enum class CreditCardDetection {
   kMaxValue = kValidated,
 };
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "RedactionToolCaller" in //tools/metrics/histograms/enums.xml.
+enum class RedactionToolCaller {
+  kSysLogUploader = 1,
+  kSysLogFetcher = 2,
+  kSupportTool = 3,
+  kErrorReporting = 4,
+  kFeedbackTool = 5,
+  kBrowserSystemLogs = 6,
+  kUnitTest = 7,
+  kUndetermined = 8,
+  kUnknown = 9,
+  kMaxValue = kUnknown,
+};
+
 inline constexpr char kPIIRedactedHistogram[] = "Feedback.RedactionTool";
 inline constexpr char kCreditCardRedactionHistogram[] =
     "Feedback.RedactionTool.CreditCardMatch";
+inline constexpr char kRedactionToolCallerHistogram[] =
+    "Feedback.RedactionTool.Caller";
 
 // This class is the platform independent interface to record histograms using
 // the platform specific libraries.
@@ -49,6 +67,9 @@ class RedactionToolMetricsRecorder {
   // Records the `step` that was reached when validating a series of numbers
   // against credit card checks.
   virtual void RecordCreditCardRedactionHistogram(CreditCardDetection step) = 0;
+
+  // Records the caller who initiated the call to the Redaction Tool.
+  virtual void RecordRedactionToolCallerHistogram(RedactionToolCaller step) = 0;
 
   // Records the `time_spent` in milliseconds for redacting an input text.
   virtual void RecordTimeSpentRedactingHistogram(

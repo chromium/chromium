@@ -109,7 +109,7 @@ class ScreenlockBridge {
   ScreenlockBridge();
   ~ScreenlockBridge();
 
-  raw_ptr<LockHandler, ExperimentalAsh> lock_handler_ = nullptr;  // Not owned
+  raw_ptr<LockHandler> lock_handler_ = nullptr;  // Not owned
 
   // The last focused user's id.
   AccountId focused_account_id_;

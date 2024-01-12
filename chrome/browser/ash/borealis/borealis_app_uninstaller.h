@@ -33,7 +33,7 @@ class BorealisAppUninstaller {
   void Uninstall(std::string app_id, OnUninstalledCallback callback);
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace borealis

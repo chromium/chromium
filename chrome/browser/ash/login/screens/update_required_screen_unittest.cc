@@ -54,10 +54,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Configure the browser to use Hands-Off Enrollment.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-
     // Initialize objects needed by `UpdateRequiredScreen`.
     wizard_context_ = std::make_unique<WizardContext>();
     fake_view_ = std::make_unique<FakeUpdateRequiredScreenHandler>();
@@ -108,11 +104,10 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   // Will be deleted in `network_portal_detector::Shutdown()`.
-  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged>
       mock_network_portal_detector_;
   // Will be deleted in `DBusThreadManager::Shutdown()`.
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
-      fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
   // Initializes NetworkHandler and required DBus clients.
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 

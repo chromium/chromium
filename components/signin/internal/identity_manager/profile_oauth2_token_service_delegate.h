@@ -55,7 +55,8 @@ class ProfileOAuth2TokenServiceDelegate {
   CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) = 0;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) = 0;
 
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.

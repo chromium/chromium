@@ -48,18 +48,28 @@ void AXVirtualObject::AddChildren() {
   if (!accessible_node_)
     return;
 
-  DCHECK(children_dirty_);
-  children_dirty_ = false;
+  CHECK(NeedsToUpdateChildren());
 
   for (const auto& child : accessible_node_->GetChildren()) {
     AXObject* ax_child = AXObjectCache().GetOrCreate(child, this);
     if (!ax_child)
       continue;
+    if (ChildrenNeedToUpdateCachedValues()) {
+      ax_child->InvalidateCachedValues();
+    }
+    // Update cached values preemptively, where we can control the
+    // notify_parent_of_ignored_changes parameter, so that we do not try to
+    // notify a parent of children changes (which would be redundant as we are
+    // processing children changed on the parent).
+    ax_child->UpdateCachedAttributeValuesIfNeeded(
+        /*notify_parent_of_ignored_changes*/ false);
     DCHECK(!ax_child->IsDetached());
     DCHECK(ax_child->AccessibilityIsIncludedInTree());
 
     children_.push_back(ax_child);
   }
+
+  SetNeedsToUpdateChildren(false);
 }
 
 const AtomicString& AXVirtualObject::GetAOMPropertyOrARIAAttribute(

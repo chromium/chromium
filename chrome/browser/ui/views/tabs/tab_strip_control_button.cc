@@ -211,6 +211,7 @@ void TabStripControlButton::UpdateColors() {
     return;
   }
 
+  SetEnabledTextColorIds(foreground_frame_active_color_id_);
   UpdateBackground();
   UpdateInkDrop();
   UpdateIcon();
@@ -328,5 +329,5 @@ void TabStripControlButton::AnimateToStateForTesting(
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
 }
 
-BEGIN_METADATA(TabStripControlButton, views::LabelButton)
+BEGIN_METADATA(TabStripControlButton)
 END_METADATA

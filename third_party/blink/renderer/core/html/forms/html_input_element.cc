@@ -37,6 +37,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_selection_mode.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -90,7 +91,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -1352,7 +1352,9 @@ ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
     return ScriptValue::CreateNull(isolate);
   return ScriptValue(
       isolate,
-      ToV8(base::Time::FromMillisecondsSinceUnixEpoch(date), script_state));
+      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
+          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date))
+          .ToLocalChecked());
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,

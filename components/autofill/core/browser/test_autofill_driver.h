@@ -85,8 +85,6 @@ class TestAutofillDriverTemplate : public T {
       mojom::AutofillSuggestionAvailability suggestion_availability) override {}
   void PopupHidden() override {}
   net::IsolationInfo IsolationInfo() override { return isolation_info_; }
-  void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) override {}
   void TriggerFormExtractionInDriverFrame() override {}
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
@@ -98,9 +96,10 @@ class TestAutofillDriverTemplate : public T {
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override {}
 
-  // The return value contains the members (field, type) of `field_type_map` for
-  // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
-  std::vector<FieldGlobalId> ApplyFormAction(
+  // The return value contains the FieldGlobalIds of all elements (field_id,
+  // type) of `field_type_map` for which
+  // `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
+  base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form_data,

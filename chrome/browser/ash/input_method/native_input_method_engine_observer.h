@@ -182,7 +182,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                   ime::mojom::InputMethodMetadataPtr metadata);
 
   // Not owned by this class.
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
   raw_ptr<EditorEventSink> editor_event_sink_;
 
   std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;

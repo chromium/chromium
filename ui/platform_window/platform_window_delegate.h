@@ -43,7 +43,12 @@ enum class PlatformWindowState {
   kSnappedPrimary,
   kSnappedSecondary,
   kFloated,
+  kPinnedFullscreen,
+  kTrustedPinnedFullscreen,
 };
+
+COMPONENT_EXPORT(PLATFORM_WINDOW)
+bool IsPlatformWindowStateFullscreen(PlatformWindowState state);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 enum class PlatformFullscreenType {
@@ -152,7 +157,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnWindowStateChanged(PlatformWindowState old_state,
                                     PlatformWindowState new_state) = 0;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Notifies the delegate that the tiled state of the window edges has changed.
   virtual void OnWindowTiledStateChanged(WindowTiledEdges new_tiled_edges);
 #endif

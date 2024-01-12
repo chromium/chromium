@@ -4,10 +4,13 @@
 
 package chrome.android.junit.src.org.chromium.chrome.browser.compositor.scene_layer;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -132,7 +135,9 @@ public class TabStripSceneLayerTest {
                 mStripLayoutTabs,
                 1.f,
                 0,
-                -1);
+                -1,
+                Color.YELLOW,
+                0.3f);
 
         // Verify JNI calls.
         verify(mTabStripSceneMock)
@@ -154,5 +159,15 @@ public class TabStripSceneLayerTest {
                         mResourceManager);
         verify(mTabStripSceneMock)
                 .updateTabStripLeftFade(1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0);
+        verify(mTabStripSceneMock)
+                .updateTabStripLayer(
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        anyInt(),
+                        anyInt(),
+                        /* yOffset= */ eq(1.f),
+                        anyInt(),
+                        /* scrimColor= */ eq(Color.YELLOW),
+                        /* scrimOpacity= */ eq(0.3f));
     }
 }

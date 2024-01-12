@@ -5,13 +5,15 @@
     await dp.Network.enable();
     await dp.Audits.enable();
 
-    // Set the cookie.
+    // Set the cookie. Make sure the cookie won't be excluded by other reasons
+    // to be able to have the WARN_THIRD_PARTY_PHASEOUT reason.
     const response = await dp.Network.setCookie({
       url: 'https://example.test:8443',
       secure: true,
       name: 'foo',
       value: 'bar',
       sameSite: 'None',
+      sourcePort: 8443,
     });
 
     if (response.error)

@@ -372,10 +372,8 @@ void AddCacheHeaders(net::HttpResponseHeaders& headers,
   std::string hash =
       base::StringPrintf("%" PRId64, last_modified_time.ToInternalValue());
   hash = base::SHA1HashString(hash);
-  std::string etag;
-  base::Base64Encode(hash, &etag);
-  etag = "\"" + etag + "\"";
-  headers.SetHeader("ETag", etag);
+  headers.SetHeader(
+      "ETag", base::StringPrintf(R"("%s")", base::Base64Encode(hash).c_str()));
 
   // Also force revalidation.
   headers.SetHeader("cache-control", "no-cache");

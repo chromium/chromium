@@ -11,6 +11,9 @@ namespace crosapi {
 // trailing "." is intentional.
 const char kLacrosAppIdPrefix[] = "org.chromium.lacros.";
 
+// The default Ash-side data directory.
+const char kAshDataDir[] = "/home/chronos";
+
 // The default user-data-directory for Lacros.
 // NOTE: This is security sensitive. The directory must be inside the encrypted
 // user data partition.

@@ -73,6 +73,7 @@ const char kHealthCheckSwitch[] = "healthcheck";
 
 const char kEnterpriseSwitch[] = "enterprise";  // backward-compatibility.
 const char kSilentSwitch[] = "silent";          // backward-compatibility.
+const char kAlwaysLaunchCmdSwitch[] = "alwayslaunchcmd";
 const char kHandoffSwitch[] = "handoff";        // backward-compatibility.
 const char kOfflineDirSwitch[] = "offlinedir";  // backward-compatibility.
 const char kAppArgsSwitch[] = "appargs";        // backward-compatibility.

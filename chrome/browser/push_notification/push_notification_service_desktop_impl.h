@@ -27,7 +27,7 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
   // KeyedService:
   void Shutdown() override;
 
-  const raw_ptr<PrefService> pref_service_;
+  raw_ptr<const PrefService> pref_service_;
 };
 
 }  // namespace push_notification

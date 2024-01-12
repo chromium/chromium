@@ -128,7 +128,7 @@ class MockNetwork {
         response.body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     CHECK_EQ(MOJO_RESULT_OK, result);
     client->OnReceiveResponse(std::move(response_head), std::move(consumer),
-                              absl::nullopt);
+                              std::nullopt);
 
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;
@@ -406,7 +406,7 @@ class BodyDataPipeTestURLLoaderFactory final
 
     client->OnReceiveResponse(std::move(response_head),
                               std::move(body_consumer),
-                              /*cached_metadata=*/absl::nullopt);
+                              /*cached_metadata=*/std::nullopt);
 
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;

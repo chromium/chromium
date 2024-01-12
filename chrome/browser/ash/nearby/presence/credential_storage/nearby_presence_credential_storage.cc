@@ -362,7 +362,8 @@ void NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized(
   // public databases.
   if (private_db_initialization_status !=
       leveldb_proto::Enums::InitStatus::kOK) {
-    // TODO(b/287334363): Emit a failure metric.
+    metrics::RecordCredentialStoragePrivateInitializationResult(
+        /*success=*/false);
     LOG(ERROR) << __func__
                << ": failed to initialize private credential database with "
                   "initialization status: "
@@ -370,6 +371,9 @@ void NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized(
     std::move(on_fully_initialized).Run(/*success=*/false);
     return;
   }
+
+  metrics::RecordCredentialStoragePrivateInitializationResult(
+      /*success=*/true);
 
   // Attempt to initialize the local public credential database. Iff successful,
   // then attempt to initialize the remote public credential database.
@@ -385,7 +389,8 @@ void NearbyPresenceCredentialStorage::OnLocalPublicDatabaseInitialized(
   // remote public database.
   if (local_public_db_initialization_status !=
       leveldb_proto::Enums::InitStatus::kOK) {
-    // TODO(b/287334363): Emit a failure metric.
+    metrics::RecordCredentialStorageLocalPublicInitializationResult(
+        /*success=*/false);
     LOG(ERROR) << __func__
                << ": failed to initialize local public credential database "
                   "with initialization status: "
@@ -393,6 +398,9 @@ void NearbyPresenceCredentialStorage::OnLocalPublicDatabaseInitialized(
     std::move(on_fully_initialized).Run(/*success=*/false);
     return;
   }
+
+  metrics::RecordCredentialStorageLocalPublicInitializationResult(
+      /*success=*/true);
 
   remote_public_db_->Init(base::BindOnce(
       &NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized,
@@ -404,7 +412,8 @@ void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
     leveldb_proto::Enums::InitStatus remote_public_db_initialization_status) {
   if (remote_public_db_initialization_status !=
       leveldb_proto::Enums::InitStatus::kOK) {
-    // TODO(b/287334363): Emit a failure metric.
+    metrics::RecordCredentialStorageRemotePublicInitializationResult(
+        /*success=*/false);
     LOG(ERROR) << __func__
                << ": failed to initialize remote public credential database "
                   "with initialization status: "
@@ -412,6 +421,9 @@ void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
     std::move(on_fully_initialized).Run(/*success=*/false);
     return;
   }
+
+  metrics::RecordCredentialStorageRemotePublicInitializationResult(
+      /*success=*/true);
 
   CHECK(pending_receiver_);
   // All databases were successfully initialized, so it's safe to process

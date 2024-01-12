@@ -79,7 +79,7 @@ class MetadataTable {
   base::Value::List installed_items_;
 
   // Local state PrefService.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace component_updater

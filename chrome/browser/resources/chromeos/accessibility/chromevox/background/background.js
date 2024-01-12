@@ -99,6 +99,7 @@ export class Background extends ChromeVoxState {
     ChromeVoxPrefs.init();
     ChromeVoxRange.init();
     TtsBackground.init();
+    LogStore.init();
 
     ChromeVoxState.instance = new Background();
 
@@ -117,7 +118,6 @@ export class Background extends ChromeVoxState {
     JaPhoneticData.init(JaPhoneticMap.MAP);
     LiveRegions.init();
     LocaleOutputHelper.init();
-    LogStore.init();
     LogUrlWatcher.init();
     PanelBackground.init();
     RangeAutomationHandler.init();

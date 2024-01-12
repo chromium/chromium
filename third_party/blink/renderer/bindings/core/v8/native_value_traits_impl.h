@@ -1262,6 +1262,15 @@ struct NativeValueTraits<IDLOptional<IDLSequence<T>>>
 };
 
 // Frozen array types
+//
+// Just for convenience, NativeValueTraits<IDLArray<T>> returns a mutable
+// (Heap)Vector<T> rather than an immutable FrozenArray<T>. It's easy (and cheap
+// when the move semantics is used) to convert a (Heap)Vector<T> to a
+// FrozenArray<T>, but the reverse conversion is not.
+//
+// Note that it's possible that Blink implementation wants to make some
+// modifications on the sequence before making it frozen. Thus this returns
+// a mutable (Heap)Vector.
 template <typename T>
 struct NativeValueTraits<IDLArray<T>>
     : public NativeValueTraits<IDLSequence<T>> {};

@@ -233,7 +233,7 @@ class CONTENT_EXPORT MediaDevicesManager
     // The previously seen device ID salt for this subscription, to be used only
     // to tell if a new salt has been generated, meaning the subscription should
     // be notified that device IDs have changed.
-    absl::optional<std::string> last_seen_device_id_salt_;
+    std::optional<std::string> last_seen_device_id_salt_;
   };
 
   // Class containing the state of each spawned enumeration. This state is
@@ -304,7 +304,7 @@ class CONTENT_EXPORT MediaDevicesManager
   void GotAudioInputCapabilities(
       size_t state_index,
       size_t capabilities_index,
-      const absl::optional<media::AudioParameters>& parameters);
+      const std::optional<media::AudioParameters>& parameters);
   void FinalizeDevicesEnumerated(EnumerationState enumeration_state);
 
   std::vector<VideoInputDeviceCapabilitiesPtr> ComputeVideoInputCapabilities(

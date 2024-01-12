@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_H_
 
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -77,6 +78,8 @@ class PrimaryAccountMutator {
   //
   // The account state changes will be recorded in UMA, attributed to the
   // provided `access_point`.
+  // `prefs_committed_callback` is called once the primary account preferences
+  // are written to the persistent storage.
   // TODO(crbug.com/1261772): Don't set a default `access_point`. All callsites
   //     should provide a valid value.
   // TODO(crbug.com/1462858): ConsentLevel::kSync is being migrated away from,
@@ -87,7 +90,8 @@ class PrimaryAccountMutator {
       const CoreAccountId& account_id,
       ConsentLevel consent_level,
       signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) = 0;
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      base::OnceClosure prefs_committed_callback = base::NullCallback()) = 0;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Revokes sync consent from the primary account. We distinguish the following

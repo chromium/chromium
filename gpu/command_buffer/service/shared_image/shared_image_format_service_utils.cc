@@ -219,6 +219,8 @@ SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
       return SkYUVAInfo::PlaneConfig::kY_UV;
     case PlaneConfig::kY_UV_A:
       return SkYUVAInfo::PlaneConfig::kY_UV_A;
+    case PlaneConfig::kY_U_V_A:
+      return SkYUVAInfo::PlaneConfig::kY_U_V_A;
   }
 }
 
@@ -502,7 +504,8 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
                             : wgpu::TextureFormat::RG16Unorm;
   } else if (format == viz::LegacyMultiPlaneFormat::kYV12 ||
              format == viz::MultiPlaneFormat::kYV12 ||
-             format == viz::MultiPlaneFormat::kI420) {
+             format == viz::MultiPlaneFormat::kI420 ||
+             format == viz::MultiPlaneFormat::kI420A) {
     // All planes are R8.
     return wgpu::TextureFormat::R8Unorm;
   } else {

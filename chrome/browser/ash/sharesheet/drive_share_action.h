@@ -30,8 +30,7 @@ class DriveShareAction : public ::sharesheet::ShareAction {
                         bool contains_hosted_document) override;
 
  private:
-  raw_ptr<::sharesheet::SharesheetController, ExperimentalAsh> controller_ =
-      nullptr;
+  raw_ptr<::sharesheet::SharesheetController> controller_ = nullptr;
 };
 
 }  // namespace sharesheet

@@ -10,6 +10,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -21,7 +22,6 @@
 #include "base/memory/singleton.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -302,8 +302,7 @@ bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
   return pattern_set.MatchesURL(extension_url_.Resolve(resource));
 }
 
-ExtensionResource Extension::GetResource(
-    base::StringPiece relative_path) const {
+ExtensionResource Extension::GetResource(std::string_view relative_path) const {
   // We have some legacy data where resources have leading slashes.
   // See: http://crbug.com/121164
   if (!relative_path.empty() && relative_path[0] == '/')
@@ -370,7 +369,7 @@ bool Extension::ProducePEM(const std::string& input, std::string* output) {
   DCHECK(output);
   if (input.empty())
     return false;
-  base::Base64Encode(input, output);
+  *output = base::Base64Encode(input);
   return true;
 }
 

@@ -131,8 +131,7 @@ class AlmanacFetcherTest : public testing::Test {
     testing::Test::SetUp();
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_loader_factory_));
+        url_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
     auto icon_cache = std::make_unique<MockAlmanacIconCache>();

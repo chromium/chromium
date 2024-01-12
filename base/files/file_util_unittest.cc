@@ -1239,7 +1239,7 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   EXPECT_FALSE(mode & FILE_PERMISSION_READ_BY_USER);
   EXPECT_FALSE(PathIsReadable(file_name));
   // Make sure the file can't be read.
-  EXPECT_EQ(-1, ReadFile(file_name, buffer, kDataSize));
+  EXPECT_EQ(ReadFile(file_name, buffer), std::nullopt);
 
   // Give the read permission.
   EXPECT_TRUE(SetPosixFilePermissions(file_name, FILE_PERMISSION_READ_BY_USER));
@@ -1247,7 +1247,7 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   EXPECT_TRUE(mode & FILE_PERMISSION_READ_BY_USER);
   EXPECT_TRUE(PathIsReadable(file_name));
   // Make sure the file can be read.
-  EXPECT_EQ(kDataSize, ReadFile(file_name, buffer, kDataSize));
+  EXPECT_EQ(ReadFile(file_name, buffer), kDataSize);
 
   // Delete the file.
   EXPECT_TRUE(DeleteFile(file_name));
@@ -3410,33 +3410,24 @@ TEST_F(FileUtilTest, ReadFile) {
   std::vector<char> large_buffer(kTestData.size() * 2);
 
   // Read the file with smaller buffer.
-  int bytes_read_small = ReadFile(
-      file_path, &small_buffer[0], static_cast<int>(small_buffer.size()));
-  EXPECT_EQ(static_cast<int>(small_buffer.size()), bytes_read_small);
+  EXPECT_EQ(ReadFile(file_path, small_buffer), small_buffer.size());
   EXPECT_EQ(
       std::string(kTestData.begin(), kTestData.begin() + small_buffer.size()),
       std::string(small_buffer.begin(), small_buffer.end()));
 
   // Read the file with buffer which have exactly same size.
-  int bytes_read_exact = ReadFile(
-      file_path, &exact_buffer[0], static_cast<int>(exact_buffer.size()));
-  EXPECT_EQ(static_cast<int>(kTestData.size()), bytes_read_exact);
+  EXPECT_EQ(ReadFile(file_path, exact_buffer), kTestData.size());
   EXPECT_EQ(kTestData, std::string(exact_buffer.begin(), exact_buffer.end()));
 
   // Read the file with larger buffer.
-  int bytes_read_large = ReadFile(
-      file_path, &large_buffer[0], static_cast<int>(large_buffer.size()));
-  EXPECT_EQ(static_cast<int>(kTestData.size()), bytes_read_large);
+  EXPECT_EQ(ReadFile(file_path, large_buffer), kTestData.size());
   EXPECT_EQ(kTestData, std::string(large_buffer.begin(),
                                    large_buffer.begin() + kTestData.size()));
 
-  // Make sure the return value is -1 if the file doesn't exist.
+  // Make sure the read fails if the file doesn't exist.
   FilePath file_path_not_exist =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ReadFileNotExistTest"));
-  EXPECT_EQ(-1,
-            ReadFile(file_path_not_exist,
-                     &exact_buffer[0],
-                     static_cast<int>(exact_buffer.size())));
+  EXPECT_EQ(ReadFile(file_path_not_exist, exact_buffer), std::nullopt);
 }
 
 TEST_F(FileUtilTest, ReadFileToBytes) {

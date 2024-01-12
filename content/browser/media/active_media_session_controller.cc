@@ -87,10 +87,11 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
 
   // Stop listening to any keys that are currently being watched, but aren't in
   // |actions|.
-  // This loop is what tells SMTC to stop watching next/previous when a new tab
-  // is active because next/previous are in actions_ but NOT in actions
+  // This loop is what tells the media keys listener manager to stop watching
+  // next/previous when a new tab is active because next/previous are in
+  // actions_ but NOT in |actions|.
   for (const MediaSessionAction& action : actions_) {
-    absl::optional<ui::KeyboardCode> action_key_code =
+    std::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (!action_key_code.has_value())
       continue;
@@ -103,7 +104,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   // to necessary media keys.
   actions_.clear();
   for (const MediaSessionAction& action : actions) {
-    absl::optional<ui::KeyboardCode> action_key_code =
+    std::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (action_key_code.has_value()) {
       // It's okay to call this even on keys we're already listening to, since
@@ -122,7 +123,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
 }
 
 void ActiveMediaSessionController::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   position_ = position;
 }
 
@@ -262,7 +263,7 @@ MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
   }
 }
 
-absl::optional<ui::KeyboardCode>
+std::optional<ui::KeyboardCode>
 ActiveMediaSessionController::MediaSessionActionToKeyCode(
     MediaSessionAction action) const {
   switch (action) {
@@ -291,7 +292,7 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

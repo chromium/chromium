@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_FRAME_SINK_VIDEO_CAPTURE_DEVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/viz/public/cpp/compositing/video_capture_target_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor.h"
 
 namespace content {
@@ -108,10 +108,10 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   void OnLog(const std::string& message) final;
 
   // These are called to notify when the capture target has changed or was
-  // permanently lost. NOTE: a target can be temporarily absl::nullopt without
+  // permanently lost. NOTE: a target can be temporarily std::nullopt without
   // being permanently lost.
   virtual void OnTargetChanged(
-      const absl::optional<viz::VideoCaptureTarget>& target,
+      const std::optional<viz::VideoCaptureTarget>& target,
       uint32_t sub_capture_target_version);
   virtual void OnTargetPermanentlyLost();
 
@@ -187,12 +187,12 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // from any thread, will hop to the sequence on which the device was created.
   // This indirection is needed to support cancellation of handed out callbacks.
   void SetGpuCapabilitiesOnDevice(
-      absl::optional<gpu::Capabilities> capabilities);
+      std::optional<gpu::Capabilities> capabilities);
 
   // Current capture target. This is cached to resolve a race where
   // `OnTargetChanged()` can be called before the |capturer_| is created in
   // `OnCapturerCreated()`.
-  absl::optional<viz::VideoCaptureTarget> target_;
+  std::optional<viz::VideoCaptureTarget> target_;
 
   // The requested format, rate, and other capture constraints.
   media::VideoCaptureParams capture_params_;
@@ -209,7 +209,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;
 
   // Capabilities obtained from `viz::ContextProvider`.
-  absl::optional<gpu::Capabilities> gpu_capabilities_
+  std::optional<gpu::Capabilities> gpu_capabilities_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Instance that is responsible for monitoring for context loss events on the
@@ -227,7 +227,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // Set when `OnFatalError()` is called. This prevents any future
   // AllocateAndStartWithReceiver() calls from succeeding.
-  absl::optional<std::string> fatal_error_message_;
+  std::optional<std::string> fatal_error_message_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

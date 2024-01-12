@@ -172,9 +172,7 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
     log_dict.Set("timestamp", log->timestamp);
 
     if (include_log_proto_data) {
-      std::string base64_encoded_data;
-      base::Base64Encode(log->data, &base64_encoded_data);
-      log_dict.Set("data", base64_encoded_data);
+      log_dict.Set("data", base::Base64Encode(log->data));
     }
 
     log_dict.Set("size", static_cast<int>(log->data.length()));

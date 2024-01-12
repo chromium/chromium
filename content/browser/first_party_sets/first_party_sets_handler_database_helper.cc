@@ -43,7 +43,7 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
   old_sets.ForEachEffectiveSetEntry(
       old_config, [&](const net::SchemefulSite& old_member,
                       const net::FirstPartySetEntry& old_entry) {
-        absl::optional<net::FirstPartySetEntry> current_entry =
+        std::optional<net::FirstPartySetEntry> current_entry =
             current_sets.FindEntry(old_member, current_config);
         // Look for the removed sites and the ones whose primary has changed.
         if (!current_entry.has_value() ||

@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">เลื่อนไปทางขวา</translation>
 <translation id="3081586908890909590">เปลี่ยนเป็นโหมดบันทึกวิดีโอ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">เข้าร่วม "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3240426699337459095">คัดลอกลิงก์แล้ว</translation>
 <translation id="3354465018370944241">การตั้งค่ารูปภาพ</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">สัดส่วนภาพ</translation>
 <translation id="5057360777601936059">ขณะนี้กล้องไม่พร้อมใช้งาน
         โปรดตรวจสอบว่ากล้องเชื่อมต่ออย่างถูกต้อง</translation>
+<translation id="5157591164390831335">ตรวจพบ URL</translation>
 <translation id="5163387177077603948">ย้ายไปทางด้านขวา</translation>
 <translation id="5235304959032763950">16 ต่อ 9</translation>
 <translation id="5266635337630551423">มุมซ้ายบนของเอกสาร</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">ขอบคุณที่แสดงความคิดเห็นเกี่ยวกับแอปกล้องถ่ายรูป
 
 หากความคิดนั้นเห็นเกี่ยวกับคุณภาพของรูปภาพหรือวิดีโอ โปรดแนบตัวอย่างรูปภาพหรือวิดีโอแล้วอธิบายปัญหาที่พบ (เช่น รูปภาพมืดเกินไปหรือวัตถุไม่อยู่ในโฟกัส)</translation>
+<translation id="6519884562954018934">เข้าร่วม <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6617916774429601017">แสดงความละเอียดทั้งหมด</translation>
 <translation id="6631515515009660915">ปิดมิเรอร์</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">เปิด/ปิดเสียงไมโครโฟน ปิดเสียงอยู่</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8732462232047530626">แสดงตัวอย่างข้อมูลเมตา</translation>
+<translation id="874854738381978209">ตรวจพบเครือข่าย Wi-Fi</translation>
 <translation id="8815966864175525708">เปลี่ยนเป็นถ่ายภาพบุคคล</translation>
 <translation id="8828441885228359828">บันทึกต่อ</translation>
 <translation id="8870695351537079478">เริ่มบันทึกวิดีโอไม่ได้</translation>

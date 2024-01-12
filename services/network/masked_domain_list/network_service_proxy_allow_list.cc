@@ -29,19 +29,18 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
       network::mojom::IpProtectionProxyBypassPolicy::
           kFirstPartyToTopLevelFrame);
 
-  for (auto const& [domain, properties] : first_party_map) {
-    net::SchemeHostPortMatcher bypass_matcher;
-    for (auto property : properties) {
-      bypass_matcher.AddAsFirstRule(
-          net::SchemeHostPortMatcherRule::FromUntrimmedRawString(property));
-      bypass_matcher.AddAsFirstRule(
-          net::SchemeHostPortMatcherRule::FromUntrimmedRawString("." +
-                                                                 property));
-    }
+  auto mdl = masked_domain_list::MaskedDomainList();
 
-    allow_list.AddDomainWithBypass(domain, std::move(bypass_matcher));
+  for (auto const& [domain, properties] : first_party_map) {
+    auto* resourceOwner = mdl.add_resource_owners();
+    for (auto property : properties) {
+      resourceOwner->add_owned_properties(property);
+    }
+    auto* resource = resourceOwner->add_owned_resources();
+    resource->set_domain(domain);
   }
 
+  allow_list.UseMaskedDomainList(mdl);
   return allow_list;
 }
 
@@ -51,25 +50,6 @@ bool NetworkServiceProxyAllowList::IsEnabled() {
 
 bool NetworkServiceProxyAllowList::IsPopulated() {
   return url_matcher_with_bypass_.IsPopulated();
-}
-
-// static
-mojom::CustomProxyConfigPtr
-NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig() {
-  auto custom_proxy_config = network::mojom::CustomProxyConfig::New();
-  // Indicate to the NetworkServiceProxyDelegate that this is for IP Protection
-  // and it should use the allow list. In this situation, the delegate does not
-  // use any other fields from the custom proxy config.
-  custom_proxy_config->rules.restrict_to_network_service_proxy_allow_list =
-      true;
-  return custom_proxy_config;
-}
-
-void NetworkServiceProxyAllowList::AddDomainWithBypass(
-    const std::string& domain,
-    net::SchemeHostPortMatcher bypass_matcher) {
-  url_matcher_with_bypass_.AddDomainWithBypass(
-      domain, std::move(bypass_matcher), /*include_subdomains=*/true);
 }
 
 size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
@@ -131,18 +111,28 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
   for (auto owner : mdl.resource_owners()) {
     // Group domains by partition first so that only one set of the owner's
     // bypass rules are created per partition.
-    std::map<std::string, std::vector<std::string>> owned_domains_by_partition;
+    std::map<std::string, std::set<std::string>> owned_domains_by_partition;
     for (auto resource : owner.owned_resources()) {
       if (is_eligible(resource)) {
         const std::string partition =
             UrlMatcherWithBypass::PartitionMapKey(resource.domain());
-        owned_domains_by_partition[partition].emplace_back(resource.domain());
+        owned_domains_by_partition[partition].insert(resource.domain());
       }
     }
 
     for (const auto& [partition, domains] : owned_domains_by_partition) {
-      url_matcher_with_bypass_.AddMaskedDomainListRules(domains, partition,
-                                                        owner);
+      switch (proxy_bypass_policy_) {
+        case network::mojom::IpProtectionProxyBypassPolicy::kNone: {
+          url_matcher_with_bypass_.AddRulesWithoutBypass(domains, partition);
+          break;
+        }
+        case network::mojom::IpProtectionProxyBypassPolicy::
+            kFirstPartyToTopLevelFrame: {
+          url_matcher_with_bypass_.AddMaskedDomainListRules(domains, partition,
+                                                            owner);
+          break;
+        }
+      }
     }
   }
   base::UmaHistogramMemoryKB(

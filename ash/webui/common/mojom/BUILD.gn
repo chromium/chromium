@@ -33,3 +33,30 @@ mojom("shortcut_input_provider") {
 
   deps = [ "//ash/public/mojom:mojom" ]
 }
+
+mojom("sea_pen") {
+  disable_variants = true
+  webui_module_path = "/"
+  sources = [ "sea_pen.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.personalization_app.mojom.MantaStatusCode"
+          cpp = "::manta::MantaStatusCode"
+        },
+      ]
+      traits_headers = [ "sea_pen_mojom_traits.h" ]
+      traits_sources = [ "sea_pen_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ash/public/cpp",
+        "//ash/webui/personalization_app/proto",
+        "//components/manta",
+      ]
+    },
+  ]
+}

@@ -76,6 +76,11 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToListKeys = 27,
   kFailedToRemovePrivateKey = 28,
   kFailedToRemovePublicKey = 29,
+  kFailedToRemoveObjects = 30,
+  kFailedToCreateSpki = 31,
+  kFailedToGetPkcs11Id = 32,
+  kFailedToSearchForObjects = 33,
+  kPkcs11SessionFailure = 34,
 };
 
 // Handles for tokens on ChromeOS.
@@ -226,6 +231,9 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
   const std::optional<Token>& GetTokenInternal() const { return token_; }
   const Pkcs11Id& GetPkcs11IdInternal() const { return pkcs11_id_; }
   const PublicKeySpki& GetSpkiInternal() const { return pub_key_spki_; }
+  void SetPkcs11IdInternal(Pkcs11Id pkcs11_id) {
+    pkcs11_id_ = std::move(pkcs11_id);
+  }
 
  private:
   // Depending on how PrivateKeyHandle is constructed, some member variables

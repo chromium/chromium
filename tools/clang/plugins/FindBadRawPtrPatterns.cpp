@@ -293,7 +293,8 @@ void FindBadRawPtrPatterns(Options options,
   }
 
   RawPtrToStackAllocatedMatcher raw_ptr_to_stack(compiler);
-  if (options.check_raw_ptr_to_stack_allocated) {
+  if (options.check_raw_ptr_to_stack_allocated &&
+      !options.disable_check_raw_ptr_to_stack_allocated_error) {
     raw_ptr_to_stack.Register(match_finder);
   }
 

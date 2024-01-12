@@ -144,21 +144,20 @@ class ItemSuggestCacheTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<signin::IdentityTestEnvironment, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<signin::IdentityTestEnvironment, DanglingUntriaged>
       identity_test_env_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   ScopedFeatureList scoped_feature_list_;
-  const raw_ref<const base::Feature, ExperimentalAsh> feature_{
-      kLauncherItemSuggest};
+  const raw_ref<const base::Feature> feature_{kLauncherItemSuggest};
 
   const base::HistogramTester histogram_tester_;
 };

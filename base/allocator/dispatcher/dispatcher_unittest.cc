@@ -7,6 +7,7 @@
 
 #include "base/allocator/dispatcher/configuration.h"
 #include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
 #include "base/allocator/dispatcher/testing/tools.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -34,13 +35,12 @@ using testing::DispatcherTest;
 // Allocator and Allocator Shim, implementing an observer with Google Mock
 // results in endless recursion.
 struct ObserverMock {
-  void OnAllocation(void* address,
-                    size_t size,
-                    AllocationSubsystem sub_system,
-                    const char* type_name) {
+  void OnAllocation(const AllocationNotificationData& notification_data) {
     ++on_allocation_calls_;
   }
-  void OnFree(void* address) { ++on_free_calls_; }
+  void OnFree(const FreeNotificationData& notification_data) {
+    ++on_free_calls_;
+  }
 
   void Reset() {
     on_allocation_calls_ = 0;

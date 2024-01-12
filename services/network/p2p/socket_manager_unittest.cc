@@ -57,8 +57,8 @@ class P2PSocketManagerTest : public testing::Test {
         url_request_context_.get());
   }
 
-  std::unique_ptr<P2PSocketManager> socket_manager_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
+  std::unique_ptr<P2PSocketManager> socket_manager_;
   mojo::Remote<mojom::P2PSocketManager> socket_manager_remote_;
 
   base::test::TaskEnvironment task_environment_;

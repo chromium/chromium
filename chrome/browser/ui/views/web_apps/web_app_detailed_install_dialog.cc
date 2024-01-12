@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/web_apps/web_app_detailed_install_dialog.h"
+
 #include <memory>
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -11,7 +14,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/numerics/safe_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,7 +23,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_detailed_install_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -32,6 +33,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
@@ -362,7 +364,9 @@ void ShowWebAppDetailedInstallDialog(
                             gfx::Size(kIconSize, kIconSize));
 
   auto title = install_info->title;
-  auto start_url_host = install_info->start_url.host();
+  std::u16string start_url_host_formatted_for_display =
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          install_info->start_url);
   const std::u16string description = gfx::TruncateString(
       install_info->description, webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK);
@@ -378,7 +382,7 @@ void ShowWebAppDetailedInstallDialog(
           .SetInternalName("WebAppDetailedInstallDialog")
           .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
           .SetTitle(title)
-          .SetSubtitle(base::UTF8ToUTF16(start_url_host))
+          .SetSubtitle(start_url_host_formatted_for_display)
           .AddParagraph(
               ui::DialogModelLabel(description).set_is_secondary(),
               l10n_util::GetStringUTF16(

@@ -17,9 +17,9 @@ bool IsFlagSet(ArcGameControlsFlag flags, ArcGameControlsFlag flag) {
   return (flags & flag) == flag;
 }
 
-bool IsFlagChanged(ash::ArcGameControlsFlag new_flags,
-                   ash::ArcGameControlsFlag old_flags,
-                   ash::ArcGameControlsFlag flag) {
+bool IsFlagChanged(ArcGameControlsFlag new_flags,
+                   ArcGameControlsFlag old_flags,
+                   ArcGameControlsFlag flag) {
   return ((new_flags ^ old_flags) & flag) == flag;
 }
 

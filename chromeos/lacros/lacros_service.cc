@@ -59,6 +59,7 @@
 #include "chromeos/crosapi/mojom/eye_dropper.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
+#include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
@@ -88,6 +89,8 @@
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
+#include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
+#include "chromeos/crosapi/mojom/one_drive_notification_service.mojom.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
@@ -380,6 +383,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::Feedback,
                   &crosapi::mojom::Crosapi::BindFeedback,
                   Crosapi::MethodMinVersions::kBindFeedbackMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::FileChangeServiceBridge,
+      &crosapi::mojom::Crosapi::BindFileChangeServiceBridge,
+      Crosapi::MethodMinVersions::kBindFileChangeServiceBridgeMinVersion>();
   ConstructRemote<crosapi::mojom::FileManager,
                   &crosapi::mojom::Crosapi::BindFileManager,
                   Crosapi::MethodMinVersions::kBindFileManagerMinVersion>();
@@ -496,8 +503,17 @@ LacrosService::LacrosService()
       crosapi::mojom::NetworkingPrivate, &Crosapi::BindNetworkingPrivate,
       Crosapi::MethodMinVersions::kBindNetworkingPrivateMinVersion>();
 
+  ConstructRemote<
+      crosapi::mojom::OneDriveNotificationService,
+      &crosapi::mojom::Crosapi::BindOneDriveNotificationService,
+      Crosapi::MethodMinVersions::kBindOneDriveNotificationServiceMinVersion>();
+
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::NonclosableAppToastService,
+      &crosapi::mojom::Crosapi::BindNonclosableAppToastService,
+      Crosapi::MethodMinVersions::kBindNonclosableAppToastServiceMinVersion>();
   if (BrowserParamsProxy::Get()->UseCupsForPrinting()) {
     ConstructRemote<
         crosapi::mojom::PrintingMetrics,

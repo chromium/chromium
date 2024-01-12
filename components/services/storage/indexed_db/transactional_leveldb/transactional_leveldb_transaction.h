@@ -49,17 +49,16 @@ class TransactionalLevelDBTransaction
   TransactionalLevelDBTransaction& operator=(
       const TransactionalLevelDBTransaction&) = delete;
 
-  [[nodiscard]] leveldb::Status Put(const std::string_view& key,
-                                    std::string* value);
+  [[nodiscard]] leveldb::Status Put(std::string_view key, std::string* value);
 
-  [[nodiscard]] leveldb::Status Remove(const std::string_view& key);
+  [[nodiscard]] leveldb::Status Remove(std::string_view key);
 
   [[nodiscard]] leveldb::Status RemoveRange(
-      const std::string_view& begin,
-      const std::string_view& end,
+      std::string_view begin,
+      std::string_view end,
       LevelDBScopeDeletionMode deletion_mode);
 
-  [[nodiscard]] virtual leveldb::Status Get(const std::string_view& key,
+  [[nodiscard]] virtual leveldb::Status Get(std::string_view key,
                                             std::string* value,
                                             bool* found);
   [[nodiscard]] virtual leveldb::Status Commit(bool sync_on_commit);
@@ -151,11 +150,11 @@ class LevelDBDirectTransaction {
 
   virtual ~LevelDBDirectTransaction();
 
-  leveldb::Status Put(const std::string_view& key, const std::string* value);
-  virtual leveldb::Status Get(const std::string_view& key,
+  leveldb::Status Put(std::string_view key, const std::string* value);
+  virtual leveldb::Status Get(std::string_view key,
                               std::string* value,
                               bool* found);
-  void Remove(const std::string_view& key);
+  void Remove(std::string_view key);
   leveldb::Status Commit();
 
   TransactionalLevelDBDatabase* db() { return db_; }

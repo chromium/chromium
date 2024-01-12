@@ -41,7 +41,7 @@ bool IsValidTransform(const gfx::Transform& transform) {
   if (!transform.IsInvertible() || transform.HasPerspective())
     return false;
 
-  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   if (!decomp)
     return false;
 
@@ -456,7 +456,7 @@ BrowserXRRuntimeImpl::GetSupportedFeatures() {
 }
 
 #if BUILDFLAG(IS_WIN)
-absl::optional<CHROME_LUID> BrowserXRRuntimeImpl::GetLuid() const {
+std::optional<CHROME_LUID> BrowserXRRuntimeImpl::GetLuid() const {
   return device_data_->luid;
 }
 #endif

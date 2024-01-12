@@ -28,7 +28,8 @@ class IsolatedVRDeviceProvider
   ~IsolatedVRDeviceProvider() override;
 
   // If the VR API requires initialization that should happen here.
-  void Initialize(device::VRDeviceProviderClient* client) override;
+  void Initialize(device::VRDeviceProviderClient* client,
+                  content::WebContents* initializing_web_contents) override;
 
   // Returns true if initialization is complete.
   bool Initialized() override;

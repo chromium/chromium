@@ -64,7 +64,6 @@ namespace ash::onc {
 namespace {
 
 // Scheme strings for supported |net::ProxyServer::SCHEME_*| enum values.
-constexpr char kDirectScheme[] = "direct";
 constexpr char kQuicScheme[] = "quic";
 constexpr char kSocksScheme[] = "socks";
 constexpr char kSocks4Scheme[] = "socks4";
@@ -141,8 +140,6 @@ net::ProxyBypassRules ConvertOncExcludeDomainsToBypassRules(
 
 std::string SchemeToString(net::ProxyServer::Scheme scheme) {
   switch (scheme) {
-    case net::ProxyServer::SCHEME_DIRECT:
-      return kDirectScheme;
     case net::ProxyServer::SCHEME_HTTP:
       return url::kHttpScheme;
     case net::ProxyServer::SCHEME_SOCKS4:

@@ -14,8 +14,7 @@ Unmount::Unmount(RequestDispatcher* dispatcher,
                  storage::AsyncFileUtil::StatusCallback callback)
     : Operation(dispatcher, file_system_info), callback_(std::move(callback)) {}
 
-Unmount::~Unmount() {
-}
+Unmount::~Unmount() = default;
 
 bool Unmount::Execute(int request_id) {
   using extensions::api::file_system_provider::UnmountRequestedOptions;

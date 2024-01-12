@@ -313,9 +313,9 @@ void FillUploadField(AutofillUploadContents::Field* field,
                      const std::vector<unsigned>& validity_states);
 
 // Creates the structure of signatures that would be encoded by
-// FormStructure::EncodeUploadRequest() and FormStructure::EncodeQueryRequest()
-// and consumed by FormStructure::ParseQueryResponse() and
-// FormStructure::ParseApiQueryResponse().
+// `EncodeUploadRequest()` and `EncodeAutofillPageQueryRequest()`
+// and consumed by `ParseServerPredictionsQueryResponse()` and
+// `ProcessServerPredictionsQueryResponse()`.
 //
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);

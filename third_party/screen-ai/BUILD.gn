@@ -1,0 +1,11 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("screen_ai_linux") {
+  # Note that this group depends on data that must be used only for test. If we
+  # need to remove/update the testonly variable below, we must go through a
+  # security review.
+  testonly = true
+  data_deps = [ "//third_party/screen-ai/linux:screen_ai_resources" ]
+}

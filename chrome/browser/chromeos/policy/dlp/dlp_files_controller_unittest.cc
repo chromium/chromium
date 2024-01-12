@@ -105,8 +105,7 @@ class DlpFilesControllerTest : public DlpFilesTestBase {
 
   std::unique_ptr<MockDlpFilesController> files_controller_;
 
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
-      nullptr;
+  raw_ptr<storage::ExternalMountPoints> mount_points_ = nullptr;
 
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");

@@ -4,20 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DESKTOP_BOOKMARK_ITEM;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_ITEM_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_ITEM;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_ITEM_A;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.res.Resources;
@@ -49,14 +40,17 @@ import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
@@ -64,8 +58,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.url.GURL;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,6 +67,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkFolderPickerRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -82,10 +77,11 @@ public class BookmarkFolderPickerRenderTest {
                     new ParameterSet().value(false, true).name("CompactRow_NightModeEnabled"),
                     new ParameterSet().value(false, false).name("CompactRow_NightModeDisabled"));
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final Features.JUnitProcessor mFeaturesRule = new Features.JUnitProcessor();
+
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
-
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -94,14 +90,13 @@ public class BookmarkFolderPickerRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
     private final boolean mUseVisualRowLayout;
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
-    @Mock private BookmarkModel mBookmarkModel;
     @Mock private Runnable mFinishRunnable;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
@@ -114,6 +109,7 @@ public class BookmarkFolderPickerRenderTest {
     private BookmarkFolderPickerCoordinator mCoordinator;
     private ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private RecyclerView mRecyclerView;
+    private BookmarkModel mBookmarkModel;
 
     public BookmarkFolderPickerRenderTest(boolean useVisualRowLayout, boolean nightModeEnabled) {
         mUseVisualRowLayout = useVisualRowLayout;
@@ -126,6 +122,7 @@ public class BookmarkFolderPickerRenderTest {
 
     @Before
     public void setUp() throws Exception {
+        mBookmarkModel = runOnUiThreadBlocking(() -> FakeBookmarkModel.createModel());
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -134,7 +131,6 @@ public class BookmarkFolderPickerRenderTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
 
-        SharedBookmarkModelMocks.initMocks(mBookmarkModel);
 
         // Setup BookmarkImageFetcher.
         final Resources resources = mActivity.getResources();
@@ -179,16 +175,23 @@ public class BookmarkFolderPickerRenderTest {
                                     mBookmarkModel,
                                     mBookmarkUiPrefs,
                                     mShoppingService);
+                });
+    }
+
+    void createCoordinatorToMoveBookmarkIds(BookmarkId... ids) throws Exception {
+        runOnUiThreadBlocking(
+                () -> {
                     mCoordinator =
                             new BookmarkFolderPickerCoordinator(
                                     mActivity,
                                     mBookmarkModel,
-                                    Arrays.asList(URL_BOOKMARK_ID_A),
+                                    Arrays.asList(ids),
                                     mFinishRunnable,
                                     mAddNewFolderCoordinator,
                                     mBookmarkUiPrefs,
                                     mImprovedBookmarkRowCoordinator,
                                     mShoppingService);
+
                     mContentView.addView(mCoordinator.getView());
 
                     Toolbar toolbar = mContentView.findViewById(R.id.toolbar);
@@ -202,9 +205,22 @@ public class BookmarkFolderPickerRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testMoveBookmarkFromUserFolder() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mCoordinator.openFolderForTesting(FOLDER_BOOKMARK_ID_A));
+    public void testMoveBookmarkFromUserFolder() throws Exception {
+        BookmarkId folderId =
+                runOnUiThreadBlocking(
+                        () ->
+                                mBookmarkModel.addFolder(
+                                        mBookmarkModel.getMobileFolderId(), 0, "user folder"));
+        BookmarkId bookmarkId =
+                runOnUiThreadBlocking(
+                        () ->
+                                mBookmarkModel.addBookmark(
+                                        folderId,
+                                        0,
+                                        "user bookmark",
+                                        new GURL("https://test.com")));
+        createCoordinatorToMoveBookmarkIds(bookmarkId);
+
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "move_bookmark_from_user_folder");
     }
@@ -212,25 +228,63 @@ public class BookmarkFolderPickerRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testMoveBookmarkFromMobileBookmarks() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mCoordinator.openFolderForTesting(MOBILE_BOOKMARK_ID));
-        onView(withText(FOLDER_ITEM_A.getTitle()));
-        onView(withText(URL_ITEM_A.getTitle()));
+    public void testMoveBookmarkFromMobileBookmarks() throws Exception {
+        runOnUiThreadBlocking(
+                () ->
+                        mBookmarkModel.addFolder(
+                                mBookmarkModel.getMobileFolderId(), 0, "user folder"));
+        BookmarkId bookmarkId =
+                runOnUiThreadBlocking(
+                        () ->
+                                mBookmarkModel.addBookmark(
+                                        mBookmarkModel.getMobileFolderId(),
+                                        0,
+                                        "user bookmark",
+                                        new GURL("https://test.com")));
+        createCoordinatorToMoveBookmarkIds(bookmarkId);
+
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
+
         mRenderTestRule.render(mContentView, "move_bookmark_from_mobile_bookmarks");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testMoveBookmarkFromRoot() throws IOException {
+    public void testMoveBookmarkFromRoot() throws Exception {
+        BookmarkId bookmarkId =
+                runOnUiThreadBlocking(
+                        () ->
+                                mBookmarkModel.addBookmark(
+                                        mBookmarkModel.getMobileFolderId(),
+                                        0,
+                                        "user bookmark",
+                                        new GURL("https://test.com")));
+        createCoordinatorToMoveBookmarkIds(bookmarkId);
+
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mCoordinator.openFolderForTesting(ROOT_BOOKMARK_ID));
-        CriteriaHelper.pollUiThread(() -> mRecyclerView.getAdapter().getItemCount() == 4);
-        onView(withText(DESKTOP_BOOKMARK_ITEM.getTitle()));
-        onView(withText(READING_LIST_ITEM.getTitle()));
-        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
+                () -> mCoordinator.openFolderForTesting(mBookmarkModel.getRootFolderId()));
         mRenderTestRule.render(mContentView, "move_bookmark_from_root");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testMoveBookmarkFromRoot_withAccountFolders() throws Exception {
+        BookmarkId bookmarkId =
+                runOnUiThreadBlocking(
+                        () ->
+                                mBookmarkModel.addBookmark(
+                                        mBookmarkModel.getMobileFolderId(),
+                                        0,
+                                        "user bookmark",
+                                        new GURL("https://test.com")));
+        createCoordinatorToMoveBookmarkIds(bookmarkId);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mCoordinator.openFolderForTesting(mBookmarkModel.getRootFolderId()));
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
+        mRenderTestRule.render(mContentView, "move_bookmark_from_root_with_account");
     }
 }

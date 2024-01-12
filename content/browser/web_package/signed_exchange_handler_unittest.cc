@@ -212,7 +212,7 @@ class SignedExchangeHandlerTest
     SignedExchangeHandler::SetNetworkContextForTesting(nullptr);
     network::NetworkContext::SetCertVerifierForTesting(nullptr);
     signed_exchange_utils::SetVerificationTimeForTesting(
-        absl::optional<base::Time>());
+        std::optional<base::Time>());
     SetBrowserClientForTesting(original_client_);
   }
 
@@ -335,7 +335,7 @@ class SignedExchangeHandlerTest
         base::BindOnce(&SignedExchangeHandlerTest::OnHeaderFound,
                        base::Unretained(this)),
         std::move(cert_fetcher_factory_),
-        absl::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
+        std::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
         net::IPEndPoint(),
         std::make_unique<blink::WebPackageRequestMatcher>(
             net::HttpRequestHeaders(), std::string() /* accept_langs */),
@@ -352,12 +352,12 @@ class SignedExchangeHandlerTest
   }
 
   void ExpectHistogramValues(
-      absl::optional<SignedExchangeSignatureVerifier::Result> signature_result,
-      absl::optional<int32_t> cert_result,
-      absl::optional<net::ct::CTPolicyCompliance> ct_result,
-      absl::optional<bssl::OCSPVerifyResult::ResponseStatus>
+      std::optional<SignedExchangeSignatureVerifier::Result> signature_result,
+      std::optional<int32_t> cert_result,
+      std::optional<net::ct::CTPolicyCompliance> ct_result,
+      std::optional<bssl::OCSPVerifyResult::ResponseStatus>
           ocsp_response_status,
-      absl::optional<bssl::OCSPRevocationStatus> ocsp_revocation_status) {
+      std::optional<bssl::OCSPRevocationStatus> ocsp_revocation_status) {
     // CertVerificationResult histogram records negated net::Error code.
     if (cert_result.has_value())
       *cert_result = -*cert_result;
@@ -398,7 +398,7 @@ class SignedExchangeHandlerTest
 
   template <typename T>
   void ExpectZeroOrUniqueSample(const std::string& histogram_name,
-                                absl::optional<T> expected_value) {
+                                std::optional<T> expected_value) {
     if (expected_value.has_value())
       histogram_tester_.ExpectUniqueSample(histogram_name, *expected_value, 1);
     else
@@ -671,9 +671,9 @@ TEST_P(SignedExchangeHandlerTest, CertSha256Mismatch) {
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,
-      absl::nullopt /* cert_result */, absl::nullopt /* ct_result */,
-      absl::nullopt /* ocsp_response_status */,
-      absl::nullopt /* ocsp_revocation_status */);
+      std::nullopt /* cert_result */, std::nullopt /* ct_result */,
+      std::nullopt /* ocsp_response_status */,
+      std::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
@@ -701,8 +701,8 @@ TEST_P(SignedExchangeHandlerTest, VerifyCertFailure) {
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kSuccess, net::ERR_CERT_INVALID,
       net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
-      absl::nullopt /* ocsp_response_status */,
-      absl::nullopt /* ocsp_revocation_status */);
+      std::nullopt /* ocsp_response_status */,
+      std::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
@@ -866,8 +866,8 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
                         net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
                         net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                        absl::nullopt /* ocsp_response_status */,
-                        absl::nullopt /* ocsp_revocation_status */);
+                        std::nullopt /* ocsp_response_status */,
+                        std::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 }

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/goma/chromeos-amd64-generic-rel-goma-rbe-staging/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

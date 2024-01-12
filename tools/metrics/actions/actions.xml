@@ -7083,6 +7083,106 @@ should be able to be added at any place in this file.
   <description>Triggered when ther user visits the checkout page.</description>
 </action>
 
+<action name="Compose.ComposeRequest.CreateClicked">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when the user presses the &quot;Create&quot; button in the input
+    state of the Compose dialog. This is emitted when the button is pressed and
+    before the Compose request is made, at most once per Compose session.
+  </description>
+</action>
+
+<action name="Compose.ContextMenu.ItemSeen">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when the user opens the right-click context menu and the &quot;Help
+    me write&quot; menu item is available. This is emitted when the right-click
+    menu is opened.
+  </description>
+</action>
+
+<action name="Compose.DialogSeen.FirstRunDisclaimer">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    The Compose dialog can be shown in one of three UI states. The first run
+    disclaimer is shown as the first state if the user has never progressed past
+    it. This is emitted when the dialog is shown for a newly created session and
+    is in this disclaimer state. This is emitted at most once per Compose
+    session.
+  </description>
+</action>
+
+<action name="Compose.DialogSeen.FirstRunMSBB">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    The Compose dialog can be shown in one of three UI states. This dialog state
+    is shown if the user has not agreed to the MSBB setting, and is shown after
+    the FRE disclaimer (if relevant). This is emitted when the dialog is shown
+    for a newly created session and is in this MSBB state, or when the dialog
+    moves from the FRE disclaimer to the MSBB state by user action. This is
+    emitted at most once per Compose session.
+  </description>
+</action>
+
+<action name="Compose.DialogSeen.MainDialog">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    The Compose dialog can be shown in one of three UI states. The main dialog
+    encompasses the actual feature experience, and is shown after the first run
+    disclaimer and MSBB states (if they are relevant). This is emitted when the
+    dialog is shown for a newly created session and is in this main state, when
+    the dialog moves from the FRE disclaimer to this main state by user action,
+    or when the dialog is shown in this main state and the last state it was
+    open in was the MSBB state. This is emitted at most once per Compose
+    session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.CloseButtonClicked">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends because the close button of its
+    corresponding Compose dialog is pressed. This is emitted at most once per
+    session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.EndedImplicitly">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends implicitly. This is emitted when the
+    session is destroyed because the owning WebContents navigates or is
+    destroyed. This is emitted at most once per session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.InsertButtonClicked">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends because the &quot;Insert&quot; button of
+    its corresponding Compose dialog is pressed. This is emitted at most once
+    per session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.NewSessionWithSelectedText">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends because a dialog was opened with a text
+    selection from the same page field. This is emitted at most once per
+    session.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -7166,6 +7266,22 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ContentNotifications.Promo.Prompt.GoToSettingsTapped">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped 'Go to Settings' on the OS notification permission prompt.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.Prompt.NoThanksTapped">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped 'No Thanks' on the OS notification permission prompt.
+  </description>
+</action>
+
 <action name="ContentNotifications.Promo.SetUpList.Accepted">
   <owner>tinazwang@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
@@ -7189,6 +7305,42 @@ should be able to be added at any place in this file.
   <description>
     The user tapped 'Remind Me Later' in the SetUpList content notification
     promo and it dismissed.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.Snackbar.ActionButtonTapped">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped the action button in the confirmation snackbar when
+    successfully opt-in content notification.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.TopOfFeed.MainButtonTapped">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user has tapped on the main button to enable notifications from the Top
+    Of Feed Notifications Promo.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.TopOfFeed.Permission.Accepted">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user has accepted the OS prompt to enable notifications from the Top Of
+    Feed Notifications Promo.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.TopOfFeed.Permission.Declined">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user has declined on the OS prompt to disable notifications from the Top
+    Of Feed Notifications Promo.
   </description>
 </action>
 
@@ -8267,6 +8419,11 @@ should be able to be added at any place in this file.
 <action name="CriticalNotificationShown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Crosh_Run_top">
+  <owner>yuholong@google.com</owner>
+  <description>The user ran the command top in crosh.</description>
 </action>
 
 <action name="Crow.EntryPointShown">
@@ -9481,6 +9638,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ExperimentalAI_IPHPromo_SettingsPageOpened">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@chromium.org</owner>
+  <description>
+    The AI Settings page was opened from the displayed IPH promo for
+    Experimental AI. Recorded whenever the IPH promo is clicked to view
+    settings.
+  </description>
+</action>
+
 <action name="ExploreSites.ContextMenu">
   <owner>chili@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
@@ -10244,6 +10411,15 @@ should be able to be added at any place in this file.
   <obsolete>Deprecated 02/2017.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="FirstVisibleContentAfterBackPress">
+  <owner>lazzzis@google.com</owner>
+  <description>
+    Record that the first visible content is drawn (i.e. at the moment when
+    Startup.Android.Cold.TimeToFirstVisibleContent2) after a back press. Android
+    only.
+  </description>
 </action>
 
 <action name="Flash.JavaScriptUsed" not_user_triggered="true">
@@ -20515,6 +20691,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileDownloadRetryUpload">
+  <owner>qpubert@google.Com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    User attempted to retry uploading a file after the upload failed.
+  </description>
+</action>
+
 <action name="MobileExitStackView">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -30059,6 +30243,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ReviewAccountSettings_Impression_FromBookmarkManager"
+    not_user_triggered="true">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when showing review account settings promo in the bookmark manager.
+    iOS only.
+  </description>
+</action>
+
+<action name="ReviewAccountSettings_Impression_FromReadingListManager"
+    not_user_triggered="true">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when showing review account settings promo in the reading list
+    manager. iOS only.
+  </description>
+</action>
+
+<action name="ReviewAccountSettings_Tapped_FromBookmarkManager">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when the user taps the button to review account settings in the
+    bookmark manager. iOS only.
+  </description>
+</action>
+
+<action name="ReviewAccountSettings_Tapped_FromReadingListManager">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when the user taps the button to review account settings in the
+    reading list manager. iOS only.
+  </description>
+</action>
+
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.Dismissed">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -37547,6 +37769,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SystemBackBeforeFirstVisibleContent">
+  <owner>lazzzis@google.com</owner>
+  <description>
+    Records that a back press occurs before the first visible content is drawn
+    (i.e. at the moment Startup.Android.Cold.TimeToFirstVisibleContent2 is
+    recorded). Android only.
+  </description>
+</action>
+
 <action name="SystemBackBeforeNativeInitialized">
   <owner>lazzzis@google.com</owner>
   <description>
@@ -39372,6 +39603,12 @@ should be able to be added at any place in this file.
   <description>An IPH was shown to the user.</description>
 </action>
 
+<action name="UserEducation.MessageShown.ActionableAlert.CustomAction">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>An Actionable Alert IPH was shown to the user.</description>
+</action>
+
 <action name="UserEducation.MessageShown.CustomAction">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -39889,6 +40126,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebView.PermissionAllow.HID">
+  <owner>vkovalova@google.com</owner>
+  <description>
+    Tracks when showing the HID selection dialog is explicitly allowed on a
+    webview.
+  </description>
+</action>
+
 <action name="WebView.PermissionAllow.JSDialog">
   <owner>fsamuel@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -39942,6 +40187,14 @@ should be able to be added at any place in this file.
   <owner>lazyboy@chromium.org</owner>
   <description>
     Tracks when the geolocation permission is explicitly denied on a webview.
+  </description>
+</action>
+
+<action name="WebView.PermissionDeny.HID">
+  <owner>vkovalova@google.com</owner>
+  <description>
+    Tracks when showing the HID selection dialog is explicitly denied on a
+    webview.
   </description>
 </action>
 
@@ -40679,6 +40932,8 @@ should be able to be added at any place in this file.
       label="For companion side panel region search feature."/>
   <suffix name="ComposeMenuNewBadgeFeature"
       label="For Compose new badge in context menu feature"/>
+  <suffix name="ComposeMSBBSettingsFeature"
+      label="For Compose MSBB Settings badge feature"/>
   <suffix name="ComposeNewBadgeFeature" label="For Compose new badge feature"/>
   <suffix name="ContextualPageActions_PriceTracking"
       label="For Contextual page actions price tracking feature."/>
@@ -40811,6 +41066,9 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserSettingsBadge feature"/>
   <suffix name="iOSDefaultBrowserVideoPromoTrigger"
       label="For iOSDefaultBrowserVideoPromoTrigger feature"/>
+  <suffix name="iOSDockingPromoFeature" label="For iOSDockingPromo feature"/>
+  <suffix name="iOSDockingPromoRemindMeLaterFeature"
+      label="For iOSDockingPromoRemindMeLater feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlinePromoEnhancedSafeBrowsing"
@@ -40842,6 +41100,8 @@ should be able to be added at any place in this file.
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <suffix name="iOSShareToolbarItemFeature"
       label="For iOSShareToolbarItemFeature feature"/>
+  <suffix name="iOSTabGridSwipeLeftForIncognito"
+      label="For iOSTabGridSwipeLeftForIncognito feature"/>
   <suffix name="iOSTabGridToolbarItemFeature"
       label="For iOSTabGridToolbarItemFeature feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
@@ -40865,7 +41125,7 @@ should be able to be added at any place in this file.
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="Deprecated in M79-."/>
   <suffix name="NewTabPageHomeButton"
-      label="For NewTabPageHomeButton feature."/>
+      label="For NewTabPageHomeButton feature. (obsolete)"/>
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
   <suffix name="PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>

@@ -24,7 +24,7 @@ const char kNonIncognito[] = "NonIncognito";
 
 const char kMigration[] = ".Migration";
 
-const char kDeleteDatabaseError[] = "DeleteDatabaseError.";
+const char kDeleteForTimeFrameError[] = "DeleteForTimeFrameError.";
 const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
 const char kDeleteFileError[] = "DeleteFileError.";
 const char kWriteFileError[] = "WriteFileError.";
@@ -97,7 +97,7 @@ void CdmStorageManager::ReadFile(
     const blink::StorageKey& storage_key,
     const media::CdmType& cdm_type,
     const std::string& file_name,
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.AsyncCall(&CdmStorageDatabase::ReadFile)
@@ -127,27 +127,35 @@ void CdmStorageManager::DeleteFile(const blink::StorageKey& storage_key,
 
   db_.AsyncCall(&CdmStorageDatabase::DeleteFile)
       .WithArgs(storage_key, cdm_type, file_name)
-      .Then(base::BindOnce(&CdmStorageManager::DidDeleteFile,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
+      .Then(base::BindOnce(&CdmStorageManager::DidDelete,
+                           weak_factory_.GetWeakPtr(), std::move(callback),
+                           kDeleteFileError));
 }
 
 void CdmStorageManager::DeleteDataForStorageKey(
     const blink::StorageKey& storage_key,
+    const base::Time begin,
+    const base::Time end,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.AsyncCall(&CdmStorageDatabase::DeleteDataForStorageKey)
-      .WithArgs(storage_key)
-      .Then(base::BindOnce(&CdmStorageManager::DidDeleteForStorageKey,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
+      .WithArgs(storage_key, begin, end)
+      .Then(base::BindOnce(&CdmStorageManager::DidDelete,
+                           weak_factory_.GetWeakPtr(), std::move(callback),
+                           kDeleteForStorageKeyError));
 }
 
-void CdmStorageManager::DeleteDatabase() {
+void CdmStorageManager::DeleteDataForTimeFrame(
+    const base::Time begin,
+    const base::Time end,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.AsyncCall(&CdmStorageDatabase::ClearDatabase)
-      .Then(base::BindOnce(&CdmStorageManager::DidDeleteDatabase,
-                           weak_factory_.GetWeakPtr()));
+      .Then(base::BindOnce(&CdmStorageManager::DidDelete,
+                           weak_factory_.GetWeakPtr(), std::move(callback),
+                           kDeleteForTimeFrameError));
 }
 
 void CdmStorageManager::OnFileReceiverDisconnect(
@@ -192,12 +200,12 @@ void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,
 }
 
 void CdmStorageManager::DidReadFile(
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback,
-    absl::optional<std::vector<uint8_t>> data) {
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    std::optional<std::vector<uint8_t>> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::UmaHistogramBoolean(GetHistogramName(kReadFileError),
-                            data == absl::nullopt);
+                            data == std::nullopt);
 
   std::move(callback).Run(data);
 }
@@ -211,33 +219,17 @@ void CdmStorageManager::DidWriteFile(base::OnceCallback<void(bool)> callback,
   std::move(callback).Run(success);
 }
 
-void CdmStorageManager::DidDeleteFile(base::OnceCallback<void(bool)> callback,
-                                      bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramBoolean(GetHistogramName(kDeleteFileError), !success);
-
-  std::move(callback).Run(success);
-}
-
-void CdmStorageManager::DidDeleteForStorageKey(
-    base::OnceCallback<void(bool)> callback,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramBoolean(GetHistogramName(kDeleteForStorageKeyError),
-                            !success);
-
-  std::move(callback).Run(success);
-}
-
 // TODO(crbug.com/1454512) Investigate if we can propagate the SQL errors.
 // Investigate adding delete functionality to 'MojoCdmHelper::CloseCdmFileIO' to
 // close database on CdmFileIO closure.
-void CdmStorageManager::DidDeleteDatabase(bool success) {
+void CdmStorageManager::DidDelete(base::OnceCallback<void(bool)> callback,
+                                  const std::string& operation,
+                                  bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramBoolean(GetHistogramName(kDeleteDatabaseError), !success);
+  base::UmaHistogramBoolean(GetHistogramName(operation), !success);
+  db_.AsyncCall(&CdmStorageDatabase::DeleteIfEmptyDatabase)
+      .WithArgs(success)
+      .Then(std::move(callback));
 }
 
 void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {
@@ -249,12 +241,12 @@ void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {
   base::UmaHistogramEnumeration(GetHistogramName(kDatabaseOpenError), error);
 }
 
-std::string CdmStorageManager::GetHistogramName(const char operation[]) {
+std::string CdmStorageManager::GetHistogramName(const std::string& operation) {
   // If the 'kCdmStorageDatabaseMigration' flag is enabled, we should mark the
   // UMA with the fact that this error came during the migration.
 
   auto histogram_name =
-      std::string{kUmaPrefix} + std::string{operation} +
+      std::string{kUmaPrefix} + operation +
       (in_memory() ? std::string{kIncognito} : std::string{kNonIncognito});
 
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&

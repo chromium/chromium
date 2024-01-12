@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">זוהתה גרסת פרוטוקול לא תואמת. יש לוודא שהתקנת את הגרסה העדכנית ביותר של התוכנה בשני המחשבים ולנסות שוב.</translation>
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="1201402288615127009">הבא</translation>
-<translation id="1296511125400541222">‏זכויות יוצרים 2023 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="1297009705180977556">אירעה שגיאת התחברות אל <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">האובייקט המבוקש אינו קיים.</translation>
 <translation id="1480046233931937785">שותפים לעשייה</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972">יש להזין את קוד האימות של <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">מארח</translation>
 <translation id="4867841927763172006">‏שליחת PrtScn</translation>
-<translation id="4960795469833295568">‏זכויות יוצרים 2023 Google LLC. כל הזכויות שמורות.</translation>
 <translation id="4974476491460646149">ההתחברות אל <ph name="HOSTNAME" /> סגורה</translation>
 <translation id="4985296110227979402">תחילה עליך להגדיר את המחשב שלך לגישה מרחוק</translation>
 <translation id="4987330545941822761">‏ל-Chrome Remote Desktop אין אפשרות לקבוע באיזה דפדפן לפתוח כתובות URL במחשב. עליך לבחור דפדפן מהרשימה שלמטה.</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">רענון רשימת המארחים</translation>
 <translation id="7714222945760997814">דיווח על הבעיה</translation>
 <translation id="7868137160098754906">יש להזין את קוד האימות עבור המחשב המרוחק.</translation>
+<translation id="7881455334687220899">‏זכויות יוצרים 2024 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מתירה חיבורים מהחשבון שלך.</translation>
 <translation id="7936528439960309876">עגינה לימין</translation>
 <translation id="7970576581263377361">‏האימות נכשל. יש להיכנס שוב ל-Chromium.</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
+<translation id="9042277333359847053">‏זכויות יוצרים 2024 Google LLC. כל הזכויות שמורות.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש להקיש במסך עם ארבע אצבעות.</translation>
 <translation id="9126115402994542723">אין לבקש שוב קוד אימות בעת התחברות למארח הזה ממכשיר זה.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>

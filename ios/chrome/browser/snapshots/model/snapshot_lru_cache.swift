@@ -8,9 +8,7 @@ import UIKit
 // Once the cache reach its size limit, it will start to evict items in a
 // Least Recently Used order. (where the term "used" is determined in terms
 // of query to the cache).
-// TODO(crbug.com/1502841): Remove the suffix `InSwift` once the entire
-// snapshot is replaced with it.
-@objcMembers public class SnapshotLRUCacheInSwift: NSObject {
+@objcMembers public class SnapshotLRUCache: NSObject {
   // The number of snapshot images stored in this cache.
   private var count: Int
   // The cache that stores snapshot images.

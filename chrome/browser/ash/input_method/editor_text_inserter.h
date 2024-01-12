@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -35,12 +38,18 @@ class EditorTextInserter {
     std::string text;
   };
 
+  void CancelTextInsertion();
+
   // Holds any pending text insertions. It is assumed that only one text
   // insertion will be requested at any given time.
   absl::optional<PendingTextInsert> pending_text_insert_;
 
   // Holds the context of a focused text client.
   absl::optional<TextClientContext> focused_client_;
+
+  base::OneShotTimer text_insertion_timer_;
+
+  base::WeakPtrFactory<EditorTextInserter> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method

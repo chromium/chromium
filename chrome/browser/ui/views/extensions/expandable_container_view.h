@@ -19,8 +19,9 @@ class Link;
 // A view that displays a list of details, along with a link that expands and
 // collapses those details.
 class ExpandableContainerView : public views::View {
+  METADATA_HEADER(ExpandableContainerView, views::View)
+
  public:
-  METADATA_HEADER(ExpandableContainerView);
   explicit ExpandableContainerView(const std::vector<std::u16string>& details);
   ExpandableContainerView(const ExpandableContainerView&) = delete;
   ExpandableContainerView& operator=(const ExpandableContainerView&) = delete;
@@ -36,8 +37,9 @@ class ExpandableContainerView : public views::View {
  private:
   // Helper class representing the list of details, that can hide itself.
   class DetailsView : public views::View {
+    METADATA_HEADER(DetailsView, views::View)
+
    public:
-    METADATA_HEADER(DetailsView);
     explicit DetailsView(const std::vector<std::u16string>& details);
     DetailsView(const DetailsView&) = delete;
     DetailsView& operator=(const DetailsView&) = delete;

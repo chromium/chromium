@@ -35,6 +35,8 @@ const std::string kPromptResultMetricNameServer =
 const std::string kUserActionCvcMetricNameLocal = "Autofill.CvcInfoBar.Local";
 const std::string kUserActionCvcMetricNameServer = "Autofill.CvcInfoBar.Upload";
 
+const std::string kSaveWithCvcSuffix = ".SavingWithCvc";
+
 // Params of AutofillSaveCardDelegateTest:
 // -- bool is_upload: Indicates whether the card should be saved locally or
 //                    uploaded to server.
@@ -322,6 +324,54 @@ TEST_P(AutofillSaveCardDelegateTest, MetricsOnUiCanceledCvcSave) {
                                           ? kUserActionCvcMetricNameServer
                                           : kUserActionCvcMetricNameLocal,
                                       InfoBarMetric::INFOBAR_DENIED, 1);
+}
+
+TEST_P(AutofillSaveCardDelegateTest, MetricsOnUiShownWhenSaveWithCvc) {
+  auto delegate = CreateDelegate(/*options=*/{
+      .card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc});
+  base::HistogramTester histogram_tester;
+  delegate.OnUiShown();
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({IsUpload() ? kUserActionMetricNameServer
+                               : kUserActionMetricNameLocal,
+                    kSaveWithCvcSuffix}),
+      AutofillMetrics::INFOBAR_SHOWN, 1);
+}
+
+TEST_P(AutofillSaveCardDelegateTest, MetricsOnUiAcceptedWhenSaveWithCvc) {
+  auto delegate = CreateDelegate(/*options=*/{
+      .card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc});
+  base::HistogramTester histogram_tester;
+  delegate.OnUiAccepted();
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({IsUpload() ? kUserActionMetricNameServer
+                               : kUserActionMetricNameLocal,
+                    kSaveWithCvcSuffix}),
+      InfoBarMetric::INFOBAR_ACCEPTED, 1);
+}
+
+TEST_P(AutofillSaveCardDelegateTest, MetricsOnUiIgnoredWhenSaveWithCvc) {
+  auto delegate = CreateDelegate(/*options=*/{
+      .card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc});
+  base::HistogramTester histogram_tester;
+  delegate.OnUiIgnored();
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({IsUpload() ? kUserActionMetricNameServer
+                               : kUserActionMetricNameLocal,
+                    kSaveWithCvcSuffix}),
+      InfoBarMetric::INFOBAR_IGNORED, 1);
+}
+
+TEST_P(AutofillSaveCardDelegateTest, MetricsOnUiCanceledWhenSaveWithCvc) {
+  auto delegate = CreateDelegate(/*options=*/{
+      .card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc});
+  base::HistogramTester histogram_tester;
+  delegate.OnUiCanceled();
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({IsUpload() ? kUserActionMetricNameServer
+                               : kUserActionMetricNameLocal,
+                    kSaveWithCvcSuffix}),
+      InfoBarMetric::INFOBAR_DENIED, 1);
 }
 
 }  // namespace autofill

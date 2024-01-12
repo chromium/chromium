@@ -62,7 +62,10 @@
     ;; <Enum> in the grammar.
     "enum"
     ;; <Const> in the grammar.
-    "const"))
+    "const"
+    ;; <Feature> in the grammar.
+    "feature"
+    ))
 
 (defconst mojom-idl-constants
   '(

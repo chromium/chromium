@@ -228,6 +228,29 @@ TEST_F(NotificationGroupingControllerTest, BasicGrouping) {
   EXPECT_TRUE(message_center->FindNotificationById(id_parent)->group_parent());
 }
 
+// Test a situation where a notification being added is already marked
+// as a parent.
+// In this case, make sure it's added as such and no parent_copy
+// notification is added.
+TEST_F(NotificationGroupingControllerTest, AddPreparentNotificationGroupsCorrectly) {
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1;
+  const GURL url(u"http://test-url.com/");
+  auto parent_notification = MakeNotification(id0, url);
+  auto child_notification = MakeNotification(id1, url);
+  parent_notification->SetGroupParent();
+  message_center->AddNotification(std::move(parent_notification));
+  message_center->AddNotification(std::move(child_notification));
+
+  EXPECT_TRUE(message_center->FindNotificationById(id0)->group_parent());
+  EXPECT_TRUE(message_center->FindNotificationById(id1)->group_child());
+
+  std::string id_parent =
+      id0 + message_center_utils::GenerateGroupParentNotificationIdSuffix(
+                message_center->FindNotificationById(id0)->notifier_id());
+  EXPECT_FALSE(message_center->FindNotificationById(id_parent));
+}
+
 TEST_F(NotificationGroupingControllerTest, BasicRemoval) {
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com");

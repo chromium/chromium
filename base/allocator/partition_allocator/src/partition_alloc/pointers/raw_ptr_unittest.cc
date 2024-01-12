@@ -147,10 +147,12 @@ static_assert([]() constexpr {
     [[maybe_unused]] Int* i2 = r;               // operator T*()
     [[maybe_unused]] IntBase* i3 = r;           // operator Convertible*()
 
-    [[maybe_unused]] Int** i4 = &r.AsEphemeralRawAddr();
-    [[maybe_unused]] Int*& i5 = r.AsEphemeralRawAddr();
+    auto func_taking_ptr_to_ptr = [](Int**) {};
+    auto func_taking_ref_to_ptr = [](Int*&) {};
+    func_taking_ptr_to_ptr(&r.AsEphemeralRawAddr());
+    func_taking_ref_to_ptr(r.AsEphemeralRawAddr());
 
-    Int* array = new Int[3]();
+    Int* array = new Int[4]();
     {
       raw_ptr<Int, base::RawPtrTraits::kAllowPtrArithmetic> ra(array);
       ++ra;      // operator++()
@@ -159,6 +161,33 @@ static_assert([]() constexpr {
       ra--;      // operator--(int)
       ra += 1u;  // operator+=()
       ra -= 1u;  // operator-=()
+      ra = ra + 1;                             // operator+(raw_ptr,int)
+      ra = 1 + ra;                             // operator+(int,raw_ptr)
+      ra = ra - 2;                             // operator-(raw_ptr,int)
+      [[maybe_unused]] ptrdiff_t d = ra - ra;  // operator-(raw_ptr,raw_ptr)
+      d = ra - array;                          // operator-(raw_ptr,T*)
+      d = array - ra;                          // operator-(T*,raw_ptr)
+
+      ra[0] = ra[1];  // operator[]()
+
+      b = ra < ra;      // operator<(raw_ptr,raw_ptr)
+      b = ra < array;   // operator<(raw_ptr,T*)
+      b = array < ra;   // operator<(T*,raw_ptr)
+      b = ra <= ra;     // operator<=(raw_ptr,raw_ptr)
+      b = ra <= array;  // operator<=(raw_ptr,T*)
+      b = array <= ra;  // operator<=(T*,raw_ptr)
+      b = ra > ra;      // operator>(raw_ptr,raw_ptr)
+      b = ra > array;   // operator>(raw_ptr,T*)
+      b = array > ra;   // operator>(T*,raw_ptr)
+      b = ra >= ra;     // operator>=(raw_ptr,raw_ptr)
+      b = ra >= array;  // operator>=(raw_ptr,T*)
+      b = array >= ra;  // operator>=(T*,raw_ptr)
+      b = ra == ra;     // operator==(raw_ptr,raw_ptr)
+      b = ra == array;  // operator==(raw_ptr,T*)
+      b = array == ra;  // operator==(T*,raw_ptr)
+      b = ra != ra;     // operator!=(raw_ptr,raw_ptr)
+      b = ra != array;  // operator!=(raw_ptr,T*)
+      b = array != ra;  // operator!=(T*,raw_ptr)
     }
     delete[] array;
   }
@@ -1986,7 +2015,73 @@ TEST_F(BackupRefPtrTest, ReinterpretCast) {
   // been already freed.
   BASE_EXPECT_DEATH(*wrapped_ptr = nullptr, "");
 }
-#endif
+#endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+
+// Tests that ref-count management is correct, despite `absl::optional` may be
+// using `union` underneath.
+TEST_F(BackupRefPtrTest, WorksWithOptional) {
+  void* ptr = allocator_.root()->Alloc(16);
+  auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  absl::optional<raw_ptr<void>> opt = ptr;
+  ASSERT_TRUE(opt.has_value());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  opt.reset();
+  ASSERT_TRUE(!opt.has_value());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  opt = ptr;
+  ASSERT_TRUE(opt.has_value());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  opt = nullptr;
+  ASSERT_TRUE(opt.has_value());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  {
+    absl::optional<raw_ptr<void>> opt2 = ptr;
+    ASSERT_TRUE(opt2.has_value());
+    EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+  }
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  allocator_.root()->Free(ptr);
+}
+
+// Tests that ref-count management is correct, despite `absl::variant` may be
+// using `union` underneath.
+TEST_F(BackupRefPtrTest, WorksWithVariant) {
+  void* ptr = allocator_.root()->Alloc(16);
+  auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  absl::variant<uintptr_t, raw_ptr<void>> vary = ptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  vary = 42u;
+  ASSERT_EQ(0u, vary.index());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  vary = ptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  vary = nullptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  {
+    absl::variant<uintptr_t, raw_ptr<void>> vary2 = ptr;
+    ASSERT_EQ(1u, vary2.index());
+    EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+  }
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  allocator_.root()->Free(ptr);
+}
 
 namespace {
 
@@ -2318,7 +2413,7 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }
 
-TEST_F(BackupRefPtrTest, VectorExperimental) {
+TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
   // Allocate a slot so that a slot span doesn't get decommitted from memory,
   // while we allocate/deallocate/access the tested slot below.
   void* sentinel = allocator_.root()->Alloc(sizeof(unsigned int), "");
@@ -2339,9 +2434,9 @@ TEST_F(BackupRefPtrTest, VectorExperimental) {
     EXPECT_EQ(kQuarantined4Bytes, *ptr);
 #endif
   }
-  // raw_ptr with VectorExperimental, BRP is expected to be off.
+  // raw_ptr with DisableBRP, BRP is expected to be off.
   {
-    raw_ptr<unsigned int, DanglingUntriaged | VectorExperimental> ptr =
+    raw_ptr<unsigned int, DanglingUntriaged | RawPtrTraits::kDisableBRP> ptr =
         static_cast<unsigned int*>(
             allocator_.root()->Alloc(sizeof(unsigned int), ""));
     *ptr = 0;

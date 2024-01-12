@@ -1036,10 +1036,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
-  virtual bool IsWidget() const {
-    NOT_DESTROYED();
-    return false;
-  }
   virtual bool IsImage() const {
     NOT_DESTROYED();
     return false;

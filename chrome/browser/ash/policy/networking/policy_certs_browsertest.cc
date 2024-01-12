@@ -662,8 +662,7 @@ class PolicyProvidedCertsForSigninExtensionTest
         extension_id, signin_profile_, /*can_create=*/false);
   }
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> signin_profile_ =
-      nullptr;
+  raw_ptr<Profile, DanglingUntriaged> signin_profile_ = nullptr;
   scoped_refptr<net::X509Certificate> server_cert_;
 
  private:

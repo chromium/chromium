@@ -20,9 +20,26 @@ namespace {
 /// Leading and trailing padding for the `addressBarView`.
 constexpr CGFloat kAddressViewHorizontalPadding = 11;
 /// The size of the logo image.
-const CGFloat kLogoSize = 36;
+constexpr const CGFloat kLogoSize = 45;
+/// The top margin percentage of the header view.
+constexpr const CGFloat kHeaderTopMarginPercentage = 0.05;
+/// The bottom margin of the header view.
+constexpr const CGFloat kHeaderBottomMargin = 31;
+/// The inset of the shadow in the header view.
+constexpr const CGFloat kHeaderShadowInset = 11;
+
+/// Padding between the subtitle and the `addressBarView`.
+constexpr const CGFloat kSubtitleBottomMargin = 17;
 
 }  // namespace
+
+@interface OmniboxPositionChoiceViewController ()
+
+/// Haptic feedback generator for selection change.
+@property(nonatomic, readonly, strong)
+    UISelectionFeedbackGenerator* feedbackGenerator;
+
+@end
 
 @implementation OmniboxPositionChoiceViewController {
   /// The view for the top address bar preference option.
@@ -32,6 +49,8 @@ const CGFloat kLogoSize = 36;
   /// Whether the screen is being shown in the FRE.
   BOOL _isFirstRun;
 }
+
+@synthesize feedbackGenerator = _feedbackGenerator;
 
 #pragma mark - UIViewController
 
@@ -62,6 +81,9 @@ const CGFloat kLogoSize = 36;
 
   self.headerImageType = PromoStyleImageType::kImageWithShadow;
   self.headerViewForceStyleLight = YES;
+  self.headerImageShadowInset = kHeaderShadowInset;
+  self.noBackgroundHeaderImageTopMarginPercentage = kHeaderTopMarginPercentage;
+  self.headerImageBottomMargin = kHeaderBottomMargin;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
@@ -71,6 +93,7 @@ const CGFloat kLogoSize = 36;
   self.headerImage = logo;
 
   self.titleHorizontalMargin = 0;
+  self.subtitleBottomMargin = kSubtitleBottomMargin;
   self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE);
@@ -89,10 +112,16 @@ const CGFloat kLogoSize = 36;
   [_topAddressBar addTarget:self
                      action:@selector(didTapTopAddressBarView)
            forControlEvents:UIControlEventTouchUpInside];
+  [_topAddressBar addTarget:self
+                     action:@selector(didTouchDownAddressBarOption)
+           forControlEvents:UIControlEventTouchDown];
 
   [_bottomAddressBar addTarget:self
                         action:@selector(didTapBottomAddressBarView)
               forControlEvents:UIControlEventTouchUpInside];
+  [_bottomAddressBar addTarget:self
+                        action:@selector(didTouchDownAddressBarOption)
+              forControlEvents:UIControlEventTouchDown];
 
   NSArray* addressBarOptions = @[ _topAddressBar, _bottomAddressBar ];
   if (DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary) {
@@ -119,6 +148,13 @@ const CGFloat kLogoSize = 36;
   [super viewDidLoad];
 }
 
+- (UISelectionFeedbackGenerator*)feedbackGenerator {
+  if (!_feedbackGenerator) {
+    _feedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
+  }
+  return _feedbackGenerator;
+}
+
 #pragma mark - OmniboxPositionChoiceConsumer
 
 - (void)setSelectedToolbarForOmnibox:(ToolbarType)position {
@@ -133,6 +169,7 @@ const CGFloat kLogoSize = 36;
   if (_topAddressBar.selected) {
     return;
   }
+  [self.feedbackGenerator selectionChanged];
   [self.mutator selectTopOmnibox];
 }
 
@@ -141,7 +178,12 @@ const CGFloat kLogoSize = 36;
   if (_bottomAddressBar.selected) {
     return;
   }
+  [self.feedbackGenerator selectionChanged];
   [self.mutator selectBottomOmnibox];
+}
+
+- (void)didTouchDownAddressBarOption {
+  [self.feedbackGenerator prepare];
 }
 
 @end

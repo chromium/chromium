@@ -8,16 +8,17 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/clang_profiling_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_constants.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
@@ -31,9 +32,11 @@ class File;
 class FilePath;
 }  // namespace base
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 namespace IPC {
 class MessageFilter;
 }
+#endif
 
 namespace mojo {
 class OutgoingInvitation;
@@ -153,7 +156,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //
   // Always valid immediately after ChildProcessHost construction, but may be
   // null if someone else has taken ownership.
-  virtual absl::optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
+  virtual std::optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
 
   // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
   // legacy IPC will be used to communicate with the child process, but
@@ -165,8 +168,10 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // been invoked.
   virtual bool IsChannelOpening() = 0;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Adds an IPC message filter.  A reference will be kept to the filter.
   virtual void AddFilter(IPC::MessageFilter* filter) = 0;
+#endif
 
   // Bind an interface exposed by the child process. Whether or not the
   // interface in |receiver| can be bound depends on the process type and

@@ -32,14 +32,14 @@
 </style>
 
 <div class="tab-organization-container">
-  <picture>
-    <source media="(prefers-color-scheme: dark)"
-        srcset="./images/not_started_dark.svg">
-    <!-- Decorative image, intentionally empty alt text -->
-    <img id="product-logo" srcset="./images/not_started.svg" alt="">
-  </picture>
+  <tab-organization-not-started-image></tab-organization-not-started-image>
   <div class="tab-organization-text-container">
-    <div class="tab-organization-header">[[getTitle_(showFre)]]</div>
+    <div id="header"
+        class="tab-organization-header"
+        aria-live="polite"
+        aria-relevant="all">
+      [[getTitle_(showFre)]]
+    </div>
     <div class="tab-organization-body">
       [[getBody_(showFre, sync_, account_)]]
     </div>
@@ -57,7 +57,9 @@
       </div>
     </div>
   </template>
-  <cr-button class="action-button" on-click="onButtonClick_">
+  <cr-button class="action-button"
+      aria-label="[[getButtonAriaLabel_(sync_, account_)]]"
+      on-click="onButtonClick_">
     [[getButtonText_(sync_, account_)]]
   </cr-button>
 </div>

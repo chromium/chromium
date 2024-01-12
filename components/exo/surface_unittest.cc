@@ -1133,139 +1133,62 @@ TEST_P(SurfaceTest, SetAlpha) {
   }
 }
 
-TEST_P(SurfaceTest, SurfaceQuad) {
+TEST_P(SurfaceTest, ForceRgbxTest) {
   gfx::Size buffer_size(1, 1);
   auto buffer = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
       true, true, false);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  surface->Attach(buffer.get());
-  surface->SetAlpha(1.0f);
-
-  surface->SetEmbeddedSurfaceSize(gfx::Size(1, 1));
-  surface->SetEmbeddedSurfaceId(base::BindRepeating([]() -> viz::SurfaceId {
-    return viz::SurfaceId(
-        viz::FrameSinkId(1, 1),
-        viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
-  }));
 
   {
+    surface->Attach(buffer.get());
+    // Blend mode 'kSrc' will result in an opaque surface.
+    surface->SetBlendMode(SkBlendMode::kSrc);
     surface->Commit();
     test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    EXPECT_EQ(1u, frame.render_pass_list.size());
-    EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
-    EXPECT_EQ(1u, frame.resource_list.size());
-    // Ensure that the quad is correct and the resource is included.
-    EXPECT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
-    EXPECT_EQ(viz::DrawQuad::Material::kSurfaceContent,
-              frame.render_pass_list.back()->quad_list.back()->material);
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+    ASSERT_EQ(1u, frame.resource_list.size());
+    ASSERT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
+    auto& quad_list = frame.render_pass_list.back()->quad_list;
+    auto* texture_quad = quad_list.front()->DynamicCast<viz::TextureDrawQuad>();
+    ASSERT_TRUE(texture_quad);
+    ASSERT_TRUE(texture_quad->force_rgbx);
   }
 }
 
-TEST_P(SurfaceTest, EmptySurfaceQuad) {
+TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
   gfx::Size buffer_size(1, 1);
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
-      true, true, false);
+  auto buffer =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+                                   buffer_size, gfx::BufferFormat::RGBX_8888),
+                               GL_TEXTURE_2D, 0, true, true, false);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  surface->Attach(buffer.get());
-  surface->SetAlpha(1.0f);
-
-  // Explicitly zero the size, no quad should be produced.
-  surface->SetEmbeddedSurfaceSize(gfx::Size(0, 0));
-  surface->SetEmbeddedSurfaceId(base::BindRepeating([]() -> viz::SurfaceId {
-    return viz::SurfaceId(
-        viz::FrameSinkId(1, 1),
-        viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
-  }));
 
   {
+    surface->Attach(buffer.get());
+    // Blend mode 'kSrc' will result in an opaque surface.
+    surface->SetBlendMode(SkBlendMode::kSrc);
     surface->Commit();
     test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    EXPECT_EQ(1u, frame.render_pass_list.size());
-    EXPECT_EQ(0u, frame.render_pass_list.back()->quad_list.size());
-    // No quad but still has a resource though.
-    EXPECT_EQ(1u, frame.resource_list.size());
-    EXPECT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
-  }
-}
-
-TEST_P(SurfaceTest, ScaledSurfaceQuad) {
-  gfx::Size buffer_size(1, 1);
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
-      true, true, false);
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  surface->Attach(buffer.get());
-  surface->SetAlpha(1.0f);
-
-  surface->SetEmbeddedSurfaceId(base::BindRepeating([]() -> viz::SurfaceId {
-    return viz::SurfaceId(
-        viz::FrameSinkId(1, 1),
-        viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
-  }));
-
-  // A 256x256 surface, of which as 128x128 chunk is selected, drawn into a
-  // 128x64 rect.
-  surface->SetEmbeddedSurfaceSize(gfx::Size(256, 256));
-
-  surface->SetViewport(gfx::SizeF(128, 64));
-  surface->SetCrop(
-      gfx::RectF(gfx::PointF(32.0f, 32.0f), gfx::SizeF(128.0f, 128.0f)));
-
-  {
-    surface->Commit();
-    test::WaitForLastFrameAck(shell_surface.get());
-
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    EXPECT_EQ(1u, frame.render_pass_list.size());
-    EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
-    EXPECT_EQ(1u, frame.resource_list.size());
-    // Ensure that the quad is correct and the resource is included.
-    EXPECT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
-    EXPECT_EQ(viz::DrawQuad::Material::kSurfaceContent,
-              frame.render_pass_list.back()->quad_list.back()->material);
-    // We are outputting to 0,0 -> 128,64.
-    EXPECT_EQ(gfx::Rect(gfx::Point(), gfx::Size(128, 64)),
-              frame.render_pass_list.back()
-                  ->quad_list.back()
-                  ->shared_quad_state->clip_rect);
-
-    gfx::Rect testing_rect(256, 256);
-    // To get 32,32 -> 160,160 into the correct position it must be translated
-    // backwards and scaled 0.5x in Y, then everything is scaled by the scale
-    // factor.
-    auto expected_transform =
-        gfx::Transform::MakeScale(1.0f * device_scale_factor(),
-                                  0.5f * device_scale_factor()) *
-        gfx::Transform::MakeTranslation(-32.0f, -32.0f);
-
-    // When possible exo will represent the transform completely in the |rect|.
-    // This leaves the |quad_to_target_transform| transform as Identity.
-    if (gfx::Transform() == frame.render_pass_list.back()
-                                ->quad_list.back()
-                                ->shared_quad_state->quad_to_target_transform) {
-      auto expected_rect = expected_transform.MapRect(testing_rect);
-      EXPECT_EQ(expected_rect,
-                frame.render_pass_list.back()->quad_list.back()->rect);
-    } else {
-      EXPECT_EQ(expected_transform,
-                frame.render_pass_list.back()
-                    ->quad_list.back()
-                    ->shared_quad_state->quad_to_target_transform);
-      EXPECT_EQ(testing_rect,
-                frame.render_pass_list.back()->quad_list.back()->rect);
-    }
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+    ASSERT_EQ(1u, frame.resource_list.size());
+    ASSERT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
+    auto& quad_list = frame.render_pass_list.back()->quad_list;
+    auto* texture_quad = quad_list.front()->DynamicCast<viz::TextureDrawQuad>();
+    ASSERT_TRUE(texture_quad);
+    ASSERT_FALSE(texture_quad->force_rgbx);
   }
 }
 
@@ -1281,13 +1204,6 @@ TEST_P(SurfaceTest, ColorBufferAlpha) {
     auto shell_surface = std::make_unique<ShellSurface>(surface.get());
     surface->Attach(buffer.get());
     surface->SetAlpha(1.0f);
-
-    surface->SetEmbeddedSurfaceSize(gfx::Size(1, 1));
-    surface->SetEmbeddedSurfaceId(base::BindRepeating([]() -> viz::SurfaceId {
-      return viz::SurfaceId(
-          viz::FrameSinkId(1, 1),
-          viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
-    }));
 
     {
       surface->Commit();

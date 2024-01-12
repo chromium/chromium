@@ -135,9 +135,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   SetSystemPermission(ash::GeolocationAccessLevel::kDisallowed);
 
   ExpectAndApproveBrowserPrompt(false);
-  // TODO(b/312485657): This is where the bug is. The OS notification should not
-  // appear. Uncomment when fixed.
-  // ExpectOSNotification(false);
+  ExpectOSNotification(false);
 }
 
 // TODO(b/312485657): Enable the testcase.
@@ -147,9 +145,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   SetSystemPermission(ash::GeolocationAccessLevel::kDisallowed);
 
   ExpectAndApproveBrowserPrompt(false);
-  // TODO(b/312485657): this is where the bug is. The OS notification should not
-  // appear. Uncomment when fixed.
-  // ExpectOSNotification(false);
+  ExpectOSNotification(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
@@ -166,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest, BrowserAskSystemOnly) {
   SetSystemPermission(ash::GeolocationAccessLevel::kOnlyAllowedForSystem);
 
   ExpectAndApproveBrowserPrompt(true);
-  ExpectOSNotification(true);
+  ExpectOSNotification(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
@@ -175,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   SetSystemPermission(ash::GeolocationAccessLevel::kDisallowed);
 
   ExpectAndApproveBrowserPrompt(true);
-  ExpectOSNotification(true);
+  ExpectOSNotification(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
@@ -193,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   SetSystemPermission(ash::GeolocationAccessLevel::kOnlyAllowedForSystem);
 
   ExpectAndApproveBrowserPrompt(false);
-  ExpectOSNotification(true);
+  ExpectOSNotification(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
@@ -202,5 +198,5 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   SetSystemPermission(ash::GeolocationAccessLevel::kDisallowed);
 
   ExpectAndApproveBrowserPrompt(false);
-  ExpectOSNotification(true);
+  ExpectOSNotification(false);
 }

@@ -1,0 +1,15 @@
+#target {
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+  view-transition-name: target;
+}
+
+::view-transition-group(root),
+::view-transition-group(target) {
+  animation-duration: 300s;
+}
+
+::view-transition-group(target) {
+  opacity: 1;
+}

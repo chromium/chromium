@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import {VolumeManager} from './volume_manager.js';
 
-import {VolumeManagerImpl} from './volume_manager_impl.js';
 
 const volumeManagerFactory = (() => {
   /**
    * The singleton instance of VolumeManager. Initialized by the first
    * invocation of getInstance().
    */
-  let instance: VolumeManagerImpl|null = null;
+  let instance: VolumeManager|null = null;
 
   let instanceInitialized: Promise<void>|null = null;
 
@@ -22,7 +21,7 @@ const volumeManagerFactory = (() => {
    */
   async function getInstance(): Promise<VolumeManager> {
     if (!instance) {
-      instance = new VolumeManagerImpl();
+      instance = new VolumeManager();
       instanceInitialized = instance.initialize();
     }
     await instanceInitialized;

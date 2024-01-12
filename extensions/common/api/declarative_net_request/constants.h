@@ -95,6 +95,9 @@ extern const char kTabIdsKey[];
 extern const char kExcludedTabIdsKey[];
 extern const char kMatchResponseHeadersPath[];
 extern const char kMatchExcludedResponseHeadersPath[];
+extern const char kHeaderValuesKey[];
+extern const char kHeaderExcludedValuesKey[];
+extern const char kExcludedResponseHeadersKey[];
 
 }  // namespace extensions::declarative_net_request
 

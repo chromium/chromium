@@ -8,8 +8,9 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
-#include "base/strings/string_piece.h"
+
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 class GURL;
@@ -90,7 +91,7 @@ class URLPattern {
   static const char kAllUrlsPattern[];
 
   // Returns true if the given |scheme| is considered valid for extensions.
-  static bool IsValidSchemeForExtensions(base::StringPiece scheme);
+  static bool IsValidSchemeForExtensions(std::string_view scheme);
 
   // Returns the mask for all schemes considered valid for extensions.
   static int GetValidSchemeMaskForExtensions();
@@ -100,7 +101,7 @@ class URLPattern {
   // Convenience to construct a URLPattern from a string. If the string is not
   // known ahead of time, use Parse() instead, which returns success or failure.
   // This method will DCHECK if parsing fails.
-  URLPattern(int valid_schemes, base::StringPiece pattern);
+  URLPattern(int valid_schemes, std::string_view pattern);
 
   URLPattern();
   URLPattern(const URLPattern& other);
@@ -118,7 +119,7 @@ class URLPattern {
   // URLPattern::ParseResult::kSuccess on success, or an error code otherwise.
   // On failure, this instance will have some intermediate values and is in an
   // invalid state.
-  ParseResult Parse(base::StringPiece pattern_str);
+  ParseResult Parse(std::string_view pattern_str);
 
   // Gets the bitmask of valid schemes.
   int valid_schemes() const { return valid_schemes_; }
@@ -127,7 +128,7 @@ class URLPattern {
   // Gets the host the pattern matches. This can be an empty string if the
   // pattern matches all hosts (the input was <scheme>://*/<whatever>).
   const std::string& host() const { return host_; }
-  void SetHost(base::StringPiece host);
+  void SetHost(std::string_view host);
 
   // Gets whether to match subdomains of host().
   bool match_subdomains() const { return match_subdomains_; }
@@ -136,7 +137,7 @@ class URLPattern {
   // Gets the path the pattern matches with the leading slash. This can have
   // embedded asterisks which are interpreted using glob rules.
   const std::string& path() const { return path_; }
-  void SetPath(base::StringPiece path);
+  void SetPath(std::string_view path);
 
   // Returns true if this pattern matches all (valid) urls.
   bool match_all_urls() const { return match_all_urls_; }
@@ -145,14 +146,14 @@ class URLPattern {
   // Sets the scheme for pattern matches. This can be a single '*' if the
   // pattern matches all valid schemes (as defined by the valid_schemes_
   // property). Returns false on failure (if the scheme is not valid).
-  bool SetScheme(base::StringPiece scheme);
+  bool SetScheme(std::string_view scheme);
   // Note: You should use MatchesScheme() instead of this getter unless you
   // absolutely need the exact scheme. This is exposed for testing.
   const std::string& scheme() const { return scheme_; }
 
   // Returns true if the specified scheme can be used in this URL pattern, and
   // false otherwise. Uses valid_schemes_ to determine validity.
-  bool IsValidScheme(base::StringPiece scheme) const;
+  bool IsValidScheme(std::string_view scheme) const;
 
   // Returns true if this instance matches the specified URL. Always returns
   // false for invalid URLs.
@@ -165,14 +166,14 @@ class URLPattern {
   // Note that if test is "filesystem", this may fail whereas MatchesURL
   // may succeed.  MatchesURL is smart enough to look at the inner_url instead
   // of the outer "filesystem:" part.
-  bool MatchesScheme(base::StringPiece test) const;
+  bool MatchesScheme(std::string_view test) const;
 
   // Returns true if |test| matches our host.
-  bool MatchesHost(base::StringPiece test) const;
+  bool MatchesHost(std::string_view test) const;
   bool MatchesHost(const GURL& test) const;
 
   // Returns true if |test| matches our path.
-  bool MatchesPath(base::StringPiece test) const;
+  bool MatchesPath(std::string_view test) const;
 
   // Returns true if the pattern matches all patterns in an (e)TLD. This
   // includes patterns like *://*.com/*, *://*.co.uk/*, etc. A pattern that
@@ -195,7 +196,7 @@ class URLPattern {
   bool MatchesSingleOrigin() const;
 
   // Sets the port. Returns false if the port is invalid.
-  bool SetPort(base::StringPiece port);
+  bool SetPort(std::string_view port);
   const std::string& port() const { return port_; }
 
   // Returns a string representing this instance.
@@ -257,7 +258,7 @@ class URLPattern {
   bool MatchesSecurityOriginHelper(const GURL& test) const;
 
   // Returns true if our port matches the |port| pattern (it may be "*").
-  bool MatchesPortPattern(base::StringPiece port) const;
+  bool MatchesPortPattern(std::string_view port) const;
 
   // If the URLPattern contains a wildcard scheme, returns a list of
   // equivalent literal schemes, otherwise returns the current scheme.

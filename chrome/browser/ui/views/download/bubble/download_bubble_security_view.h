@@ -24,7 +24,6 @@ class ImageView;
 class StyledLabel;
 class ImageButton;
 class BubbleDialogDelegate;
-class LabelButton;
 }  // namespace views
 
 class DownloadBubbleNavigationHandler;
@@ -135,11 +134,7 @@ class DownloadBubbleSecurityView : public views::View,
   void AddProgressBar();
   void AddPasswordPrompt(views::View* parent);
 
-  // `old_danger_type` is the previous danger type before the update, which is
-  // used for debugging only.
-  void UpdateViews(
-      download::DownloadDangerType old_danger_type =
-          download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  void UpdateViews();
   void UpdateHeader();
   void UpdateIconAndText();
   void UpdateSecondaryIconAndText();
@@ -191,7 +186,6 @@ class DownloadBubbleSecurityView : public views::View,
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
       nullptr;
 
-  raw_ptr<views::LabelButton, DanglingUntriaged> secondary_button_ = nullptr;
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<ParagraphsView> paragraphs_ = nullptr;

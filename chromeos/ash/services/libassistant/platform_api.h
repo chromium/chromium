@@ -54,8 +54,7 @@ class PlatformApi : public assistant_client::PlatformApi,
 
  private:
   // This is owned by |AudioInputController|.
-  raw_ptr<assistant_client::AudioInputProvider, ExperimentalAsh>
-      audio_input_provider_ = nullptr;
+  raw_ptr<assistant_client::AudioInputProvider> audio_input_provider_ = nullptr;
 
   std::unique_ptr<AudioOutputProviderImpl> audio_output_provider_;
   std::unique_ptr<FakeAuthProvider> fake_auth_provider_;

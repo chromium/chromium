@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -16,7 +18,6 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -39,7 +40,7 @@ class MockAttributionObserver : public AttributionObserver {
               OnSourceHandled,
               (const StorableSource&,
                base::Time source_time,
-               absl::optional<uint64_t> cleared_debug_key,
+               std::optional<uint64_t> cleared_debug_key,
                StorableSource::Result),
               (override));
 
@@ -58,7 +59,7 @@ class MockAttributionObserver : public AttributionObserver {
   MOCK_METHOD(void,
               OnTriggerHandled,
               (const AttributionTrigger&,
-               absl::optional<uint64_t> cleared_debug_key,
+               std::optional<uint64_t> cleared_debug_key,
                const CreateReportResult&),
               (override));
 };

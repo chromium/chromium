@@ -51,9 +51,9 @@ class CloudExternalDataPolicyObserver::PolicyServiceObserver
                        const PolicyMap& current) override;
 
  private:
-  raw_ptr<CloudExternalDataPolicyObserver, ExperimentalAsh> parent_;
+  raw_ptr<CloudExternalDataPolicyObserver> parent_;
   const std::string user_id_;
-  raw_ptr<PolicyService, ExperimentalAsh> policy_service_;
+  raw_ptr<PolicyService> policy_service_;
 };
 
 CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(

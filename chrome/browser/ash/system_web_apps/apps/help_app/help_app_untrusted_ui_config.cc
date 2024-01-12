@@ -180,7 +180,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean("isManagedDevice",
                      profile->GetProfilePolicyConnector()->IsManaged());
   if (user_manager->GetActiveUser()) {
-    source->AddInteger("userType", user_manager->GetActiveUser()->GetType());
+    source->AddInteger(
+        "userType", static_cast<int>(user_manager->GetActiveUser()->GetType()));
   } else {
     // It's possible that there is no logged-in user. Set to -1 to indicate when
     // this is the case.

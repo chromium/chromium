@@ -15,7 +15,7 @@ PasswordProtectionCommitDeferringCondition::
         content::NavigationHandle& navigation_handle,
         PasswordProtectionRequestContent& request)
     : content::CommitDeferringCondition(navigation_handle),
-      request_(base::AsWeakPtr(&request)) {
+      request_(request.AsWeakPtrImpl()) {
   DCHECK(request_);
   request_->AddDeferredNavigation(*this);
 }

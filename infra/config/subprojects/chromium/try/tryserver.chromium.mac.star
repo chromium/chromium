@@ -84,7 +84,7 @@ try_.builder(
     ],
     gn_args = "ci/mac-osxbeta-rel",
     builderless = False,
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -119,7 +119,7 @@ try_.builder(
     mirrors = ["ci/Mac Builder Next"],
     gn_args = "ci/Mac Builder Next",
     builderless = False,
-    os = os.MAC_13,
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -710,7 +710,7 @@ ios_builder(
         "ci/ios16-beta-simulator",
     ],
     gn_args = "ci/ios16-beta-simulator",
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -730,7 +730,7 @@ ios_builder(
     name = "ios17-beta-simulator",
     mirrors = ["ci/ios17-beta-simulator"],
     gn_args = "ci/ios17-beta-simulator",
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
@@ -738,7 +738,7 @@ ios_builder(
     name = "ios17-sdk-simulator",
     mirrors = ["ci/ios17-sdk-simulator"],
     gn_args = "ci/ios17-sdk-simulator",
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     xcode = xcode.x15betabots,
 )
@@ -778,6 +778,17 @@ try_.gpu.optional_tests_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "x64",
+            "disable_nacl",
+        ],
     ),
     cpu = cpu.ARM64,
     ssd = None,

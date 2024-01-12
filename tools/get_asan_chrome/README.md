@@ -46,7 +46,7 @@ You can also download a build for an operating system that is different than
 where the script runs:
 
 ```sh
-vpython3 get_asan_chrome.py --os {linux,mac,win64,cros}
+vpython3 get_asan_chrome.py --os {linux,mac,win64,lacros}
 ```
 
 ### Combine

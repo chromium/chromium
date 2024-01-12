@@ -144,8 +144,7 @@ gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {
   return bubble_rect;
 }
 
-BEGIN_METADATA(LensRegionSearchInstructionsView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(LensRegionSearchInstructionsView)
 END_METADATA
 
 }  // namespace lens

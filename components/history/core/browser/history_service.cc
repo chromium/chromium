@@ -470,7 +470,8 @@ void HistoryService::OnDeviceInfoChange() {
 
   SyncDeviceInfoMap sync_device_info;
 
-  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+  for (const syncer::DeviceInfo* device_info :
+       device_info_tracker_->GetAllDeviceInfo()) {
     sync_device_info[device_info->guid()] = {device_info->os_type(),
                                              device_info->form_factor()};
   }

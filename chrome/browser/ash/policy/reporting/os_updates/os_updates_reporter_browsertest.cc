@@ -120,7 +120,7 @@ class OsUpdatesReporterBrowserTest
 
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged>
       fake_update_engine_client_ = nullptr;
 };
 
@@ -242,8 +242,7 @@ class OsUpdatesReporterPowerwashBrowserTest
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
-  raw_ptr<::policy::DeviceCloudPolicyManagerAsh,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<::policy::DeviceCloudPolicyManagerAsh, DanglingUntriaged>
       policy_manager_;
 };
 

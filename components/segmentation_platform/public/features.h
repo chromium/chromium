@@ -86,6 +86,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformTabResumptionRanker);
 // Feature flag for enabling ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRanker);
 
+// Feature flag for enabling android home module ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker);
+
 // Feature flag for controlling sampling of training data collection.
 BASE_DECLARE_FEATURE(kSegmentationPlatformTimeDelaySampling);
 

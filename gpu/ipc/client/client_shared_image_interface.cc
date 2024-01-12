@@ -118,9 +118,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   // `format` at `size` so if span is smaller there is a problem.
   CHECK_GE(pixel_data.size(), format.EstimatedSizeInBytes(size));
 
-  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(
+  auto mailbox =
       proxy_->CreateSharedImage(format, size, color_space, surface_origin,
-                                alpha_type, usage, debug_label, pixel_data)));
+                                alpha_type, usage, debug_label, pixel_data);
+  if (mailbox.IsZero()) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(

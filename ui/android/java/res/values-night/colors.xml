@@ -102,4 +102,11 @@ found in the LICENSE file.
     <color name="drag_shadow_outline_color">@color/baseline_neutral_variant_30_alpha_20</color>
     <color name="gm3_baseline_surface_container">@color/gm3_baseline_surface_container_dark</color>
     <color name="gm3_baseline_surface">@color/gm3_baseline_surface_dark</color>
+
+    <!-- Menu colors -->
+    <color name="menu_list_item_icon_color">@color/baseline_neutral_variant_80</color>
+    <color name="menu_list_item_icon_color_disabled">@color/baseline_neutral_90</color>
+    <color name="menu_list_item_text_color">@color/baseline_neutral_90</color>
+    <color name="menu_list_item_text_color_disabled">@color/baseline_neutral_90</color>
+    <color name="menu_list_item_divider_color">@color/baseline_neutral_variant_30</color>
 </resources>

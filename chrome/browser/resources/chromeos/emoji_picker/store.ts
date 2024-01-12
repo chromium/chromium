@@ -4,7 +4,7 @@
 
 import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
-import {CategoryEnum, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
+import {CategoryEnum, Emoji, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
 const MAX_RECENTS = 10;
 
@@ -74,8 +74,9 @@ export class RecentlyUsedStore {
    *    otherwise.
    */
   savePreferredVariant(variant: string, baseEmoji?: string) {
+    // If `baseEmoji == undefined`, then variant itself is a base emoji.
     if (!baseEmoji) {
-      return false;
+      baseEmoji = variant;
     }
 
     const preference = this.store.data.preference;
@@ -162,6 +163,29 @@ export class RecentlyUsedStore {
   }
 
   /**
+   * Fills any gaps in the variant and grouping information for emojis with the
+   * given name, because existing store data may not have the information.
+   */
+  fillEmojiVariantAttributes(
+      name: string, alternates: Emoji[], groupedTone = false,
+      groupedGender = false) {
+    const matchingEmojis =
+        this.store.data.history.filter(emoji => emoji.base.name === ' ' + name);
+
+    if (matchingEmojis.length == 0) {
+      return;
+    }
+
+    matchingEmojis.forEach(emoji => {
+      emoji.alternates = alternates;
+      emoji.groupedTone = groupedTone;
+      emoji.groupedGender = groupedGender;
+    });
+
+    this.store.save();
+  }
+
+  /**
    * Removes invalid GIFs from history.
    */
   async validate(apiProxy: EmojiPickerApiProxy): Promise<boolean> {
@@ -201,25 +225,25 @@ interface EmojiPreferences {
 }
 
 export class EmojiPreferencesStore {
-  private static store = new Store<EmojiPreferences>(
+  private store = new Store<EmojiPreferences>(
       'emoji-preferences', {tone: null, gender: null});
 
-  static getTone(): Tone|null {
-    return EmojiPreferencesStore.store.data.tone;
+  getTone(): Tone|null {
+    return this.store.data.tone;
   }
 
-  static setTone(tone: Tone) {
-    EmojiPreferencesStore.store.data.tone = tone;
-    EmojiPreferencesStore.store.save();
+  setTone(tone: Tone) {
+    this.store.data.tone = tone;
+    this.store.save();
   }
 
-  static getGender(): Gender|null {
-    return EmojiPreferencesStore.store.data.gender;
+  getGender(): Gender|null {
+    return this.store.data.gender;
   }
 
-  static setGender(gender: Gender) {
-    EmojiPreferencesStore.store.data.gender = gender;
-    EmojiPreferencesStore.store.save();
+  setGender(gender: Gender) {
+    this.store.data.gender = gender;
+    this.store.save();
   }
 }
 

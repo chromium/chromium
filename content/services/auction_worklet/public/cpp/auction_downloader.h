@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -56,7 +56,7 @@ class CONTENT_EXPORT AuctionDownloader {
   using AuctionDownloaderCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               scoped_refptr<net::HttpResponseHeaders> headers,
-                              absl::optional<std::string> error)>;
+                              std::optional<std::string> error)>;
 
   // This handles how network requests get logged to devtools.
   class CONTENT_EXPORT NetworkEventsDelegate {

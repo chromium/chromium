@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">ডানদিকে প্যান করুন</translation>
 <translation id="3081586908890909590">ভিডিও রেকর্ড মোডে পাল্টান</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />"-এ যোগ দিন</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3240426699337459095">লিঙ্ক কপি করা হয়েছে</translation>
 <translation id="3354465018370944241">ফটো সেটিংস</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">ফটো আকৃতির অনুপাত</translation>
 <translation id="5057360777601936059">আপনার ক্যামেরা বর্তমানে উপলভ্য নেই।
         ক্যামেরা ঠিকভাবে কানেক্ট করা আছে কিনা দেখুন।</translation>
+<translation id="5157591164390831335">URL শনাক্ত করা হয়েছে।</translation>
 <translation id="5163387177077603948">ডানদিকে সরানো হচ্ছে</translation>
 <translation id="5235304959032763950">১৬ থেকে ৯</translation>
 <translation id="5266635337630551423">উপরে-বাঁদিকের কোণার ডকুমেন্ট</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Camera অ্যাপে আপনার মতামত দেওয়ার জন্য ধন্যবাদ।
 
 যদি আপনি কোনও ছবি বা ভিডিওর কোয়ালিটির ব্যাপারে মতামত জানাতে চান, তাহলে উদাহরণস্বরূপ একটি ফটো বা ভিডিও এখানে অ্যাটাচ করুন এবং আমাদের জানান সেটিতে কোন বিষয়টি আপনার খারাপ লেগেছে। (যেমন, ফটোতে পর্যাপ্ত আলোর অভাব রয়েছে বা যার ফটো তোলা হয়েছে, তাকে ফোকাসে রেখে ফটোটি তোলা হয়নি।)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />-এ যোগ দিন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6617916774429601017">সমস্ত রেজোলিউশন দেখান</translation>
 <translation id="6631515515009660915">মিরর করার ফিচার বন্ধ করুন</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন চালু আছে</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8732462232047530626">মেটাডেটা প্রিভিউ করুন</translation>
+<translation id="874854738381978209">ওয়াই-ফাই নেটওয়ার্ক শনাক্ত করা হয়েছে।</translation>
 <translation id="8815966864175525708">পোর্ট্রেট ফটো তুলতে মোড পাল্টান</translation>
 <translation id="8828441885228359828">আবার রেকর্ডিং করা চালু করুন</translation>
 <translation id="8870695351537079478">রেকর্ডিং শুরু করা যাচ্ছে না</translation>

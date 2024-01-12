@@ -8,8 +8,15 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+
 // Tab grid toolbars configuration used by bottom and top tab grid toolbars.
 @interface TabGridToolbarsConfiguration : NSObject
+
+// The page for which this configuration is created.
+@property(nonatomic, assign, readonly) TabGridPage page;
+// The current mode for this configuration.
+@property(nonatomic, assign) TabGridMode mode;
 
 // NORMAL MODE ====================
 // YES if the button should be displayed.
@@ -44,7 +51,10 @@
 @property(nonatomic) BOOL searchButton;
 
 // Returns a configuration disabling all buttons.
-+ (TabGridToolbarsConfiguration*)disabledConfiguration;
++ (TabGridToolbarsConfiguration*)disabledConfigurationForPage:(TabGridPage)page;
+
+- (instancetype)initWithPage:(TabGridPage)page;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

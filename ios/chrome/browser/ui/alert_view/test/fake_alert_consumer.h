@@ -16,6 +16,7 @@
     NSArray<TextFieldConfiguration*>* textFieldConfigurations;
 @property(nonatomic, copy) NSArray<NSArray<AlertAction*>*>* actions;
 @property(nonatomic, copy) NSString* alertAccessibilityIdentifier;
+@property(nonatomic, assign) BOOL shouldShowActivityIndicator;
 
 @end
 

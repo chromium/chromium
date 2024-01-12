@@ -97,6 +97,10 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
 
+// Move activity indicators to the left-hand side of Omnibox.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kLeftHandSideActivityIndicators);
+
 // Feature to enable redesigned tracking protection UX + prefs for 3PCD.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
@@ -119,6 +123,9 @@ extern const base::FeatureParam<bool> kTpcdReadHeuristicsGrants;
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
 
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const char kUseTestMetadataName[];
+
 // Enables writing and reading metadata grants as a host-indexed data structure.
 // This is meant to optimize lookups when the list is large.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
@@ -128,6 +135,12 @@ BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
 // the optimized data structure.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<int> kMetadataGrantsThreshold;
+
+// Enables generating and using test metadata. Used to test performance at
+// large list sizes. Set to a value greater than 0 to use that many generated
+// entries for testing.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<int> kUseTestMetadata;
 
 // Enable indexing HostContentSettings to allow for faster lookups of content
 // setting rules.

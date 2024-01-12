@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -449,8 +450,7 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
     }
 
     for (const String& feature_entry : feature_entries) {
-      Vector<String> tokens;
-      feature_entry.Split(' ', tokens);
+      Vector<String> tokens = SplitOnASCIIWhitespace(feature_entry);
 
       if (tokens.empty()) {
         continue;

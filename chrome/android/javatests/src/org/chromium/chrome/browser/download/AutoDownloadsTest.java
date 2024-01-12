@@ -94,7 +94,7 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
 
         // Wait for "multiple downloads" permission dialog and allow.
         PermissionTestRule.waitForDialog(activity);
-        PermissionTestRule.replyToDialog(true, activity);
+        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.ALLOW, activity);
 
         CriteriaHelper.pollUiThread(
                 () -> {

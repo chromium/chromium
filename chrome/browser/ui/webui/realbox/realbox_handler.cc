@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -692,6 +693,8 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxCr23Theming",
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean("realboxCr23SteadyStateShadow",
+                     ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 }
 
 // static
@@ -947,11 +950,11 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
 
-  autocomplete_controller()->Start(autocomplete_input);
+  controller_->StartAutocomplete(autocomplete_input);
 }
 
 void RealboxHandler::StopAutocomplete(bool clear_result) {
-  autocomplete_controller()->Stop(clear_result);
+  controller_->StopAutocomplete(clear_result);
 }
 
 void RealboxHandler::OpenAutocompleteMatch(uint8_t line,
@@ -1007,7 +1010,7 @@ void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
     // the web UI is referencing a stale match.
     return;
   }
-  autocomplete_controller()->Stop(false);
+  controller_->StopAutocomplete(/*clear_result=*/false);
   autocomplete_controller()->DeleteMatch(*match);
 }
 

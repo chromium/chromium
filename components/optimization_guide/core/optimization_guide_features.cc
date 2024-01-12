@@ -301,7 +301,7 @@ BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
 // Whether to enable model execution.
 BASE_FEATURE(kOptimizationGuideModelExecution,
              "OptimizationGuideModelExecution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to use the on device model service in optimization guide.
 BASE_FEATURE(kOptimizationGuideOnDeviceModel,
@@ -1025,8 +1025,7 @@ bool CanLaunchOnDeviceModelService() {
 bool IsOnDeviceExecutionEnabled() {
   return base::FeatureList::IsEnabled(
              features::kOptimizationGuideModelExecution) &&
-         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) &&
-         base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel);
 }
 
 base::TimeDelta GetOnDeviceModelRetentionTime() {
@@ -1035,19 +1034,33 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
+bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+    int64_t free_disk_space_bytes) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+             kOptimizationGuideOnDeviceModel,
+             "on_device_model_free_space_mb_required_to_install",
+             20 * 1024) <= free_disk_space_bytes / (1024 * 1024);
+}
+
+bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
+    int64_t free_disk_space_bytes) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+             kOptimizationGuideOnDeviceModel,
+             "on_device_model_free_space_mb_required_to_retain",
+             10 * 1024) >= free_disk_space_bytes / (1024 * 1024);
+}
+
 bool GetOnDeviceModelRetractUnsafeContent() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{
-          &kOptimizationGuideOnDeviceModel, "on_device_retract_unsafe_content",
-          false};
+          &kTextSafetyClassifier, "on_device_retract_unsafe_content", false};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 
 bool GetOnDeviceModelMustUseSafetyModel() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{
-          &kOptimizationGuideOnDeviceModel, "on_device_must_use_safety_model",
-          false};
+          &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 

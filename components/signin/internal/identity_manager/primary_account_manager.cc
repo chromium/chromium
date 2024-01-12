@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -122,14 +123,38 @@ void LogPrimaryAccountPrefsOnInitialize(const std::string& pref_account_id,
 
 // A wrapper around PrefService that sets prefs only when updated. It can be
 // configured to commit writes for the updated values on destruction.
+//
+// In this case: if pref values are updated, commit will happen on destruction
+// and `commit_done_callback` is called when the prefs are written to the
+// persistent storage; if no pref has been updated, the callback will simply be
+// called during `ScopedPrefCommit`'s destruction.
+//
+// If `commit_done_callback` has a non-null value, `commit_on_destroy` must be
+// true.
 class PrimaryAccountManager::ScopedPrefCommit {
  public:
-  ScopedPrefCommit(PrefService* pref_service, bool commit_on_destroy)
-      : pref_service_(pref_service), commit_on_destroy_(commit_on_destroy) {}
+  ScopedPrefCommit(
+      PrefService* pref_service,
+      bool commit_on_destroy,
+      base::OnceClosure commit_done_callback = base::NullCallback())
+      : pref_service_(pref_service),
+        commit_on_destroy_(commit_on_destroy),
+        commit_done_callback_(std::move(commit_done_callback)) {
+    if (commit_done_callback) {
+      // If `commit_on_destroy` is false, no commit will be done by
+      // `ScopedPrefCommit` so the commit-related callback will not be called.
+      // This CHECK ensures that the callback is not used (and expected to run)
+      // in this case.
+      CHECK(commit_on_destroy);
+    }
+  }
 
   ~ScopedPrefCommit() {
     if (commit_on_destroy_ && need_commit_) {
-      pref_service_->CommitPendingWrite();
+      pref_service_->CommitPendingWrite(std::move(commit_done_callback_),
+                                        base::NullCallback());
+    } else if (!need_commit_ && commit_done_callback_) {
+      std::move(commit_done_callback_).Run();
     }
   }
 
@@ -151,10 +176,20 @@ class PrimaryAccountManager::ScopedPrefCommit {
     pref_service_->SetString(path, value);
   }
 
+  void ClearPref(const std::string& path) {
+    if (!pref_service_->HasPrefPath(path)) {
+      return;
+    }
+
+    need_commit_ = true;
+    pref_service_->ClearPref(path);
+  }
+
  private:
   raw_ptr<PrefService> pref_service_ = nullptr;
   bool need_commit_ = false;
   bool commit_on_destroy_ = false;
+  base::OnceClosure commit_done_callback_ = base::NullCallback();
 };
 
 PrimaryAccountManager::PrimaryAccount::PrimaryAccount(
@@ -396,7 +431,8 @@ CoreAccountId PrimaryAccountManager::GetPrimaryAccountId(
 void PrimaryAccountManager::SetPrimaryAccountInfo(
     const CoreAccountInfo& account_info,
     signin::ConsentLevel consent_level,
-    signin_metrics::AccessPoint access_point) {
+    signin_metrics::AccessPoint access_point,
+    base::OnceClosure prefs_committed_callback) {
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync))
         << "Changing the primary sync account is not allowed.";
@@ -411,24 +447,38 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
 
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
   switch (consent_level) {
-    case signin::ConsentLevel::kSync:
-      SetSyncPrimaryAccountInternal(account_info);
-      FirePrimaryAccountChanged(previous_state, access_point);
+    case signin::ConsentLevel::kSync: {
+      // Commit primary sync account info immediately so that it does not get
+      // lost if Chrome crashes before the next commit interval.
+      ScopedPrefCommit sync_scoped_pref_commit(
+          client_->GetPrefs(),
+          /*commit_on_destroy*/ true, std::move(prefs_committed_callback));
+      SetSyncPrimaryAccountInternal(account_info, sync_scoped_pref_commit);
+      FirePrimaryAccountChanged(previous_state, access_point,
+                                sync_scoped_pref_commit);
       return;
-    case signin::ConsentLevel::kSignin:
+    }
+    case signin::ConsentLevel::kSignin: {
       bool account_changed = account_info != GetPrimaryAccount().account_info;
-      ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                          /*commit_on_destroy*/ false);
+      // Commit primary account info immediately so that it does not get lost
+      // if Chrome exits before the next commit interval. (e.g. at the end of
+      // Chrome restore.)
+      ScopedPrefCommit signin_scoped_pref_commit(
+          client_->GetPrefs(),
+          /*commit_on_destroy*/ true, std::move(prefs_committed_callback));
       SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
-                                scoped_pref_commit);
+                                signin_scoped_pref_commit);
       if (account_changed)
-        FirePrimaryAccountChanged(previous_state, access_point);
+        FirePrimaryAccountChanged(previous_state, access_point,
+                                  signin_scoped_pref_commit);
       return;
+    }
   }
 }
 
 void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
-    const CoreAccountInfo& account_info) {
+    const CoreAccountInfo& account_info,
+    ScopedPrefCommit& scoped_pref_commit) {
   DCHECK(!account_info.account_id.empty());
   DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
 
@@ -446,10 +496,6 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
   }
 #endif  // DCHECK_IS_ON()
 
-  // Commit primary sync account info immediately so that it does not get lost
-  // if Chrome crashes before the next commit interval.
-  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                      /*commit_on_destroy*/ true);
   SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
                             scoped_pref_commit);
 
@@ -471,11 +517,19 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
   // 'account_info' might be a reference to the contents of `primary_account_`.
   // Create a PrimaryAccount object before calling emplace to avoid crashes.
   primary_account_.emplace(PrimaryAccount(account_info, consented_to_sync));
-  scoped_pref_commit.SetString(
-      prefs::kGoogleServicesAccountId,
-      GetPrimaryAccount().account_info.account_id.ToString());
+  std::string account_id =
+      GetPrimaryAccount().account_info.account_id.ToString();
+  scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, account_id);
   scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
                                 GetPrimaryAccount().consented_to_sync);
+  // If this was a sign-out (account ID is empty), also clear the "account was
+  // migrated" prefs.
+  if (account_id.empty()) {
+    scoped_pref_commit.ClearPref(
+        prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+    scoped_pref_commit.ClearPref(
+        prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+  }
 }
 
 void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
@@ -627,7 +681,8 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   }
 
   DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
-  FirePrimaryAccountChanged(previous_state, signout_source_metric);
+  FirePrimaryAccountChanged(previous_state, signout_source_metric,
+                            scoped_pref_commit);
 }
 
 PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
@@ -642,12 +697,13 @@ PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
 void PrimaryAccountManager::ComputeExplicitBrowserSignin(
     const PrimaryAccountChangeEvent& event_details,
     const absl::variant<signin_metrics::AccessPoint,
-                        signin_metrics::ProfileSignout>& event_source) {
+                        signin_metrics::ProfileSignout>& event_source,
+    ScopedPrefCommit& scoped_pref_commit) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case PrimaryAccountChangeEvent::Type::kNone:
       return;
     case PrimaryAccountChangeEvent::Type::kCleared:
-      client_->GetPrefs()->ClearPref(prefs::kExplicitBrowserSignin);
+      scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
       CHECK(absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
@@ -657,11 +713,11 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
           access_point ==
               signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
-        client_->GetPrefs()->ClearPref(prefs::kExplicitBrowserSignin);
+        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
       } else {
         // All others access points are explicit sign ins except the Web
         // Signin event.
-        client_->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+        scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
       }
   }
 }
@@ -669,7 +725,8 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
 void PrimaryAccountManager::FirePrimaryAccountChanged(
     const PrimaryAccountChangeEvent::State& previous_state,
     absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {
+        event_source,
+    ScopedPrefCommit& scoped_pref_commit) {
   PrimaryAccountChangeEvent::State current_state = GetPrimaryAccountState();
   PrimaryAccountChangeEvent event_details(previous_state, current_state);
 
@@ -681,7 +738,7 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 
   LogPrimaryAccountChangeMetrics(event_details, event_source);
 
-  ComputeExplicitBrowserSignin(event_details, event_source);
+  ComputeExplicitBrowserSignin(event_details, event_source, scoped_pref_commit);
 
   client_->OnPrimaryAccountChangedWithEventSource(event_details, event_source);
 

@@ -488,6 +488,10 @@ targets.tests.isolated_script_test(
     name = "chrome_junit_tests",
 )
 
+targets.tests.gtest_test(
+    name = "chrome_ml_unittests",
+)
+
 targets.tests.isolated_script_test(
     name = "chrome_private_code_test",
 )
@@ -679,6 +683,19 @@ targets.tests.gtest_test(
         "--run-manual",
         "--ui-test-action-max-timeout=110000",
         "--test-launcher-timeout=120000",
+    ],
+    binary = "content_browsertests",
+)
+
+targets.tests.gtest_test(
+    name = "content_browsertests_with_emulator_network",
+    mixins = [
+        "emulator-enable-network",
+    ],
+    args = [
+        # These are integration tests for network change, they need to run
+        # on an emulator with network enabled
+        "--gtest_filter=QuicConnectionMigrationTest.*",
     ],
     binary = "content_browsertests",
 )
@@ -973,6 +990,20 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests",
+    args = [
+        "--env-var",
+        "LIBVA_DRIVERS_PATH",
+        "./",
+        "--env-var",
+        "LIBVA_DRIVER_NAME",
+        "libfake",
+        "test-25fps.vp9",
+        "test-25fps.vp9.json",
+    ],
+)
+
+targets.tests.gtest_test(
     name = "filesystem_service_unittests",
 )
 
@@ -1151,6 +1182,44 @@ targets.tests.isolated_script_test(
 
 targets.tests.gtest_test(
     name = "gpu_unittests",
+)
+
+targets.tests.isolated_script_test(
+    # graphite_enabled_blink_web_tests provides coverage for
+    # running Layout Tests with Skia Graphite.
+    name = "graphite_enabled_blink_web_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=enable-skia-graphite",
+        "--skipped=always",
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        "--num-retries=3",
+    ],
+    binary = "blink_web_tests",
+)
+
+targets.tests.isolated_script_test(
+    # graphite_enabled_blink_wpt_tests provides coverage for
+    # running Layout Tests with Skia Graphite.
+    name = "graphite_enabled_blink_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=enable-skia-graphite",
+        "--skipped=always",
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        "--num-retries=3",
+    ],
+    binary = "blink_wpt_tests",
 )
 
 targets.tests.isolated_script_test(
@@ -1359,10 +1428,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "lacros_cq_tast_tests_eve",
-)
-
-targets.tests.gtest_test(
     name = "latency_unittests",
 )
 
@@ -1422,22 +1487,6 @@ targets.tests.gtest_test(
         "--use-gpu-in-tests",
     ],
     binary = "media_unittests",
-)
-
-targets.tests.gpu_telemetry_test(
-    name = "mediapipe_passthrough_tests",
-    telemetry_test_name = "mediapipe",
-    mixins = [
-        "has_native_resultdb_integration",
-    ],
-)
-
-targets.tests.gpu_telemetry_test(
-    name = "mediapipe_validating_tests",
-    telemetry_test_name = "mediapipe",
-    mixins = [
-        "has_native_resultdb_integration",
-    ],
 )
 
 targets.tests.isolated_script_test(
@@ -2163,18 +2212,6 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "vaapi_unittest",
-    args = [
-        "--stop-ui",
-        # Tell libva to do dummy encoding/decoding. For more info, see:
-        # https://github.com/intel/libva/blob/master/va/va_fool.c#L47
-        "--env-var",
-        "LIBVA_DRIVERS_PATH",
-        "./",
-        "--env-var",
-        "LIBVA_DRIVER_NAME",
-        "libfake",
-        "--gtest_filter=\"VaapiTest.*\"",
-    ],
 )
 
 targets.tests.isolated_script_test(
@@ -2683,6 +2720,13 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "webview_trichrome_64_cts_tests",
+    mixins = [
+        "webview_cts_archive",
+    ],
+)
+
+targets.tests.gtest_test(
+    name = "webview_trichrome_64_cts_hostside_tests",
     mixins = [
         "webview_cts_archive",
     ],

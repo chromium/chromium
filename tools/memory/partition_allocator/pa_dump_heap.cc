@@ -10,6 +10,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <optional>
 #include <string>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -29,7 +30,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/snappy/src/snappy.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
@@ -57,15 +57,15 @@ struct PageMapEntry {
 };
 static_assert(sizeof(PageMapEntry) == sizeof(uint64_t), "Wrong bitfield size");
 
-absl::optional<PageMapEntry> EntryAtAddress(int pagemap_fd, uintptr_t address) {
+std::optional<PageMapEntry> EntryAtAddress(int pagemap_fd, uintptr_t address) {
   constexpr size_t kPageShift = 12;
   off_t offset = (address >> kPageShift) * sizeof(PageMapEntry);
   if (lseek(pagemap_fd, offset, SEEK_SET) != offset)
-    return absl::nullopt;
+    return std::nullopt;
 
   PageMapEntry entry;
   if (read(pagemap_fd, &entry, sizeof(PageMapEntry)) != sizeof(PageMapEntry))
-    return absl::nullopt;
+    return std::nullopt;
 
   return {entry};
 }

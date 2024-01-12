@@ -223,6 +223,9 @@ class FrameSequenceTrackerTest : public testing::Test {
             DCHECK_EQ(last_activated_main_args.frame_id.sequence_number,
                       last_activated_main);
           collection_.NotifyFrameEnd(args, last_activated_main_args);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+          collection_.AddSortedFrame(args, frame_info);
           break;
         }
 
@@ -384,6 +387,9 @@ TEST_F(FrameSequenceTrackerTest, ReportMetricsAtFixedInterval) {
   collection_.NotifyBeginImplFrame(args);
   collection_.NotifyImplFrameCausedNoDamage(viz::BeginFrameAck(args, false));
   collection_.NotifyFrameEnd(args, args);
+  FrameInfo frame_info;
+  frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+  collection_.AddSortedFrame(args, frame_info);
   EXPECT_EQ(NumberOfTrackers(), 1u);
   // At NotifyFrameEnd, the tracker is removed from removal_tracker_ list.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
@@ -734,38 +740,6 @@ TEST_F(FrameSequenceTrackerTest, TerminationWithNullPresentationTimeStamp) {
       1, {base::TimeTicks(), viz::BeginFrameArgs::DefaultInterval(), 0});
   GenerateSequence("e(1,0)");
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
-}
-
-// Test that a tracker is terminated after 3 submitted frames, remove this
-// once crbug.com/1072482 is fixed.
-TEST_F(FrameSequenceTrackerTest, TerminationAfterThreeSubmissions1) {
-  GenerateSequence("b(1)s(1)e(1,0)");
-  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  GenerateSequence("b(2)s(2)e(2,0)b(3)s(3)e(3,0)b(4)s(4)e(4,0)b(5)s(5)e(5,0)");
-  EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
-}
-
-TEST_F(FrameSequenceTrackerTest, TerminationAfterThreeSubmissions2) {
-  GenerateSequence("b(1)");
-  auto args = CreateBeginFrameArgs(1u, 1u);
-  // Ack to an impl frame that doesn't exist in this tracker.
-  collection_.NotifySubmitFrame(UINT32_MAX, /*has_missing_content=*/false,
-                                viz::BeginFrameAck(args, true), args);
-  GenerateSequence("e(1,0)");
-  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  GenerateSequence("b(2)s(1)e(2,0)b(3)s(2)e(3,0)b(4)s(3)e(4,0)");
-  EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
-}
-
-TEST_F(FrameSequenceTrackerTest, TerminationAfterThreeSubmissions3) {
-  GenerateSequence(
-      "b(1)s(1)e(1,0)P(1)b(2)s(2)e(2,0)P(2)b(3)s(3)e(3,0)P(3)b(4)");
-  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  GenerateSequence("s(4)");
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage1) {

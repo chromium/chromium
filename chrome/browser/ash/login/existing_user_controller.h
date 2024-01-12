@@ -335,7 +335,7 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   size_t num_login_attempts_ = 0;
 
   // Interface to the signed settings store.
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<CrosSettings> cros_settings_;
 
   // URL to append to start Guest mode with.
   GURL guest_mode_url_;

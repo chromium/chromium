@@ -22,6 +22,20 @@ testcase.mountCrostini = async () => {
   await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 };
 
+testcase.mountCrostiniWithSubFolder = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  // Expect the expand icon is hidden for fake Crostini.
+  await directoryTree.waitForItemExpandIconToHideByLabel('Linux files');
+
+  // Add a sub folder to Crostini and mount it.
+  await mountCrostini(appId, [ENTRIES.photos]);
+
+  // Expect the expand icon shows now.
+  await directoryTree.waitForItemExpandIconToShowByLabel('Linux files');
+};
+
 testcase.enableDisableCrostini = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -130,7 +144,7 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
-      1, appOptions.filter(el => el.text == 'App (Windows)').length);
+      1, appOptions.filter(el => el.text === 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
   await remoteCall.callRemoteTestUtil(
@@ -204,7 +218,7 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
-      1, appOptions.filter(el => el.text == 'App (Windows)').length);
+      1, appOptions.filter(el => el.text === 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
   await remoteCall.callRemoteTestUtil(

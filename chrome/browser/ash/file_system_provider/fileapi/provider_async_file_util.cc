@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -120,22 +121,14 @@ void OnReadDirectory(storage::AsyncFileUtil::ReadDirectoryCallback callback,
                      base::File::Error result,
                      storage::AsyncFileUtil::EntryList entry_list,
                      bool has_more) {
-  auto new_end_it =
-      std::remove_if(entry_list.begin(), entry_list.end(),
-                     [](const filesystem::mojom::DirectoryEntry& entry) {
-                       if (!filesystem::mojom::IsKnownEnumValue(entry.type)) {
-                         return true;
-                       }
-                       if (entry.name.empty() || entry.name.value() == "." ||
-                           entry.name.value() == ".." ||
-                           base::Contains(entry.name.value(), '\0') ||
-                           base::Contains(entry.name.value(), '/') ||
-                           base::Contains(entry.name.value(), '\\')) {
-                         return true;
-                       }
-                       return false;
-                     });
-  entry_list.erase(new_end_it, entry_list.end());
+  std::erase_if(entry_list, [](const filesystem::mojom::DirectoryEntry& entry) {
+    return !filesystem::mojom::IsKnownEnumValue(entry.type) ||
+           entry.name.empty() || entry.name.value() == "." ||
+           entry.name.value() == ".." ||
+           base::Contains(entry.name.value(), '\0') ||
+           base::Contains(entry.name.value(), '/') ||
+           base::Contains(entry.name.value(), '\\');
+  });
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -308,9 +301,9 @@ void OnTruncate(storage::AsyncFileUtil::StatusCallback callback,
 
 }  // namespace
 
-ProviderAsyncFileUtil::ProviderAsyncFileUtil() {}
+ProviderAsyncFileUtil::ProviderAsyncFileUtil() = default;
 
-ProviderAsyncFileUtil::~ProviderAsyncFileUtil() {}
+ProviderAsyncFileUtil::~ProviderAsyncFileUtil() = default;
 
 void ProviderAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,

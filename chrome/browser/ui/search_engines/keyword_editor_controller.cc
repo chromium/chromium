@@ -113,8 +113,10 @@ const TemplateURL* KeywordEditorController::GetDefaultSearchProvider() {
   return url_model_->GetDefaultSearchProvider();
 }
 
-void KeywordEditorController::MakeDefaultTemplateURL(int index) {
-  table_model_->MakeDefaultTemplateURL(index);
+void KeywordEditorController::MakeDefaultTemplateURL(
+    int index,
+    search_engines::ChoiceMadeLocation choice_location) {
+  table_model_->MakeDefaultTemplateURL(index, choice_location);
 }
 
 void KeywordEditorController::SetIsActiveTemplateURL(int index,

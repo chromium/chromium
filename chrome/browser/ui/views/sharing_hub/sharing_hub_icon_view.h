@@ -18,8 +18,9 @@ class SharingHubBubbleController;
 // choose to share the current page to a sharing target or save the page using
 // first party actions.
 class SharingHubIconView : public PageActionIconView {
+  METADATA_HEADER(SharingHubIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(SharingHubIconView);
   SharingHubIconView(CommandUpdater* command_updater,
                      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                      PageActionIconView::Delegate* page_action_icon_delegate);

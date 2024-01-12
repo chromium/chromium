@@ -47,9 +47,9 @@ void BookmarkProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "BookmarkProvider::Start");
   matches_.clear();
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
-      input.text().empty())
+  if (input.IsZeroSuggest() || input.text().empty()) {
     return;
+  }
 
   DoAutocomplete(input);
 }

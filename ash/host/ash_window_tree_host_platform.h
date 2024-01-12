@@ -38,10 +38,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
 
   ~AshWindowTreeHostPlatform() override;
 
-  void set_ignore_platform_damage_rect_for_test(bool ignore) {
-    ignore_platform_damage_rect_for_test_ = ignore;
-  }
-
  protected:
   friend ExtendedMouseWarpControllerTest;
   FRIEND_TEST_ALL_PREFIXES(ExtendedMouseWarpControllerTest,
@@ -74,7 +70,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
       const gfx::Size& host_size_in_pixels) const override;
   void OnCursorVisibilityChangedNative(bool show) override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
-  void OnDamageRect(const gfx::Rect& damage_rect) override;
   void DispatchEvent(ui::Event* event) override;
   std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
   RequestUnadjustedMovement() override;
@@ -94,8 +89,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   raw_ptr<ui::InputController, DanglingUntriaged> input_controller_ = nullptr;
 
   gfx::Rect last_cursor_confine_bounds_in_pixels_;
-
-  bool ignore_platform_damage_rect_for_test_ = false;
 };
 
 }  // namespace ash

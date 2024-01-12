@@ -71,21 +71,6 @@ class NET_EXPORT ProxyDelegate {
   // `proxy_resolution_service` must outlive `this`.
   virtual void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) = 0;
-
-  void OnBeforeTunnelRequestServerOnly(const ProxyChain& proxy_chain,
-                                       size_t proxy_chain_index,
-                                       HttpRequestHeaders* extra_headers) {
-    DCHECK(!proxy_chain.is_direct());
-    OnBeforeTunnelRequest(proxy_chain, proxy_chain_index, extra_headers);
-  }
-
-  Error OnTunnelHeadersReceivedServerOnly(
-      const ProxyChain& proxy_chain,
-      size_t proxy_chain_index,
-      const HttpResponseHeaders& response_headers) {
-    return OnTunnelHeadersReceived(proxy_chain, proxy_chain_index,
-                                   response_headers);
-  }
 };
 
 }  // namespace net

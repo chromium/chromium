@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 112 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] cos float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
 [FAIL] cos float32 2D tensor / sync
@@ -76,18 +76,6 @@ Found 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
 [FAIL] sin float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
-[FAIL] sqrt float32 0D scalar / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
-[FAIL] sqrt float32 1D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
-[FAIL] sqrt float32 2D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
-[FAIL] sqrt float32 3D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
-[FAIL] sqrt float32 4D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
-[FAIL] sqrt float32 5D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
 [FAIL] tan float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (tan) is not supported.
 [FAIL] tan float32 2D tensor / sync

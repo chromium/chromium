@@ -394,8 +394,8 @@ bool MenuManager::AddContextItem(const Extension* extension,
       SanitizeRadioListsInMenu(context_items_[key]);
   }
 
-  // If this is the first item for this extension, start loading its icon.
-  if (first_item && extension) {
+  // If this is the first item, start loading its icon.
+  if (first_item) {
     GetMenuIconLoader(key)->LoadIcon(browser_context_, extension, key);
   }
 

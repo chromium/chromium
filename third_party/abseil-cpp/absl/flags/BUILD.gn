@@ -154,10 +154,6 @@ absl_source_set("flag_internal") {
 }
 
 absl_source_set("flag") {
-  sources = [
-    "flag.cc",
-    "internal/flag_msvc.inc",
-  ]
   public = [
     "declare.h",
     "flag.h",

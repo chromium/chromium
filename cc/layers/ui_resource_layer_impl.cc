@@ -130,9 +130,9 @@ void UIResourceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource, premultiplied_alpha, uv_top_left_, uv_bottom_right_,
-               SkColors::kTransparent, vertex_opacity_, flipped,
-               nearest_neighbor,
+               SkColors::kTransparent, flipped, nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+  quad->set_vertex_opacity(vertex_opacity_);
   ValidateQuadResources(quad);
 }
 

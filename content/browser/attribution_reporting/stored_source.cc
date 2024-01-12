@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -20,7 +21,6 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -39,7 +39,7 @@ bool AreFieldsValid(int64_t aggregatable_budget_consumed,
                     base::Time source_time,
                     base::Time expiry_time,
                     base::Time aggregatable_report_window_time,
-                    absl::optional<uint64_t> debug_key,
+                    std::optional<uint64_t> debug_key,
                     bool debug_cookie_set) {
   return aggregatable_budget_consumed >= 0 && randomized_response_rate >= 0 &&
          randomized_response_rate <= 1 &&
@@ -52,7 +52,7 @@ bool AreFieldsValid(int64_t aggregatable_budget_consumed,
 }  // namespace
 
 // static
-absl::optional<StoredSource> StoredSource::Create(
+std::optional<StoredSource> StoredSource::Create(
     CommonSourceInfo common_info,
     uint64_t source_event_id,
     attribution_reporting::DestinationSet destination_sites,
@@ -63,7 +63,7 @@ absl::optional<StoredSource> StoredSource::Create(
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     attribution_reporting::AggregationKeys aggregation_keys,
     AttributionLogic attribution_logic,
     ActiveState active_state,
@@ -76,7 +76,7 @@ absl::optional<StoredSource> StoredSource::Create(
   if (!AreFieldsValid(aggregatable_budget_consumed, randomized_response_rate,
                       source_time, expiry_time, aggregatable_report_window_time,
                       debug_key, debug_cookie_set)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return StoredSource(std::move(common_info), source_event_id,
@@ -100,7 +100,7 @@ StoredSource::StoredSource(
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     attribution_reporting::AggregationKeys aggregation_keys,
     AttributionLogic attribution_logic,
     ActiveState active_state,

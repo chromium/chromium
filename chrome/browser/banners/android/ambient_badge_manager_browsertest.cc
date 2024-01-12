@@ -159,7 +159,7 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
   virtual void SetUpFeatureList() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBlockInstallPromptIfIgnoreRecently},
+        /*enabled_features=*/{},
         /*disabled_features=*/{features::kAmbientBadgeSuppressFirstVisit,
                                features::kInstallPromptSegmentation});
   }
@@ -231,32 +231,6 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
 
   // Badge can show again after 91 days.
   webapps::AppBannerManager::SetTimeDeltaForTesting(91);
-  RunTest(app_banner_manager.get(),
-          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::kShowing);
-}
-
-IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
-                       BlockedIfIgnoredRecently) {
-  auto app_banner_manager =
-      std::make_unique<TestAppBannerManager>(web_contents());
-
-  RunTest(app_banner_manager.get(),
-          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::kShowing);
-
-  // Explicitly dismiss the badge.
-  app_banner_manager->GetBadgeManagerForTest()->BadgeIgnored();  // IN-TEST
-  EXPECT_EQ(AmbientBadgeManager::State::kDismissed,
-            app_banner_manager->GetBadgeManagerForTest()->state());  // IN-TEST
-
-  // Badge blocked because it was recently dismissed.
-  RunTest(app_banner_manager.get(),
-          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::kBlocked);
-
-  // Badge can show again after 8 days.
-  webapps::AppBannerManager::SetTimeDeltaForTesting(8);
   RunTest(app_banner_manager.get(),
           embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
           AmbientBadgeManager::State::kShowing);

@@ -112,7 +112,7 @@ class FileSystemScanner {
 
   const base::FilePath cros_dir_;
   const base::FilePath android_dir_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   // The timestamp of the start of the last scan.
   base::Time previous_scan_time_;

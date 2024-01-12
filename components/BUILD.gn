@@ -280,6 +280,7 @@ test("components_unittests") {
     "//components/prefs:unit_tests",
     "//components/profile_metrics:unit_tests",
     "//components/proxy_config:unit_tests",
+    "//components/push_notification:unit_tests",
     "//components/qr_code_generator:unit_tests",
     "//components/query_parser:unit_tests",
     "//components/reading_list/core:unit_tests",
@@ -764,7 +765,6 @@ test("components_unittests") {
     deps += [
       "//components/safe_browsing/content/renderer:throttles_unittest",
       "//components/safe_browsing/core/browser:ping_manager_unittest",
-      "//components/safe_browsing/core/browser:safe_browsing_lookup_mechanism_experimenter_unittest",
       "//components/safe_browsing/core/browser:user_population_unittest",
       "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
       "//components/safe_browsing/core/browser/db:unit_tests_local_db",
@@ -914,6 +914,7 @@ if (use_blink) {
       "autofill/content/browser/risk/fingerprint_browsertest.cc",
       "autofill/content/renderer/a11y_utils_browsertest.cc",
       "autofill/content/renderer/autofill_agent_browsertest.cc",
+      "autofill/content/renderer/autofill_agent_form_interaction_browsertest.cc",
       "autofill/content/renderer/form_autofill_issues_browsertest.cc",
       "autofill/content/renderer/form_autofill_util_browsertest.cc",
       "autofill/content/renderer/form_cache_browsertest.cc",

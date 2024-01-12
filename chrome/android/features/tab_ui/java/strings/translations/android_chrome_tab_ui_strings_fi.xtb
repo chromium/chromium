@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Haluatko sulkea vanhat välilehdet?</translation>
 <translation id="1215127405478249895">Tarkista välilehdet</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
+<translation id="1326271443836399892">Tarkista nykyiset järjestelyasetukset.</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Poista ryhmästä</translation>
 <translation id="3008554597174452548">Lopeta tuotteen seuraaminen</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Sinulla on <ph name="TABS_COUNT_ONE" /> arkistoitu välilehti}other{Sinulla on <ph name="TABS_COUNT_MANY" /> arkistoitua välilehteä}}</translation>
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
 <translation id="9150694013019234766">Vaihda välilehteä välilehtiryhmässä näytön alalaidassa</translation>
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>
+<translation id="955558140275419384">Avaa tämä muokkaaja, niin voit tarkistaa kaikki arkistoidut välilehdet ja järjestellä ne.</translation>
 <translation id="959682366969460160">Järjestä</translation>
 </translationbundle>

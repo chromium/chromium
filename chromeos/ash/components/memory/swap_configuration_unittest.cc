@@ -26,8 +26,7 @@ class SwapConfigurationPressureThreshold : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<FakeResourcedClient, DanglingUntriaged | ExperimentalAsh>
-      resourced_client_ = nullptr;
+  raw_ptr<FakeResourcedClient, DanglingUntriaged> resourced_client_ = nullptr;
 };
 
 }  // namespace

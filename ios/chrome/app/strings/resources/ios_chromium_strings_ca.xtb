@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">Chromium no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="2784449251446768092">Gestiona la configuració de Chromium</translation>
 <translation id="2798503587425057129">Obre la llista de lectura de Chromium.</translation>
+<translation id="28276745681323897">Pots <ph name="BEGIN_LINK" />gestionar quines dades de Chromium es desen<ph name="END_LINK" /> al teu Compte de Google.
+
+Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="2843571538056574338">Utilitza Chromium per a Emplenament automàtic</translation>
 <translation id="2918709798697875261">La teva organització requereix que tanquis la sessió de Chromium.</translation>
 <translation id="2942241131342758843">Utilitza Chromium de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
@@ -79,6 +82,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="3478750326643748149">Amaga "Treu el màxim profit de Chromium"</translation>
+<translation id="347967311580159871">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La contrasenya no s'ha compartit. Comprova la connexió a Internet i assegura't que tens la sessió iniciada a Chromium. Després, torna-ho a provar.</translation>
 <translation id="3554027294407525061">Esborra les dades de navegació a Chromium.</translation>
 <translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>

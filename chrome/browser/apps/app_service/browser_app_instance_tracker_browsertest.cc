@@ -219,7 +219,7 @@ class Recorder : public apps::BrowserAppInstanceObserver {
     return {};
   }
 
-  const raw_ref<apps::BrowserAppInstanceTracker, ExperimentalAsh> tracker_;
+  const raw_ref<apps::BrowserAppInstanceTracker> tracker_;
   std::vector<TestInstance> calls_;
 };
 

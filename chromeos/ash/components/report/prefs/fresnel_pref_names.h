@@ -29,6 +29,8 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
 extern const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
 extern const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
+extern const char kDeviceActive28DayActivePingCache[];
 
 }  // namespace ash::report::prefs
 

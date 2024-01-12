@@ -1166,6 +1166,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash2) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaOwnsChildAndHiddenDescendantCrash) {
+  RunFormControlsTest(
+      FILE_PATH_LITERAL("aria-owns-child-and-hidden-descendant-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaOwnsFromTextarea) {
   RunRegressionTest(FILE_PATH_LITERAL("aria-owns-from-textarea.html"));
 }
@@ -3013,6 +3019,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("progress-with-background-exposes-values.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityProgressMeterCrash) {
+  RunFormControlsTest(FILE_PATH_LITERAL("progress-meter-crash.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityQ) {
   RunHtmlTest(FILE_PATH_LITERAL("q.html"));
 }
@@ -3102,9 +3113,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // Flaky on Android and Fuchsia - crbug.com/1286650, crbug.com/1491059
-// crbug.com/1401767
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilitySelectList DISABLED_AccessibilitySelectList
+#else
+#define MAYBE_AccessibilitySelectList AccessibilitySelectList
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilitySelectList) {
+                       MAYBE_AccessibilitySelectList) {
+  RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelectList) {
   RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
 }
 
@@ -3597,6 +3617,21 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AddChildOfNotIncludedInTreeChain) {
   RunRegressionTest(
       FILE_PATH_LITERAL("add-child-of-not-included-in-tree-chain.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AddChildOfNotIncludedInTreeChain) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("add-child-of-not-included-in-tree-chain.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AddDisplayNoneChildren) {
+  RunRegressionTest(FILE_PATH_LITERAL("add-display-none-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AddDisplayNoneChildren) {
+  RunRegressionTest(FILE_PATH_LITERAL("add-display-none-children.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ComputeNameWhileFreezing) {

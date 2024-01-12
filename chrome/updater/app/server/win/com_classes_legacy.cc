@@ -451,29 +451,27 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     };
 
     auto result = base::MakeRefCounted<CurrentVersionResult>();
-    AppServerWin::PostRpcTask(
-        base::BindOnce(
-            [](const std::string app_id,
-               scoped_refptr<CurrentVersionResult> result) {
-              const base::ScopedClosureRunner signal_event(base::BindOnce(
-                  [](scoped_refptr<CurrentVersionResult> result) {
-                    result->completion_event.Signal();
-                  },
-                  result));
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](const std::string app_id,
+           scoped_refptr<CurrentVersionResult> result) {
+          const base::ScopedClosureRunner signal_event(base::BindOnce(
+              [](scoped_refptr<CurrentVersionResult> result) {
+                result->completion_event.Signal();
+              },
+              result));
 
-              const base::Version current_version =
-                  base::MakeRefCounted<const PersistedData>(
-                      GetUpdaterScope(),
-                      GetAppServerWinInstance()->prefs()->GetPrefService(),
-                      nullptr)
-                      ->GetProductVersion(app_id);
-              if (!current_version.IsValid()) {
-                return;
-              }
+          const base::Version current_version =
+              base::MakeRefCounted<const PersistedData>(
+                  GetUpdaterScope(),
+                  GetAppServerWinInstance()->prefs()->GetPrefService(), nullptr)
+                  ->GetProductVersion(app_id);
+          if (!current_version.IsValid()) {
+            return;
+          }
 
-              result->current_version = current_version;
-            },
-            app_id_, result));
+          result->current_version = current_version;
+        },
+        app_id_, result));
 
     if (!result->completion_event.TimedWait(base::Seconds(60)) ||
         !result->current_version.has_value()) {
@@ -1142,40 +1140,36 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
   auto result = base::MakeRefCounted<LastCheckedTimeResult>();
-  AppServerWin::PostRpcTask(
-      base::BindOnce(
-          [](PolicyStatusImplPtr obj,
-             scoped_refptr<LastCheckedTimeResult> result) {
-            const base::ScopedClosureRunner signal_event(base::BindOnce(
-                [](scoped_refptr<LastCheckedTimeResult> result) {
-                  result->completion_event.Signal();
-                },
-                result));
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](PolicyStatusImplPtr obj, scoped_refptr<LastCheckedTimeResult> result) {
+        const base::ScopedClosureRunner signal_event(base::BindOnce(
+            [](scoped_refptr<LastCheckedTimeResult> result) {
+              result->completion_event.Signal();
+            },
+            result));
 
-            const base::Time last_checked_time =
-                base::MakeRefCounted<const PersistedData>(
-                    GetUpdaterScope(),
-                    GetAppServerWinInstance()->prefs()->GetPrefService(),
-                    nullptr)
-                    ->GetLastChecked();
-            if (last_checked_time.is_null()) {
-              return;
-            }
+        const base::Time last_checked_time =
+            base::MakeRefCounted<const PersistedData>(
+                GetUpdaterScope(),
+                GetAppServerWinInstance()->prefs()->GetPrefService(), nullptr)
+                ->GetLastChecked();
+        if (last_checked_time.is_null()) {
+          return;
+        }
 
-            const FILETIME last_checked_filetime =
-                last_checked_time.ToFileTime();
-            FILETIME file_time_local = {};
-            SYSTEMTIME system_time = {};
-            DATE last_checked_variant_time = {};
-            if (::FileTimeToLocalFileTime(&last_checked_filetime,
-                                          &file_time_local) &&
-                ::FileTimeToSystemTime(&file_time_local, &system_time) &&
-                ::SystemTimeToVariantTime(&system_time,
-                                          &last_checked_variant_time)) {
-              result->last_checked_time = last_checked_variant_time;
-            }
-          },
-          PolicyStatusImplPtr(this), result));
+        const FILETIME last_checked_filetime = last_checked_time.ToFileTime();
+        FILETIME file_time_local = {};
+        SYSTEMTIME system_time = {};
+        DATE last_checked_variant_time = {};
+        if (::FileTimeToLocalFileTime(&last_checked_filetime,
+                                      &file_time_local) &&
+            ::FileTimeToSystemTime(&file_time_local, &system_time) &&
+            ::SystemTimeToVariantTime(&system_time,
+                                      &last_checked_variant_time)) {
+          result->last_checked_time = last_checked_variant_time;
+        }
+      },
+      PolicyStatusImplPtr(this), result));
 
   if (!result->completion_event.TimedWait(base::Seconds(60)) ||
       !result->last_checked_time.has_value()) {

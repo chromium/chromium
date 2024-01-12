@@ -158,6 +158,7 @@ class ThreadableLoaderTestHelper final {
     loader_ = nullptr;
   }
   void ClearLoader() { loader_ = nullptr; }
+
   Checkpoint& GetCheckpoint() { return checkpoint_; }
   void CallCheckpoint(int n) { checkpoint_.Call(n); }
 
@@ -198,6 +199,7 @@ class ThreadableLoaderTest : public testing::Test {
   void CancelLoader() { helper_->CancelLoader(); }
   void CancelAndClearLoader() { helper_->CancelAndClearLoader(); }
   void ClearLoader() { helper_->ClearLoader(); }
+
   Checkpoint& GetCheckpoint() { return helper_->GetCheckpoint(); }
   void CallCheckpoint(int n) { helper_->CallCheckpoint(n); }
 
@@ -471,6 +473,8 @@ TEST_F(ThreadableLoaderTest, ClearInRedirectDidFinishLoading) {
   CallCheckpoint(2);
   ServeRequests();
 }
+
+// TODO(crbug.com/1356128): Add unit tests to cover histogram logging.
 
 }  // namespace
 

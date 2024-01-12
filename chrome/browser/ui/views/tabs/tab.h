@@ -41,7 +41,7 @@ class LinearAnimation;
 namespace views {
 class Label;
 class View;
-}
+}  // namespace views
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -52,9 +52,9 @@ class Tab : public gfx::AnimationDelegate,
             public views::MaskedTargeterDelegate,
             public views::ViewObserver,
             public TabSlotView {
- public:
-  METADATA_HEADER(Tab);
+  METADATA_HEADER(Tab, TabSlotView)
 
+ public:
   // When the content's width of the tab shrinks to below this size we should
   // hide the close button on inactive tabs. Any smaller and they're too easy
   // to hit on accident.

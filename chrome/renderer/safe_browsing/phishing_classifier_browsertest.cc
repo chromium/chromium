@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -44,7 +45,7 @@ class TestChromeContentRendererClient : public ChromeContentRendererClient {
   ~TestChromeContentRendererClient() override {}
   // Since visited_link_reader_ in ChromeContentRenderClient never get
   // initiated, overrides VisitedLinkedHash() function to prevent crashing.
-  uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override {
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override {
     return 0;
   }
 };

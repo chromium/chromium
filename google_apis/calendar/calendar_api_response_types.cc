@@ -8,15 +8,15 @@
 
 #include <map>
 #include <memory>
-#include <string>
-
 #include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
@@ -61,13 +61,13 @@ constexpr char kStatus[] = "status";
 constexpr char kSummary[] = "summary";
 
 constexpr auto kEventStatuses =
-    base::MakeFixedFlatMap<base::StringPiece, CalendarEvent::EventStatus>(
+    base::MakeFixedFlatMap<std::string_view, CalendarEvent::EventStatus>(
         {{"cancelled", CalendarEvent::EventStatus::kCancelled},
          {"confirmed", CalendarEvent::EventStatus::kConfirmed},
          {"tentative", CalendarEvent::EventStatus::kTentative}});
 
 constexpr auto kAttendeesResponseStatuses =
-    base::MakeFixedFlatMap<base::StringPiece, CalendarEvent::ResponseStatus>(
+    base::MakeFixedFlatMap<std::string_view, CalendarEvent::ResponseStatus>(
         {{"accepted", CalendarEvent::ResponseStatus::kAccepted},
          {"declined", CalendarEvent::ResponseStatus::kDeclined},
          {"needsAction", CalendarEvent::ResponseStatus::kNeedsAction},

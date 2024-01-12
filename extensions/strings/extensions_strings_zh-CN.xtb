@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">找不到指向待打包目录的绝对路径。</translation>
 <translation id="5160071981665899014">无法为脚本加载 JavaScript“<ph name="RELATIVE_PATH" />”。</translation>
 <translation id="5356315618422219272">应用视图：<ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">不支持成形的窗口。</translation>
 <translation id="5456409301717116725">此扩展程序包含密钥文件“<ph name="KEY_PATH" />”，您最好不要执行此操作。</translation>
 <translation id="5486326529110362464">请输入私有密钥值。</translation>
 <translation id="5972529113578162692">此设备的管理员要求安装“<ph name="EXTENSION_NAME" />”，因此不能卸载该扩展程序。</translation>

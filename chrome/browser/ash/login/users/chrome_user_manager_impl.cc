@@ -1083,21 +1083,24 @@ void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
   // Find a User instance from directory path, and annotate the AccountId.
   // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
   if (ash::IsUserBrowserContext(profile)) {
-    bool found = false;
-    std::string username_hash =
-        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile);
-    for (const user_manager::User* user : GetLoggedInUsers()) {
-      if (user->username_hash() == username_hash) {
-        found = true;
-        ash::AnnotatedAccountId::Set(profile, user->GetAccountId());
-        break;
-      }
-    }
-    // For user profile, corresponding User instance must be found.
-    if (!found) {
+    auto logged_in_users = GetLoggedInUsers();
+    auto it = base::ranges::find(
+        logged_in_users,
+        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile),
+        [](const user_manager::User* user) { return user->username_hash(); });
+    if (it == logged_in_users.end()) {
       // User may not be found for now on testing.
       // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
       CHECK_IS_TEST();
+    } else {
+      const user_manager::User* user = *it;
+      // A |User| instance should always exist for a profile which is not the
+      // initial, the sign-in or the lock screen app profile.
+      CHECK(session_manager::SessionManager::Get()->HasSessionForAccountId(
+          user->GetAccountId()))
+          << "Attempting to construct the profile before starting the user "
+             "session";
+      ash::AnnotatedAccountId::Set(profile, user->GetAccountId());
     }
   }
 }

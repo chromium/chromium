@@ -593,18 +593,6 @@ Vector<double> Font::IndividualCharacterAdvances(const TextRun& run) const {
   return shaper.IndividualCharacterAdvances(run);
 }
 
-void Font::ExpandRangeToIncludePartialGlyphs(const TextRun& text_run,
-                                             int* from,
-                                             int* to) const {
-  TextRunPaintInfo run_info(text_run);
-  run_info.from = *from;
-  run_info.to = *to;
-  CachingWordShaper word_shaper(*this);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(run_info, &buffer);
-  buffer.ExpandRangeToIncludePartialGlyphs(from, to);
-}
-
 float Font::TabWidth(const SimpleFontData* font_data,
                      const TabSize& tab_size,
                      float position) const {

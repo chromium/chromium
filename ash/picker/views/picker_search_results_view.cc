@@ -7,42 +7,48 @@
 #include <memory>
 
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_section_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
-#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
 PickerSearchResultsView::PickerSearchResultsView(
     SelectSearchResultCallback callback)
     : select_search_result_callback_(std::move(callback)) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
 
-bool PickerSearchResultsView::OnMousePressed(const ui::MouseEvent& event) {
-  // TODO(b/316935667): Move this event handler to the individual result item
-  // views.
-  if (event.IsOnlyLeftMouseButton()) {
-    return true;
-  }
-
-  return views::View::OnMousePressed(event);
-}
-
-void PickerSearchResultsView::OnMouseReleased(const ui::MouseEvent& event) {
-  // TODO(b/316935667): Insert the result based on the click. For now, take the
-  // very first result.
-  std::move(select_search_result_callback_)
-      .Run(search_results_.sections()[0].results()[0]);
-}
-
 void PickerSearchResultsView::SetSearchResults(
     const PickerSearchResults& search_results) {
-  // TODO(b/316935667): Render the results.
   search_results_ = search_results;
+
+  section_views_.clear();
+  RemoveAllChildViews();
+  for (const auto& section : search_results_.sections()) {
+    auto* section_view =
+        AddChildView(std::make_unique<PickerSectionView>(section.heading()));
+    for (const auto& result : section.results()) {
+      section_view->AddItemView(std::make_unique<PickerItemView>(
+          base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
+                         base::Unretained(this), result),
+          result.text()));
+    }
+    section_views_.push_back(section_view);
+  }
+}
+
+void PickerSearchResultsView::SelectSearchResult(
+    const PickerSearchResult& result) {
+  if (!select_search_result_callback_.is_null()) {
+    std::move(select_search_result_callback_).Run(result);
+  }
 }
 
 BEGIN_METADATA(PickerSearchResultsView, views::View)

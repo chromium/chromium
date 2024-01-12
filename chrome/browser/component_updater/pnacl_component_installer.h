@@ -17,7 +17,7 @@ namespace pnacl {
 // May conservatively return false before PNaCl is registered, but
 // should return the right answer after it is registered.
 bool NeedsOnDemandUpdate();
-}
+}  // namespace pnacl
 
 namespace component_updater {
 

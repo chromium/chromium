@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace views {
@@ -23,6 +24,8 @@ class View;
 // data are only copyable, and edit mode where the note or an empty username can
 // be edited. Used in the ManagePasswordsView.
 class ManagePasswordsDetailsView : public views::BoxLayoutView {
+  METADATA_HEADER(ManagePasswordsDetailsView, views::BoxLayoutView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
 

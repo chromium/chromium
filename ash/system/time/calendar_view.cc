@@ -795,7 +795,7 @@ void CalendarView::SetMonthViews() {
       calendar_view_controller_->GetNextMonthFirstDayUTC(/*num_months=*/2));
 }
 
-int CalendarView::PositionOfCurrentMonth() const {
+int CalendarView::GetPositionOfCurrentMonth() const {
   // Compute the position, because this information may be required before
   // layout.
   return kContentVerticalPadding +
@@ -804,24 +804,45 @@ int CalendarView::PositionOfCurrentMonth() const {
          current_label_->GetPreferredSize().height();
 }
 
-int CalendarView::PositionOfToday() const {
-  return PositionOfCurrentMonth() +
+int CalendarView::GetPositionOfToday() const {
+  return GetPositionOfCurrentMonth() +
          calendar_view_controller_->GetTodayRowTopHeight();
 }
 
-int CalendarView::PositionOfSelectedDate() const {
+int CalendarView::GetPositionOfSelectedDate() const {
   DCHECK(calendar_view_controller_->selected_date().has_value());
   const int row_height = calendar_view_controller_->selected_date_row_index() *
                              calendar_view_controller_->row_height() +
                          GetExpandedCalendarPadding();
   // The selected date should be either in the current month or the next month.
   if (calendar_view_controller_->IsSelectedDateInCurrentMonth()) {
-    return PositionOfCurrentMonth() + row_height;
+    return GetPositionOfCurrentMonth() + row_height;
   }
 
-  return PositionOfCurrentMonth() +
+  return GetPositionOfCurrentMonth() +
          current_month_->GetPreferredSize().height() +
          next_label_->GetPreferredSize().height() + row_height;
+}
+
+int CalendarView::GetSingleVisibleRowHeight() const {
+  return calendar_view_controller_->row_height() +
+         kCalendarEventListViewOpenMargin;
+}
+
+int CalendarView::GetHeightUnderTodaysRow() const {
+  int height_under_todays_row =
+      scroll_view_->GetVisibleRect().bottom() -
+      (GetPositionOfCurrentMonth() +
+       calendar_view_controller_->GetTodayRowBottomHeight());
+
+  // If next month's label is visible, the actual height should exclude the
+  // height of label so that it contains only date rows height.
+  if (scroll_view_->GetBoundsInScreen().Intersects(
+          next_label_->GetBoundsInScreen())) {
+    height_under_todays_row -=
+        next_label_->GetPreferredSize().height() + 2 * kExpandedCalendarPadding;
+  }
+  return height_under_todays_row;
 }
 
 void CalendarView::SetHeaderAndContentViewOpacity(float opacity) {
@@ -832,6 +853,7 @@ void CalendarView::SetHeaderAndContentViewOpacity(float opacity) {
 void CalendarView::SetShouldMonthsAnimateAndScrollEnabled(bool enabled) {
   set_should_months_animate(enabled);
   is_resetting_scroll_ = !enabled;
+  calendar_view_controller_->set_is_date_cell_clickable(enabled);
   scroll_view_->SetVerticalScrollBarMode(
       enabled ? views::ScrollView::ScrollBarMode::kHiddenButEnabled
               : views::ScrollView::ScrollBarMode::kDisabled);
@@ -1043,25 +1065,44 @@ void CalendarView::RestoreMonthStatus() {
 void CalendarView::ScrollToToday() {
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
 
-  if (event_list_view_ || up_next_view_) {
+  if (event_list_view_) {
     scroll_view_->ScrollToPosition(
         scroll_view_->vertical_scroll_bar(),
-        PositionOfToday() + GetExpandedCalendarPadding());
+        GetPositionOfToday() + GetExpandedCalendarPadding());
     return;
   }
 
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfCurrentMonth());
+                                 GetPositionOfCurrentMonth());
 
-  // If the screen does not have enough height which makes today's cell not in
-  // the visible rect, we auto scroll to today's row instead of scrolling to the
-  // first row of the current month.
-  if (PositionOfCurrentMonth() +
-          calendar_view_controller_->GetTodayRowBottomHeight() >
-      scroll_view_->GetVisibleRect().bottom()) {
-    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   PositionOfToday());
+  int offset =
+      2 * calendar_view_controller_->row_height() - GetHeightUnderTodaysRow();
+  // If there are at least two rows under today's row, no need to scroll.
+  if (offset <= 0) {
+    return;
   }
+
+  const int next_label_top_offset = next_label_->y() -
+                                    kExpandedCalendarPadding -
+                                    scroll_view_->GetVisibleRect().bottom();
+  // If `next_label_` is currently not visible and scrolling will make
+  // `next_label_` visible, `scroll_view_` should scroll up more to make sure at
+  // least two more rows will show.
+  if (next_label_top_offset >= 0 && next_label_top_offset < offset) {
+    offset +=
+        next_label_->GetPreferredSize().height() + 2 * kExpandedCalendarPadding;
+  }
+
+  // If scrolling up will make today's date invisible, scroll to today's row
+  // instead.
+  if (offset > GetPositionOfToday() - scroll_view_->GetVisibleRect().y()) {
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   GetPositionOfToday());
+    return;
+  }
+
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 scroll_view_->GetVisibleRect().y() + offset);
 }
 
 bool CalendarView::IsDateCellViewFocused() {
@@ -1123,8 +1164,8 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
   // make some changes which depend on the view belonging to a widget.
   scoped_view_observer_.RemoveObservation(observed_view);
 
-  // Initializes the view to auto scroll to `PositionOfToday` or the first row
-  // of today's month.
+  // Initializes the view to auto scroll to `GetPositionOfToday` or the first
+  // row of today's month.
   ScrollToToday();
 
   // If the view was shown via keyboard shortcut, the widget will be focusable.
@@ -1157,7 +1198,7 @@ void CalendarView::OnViewFocused(View* observed_view) {
 
   // If the event list is showing, focus on the first cell in the current row or
   // today's cell if today is in this row.
-  if (event_list_view_) {
+  if (calendar_view_controller_->is_event_list_showing()) {
     focus_manager->SetFocusedView(
         current_month_->focused_cells()[calendar_view_controller_
                                             ->GetExpandedRowIndex()]);
@@ -1311,8 +1352,10 @@ void CalendarView::OpenEventList() {
   SetCalendarSlidingSurfaceBounds(BoundsType::EVENT_LIST_VIEW_BOUNDS);
 
   set_should_months_animate(false);
+  calendar_view_controller_->set_is_date_cell_clickable(false);
+
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
-      0, -PositionOfSelectedDate() + scroll_view_->GetVisibleRect().y());
+      0, -GetPositionOfSelectedDate() + scroll_view_->GetVisibleRect().y());
 
   gfx::Transform month_moving;
   month_moving.Translate(moving_up_location);
@@ -1403,6 +1446,8 @@ void CalendarView::CloseEventList() {
                                              : ScrollViewState::FULL_HEIGHT);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+
+  calendar_view_controller_->set_is_date_cell_clickable(false);
 
   // Move EventListView to the top of the up next view if showing, or off the
   // bottom of the CalendarView.
@@ -1559,7 +1604,7 @@ void CalendarView::ScrollOneMonthAndAutoScroll(bool scroll_up) {
     ScrollDownOneMonth();
   }
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfCurrentMonth());
+                                 GetPositionOfCurrentMonth());
 
   // Starts to fade out `up_next_view_` after `scroll_view_` has been updated.
   FadeOutUpNextView();
@@ -1722,6 +1767,14 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
 }
 
 void CalendarView::OnEvent(ui::Event* event) {
+  // If it's animating, do not respond to any keyboard navigation for focus. All
+  // other keyboard event (e.g. keyboard shortcut to close the calendar view,
+  // shortcut to open the quick settings view, etc.) won't be affected.
+  if (IsAnimating()) {
+    event->StopPropagation();
+    return;
+  }
+
   if (!event->IsKeyEvent()) {
     GlanceableTrayChildBubble::OnEvent(event);
     return;
@@ -1818,7 +1871,7 @@ void CalendarView::OnEvent(ui::Event* event) {
       // scroll bar mode if the even list is showing.
       if (event_list_view_) {
         const int current_height =
-            scroll_view_->GetVisibleRect().y() - PositionOfCurrentMonth();
+            scroll_view_->GetVisibleRect().y() - GetPositionOfCurrentMonth();
         SetExpandedRowThenDisableScroll(
             current_height / calendar_view_controller_->row_height());
       }
@@ -1846,7 +1899,7 @@ void CalendarView::OnEvent(ui::Event* event) {
       // scroll bar mode if the even list is showing.
       if (event_list_view_) {
         const int current_height =
-            scroll_view_->GetVisibleRect().y() - PositionOfCurrentMonth();
+            scroll_view_->GetVisibleRect().y() - GetPositionOfCurrentMonth();
         SetExpandedRowThenDisableScroll(
             current_height / calendar_view_controller_->row_height());
       }
@@ -1868,7 +1921,7 @@ void CalendarView::SetExpandedRowThenDisableScroll(int row_index) {
                          calendar_view_controller_->row_height();
   scroll_view_->ScrollToPosition(
       scroll_view_->vertical_scroll_bar(),
-      PositionOfCurrentMonth() + row_height + GetExpandedCalendarPadding());
+      GetPositionOfCurrentMonth() + row_height + GetExpandedCalendarPadding());
 
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -1956,7 +2009,7 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   RestoreMonthStatus();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfSelectedDate());
+                                 GetPositionOfSelectedDate());
 
   // If the selected date is not on the same row with todays date, the
   // `scroll_view_` should scroll, and `user_has_scrolled_` should be true to
@@ -1978,6 +2031,8 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   if (!should_months_animate_) {
     months_animation_restart_timer_.Reset();
   }
+
+  calendar_view_controller_->set_is_date_cell_clickable(true);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   calendar_view_controller_->OnEventListOpened();
@@ -2015,6 +2070,7 @@ void CalendarView::OnCloseEventListAnimationComplete() {
   calendar_sliding_surface_->RemoveChildViewT(event_list_view_.get());
   event_list_view_ = nullptr;
   calendar_view_controller_->OnEventListClosed();
+  calendar_view_controller_->set_is_date_cell_clickable(true);
 
   MaybeShowUpNextView();
 
@@ -2046,9 +2102,8 @@ void CalendarView::OnResetToTodayAnimationComplete() {
 }
 
 void CalendarView::OnResetToTodayFadeInAnimationComplete() {
-  set_should_months_animate(true);
   set_should_header_animate(true);
-  is_resetting_scroll_ = false;
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
   scroll_view_->SetVerticalScrollBarMode(
       event_list_view_ ? views::ScrollView::ScrollBarMode::kDisabled
                        : views::ScrollView::ScrollBarMode::kHiddenButEnabled);
@@ -2121,7 +2176,7 @@ int CalendarView::CalculateFirstFullyVisibleRow() {
   // Get first visible row index. If `event_list_view_` is showing, account
   // for the extra padding added to `scroll_view_`'s visible window.
   while (visible_window_y_in_content_view >
-         (PositionOfCurrentMonth() +
+         (GetPositionOfCurrentMonth() +
           row_index * calendar_view_controller_->row_height() +
           (event_list_view_ ? GetExpandedCalendarPadding() : 0))) {
     ++row_index;
@@ -2320,11 +2375,6 @@ void CalendarView::OnAnimateScrollByOffsetComplete(int offset) {
                                  scroll_view_->GetVisibleRect().y() + offset);
 }
 
-int CalendarView::GetSingleVisibleRowHeight() {
-  return calendar_view_controller_->row_height() +
-         kCalendarEventListViewOpenMargin;
-}
-
 void CalendarView::FadeInUpNextView() {
   // If `up_next_view_` is already visible, don't perform the animation again.
   if (IsUpNextViewVisible()) {
@@ -2333,6 +2383,7 @@ void CalendarView::FadeInUpNextView() {
 
   // Disables scrolling when `up_next_view_` is animating.
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+  calendar_view_controller_->set_is_date_cell_clickable(false);
 
   ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
   // Sets the `calendar_sliding_surface_` bounds to be at the animation end
@@ -2433,15 +2484,24 @@ void CalendarView::OnFadeInUpNextViewAnimationEnded() {
   // Resets the scrolling state after the animation completes.
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
 
+  // If there are less than two rows under today's cell and scrolling up will
+  // make today's date still visible, scroll up to show more future dates.
+  const int offset_with_two_rows =
+      2 * calendar_view_controller_->row_height() - GetHeightUnderTodaysRow();
+  if (offset_with_two_rows > 0 &&
+      offset_with_two_rows <=
+          GetPositionOfToday() - scroll_view_->GetVisibleRect().y()) {
+    AnimateScrollByOffset(offset_with_two_rows);
+    return;
+  }
+
   // If todays date cell is not visible in the `scroll_view_`, i.e. it's hidden
-  // behind the up next view, then smooth scroll to it.
+  // behind the up next view, then smooth scroll to today's row.
   if (!scroll_view_->GetBoundsInScreen().Intersects(
           calendar_view_controller_->todays_date_cell_view()
               ->GetBoundsInScreen())) {
-    const int offset = calendar_view_controller_->todays_date_cell_view()
-                           ->GetBoundsInScreen()
-                           .bottom() -
-                       calendar_sliding_surface_->GetBoundsInScreen().y();
+    const int offset =
+        GetPositionOfToday() - scroll_view_->GetVisibleRect().y();
     AnimateScrollByOffset(offset);
   }
 }

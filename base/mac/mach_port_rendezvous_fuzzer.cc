@@ -14,7 +14,7 @@ namespace base {
 
 struct MachPortRendezvousFuzzer {
   MachPortRendezvousFuzzer() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
 
     mach_port_t port =
         base::MachPortRendezvousServer::GetInstance()->server_port_.get();

@@ -20,8 +20,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -129,7 +129,7 @@ class PaymentsNetworkInterface;
 // BrowserAutofillManager is used (e.g. a single tab), so when we say "for the
 // client" below, we mean "in the execution context the client is associated
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
-class AutofillClient : public RiskDataLoader {
+class AutofillClient {
  public:
   enum class PaymentsRpcResult {
     // Empty result. Used for initializing variables and should generally
@@ -398,7 +398,7 @@ class AutofillClient : public RiskDataLoader {
   // user closing the dialog directly and not when user closes the browser tab.
   using AddressProfileDeleteDialogCallback = base::OnceCallback<void(bool)>;
 
-  ~AutofillClient() override = default;
+  virtual ~AutofillClient() = default;
 
   // Returns the channel for the installation. In branded builds, this will be
   // version_info::Channel::{STABLE,BETA,DEV,CANARY}. In unbranded builds, or
@@ -539,7 +539,7 @@ class AutofillClient : public RiskDataLoader {
 #endif
 
   // Causes the Autofill settings UI to be shown.
-  virtual void ShowAutofillSettings(PopupType popup_type) = 0;
+  virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
 
   // Show the OTP unmask dialog to accept user-input OTP value.
   virtual void ShowCardUnmaskOtpInputDialog(
@@ -605,11 +605,6 @@ class AutofillClient : public RiskDataLoader {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
-
-  // Runs |show_migration_dialog_closure| if the user accepts the card migration
-  // offer. This causes the card migration dialog to be shown.
-  virtual void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure);
 
   // Shows a dialog with the given |legal_message_lines| and the |user_email|.
   // Runs |start_migrating_cards_callback| if the user would like the selected
@@ -727,8 +722,9 @@ class AutofillClient : public RiskDataLoader {
 
   // Called after credit card upload is finished. Will show upload result to
   // users. |card_saved| indicates if the card is successfully saved.
-  // TODO(crbug.com/932818): This function is overridden in iOS codebase.
-  // Ideally should remove it if iOS is not using it to do anything.
+  // TODO(crbug.com/932818): This function is overridden in iOS codebase and in
+  // the desktop codebase. If iOS is not using it to do anything, please keep
+  // this function for desktop.
   virtual void CreditCardUploadCompleted(bool card_saved);
 
   // Will show an infobar to get user consent for Credit Card assistive filling.
@@ -821,7 +817,7 @@ class AutofillClient : public RiskDataLoader {
   // `trigger_source` indicates the reason for updating the popup. (However, the
   // password manager makes no distinction).
   virtual void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                           PopupType popup_type,
+                           FillingProduct main_filling_product,
                            AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Hide the Autofill popup if one is currently showing.

@@ -28,7 +28,7 @@ bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
 
   // Post the task as part of a one-off single-task Sequence.
   scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
-      traits_, this, TaskSourceExecutionMode::kParallel);
+      traits_, nullptr, TaskSourceExecutionMode::kParallel);
 
   return pooled_task_runner_delegate_->PostTaskWithSequence(
       Task(from_here, std::move(closure), TimeTicks::Now(), delay),

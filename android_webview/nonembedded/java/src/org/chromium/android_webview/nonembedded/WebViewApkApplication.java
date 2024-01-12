@@ -31,11 +31,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
-import org.chromium.components.version_info.VersionConstants;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -187,7 +187,8 @@ public class WebViewApkApplication extends Application {
      */
     static synchronized boolean ensureNativeInitialized() {
         assert ThreadUtils.runningOnUiThread()
-                : "WebViewApkApplication#ensureNativeInitialized should only be called on the UIThread";
+                : "WebViewApkApplication#ensureNativeInitialized should only be called on the"
+                        + " UIThread";
         try {
             if (LibraryLoader.getInstance().isInitialized()) {
                 return true;

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
-#include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
+#include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
@@ -15,7 +14,9 @@
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -102,14 +103,13 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
                        cc::PaintFlags paint_flags,
                        gfx::Canvas* canvas) {
     // Draw bookmark count if more than 1 bookmark is dragged.
-    std::u16string count = base::NumberToString16(count_);
     std::unique_ptr<gfx::RenderText> render_text =
         gfx::RenderText::CreateRenderText();
     render_text->SetFontList(font_list);
     render_text->SetCursorEnabled(false);
     render_text->SetColor(
         color_provider_->GetColor(kColorBookmarkDragImageCountForeground));
-    render_text->SetText(count);
+    render_text->SetText(base::NumberToString16(count_));
     render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
     // We measure the count text size to determine container width, as the

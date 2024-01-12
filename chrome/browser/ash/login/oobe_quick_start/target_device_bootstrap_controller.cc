@@ -35,6 +35,11 @@
 
 namespace ash::quick_start {
 
+TargetDeviceBootstrapController::GaiaCredentials::GaiaCredentials() = default;
+TargetDeviceBootstrapController::GaiaCredentials::GaiaCredentials(
+    const TargetDeviceBootstrapController::GaiaCredentials& other) = default;
+TargetDeviceBootstrapController::GaiaCredentials::~GaiaCredentials() = default;
+
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
     std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
     std::unique_ptr<
@@ -406,10 +411,11 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
   absl::visit(
       base::Overloaded{
           [&](SecondDeviceAuthBroker::AuthCodeSuccessResponse res) {
-            quick_start::QS_LOG(INFO) << "Successfully fetched refresh token ";
-            // TODO(b/287006890) Replace with auth code.
+            GaiaCredentials gaia_creds;
+            gaia_creds.auth_code = res.auth_code;
+            gaia_creds.email = fido_assertion_.email;
             UpdateStatus(/*step=*/Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
-                         /*payload=*/fido_assertion_);
+                         /*payload=*/gaia_creds);
             is_error = false;
           },
           [](SecondDeviceAuthBroker::

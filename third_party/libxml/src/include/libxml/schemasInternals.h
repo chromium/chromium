@@ -21,6 +21,7 @@
 #include <libxml/xmlregexp.h>
 #include <libxml/hash.h>
 #include <libxml/dict.h>
+#include <libxml/tree.h>
 
 #ifdef __cplusplus
 extern "C" {

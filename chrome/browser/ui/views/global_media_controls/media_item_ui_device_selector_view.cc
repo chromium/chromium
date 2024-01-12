@@ -153,7 +153,6 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
         receiver,
     bool has_audio_output,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
-    bool show_expand_button,
     bool show_devices,
     std::optional<media_message_center::MediaColorTheme> media_color_theme)
     : item_id_(item_id),
@@ -167,8 +166,8 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
 
   // Do not create the expand button strip if this device selector view is used
   // on Chrome OS ash with media::kGlobalMediaControlsCrOSUpdatedUI enabled.
-  CreateExpandButtonStrip(show_expand_button &&
-                          !media_color_theme_.has_value());
+  CreateExpandButtonStrip(
+      /*show_expand_button=*/!media_color_theme_.has_value());
 
   device_entry_views_container_ = AddChildView(std::make_unique<views::View>());
   device_entry_views_container_->SetLayoutManager(

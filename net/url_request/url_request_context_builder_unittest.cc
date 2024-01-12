@@ -125,7 +125,7 @@ TEST_F(URLRequestContextBuilderTest, DefaultSettings) {
   request->set_method("GET");
   request->SetExtraRequestHeaderByName("Foo", "Bar", false);
   request->Start();
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ("Bar", delegate.data_received());
 }
 
@@ -140,7 +140,7 @@ TEST_F(URLRequestContextBuilderTest, UserAgent) {
       &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->set_method("GET");
   request->Start();
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ("Bar", delegate.data_received());
 }
 
@@ -411,7 +411,7 @@ TEST_F(URLRequestContextBuilderTest, MigrateSessionsOnNetworkChangeV2Default) {
 
   const QuicParams* quic_params = context->quic_context()->params();
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
+  EXPECT_TRUE(quic_params->migrate_sessions_on_network_change_v2);
 #else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
 #endif  // BUILDFLAG(IS_ANDROID)

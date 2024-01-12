@@ -279,8 +279,9 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
     num_in_flight_notification_registrations_--;
   }
   if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
+  }
 
   // If the device is disconnected, reject.
   if (!GetGatt()->RemoveFromActiveAlgorithms(resolver)) {
@@ -289,6 +290,9 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
     return;
   }
 
+  // Store the agent as the `resolver`'s execution context may
+  // start destruction with promise resolution.
+  Agent* agent = resolver->GetExecutionContext()->GetAgent();
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
     resolver->Resolve(this);
   } else {
@@ -299,10 +303,7 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
       !deferred_value_change_data_.empty()) {
     // Ensure promises are resolved before dispatching events allows them
     // to add listeners.
-    resolver->GetExecutionContext()
-        ->GetAgent()
-        ->event_loop()
-        ->PerformMicrotaskCheckpoint();
+    agent->event_loop()->PerformMicrotaskCheckpoint();
     // Dispatch deferred characteristicvaluechanged events created during the
     // registration of notifications.
     auto deferred_value_change_data = std::move(deferred_value_change_data_);

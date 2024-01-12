@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/allocator/dispatcher/notification_data.h"
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -43,7 +45,9 @@ namespace {
 using ProcessType = metrics::CallStackProfileParams::Process;
 using ProcessTypeSet =
     base::EnumSet<ProcessType, ProcessType::kUnknown, ProcessType::kMax>;
+using base::allocator::dispatcher::AllocationNotificationData;
 using base::allocator::dispatcher::AllocationSubsystem;
+using base::allocator::dispatcher::FreeNotificationData;
 
 constexpr size_t kSamplingRate = 1024;
 constexpr size_t kAllocationSize = 42 * kSamplingRate;
@@ -234,13 +238,16 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
   void AddOneSampleAndWait() {
     auto* sampler = base::PoissonAllocationSampler::Get();
-    sampler->OnAllocation(reinterpret_cast<void*>(0x1337), kAllocationSize,
-                          AllocationSubsystem::kManualForTesting, nullptr);
+    sampler->OnAllocation(AllocationNotificationData(
+        reinterpret_cast<void*>(0x1337), kAllocationSize, nullptr,
+        AllocationSubsystem::kManualForTesting));
     // Advance several days to be sure the sample isn't scheduled right on the
     // boundary of the fast-forward.
     task_environment_.FastForwardBy(base::Days(2));
     // Free the allocation so that other tests can re-use the address.
-    sampler->OnFree(reinterpret_cast<void*>(0x1337));
+    sampler->OnFree(
+        FreeNotificationData(reinterpret_cast<void*>(0x1337),
+                             AllocationSubsystem::kManualForTesting));
   }
 
   void ConnectRemoteProfileCollector(
@@ -334,10 +341,12 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
                      base::BindLambdaForTesting(check_profile));
 
   auto* sampler = base::PoissonAllocationSampler::Get();
-  sampler->OnAllocation(reinterpret_cast<void*>(0x1337), kAllocationSize,
-                        AllocationSubsystem::kManualForTesting, nullptr);
-  sampler->OnAllocation(reinterpret_cast<void*>(0x7331), kAllocationSize,
-                        AllocationSubsystem::kManualForTesting, nullptr);
+  sampler->OnAllocation(AllocationNotificationData(
+      reinterpret_cast<void*>(0x1337), kAllocationSize, nullptr,
+      AllocationSubsystem::kManualForTesting));
+  sampler->OnAllocation(AllocationNotificationData(
+      reinterpret_cast<void*>(0x7331), kAllocationSize, nullptr,
+      AllocationSubsystem::kManualForTesting));
 
   // The profiler should continue to collect snapshots as long as this memory is
   // allocated. If not the test will time out.
@@ -346,8 +355,10 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   }
 
   // Free all recorded memory so the address list is empty for the next test.
-  sampler->OnFree(reinterpret_cast<void*>(0x1337));
-  sampler->OnFree(reinterpret_cast<void*>(0x7331));
+  sampler->OnFree(FreeNotificationData(reinterpret_cast<void*>(0x1337),
+                                       AllocationSubsystem::kManualForTesting));
+  sampler->OnFree(FreeNotificationData(reinterpret_cast<void*>(0x7331),
+                                       AllocationSubsystem::kManualForTesting));
 }
 #endif
 

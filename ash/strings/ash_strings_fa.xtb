@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">‏روشن/خاموش کردن Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">‏نمی‌توان به سیستم Chromebook وارد شد</translation>
 <translation id="2367972762794486313">نمایش برنامه‌ها</translation>
+<translation id="2368828502825385061">مکان‌یابی</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
 <translation id="2382875860893882175">پخش محتوا موقتاً متوقف شده است. هرزمان بخواهید می‌توانید پخش محتوا را ازسر بگیرید یا متوقف کنید.</translation>
 <translation id="2386292613071805067">انتخاب همه‌چیز در صفحه</translation>
@@ -654,7 +655,7 @@
 <translation id="3659667652322717492">بعداً می‌توانید رفتار میکروفون را تغییر دهید.</translation>
 <translation id="3659814201068740063">حدود <ph name="TIME_LEFT" /> باقی مانده است (<ph name="PERCENTAGE" />٪).
 دستگاهتان را به برق وصل کنید.</translation>
-<translation id="3660860940251915011">روشن/خاموش کردن سطح بالای نمایان بودن <ph name="FEATURE_NAME" /></translation>
+<translation id="3660860940251915011">روشن/خاموش کردن سطح بالای رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3666266999138159418">برای پنهان کردن پنجره شناور، تند بکشید</translation>
 <translation id="367531336287639526">انتخاب اولین نماد در سمت راست نوار نشانی</translation>
@@ -1132,10 +1133,11 @@
 <translation id="5537725057119320332">فرستادن</translation>
 <translation id="5546397813406633847">بازیابی کاربر</translation>
 <translation id="554893713779400387">روشن/خاموش کردن املا</translation>
+<translation id="5550417424894892620">برای افزودن فایل‌ها به <ph name="HOLDING_SPACE_TITLE" />، آن‌ها را روی میز کار رها کنید. نمی‌توانید به میز کار فایل اضافه کنید.</translation>
 <translation id="5551456515017410630">باز کردن/ بستن تقویم</translation>
 <translation id="5551974246223970793">رفتن به مورد منطبق بعدی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
-<translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای نمایان بودن</translation>
+<translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای رؤیت‌پذیری</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5570122939431135380">باز کردن برگه جدید در پنجره ناشناس جدید</translation>
 <translation id="5571066253365925590">بلوتوث فعال شد</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> را به تلفنتان متصل کنید</translation>
 <translation id="7026338066939101231">کاهش</translation>
 <translation id="7029814467594812963">خروج از جلسه</translation>
+<translation id="7031303610220416229">‏دیدن همه تکالیف در Google Tasks</translation>
 <translation id="7032161822340700104">تنها ۶ الگو مجاز است. برای ذخیره کردن الگوی جدید، یکی از الگوها را حذف کنید.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> می‌خواهد از <ph name="DEVICE_NAME" /> استفاده کند. کلید فیزیکی <ph name="DEVICE_NAME" /> دستگاه را روشن کنید.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، دستیار Google</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> درحال استفاده است.</translation>
 <translation id="8369166482916924789">میزکار ذخیره‌شده، <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">جستجوی <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">جلو رفتن حرف‌به‌حرف</translation>
 <translation id="8371991222807690464">ممکن است در «حالت مهمان» عملکرد لوازم جانبی محدود باشد</translation>
 <translation id="8374601332003098278">برای ضبط بخشی از صفحه، کلید «ورود» را فشار دهید</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">مرتب‌سازی برنامه‌ها براساس نام یا رنگ</translation>
 <translation id="8609384513243082612">بازکردن برگه جدید</translation>
+<translation id="8612216344243590325">فایل‌های مهم را به‌جای میز کار، در <ph name="HOLDING_SPACE_TITLE" /> نگه دارید. کافی است فایل‌ها را در <ph name="HOLDING_SPACE_TITLE" /> بکشید.</translation>
 <translation id="8614517853887502247">اعلان‌های <ph name="APP_1_TITLE" /> و <ph name="APP_2_TITLE" /> پنهان شده است زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="8619138598101195078">کاهش صدا</translation>
 <translation id="8627191004499078455">متصل به <ph name="DEVICE_NAME" /></translation>

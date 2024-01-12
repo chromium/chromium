@@ -95,16 +95,28 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   virtual bool IsWordBreak() const;
 
   virtual String OriginalText() const;
+  unsigned OriginalTextLength() const;
 
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
-  const String& GetText() const {
+  // This function returns a string that is the result of applying
+  // text-transform and -webkit-text-security to the original text.
+  // Whitespace collapsing is not applied.  The length of the string might
+  // be different from the original text length.
+  const String& TransformedText() const {
     NOT_DESTROYED();
     return text_;
   }
+  // Returns the length of transformed text.  Do not use this.  This function
+  // is rarely useful, and we can use TransformedText().length().
+  unsigned TransformedTextLength() const {
+    NOT_DESTROYED();
+    return text_.length();
+  }
+
   virtual unsigned TextStartOffset() const {
     NOT_DESTROYED();
     return 0;
@@ -145,10 +157,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOT_DESTROYED();
     return text_.empty();
   }
-  unsigned TextLength() const {
-    NOT_DESTROYED();
-    return text_.length();
-  }
 
   // Get characters after whitespace collapsing was applied. Returns 0 if there
   // were no characters left. If whitespace collapsing is disabled (i.e.
@@ -171,7 +179,12 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void SetTextWithOffset(String, unsigned offset, unsigned len);
   void SetTextInternal(String);
 
-  virtual void TransformText();
+  // Apply text-transform and -webkit-text-security to OriginalText(), and
+  // store its result to text_.
+  virtual void TransformAndSecureOriginalText();
+  // Apply text-transform and -webkit-text-security to the specified string.
+  String TransformAndSecureText(const String& original,
+                                TextOffsetMap& offset_map) const;
 
   PhysicalRect LocalSelectionVisualRect() const final;
   PhysicalRect LocalCaretRect(
@@ -187,24 +200,22 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   Vector<TextBoxInfo> GetTextBoxInfo() const;
 
   // Returns the Position in DOM that corresponds to the given offset in the
-  // |text_| string.
-  // TODO(layout-dev): Fix it when text-transform changes text length.
+  // original text.
   virtual Position PositionForCaretOffset(unsigned) const;
 
-  // Returns the offset in the |text_| string that corresponds to the given
+  // Returns the offset in the original text that corresponds to the given
   // position in DOM; Returns nullopt is the position is not in this LayoutText.
-  // TODO(layout-dev): Fix it when text-transform changes text length.
   virtual absl::optional<unsigned> CaretOffsetForPosition(
       const Position&) const;
 
-  // Returns true if the offset (0-based in the |text_| string) is next to a
+  // Returns true if the offset (0-based in the original text) is next to a
   // non-collapsed non-linebreak character, or before a forced linebreak (<br>,
   // or segment break in node with style white-space: pre/pre-line/pre-wrap).
   // TODO(editing-dev): The behavior is introduced by crrev.com/e3eb4e in
   // InlineTextBox::ContainsCaretOffset(). Try to understand it.
   bool ContainsCaretOffset(int) const;
 
-  // Return true if the offset (0-based in the |text_| string) is before/after a
+  // Return true if the offset (0-based in the original text) is before/after a
   // non-collapsed character in this LayoutText, respectively.
   bool IsBeforeNonCollapsedCharacter(unsigned) const;
   bool IsAfterNonCollapsedCharacter(unsigned) const;
@@ -386,8 +397,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void DeleteTextBoxes();
 
-  void ApplyTextTransform();
-  void SecureText(UChar mask);
+  std::pair<String, TextOffsetMap> SecureText(const String& plain,
+                                              UChar mask) const;
 
   bool IsText() const final {
     NOT_DESTROYED();

@@ -1357,6 +1357,43 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_TabsDisabled) {
   EXPECT_FALSE(selected_types.Has(UserSelectableType::kTabs));
 }
 
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // All types are enabled ("Sync Everything" is true), but the user has a
+  // custom passphrase.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    old_prefs.SetCachedPassphraseType(PassphraseType::kCustomPassphrase);
+  }
+
+  // Pre-migration (without any explicit per-account settings), most supported
+  // types are considered selected by default - except for kHistory and kTabs,
+  // and kPasswords on desktop.
+  // Note that this is not exhaustive - depending on feature flags, additional
+  // types may be supported and default-enabled.
+  const UserSelectableTypeSet default_enabled_types{
+      UserSelectableType::kAutofill, UserSelectableType::kBookmarks,
+      UserSelectableType::kPayments, UserSelectableType::kPreferences,
+      UserSelectableType::kReadingList};
+  ASSERT_TRUE(SyncPrefs(&pref_service_)
+                  .GetSelectedTypesForAccount(gaia_id_hash_)
+                  .HasAll(default_enabled_types));
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_hash_);
+
+  // All supported types should be considered selected for this account now,
+  // except for kAutofill ("Addresses and more") which should've been disabled
+  // for custom passphrase users.
+  const UserSelectableTypeSet expected_types =
+      base::Difference(default_enabled_types, {UserSelectableType::kAutofill});
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_hash_);
+  EXPECT_TRUE(selected_types.HasAll(expected_types));
+}
+
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_SuppressesSyncToSigninMigration) {
   base::test::ScopedFeatureList enable_sync_to_signin(

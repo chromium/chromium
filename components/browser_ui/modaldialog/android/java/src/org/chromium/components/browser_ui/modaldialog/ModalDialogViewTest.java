@@ -15,9 +15,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
@@ -463,19 +465,41 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    public void testButtonGroup() {
+        createModel(
+                mModelBuilder.with(
+                        ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                        new ModalDialogProperties.ModalDialogButtonSpec[] {
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
+                                    sResources.getString(R.string.ok)),
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.POSITIVE,
+                                    sResources.getString(R.string.ok_got_it)),
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.NEGATIVE,
+                                    sResources.getString(R.string.cancel))
+                        }));
+
+        onView((withId(R.id.button_group))).check(matches(isDisplayed()));
+
+        onView(withText(R.string.ok)).check(matches(isDisplayed()));
+        onView(withText(R.string.ok_got_it)).check(matches(isDisplayed()));
+        onView(withText(R.string.cancel)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
     public void testTouchFilter() {
-        PropertyModel model =
-                createModel(
-                        mModelBuilder
-                                .with(
-                                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                        sResources,
-                                        R.string.ok)
-                                .with(
-                                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                        sResources,
-                                        R.string.cancel)
-                                .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true));
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                sResources,
+                                R.string.cancel)
+                        .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true));
         onView(withId(R.id.positive_button)).check(matches(touchFilterEnabled()));
         onView(withId(R.id.negative_button)).check(matches(touchFilterEnabled()));
     }
@@ -483,8 +507,39 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    public void testTouchFilterOnButtonGroup() {
+        createModel(
+                mModelBuilder
+                        .with(
+                                ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                                new ModalDialogProperties.ModalDialogButtonSpec[] {
+                                    new ModalDialogProperties.ModalDialogButtonSpec(
+                                            ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
+                                            sResources.getString(R.string.ok)),
+                                    new ModalDialogProperties.ModalDialogButtonSpec(
+                                            ModalDialogProperties.ButtonType.POSITIVE,
+                                            sResources.getString(R.string.ok_got_it)),
+                                    new ModalDialogProperties.ModalDialogButtonSpec(
+                                            ModalDialogProperties.ButtonType.NEGATIVE,
+                                            sResources.getString(R.string.cancel))
+                                })
+                        .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true));
+        onView(
+                        allOf(
+                                withTagValue(
+                                        is(ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL)),
+                                isDisplayed()))
+                .check(matches(touchFilterEnabled()));
+        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.POSITIVE)), isDisplayed()))
+                .check(matches(touchFilterEnabled()));
+        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.NEGATIVE)), isDisplayed()))
+                .check(matches(touchFilterEnabled()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
     public void testTouchFilterDisabled() {
-        PropertyModel model =
                 createModel(
                         mModelBuilder
                                 .with(
@@ -497,6 +552,36 @@ public class ModalDialogViewTest {
                                         R.string.cancel));
         onView(withId(R.id.positive_button)).check(matches(not(touchFilterEnabled())));
         onView(withId(R.id.negative_button)).check(matches(not(touchFilterEnabled())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testTouchFilterDisabledOnButtonGroup() {
+        createModel(
+                mModelBuilder.with(
+                        ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                        new ModalDialogProperties.ModalDialogButtonSpec[] {
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
+                                    sResources.getString(R.string.ok)),
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.POSITIVE,
+                                    sResources.getString(R.string.ok_got_it)),
+                            new ModalDialogProperties.ModalDialogButtonSpec(
+                                    ModalDialogProperties.ButtonType.NEGATIVE,
+                                    sResources.getString(R.string.cancel))
+                        }));
+        onView(
+                        allOf(
+                                withTagValue(
+                                        is(ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL)),
+                                isDisplayed()))
+                .check(matches(not(touchFilterEnabled())));
+        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.POSITIVE)), isDisplayed()))
+                .check(matches(not(touchFilterEnabled())));
+        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.NEGATIVE)), isDisplayed()))
+                .check(matches(not(touchFilterEnabled())));
     }
 
     @Test
@@ -558,6 +643,45 @@ public class ModalDialogViewTest {
                 "Not accept click event when button is frozen.", 0, callbackHelper.getCallCount());
         mFakeTime.advanceMillis(200);
         onView(withId(R.id.positive_button)).perform(click());
+        Assert.assertEquals(
+                "Button is clickable after time elapses", 1, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testButtonTapProtectionForButtonGroup() {
+        final var callbackHelper = new CallbackHelper();
+        var controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        callbackHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {}
+                };
+
+        createModel(
+                mModelBuilder
+                        .with(
+                                ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                                new ModalDialogProperties.ModalDialogButtonSpec[] {
+                                    new ModalDialogProperties.ModalDialogButtonSpec(
+                                            ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL,
+                                            sResources.getString(R.string.ok))
+                                })
+                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 100)
+                        .with(ModalDialogProperties.CONTROLLER, controller));
+        onView(withId(R.id.button_group)).check(matches(isDisplayed()));
+
+        mModalDialogView.onEnterAnimationStarted(0);
+        onView(withText(R.string.ok)).perform(click());
+        Assert.assertEquals(
+                "Not accept click event when button is frozen.", 0, callbackHelper.getCallCount());
+        mFakeTime.advanceMillis(200);
+        onView(withText(R.string.ok)).perform(click());
         Assert.assertEquals(
                 "Button is clickable after time elapses", 1, callbackHelper.getCallCount());
     }

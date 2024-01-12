@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">切換 Wi-Fi。<ph name="STATE" />。</translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
+<translation id="2368828502825385061">定位</translation>
 <translation id="2369165858548251131">「你好」的英文</translation>
 <translation id="2382875860893882175">目前已暫停投放。你隨時可以繼續或停止投放。</translation>
 <translation id="2386292613071805067">選取網頁上的所有項目</translation>
@@ -1129,6 +1130,7 @@
 <translation id="5537725057119320332">投放</translation>
 <translation id="5546397813406633847">復原使用者密碼</translation>
 <translation id="554893713779400387">切換語音輸入</translation>
+<translation id="5550417424894892620">拖曳到桌面的檔案會新增到「<ph name="HOLDING_SPACE_TITLE" />」，你無法將檔案新增到桌面。</translation>
 <translation id="5551456515017410630">開啟/關閉日曆</translation>
 <translation id="5551974246223970793">搜尋網頁時，前往下一個符合搜尋的項目</translation>
 <translation id="5555639311269196631">關閉無線基地台</translation>
@@ -1500,6 +1502,7 @@
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結到你的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029814467594812963">結束工作階段</translation>
+<translation id="7031303610220416229">查看 Google Tasks 中的所有工作</translation>
 <translation id="7032161822340700104">最多只能保存 6 個範本。如要儲存新範本，請先移除現有範本。</translation>
 <translation id="7034025838182392395">「<ph name="APP_NAME" />」想要使用「<ph name="DEVICE_NAME" />」。請開啟裝置的實體<ph name="DEVICE_NAME" />開關。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
@@ -1812,6 +1815,7 @@
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />使用中。</translation>
 <translation id="8369166482916924789">已儲存的桌面，「<ph name="SAVE_AND_RECALL_DESK_NAME" />」</translation>
+<translation id="8370414029565771236">搜尋「<ph name="TEXT" />」</translation>
 <translation id="8371779926711439835">移至下一個字母</translation>
 <translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>
 <translation id="8374601332003098278">按下 Enter 鍵以錄製部分螢幕畫面</translation>
@@ -1867,6 +1871,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">依名稱或顏色將應用程式排序</translation>
 <translation id="8609384513243082612">開啟新分頁</translation>
+<translation id="8612216344243590325">請勿將重要檔案放在桌面上，而是要放在「<ph name="HOLDING_SPACE_TITLE" />」(只需將檔案拖曳到「<ph name="HOLDING_SPACE_TITLE" />」即可)。</translation>
 <translation id="8614517853887502247">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
 <translation id="8619138598101195078">調低音量</translation>
 <translation id="8627191004499078455">已連線至<ph name="DEVICE_NAME" /></translation>

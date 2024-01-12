@@ -109,8 +109,9 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
 
   change_info_ = std::make_unique<ResolutionChangeInfo>(
       display_id, old_resolution, new_resolution, std::move(accept_callback));
-  if (!original_resolution.size().IsEmpty())
+  if (!original_resolution.size().IsEmpty()) {
     change_info_->old_resolution = original_resolution;
+  }
 
   if (!display_manager->SetDisplayMode(display_id, new_resolution)) {
     // Discard the prepared notification data since we failed to set the new
@@ -128,11 +129,13 @@ bool ResolutionNotificationController::ShouldShowDisplayChangeDialog() const {
 }
 
 void ResolutionNotificationController::CreateOrReplaceModalDialog() {
-  if (confirmation_dialog_)
+  if (confirmation_dialog_) {
     confirmation_dialog_->GetWidget()->CloseNow();
+  }
 
-  if (!ShouldShowDisplayChangeDialog())
+  if (!ShouldShowDisplayChangeDialog()) {
     return;
+  }
 
   const std::u16string display_name =
       base::UTF8ToUTF16(Shell::Get()->display_manager()->GetDisplayNameForId(
@@ -197,8 +200,9 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
 }
 
 void ResolutionNotificationController::AcceptResolutionChange() {
-  if (!change_info_)
+  if (!change_info_) {
     return;
+  }
   base::OnceClosure callback = std::move(change_info_->accept_callback);
   change_info_.reset();
   std::move(callback).Run();
@@ -206,8 +210,9 @@ void ResolutionNotificationController::AcceptResolutionChange() {
 
 void ResolutionNotificationController::RevertResolutionChange(
     bool display_was_removed) {
-  if (!change_info_)
+  if (!change_info_) {
     return;
+  }
   const int64_t display_id = change_info_->display_id;
   display::ManagedDisplayMode old_resolution = change_info_->old_resolution;
   change_info_.reset();
@@ -228,15 +233,20 @@ void ResolutionNotificationController::RevertResolutionChange(
 void ResolutionNotificationController::OnDisplayRemoved(
     const display::Display& old_display) {
   if (change_info_ && change_info_->display_id == old_display.id()) {
-    if (confirmation_dialog_)
-      confirmation_dialog_->GetWidget()->CloseNow();
-    RevertResolutionChange(true /* display_was_removed */);
+    if (confirmation_dialog_) {
+      // Use CloseWithReason rather than CloseNow to make sure the screen
+      // doesn't stay dimmed after the widget is closed. b/288485093.
+      confirmation_dialog_->GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kLostFocus);
+    }
+    RevertResolutionChange(/*display_was_removed=*/true);
   }
 }
 
 void ResolutionNotificationController::OnDisplayConfigurationChanged() {
-  if (!change_info_)
+  if (!change_info_) {
     return;
+  }
 
   display::ManagedDisplayMode mode;
   if (Shell::Get()->display_manager()->GetActiveModeForDisplayId(

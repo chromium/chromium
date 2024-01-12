@@ -79,7 +79,7 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   arc::mojom::WindowInfoPtr window_info_;
 
   // Unowned
-  raw_ptr<Profile, ExperimentalAsh> observed_profile_ = nullptr;
+  raw_ptr<Profile> observed_profile_ = nullptr;
 
   // A one shot timer to close this item.
   std::unique_ptr<base::OneShotTimer> close_timer_;

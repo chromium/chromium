@@ -130,6 +130,23 @@ void DataObject::DeleteItem(uint32_t index) {
   NotifyItemListChanged();
 }
 
+void DataObject::ClearStringItems() {
+  if (item_list_.empty()) {
+    return;
+  }
+
+  wtf_size_t num_items_before = item_list_.size();
+  item_list_.erase(std::remove_if(item_list_.begin(), item_list_.end(),
+                                  [](Member<DataObjectItem> item) {
+                                    return item->Kind() ==
+                                           DataObjectItem::kStringKind;
+                                  }),
+                   item_list_.end());
+  if (num_items_before != item_list_.size()) {
+    NotifyItemListChanged();
+  }
+}
+
 void DataObject::ClearAll() {
   if (item_list_.empty())
     return;

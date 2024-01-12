@@ -36,8 +36,8 @@ const int64_t kTruncateLength = 64;
 
 class FileSystemProviderOperationsTruncateTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsTruncateTest() {}
-  ~FileSystemProviderOperationsTruncateTest() override {}
+  FileSystemProviderOperationsTruncateTest() = default;
+  ~FileSystemProviderOperationsTruncateTest() override = default;
 
   void SetUp() override {
     MountOptions mount_options(kFileSystemId, "" /* display_name */);

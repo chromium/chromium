@@ -76,7 +76,6 @@
 <translation id="162175252992296058">પોર્ટુગીઝ, યુએસ આંતરરાષ્ટ્રીય કીબોર્ડ સાથે</translation>
 <translation id="1629521517399325891">નેટવર્કના પ્રમાણીકરણ માટે વપરાશકર્તા પ્રમાણપત્ર ઉપલબ્ધ નથી.</translation>
 <translation id="1641780993263690097">ચાઇનીઝ પિનયિન</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ફાઇલ ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="164969095109328410">Chrome ઉપકરણ</translation>
 <translation id="1661207570040737402">તમે Google Workspaceની શેર કરેલી તમારી ડ્રાઇવના સ્ટોરેજનો પૂરો ઉપયોગ કરી લીધો છે.</translation>
 <translation id="1661867754829461514">PIN ખૂટે છે</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> આઇટમને સિંક કરવાની તૈયારી કરી રહ્યાં છીએ...</translation>
 <translation id="3522708245912499433">પોર્ટુગીઝ</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર <ph name="COUNT" /> ફાઇલ કૉપિ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="6509122719576673235">નોર્વેજીયન</translation>
 <translation id="6528513914570774834">આ ઉપકરણના અન્ય વપરાશકર્તાઓને આ નેટવર્ક વાપરવાની મંજૂરી આપો</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> સમન્વયિત કરી રહ્યું છે...</translation>
 <translation id="6549689063733911810">તાજેતરનું</translation>
 <translation id="6558280019477628686">એક ભૂલ આવી. અમુક આઇટમ કદાચ ડિલીટ કરી શકાઈ નથી.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" કાઢી નાખી રહ્યું છે...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux ઍપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="7555339735447658365">તમે હાલમાં ઑફલાઇન છો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ કરશો, ત્યારે ફાઇલ સિંક કરવાની પ્રક્રિયા ફરી શરૂ થશે</translation>
 <translation id="7589661784326793847">ક્ષણભર રોકાવ</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="7600126690270271294">સર્બિયન</translation>
 <translation id="7603724359189955920">ગ્રીડ</translation>
 <translation id="7627790789328695202">ઉફ્ફ, <ph name="FILE_NAME" /> પહેલાંથી અસ્તિત્વમાં છે. તેનું નામ બદલો અને ફરી પ્રયાસ કરો.</translation>
@@ -935,6 +931,7 @@
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
 <translation id="8147028810663464959">અક્ષરની પહોળાઈ પૂર્ણ છે</translation>
 <translation id="8151638057146502721">ગોઠવો</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ભૂલ.}one{# ભૂલ.}other{# ભૂલ.}}</translation>
 <translation id="8154842056504218462">બધી એન્ટ્રી પસંદ કરેલી છે.</translation>
 <translation id="8157684860301034423">ઍપ માહિતી ફરી મેળવવામાં નિષ્ફળ થયાં.</translation>
 <translation id="8175731104491895765">ફ્રેન્ચ (બેલ્જિયમ)</translation>
@@ -968,6 +965,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" />ને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8372852072747894550">ગ્રીક</translation>
+<translation id="8377269993083688872">ઇમેઇલ લેઆઉટ</translation>
 <translation id="8386903983509584791">સ્કૅન પૂર્ણ થયું</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> મેળવી છે.</translation>
 <translation id="8395901698320285466">પરિમાણો</translation>
@@ -1006,7 +1004,6 @@
 <translation id="8569764466147087991">ખોલવા માટે એક ફાઇલ પસંદ કરો</translation>
 <translation id="8577897833047451336">ક્રોએશિયન</translation>
 <translation id="8578308463707544055">ઇન્ડોનેશિયન</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> આઇટમ્સ સમન્વયિત કરી રહ્યાં છે...</translation>
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>
@@ -1027,6 +1024,7 @@
 <translation id="8787254343425541995">શેર કરેલા નેટવર્ક્સ માટે પ્રોક્સીસને મંજૂરી આપો</translation>
 <translation id="8790981080411996443">છોડને પાણી આપી રહેલી વ્યક્તિ</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ચેતવણી.}one{# ચેતવણી.}other{# ચેતવણી.}}</translation>
 <translation id="8808686172382650546">બિલાડી</translation>
 <translation id="8810671769985673465">ઝિપ કરવાનું નિષ્ફળ, આઇટમ અસ્તિત્વમાં છે: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">સ્પેનિશ (સ્પેન)</translation>
@@ -1057,7 +1055,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
 <translation id="9046895021617826162">કનેક્ટ કરવું નિષ્ફળ</translation>
 <translation id="9065512565307033593">જો તમે ચકાસણી કરવામાં નિષ્ફળ રહ્યાં, તો તમારા નેટવર્કનો ઍક્સેસ બંધ થઈ જશે.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ચેતવણી.}one{<ph name="COUNT" /> ચેતવણી.}other{<ph name="COUNT" /> ચેતવણી.}}</translation>
 <translation id="908378762078012445">રશિયન, ફોનેટિક AATSEEL કીબોર્ડ સાથે</translation>
 <translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9099674669267916096">પેજની સંખ્યા</translation>

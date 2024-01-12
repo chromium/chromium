@@ -10,7 +10,7 @@ import android.credentials.GetCredentialRequest;
 import android.os.Bundle;
 
 /** Interface for code that will update the CredMan request bundles or requests. */
-interface CredManRequestDecorator {
+public interface CredManRequestDecorator {
     void updateCreateCredentialRequestBundle(
             Bundle input, CredManCreateCredentialRequestHelper helper);
 

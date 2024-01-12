@@ -47,7 +47,7 @@ class PendingNetworkConfigurationTrackerImpl
       const NetworkIdentifier& id) override;
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   base::Value::Dict dict_;
 };
 

@@ -35,27 +35,27 @@ namespace {
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr gfx::Insets kMainRowInsets = gfx::Insets::TLBR(0, 8, 8, 8);
 constexpr gfx::Insets kMediaInfoInsets = gfx::Insets::TLBR(0, 16, 0, 4);
-constexpr gfx::Insets kSourceRowInsets = gfx::Insets::TLBR(0, 0, 8, 0);
-constexpr gfx::Insets kControlsColumnInsets = gfx::Insets::TLBR(0, 2, 8, 2);
+constexpr gfx::Insets kSourceRowInsets = gfx::Insets::TLBR(0, 0, 6, 0);
+constexpr gfx::Insets kControlsColumnInsets = gfx::Insets::TLBR(0, 8, 4, 2);
 constexpr gfx::Insets kDeviceSelectorSeparatorInsets = gfx::Insets::VH(10, 12);
 constexpr gfx::Insets kDeviceSelectorSeparatorLineInsets =
     gfx::Insets::VH(1, 1);
 
 constexpr int kBackgroundCornerRadius = 16;
 constexpr int kArtworkCornerRadius = 12;
+constexpr int kSourceTextLineHeight = 18;
 constexpr int kTextLineHeight = 20;
 constexpr int kFontSize = 12;
 constexpr int kMediaInfoSeparator = 4;
-constexpr int kControlsColumnSeparator = 8;
+constexpr int kControlsColumnSeparator = 10;
 constexpr int kChevronIconSize = 15;
-constexpr int kPlayPauseIconSize = 26;
-constexpr int kControlsIconSize = 20;
+constexpr int kMediaButtonIconSize = 20;
 constexpr int kNotMediaActionButtonId = -1;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
-constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
-constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
+constexpr gfx::Size kArtworkSize = gfx::Size(74, 74);
+constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(40, 40);
 constexpr gfx::Size kControlsButtonSize = gfx::Size(32, 32);
 
 constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
@@ -64,6 +64,7 @@ class MediaLabelButton : public views::Button {
  public:
   METADATA_HEADER(MediaLabelButton);
   MediaLabelButton(const views::Label::CustomFont& font,
+                   int text_line_height,
                    ui::ColorId text_color_id,
                    ui::ColorId focus_ring_color_id)
       : views::Button(PressedCallback()) {
@@ -80,7 +81,7 @@ class MediaLabelButton : public views::Button {
 
     label_ = AddChildView(
         std::make_unique<views::Label>(base::EmptyString16(), font));
-    label_->SetLineHeight(kTextLineHeight);
+    label_->SetLineHeight(text_line_height);
     label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label_->SetEnabledColorId(text_color_id);
   }
@@ -109,9 +110,6 @@ class MediaButton : public views::ImageButton {
               ui::ColorId foreground_disabled_color_id,
               ui::ColorId focus_ring_color_id)
       : ImageButton(std::move(callback)),
-        icon_size_(button_id == static_cast<int>(MediaSessionAction::kPlay)
-                       ? kPlayPauseIconSize
-                       : kControlsIconSize),
         foreground_disabled_color_id_(foreground_disabled_color_id) {
     views::ConfigureVectorImageButton(this);
 
@@ -144,7 +142,7 @@ class MediaButton : public views::ImageButton {
     SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
     views::SetImageFromVectorIconWithColorId(
         this, vector_icon, foreground_color_id, foreground_disabled_color_id_,
-        icon_size_);
+        kMediaButtonIconSize);
   }
 
   void UpdateText(int tooltip_text_id) {
@@ -152,7 +150,6 @@ class MediaButton : public views::ImageButton {
   }
 
  private:
-  const int icon_size_;
   const ui::ColorId foreground_disabled_color_id_;
 };
 
@@ -237,7 +234,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   source_row->SetInsideBorderInsets(kSourceRowInsets);
 
   source_label_ = source_row->AddChildView(std::make_unique<MediaLabelButton>(
-      text_fonts, theme_.secondary_foreground_color_id,
+      text_fonts, kSourceTextLineHeight, theme_.secondary_foreground_color_id,
       theme_.focus_ring_color_id));
   source_label_->SetCallback(
       base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
@@ -251,7 +248,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   title_label_ = title_row->AddChildView(std::make_unique<MediaLabelButton>(
-      text_fonts, theme_.primary_foreground_color_id,
+      text_fonts, kTextLineHeight, theme_.primary_foreground_color_id,
       theme_.focus_ring_color_id));
   title_label_->SetCallback(
       base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
@@ -272,7 +269,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   // Create the media artist label.
   artist_label_ =
       media_info_column->AddChildView(std::make_unique<MediaLabelButton>(
-          text_fonts, theme_.secondary_foreground_color_id,
+          text_fonts, kTextLineHeight, theme_.secondary_foreground_color_id,
           theme_.focus_ring_color_id));
   artist_label_->SetCallback(
       base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,

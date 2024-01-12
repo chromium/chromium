@@ -134,7 +134,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (!tab_observer_ || GetWebContents() != web_contents) {
     tab_observer_ = std::make_unique<TabObserver>(this, web_contents);
-    ResetInitialCookieControlsStatus();
+    SetUserChangedCookieBlockingForSite(false);
   }
   auto status = GetStatus(web_contents);
   int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
@@ -340,10 +340,13 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
 }
 
 bool CookieControlsController::HasUserChangedCookieBlockingForSite() {
-  auto current_status = GetStatus(GetWebContents());
-  return current_status.status != initial_page_cookie_controls_status_ &&
-         current_status.enforcement ==
-             CookieControlsEnforcement::kNoEnforcement;
+  return user_changed_cookie_blocking_;
+}
+
+void CookieControlsController::SetUserChangedCookieBlockingForSite(
+    bool changed) {
+  // Avoid a toggle back and forth being marked as "changed".
+  user_changed_cookie_blocking_ = changed && !user_changed_cookie_blocking_;
 }
 
 CookieControlsBreakageConfidenceLevel
@@ -464,7 +467,7 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
     waiting_for_page_load_finish_ = true;
   }
 
-  ResetInitialCookieControlsStatus();
+  SetUserChangedCookieBlockingForSite(false);
 
   // Cache whether the expiration has expired since last visit before updating
   // the last visited metadata.
@@ -591,13 +594,6 @@ void CookieControlsController::RecordActivationMetrics() {
       .Record(ukm::UkmRecorder::Get());
 
   // TODO(crbug.com/1446230): Add metrics, related to repeated activations.
-}
-
-void CookieControlsController::ResetInitialCookieControlsStatus() {
-  auto status = GetStatus(GetWebContents());
-  initial_page_cookie_controls_status_ = status.status;
-  CHECK(initial_page_cookie_controls_status_ !=
-        CookieControlsStatus::kUninitialized);
 }
 
 CookieControlsController::TabObserver::TabObserver(

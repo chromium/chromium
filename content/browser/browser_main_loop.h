@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BROWSER_MAIN_LOOP_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/browser_main_runner.h"
 #include "media/media_buildflags.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ozone_buildflags.h"
 
@@ -310,7 +310,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   //
   // TODO(fdoray): Move this to a more elaborate class that prevents BEST_EFFORT
   // tasks from running when resources are needed to respond to user actions.
-  absl::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
       scoped_best_effort_execution_fence_;
 
   // Members initialized in |Init()| -------------------------------------------

@@ -207,7 +207,7 @@ export class XfSelect extends XfBase {
    * the one at the given index.
    */
   private updateSelectedOption_(index: number) {
-    if (index != this.selectedOption_.index) {
+    if (index !== this.selectedOption_.index) {
       if (index >= 0 && index < this.options.length) {
         this.selectedOption_ = {
           index: index,

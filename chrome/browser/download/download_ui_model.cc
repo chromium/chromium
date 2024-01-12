@@ -1132,8 +1132,9 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
     }
   }
 
-  if (ShouldShowTailoredWarning()) {
-    return GetBubbleUIInfoForTailoredWarning();
+  if (TailoredWarningType type = GetTailoredWarningType();
+      type != TailoredWarningType::kNoTailoredWarning) {
+    return GetBubbleUIInfoForTailoredWarning(type);
   }
 
   DownloadUIModel::BubbleUIInfo ui_info;
@@ -1407,7 +1408,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
 }
 
 DownloadUIModel::BubbleUIInfo
-DownloadUIModel::GetBubbleUIInfoForTailoredWarning() const {
+DownloadUIModel::GetBubbleUIInfoForTailoredWarning(
+    TailoredWarningType tailored_warning_type) const {
   NOTREACHED();
   return DownloadUIModel::BubbleUIInfo();
 }
@@ -1452,8 +1454,9 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfo() const {
   }
 }
 
-bool DownloadUIModel::ShouldShowTailoredWarning() const {
-  return false;
+DownloadUIModel::TailoredWarningType DownloadUIModel::GetTailoredWarningType()
+    const {
+  return TailoredWarningType::kNoTailoredWarning;
 }
 
 bool DownloadUIModel::ShouldShowInBubble() const {

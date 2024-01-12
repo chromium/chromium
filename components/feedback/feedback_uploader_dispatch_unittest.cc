@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/feedback/feedback_common.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
@@ -34,8 +35,10 @@ constexpr char kFeedbackPostUrl[] =
 
 void QueueReport(FeedbackUploader* uploader,
                  const std::string& report_data,
-                 bool has_email = true) {
-  uploader->QueueReport(std::make_unique<std::string>(report_data), has_email);
+                 bool has_email = true,
+                 int product_id = 0) {
+  uploader->QueueReport(std::make_unique<std::string>(report_data), has_email,
+                        product_id);
 }
 
 class TestFeedbackUploader final : public FeedbackUploader {
@@ -149,6 +152,43 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
       }));
 
   QueueReport(&uploader, "test");
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FeedbackUploaderDispatchTest, VariationHeadersForProductID) {
+  // Register a trial and variation id, so that there is data in variations
+  // headers.
+  CreateFieldTrialWithId("Test", "Group1", 123);
+
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
+
+  net::HttpRequestHeaders headers;
+  test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_TRUE(variations::HasVariationsHeader(request));
+      }));
+
+  QueueReport(&uploader, "test", /*has_email=*/false, /*product_id=*/208);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FeedbackUploaderDispatchTest, NoVariationHeadersForOrcaProductID) {
+  // Register a trial and variation id, so that there is data in variations
+  // headers.
+  CreateFieldTrialWithId("Test", "Group1", 123);
+
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
+
+  net::HttpRequestHeaders headers;
+  test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_FALSE(variations::HasVariationsHeader(request));
+      }));
+
+  QueueReport(&uploader, "test", /*has_email=*/false,
+              /*product_id=*/kOrcaFeedbackProductId);
   base::RunLoop().RunUntilIdle();
 }
 

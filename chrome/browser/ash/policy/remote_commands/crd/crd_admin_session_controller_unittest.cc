@@ -170,7 +170,7 @@ class RemotingServiceWrapper
   }
 
  private:
-  const raw_ref<RemotingServiceProxy, ExperimentalAsh> implementation_;
+  const raw_ref<RemotingServiceProxy> implementation_;
 };
 
 class SecurityCurtainControllerFake

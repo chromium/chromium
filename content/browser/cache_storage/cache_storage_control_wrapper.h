@@ -61,7 +61,7 @@ class CacheStorageControlWrapper : public storage::mojom::CacheStorageControl {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  std::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   base::SequenceBound<CacheStorageContextImpl> cache_storage_context_;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;

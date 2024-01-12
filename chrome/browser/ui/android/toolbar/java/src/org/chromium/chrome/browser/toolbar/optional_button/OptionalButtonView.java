@@ -71,6 +71,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private ViewGroup mTransitionRoot;
     private String mContentDescription;
     private String mActionChipLabelString;
+    private boolean mCurrentButtonSupportsTinting;
+    private ColorStateList mForegroundColorTint;
     private int mBackgroundColorFilter;
     private Runnable mOnBeforeHideTransitionCallback;
     private Callback<Transition> mFakeBeginTransitionForTesting;
@@ -214,6 +216,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mCurrentButtonVariant = buttonSpec.getButtonVariant();
         mCanCurrentButtonShow = buttonData.canShow();
+        mCurrentButtonSupportsTinting = buttonSpec.getSupportsTinting();
 
         mIconDrawable = buttonSpec.getDrawable();
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
@@ -309,8 +312,11 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     void setColorStateList(ColorStateList colorStateList) {
-        ImageViewCompat.setImageTintList(mButton, colorStateList);
-        ImageViewCompat.setImageTintList(mAnimationImage, colorStateList);
+        mForegroundColorTint = colorStateList;
+
+        if (mCurrentButtonSupportsTinting) {
+            ImageViewCompat.setImageTintList(mButton, colorStateList);
+        }
         if (colorStateList != null) {
             mActionChipLabel.setTextColor(colorStateList);
         }
@@ -322,6 +328,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     View getButtonView() {
         return mButton;
+    }
+
+    ImageView getAnimationViewForTesting() {
+        return mAnimationImage;
     }
 
     /**
@@ -381,7 +391,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     public void onTransitionStart(Transition transition) {
         if (mState != State.RUNNING_ACTION_CHIP_COLLAPSE_TRANSITION) {
             // Disable click listeners during the transitions (except action chip collapse, which
-            // goes to the same icon/action.
+            // goes to the same icon/action).
             mButton.setOnClickListener(null);
             mButton.setOnLongClickListener(null);
             mButton.setContentDescription(null);
@@ -415,6 +425,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         } else {
             mButton.setVisibility(VISIBLE);
             mButton.setImageDrawable(mIconDrawable);
+            ImageViewCompat.setImageTintList(
+                    mButton, mCurrentButtonSupportsTinting ? mForegroundColorTint : null);
             mButton.setOnClickListener(mClickListener);
             mButton.setLongClickable(mLongClickListener != null);
             mButton.setOnLongClickListener(mLongClickListener);
@@ -589,17 +601,23 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         Drawable newIcon = mIconDrawable;
         Drawable oldIcon = mButton.getDrawable();
 
+        ColorStateList oldIconTint = ImageViewCompat.getImageTintList(mButton);
+        ColorStateList newIconTint = mCurrentButtonSupportsTinting ? mForegroundColorTint : null;
+
         // Prepare icons for the transition, these changes are done instantly.
         if (!isRevertingToStatic) {
             // In the default transition we want the new icon to slide from the top and the old one
             // to shrink.
             slidingIcon.setImageDrawable(newIcon);
+            ImageViewCompat.setImageTintList(slidingIcon, newIconTint);
         } else {
             // In the reverse transition we want the new icon to grow and the old icon to slide to
             // the top
             slidingIcon.setImageDrawable(oldIcon);
+            ImageViewCompat.setImageTintList(slidingIcon, oldIconTint);
             slidingIcon.setVisibility(VISIBLE);
             shrinkingIcon.setImageDrawable(newIcon);
+            ImageViewCompat.setImageTintList(shrinkingIcon, newIconTint);
             shrinkingIcon.setVisibility(GONE);
         }
 
@@ -644,9 +662,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mActionChipLabel.setText(mActionChipLabelString);
 
         mAnimationImage.setImageDrawable(mButton.getDrawable());
+        ImageViewCompat.setImageTintList(
+                mAnimationImage, ImageViewCompat.getImageTintList(mButton));
+
         mAnimationImage.setVisibility(VISIBLE);
 
         mButton.setImageDrawable(mIconDrawable);
+        ImageViewCompat.setImageTintList(
+                mButton, mCurrentButtonSupportsTinting ? mForegroundColorTint : null);
         mButton.setVisibility(GONE);
 
         if (AdaptiveToolbarFeatures.shouldUseAlternativeActionChipColor(mCurrentButtonVariant)) {
@@ -750,6 +773,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mActionChipLabel.setVisibility(GONE);
 
         mButton.setImageDrawable(mIconDrawable);
+        ImageViewCompat.setImageTintList(
+                mButton, mCurrentButtonSupportsTinting ? mForegroundColorTint : null);
 
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.

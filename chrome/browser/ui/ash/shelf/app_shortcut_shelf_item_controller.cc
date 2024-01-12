@@ -226,10 +226,10 @@ class AppMatcher {
   // AppMatcher is stack allocated. Pointer members below are not owned.
 
   // registrar_ is set when app_id_ is a web app.
-  raw_ptr<const web_app::WebAppRegistrar, ExperimentalAsh> registrar_ = nullptr;
+  raw_ptr<const web_app::WebAppRegistrar> registrar_ = nullptr;
 
   // extension_ is set when app_id_ is a hosted app.
-  raw_ptr<const Extension, ExperimentalAsh> extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 }  // namespace

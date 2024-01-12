@@ -74,9 +74,9 @@ class HostDeviceTimestampManagerImpl : public HostDeviceTimestampManager,
   void OnHostStatusChange(const HostStatusProvider::HostStatusWithDevice&
                               host_status_with_device) override;
 
-  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<HostStatusProvider> host_status_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace multidevice_setup

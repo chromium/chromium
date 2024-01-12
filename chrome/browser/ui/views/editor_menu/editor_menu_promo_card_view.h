@@ -26,9 +26,9 @@ class PreTargetHandler;
 // A view which shows a promo card to introduce the Editor Menu feature.
 class EditorMenuPromoCardView : public views::View,
                                 public views::WidgetObserver {
- public:
-  METADATA_HEADER(EditorMenuPromoCardView);
+  METADATA_HEADER(EditorMenuPromoCardView, views::View)
 
+ public:
   EditorMenuPromoCardView(const gfx::Rect& anchor_view_bounds,
                           EditorMenuViewDelegate* delegate);
 

@@ -348,7 +348,8 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
-  if (grayed_out_ || !calendar_utils::ShouldFetchEvents()) {
+  if (grayed_out_ || !calendar_utils::ShouldFetchEvents() ||
+      !calendar_view_controller_->is_date_cell_clickable()) {
     return;
   }
 

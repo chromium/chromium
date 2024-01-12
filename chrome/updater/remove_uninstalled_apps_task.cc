@@ -82,8 +82,9 @@ std::vector<PingInfo> GetAppIDsToRemove(
 
 void UninstallPingSent(base::RepeatingClosure callback,
                        update_client::Error error) {
-  if (error != update_client::Error::NONE)
+  if (error != update_client::Error::NONE) {
     VLOG(0) << __func__ << ": Error: " << error;
+  }
   callback.Run();
 }
 

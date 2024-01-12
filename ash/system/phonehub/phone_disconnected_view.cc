@@ -17,6 +17,7 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,7 +71,8 @@ PhoneDisconnectedView::PhoneDisconnectedView(
           InterstitialScreenEvent::kConfirm,
           base::BindRepeating(
               &phonehub::ConnectionScheduler::ScheduleConnectionNow,
-              base::Unretained(connection_scheduler_))),
+              base::Unretained(connection_scheduler_),
+              phonehub::DiscoveryEntryPoint::kManualConnectionRetry)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),
       chromeos::features::IsJellyrollEnabled()

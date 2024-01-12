@@ -184,13 +184,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
       bool success,
       std::optional<InhibitOperationResult> result);
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  raw_ptr<NetworkDeviceHandler, ExperimentalAsh> network_device_handler_ =
-      nullptr;
+  raw_ptr<NetworkDeviceHandler> network_device_handler_ = nullptr;
 
   State state_ = State::kIdle;
   base::queue<std::unique_ptr<InhibitRequest>> inhibit_requests_;

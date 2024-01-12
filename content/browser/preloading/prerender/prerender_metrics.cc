@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/preloading_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -236,20 +236,20 @@ void PrerenderCancellationReason::ReportMetrics(
   }
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 PrerenderCancellationReason::DisallowedMojoInterface() const {
   switch (final_status_) {
     case PrerenderFinalStatus::kMojoBinderPolicy:
       return absl::get<std::string>(explanation_);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
     const std::string& header_name,
-    const absl::optional<std::string> initial_value,
-    const absl::optional<std::string> activation_value)
+    const std::optional<std::string> initial_value,
+    const std::optional<std::string> activation_value)
     : header_name(header_name),
       initial_value(initial_value),
       activation_value(activation_value) {}

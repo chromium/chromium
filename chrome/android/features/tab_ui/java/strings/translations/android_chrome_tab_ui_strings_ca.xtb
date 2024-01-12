@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Vols tancar les pestanyes antigues?</translation>
 <translation id="1215127405478249895">Revisa les pestanyes</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
+<translation id="1326271443836399892">Revisa la configuració actual d'ordenació.</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Suprimeix del grup</translation>
 <translation id="3008554597174452548">Atura el seguiment del producte</translation>
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Tens <ph name="TABS_COUNT_ONE" /> pestanya arxivada}other{Tens <ph name="TABS_COUNT_MANY" /> pestanyes arxivades}}</translation>
 <translation id="3194464645767632461">puntuació</translation>
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>
 <translation id="9150694013019234766">Canvia de pestanya al grup de pestanyes de la part inferior de la pantalla</translation>
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
+<translation id="955558140275419384">Accedeix a aquest editor per revisar i ordenar les pestanyes arxivades.</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>
 </translationbundle>

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ui/base/models/combobox_model_observer.h"
+
 namespace ui {
 
 SimpleComboboxModel::Item::Item(std::u16string text) : text(std::move(text)) {}
@@ -33,6 +35,14 @@ SimpleComboboxModel::SimpleComboboxModel(std::vector<Item> items)
     : items_(std::move(items)) {}
 
 SimpleComboboxModel::~SimpleComboboxModel() = default;
+
+void SimpleComboboxModel::UpdateItemList(std::vector<Item> items) {
+  items_ = std::move(items);
+
+  for (auto& observer : observers()) {
+    observer.OnComboboxModelChanged(this);
+  }
+}
 
 size_t SimpleComboboxModel::GetItemCount() const {
   return items_.size();

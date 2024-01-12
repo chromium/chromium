@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugalščina z mednarodno tipkovnico za angleščino (Združene države)</translation>
 <translation id="1629521517399325891">Uporabniško potrdilo ni na voljo za preverjanje pristnosti omrežja.</translation>
 <translation id="1641780993263690097">kitajščina (pinjin)</translation>
-<translation id="1646019627374511909">Omogočanje datotek (<ph name="NUMBER_OF_ITEMS" />) za dostop brez povezave</translation>
 <translation id="164969095109328410">Naprava Chrome</translation>
 <translation id="1661207570040737402">Porabili ste ves deljeni prostor za shranjevanje v Googlu Drive za Google Workspace.</translation>
 <translation id="1661867754829461514">Manjka PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Googlova preglednica</translation>
 <translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3486821258960016770">mongolščina</translation>
-<translation id="3495304270784461826">Št. napak: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />%, podrobnosti</translation>
 <translation id="3511705761158917664">Priprava na sinhronizacijo datotek (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="3522708245912499433">portugalščina</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Kopiranje <ph name="COUNT" /> datotek(-e) blokira skrbniški pravilnik.</translation>
 <translation id="6509122719576673235">norveščina</translation>
 <translation id="6528513914570774834">Omogoči drugim uporabnikom te naprave uporabo tega omrežja</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> – sinhroniziranje ...</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6558280019477628686">Prišlo je do napake. Nekateri elementi morda niso izbrisani.</translation>
 <translation id="656398493051028875">Brisanje datoteke »<ph name="FILENAME" />« ...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Aplikacijam za Linux dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Trenutno ste brez povezave. Sinhronizacija datotek se bo nadaljevala, ko vzpostavite internetno povezavo</translation>
 <translation id="7589661784326793847">Počakajte trenutek</translation>
-<translation id="7592775719802218421">Omogočanje dostopa do datoteke <ph name="FILE_NAME" /> brez povezave</translation>
 <translation id="7600126690270271294">srbščina</translation>
 <translation id="7603724359189955920">Mreže</translation>
 <translation id="7627790789328695202">Ups, datoteka <ph name="FILE_NAME" /> že obstaja. Preimenujte jo in poskusite znova.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8147028810663464959">Širina znaka je zapolnjena</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 napaka.}one{# napaka.}two{# napaki.}few{# napake.}other{# napak.}}</translation>
 <translation id="8154842056504218462">Izbrani so vsi vnosi.</translation>
 <translation id="8157684860301034423">Prenos podatkov aplikacije ni uspel.</translation>
 <translation id="8175731104491895765">francoščina (Belgija)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Temu omogočite dostop do datotek v mapi <ph name="FOLDER_NAME" />: <ph name="VM_NAME" /></translation>
 <translation id="8372369524088641025">Napačen ključ WEP</translation>
 <translation id="8372852072747894550">grščina</translation>
+<translation id="8377269993083688872">Postavitev e-sporočil</translation>
 <translation id="8386903983509584791">Iskanje je končano</translation>
 <translation id="8387733224523483503">Razširjeno: <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Mere</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Izberite datoteko, ki jo želite odpreti</translation>
 <translation id="8577897833047451336">hrvaščina</translation>
 <translation id="8578308463707544055">indonezijščina</translation>
-<translation id="8579285237314169903">Sinhroniziranje datotek (<ph name="NUMBER_OF_FILES" />) ...</translation>
 <translation id="8600173386174225982">Seznam datotek je spremenjen na pogled sličic.</translation>
 <translation id="8601932370724196034">Slikovna datoteka za Crostini</translation>
 <translation id="8609695766746872526">islandščina</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Dovoli proxyje za omrežja v skupni rabi</translation>
 <translation id="8790981080411996443">Oseba, ki zaliva rože</translation>
 <translation id="8798099450830957504">Privzeto</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 opozorilo.}one{# opozorilo.}two{# opozorili.}few{# opozorila.}other{# opozoril.}}</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Ustvarjanje datoteke zip ni uspelo, obstoječi element: »<ph name="FILE_NAME" />«</translation>
 <translation id="8813284582615685103">španščina (Španija)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="9065512565307033593">Če ne preverite, bo dostop do omrežja onemogočen.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 opozorilo.}one{<ph name="COUNT" /> opozorilo.}two{<ph name="COUNT" /> opozorili.}few{<ph name="COUNT" /> opozorila.}other{<ph name="COUNT" /> opozoril.}}</translation>
 <translation id="908378762078012445">ruščina s fonetično tipkovnico AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Število strani</translation>

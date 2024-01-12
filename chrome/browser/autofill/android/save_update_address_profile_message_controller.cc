@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/android/save_update_address_profile_message_controller.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -176,7 +177,7 @@ std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
 }
 
 std::u16string SaveUpdateAddressProfileMessageController::GetSourceNotice() {
-  absl::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
+  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents_->GetBrowserContext());
   if (!account) {
     return std::u16string();

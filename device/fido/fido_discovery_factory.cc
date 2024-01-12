@@ -173,8 +173,8 @@ FidoDiscoveryFactory::get_cable_contact_callback() {
   DCHECK(!contact_device_stream_);
 
   base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> ret;
-  std::tie(ret, contact_device_stream_) = FidoDeviceDiscovery::EventStream<
-      std::unique_ptr<cablev2::Pairing>>::New();
+  std::tie(ret, contact_device_stream_) =
+      FidoDiscoveryBase::EventStream<std::unique_ptr<cablev2::Pairing>>::New();
   return ret;
 }
 
@@ -183,24 +183,16 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
   hid_ignore_list_ = std::move(hid_ignore_list);
 }
 
-void FidoDiscoveryFactory::set_enclave_passkeys(
-    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
-  enclave_passkeys_ = std::move(passkeys);
-}
-
 void FidoDiscoveryFactory::set_enclave_passkey_creation_callback(
     base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
         callback) {
   enclave_passkey_creation_callback_ = callback;
 }
 
-base::RepeatingCallback<void(absl::optional<std::string_view>)>
-FidoDiscoveryFactory::get_enclave_oauth_token_callback() {
-  CHECK(!oauth_token_provider_);
-  base::RepeatingCallback<void(absl::optional<std::string_view>)> ret;
-  std::tie(ret, oauth_token_provider_) =
-      FidoDiscoveryBase::EventStream<absl::optional<std::string_view>>::New();
-  return ret;
+void FidoDiscoveryFactory::set_enclave_ui_request_stream(
+    std::unique_ptr<FidoDiscoveryBase::EventStream<
+        std::unique_ptr<enclave::CredentialRequest>>> stream) {
+  enclave_ui_request_stream_ = std::move(stream);
 }
 
 // static
@@ -277,14 +269,15 @@ void FidoDiscoveryFactory::
 #if !BUILDFLAG(IS_CHROMEOS)
 void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
     std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries) {
-  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator)) {
+  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator) ||
+      !enclave_passkey_creation_callback_ || !enclave_ui_request_stream_ ||
+      !network_context_) {
     return;
   }
   discoveries.emplace_back(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-          std::move(enclave_passkeys_),
-          std::move(enclave_passkey_creation_callback_), network_context_,
-          std::move(oauth_token_provider_)));
+          std::move(enclave_passkey_creation_callback_),
+          std::move(enclave_ui_request_stream_), network_context_));
 }
 #endif
 

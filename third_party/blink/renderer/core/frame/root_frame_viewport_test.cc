@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -195,6 +196,9 @@ class RootFrameViewportTest : public testing::Test {
 
  protected:
   void SetUp() override {}
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 // Tests that scrolling the viewport when the layout viewport is

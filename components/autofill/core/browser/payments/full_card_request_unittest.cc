@@ -39,8 +39,7 @@ using testing::_;
 using testing::NiceMock;
 
 // The consumer of the full card request API.
-class MockResultDelegate : public FullCardRequest::ResultDelegate,
-                           public base::SupportsWeakPtr<MockResultDelegate> {
+class MockResultDelegate : public FullCardRequest::ResultDelegate {
  public:
   MOCK_METHOD(void,
               OnFullCardRequestSucceeded,
@@ -52,11 +51,17 @@ class MockResultDelegate : public FullCardRequest::ResultDelegate,
               OnFullCardRequestFailed,
               (CreditCard::RecordType, payments::FullCardRequest::FailureType),
               (override));
+
+  base::WeakPtr<MockResultDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockResultDelegate> weak_ptr_factory_{this};
 };
 
 // The delegate responsible for displaying the unmask prompt UI.
-class MockUIDelegate : public FullCardRequest::UIDelegate,
-                       public base::SupportsWeakPtr<MockUIDelegate> {
+class MockUIDelegate : public FullCardRequest::UIDelegate {
  public:
   MOCK_METHOD(void,
               ShowUnmaskPrompt,
@@ -75,13 +80,20 @@ class MockUIDelegate : public FullCardRequest::UIDelegate,
               (),
               (const override));
 #endif
+
+  base::WeakPtr<MockUIDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockUIDelegate> weak_ptr_factory_{this};
 };
 
 // The personal data manager.
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
-  MockPersonalDataManager() {}
-  ~MockPersonalDataManager() override {}
+  MockPersonalDataManager() = default;
+  ~MockPersonalDataManager() override = default;
   MOCK_METHOD(bool,
               IsSyncFeatureEnabledForPaymentsServerMetrics,
               (),

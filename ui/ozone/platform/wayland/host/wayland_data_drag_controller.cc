@@ -15,7 +15,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -227,7 +228,6 @@ void WaylandDataDragController::DumpState(std::ostream& out) const {
       << ", data_source=" << !!data_source_
       << ", origin_window=" << GetWindowName(origin_window_)
       << ", current_window=" << GetWindowName(window_)
-      << ", unprocessed_mime_types=" << ListToString(unprocessed_mime_types_)
       << ", last_drag_location=" << last_drag_location_.ToString()
       << ", is_leave_pending=" << is_leave_pending_
       << ", icon_surface_bufer_scale=" << icon_surface_buffer_scale_
@@ -351,9 +351,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   // OnWindowRemoved, so that memory corruption issues are avoided.
   window_ = window;
 
-  unprocessed_mime_types_.clear();
   for (auto mime : data_offer_->mime_types()) {
-    unprocessed_mime_types_.push_back(mime);
     data_offer_->Accept(serial, mime);
   }
 
@@ -387,10 +385,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     // which will defer sending OnDragEnter to the client until the data
     // is ready.
     state_ = State::kTransferring;
-    received_exchange_data_provider_ =
-        std::make_unique<WaylandExchangeDataProvider>();
-    last_drag_location_ = location;
-    HandleUnprocessedMimeTypes(timestamp);
+    PostDataTransferTask(location, timestamp);
   }
 }
 
@@ -524,71 +519,72 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
   }
 }
 
-// Asynchronously requests and reads data for every negotiated/supported mime
-// type, one after another, OnMimeTypeDataTransferred calls back into this
-// function once it finishes reading data for each mime type, until there is no
-// more unprocessed mime types on the |unprocessed_mime_types_| queue. Once this
-// process is finished, OnDataTransferFinished is called to deliver the
-// |received_exchange_data_provider_| to the drop handler.
-void WaylandDataDragController::HandleUnprocessedMimeTypes(
+void WaylandDataDragController::PostDataTransferTask(
+    const gfx::PointF& location,
     base::TimeTicks start_time) {
-  std::string mime_type = GetNextUnprocessedMimeType();
-  VLOG(1) << __FUNCTION__ << " mime=" << mime_type;
-  if (mime_type.empty() || is_leave_pending_ || state_ == State::kIdle ||
-      !window_) {
-    OnDataTransferFinished(start_time,
-                           std::make_unique<OSExchangeData>(
-                               std::move(received_exchange_data_provider_)));
-  } else {
-    DCHECK(data_offer_);
-    data_device_->RequestData(
-        data_offer_.get(), mime_type,
-        base::BindOnce(&WaylandDataDragController::OnMimeTypeDataTransferred,
-                       weak_factory_.GetWeakPtr(), start_time));
+  using FetchingInfo = std::vector<std::pair<std::string, int>>;
+
+  DCHECK_EQ(state_, State::kTransferring);
+  DCHECK(data_offer_);
+
+  FetchingInfo offered_data;
+  for (const auto& mime_type : data_offer_->mime_types()) {
+    if (!IsMimeTypeSupported(mime_type)) {
+      LOG(WARNING) << "Skipping unsupported mime type " << mime_type;
+      continue;
+    }
+
+    VLOG(1) << __func__ << " requests to receive data for " << mime_type;
+    base::ScopedFD fd = data_offer_->Receive(mime_type);
+    if (!fd.is_valid()) {
+      DPLOG(ERROR) << "Failed to open file descriptor for " << mime_type;
+      continue;
+    }
+    offered_data.emplace_back(mime_type, fd.release());
   }
-}
+  connection_->Flush();
 
-// Post |data_transferred_callback_for_testing_|, if any, to be executed in the
-// current task runner, such that test code is run only when current event is
-// fully processed, ie: internal drag controller state consistency is assured.
-void WaylandDataDragController::RunDataTransferredCallbackForTesting(
-    const std::string& mime_type) {
-  if (data_transferred_callback_for_testing_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(data_transferred_callback_for_testing_, mime_type));
-  }
-}
+  auto fetch_data_closure = [](FetchingInfo offered_data) {
+    auto fetched_data = std::make_unique<WaylandExchangeDataProvider>();
+    VLOG(1) << __func__ << " Starting data fetching for " << offered_data.size()
+            << " mime types.";
 
-void WaylandDataDragController::OnMimeTypeDataTransferred(
-    base::TimeTicks timestamp,
-    PlatformClipboard::Data contents) {
-  DCHECK(contents);
-  std::string mime_type = unprocessed_mime_types_.front();
-  if (!contents->data().empty()) {
-    received_exchange_data_provider_->AddData(contents, mime_type);
-  }
-  unprocessed_mime_types_.pop_front();
+    for (const auto& [mime_type, fd_handle] : offered_data) {
+      DCHECK(IsMimeTypeSupported(mime_type));
+      VLOG(1) << __func__ << " will fetch data for " << mime_type;
 
-  RunDataTransferredCallbackForTesting(mime_type);  // IN-TEST
+      std::vector<uint8_t> contents;
+      wl::ReadDataFromFD(base::ScopedFD(fd_handle), &contents);
+      if (contents.empty()) {
+        continue;
+      }
 
-  // Continue reading data for other negotiated mime types.
-  HandleUnprocessedMimeTypes(timestamp);
+      VLOG(1) << __func__ << " fetched " << contents.size() << " bytes.";
+      fetched_data->AddData(base::RefCountedBytes::TakeVector(&contents),
+                            mime_type);
+    }
+
+    return std::make_unique<OSExchangeData>(std::move(fetched_data));
+  };
+
+  last_drag_location_ = location;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(fetch_data_closure, std::move(offered_data)),
+      base::BindOnce(&WaylandDataDragController::OnDataTransferFinished,
+                     weak_factory_.GetWeakPtr(), std::move(start_time)));
 }
 
 void WaylandDataDragController::OnDataTransferFinished(
     base::TimeTicks timestamp,
     std::unique_ptr<OSExchangeData> received_data) {
-  VLOG(1) << __FUNCTION__ << " unprocessed=" << unprocessed_mime_types_.size()
-          << " leave_pending=" << is_leave_pending_ << " window=" << !!window_;
-  unprocessed_mime_types_.clear();
+  VLOG(1) << __func__ << " leave_pending=" << is_leave_pending_
+          << " window=" << !!window_;
   if (state_ == State::kIdle) {
     return;
   }
 
   state_ = State::kIdle;
-
-  RunDataTransferredCallbackForTesting();  // IN-TEST
 
   // If a 'leave' event was received while incoming data was on transit (see
   // OnDragLeave function), propagating 'enter' event at this point makes no
@@ -607,21 +603,6 @@ void WaylandDataDragController::OnDataTransferFinished(
 
   PropagateOnDragEnter(last_drag_location_, timestamp,
                        std::move(received_data));
-}
-
-// Returns the next MIME type to be received from the source process, or an
-// empty string if there are no more interesting MIME types left to process.
-std::string WaylandDataDragController::GetNextUnprocessedMimeType() {
-  while (!unprocessed_mime_types_.empty()) {
-    const std::string& mime_type = unprocessed_mime_types_.front();
-    if (!IsMimeTypeSupported(mime_type)) {
-      VLOG(1) << "Skipping unsupported mime type: " << mime_type;
-      unprocessed_mime_types_.pop_front();
-      continue;
-    }
-    return mime_type;
-  }
-  return {};
 }
 
 void WaylandDataDragController::PropagateOnDragEnter(

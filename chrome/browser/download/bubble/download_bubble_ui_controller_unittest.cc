@@ -133,10 +133,9 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
  private:
   raw_ptr<Profile> profile_;
   std::vector<ModelType> model_types_;
-  const raw_ref<const std::vector<std::unique_ptr<StrictMockDownloadItem>>,
-                ExperimentalAsh>
+  const raw_ref<const std::vector<std::unique_ptr<StrictMockDownloadItem>>>
       download_items_;
-  const raw_ref<const OfflineItemList, ExperimentalAsh> offline_items_;
+  const raw_ref<const OfflineItemList> offline_items_;
 };
 
 class DownloadBubbleUIControllerTest : public testing::Test {

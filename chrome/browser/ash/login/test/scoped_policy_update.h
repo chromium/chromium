@@ -39,7 +39,7 @@ class ScopedUserPolicyUpdate {
   }
 
  private:
-  const raw_ptr<policy::UserPolicyBuilder, ExperimentalAsh> policy_builder_;
+  const raw_ptr<policy::UserPolicyBuilder> policy_builder_;
   base::OnceClosure callback_;
 };
 
@@ -69,7 +69,7 @@ class ScopedDevicePolicyUpdate {
   }
 
  private:
-  const raw_ptr<policy::DevicePolicyBuilder, ExperimentalAsh> policy_builder_;
+  const raw_ptr<policy::DevicePolicyBuilder> policy_builder_;
   base::OnceClosure callback_;
 };
 

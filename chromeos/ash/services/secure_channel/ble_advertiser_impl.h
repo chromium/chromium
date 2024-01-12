@@ -135,9 +135,9 @@ class BleAdvertiserImpl : public BleAdvertiser {
   void AttemptToNotifyFailureToGenerateAdvertisement(
       const DeviceIdPair& device_id_pair);
 
-  raw_ptr<BluetoothHelper, ExperimentalAsh> bluetooth_helper_;
-  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_base_;
-  raw_ptr<TimerFactory, ExperimentalAsh> timer_factory_;
+  raw_ptr<BluetoothHelper> bluetooth_helper_;
+  raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
+  raw_ptr<TimerFactory> timer_factory_;
 
   // For posting tasks to the current base::SequencedTaskRunner.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

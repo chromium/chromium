@@ -99,7 +99,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
 
   cc::RenderFrameMetadata last_render_frame_metadata_;
 
-  absl::optional<viz::LocalSurfaceId> last_local_surface_id_;
+  std::optional<viz::LocalSurfaceId> last_local_surface_id_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -112,10 +112,10 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       render_frame_metadata_observer_remote_;
 
 #if BUILDFLAG(IS_ANDROID)
-  absl::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
+  std::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
       pending_root_scroll_offset_update_frequency_;
 #endif
-  absl::optional<bool> pending_report_all_frame_submission_for_testing_;
+  std::optional<bool> pending_report_all_frame_submission_for_testing_;
 
   base::WeakPtrFactory<RenderFrameMetadataProviderImpl> weak_factory_{this};
 };

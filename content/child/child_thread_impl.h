@@ -87,8 +87,10 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // Returns true if the thread should be destroyed.
   virtual bool ShouldBeDestroyed();
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // IPC::Sender implementation:
   bool Send(IPC::Message* msg) override;
+#endif
 
   // ChildThread implementation:
 #if BUILDFLAG(IS_WIN)
@@ -104,7 +106,9 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   IPC::SyncChannel* channel() { return channel_.get(); }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   IPC::MessageRouter* GetRouter();
+#endif
 
   IPC::SyncMessageFilter* sync_message_filter() const {
     return sync_message_filter_.get();
@@ -151,7 +155,10 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // available to handle incoming interface requests from the browser.
   void ExposeInterfacesToBrowser(mojo::BinderMap binders);
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   virtual bool OnControlMessageReceived(const IPC::Message& msg);
+#endif
+
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& msg) override;
   void OnAssociatedInterfaceRequest(
@@ -179,6 +186,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   class IOThreadState;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   class ChildThreadMessageRouter : public IPC::MessageRouter {
    public:
     // |sender| must outlive this object.
@@ -191,6 +199,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
    private:
     const raw_ptr<IPC::Sender> sender_;
   };
+#endif
 
   void Init(const Options& options);
 
@@ -215,9 +224,11 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // Allows threads other than the main thread to send sync messages.
   scoped_refptr<IPC::SyncMessageFilter> sync_message_filter_;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Implements message routing functionality to the consumers of
   // ChildThreadImpl.
   ChildThreadMessageRouter router_;
+#endif
 
   // The OnChannelError() callback was invoked - the channel is dead, don't
   // attempt to communicate.

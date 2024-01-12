@@ -5,6 +5,7 @@
 #include "content/browser/payments/payment_app_info_fetcher.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

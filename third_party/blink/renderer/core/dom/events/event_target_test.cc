@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_event_listener_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
@@ -148,7 +149,9 @@ TEST_F(EventTargetTest,
        ObservableSubscriptionBecomingInactiveRemovesEventListener) {
   V8TestingScope scope;
   EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
-  Observable* observable = event_target->on(AtomicString("test"));
+  Observable* observable =
+      event_target->on(AtomicString("test"),
+                       MakeGarbageCollected<ObservableEventListenerOptions>());
   EXPECT_FALSE(event_target->HasEventListeners());
 
   AbortController* controller = AbortController::Create(scope.GetScriptState());

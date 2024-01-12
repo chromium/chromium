@@ -27,54 +27,50 @@ namespace {
 
 // Helper method to normalize the `admin_area` for the given `country_code`.
 // The value in `admin_area` will be overwritten.
-bool NormalizeAdminAreaForCountryCode(std::u16string* admin_area,
+bool NormalizeAdminAreaForCountryCode(std::u16string& admin_area,
                                       const std::string& country_code,
-                                      AddressNormalizer* address_normalizer) {
-  DCHECK(address_normalizer);
-  DCHECK(admin_area);
-  if (admin_area->empty() || country_code.empty()) {
+                                      AddressNormalizer& address_normalizer) {
+  if (admin_area.empty() || country_code.empty()) {
     return false;
   }
 
   AutofillProfile tmp_profile((AddressCountryCode(country_code)));
-  tmp_profile.SetRawInfo(ADDRESS_HOME_STATE, *admin_area);
-  if (!address_normalizer->NormalizeAddressSync(&tmp_profile)) {
+  tmp_profile.SetRawInfo(ADDRESS_HOME_STATE, admin_area);
+  if (!address_normalizer.NormalizeAddressSync(&tmp_profile)) {
     return false;
   }
 
-  *admin_area = tmp_profile.GetRawInfo(ADDRESS_HOME_STATE);
+  admin_area = tmp_profile.GetRawInfo(ADDRESS_HOME_STATE);
   return true;
 }
 
-// Will normalize `value` and the options in `field` with `address_normalizer`
-// (which should not be null), and return whether the fill was successful.
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetNormalizedStateSelectControlValue(
-    const std::u16string& value,
+// Returns the SelectOption::value of `field_options` that best matches the
+// normalized `value`. Returns an empty string if no match is found.
+// Normalization is relative to the `country_code` and to `address_normalizer`.
+std::u16string GetNormalizedStateSelectControlValue(
+    std::u16string value,
     base::span<const SelectOption> field_options,
     const std::string& country_code,
-    AddressNormalizer* address_normalizer,
+    AddressNormalizer& address_normalizer,
     std::string* failure_to_fill) {
-  DCHECK(address_normalizer);
-  // We attempt to normalize a copy of the field value. If normalization was not
-  // successful, it means the rules were probably not loaded. Give up. Note that
-  // the normalizer will fetch the rule for next time it's called.
+  // We attempt to normalize `value`. If normalization was not successful, it
+  // means the rules were probably not loaded. Give up. Note that the normalizer
+  // will fetch the rule next time it's called.
   // TODO(crbug.com/788417): We should probably sanitize |value| before
   // normalizing.
-  std::u16string field_value = value;
-  if (!NormalizeAdminAreaForCountryCode(&field_value, country_code,
+  if (!NormalizeAdminAreaForCountryCode(value, country_code,
                                         address_normalizer)) {
     if (failure_to_fill) {
       *failure_to_fill += "Could not normalize admin area for country code. ";
     }
-    return std::nullopt;
+    return {};
   }
 
   // If successful, try filling the normalized value with the existing field
   // |options|.
   if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(field_value, field_options, failure_to_fill)) {
-    return select_control_value;
+          GetSelectControlValue(value, field_options, failure_to_fill)) {
+    return *select_control_value;
   }
 
   // Normalize `field_options` using a copy.
@@ -84,15 +80,15 @@ std::optional<std::u16string> GetNormalizedStateSelectControlValue(
   std::vector<SelectOption> field_options_copy(field_options.begin(),
                                                field_options.end());
   for (SelectOption& option : field_options_copy) {
-    normalized |= NormalizeAdminAreaForCountryCode(&option.value, country_code,
+    normalized |= NormalizeAdminAreaForCountryCode(option.value, country_code,
                                                    address_normalizer);
-    normalized |= NormalizeAdminAreaForCountryCode(
-        &option.content, country_code, address_normalizer);
+    normalized |= NormalizeAdminAreaForCountryCode(option.content, country_code,
+                                                   address_normalizer);
   }
 
   // Try filling the normalized value with the existing `field_options_copy`.
   size_t best_match_index = 0;
-  if (normalized && GetSelectControlValue(field_value, field_options_copy,
+  if (normalized && GetSelectControlValue(value, field_options_copy,
                                           failure_to_fill, &best_match_index)) {
     // `best_match_index` now points to the option in `field->options`
     // that corresponds to our best match.
@@ -101,12 +97,12 @@ std::optional<std::u16string> GetNormalizedStateSelectControlValue(
   if (failure_to_fill) {
     *failure_to_fill += "Could not set normalized state in control element. ";
   }
-  return std::nullopt;
+  return {};
 }
 
 // Gets the state value to fill in a select control.
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetStateSelectControlValue(
+// Returns an empty string if no value for filling was found.
+std::u16string GetStateSelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     const std::string& country_code,
@@ -165,7 +161,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
     if (std::optional<std::u16string> select_control_value =
             GetSelectControlValue(abbreviation, field_options,
                                   failure_to_fill)) {
-      return select_control_value;
+      return *select_control_value;
     }
   }
 
@@ -173,7 +169,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
   for (const std::u16string& full : full_names) {
     if (std::optional<std::u16string> select_control_value =
             GetSelectControlValue(full, field_options, failure_to_fill)) {
-      return select_control_value;
+      return *select_control_value;
     }
   }
 
@@ -183,7 +179,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
             GetSelectControlValueSubstringMatch(
                 full, /*ignore_whitespace=*/false, field_options,
                 failure_to_fill)) {
-      return select_control_value;
+      return *select_control_value;
     }
   }
 
@@ -192,7 +188,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
     if (std::optional<std::u16string> select_control_value =
             GetSelectControlValueTokenMatch(abbreviation, field_options,
                                             failure_to_fill)) {
-      return select_control_value;
+      return *select_control_value;
     }
   }
 
@@ -200,31 +196,31 @@ std::optional<std::u16string> GetStateSelectControlValue(
     if (failure_to_fill) {
       *failure_to_fill += "Could not fill state in select control element. ";
     }
-    return std::nullopt;
+    return {};
   }
 
   // Try to match a normalized `value` of the state and the `field_options`.
   return GetNormalizedStateSelectControlValue(
-      value, field_options, country_code, address_normalizer, failure_to_fill);
+      value, field_options, country_code, *address_normalizer, failure_to_fill);
 }
 
 // Gets the country value to fill in a select control.
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetCountrySelectControlValue(
+// Returns an empty string if no value for filling was found.
+std::u16string GetCountrySelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
   // Search for exact matches.
   if (std::optional<std::u16string> select_control_value =
           GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return select_control_value;
+    return *select_control_value;
   }
   std::string country_code = CountryNames::GetInstance()->GetCountryCode(value);
   if (country_code.empty()) {
     if (failure_to_fill) {
       *failure_to_fill += "Cannot fill empty country code. ";
     }
-    return std::nullopt;
+    return {};
   }
 
   for (const SelectOption& option : field_options) {
@@ -242,7 +238,7 @@ std::optional<std::u16string> GetCountrySelectControlValue(
     *failure_to_fill +=
         "Did not find country to fill in select control element. ";
   }
-  return std::nullopt;
+  return {};
 }
 
 // Returns appropriate street address for `field`. Translates newlines into
@@ -269,11 +265,10 @@ std::u16string GetStreetAddressForInput(
 // The canonical state is checked if it fits in the field and at last the
 // abbreviations are tried. Does not return a state if neither |state_value| nor
 // the canonical state name nor its abbreviation fit into the field.
-std::optional<std::u16string> GetStateTextForInput(
-    const std::u16string& state_value,
-    const std::string& country_code,
-    uint64_t field_max_length,
-    std::string* failure_to_fill) {
+std::u16string GetStateTextForInput(const std::u16string& state_value,
+                                    const std::string& country_code,
+                                    uint64_t field_max_length,
+                                    std::string* failure_to_fill) {
   if (field_max_length == 0 || field_max_length >= state_value.size()) {
     // Return the state value directly.
     return state_value;
@@ -304,19 +299,19 @@ std::optional<std::u16string> GetStateTextForInput(
   if (failure_to_fill) {
     *failure_to_fill += "Could not fit raw state nor abbreviation. ";
   }
-  return std::nullopt;
+  return {};
 }
 
 // Finds the best suitable option in the `field` that corresponds to the
 // `country_code`.
 // If the exact match is not found, extracts the digits (ignoring leading '00'
 // or '+') from each option and compares them with the `country_code`.
-std::optional<std::u16string> GetPhoneCountryCodeSelectControlForInput(
+std::u16string GetPhoneCountryCodeSelectControlForInput(
     const std::u16string& country_code,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
   if (country_code.empty()) {
-    return std::nullopt;
+    return {};
   }
   // Find the option that exactly matches the |country_code|.
   if (std::optional<std::u16string> select_control_value =
@@ -337,20 +332,19 @@ std::optional<std::u16string> GetPhoneCountryCodeSelectControlForInput(
   if (failure_to_fill) {
     *failure_to_fill += "Could not match to formatted country code options. ";
   }
-  return std::nullopt;
+  return {};
 }
 
 // Returns the appropriate `profile` value based on `field_type` to fill
 // into the input `field`.
-std::optional<std::u16string> GetValueForProfileForInput(
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    const AutofillType& field_type,
-    const FormFieldData& field_data,
-    std::string* failure_to_fill) {
+std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
+                                          const std::string& app_locale,
+                                          const AutofillType& field_type,
+                                          const FormFieldData& field_data,
+                                          std::string* failure_to_fill) {
   const std::u16string value = profile.GetInfo(field_type, app_locale);
   if (value.empty()) {
-    return std::nullopt;
+    return {};
   }
   if (field_type.group() == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
@@ -366,10 +360,10 @@ std::optional<std::u16string> GetValueForProfileForInput(
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
         field_data.max_length, failure_to_fill);
   }
-  return std::move(value);
+  return value;
 }
 
-std::optional<std::u16string> GetValueForProfileSelectControl(
+std::u16string GetValueForProfileSelectControl(
     const AutofillProfile& profile,
     const std::u16string& value,
     const std::string& app_locale,
@@ -390,33 +384,32 @@ std::optional<std::u16string> GetValueForProfileSelectControl(
       return GetPhoneCountryCodeSelectControlForInput(value, field_options,
                                                       failure_to_fill);
     default:
-      return GetSelectControlValue(value, field_options, failure_to_fill);
+      return GetSelectControlValue(value, field_options, failure_to_fill)
+          .value_or(u"");
   }
 }
 
 }  // namespace
 
-std::optional<std::pair<std::u16string, FieldType>>
-GetFillingValueAndTypeForProfile(const AutofillProfile& profile,
-                                 const std::string& app_locale,
-                                 const AutofillType& field_type,
-                                 const FormFieldData& field_data,
-                                 AddressNormalizer* address_normalizer,
-                                 std::string* failure_to_fill) {
+std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    const AutofillType& field_type,
+    const FormFieldData& field_data,
+    AddressNormalizer* address_normalizer,
+    std::string* failure_to_fill) {
   AutofillType filling_type = profile.GetFillingType(field_type);
   CHECK(IsAddressType(filling_type.GetStorableType()));
-  std::optional<std::u16string> value = GetValueForProfileForInput(
+  std::u16string value = GetValueForProfileForInput(
       profile, app_locale, filling_type, field_data, failure_to_fill);
 
-  if (value && field_data.IsSelectOrSelectListElement()) {
+  if (field_data.IsSelectOrSelectListElement() && !value.empty()) {
     value = GetValueForProfileSelectControl(
-        profile, *value, app_locale, field_data.options,
+        profile, value, app_locale, field_data.options,
         filling_type.GetStorableType(), address_normalizer, failure_to_fill);
   }
 
-  return value ? std::make_optional<std::pair<std::u16string, FieldType>>(
-                     std::move(*value), filling_type.GetStorableType())
-               : std::nullopt;
+  return {value, filling_type.GetStorableType()};
 }
 
 std::u16string GetPhoneNumberValueForInput(

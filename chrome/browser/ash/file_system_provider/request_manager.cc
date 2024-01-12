@@ -138,9 +138,9 @@ void RequestManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-RequestManager::Request::Request() {}
+RequestManager::Request::Request() = default;
 
-RequestManager::Request::~Request() {}
+RequestManager::Request::~Request() = default;
 
 void RequestManager::OnRequestTimeout(int request_id) {
   for (auto& observer : observers_)

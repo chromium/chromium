@@ -43,6 +43,16 @@ constexpr size_t kExtensionsSize =
 
 // Helpers ---------------------------------------------------------------------
 
+// Returns the `FilePickerBindingContext` representation of the specified
+// `file_picker_binding_context`. Note that these values are persisted to
+// histograms so should remain unchanged.
+FilePickerBindingContext ToFilePickerBindingContext(
+    const GURL& file_picker_binding_context) {
+  return file_picker_binding_context.DomainIs("photoshop.adobe.com")
+             ? FilePickerBindingContext::kPhotoshopWeb
+             : FilePickerBindingContext::kUnknown;
+}
+
 // Returns the string representation of the specified `action`. Note that these
 // values are persisted to histograms so should remain unchanged.
 std::string ToString(ItemAction action) {
@@ -128,6 +138,17 @@ void RecordFilesAppChipAction(FilesAppChipAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
 }
 
+void RecordFileCreatedFromShowSaveFilePicker(
+    const GURL& file_picker_binding_context,
+    const base::FilePath& file_path) {
+  base::UmaHistogramExactLinear(
+      "HoldingSpace.FileCreatedFromShowSaveFilePicker.Extension",
+      FilePathToExtension(file_path), kExtensionsSize);
+  base::UmaHistogramEnumeration(
+      "HoldingSpace.FileCreatedFromShowSaveFilePicker.FilePickerBindingContext",
+      ToFilePickerBindingContext(file_picker_binding_context));
+}
+
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
                       ItemAction action) {
   const std::string action_string = ToString(action);
@@ -159,15 +180,24 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts(items, /*visible=*/false);
 }
 
-void RecordItemFailureToLaunch(HoldingSpaceItem::Type type,
-                               const base::FilePath& file_path,
-                               ItemFailureToLaunchReason reason) {
-  base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch", type);
-  base::UmaHistogramExactLinear("HoldingSpace.Item.FailureToLaunch.Extension",
-                                FilePathToExtension(file_path),
-                                kExtensionsSize);
-  base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch.Reason",
-                                reason);
+void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
+                           const base::FilePath& file_path) {
+  base::UmaHistogramEnumeration("HoldingSpace.Item.Action.Launch.Empty", type);
+  base::UmaHistogramExactLinear(
+      "HoldingSpace.Item.Action.Launch.Empty.Extension",
+      FilePathToExtension(file_path), kExtensionsSize);
+}
+
+void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
+                             const base::FilePath& file_path,
+                             ItemLaunchFailureReason reason) {
+  base::UmaHistogramEnumeration("HoldingSpace.Item.Action.Launch.Failure",
+                                type);
+  base::UmaHistogramExactLinear(
+      "HoldingSpace.Item.Action.Launch.Failure.Extension",
+      FilePathToExtension(file_path), kExtensionsSize);
+  base::UmaHistogramEnumeration(
+      "HoldingSpace.Item.Action.Launch.Failure.Reason", reason);
 }
 
 void RecordSuggestionsAction(SuggestionsAction action) {

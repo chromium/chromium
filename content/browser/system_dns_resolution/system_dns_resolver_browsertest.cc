@@ -49,8 +49,8 @@ const char kFailHostname[] = "failhostname";
 using ResolveHostFuture = base::test::TestFuture<
     int,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>&,
-    const absl::optional<net::HostResolverEndpointResults>&>;
+    const std::optional<net::AddressList>&,
+    const std::optional<net::HostResolverEndpointResults>&>;
 
 }  // namespace
 
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   ResolveHostFuture future;
   ResolveHostname(kHostname1, future.GetCallback());
 
-  const auto& addr_list1 = future.Get<absl::optional<net::AddressList>>();
+  const auto& addr_list1 = future.Get<std::optional<net::AddressList>>();
 
   if (GetContentClientForTesting()
           ->browser()
@@ -135,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   ResolveHostFuture future2;
   ResolveHostname(kHostname2, future2.GetCallback());
 
-  const auto& addr_list1 = future1.Get<absl::optional<net::AddressList>>();
-  const auto& addr_list2 = future2.Get<absl::optional<net::AddressList>>();
+  const auto& addr_list1 = future1.Get<std::optional<net::AddressList>>();
+  const auto& addr_list2 = future2.Get<std::optional<net::AddressList>>();
 
   if (GetContentClientForTesting()
           ->browser()
@@ -295,7 +295,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 // out-of-process system DNS resolution fully launches.
 IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
   std::vector<ResolveHostFuture> futures(kNumResolutions);
-  std::vector<absl::optional<net::AddressList>> results(kNumResolutions);
+  std::vector<std::optional<net::AddressList>> results(kNumResolutions);
 
   // Simulate UI thread busyness:
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
     ResolveAHost(future.GetCallback());
   }
   for (size_t i = 0; i < kNumResolutions; i++) {
-    results[i] = futures[i].Get<absl::optional<net::AddressList>>();
+    results[i] = futures[i].Get<std::optional<net::AddressList>>();
   }
   base::TimeDelta duration = base::TimeTicks::Now() - start;
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
       duration.InMilliseconds() / static_cast<double>(kNumResolutions));
 
   // Verify there are results.
-  for (const absl::optional<net::AddressList>& result : results) {
+  for (const std::optional<net::AddressList>& result : results) {
     ASSERT_TRUE(result);
     ASSERT_GT(result->size(), 0u);
   }

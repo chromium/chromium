@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/notifications/blink_notification_service_impl.h"
+
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -15,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "content/browser/notifications/blink_notification_service_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -35,7 +38,6 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -270,7 +272,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     if (success) {
       get_notification_resources_ = notification_resources;
     } else {
-      get_notification_resources_ = absl::nullopt;
+      get_notification_resources_ = std::nullopt;
     }
     std::move(quit_closure).Run();
   }
@@ -361,7 +363,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     return get_notifications_data_;
   }
 
-  absl::optional<blink::NotificationResources>
+  std::optional<blink::NotificationResources>
   GetNotificationResourcesFromContextSync(const std::string& notification_id) {
     base::RunLoop run_loop;
     notification_context_->ReadNotificationResources(
@@ -457,7 +459,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
   std::vector<NotificationDatabaseData> get_notifications_data_;
 
-  absl::optional<blink::NotificationResources> get_notification_resources_;
+  std::optional<blink::NotificationResources> get_notification_resources_;
 
   bool read_notification_data_callback_result_ = false;
 

@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Quer fechar os separadores antigos?</translation>
 <translation id="1215127405478249895">Reveja os separadores</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
+<translation id="1326271443836399892">Reveja as definições de organização atuais.</translation>
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="3008554597174452548">Deixar de monitorizar produto</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador arquivado}other{Tem <ph name="TABS_COUNT_MANY" /> separadores arquivados}}</translation>
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informações acerca desta loja fechadas</translation>
 <translation id="9150694013019234766">Alterne entre separadores no grupo de separadores junto à parte inferior do ecrã.</translation>
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>
+<translation id="955558140275419384">Reveja todos os separadores arquivados para maior organização acedendo a este editor.</translation>
 <translation id="959682366969460160">Organize-se</translation>
 </translationbundle>

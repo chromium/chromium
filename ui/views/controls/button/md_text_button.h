@@ -13,6 +13,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
 
@@ -27,20 +28,18 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   METADATA_HEADER(MdTextButton, LabelButton)
 
  public:
-  explicit MdTextButton(PressedCallback callback = PressedCallback(),
-                        const std::u16string& text = std::u16string(),
-                        int button_context = style::CONTEXT_BUTTON_MD,
-                        bool use_text_color_for_icon = true);
+  explicit MdTextButton(
+      PressedCallback callback = PressedCallback(),
+      const std::u16string& text = std::u16string(),
+      int button_context = style::CONTEXT_BUTTON_MD,
+      bool use_text_color_for_icon = true,
+      std::unique_ptr<LabelButtonImageContainer> image_container =
+          std::make_unique<SingleImageContainer>());
 
   MdTextButton(const MdTextButton&) = delete;
   MdTextButton& operator=(const MdTextButton&) = delete;
 
   ~MdTextButton() override;
-
-  // TODO(crbug.com/1406008): Remove the use of Prominent state and use button
-  // style state instead.
-  void SetProminent(bool is_prominent);
-  bool GetProminent() const;
 
   void SetStyle(ui::ButtonStyle button_style);
   ui::ButtonStyle GetStyle() const;
@@ -116,7 +115,6 @@ class VIEWS_EXPORT MdTextButtonActionViewInterface
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
-VIEW_BUILDER_PROPERTY(bool, Prominent)
 VIEW_BUILDER_PROPERTY(absl::optional<float>, CornerRadius)
 VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, CustomPadding)

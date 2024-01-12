@@ -71,13 +71,11 @@ class KeepAliveScheduler : public ActiveHost::Observer,
 
   static const uint32_t kKeepAliveIntervalMinutes;
 
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
-  raw_ptr<DeviceIdTetherNetworkGuidMap, ExperimentalAsh>
-      device_id_tether_network_guid_map_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<HostScanCache> host_scan_cache_;
+  raw_ptr<DeviceIdTetherNetworkGuidMap> device_id_tether_network_guid_map_;
 
   std::unique_ptr<base::RepeatingTimer> timer_;
   std::optional<multidevice::RemoteDeviceRef> active_host_device_;

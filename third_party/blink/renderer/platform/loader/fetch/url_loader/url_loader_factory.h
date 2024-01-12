@@ -23,6 +23,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace network {
+struct ResourceRequest;
 class SharedURLLoaderFactory;
 }
 
@@ -30,7 +31,6 @@ namespace blink {
 
 class BackForwardCacheLoaderHelper;
 class URLLoader;
-class WebURLRequest;
 class URLLoaderThrottle;
 
 // An abstract interface to create a URLLoader. It is expected that each
@@ -52,7 +52,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderFactory {
   // URLLoaderClientImpl and ResponseBodyLoader use unfreezable task runner.
   // This currently takes two task runners: freezable and unfreezable one.
   virtual std::unique_ptr<URLLoader> CreateURLLoader(
-      const WebURLRequest& webreq,
+      const network::ResourceRequest& request,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,

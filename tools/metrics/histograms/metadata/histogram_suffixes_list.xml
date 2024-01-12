@@ -370,46 +370,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.FormEvents.CreditCard"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillSaveCreditCardPromptRequestingCardholderName"
-    separator=".">
-  <suffix name="RequestingCardholderName"
-      label="Cardholder name was explicitly requested in prompt or infobar"/>
-  <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
-  <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram
-      name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
-  <affected-histogram
-      name="Autofill.SaveCreditCardPromptResult.Upload.FirstShow"/>
-  <affected-histogram
-      name="Autofill.SaveCreditCardPromptResult.Upload.Reshows"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillSaveCreditCardPromptRequestingExpirationDate"
-    separator=".">
-  <suffix name="RequestingExpirationDate"
-      label="Expiration date was explicitly requested in prompt or infobar"/>
-  <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
-  <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram
-      name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
-  <affected-histogram
-      name="Autofill.SaveCreditCardPromptResult.Upload.FirstShow"/>
-  <affected-histogram
-      name="Autofill.SaveCreditCardPromptResult.Upload.Reshows"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillSaveCreditCardPromptShow" separator=".">
-  <suffix name="FirstShow"
-      label="first time prompt is shown for a single credit card submit"/>
-  <suffix name="Reshows" label="all shows after the first one, combined"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptResult.Upload"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillSaveCreditCardPromptWithMultipleLegalLines"
     separator=".">
   <suffix name="WithMultipleLegalLines"
@@ -578,7 +538,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.MediaIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Paint.UpdateTime"/>
   <affected-histogram name="Blink.ParseStyleSheet.UpdateTime"/>
-  <affected-histogram name="Blink.PossibleSynchronizedScrollCount.UpdateTime"/>
+  <affected-histogram name="Blink.PossibleSynchronizedScrollCount2.UpdateTime"/>
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
@@ -2742,6 +2702,7 @@ chromium-metrics-reviews@google.com.
       label="Top-level Storage Access API permission"/>
   <suffix name="VideoCapture" label="Camera permission"/>
   <suffix name="VR" label="VR permission"/>
+  <suffix name="WebPrinting" label="Web Printing permission"/>
   <suffix name="WindowPlacement" label="Window Management permission"/>
   <affected-histogram name="Permissions.Engagement.Accepted"/>
   <affected-histogram name="Permissions.Engagement.AcceptedOnce"/>
@@ -3963,9 +3924,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="interstitial.malware_subresource.decision.repeat_visit"/>
   <affected-histogram name="interstitial.malware_subresource.interaction"/>
-  <affected-histogram name="interstitial.origin_policy.decision"/>
-  <affected-histogram name="interstitial.origin_policy.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.origin_policy.interaction"/>
   <affected-histogram name="interstitial.phishing.decision"/>
   <affected-histogram name="interstitial.phishing.decision.repeat_visit"/>
   <affected-histogram name="interstitial.phishing.interaction"/>
@@ -4627,7 +4585,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="DemoMode" label="DemoMode"/>
   <suffix name="Diagnostics" label="Diagnostics"/>
   <suffix name="Eche" label="Eche"/>
-  <suffix name="FaceML" label="Face ML"/>
+  <suffix name="FaceML" label="Face ML (Deprecated)"/>
   <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>

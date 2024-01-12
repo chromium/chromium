@@ -50,13 +50,17 @@ void ErrorExit(jpeg_common_struct* cinfo) {
 bool JPEGCodec::Encode(const SkPixmap& input,
                        int quality,
                        SkJpegEncoder::Downsample downsample,
-                       std::vector<unsigned char>* output) {
+                       std::vector<unsigned char>* output,
+                       const SkData* xmp_metadata) {
   output->clear();
   VectorWStream dst(output);
 
   SkJpegEncoder::Options options;
   options.fQuality = quality;
   options.fDownsample = downsample;
+  if (xmp_metadata) {
+    options.xmpMetadata = xmp_metadata;
+  }
   return SkJpegEncoder::Encode(&dst, input, options);
 }
 

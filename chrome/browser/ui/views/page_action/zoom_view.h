@@ -11,8 +11,9 @@
 
 // View for the zoom icon in the Omnibox.
 class ZoomView : public PageActionIconView {
+  METADATA_HEADER(ZoomView, PageActionIconView)
+
  public:
-  METADATA_HEADER(ZoomView);
   // Clicking on the ZoomView shows a ZoomBubbleView, which requires the current
   // WebContents. Because the current WebContents changes as the user switches
   // tabs, a LocationBarView::Delegate is supplied to queried for the current

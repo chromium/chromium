@@ -123,11 +123,9 @@ AutofillMlPredictionModelHandler::VectorizeForm(
 void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
     FormStructure& form,
     const AutofillModelExecutor::ModelOutput& output) const {
-  // The model only outputs type for the first
-  // `AutofillModelExecutor::kMaxNumberOfFields` many fields.
-  CHECK_EQ(output.size(), std::min(form.field_count(),
-                                   AutofillModelExecutor::kMaxNumberOfFields));
-  for (size_t i = 0; i < output.size(); i++) {
+  // The ML model can process at most `kModelExecutorMaxNumberOfFields`.
+  size_t relevant_fields = std::min(form.field_count(), output.size());
+  for (size_t i = 0; i < relevant_fields; i++) {
     form.field(i)->set_heuristic_type(HeuristicSource::kMachineLearning,
                                       GetMostLikelyType(output[i]));
   }

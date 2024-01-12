@@ -111,17 +111,13 @@ void BuildAndCompute(
   was_callback_called = false;
   webnn_graph_remote->Compute(
       std::move(named_inputs),
-      base::BindLambdaForTesting(
-          [&](mojom::ComputeResult result,
-              absl::optional<base::flat_map<std::string, mojo_base::BigBuffer>>
-                  named_results) {
-            EXPECT_EQ(result, mojom::ComputeResult::kOk);
-            EXPECT_TRUE(named_results.has_value() &&
-                        !named_results.value().empty());
-            was_callback_called = true;
-            named_outputs = std::move(named_results.value());
-            run_loop_graph_compute.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+        EXPECT_TRUE(result->is_named_outputs());
+        EXPECT_FALSE(result->get_named_outputs().empty());
+        was_callback_called = true;
+        named_outputs = std::move(result->get_named_outputs());
+        run_loop_graph_compute.Quit();
+      }));
   run_loop_graph_compute.Run();
   EXPECT_TRUE(was_callback_called);
 
@@ -412,6 +408,8 @@ struct Activation {
   mojom::Activation::Tag kind;
   absl::optional<ClampAttributes> clamp_attributes;
   absl::optional<float> elu_alpha;
+  absl::optional<float> hard_sigmoid_alpha;
+  absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> leaky_relu_alpha;
   absl::optional<float> linear_alpha;
   absl::optional<float> linear_beta;
@@ -543,6 +541,34 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .Test();
   }
   {
+    // Test batchNormalization with 4-D input with activation = hardsigmoids.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kHardSigmoid,
+                               .hard_sigmoid_alpha = 1,
+                               .hard_sigmoid_beta = 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {1, 1, 1, 1, 1, 1}}}
+        .Test();
+  }
+  {
     // Test batchNormalization with 4-D input with activation = relu.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -573,10 +599,37 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 1, 3},
-                  .values = {-1, 0, 1, 2, 3, 4}},
+                  .values = {-100, -50, 100, 101, 102, 103}},
         .mean = {.type = mojom::Operand::DataType::kFloat32,
                  .dimensions = {2},
                  .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1, 4}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1, 2}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.epsilon = 0,
+                       .activation =
+                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
+                                      .softplus_steepness = 3.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {0, 0, 100, 99, 100, 101}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 1-D input with activation = softsign.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1, 1}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {-1, 1}},
         .variance = {.type = mojom::Operand::DataType::kFloat32,
                      .dimensions = {2},
                      .values = {1.0, 1.5}},
@@ -586,14 +639,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
                                    .dimensions = {2},
                                    .values = {0, 1}},
-        .attributes = {.activation =
-                           Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 1.2}},
+        .attributes = {.axis = 0,
+                       .activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftsign}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 2, 1, 3},
-                   .values = {0.2194032134850967, 0.5776226504666211,
-                              1.2193982135225965, 0.47280567014419334,
-                              1.219402056115026, 2.2805572041114077}}}
+                   .dimensions = {2},
+                   .values = {0, 0.5}}}
         .Test();
   }
   {
@@ -1028,6 +1080,35 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
         .Test();
   }
+  // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1}},
+                       .activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kHardSigmoid,
+                               .hard_sigmoid_alpha = 0.01,
+                               .hard_sigmoid_beta = -1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {0,    0,    0, 0,    0,    0,    0, 0,    0,
+                              0,    0,    0, 0.09, 0.18, 0,    0, 0.45, 0.54,
+                              0.63, 0.12, 0, 0.12, 0.18, 0.24, 0}}}
+        .Test();
+  }
   // Test conv2d with NCHW layout, fusing with sigmoid activation.
   {
     Conv2dTester<float>{
@@ -1076,26 +1157,35 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 3, 3},
-                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+                  .dimensions = {1, 1, 2, 2},
+                  .values = {5, 6, 7, 8}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 1, 1},
                    .values = {1}},
-        .attributes = {.bias =
-                           OperandInfo<float>{
-                               .type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1},
-                               .values = {-2}},
-                       .activation =
+        .attributes = {.activation =
                            Activation{.kind = mojom::Activation::Tag::kSoftplus,
-                                      .softplus_steepness = 1.0}},
+                                      .softplus_steepness = 8.0}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = {0.1269280110429726, 0.31326168751822286,
-                              0.6931471805599453, 1.3132616875182228,
-                              2.1269280110429727, 3.048587351573742,
-                              4.0181499279178094, 5.006715348489118,
-                              6.00247568513773}}}
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {5, 6, 7, 8}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
+  // activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {-3, -2, -1, -4, 0, 2, 1, 3, 4}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = std::vector<float>(4, 1)},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftsign}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {-0.9, -0.5, 0, 0.9}}}
         .Test();
   }
   // Test conv2d with NCHW layout, fusing with tanh activation.
@@ -3117,12 +3207,14 @@ struct UnaryOperatorTester {
   OperandInfo<T> input;
   absl::optional<float> clamp_min_value;
   absl::optional<float> clamp_max_value;
+  absl::optional<float> hard_sigmoid_alpha;
+  absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
   absl::optional<float> linear_alpha;
   absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
-  OperandInfo<float> output;
+  OperandInfo<T> output;
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
     // Build the graph with mojo type.
@@ -3142,6 +3234,10 @@ struct UnaryOperatorTester {
         CHECK(elu_alpha);
         builder.BuildElu(input_operand_id, output_operand_id,
                          elu_alpha.value());
+        break;
+      case mojom::Operation::Tag::kHardSigmoid:
+        builder.BuildHardSigmoid(input_operand_id, output_operand_id,
+                                 hard_sigmoid_alpha, hard_sigmoid_beta);
         break;
       case mojom::Operation::Tag::kLeakyRelu:
         CHECK(leaky_relu_alpha);
@@ -3167,6 +3263,9 @@ struct UnaryOperatorTester {
         CHECK(softplus_steepness);
         builder.BuildSoftplus(input_operand_id, output_operand_id,
                               softplus_steepness.value());
+        break;
+      case mojom::Operation::Tag::kSoftsign:
+        builder.BuildSoftsign(input_operand_id, output_operand_id);
         break;
       case mojom::Operation::Tag::kTanh:
         builder.BuildTanh(input_operand_id, output_operand_id);
@@ -3218,6 +3317,50 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorClamp) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {},
                    .values = {3}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator hardSigmoid.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSigmoid) {
+  {
+    // Test hardSigmoid with default alpha = 0.2 and beta = 0.5.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-1, -2, 0, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 1},
+                   .values = {0.3, 0.1, 0.5, 0.9}}}
+        .Test();
+  }
+  {
+    // Test hardSigmoid for 4-D tensor input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-1, -2, 0, 2}},
+        .hard_sigmoid_alpha = 0.1,
+        .hard_sigmoid_beta = 0.2,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 1},
+                   .values = {0.1, 0, 0.2, 0.4}}}
+        .Test();
+  }
+  {
+    // Test sigmoid for 0-D scalar input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {24}},
+        .hard_sigmoid_alpha = 0.1,
+        .hard_sigmoid_beta = 3,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {1}}}
         .Test();
   }
 }
@@ -3299,27 +3442,24 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftplus) {
         .tag = mojom::Operation::Tag::kSoftplus,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 2, 3},
-                  .values = {-2, -1, 0, 1, 2, 3}},
+                  .values = {-100, -50, 40, 50, 100, 150}},
         .softplus_steepness = 1.0,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 2, 3},
-                   .values = {0.1269280110429726, 0.31326168751822286,
-                              0.6931471805599453, 1.3132616875182228,
-                              2.1269280110429727, 3.048587351573742}}}
+                   .values = {0, 0, 40, 50, 100, 150}}}
         .Test();
   }
   {
-    // Test softplus with steepness = 2.0.
+    // Test softplus with steepness = 5.0.
     UnaryOperatorTester<float>{
         .tag = mojom::Operation::Tag::kSoftplus,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 2, 1},
-                  .values = {-1, 0, 1, 2}},
-        .softplus_steepness = 2.0,
+                  .values = {-10, -8, 8, 10}},
+        .softplus_steepness = 5.0,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 2, 1},
-                   .values = {0.0634640055214863, 0.34657359027997264,
-                              1.0634640055214863, 2.0090749639589047}}}
+                   .values = {0, 0, 8, 10}}}
         .Test();
   }
   {
@@ -3328,11 +3468,11 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftplus) {
         .tag = mojom::Operation::Tag::kSoftplus,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 3, 2, 1},
-                  .values = {-10, -5, 0, 5, 10, 15}},
+                  .values = {-10, -5, 7, 10, 15, 20}},
         .softplus_steepness = 10.0,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 3, 2, 1},
-                   .values = {0, 0, 0.06931471805599453, 5, 10, 15}}}
+                   .values = {0, 0, 7, 10, 15, 20}}}
         .Test();
   }
   {
@@ -3341,12 +3481,41 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftplus) {
         .tag = mojom::Operation::Tag::kSoftplus,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 1, 1},
-                  .values = {0}},
+                  .values = {200}},
         .softplus_steepness = 0.5,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 1, 1},
-                   .values = {1.38629436111989}}}
+                   .values = {200}}}
         .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+  }
+}
+
+// Test building and computing a DML graph with single operator softsign.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftsign) {
+  {
+    // Test softsign with a float32 input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSoftsign,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-9, -7, -4, -3, -1, 0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-0.9, -0.875, -0.8, -0.75, -0.5, 0}}}
+        .Test();
+  }
+  {
+    // Test softsign with a float16 input.
+    UnaryOperatorTester<float16>{
+        .tag = mojom::Operation::Tag::kSoftsign,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = Float16FromFloat32({0, 1, 3, 4, 7, 9})},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 1},
+                   .values =
+                       Float16FromFloat32({0, 0.5, 0.75, 0.8, 0.875, 0.9})}}
+        .Test();
   }
 }
 
@@ -3983,6 +4152,9 @@ struct GatherTester {
 };
 
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
+  // DML_GATHER_OPERATOR_DESC support for 1~8 dimensions was introduced in
+  // DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
     // Test gather with 1-D input, 1-D indices and axis = 0 with data type
     // uint32.
@@ -4051,24 +4223,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 6-D input, 0-D indices and axis = 5 with data type
-    // int32.
-    GatherTester<float, int32_t>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 1, 1, 1, 5},
-                  // [[[[[[1, 2, 3, 4, 5]]]]]] with shape (1, 1, 1, 1, 1, 5)
-                  .values = {1, 2, 3, 4, 5}},
-        .indices = {.type = mojom::Operand::DataType::kInt32,
-                    .dimensions = {},
-                    .values = {3}},
-        .axis = 5,
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 1, 1, 1},
-                   // [[[[[4]]]]] with shape (1, 1, 1, 1, 1)
-                   .values = {4}}}
-        .Test();
-  }
-  {
     // Test gather with 1-D input, 0-D indices and axis = 0 with data type
     // uint32.
     GatherTester<int32_t, uint32_t>{
@@ -4082,6 +4236,81 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .output = {.type = mojom::Operand::DataType::kInt32,
                    .dimensions = {},
                    .values = {3}}}
+        .Test();
+  }
+  {
+    // Test gather with 6-D input, 0-D indices and axis = 0 with data type
+    // int32.
+    GatherTester<float, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 1, 1, 1, 1, 5},
+                  // [[[[[[1 2 3 4  5]]]]]
+                  //  [[[[[6 7 8 9 10]]]]]] with shape (2, 1, 1, 1, 1, 5)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {},
+                    .values = {1}},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1, 5},
+                   // [[[[[6 7 8 9 10]]]]] with shape (1, 1, 1, 1, 5)
+                   .values = {6, 7, 8, 9, 10}}}
+        .Test();
+  }
+  {
+    // Test gather with 3-D input, 0-D indices and axis = 1 with data type
+    // int64.
+    GatherTester<float, int64_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 2},
+                  // [[[ 1  2]
+                  //   [ 3  4]
+                  //   [ 5  6]
+                  //   [ 7  8]]
+                  //  [[ 9 10]
+                  //   [11 12]
+                  //   [13 14]
+                  //   [15 16]]
+                  //  [[17 18]
+                  //   [19 20]
+                  //   [21 22]
+                  //   [23 24]]] with shape (3, 4, 2)
+                  .values = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .indices = {.type = mojom::Operand::DataType::kInt64,
+                    .dimensions = {},
+                    .values = {2}},
+        .axis = 1,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 2},
+                   // [[ 5  6]
+                   //  [13 14]
+                   //  [21 22]] with shape (3, 2)
+                   .values = {5, 6, 13, 14, 21, 22}}}
+        .Test();
+  }
+  {
+    // Test gather with 5-D input, 0-D indices and axis = 4 with data type
+    // int32.
+    GatherTester<int32_t, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kInt32,
+                  .dimensions = {2, 1, 1, 3, 2},
+                  // [[[[[ 1  2]
+                  //     [ 3  4]
+                  //     [ 5  6]]]]
+                  //  [[[[ 7  8]
+                  //     [ 9 10]
+                  //     [11 12]]]]] with shape (2, 1, 1, 3, 2)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {},
+                    .values = {1}},
+        .axis = 4,
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {2, 1, 1, 3},
+                   // [[[[ 2  4  6]]]
+                   //  [[[ 8 10 12]]]] with shape (2, 1, 1, 3)
+                   .values = {2, 4, 6, 8, 10, 12}}}
         .Test();
   }
   {
@@ -4420,17 +4649,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     was_callback_called = false;
     webnn_graph_remote->Compute(
         std::move(named_inputs),
-        base::BindLambdaForTesting(
-            [&](mojom::ComputeResult result,
-                absl::optional<base::flat_map<
-                    std::string, mojo_base::BigBuffer>> named_results) {
-              EXPECT_EQ(result, mojom::ComputeResult::kOk);
-              EXPECT_TRUE(named_results.has_value() &&
-                          !named_results.value().empty());
-              was_callback_called = true;
-              named_outputs = std::move(named_results.value());
-              run_loop_graph_compute.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+          EXPECT_TRUE(result->is_named_outputs());
+          EXPECT_FALSE(result->get_named_outputs().empty());
+          was_callback_called = true;
+          named_outputs = std::move(result->get_named_outputs());
+          run_loop_graph_compute.Quit();
+        }));
     run_loop_graph_compute.Run();
     EXPECT_TRUE(was_callback_called);
 
@@ -4447,17 +4672,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     was_callback_called = false;
     webnn_graph_remote->Compute(
         std::move(named_inputs),
-        base::BindLambdaForTesting(
-            [&](mojom::ComputeResult result,
-                absl::optional<base::flat_map<
-                    std::string, mojo_base::BigBuffer>> named_results) {
-              EXPECT_EQ(result, mojom::ComputeResult::kOk);
-              EXPECT_TRUE(named_results.has_value() &&
-                          !named_results.value().empty());
-              was_callback_called = true;
-              named_outputs = std::move(named_results.value());
-              run_loop_graph_compute.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+          EXPECT_TRUE(result->is_named_outputs());
+          EXPECT_FALSE(result->get_named_outputs().empty());
+          was_callback_called = true;
+          named_outputs = std::move(result->get_named_outputs());
+          run_loop_graph_compute.Quit();
+        }));
     run_loop_graph_compute.Run();
     EXPECT_TRUE(was_callback_called);
 
@@ -4474,17 +4695,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     was_callback_called = false;
     webnn_graph_remote->Compute(
         std::move(named_inputs),
-        base::BindLambdaForTesting(
-            [&](mojom::ComputeResult result,
-                absl::optional<base::flat_map<
-                    std::string, mojo_base::BigBuffer>> named_results) {
-              EXPECT_EQ(result, mojom::ComputeResult::kOk);
-              EXPECT_TRUE(named_results.has_value() &&
-                          !named_results.value().empty());
-              was_callback_called = true;
-              named_outputs = std::move(named_results.value());
-              run_loop_graph_compute.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+          EXPECT_TRUE(result->is_named_outputs());
+          EXPECT_FALSE(result->get_named_outputs().empty());
+          was_callback_called = true;
+          named_outputs = std::move(result->get_named_outputs());
+          run_loop_graph_compute.Quit();
+        }));
     run_loop_graph_compute.Run();
     EXPECT_TRUE(was_callback_called);
 
@@ -5121,6 +5338,101 @@ TEST_F(WebNNGraphDMLImplTest, BuildAddWithReshapedConstantOperand) {
                   named_outputs);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({2, 2, 2, 2}));
+}
+
+// Test building and computing a DML graph whose relu operator only has a
+// constant operand input, as the following topology:
+//    [constant]
+//         |
+//       relu
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeReluWithOnlyConstantInput) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  std::vector<float> constant_data = {-1, 0, 1};
+  uint64_t constant_operand_id =
+      builder.BuildConstant({3}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildRelu(constant_operand_id, output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({0, 0, 1}));
+}
+
+// Test building and computing a DML graph whose add operator only has constant
+// operand inputs, as the following topology:
+//    [constant_a]  [constant_b]
+//               \  /
+//               add
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeAddWithOnlyConstantInputs) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  std::vector<float> constant_a_data = {1, 1, 1, 1};
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_a_data)));
+  std::vector<float> constant_b_data = {2, 2, 2, 2};
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_b_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 constant_a_operand_id, constant_b_operand_id,
+                                 output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({3, 3, 3, 3}));
+}
+
+// Test building and computing a DML graph whose add and mul operators only have
+// constant and intermediate operand inputs, as the following topology:
+//    [constant_a]  [constant_b]
+//               \  /
+//               add    [constant_c]
+//                  \  /
+//                   mul
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeAddAndMulWithOnlyConstantInputs) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  std::vector<float> constant_a_data = {1, 1, 1, 1};
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_a_data)));
+  std::vector<float> constant_b_data = {2, 2, 2, 2};
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_b_data)));
+  uint64_t intermediate_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 constant_a_operand_id, constant_b_operand_id,
+                                 intermediate_operand_id);
+  std::vector<float> constant_c_data = {3, 3, 3, 3};
+  uint64_t constant_c_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_c_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kMul,
+                                 intermediate_operand_id, constant_c_operand_id,
+                                 output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({9, 9, 9, 9}));
 }
 
 // Test building a DML graph in the following topology.

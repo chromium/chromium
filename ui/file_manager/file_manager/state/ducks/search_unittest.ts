@@ -4,7 +4,7 @@
 
 import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {PropStatus, SearchData, SearchLocation, SearchRecency} from '../../externs/ts/state.js';
+import {PropStatus, type SearchData, SearchLocation, SearchRecency} from '../../state/state.js';
 import {getEmptyState, getStore, type Store} from '../store.js';
 
 import {clearSearch, updateSearch} from './search.js';
@@ -25,7 +25,7 @@ export function testSearchAction() {
   };
   assertDeepEquals(
       want, firstState,
-      `1. ${JSON.stringify(want)} != ${JSON.stringify(firstState)}`);
+      `1. ${JSON.stringify(want)} !== ${JSON.stringify(firstState)}`);
 
   // Change the options only.
   const currentOptions = {
@@ -44,7 +44,7 @@ export function testSearchAction() {
   const secondState = store.getState().search;
   assertDeepEquals(
       want, secondState,
-      `2. ${JSON.stringify(want)} != ${JSON.stringify(secondState)}`);
+      `2. ${JSON.stringify(want)} !== ${JSON.stringify(secondState)}`);
   // Check that changing options does not mutate firstState.
   assertFalse(firstState === secondState);
 
@@ -75,7 +75,7 @@ export function testSearchAction() {
   const freshRecencyOptionsState = store.getState().search;
   assertDeepEquals(
       want, freshRecencyOptionsState,
-      `3. ${JSON.stringify(want)} != ${
+      `3. ${JSON.stringify(want)} !== ${
           JSON.stringify(freshRecencyOptionsState)}`);
   // Check that changing options does not mutate firstState.
   assertFalse(unchangedState === freshRecencyOptionsState);
@@ -91,7 +91,7 @@ export function testSearchAction() {
   const thirdState = store.getState().search;
   assertDeepEquals(
       want, thirdState,
-      `4. ${JSON.stringify(want)} != ${JSON.stringify(thirdState)}`);
+      `4. ${JSON.stringify(want)} !== ${JSON.stringify(thirdState)}`);
 
   // Clear search.
   store.dispatch(clearSearch());
@@ -101,5 +101,5 @@ export function testSearchAction() {
   want.options = undefined;
   assertDeepEquals(
       want, fourthState,
-      `${JSON.stringify(want)} != ${JSON.stringify(fourthState)}`);
+      `${JSON.stringify(want)} !== ${JSON.stringify(fourthState)}`);
 }

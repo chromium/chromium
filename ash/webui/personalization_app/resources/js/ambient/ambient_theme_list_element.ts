@@ -5,8 +5,9 @@
 /**
  * @fileoverview The element for displaying a list of ambient themes.
  */
+
+import 'chrome://resources/ash/common/personalization/common.css.js';
 import './ambient_theme_item_element.js';
-import '../../css/common.css.js';
 
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">ABD Uluslararası klavye ile Portekizce</translation>
 <translation id="1629521517399325891">Kullanıcı sertifikası, ağ kimlik doğrulaması için kullanılamıyor.</translation>
 <translation id="1641780993263690097">Çince Pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> dosya çevrimdışı kullanılabilir hale getiriliyor</translation>
 <translation id="164969095109328410">Chrome cihaz</translation>
 <translation id="1661207570040737402">Google Workspace ortak Drive depolama alanınızın tamamını kullandınız.</translation>
 <translation id="1661867754829461514">PIN eksik</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google e-tablosu</translation>
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3486821258960016770">Moğolca</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> hata.</translation>
 <translation id="3509680540198371098">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> öğe senkronize edilmeye hazırlanıyor...</translation>
 <translation id="3522708245912499433">Portekizce</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> dosyanın kopyalanması yönetici politikası tarafından engellendi</translation>
 <translation id="6509122719576673235">Norveççe</translation>
 <translation id="6528513914570774834">Bu cihazın diğer kullanıcılarının bu ağı kullanmalarına izin verin</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> senkronize ediliyor...</translation>
 <translation id="6549689063733911810">En son</translation>
 <translation id="6558280019477628686">Bir hata oluştu. Bazı öğeler silinmemiş olabilir.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" siliniyor...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux uygulamalarına <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="7555339735447658365">Şu anda çevrimdışısınız. Senkronizasyon, internete bağlandığınızda devam edecek.</translation>
 <translation id="7589661784326793847">Bir saniye bekleyin</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> çevrimdışı kullanılabilir hale getiriliyor</translation>
 <translation id="7600126690270271294">Sırpça</translation>
 <translation id="7603724359189955920">Izgaralar</translation>
 <translation id="7627790789328695202">Hata! <ph name="FILE_NAME" /> zaten mevcut. Yeniden adlandırın ve tekrar deneyin.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8147028810663464959">Karakter genişliği Tam</translation>
 <translation id="8151638057146502721">Yapılandır</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 hata.}other{# hata.}}</translation>
 <translation id="8154842056504218462">Tüm girişler seçildi.</translation>
 <translation id="8157684860301034423">Uygulama bilgileri alınamadı.</translation>
 <translation id="8175731104491895765">Fransızca (Belçika)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> için <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="8372369524088641025">Hatalı WEP anahtarı</translation>
 <translation id="8372852072747894550">Yunanca</translation>
+<translation id="8377269993083688872">E-posta düzenleri</translation>
 <translation id="8386903983509584791">Tarama tamamlandı</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> çıkarıldı.</translation>
 <translation id="8395901698320285466">Boyutlar</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Açılacak dosyayı seçin</translation>
 <translation id="8577897833047451336">Hırvatça</translation>
 <translation id="8578308463707544055">Endonezce</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> öğe senkronize ediliyor...</translation>
 <translation id="8600173386174225982">Dosya listesi, küçük resim görünümü olarak değiştirildi.</translation>
 <translation id="8601932370724196034">Crostini resim dosyası</translation>
 <translation id="8609695766746872526">İzlandaca</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Paylaşılan ağlar için proxy'lere izin ver</translation>
 <translation id="8790981080411996443">Bitkileri sulayan bir kişi</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 uyarı.}other{# uyarı.}}</translation>
 <translation id="8808686172382650546">Kedi</translation>
 <translation id="8810671769985673465">Sıkıştırma başarısız oldu, öğe mevcut: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">İspanyolca (İspanya)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı dosya zaten var. Lütfen farklı bir ad seçin.</translation>
 <translation id="9046895021617826162">Bağlantı başarısız oldu</translation>
 <translation id="9065512565307033593">Kimliğinizi doğrulayamazsanız ağ erişiminiz devre dışı bırakılacaktır.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 uyarı.}other{<ph name="COUNT" /> uyarı.}}</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klavye ile Rusça</translation>
 <translation id="9086302186042011942">Senkronize ediliyor</translation>
 <translation id="9099674669267916096">Sayfa sayısı</translation>

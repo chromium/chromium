@@ -183,7 +183,7 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
   void WriteBlobToFile(mojo::PendingRemote<::blink::mojom::Blob> blob,
                        const base::FilePath& path,
                        bool flush_on_write,
-                       absl::optional<base::Time> last_modified,
+                       std::optional<base::Time> last_modified,
                        WriteBlobToFileCallback callback) override {
     writes_.emplace_back(std::move(blob), path);
 

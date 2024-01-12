@@ -44,6 +44,11 @@
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
   }
+
+  /* Hide the default icon element.*/
+  cr-link-row[hide-icon]::part(icon) {
+    display: none;
+  }
 </style>
 <h2 class="page-title">$i18n{settings}</h2>
 <div class="card">
@@ -89,6 +94,16 @@
         change-requires-validation
         on-validate-and-change-pref="changeAccountStorageOptIn_">
     </pref-toggle-button>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser, passwordsOnDevice_)]]"
+      restamp>
+    <cr-link-row class="cr-row" non-clickable label="[[movePasswordsLabel_]]"
+        sub-label="$i18n{movePasswordsInSettingsSubLabel}" hide-icon>
+      <cr-button id="movePasswordsButton" on-click="onMovePasswordsClicked_">
+          $i18n{moveSinglePasswordButton}
+      </cr-button>
+    </cr-link-row>
   </template>
   <cr-link-row id="trustedVaultBanner" class="cr-row"
       label="[[getTrustedVaultBannerTitle_(trustedVaultBannerState_)]]"
@@ -159,3 +174,9 @@
     </div>
   </div>
 </div>
+<template is="dom-if" if="[[showMovePasswordsDialog_]]" restamp>
+  <move-passwords-dialog on-close="onMovePasswordsDialogClose_"
+      id="movePasswordsDialog" passwords="[[passwordsOnDevice_]]"
+      trigger="[[getMovePasswordsDialogTrigger_()]]">
+  </move-passwords-dialog>
+</template>

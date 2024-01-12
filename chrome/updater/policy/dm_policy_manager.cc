@@ -95,22 +95,25 @@ std::string DMPolicyManager::source() const {
 }
 
 std::optional<base::TimeDelta> DMPolicyManager::GetLastCheckPeriod() const {
-  if (!omaha_settings_.has_auto_update_check_period_minutes())
+  if (!omaha_settings_.has_auto_update_check_period_minutes()) {
     return std::nullopt;
+  }
 
   return base::Minutes(omaha_settings_.auto_update_check_period_minutes());
 }
 
 std::optional<UpdatesSuppressedTimes>
 DMPolicyManager::GetUpdatesSuppressedTimes() const {
-  if (!omaha_settings_.has_updates_suppressed())
+  if (!omaha_settings_.has_updates_suppressed()) {
     return std::nullopt;
+  }
 
   const auto& updates_suppressed = omaha_settings_.updates_suppressed();
   if (!updates_suppressed.has_start_hour() ||
       !updates_suppressed.has_start_minute() ||
-      !updates_suppressed.has_duration_min())
+      !updates_suppressed.has_duration_min()) {
     return std::nullopt;
+  }
 
   UpdatesSuppressedTimes suppressed_times;
   suppressed_times.start_hour_ = updates_suppressed.start_hour();
@@ -120,8 +123,9 @@ DMPolicyManager::GetUpdatesSuppressedTimes() const {
 }
 
 std::optional<std::string> DMPolicyManager::GetDownloadPreference() const {
-  if (!omaha_settings_.has_download_preference())
+  if (!omaha_settings_.has_download_preference()) {
     return std::nullopt;
+  }
 
   return omaha_settings_.download_preference();
 }
@@ -135,22 +139,25 @@ std::optional<int> DMPolicyManager::GetPackageCacheExpirationTimeDays() const {
 }
 
 std::optional<std::string> DMPolicyManager::GetProxyMode() const {
-  if (!omaha_settings_.has_proxy_mode())
+  if (!omaha_settings_.has_proxy_mode()) {
     return std::nullopt;
+  }
 
   return omaha_settings_.proxy_mode();
 }
 
 std::optional<std::string> DMPolicyManager::GetProxyPacUrl() const {
-  if (!omaha_settings_.has_proxy_pac_url())
+  if (!omaha_settings_.has_proxy_pac_url()) {
     return std::nullopt;
+  }
 
   return omaha_settings_.proxy_pac_url();
 }
 
 std::optional<std::string> DMPolicyManager::GetProxyServer() const {
-  if (!omaha_settings_.has_proxy_server())
+  if (!omaha_settings_.has_proxy_server()) {
     return std::nullopt;
+  }
 
   return omaha_settings_.proxy_server();
 }
@@ -211,8 +218,9 @@ std::optional<int> DMPolicyManager::GetEffectivePolicyForAppUpdates(
 std::optional<std::string> DMPolicyManager::GetTargetVersionPrefix(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
-  if (!app_settings || !app_settings->has_target_version_prefix())
+  if (!app_settings || !app_settings->has_target_version_prefix()) {
     return std::nullopt;
+  }
 
   return app_settings->target_version_prefix();
 }
@@ -220,8 +228,9 @@ std::optional<std::string> DMPolicyManager::GetTargetVersionPrefix(
 std::optional<std::string> DMPolicyManager::GetTargetChannel(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
-  if (!app_settings || !app_settings->has_target_channel())
+  if (!app_settings || !app_settings->has_target_channel()) {
     return std::nullopt;
+  }
 
   return app_settings->target_channel();
 }
@@ -229,8 +238,9 @@ std::optional<std::string> DMPolicyManager::GetTargetChannel(
 std::optional<bool> DMPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
   const auto* app_settings = GetAppSettings(app_id);
-  if (!app_settings || !app_settings->has_rollback_to_target_version())
+  if (!app_settings || !app_settings->has_rollback_to_target_version()) {
     return std::nullopt;
+  }
 
   return (app_settings->rollback_to_target_version() ==
           ::wireless_android_enterprise_devicemanagement::

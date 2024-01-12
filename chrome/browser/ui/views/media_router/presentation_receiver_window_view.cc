@@ -426,5 +426,5 @@ void PresentationReceiverWindowView::OnFullscreenChanged() {
     Layout();
 }
 
-BEGIN_METADATA(PresentationReceiverWindowView, views::WidgetDelegateView)
+BEGIN_METADATA(PresentationReceiverWindowView)
 END_METADATA

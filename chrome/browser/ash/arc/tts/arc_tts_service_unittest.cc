@@ -109,7 +109,7 @@ class ArcTtsServiceTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<TestableTtsController> tts_controller_;
-  const raw_ptr<ArcTtsService, ExperimentalAsh> tts_service_;
+  const raw_ptr<ArcTtsService> tts_service_;
 };
 
 // Tests that ArcTtsService can be constructed and destructed.

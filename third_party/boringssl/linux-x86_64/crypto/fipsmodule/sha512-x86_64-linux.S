@@ -6,24 +6,13 @@
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
 
-.extern	OPENSSL_ia32cap_P
-.hidden OPENSSL_ia32cap_P
-.globl	sha512_block_data_order
-.hidden sha512_block_data_order
-.type	sha512_block_data_order,@function
+.globl	sha512_block_data_order_nohw
+.hidden sha512_block_data_order_nohw
+.type	sha512_block_data_order_nohw,@function
 .align	16
-sha512_block_data_order:
+sha512_block_data_order_nohw:
 .cfi_startproc	
 _CET_ENDBR
-	leaq	OPENSSL_ia32cap_P(%rip),%r11
-	movl	0(%r11),%r9d
-	movl	4(%r11),%r10d
-	movl	8(%r11),%r11d
-	andl	$1073741824,%r9d
-	andl	$268435968,%r10d
-	orl	%r9d,%r10d
-	cmpl	$1342177792,%r10d
-	je	.Lavx_shortcut
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -1729,7 +1718,7 @@ _CET_ENDBR
 .Lepilogue:
 	ret
 .cfi_endproc	
-.size	sha512_block_data_order,.-sha512_block_data_order
+.size	sha512_block_data_order_nohw,.-sha512_block_data_order_nohw
 .section	.rodata
 .align	64
 .type	K512,@object
@@ -1819,11 +1808,13 @@ K512:
 .quad	0x0001020304050607,0x08090a0b0c0d0e0f
 .byte	83,72,65,53,49,50,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .text	
+.globl	sha512_block_data_order_avx
+.hidden sha512_block_data_order_avx
 .type	sha512_block_data_order_avx,@function
 .align	64
 sha512_block_data_order_avx:
 .cfi_startproc	
-.Lavx_shortcut:
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx

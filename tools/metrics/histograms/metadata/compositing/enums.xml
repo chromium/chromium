@@ -113,6 +113,17 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="ToggleFrameRateCase">
+  <int value="0" label="No video"/>
+  <int value="1" label="Frame rate toggling supported by the platfrom"/>
+  <int value="2"
+      label="Single video with perfect cadence that matches the display"/>
+  <int value="3"
+      label="Single video with perfect cadence that differs from the display"/>
+  <int value="4" label="Single video without perfect cadence"/>
+  <int value="5" label="Multiple videos"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

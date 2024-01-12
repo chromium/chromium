@@ -13,7 +13,6 @@ import java.util.Set;
 
 /** Java implementation of PrivacySandboxBridge for testing. */
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
-    private boolean mIsPrivacySandboxEnabled = true;
     private boolean mIsPrivacySandboxRestricted /* = false*/;
     private boolean mIsRestrictedNoticeEnabled /* = false*/;
 
@@ -60,16 +59,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public boolean isPrivacySandboxEnabled() {
-        return mIsPrivacySandboxEnabled;
-    }
-
-    @Override
-    public boolean isPrivacySandboxManaged() {
-        return false;
-    }
-
-    @Override
     public boolean isPrivacySandboxRestricted() {
         return mIsPrivacySandboxRestricted;
     }
@@ -92,11 +81,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     @Override
     public boolean isPartOfManagedFirstPartySet(String origin) {
         return false;
-    }
-
-    @Override
-    public void setPrivacySandboxEnabled(boolean enabled) {
-        mIsPrivacySandboxEnabled = enabled;
     }
 
     @Override

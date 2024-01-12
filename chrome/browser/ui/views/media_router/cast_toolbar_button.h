@@ -32,9 +32,9 @@ class CastToolbarButton : public ToolbarButton,
                           public IssuesObserver,
                           public MediaRoutesObserver,
                           public MirroringMediaControllerHost::Observer {
- public:
-  METADATA_HEADER(CastToolbarButton);
+  METADATA_HEADER(CastToolbarButton, ToolbarButton)
 
+ public:
   static std::unique_ptr<CastToolbarButton> Create(Browser* browser);
 
   CastToolbarButton(Browser* browser,

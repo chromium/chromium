@@ -380,4 +380,59 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(56), DbPath());
+
+  {
+    // Verify pre-conditions.
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    AttributionStorageSql storage(
+        temp_directory_.GetPath(),
+        std::make_unique<ConfigurableStorageDelegate>());
+
+    // Store a valid report to verify corruption deletion.
+    static_cast<AttributionStorage*>(&storage)->StoreSource(
+        SourceBuilder().Build());
+    static_cast<AttributionStorage*>(&storage)->MaybeCreateAndStoreReport(
+        DefaultTrigger());
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Testing deletion of corrupted reports.
+    size_t rows;
+    static constexpr const char* kTablesExpectOne[] = {"sources", "reports",
+                                                       "source_destinations"};
+    for (const char* table : kTablesExpectOne) {
+      sql::test::CountTableRows(&db, table, &rows);
+      EXPECT_EQ(1u, rows) << table;
+    }
+
+    sql::test::CountTableRows(&db, "dedup_keys", &rows);
+    EXPECT_EQ(0u, rows) << "dedup_keys";
+
+    histograms.ExpectUniqueSample(
+        "Conversions.CorruptSourcesDeletedOnMigration", 1, 1);
+    histograms.ExpectUniqueSample(
+        "Conversions.CorruptReportsDeletedOnMigration", 2, 1);
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

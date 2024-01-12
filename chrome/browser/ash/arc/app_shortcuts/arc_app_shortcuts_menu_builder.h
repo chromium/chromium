@@ -54,7 +54,7 @@ class ArcAppShortcutsMenuBuilder {
       GetMenuModelCallback callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const std::string app_id_;
   const int64_t display_id_;
   const int command_id_first_;

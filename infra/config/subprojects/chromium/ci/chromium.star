@@ -11,6 +11,7 @@ load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 # Take care when changing the GN args of any of these builders to ensure that
 # you do not include a configuration with 'chrome_with_codecs' since these
@@ -82,6 +83,9 @@ ci.builder(
             "strip_debug_info",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     cores = 32,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -137,6 +141,9 @@ ci.builder(
             "arm64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     cores = 32,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -187,6 +194,9 @@ ci.builder(
             "full_symbols",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     builderless = False,
     cores = 32,
     console_view_entry = consoles.console_view_entry(
@@ -226,6 +236,38 @@ ci.builder(
             "release_builder",
             "reclient",
             "use_cups",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "base_unittests",
+            "browser_tests",
+            "chromeos_unittests",
+            "components_unittests",
+            "compositor_unittests",
+            "content_browsertests",
+            "content_unittests",
+            "crypto_unittests",
+            "dbus_unittests",
+            "device_unittests",
+            "gcm_unit_tests",
+            "google_apis_unittests",
+            "gpu_unittests",
+            "interactive_ui_tests",
+            "ipc_tests",
+            "media_unittests",
+            "message_center_unittests",
+            "nacl_loader_unittests",
+            "net_unittests",
+            "ppapi_unittests",
+            "printing_unittests",
+            "remoting_unittests",
+            "sandbox_linux_unittests",
+            "sql_unittests",
+            "ui_base_unittests",
+            "unit_tests",
+            "url_unittests",
+            "views_unittests",
         ],
     ),
     cores = 8,
@@ -273,6 +315,9 @@ ci.builder(
             "reclient",
             "also_build_ash_chrome",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "chrome",
     ),
     cores = 8,
     # TODO(crbug.com/1362019): Turn on when stable.
@@ -331,6 +376,10 @@ ci.builder(
             "release",
         ],
     ),
+    # If tests get added to this builder, it will need to specify os_type chromeos
+    targets = targets.bundle(
+        additional_compile_targets = "chrome",
+    ),
     cores = 32,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -386,6 +435,10 @@ ci.builder(
             "lacros",
             "release",
         ],
+    ),
+    # If tests get added to this builder, it will need to specify os_type chromeos
+    targets = targets.bundle(
+        additional_compile_targets = "chrome",
     ),
     cores = 32,
     tree_closing = True,
@@ -443,6 +496,10 @@ ci.builder(
             "release",
         ],
     ),
+    # If tests get added to this builder, it will need to specify os_type chromeos
+    targets = targets.bundle(
+        additional_compile_targets = "chrome",
+    ),
     cores = 32,
     sheriff_rotations = args.ignore_default(None),
     # TODO(crbug.com/1363272): Enable tree_closing/sheriff when stable.
@@ -490,6 +547,9 @@ ci.builder(
             "updater",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     cores = 32,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -532,6 +592,9 @@ ci.builder(
     gn_args = gn_args.config(
         configs = ["official_optimize", "reclient"],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     builderless = False,
     cores = 32,
     sheriff_rotations = args.ignore_default(None),
@@ -541,7 +604,7 @@ ci.builder(
     ),
     execution_timeout = 7 * time.hour,
     health_spec = health_spec.modified_default({
-        "Unhealthy": struct(
+        "Unhealthy": health_spec.unhealthy_thresholds(
             build_time = struct(
                 p50_mins = 240,
             ),
@@ -572,6 +635,9 @@ ci.builder(
             "mac_strip",
             "minimal_symbols",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
     ),
     cores = 12,
     os = os.MAC_DEFAULT,
@@ -619,6 +685,9 @@ ci.builder(
             "arm64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     cores = 12,
     os = os.MAC_DEFAULT,
     tree_closing = True,
@@ -664,6 +733,9 @@ ci.builder(
             "reclient",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     builderless = False,
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
@@ -699,6 +771,10 @@ ci.builder(
             "reclient",
             "minimal_symbols",
         ],
+    ),
+    targets = targets.bundle(
+        targets = "public_build_scripts",
+        additional_compile_targets = "all",
     ),
     builderless = False,
     cores = 32,
@@ -747,6 +823,9 @@ ci.builder(
             "minimal_symbols",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
+    ),
     builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -783,6 +862,10 @@ ci.builder(
             "x86",
             "minimal_symbols",
         ],
+    ),
+    targets = targets.bundle(
+        targets = "public_build_scripts",
+        additional_compile_targets = "all",
     ),
     builderless = False,
     cores = 32,
@@ -830,6 +913,9 @@ ci.builder(
             "reclient",
             "x86",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "all",
     ),
     builderless = False,
     cores = 32,

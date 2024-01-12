@@ -197,8 +197,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  private:
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       foreign_sessions_;
-  raw_ptr<sync_sessions::SyncedSession, DanglingUntriaged | ExperimentalAsh>
-      local_session_ = nullptr;
+  raw_ptr<sync_sessions::SyncedSession, DanglingUntriaged> local_session_ =
+      nullptr;
 };
 
 }  // namespace
@@ -252,9 +252,9 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   // for: #addr-of
   RAW_PTR_EXCLUSION const sync_sessions::SyncedSession* restored_session_ =
       nullptr;
-  raw_ptr<const DeskTemplate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<const DeskTemplate, DanglingUntriaged>
       restored_floating_workspace_template_ = nullptr;
-  raw_ptr<DeskTemplate, ExperimentalAsh> uploaded_desk_template_ = nullptr;
+  raw_ptr<DeskTemplate> uploaded_desk_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
 };
 
@@ -403,7 +403,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   std::unique_ptr<MockDesksClient> mock_desks_client_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
@@ -1609,7 +1609,7 @@ class FloatingWorkspaceServiceMultiUserTest
   AccountId account_id2_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service2_;
   std::unique_ptr<apps::AppRegistryCache> cache2_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile2_ = nullptr;
+  raw_ptr<TestingProfile> profile2_ = nullptr;
 };
 
 TEST_F(FloatingWorkspaceServiceMultiUserTest, TwoUserLoggedInAndCaptureStops) {

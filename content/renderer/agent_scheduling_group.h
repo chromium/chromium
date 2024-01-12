@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_features.h"
 #include "ipc/ipc.mojom.h"
@@ -40,6 +41,7 @@ class WebView;
 }  // namespace blink
 
 namespace content {
+class RenderFrameImpl;
 class RenderThread;
 
 // Renderer-side representation of AgentSchedulingGroup, used for communication
@@ -66,12 +68,13 @@ class CONTENT_EXPORT AgentSchedulingGroup
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&) = delete;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   bool Send(IPC::Message* message);
-  void AddRoute(int32_t routing_id, IPC::Listener* listener);
+#endif
   void AddFrameRoute(int32_t routing_id,
-                     IPC::Listener* listener,
+                     RenderFrameImpl* render_frame,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  void RemoveRoute(int32_t routing_id);
+  void RemoveFrameRoute(int32_t routing_id);
   void DidUnloadRenderFrame(const blink::LocalFrameToken& frame_token);
 
   mojom::RouteProvider* GetRemoteRouteProvider();
@@ -121,15 +124,15 @@ class CONTENT_EXPORT AgentSchedulingGroup
       mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
           receiver) override;
 
-  IPC::Listener* GetListener(int32_t routing_id);
+  RenderFrameImpl* GetListener(int32_t routing_id);
 
   // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
   // `features::MBIMode::kEnabledPerRenderProcessHost` or
   // `features::MBIMode::kEnabledPerSiteInstance` mode.
   std::unique_ptr<IPC::SyncChannel> channel_;
 
-  // Map of registered IPC listeners.
-  base::IDMap<IPC::Listener*> listener_map_;
+  // Map of registered RenderFrames.
+  base::IDMap<RenderFrameImpl*> listener_map_;
 
   // A dedicated scheduler for this AgentSchedulingGroup.
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>

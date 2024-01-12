@@ -25,6 +25,7 @@ namespace blink {
 class ClipboardWriter;
 class ScriptPromiseResolver;
 class LocalFrame;
+class ExceptionState;
 class ExecutionContext;
 class ClipboardUnsanitizedFormats;
 
@@ -44,29 +45,36 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // https://w3c.github.io/clipboard-apis/#dom-clipboardunsanitizedformats-unsanitized
   static ScriptPromise CreateForRead(ExecutionContext* execution_context,
                                      ScriptState* script_state,
-                                     ClipboardUnsanitizedFormats* formats);
+                                     ClipboardUnsanitizedFormats* formats,
+                                     ExceptionState& exception_state);
 
   // Creates a promise for reading plain text from the clipboard.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-readtext
   static ScriptPromise CreateForReadText(ExecutionContext* execution_context,
-                                         ScriptState* script_state);
+                                         ScriptState* script_state,
+                                         ExceptionState& exception_state);
 
   // Creates a promise for writing supported MIME types to the clipboard.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-write
   static ScriptPromise CreateForWrite(
       ExecutionContext* execution_context,
       ScriptState* script_state,
-      const HeapVector<Member<ClipboardItem>>& items);
+      const HeapVector<Member<ClipboardItem>>& items,
+      ExceptionState& exception_state);
 
   // Creates a promise for writing text to the clipboard.
   // `text`: The text to be written to the clipboard.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-writetext
   static ScriptPromise CreateForWriteText(ExecutionContext* execution_context,
                                           ScriptState* script_state,
-                                          const String& text);
+                                          const String& text,
+                                          ExceptionState& exception_state);
 
+  // Use one of the above factories to construct. This ctor is public for
+  // `MakeGarbageCollected<>`.
   ClipboardPromise(ExecutionContext* execution_context,
-                   ScriptState* script_state);
+                   ScriptState* script_state,
+                   ExceptionState& exception_state);
   ClipboardPromise(const ClipboardPromise&) = delete;
   ClipboardPromise& operator=(const ClipboardPromise&) = delete;
   ~ClipboardPromise() override;
@@ -91,6 +99,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
 
  private:
   class BlobPromiseResolverFunction;
+
   void HandlePromiseBlobsWrite(HeapVector<Member<Blob>>* blob_list);
   void WriteBlobs(HeapVector<Member<Blob>>* blob_list);
 
@@ -127,21 +136,23 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // the remote connection fails.
   mojom::blink::PermissionService* GetPermissionService();
 
-  // Requests the specified permission from the `PermissionService`.
+  // Validates that the action may proceed, including but not limited to
+  // requesting permissions from the `PermissionService` as necessary.
+  // On failure, will reject via `script_promise_resolver_`.
+  //
   // `permission`: The permission to request.
   // `will_be_sanitized`: Whether the data will be sanitized.
   // `callback`: The callback function to be called with the permission status.
-  void RequestPermission(
+  void ValidatePreconditions(
       mojom::blink::PermissionName permission,
       bool will_be_sanitized,
-      base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback);
+      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetClipboardTaskRunner();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
-  Member<ScriptState> script_state_;
   Member<ScriptPromiseResolver> script_promise_resolver_;
   Member<ClipboardWriter> clipboard_writer_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

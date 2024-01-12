@@ -43,7 +43,7 @@ class EnumHistogramChecker {
 
   // When not NULL, expected values are compared with actual values
   // minus base.
-  raw_ptr<base::HistogramSamples, ExperimentalAsh> base_;
+  raw_ptr<base::HistogramSamples> base_;
 };
 
 }  // namespace ash

@@ -17,9 +17,8 @@ class CommandLine;
 namespace component_updater {
 
 scoped_refptr<update_client::Configurator>
-MakeChromeComponentUpdaterConfigurator(
-    const base::CommandLine* cmdline,
-    PrefService* pref_service);
+MakeChromeComponentUpdaterConfigurator(const base::CommandLine* cmdline,
+                                       PrefService* pref_service);
 
 }  // namespace component_updater
 

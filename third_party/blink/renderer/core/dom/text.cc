@@ -269,7 +269,7 @@ static inline bool CanHaveWhitespaceChildren(
 
     return style.ShouldPreserveBreaks() ||
            !EndsWithWhitespace(
-               To<LayoutText>(context.previous_in_flow)->GetText());
+               To<LayoutText>(context.previous_in_flow)->TransformedText());
   }
   return true;
 }
@@ -314,7 +314,7 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
 
   if (context.previous_in_flow->IsText()) {
     return !EndsWithWhitespace(
-        To<LayoutText>(context.previous_in_flow)->GetText());
+        To<LayoutText>(context.previous_in_flow)->TransformedText());
   }
 
   return context.previous_in_flow->IsInline() &&
@@ -457,7 +457,7 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   if (text_layout_object->IsSecure())
     return false;
   if (!FirstLetterPseudoElement::FirstLetterLength(
-          text_layout_object->GetText()) &&
+          text_layout_object->TransformedText()) &&
       FirstLetterPseudoElement::FirstLetterLength(text_node.data())) {
     // We did not previously apply ::first-letter styles to this |text_node|,
     // and if there was no first formatted letter, but now is, we may need to

@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "media/base/decoder.h"
 #include "media/base/video_decoder_config.h"
-#include "media/filters/resolution_monitor.h"
+#include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder.h"
@@ -65,7 +65,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   static std::unique_ptr<RTCVideoDecoderAdapter> Create(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       const webrtc::SdpVideoFormat& format,
-      std::unique_ptr<media::ResolutionMonitor> resolution_monitor = nullptr);
+      std::unique_ptr<ResolutionMonitor> resolution_monitor = nullptr);
 
   RTCVideoDecoderAdapter(const RTCVideoDecoderAdapter&) = delete;
   RTCVideoDecoderAdapter& operator=(const RTCVideoDecoderAdapter&) = delete;
@@ -108,10 +108,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   };
 
   // Called on the worker thread.
-  RTCVideoDecoderAdapter(
-      media::GpuVideoAcceleratorFactories* gpu_factories,
-      const media::VideoDecoderConfig& config,
-      std::unique_ptr<media::ResolutionMonitor> resolution_monitor);
+  RTCVideoDecoderAdapter(media::GpuVideoAcceleratorFactories* gpu_factories,
+                         const media::VideoDecoderConfig& config,
+                         std::unique_ptr<ResolutionMonitor> resolution_monitor);
 
   bool InitializeSync(const media::VideoDecoderConfig& config);
   absl::optional<DecodeResult> DecodeInternal(
@@ -130,7 +129,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Construction parameters.
   media::VideoDecoderConfig config_;
 
-  const std::unique_ptr<media::ResolutionMonitor> resolution_monitor_
+  const std::unique_ptr<ResolutionMonitor> resolution_monitor_
       GUARDED_BY_CONTEXT(decoding_sequence_checker_);
 
   // Decoding thread members.

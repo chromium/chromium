@@ -19,7 +19,7 @@ rust_static_library("test_aliased_deps") {
   aliased_deps = {
     # Unfortunately we have to know the `__rlib` suffix which is attached to the
     # actual rlib in `rust_static_library()`.
-    build_rust_tests_test_aliased_deps_other_name = ":real_name__rlib"
+    other_name = ":real_name__rlib"
   }
   build_native_rust_unit_tests = true
 }

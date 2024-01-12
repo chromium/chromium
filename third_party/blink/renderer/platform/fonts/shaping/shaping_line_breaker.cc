@@ -96,10 +96,10 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
     return {start};
   }
   if (UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
+      UNLIKELY(ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
       // TODO(crbug.com/1463891): `MaybeOpen` is likely to hit the performance
       // for non-CJK documents. We should try harder not to require reshaping.
-      UNLIKELY(HanKerning::MaybeOpen(GetText()[start])) &&
-      text_spacing_trim_ == TextSpacingTrim::kSpaceFirst) {
+      UNLIKELY(HanKerning::MaybeOpen(GetText()[start]))) {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply
     // `HanKerning` if applicable. Note, it may not actually apply, if the font
@@ -274,18 +274,32 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   const bool is_break_after_any_space =
       break_iterator_->BreakSpace() == BreakSpaceType::kAfterEverySpace;
 
-  // Compute if the start is safe-to-break.
-  const EdgeOffset first_safe = FirstSafeOffset(start);
-  DCHECK_GE(first_safe.offset, start);
-
   // The start position in the original shape results.
   const float start_position =
       result_->CachedPositionForOffset(start - range_start);
 
+  // If the start offset is not at a safe-to-break boundary, the content between
+  // the start and the next safe-to-break boundary needs to be reshaped.
+  scoped_refptr<const ShapeResult> line_start_result;
+  const TextDirection direction = result_->Direction();
+  const EdgeOffset first_safe = FirstSafeOffset(start);
+  DCHECK_GE(first_safe.offset, start);
+  if (UNLIKELY(first_safe.offset != start)) {
+    const float first_safe_position =
+        result_->CachedPositionForOffset(first_safe.offset - range_start);
+    line_start_result = Shape(start, first_safe.offset,
+                              {.han_kerning_start = first_safe.han_kerning});
+    // Adjust the available space to take the reshaping into account.
+    const LayoutUnit old_width = LayoutUnit::FromFloatCeil(
+        FlipRtl(first_safe_position - start_position, direction));
+    if (const LayoutUnit diff = old_width - line_start_result->SnappedWidth()) {
+      available_space = std::max(available_space + diff, LayoutUnit());
+    }
+  }
+
   // Find a candidate break opportunity by identifying the last offset before
   // exceeding the available space and the determine the closest valid break
   // preceding the candidate.
-  const TextDirection direction = result_->Direction();
   const float end_position =
       start_position + FlipRtl(available_space, direction);
   DCHECK_GE(FlipRtl(LayoutUnit::FromFloatCeil(end_position - start_position),
@@ -424,25 +438,16 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   }
   CheckBreakOffset(break_opportunity.offset, start, range_end);
 
-  // If the start offset is not at a safe-to-break boundary the content between
-  // the start and the next safe-to-break boundary needs to be reshaped and the
-  // available space adjusted to take the reshaping into account.
-  scoped_refptr<const ShapeResult> line_start_result;
-  if (first_safe.offset != start) {
-    const ShapeOptions options{.han_kerning_start = first_safe.han_kerning};
-    if (first_safe.offset >= break_opportunity.offset) {
-      // There is no safe-to-break, reshape the whole range.
-      SetBreakOffset(break_opportunity, text, result_out);
-      CheckBreakOffset(result_out->break_offset, start, range_end);
-      return ShapeResultView::Create(
-          Shape(start, break_opportunity.offset, options).get());
-    }
-    float first_safe_position =
-        result_->CachedPositionForOffset(first_safe.offset - range_start);
-    LayoutUnit original_width = LayoutUnit::FromFloatCeil(
-        FlipRtl(first_safe_position - start_position, direction));
-    line_start_result = Shape(start, first_safe.offset, options);
-    available_space += line_start_result->SnappedWidth() - original_width;
+  // If there are no safe-to-break between the start and the break opportunity,
+  // reshape the whole range.
+  if (UNLIKELY(first_safe.offset >= break_opportunity.offset)) {
+    DCHECK_NE(first_safe.offset, start);
+    SetBreakOffset(break_opportunity, text, result_out);
+    CheckBreakOffset(result_out->break_offset, start, range_end);
+    return ShapeResultView::Create(
+        Shape(start, break_opportunity.offset,
+              {.han_kerning_start = first_safe.han_kerning})
+            .get());
   }
   DCHECK_GE(first_safe.offset, start);
   DCHECK_LE(first_safe.offset, break_opportunity.offset);

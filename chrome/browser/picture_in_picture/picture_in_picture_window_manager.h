@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
@@ -194,6 +195,12 @@ class PictureInPictureWindowManager {
       content::PictureInPictureWindowController* controller) {
     pip_window_controller_ = controller;
   }
+
+  // Return true if and only if the URL is can be used as an opener.  This check
+  // allows us to explicitly opt-in opener URL types, to ensure that the pip
+  // window's title bar is formatted properly.  Allowing any secure context, for
+  // example, might result in a misleading window title.
+  static bool IsSupportedForDocumentPictureInPicture(const GURL& url);
 
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;

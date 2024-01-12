@@ -68,8 +68,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     const std::optional<base::FilePath> path =
         GetInstallDirectory(updater_scope_);
     ASSERT_TRUE(path);
-    if (path)
+    if (path) {
       updater::test::CopyLog(*path);
+    }
   }
 
   void Clean() const override { RunCommand("clean"); }
@@ -78,16 +79,20 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void Install() const override { RunCommand("install"); }
 
-  void InstallUpdaterAndApp(
-      const std::string& app_id,
-      const bool is_silent_install,
-      const std::string& tag,
-      const std::string& child_window_text_to_find) const override {
-    RunCommand("install_updater_and_app",
-               {Param("app_id", app_id),
-                Param("is_silent_install", BoolToString(is_silent_install)),
-                Param("tag", tag),
-                Param("child_window_text_to_find", child_window_text_to_find)});
+  void InstallUpdaterAndApp(const std::string& app_id,
+                            const bool is_silent_install,
+                            const std::string& tag,
+                            const std::string& child_window_text_to_find,
+                            const bool always_launch_cmd) const override {
+    RunCommand(
+        "install_updater_and_app",
+        {
+            Param("app_id", app_id),
+            Param("is_silent_install", BoolToString(is_silent_install)),
+            Param("tag", tag),
+            Param("child_window_text_to_find", child_window_text_to_find),
+            Param("always_launch_cmd", BoolToString(always_launch_cmd)),
+        });
   }
 
   void ExpectInstalled() const override { RunCommand("expect_installed"); }
@@ -419,7 +424,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void DeleteLegacyUpdater() const override {
     RunCommand("delete_legacy_updater");
   }
-#endif  // BUILDFLAG(IS_WIN)
+
+  void ExpectPrepareToRunBundleSuccess(
+      const base::FilePath& bundle_path) const override {
+    RunCommand("expect_prepare_to_run_bundle_success",
+               {Param("bundle_path", bundle_path.MaybeAsASCII())});
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   void ExpectLegacyUpdaterMigrated() const override {
     RunCommand("expect_legacy_updater_migrated");

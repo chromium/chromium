@@ -61,8 +61,8 @@ class CertIterator {
   void StopIteration(chromeos::platform_keys::Status status);
 
   const CertScope cert_scope_ = CertScope::kDevice;
-  const raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  const raw_ptr<platform_keys::PlatformKeysService> platform_keys_service_ =
+      nullptr;
 
   size_t wait_counter_ = 0;
   CertIteratorForEachCallback for_each_callback_;
@@ -151,8 +151,8 @@ class CertDeleter {
   void ReturnStatus(chromeos::platform_keys::Status status);
 
   const CertScope cert_scope_ = CertScope::kDevice;
-  const raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  const raw_ptr<platform_keys::PlatformKeysService> platform_keys_service_ =
+      nullptr;
 
   CertIterator iterator_;
   bool iteration_finished_ = false;

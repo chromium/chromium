@@ -121,6 +121,7 @@ PASS childWindow.onmouseout is null
 PASS childWindow.onmouseover is null
 PASS childWindow.onmouseup is null
 PASS childWindow.onmousewheel is null
+PASS childWindow.onmove is null
 PASS childWindow.onoffline is null
 PASS childWindow.ononline is null
 PASS childWindow.onoverscroll is null

@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">右にパン</translation>
 <translation id="3081586908890909590">動画の撮影に切り替え</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">「<ph name="WIFINAME" />」に参加</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3240426699337459095">リンクをコピーしました</translation>
 <translation id="3354465018370944241">写真の設定</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">写真のアスペクト比</translation>
 <translation id="5057360777601936059">カメラを使用できません。
         カメラが正しく接続されているかご確認ください。</translation>
+<translation id="5157591164390831335">URL が検出されました。</translation>
 <translation id="5163387177077603948">右側に移動しています</translation>
 <translation id="5235304959032763950">16 対 9</translation>
 <translation id="5266635337630551423">ドキュメントの左上の角</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">カメラアプリに関するフィードバックをお送りいただきありがとうございます。
 
 画質に関するフィードバックの場合は、サンプルの写真や動画を添付し、問題の内容を詳しくご説明ください（写真が暗すぎる、ピントが合わないなど）。</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> に参加</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6617916774429601017">すべての解像度を表示</translation>
 <translation id="6631515515009660915">ミラーをオフにする</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">マイクのミュートを切り替えます。ミュートはオンです</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8732462232047530626">メタデータのプレビュー</translation>
+<translation id="874854738381978209">Wi-Fi ネットワークが検出されました。</translation>
 <translation id="8815966864175525708">ポートレート写真の撮影に切り替え</translation>
 <translation id="8828441885228359828">録画を再開</translation>
 <translation id="8870695351537079478">録画を開始できません</translation>

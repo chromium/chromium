@@ -200,34 +200,6 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
-    @DisabledTest(message = "Flaky, see crbug.com/1469393")
-    public void groupTabSuggestionReviewedAndAccepted() {
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-
-        enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
-        reviewSuggestion();
-        acceptSuggestion(R.id.tab_list_editor_group_menu_item);
-
-        onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs grouped")));
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
-    @DisabledTest(message = "crbug.com/1257781")
-    public void groupTabSuggestionReviewedAndDismissed() {
-        CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
-
-        enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
-        reviewSuggestion();
-        dismissSuggestion(true);
-
-        onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
     @CommandLineFlags.Add({
         BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM + ENABLE_CLOSE_SUGGESTION_PARAM
     })

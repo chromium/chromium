@@ -132,6 +132,21 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
                     feature_engagement::kMaxStoragePeriod));
   }
 
+  if (kIPHiOSDockingPromoFeature.name == feature->name) {
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->used = EventConfig("docking_promo_used", Comparator(EQUAL, 0),
+                               feature_engagement::kMaxStoragePeriod,
+                               feature_engagement::kMaxStoragePeriod);
+    config->trigger = EventConfig("docking_promo_trigger", Comparator(EQUAL, 0),
+                                  feature_engagement::kMaxStoragePeriod,
+                                  feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
   // All standard promos can only be shown once per month.
   if (config) {
     config->event_configs.insert(
@@ -257,6 +272,19 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     // has to make.
     config->trigger =
         EventConfig("choice_screen_trigger", Comparator(ANY, 0), 365, 365);
+    return config;
+  }
+
+  if (kIPHiOSDockingPromoRemindMeLaterFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("docking_promo_remind_me_later_used",
+                               Comparator(ANY, 0), 3650, 3650);
+    // Should not be subject to impression limits.
+    config->trigger = EventConfig("docking_promo_remind_me_later_trigger",
+                                  Comparator(ANY, 0), 3650, 3650);
     return config;
   }
 

@@ -42,15 +42,9 @@ class SnapshotID;
 // `callback` will be called with nil.
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback;
 
-// Asynchronously generates a new snapshot with WebKit-based snapshot API,
-// updates the snapshot storage, and runs a callback with the new snapshot
-// image. It is an error to call this method if the web state is showing
-// anything other (e.g., native content) than a web view.
-- (void)updateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
-
-// Generates a new snapshot with UIKit-based snapshot API, updates the snapshot
-// storage, and runs a callback with the new snapshot image.
-- (void)updateUIViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
+// Generates a new snapshot, updates the snapshot storage, and runs a callback
+// with the new snapshot image.
+- (void)updateSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
 // Generates and returns a new snapshot image with UIKit-based snapshot API.
 // This does not update the snapshot storage.

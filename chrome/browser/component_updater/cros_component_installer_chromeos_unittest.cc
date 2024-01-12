@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+
 #include <map>
 #include <utility>
 
@@ -22,7 +24,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -146,8 +147,9 @@ class TestUpdater : public OnDemandUpdater {
                     const base::FilePath& unpacked_path,
                     std::map<std::string, Callback>* updates) {
     auto it = updates->find(name);
-    if (it == updates->end())
+    if (it == updates->end()) {
       return false;
+    }
 
     Callback callback = std::move(it->second);
     updates->erase(it);
@@ -159,8 +161,9 @@ class TestUpdater : public OnDemandUpdater {
 
     scoped_refptr<update_client::CrxInstaller> installer =
         component_installers_[name];
-    if (!installer)
+    if (!installer) {
       return false;
+    }
 
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
@@ -330,8 +333,9 @@ class CrOSComponentInstallerTest : public testing::Test {
       const std::string& name,
       const std::string& version,
       const std::string& min_env_version) {
-    if (!base::CreateDirectory(path))
+    if (!base::CreateDirectory(path)) {
       return absl::nullopt;
+    }
 
     static constexpr char kManifestTemplate[] = R"({
         "name": "%s",
@@ -341,8 +345,9 @@ class CrOSComponentInstallerTest : public testing::Test {
     const std::string manifest =
         base::StringPrintf(kManifestTemplate, name.c_str(), version.c_str(),
                            min_env_version.c_str());
-    if (!base::WriteFile(path.AppendASCII("manifest.json"), manifest))
+    if (!base::WriteFile(path.AppendASCII("manifest.json"), manifest)) {
       return absl::nullopt;
+    }
 
     return absl::make_optional(path);
   }
@@ -352,8 +357,7 @@ class CrOSComponentInstallerTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_;
 
   // Image loader client that is active during the test.
-  raw_ptr<ash::FakeImageLoaderClient, ExperimentalAsh> image_loader_client_ =
-      nullptr;
+  raw_ptr<ash::FakeImageLoaderClient> image_loader_client_ = nullptr;
 
   base::ScopedTempDir base_component_paths_;
 

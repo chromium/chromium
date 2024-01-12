@@ -54,6 +54,9 @@ void AddAllowedPolicyTypes(em::DeviceRegisterRequest::Type type,
     case em::DeviceRegisterRequest::ANDROID_BROWSER:
       allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
       break;
+    case em::DeviceRegisterRequest::IOS_BROWSER:
+      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
+      break;
     default:
       NOTREACHED();
   }

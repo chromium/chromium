@@ -192,13 +192,11 @@ class VideoCaptureControllerTest
         media::VideoCaptureBufferType::kSharedMemory, kPoolSize);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
-        media::VideoCaptureBufferType::kSharedMemory,
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
         buffer_pool_, media::VideoCaptureJpegDecoderFactoryCB());
 #else
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
-        media::VideoCaptureBufferType::kSharedMemory,
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
         buffer_pool_,

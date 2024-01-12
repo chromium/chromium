@@ -1395,9 +1395,17 @@ void TabDragController::Attach(TabDragContext* attached_context,
     // Register a new group if necessary, so that the insertion index in the
     // tab strip can be calculated based on the group membership of tabs.
     if (header_drag_) {
+      const tab_groups::TabGroupVisualData og_visual_data =
+          source_view_drag_data()->tab_group_data.value().group_visual_data;
+      // Create the new group already un-collapsed, regardless of whether the
+      // original group started out collapsed or not.
+      const tab_groups::TabGroupVisualData new_visual_data =
+          tab_groups::TabGroupVisualData(og_visual_data.title(),
+                                         og_visual_data.color(),
+                                         /*is_collapsed=*/false);
+
       attached_context_->GetTabStripModel()->group_model()->AddTabGroup(
-          group_.value(),
-          source_view_drag_data()->tab_group_data.value().group_visual_data);
+          group_.value(), new_visual_data);
     }
 
     // Insert at any valid index in the tabstrip. We'll fix up the insertion

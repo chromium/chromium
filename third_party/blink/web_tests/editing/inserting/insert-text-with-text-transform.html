@@ -1,0 +1,23 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+const ATTRIBUTES = 'contenteditable lang="lt" style="text-transform:uppercase"';
+
+selection_test(
+  `<div ${ATTRIBUTES}>|r\u00DFt</div>`,
+  selection => {
+    selection.document.execCommand('insertText', false, 'X');
+    selection.document.execCommand('selectAll', false, '');
+    assert_equals(selection.toString(), 'XRSST');
+  },
+  `<div ${ATTRIBUTES}>^Xr\u00DFt|</div>`,
+  'Inserting text with an expanding text-transform should not break OffetMapping');
+
+selection_test(
+  `<div ${ATTRIBUTES}>|i\u0307bar</div>`,
+  'insertText X',
+  `<div ${ATTRIBUTES}>X|i\u0307bar</div>`,
+  'Inserting text with a shrinking text-transform should not crash');
+</script>

@@ -114,6 +114,9 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
       const base::Value& value,
       enterprise_management::ChromeDeviceSettingsProto& settings);
 
+  void SetPrivateKeyForTesting(
+      scoped_refptr<ownership::PrivateKey> private_key);
+
  protected:
   OwnerSettingsServiceAsh(
       DeviceSettingsService* device_settings_service,
@@ -175,10 +178,10 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   void MigrateFeatureFlags(
       enterprise_management::ChromeDeviceSettingsProto* settings);
 
-  raw_ptr<DeviceSettingsService, ExperimentalAsh> device_settings_service_;
+  raw_ptr<DeviceSettingsService> device_settings_service_;
 
   // Profile this service instance belongs to.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // User ID this service instance belongs to.
   std::string user_id_;

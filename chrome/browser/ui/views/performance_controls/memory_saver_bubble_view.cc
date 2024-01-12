@@ -20,6 +20,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
@@ -73,7 +74,7 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
   } else {
     button_string_id = IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST;
     callback = base::BindOnce(
-        &MemorySaverBubbleDelegate::OnAddSiteToExceptionsListClicked,
+        &MemorySaverBubbleDelegate::OnAddSiteToTabDiscardExceptionsListClicked,
         base::Unretained(bubble_delegate));
   }
   dialog_model_builder->AddCancelButton(
@@ -167,8 +168,9 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements) &&
       !is_guest && !profile->IsIncognitoProfile()) {
-    const bool is_site_excluded = memory_saver::IsSiteInExceptionsList(
-        profile->GetPrefs(), web_contents->GetURL().host());
+    const bool is_site_excluded = performance_manager::user_tuning::prefs::
+        IsSiteInTabDiscardExceptionsList(profile->GetPrefs(),
+                                         web_contents->GetURL().host());
     AddCancelButton(&dialog_model_builder, bubble_delegate, is_site_excluded);
   }
 

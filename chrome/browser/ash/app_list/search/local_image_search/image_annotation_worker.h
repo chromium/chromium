@@ -107,8 +107,7 @@ class ImageAnnotationWorker {
 
   // AnnotationStorage owns this ImageAnnotationWorker. All the methods must
   // be called from the main sequence.
-  raw_ptr<AnnotationStorage, DanglingUntriaged | ExperimentalAsh>
-      annotation_storage_;
+  raw_ptr<AnnotationStorage, DanglingUntriaged> annotation_storage_;
 
   // ML models used as DLCs.
   ImageContentAnnotator image_content_annotator_;

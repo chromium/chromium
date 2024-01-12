@@ -34,8 +34,7 @@ class FakePlatformDelegateImpl : public assistant::FakePlatformDelegate {
   }
 
  private:
-  const raw_ptr<device::TestWakeLockProvider, ExperimentalAsh>
-      wake_lock_provider_;
+  const raw_ptr<device::TestWakeLockProvider> wake_lock_provider_;
 };
 
 }  // namespace

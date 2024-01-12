@@ -45,6 +45,10 @@ dictionary WebPrinterAttributes {
   WebPrintColorMode printColorModeDefault;
   sequence<WebPrintColorMode> printColorModeSupported;
 
+  WebPrinterState printerState;
+  DOMString printerStateMessage;
+  sequence<WebPrinterStateReason> printerStateReasons;
+
   WebPrintQuality printQualityDefault;
   sequence<WebPrintQuality> printQualitySupported;
 

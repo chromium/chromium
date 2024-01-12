@@ -31,6 +31,9 @@ struct RegistrationMethod {
   bool (*func)(JNIEnv* env);
 };
 
+using LogFatalCallback = void (*)(const char* message);
+
+BASE_EXPORT extern LogFatalCallback g_log_fatal_callback_for_testing;
 BASE_EXPORT extern const char kUnableToGetStackTraceMessage[];
 BASE_EXPORT extern const char kReetrantOutOfMemoryMessage[];
 BASE_EXPORT extern const char kReetrantExceptionMessage[];
@@ -139,11 +142,15 @@ class BASE_EXPORT MethodID {
 };
 
 // Returns true if an exception is pending in the provided JNIEnv*.
-BASE_EXPORT bool HasException(JNIEnv* env);
+inline bool HasException(JNIEnv* env) {
+  return jni_zero::HasException(env);
+}
 
 // If an exception is pending in the provided JNIEnv*, this function clears it
 // and returns true.
-BASE_EXPORT bool ClearException(JNIEnv* env);
+inline bool ClearException(JNIEnv* env) {
+  return jni_zero::ClearException(env);
+}
 
 // This function will call CHECK() macro if there's any pending exception.
 BASE_EXPORT void CheckException(JNIEnv* env);

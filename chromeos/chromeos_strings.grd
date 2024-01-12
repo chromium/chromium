@@ -339,11 +339,17 @@
       <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
         Enter custom prompt such as "write a thank you note"
       </message>
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_SHORT_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
+        Enter custom prompt
+      </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
         Rewrite
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
         Enter custom rewrite prompt such as "sound more confident"
+      </message>
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_SHORT_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
+        Enter custom rewrite prompt
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
         Settings
@@ -2480,6 +2486,24 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE" desc="Label for auto color mode setting">
           Auto
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER" translateable="false" desc="In Personalization>Wallpaper, the warning text that tells users that system geolocation permission is needed for auto theme mode scheduling">
+          Current schedule is set to 6am - 6pm. To automatically update the dark mode schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" translateable="false" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
+          Weather is not displayed because it doesn't know your location. To display local weather, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_TITLE" translateable="false" desc="Title for the dialog, that enables users to grant the system geolocation permission for system services. This pop-up is used in few places (e.g. Automatic Time Zone) to let users conveniently enable geolocation and make the underlying feature fucntional, without navigating to the settings page.">
+          Allow system services to use your location?
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_BODY" translateable="false" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
+          This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
+          Allow
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CANCEL_BUTTON" translateable="false"  desc="Label of the cancel button, that dismisses the geolocation dialog.">
+          Cancel
+        </message>
         <message name="IDS_PERSONALIZATION_APP_AVATAR_LABEL" desc="Label for the Avatar page in Personalization app.">
           Avatar
         </message>
@@ -3039,6 +3063,9 @@
         </message>
 
         <!-- Sea Pen UI -->
+        <message name="IDS_SEA_PEN_LABEL" desc="Label for the Create with AI feature.">
+          Create with AI
+        </message>
         <message name="IDS_SEA_PEN_POWERED_BY_GOOGLE" desc="Subheading describing that Google made these wallpapers.">
           Powered by Google
         </message>
@@ -3046,7 +3073,7 @@
           Use a template
         </message>
         <message name="IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING" desc="Section heading for recently-created wallpapers.">
-          Recent wallpapers
+          Recent wallpapers powered by Google AI
         </message>
         <message name="IDS_SEA_PEN_INSPIRE_ME_BUTTON" desc="Button that randomizes selected options.">
           Inspire me
@@ -3058,13 +3085,13 @@
           Recreate
         </message>
         <message name="IDS_SEA_PEN_WALLPAPER_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
-          Wallpaper powered by Google
+          Wallpaper powered by Google AI
         </message>
         <message name="IDS_SEA_PEN_DELETE_WALLPAPER" desc="Menu item that deletes a wallpaper.">
           Delete
         </message>
         <message name="IDS_SEA_PEN_CREATE_MORE" desc="Menu item that, when clicked, will allow users to create more wallpapers like the selected wallpaper.">
-          Create more
+          Create more in this style
         </message>
         <message name="IDS_SEA_PEN_ABOUT" desc="Menu item that, when clicked, will show users more about the selected wallpaper.">
           About
@@ -3072,6 +3099,16 @@
         <message name="IDS_SEA_PEN_EXPERIMENT_LABEL" desc="Label for experiment item indicating the feature is experimental.">
           Experiment
         </message>
+        <message name="IDS_SEA_PEN_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
+          No internet. Connect to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED" desc="Error message displayed when the resource is exhausted.">
+          We're at capacity. Please come back in a bit.
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_GENERIC" desc="Error message displayed when an error occurs.">
+          Something went wrong. Try again.
+        </message>
+
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
@@ -4613,16 +4650,16 @@
           Default
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN type will be used">
-          Attach
+          <ph name="ATTACH">Attach</ph> (<ph name="IA">IA</ph>)
         </message>
         <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_AND_ATTACH_APN" desc="Accessibility text for when an APN is both a default and an attach APN">
-          APN is type default and attach.
+          APN is type default and <ph name="ATTACH">attach</ph>.
         </message>
         <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_APN_ONLY" desc="Accessibility text for when an APN is only a default APN">
           APN is type default.
         </message>
         <message name="IDS_SETTINGS_APN_A11Y_ATTACH_APN_ONLY" desc="Accessibility text for when an APN is only an attach APN">
-          APN is type attach.
+          APN is type <ph name="ATTACH">attach</ph>.
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
           A default APN is required
@@ -4634,7 +4671,7 @@
           Automatically detected
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
-          Can't disable or remove this APN. Make sure enabled attach APNs are disabled or removed.
+          Can't disable or remove this APN. Make sure enabled <ph name="ATTACH">attach</ph> APNs are disabled or removed.
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_ENABLE" desc="Warning Prompt describing why the APN can't be enabled.">
           Can’t enable this APN. Make sure a default APN is added.
@@ -4733,6 +4770,11 @@
       <message name="IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN" desc="Text for the close button when prevent close is enabled by the administrator">
         Your administrator doesn't allow closing this app
       </message>
+
+      <message name="IDS_PREVENT_CLOSE_TOAST_MESSAGE" desc="Text for the toast that is shown if a user tried to close an unclosable PWA">
+        Your administrator doesn't allow closing <ph name="APP_NAME">{APP_NAME}</ph>
+      </message>
+
       <!-- End of Strings for WebAppSettings -->
       <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_TITLE" desc="Title of the app relaunch notification.">
           Restarting and updating <ph name="APP_NAME">$1</ph>

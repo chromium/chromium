@@ -134,14 +134,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // restore the WiFi status once hotspot is turned off.
   bool wifi_turned_off_ = false;
 
-  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
-      hotspot_capabilities_provider_ = nullptr;
-  raw_ptr<HotspotFeatureUsageMetrics, ExperimentalAsh>
-      hotspot_feature_usage_metrics_ = nullptr;
-  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_ =
-      nullptr;
-  raw_ptr<TechnologyStateController, ExperimentalAsh>
-      technology_state_controller_ = nullptr;
+  raw_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_ = nullptr;
+  raw_ptr<HotspotStateHandler> hotspot_state_handler_ = nullptr;
+  raw_ptr<TechnologyStateController> technology_state_controller_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotController> weak_ptr_factory_{this};

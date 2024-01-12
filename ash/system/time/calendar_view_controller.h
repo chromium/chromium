@@ -195,6 +195,13 @@ class ASH_EXPORT CalendarViewController {
     todays_date_cell_view_ = todays_date_cell_view;
   }
 
+  bool is_date_cell_clickable() const { return is_date_cell_clickable_; }
+  void set_is_date_cell_clickable(bool is_clickable) {
+    is_date_cell_clickable_ = is_clickable;
+  }
+
+  bool is_event_list_showing() const { return is_event_list_showing_; }
+
   // Returns whether the events for `start_of_month` have been successfully
   // fetched. The `FetchingStatus` should be either `kSuccess` or `kRefetching`.
   bool IsSuccessfullyFetched(base::Time start_of_month);
@@ -243,6 +250,10 @@ class ASH_EXPORT CalendarViewController {
   // Record if any events are displayed (via the dots in the current month) on
   // screen to the user.
   bool events_shown_to_user_recorded_ = false;
+
+  // Whether date cells are clickable. When the event list animation is running,
+  // date cells should become unclickable until the animation completes.
+  bool is_date_cell_clickable_ = true;
 
   // The currently selected date.
   std::optional<base::Time> selected_date_;

@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 use crate::config;
-use crate::crates::{self, Epoch};
+use crate::crates::Epoch;
 use crate::inherit::{
     find_inherited_privilege_group, find_inherited_security_critical_flag,
     find_inherited_shipped_flag,
 };
+use crate::metadata_util::{metadata_nodes, metadata_packages};
 use crate::paths;
 use crate::readme;
 use crate::util::{
     create_dirs_if_needed, init_handlebars, remove_checksums_from_lock, run_cargo_metadata,
     run_command, without_cargo_config_toml,
 };
+use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
 use anyhow::{format_err, Context, Result};
 use std::collections::{HashMap, HashSet};
@@ -40,18 +42,28 @@ fn vendor_impl(
     let config_file_contents = std::fs::read_to_string(config_file_path).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
 
-    let template_path = paths
+    let readme_template_path = paths
         .third_party_config_file
         .parent()
         .unwrap()
         .join(&config.gn_config.readme_file_template);
-    let handlebars = init_handlebars(&template_path).context("init_handlebars")?;
+    let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
+
+    let vet_template_path = paths //
+        .third_party_config_file
+        .parent()
+        .unwrap()
+        .join(&config.vet_config.config_template);
+    let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
 
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
     let metadata =
         run_cargo_metadata(paths.third_party_cargo_root.into(), tools, Vec::new(), HashMap::new())
             .context("run_cargo_metadata")?;
+    let packages: HashMap<_, _> = metadata_packages(&metadata)?;
+    let nodes: HashMap<_, _> = metadata_nodes(&metadata);
+    let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
 
     // Running cargo commands against actual crates.io will put checksum into
     // the Cargo.lock file, but we don't generate checksums when we download
@@ -59,43 +71,6 @@ fn vendor_impl(
     // using our vendor/ directory. So we remove all the checksums from the
     // lock file.
     remove_checksums_from_lock(paths.third_party_cargo_root)?;
-
-    // Collect the set of third-party crates.
-    let packages = {
-        let packages: HashMap<_, _> = metadata
-            .packages
-            .iter()
-            .filter(|package| {
-                // Remove the root package (our "chromium" crate).
-                //
-                // We have to keep packages in the `remove_crates` config
-                // because they must be downloaded for `cargo metadata` to work.
-                metadata.root_package().unwrap().id != package.id
-            })
-            // Key off the package id.
-            .map(|p| (&p.id, p))
-            .collect();
-
-        // If there are multiple crates with the same epoch, this is unexpected.
-        // Bail out.
-        {
-            let mut found = HashSet::new();
-            for (_, p) in &packages {
-                let epoch = crates::Epoch::from_version(&p.version);
-                if found.insert((&p.name, epoch)) == false {
-                    return Err(format_err!(
-                        "Two '{}' crates found with the same {} epoch",
-                        p.name,
-                        epoch
-                    ));
-                }
-            }
-        }
-
-        packages
-    };
-    let nodes: HashMap<_, _> =
-        metadata.resolve.as_ref().unwrap().nodes.iter().map(|node| (&node.id, node)).collect();
 
     {
         let package_names = packages.values().map(|p| &p.name).collect::<HashSet<_>>();
@@ -150,7 +125,6 @@ fn vendor_impl(
             .with_context(|| format!("removing {}", d))?
     }
 
-    let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
     let find_group = |id| find_inherited_privilege_group(id, root, &packages, &nodes, &config);
     let find_security_critical =
         |id| find_inherited_security_critical_flag(id, root, &packages, &nodes, &config);
@@ -198,11 +172,23 @@ fn vendor_impl(
         }
     }
 
+    let vet_config_toml =
+        create_vet_config(packages.values().copied(), &config, find_group, find_shipped)?;
+
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(&dir).context(format!("dir: {}", dir.display()))?;
     }
 
     if args.dump_template_input {
+        serde_json::to_writer_pretty(
+            std::fs::File::create(
+                paths.vet_config_file.parent().unwrap().join("vet-template-input.json"),
+            )
+            .context("opening dump file")?,
+            &vet_config_toml,
+        )
+        .context("dumping vet config information")?;
+
         for (dir, readme_file) in &all_readme_files {
             serde_json::to_writer_pretty(
                 std::fs::File::create(dir.join("gnrt-template-input.json"))
@@ -214,8 +200,19 @@ fn vendor_impl(
         return Ok(());
     }
 
+    {
+        let config_str = vet_handlebars.render("template", &vet_config_toml)?;
+        let file_path = paths.vet_config_file;
+        let file = std::fs::File::create(&paths.vet_config_file).with_context(|| {
+            format!("Could not create README.chromium output file {}", file_path.to_string_lossy())
+        })?;
+        use std::io::Write;
+        write!(std::io::BufWriter::new(file), "{}", config_str)
+            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
+    }
+
     for (dir, readme_file) in &all_readme_files {
-        let readme_str = handlebars.render("template", &readme_file)?;
+        let readme_str = readme_handlebars.render("template", &readme_file)?;
 
         let file_path = dir.join("README.chromium");
         let file = std::fs::File::create(&file_path).with_context(|| {

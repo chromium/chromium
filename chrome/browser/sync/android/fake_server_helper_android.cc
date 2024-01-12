@@ -368,6 +368,17 @@ static void JNI_FakeServerHelper_DeleteEntity(
       native_id, base::android::ConvertJavaStringToUTF8(env, client_tag_hash)));
 }
 
+static void JNI_FakeServerHelper_SetCustomPassphraseNigori(
+    JNIEnv* env,
+    jlong fake_server,
+    const JavaParamRef<jstring>& passphrase) {
+  SetNigoriInFakeServer(
+      syncer::BuildCustomPassphraseNigoriSpecifics(
+          syncer::Pbkdf2PassphraseKeyParamsForTesting(
+              base::android::ConvertJavaStringToUTF8(env, passphrase))),
+      reinterpret_cast<fake_server::FakeServer*>(fake_server));
+}
+
 static void JNI_FakeServerHelper_SetTrustedVaultNigori(
     JNIEnv* env,
     jlong fake_server,

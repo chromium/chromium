@@ -21,6 +21,7 @@
 #include "base/supports_user_data.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
@@ -98,7 +99,6 @@ class Origin;
 
 namespace content {
 class BrowserContext;
-class BrowserMessageFilter;
 class BucketContext;
 class IsolationContext;
 class ProcessLock;
@@ -110,6 +110,9 @@ class StoragePartition;
 struct GlobalRenderFrameHostId;
 #if BUILDFLAG(IS_ANDROID)
 enum class ChildProcessImportance;
+#endif
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+class BrowserMessageFilter;
 #endif
 
 namespace mojom {
@@ -305,8 +308,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Returns the renderer channel.
   virtual IPC::ChannelProxy* GetChannel() = 0;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Adds a message filter to the IPC channel.
   virtual void AddFilter(BrowserMessageFilter* filter) = 0;
+#endif
 
   // Sets whether this render process is blocked. This means that input events
   // should not be sent to it, nor other timely signs of life expected from it.

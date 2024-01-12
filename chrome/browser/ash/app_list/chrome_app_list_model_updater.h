@@ -215,13 +215,11 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void OnFeatureEngagementTrackerInitialized(bool success);
 
   // Indicates the profile that the model updater is associated with.
-  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
 
   // Provides the access to the methods for ordering app list items.
-  const raw_ptr<app_list::reorder::AppListReorderDelegate, ExperimentalAsh>
-      order_delegate_;
-  const raw_ptr<app_list::AppListSyncModelSanitizer, ExperimentalAsh>
-      sync_model_sanitizer_;
+  const raw_ptr<app_list::reorder::AppListReorderDelegate> order_delegate_;
+  const raw_ptr<app_list::AppListSyncModelSanitizer> sync_model_sanitizer_;
 
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;

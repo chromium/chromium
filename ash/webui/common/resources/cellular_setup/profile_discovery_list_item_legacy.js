@@ -15,55 +15,69 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './cellular_setup_icons.html.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_item_legacy.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'profile-discovery-list-item-legacy',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ProfileDiscoveryListItemLegacyElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ProfileDiscoveryListItemLegacyElement extends
+    ProfileDiscoveryListItemLegacyElementBase {
+  static get is() {
+    return 'profile-discovery-list-item-legacy';
+  }
 
-  properties: {
-    /** @type {?ESimProfileRemote} */
-    profile: {
-      type: Object,
-      value: null,
-      observer: 'onProfileChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    selected: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      /** @type {?ESimProfileRemote} */
+      profile: {
+        type: Object,
+        value: null,
+        observer: 'onProfileChanged_',
+      },
 
-    showLoadingIndicator: {
-      type: Boolean,
-    },
+      selected: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /**
-     * @type {?ESimProfileProperties}
-     * @private
-     */
-    profileProperties_: {
-      type: Object,
-      value: null,
-      notify: true,
-    },
+      showLoadingIndicator: Boolean,
 
-    /**
-     * @type {boolean}
-     * @private
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * @type {?ESimProfileProperties}
+       * @private
+       */
+      profileProperties_: {
+        type: Object,
+        value: null,
+        notify: true,
+      },
+
+      /**
+       * @type {boolean}
+       * @private
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
 
   /** @private */
   onProfileChanged_() {
@@ -74,7 +88,7 @@ Polymer({
     this.profile.getProperties().then(response => {
       this.profileProperties_ = response.properties;
     });
-  },
+  }
 
   /** @private */
   getProfileName_() {
@@ -82,5 +96,9 @@ Polymer({
       return '';
     }
     return mojoString16ToString(this.profileProperties_.name);
-  },
-});
+  }
+}
+
+customElements.define(
+    ProfileDiscoveryListItemLegacyElement.is,
+    ProfileDiscoveryListItemLegacyElement);

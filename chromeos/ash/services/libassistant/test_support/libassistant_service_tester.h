@@ -92,8 +92,7 @@ class LibassistantServiceTester {
   mojo::Remote<mojom::LibassistantService> service_remote_;
   // Our file provider requires the home dir to be overridden.
   base::ScopedPathOverride home_dir_override_;
-  raw_ptr<FakeLibassistantFactory, ExperimentalAsh> libassistant_factory_ =
-      nullptr;
+  raw_ptr<FakeLibassistantFactory> libassistant_factory_ = nullptr;
   std::unique_ptr<LibassistantService> service_;
 };
 

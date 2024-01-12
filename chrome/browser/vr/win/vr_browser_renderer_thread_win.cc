@@ -10,11 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/ui.h"
-#include "chrome/browser/vr/ui_browser_interface.h"
-#include "chrome/browser/vr/ui_initial_state.h"
 #include "chrome/browser/vr/win/graphics_delegate_win.h"
-#include "chrome/browser/vr/win/input_delegate_win.h"
-#include "chrome/browser/vr/win/scheduler_delegate_win.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -60,7 +56,6 @@ void VRBrowserRendererThreadWin::StopOverlay() {
   browser_renderer_ = nullptr;
   started_ = false;
   graphics_ = nullptr;
-  scheduler_ = nullptr;
   ui_ = nullptr;
   scheduler_ui_ = nullptr;
 }
@@ -246,13 +241,6 @@ void VRBrowserRendererThreadWin::DisableFrameTimeoutForTesting() {
   g_frame_timeout_ui_disabled_for_testing_ = true;
 }
 
-class VRUiBrowserInterface : public UiBrowserInterface {
- public:
-  ~VRUiBrowserInterface() override = default;
-
-  void ExitPresent() override {}
-};
-
 void VRBrowserRendererThreadWin::StartOverlay() {
   if (started_)
     return;
@@ -270,28 +258,14 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   graphics_->BindContext();
 
   // Create a vr::Ui
-  ui_browser_interface_ = std::make_unique<VRUiBrowserInterface>();
-  UiInitialState ui_initial_state = {};
-  std::unique_ptr<Ui> ui =
-      std::make_unique<Ui>(ui_browser_interface_.get(), ui_initial_state);
+  std::unique_ptr<Ui> ui = std::make_unique<Ui>();
   static_cast<UiInterface*>(ui.get())->OnGlInitialized();
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();
 
-  // Create the remaining delegates, and keep raw pointers to them.  They are
-  // also owned by browser_renderer_.
-  std::unique_ptr<SchedulerDelegateWin> scheduler_delegate =
-      std::make_unique<SchedulerDelegateWin>();
-  scheduler_ = scheduler_delegate.get();
-  std::unique_ptr<InputDelegateWin> input_delegate =
-      std::make_unique<InputDelegateWin>();
-  input_ = input_delegate.get();
-
   // Create the BrowserRenderer to drive UI rendering based on the delegates.
   browser_renderer_ = std::make_unique<BrowserRenderer>(
-      std::move(ui), std::move(scheduler_delegate),
-      std::move(initializing_graphics), std::move(input_delegate),
-      nullptr /*browser_renderer_interface*/, kSlidingAverageSize);
+      std::move(ui), std::move(initializing_graphics), kSlidingAverageSize);
 
   graphics_->ClearContext();
 
@@ -405,14 +379,19 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
   gfx::Transform head_from_world =
       head_from_unoriented_head * unoriented_head_from_world;
 
-  input_->OnPose(head_from_world);
+  base::TimeTicks now = base::TimeTicks::Now();
+  bool need_submit = false;
+  if (draw_state_.ShouldDrawWebXR()) {
+    browser_renderer_->DrawWebXrFrame(now, head_from_world);
+    need_submit = true;
+  } else if (draw_state_.ShouldDrawUI()) {
+    browser_renderer_->DrawBrowserFrame(now, head_from_world);
+    need_submit = true;
+  }
 
-  // base::Unretained is safe because scheduler_ will be destroyed without
-  // calling the callback if we are destroyed.
-  scheduler_->OnPose(base::BindOnce(&VRBrowserRendererThreadWin::SubmitFrame,
-                                    base::Unretained(this), data->frame_id),
-                     head_from_world, draw_state_.ShouldDrawWebXR(),
-                     draw_state_.ShouldDrawUI());
+  if (need_submit) {
+    SubmitFrame(data->frame_id);
+  }
 }
 
 bool VRBrowserRendererThreadWin::PreRender() {

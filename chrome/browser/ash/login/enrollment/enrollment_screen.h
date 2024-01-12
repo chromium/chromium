@@ -211,6 +211,7 @@ class EnrollmentScreen
   // Similar to OnRetry(), but responds to a timer instead of the user
   // pressing the Retry button. Does not retry if `ShouldAutoRetryOnError()`
   // returns false.
+  // TODO(b/314130124): Remove if retry logic is not needed.
   void MaybeAutomaticRetry();
 
   // Processes a request to retry enrollment.
@@ -227,12 +228,11 @@ class EnrollmentScreen
   // to reboot the device.
   void CheckInstallAttributesState();
 
-  // Returns true if enrollment should be automatically retried on error. E.g.
-  // for Zero-Touch Hands Off flow.
+  // Returns true if enrollment should be automatically retried on error.
+  // TODO(b/314130124): Remove if retry logic is not needed.
   bool ShouldAutoRetryOnError() const;
 
-  // Returns true if success screen should be skipped. E.g. for Zero-Touch Hands
-  // Off flow or rollback.
+  // Returns true if success screen should be skipped.
   bool AutoCloseEnrollmentConfirmationOnSuccess() const;
 
   // Returns true if current visible screen is the error screen over
@@ -246,7 +246,7 @@ class EnrollmentScreen
                           NetworkError::ErrorReason reason);
 
   base::WeakPtr<EnrollmentScreenView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
+  raw_ptr<ErrorScreen> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
   std::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;

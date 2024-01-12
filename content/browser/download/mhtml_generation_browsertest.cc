@@ -287,7 +287,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
   MHTMLGenerationTest()
       : has_mhtml_callback_run_(false),
         file_size_(0),
-        file_digest_(absl::nullopt),
+        file_digest_(std::nullopt),
         well_formedness_check_(true) {}
 
   enum TaskOrder { WriteThenRespond, RespondThenWrite };
@@ -347,8 +347,8 @@ class MHTMLGenerationTest : public ContentBrowserTest,
 
     // TODO(crbug.com/997408): Add tests which will let MHTMLGeneration manager
     // fail during file write operation. This will allow us to actually test if
-    // we receive a bogus hash instead of a absl::nullopt.
-    EXPECT_EQ(absl::nullopt, file_digest());
+    // we receive a bogus hash instead of a std::nullopt.
+    EXPECT_EQ(std::nullopt, file_digest());
 
     // Skip well formedness check if explicitly disabled or there was a
     // generation error.
@@ -474,7 +474,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
 
   bool has_mhtml_callback_run() const { return has_mhtml_callback_run_; }
   int64_t file_size() const { return file_size_; }
-  absl::optional<std::string> file_digest() const { return file_digest_; }
+  std::optional<std::string> file_digest() const { return file_digest_; }
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
   base::ScopedTempDir temp_dir_;
@@ -495,7 +495,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
 
   bool has_mhtml_callback_run_;
   int64_t file_size_;
-  absl::optional<std::string> file_digest_;
+  std::optional<std::string> file_digest_;
   bool well_formedness_check_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };

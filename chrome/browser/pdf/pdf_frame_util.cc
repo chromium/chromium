@@ -70,4 +70,21 @@ content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
   return pdf_rfh;
 }
 
+content::RenderFrameHost* GetEmbedderHost(
+    content::RenderFrameHost* content_host) {
+  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+
+  if (!content_host) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* extension_host = content_host->GetParent();
+  if (!extension_host ||
+      !IsPdfExtensionOrigin(extension_host->GetLastCommittedOrigin())) {
+    return nullptr;
+  }
+
+  return extension_host->GetParent();
+}
+
 }  // namespace pdf_frame_util

@@ -116,14 +116,13 @@ class InSessionPasswordSyncManager
   void OnPasswordUpdateFailure(std::unique_ptr<UserContext> user_context,
                                AuthenticationError error);
 
-  const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
+  const raw_ptr<Profile> primary_profile_;
   UserContext user_context_;
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
-  const raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
-      primary_user_;
+  raw_ptr<const base::Clock> clock_;
+  const raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
   ReauthenticationReason lock_screen_reauth_reason_ =
       ReauthenticationReason::kNone;
-  raw_ptr<proximity_auth::ScreenlockBridge, ExperimentalAsh> screenlock_bridge_;
+  raw_ptr<proximity_auth::ScreenlockBridge> screenlock_bridge_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
 
   // Used to authenticate the user.

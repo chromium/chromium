@@ -548,8 +548,7 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
         l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_TRY_AGAIN));
     __weak __typeof(self) weakSelf = self;
     UIAction* tryAgainAction = [UIAction actionWithHandler:^(UIAction* action) {
-      [weakSelf.delegate
-          downloadManagerViewControllerDidStartDownload:weakSelf];
+      [weakSelf.delegate downloadManagerViewControllerDidRetry:weakSelf];
     }];
     _tryAgainButton = [UIButton buttonWithConfiguration:tryAgainButtonConf
                                           primaryAction:tryAgainAction];

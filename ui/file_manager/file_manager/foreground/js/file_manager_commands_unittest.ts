@@ -5,20 +5,19 @@
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
 
+import type {CommandHandlerDeps, FilesCommandId} from './command_handler.js';
 import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
-import type {FilesCommandId} from './command_handler.js';
 import {CanExecuteEvent, Command} from './ui/command.js';
 
 let mockMetrics: MockMetrics;
@@ -28,7 +27,11 @@ function getMetricName(metricIndex: number): string|undefined {
 }
 
 interface ExtraCanExecuteCommandProperties {
-  target: {entry?: DirectoryEntry, parentElement?: {contextElement: null}};
+  target: {
+    entry?: DirectoryEntry,
+    classList?: {contains: () => boolean},
+    parentElement?: {contextElement: null},
+  };
 }
 
 interface CurrentSelection {
@@ -553,6 +556,7 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
     // Mock `Event`.
     const event = createMockEvent(commandName, {
       target: {
+        classList: {contains: () => false},
         parentElement: {
           contextElement: null,
         },

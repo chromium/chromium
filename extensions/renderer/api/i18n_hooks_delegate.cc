@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/api/i18n_hooks_delegate.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -248,7 +249,7 @@ RequestResult I18nHooksDelegate::HandleRequest(
       ScriptContext*, const APISignature::V8ParseResult&);
   static constexpr struct {
     Handler handler;
-    base::StringPiece method;
+    std::string_view method;
   } kHandlers[] = {
       {&I18nHooksDelegate::HandleGetMessage, kGetMessage},
       {&I18nHooksDelegate::HandleGetUILanguage, kGetUILanguage},

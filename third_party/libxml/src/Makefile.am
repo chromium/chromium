@@ -97,9 +97,6 @@ endif
 if WITH_SCHEMATRON_SOURCES
 libxml2_la_SOURCES += schematron.c
 endif
-if WITH_TRIO_SOURCES
-libxml2_la_SOURCES += triostr.c trio.c
-endif
 if WITH_WRITER_SOURCES
 libxml2_la_SOURCES += xmlwriter.c
 endif
@@ -379,7 +376,7 @@ cleanup:
 	-@(find . -name \*.orig -o -name \*.rej -o -name \*.old -exec rm -f {} \;)
 
 dist-hook: cleanup
-	(cd $(srcdir) ; tar -cf - --exclude .git win32 os400 vms test result) | (cd $(distdir); tar xf -)
+	(cd $(srcdir) ; tar -cf - --exclude .git win32 os400 test result) | (cd $(distdir); tar xf -)
 
 CLEANFILES = runsuite.log runxmlconf.log test.out *.gcda *.gcno *.res
 DISTCLEANFILES = COPYING missing.lst
@@ -389,8 +386,7 @@ EXTRA_DIST = Copyright check-xml-test-suite.py gentest.py \
 	     check-xsddata-test-suite.py check-xinclude-test-suite.py \
              example/Makefile.am example/gjobread.c example/gjobs.xml \
 	     libxml2-config.cmake.in autogen.sh \
-	     trionan.c trionan.h triostr.c triostr.h trio.c trio.h \
-	     triop.h triodef.h libxml.h \
+	     libxml.h \
 	     genUnicode.py \
 	     dbgen.pl dbgenattr.pl \
 	     libxml2.syms timsort.h \

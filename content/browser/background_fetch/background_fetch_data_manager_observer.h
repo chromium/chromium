@@ -6,10 +6,10 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DATA_MANAGER_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 class SkBitmap;
@@ -48,7 +48,7 @@ class BackgroundFetchDataManagerObserver {
       int num_requests,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
-      absl::optional<net::IsolationInfo> isolation_info) = 0;
+      std::optional<net::IsolationInfo> isolation_info) = 0;
 
   // Called when a registration is being queried. Implementations should update
   // |registration_data| with in-progress information.

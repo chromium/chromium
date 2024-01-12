@@ -30,7 +30,7 @@ cd $TMP_DIR
 NEW_DEPS=$(mktemp -p ./)
 
 # Create new dependencies list and drop duplicates.
-"$GN_PATH" desc ./ //components/cronet/android:cronet deps --all |
+"$GN_PATH" desc ./ //components/cronet/android:cronet_sample_apk deps --all |
   awk -F ':' '{new_deps[$1]=1}; END{for(dep in new_deps) print dep}' |
   sort > "$NEW_DEPS"
 

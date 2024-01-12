@@ -12,6 +12,7 @@ if (is_android) {
 
 static_library("search_engines") {
   sources = [
+    "choice_made_location.h",
     "default_search_manager.cc",
     "default_search_manager.h",
     "default_search_policy_handler.cc",
@@ -164,6 +165,8 @@ static_library("test_support") {
   sources = [
     "search_engines_test_util.cc",
     "search_engines_test_util.h",
+    "template_url_service_test_util.cc",
+    "template_url_service_test_util.h",
     "testing_search_terms_data.cc",
     "testing_search_terms_data.h",
   ]
@@ -230,6 +233,11 @@ source_set("unit_tests") {
       "//components/policy/core/browser:test_support",
     ]
   }
+
+  if (is_android) {
+    sources += [ "android/template_url_service_android_unittest.cc" ]
+    # deps += [ "//components/search_engines/android:jni_headers" ]
+  }
 }
 
 json_to_struct("prepopulated_engines") {
@@ -242,7 +250,10 @@ json_to_struct("prepopulated_engines") {
 }
 
 if (is_android) {
-  java_cpp_enum("search_engine_type_java") {
-    sources = [ "search_engine_type.h" ]
+  java_cpp_enum("search_engine_enums_java") {
+    sources = [
+      "choice_made_location.h",
+      "search_engine_type.h",
+    ]
   }
 }

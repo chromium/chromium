@@ -184,7 +184,7 @@ class KioskBrowserSession::PluginHandlerDelegateImpl
   }
 
  private:
-  const raw_ptr<KioskBrowserSession, ExperimentalAsh> owner_;
+  const raw_ptr<KioskBrowserSession> owner_;
 };
 #endif
 

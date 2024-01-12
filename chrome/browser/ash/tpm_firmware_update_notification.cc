@@ -66,7 +66,7 @@ class TPMFirmwareUpdateNotificationDelegate
         NotificationHandler::Type::TRANSIENT, kTPMFirmwareUpdateNotificationId);
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 void OnAvailableUpdateModes(Profile* profile,

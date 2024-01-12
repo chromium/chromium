@@ -35,8 +35,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Sets the global instance of the Geolocation Manager.
   static void SetInstance(std::unique_ptr<GeolocationManager> manager);
 
-  void TrackGeolocationAttempted();
-  void TrackGeolocationRelinquished();
   void RequestSystemPermission();
   // Opens appropriate system preferences/setting page.
   void OpenSystemPermissionSetting();

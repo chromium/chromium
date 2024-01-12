@@ -179,6 +179,7 @@ class OptimizationGuideKeyedService
   void SimulateBrowserRestartForControllerTesting();
 
  private:
+  friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
@@ -246,6 +247,10 @@ class OptimizationGuideKeyedService
   bool IsSettingVisible(
       optimization_guide::proto::ModelExecutionFeature feature) const;
 
+  // Returns whether all conditions are met to show the IPH promo for
+  // experimental AI.
+  bool ShouldShowExperimentalAIPromo() const;
+
   download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
 
   bool ComponentUpdatesEnabledProvider() const;
@@ -267,6 +272,11 @@ class OptimizationGuideKeyedService
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
+  // The top host provider to use for fetching information for the user's top
+  // hosts. Will be null if the user has not consented to this type of browser
+  // behavior.
+  std::unique_ptr<optimization_guide::TopHostProvider> top_host_provider_;
+
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
 
@@ -279,11 +289,6 @@ class OptimizationGuideKeyedService
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
-
-  // The top host provider to use for fetching information for the user's top
-  // hosts. Will be null if the user has not consented to this type of browser
-  // behavior.
-  std::unique_ptr<optimization_guide::TopHostProvider> top_host_provider_;
 
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import android.app.Activity;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -32,15 +32,17 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
 
     /**
      * Creates and registers a new {@link IncognitoTabbedSnapshotController}.
-     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
+     *
+     * @param window The {@link Window} containing the flags to which the secure flag will be added
+     *     and cleared.
      * @param layoutManager The {@link LayoutManagerChrome} where this controller will be added.
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
-     *         fetched.
+     *     fetched.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} which would allow
-     *         to register as {@link DestroyObserver}.
+     *     to register as {@link DestroyObserver}.
      */
     public static void createIncognitoTabSnapshotController(
-            @NonNull Activity activity,
+            @NonNull Window window,
             @NonNull LayoutManagerChrome layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
@@ -50,7 +52,7 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
                 getIsShowingIncognitoSupplier(tabModelSelector, isOverviewModeSupplier);
 
         new IncognitoTabbedSnapshotController(
-                activity,
+                window,
                 layoutManager,
                 tabModelSelector,
                 activityLifecycleDispatcher,
@@ -76,23 +78,24 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
     }
 
     /**
-     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
+     * @param window The {@link Window} containing the flags to which the secure flag will be added
+     *     and cleared.
      * @param layoutManager The {@link LayoutManagerChrome} where this controller will be added.
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
-     *         fetched.
+     *     fetched.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} which would allow
-     *         to register as {@link DestroyObserver}.
+     *     to register as {@link DestroyObserver}.
      * @param isShowingIncognitoSupplier The {@link Supplier<Boolean>} to supply with the
-     *         information if we are showing Incognito currently.
+     *     information if we are showing Incognito currently.
      */
     @VisibleForTesting
     IncognitoTabbedSnapshotController(
-            @NonNull Activity activity,
+            @NonNull Window window,
             @NonNull LayoutManagerChrome layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
-        super(activity, isShowingIncognitoSupplier);
+        super(window, isShowingIncognitoSupplier);
 
         mLayoutManager = layoutManager;
         mTabModelSelector = tabModelSelector;

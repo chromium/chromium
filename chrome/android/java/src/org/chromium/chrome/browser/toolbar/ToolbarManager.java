@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1169,9 +1168,7 @@ public class ToolbarManager
                         if (layoutType == LayoutType.TAB_SWITCHER) {
                             mToolbar.onTabSwitcherTransitionFinished();
                         }
-                        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-                            mToolbar.onTransitionEnd();
-                        }
+                        mToolbar.onTransitionEnd();
                         if (layoutType == LayoutType.BROWSING) {
                             maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
                         }
@@ -1188,9 +1185,7 @@ public class ToolbarManager
                                 mControlContainer.invalidateBitmap();
                             }
                         }
-                        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-                            mToolbar.onTransitionStart();
-                        }
+                        mToolbar.onTransitionStart();
                     }
 
                     @Override
@@ -1407,15 +1402,10 @@ public class ToolbarManager
                     new HomeButtonCoordinator(
                             mActivity,
                             homeButton,
-                            mUserEducationHelper,
-                            mIncognitoStateProvider::isIncognitoSelected,
-                            mPromoShownOneshotSupplier,
-                            HomepageManager::isHomepageNonNtp,
-                            FeedFeatures::isFeedEnabled,
-                            mActivityTabProvider,
                             this::onHomeButtonMenuClick,
                             HomepagePolicyManager::isHomepageManagedByPolicy);
         }
+
         return toolbar;
     }
 
@@ -1728,24 +1718,20 @@ public class ToolbarManager
         if (stripLayoutHelperManager != null) {
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
+            mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
             stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
-
-            mTabStripHeightObserver =
-                    new TabStripHeightObserver() {
-                        @Override
-                        public void onHeightTransitionRequested(int newHeight) {
-                            // TODO(crbug.com/1509013): Supplier can have an inconsistent value
-                            //  with mToolbar.getTabStripHeight().
-                            mTabStripHeightSupplier.set(newHeight);
-                        }
-
-                        @Override
-                        public void onHeightChanged(int newHeight) {
-                            stripLayoutHelperManager.setIsTabStripHidden(newHeight == 0);
-                        }
-                    };
-            mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
         }
+
+        mTabStripHeightObserver =
+                new TabStripHeightObserver() {
+                    @Override
+                    public void onTransitionRequested(int newHeight) {
+                        // TODO(crbug.com/1509013): Supplier can have an inconsistent value
+                        //  with mToolbar.getTabStripHeight().
+                        mTabStripHeightSupplier.set(newHeight);
+                    }
+                };
+        mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
 
         if (mMenuStateObserver != null) {
             UpdateMenuItemHelper.getInstance().registerObserver(mMenuStateObserver);
@@ -1955,10 +1941,6 @@ public class ToolbarManager
             mOverviewModeMenuButtonCoordinator = null;
         }
 
-        if (mHomeButtonCoordinator != null) {
-            mHomeButtonCoordinator.destroy();
-            mHomeButtonCoordinator = null;
-        }
         if (mToggleTabStackButtonCoordinator != null) {
             mToggleTabStackButtonCoordinator.destroy();
             mToggleTabStackButtonCoordinator = null;
@@ -2337,14 +2319,6 @@ public class ToolbarManager
         assert profile != null
                 : "Failed to get Profile when incognito = "
                         + mTabModelSelector.isIncognitoSelected();
-        // TODO(crbug/1498999): Remove this Profile calculation fallback if no asserts are hit.
-        if (profile == null) {
-            assert tab == null;
-            profile =
-                    mTabModelSelector.isIncognitoSelected()
-                            ? IncognitoUtils.getIncognitoProfileFromWindowAndroid(mWindowAndroid)
-                            : Profile.getLastUsedRegularProfile();
-        }
 
         mLocationBarModel.setTab(tab, profile);
         updateTabLoadingState(true);

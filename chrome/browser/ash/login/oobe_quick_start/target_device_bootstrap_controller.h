@@ -59,6 +59,22 @@ class TargetDeviceBootstrapController
     FETCHING_REFRESH_TOKEN_FAILED,
   };
 
+  // Result of the exchange between ChromeOS, Android and the SecondDevice API.
+  // It contains the user's email and an OAuth authorization code that can be
+  // exchanged for a access/refresh token.
+  struct GaiaCredentials {
+    GaiaCredentials();
+    GaiaCredentials(const GaiaCredentials&);
+    ~GaiaCredentials();
+
+    std::string email;
+    std::string auth_code;
+    std::string gaia_id;
+    // TODO(b/318664950) - Remove once the server starts sending the gaia_id.
+    std::string access_token;
+    std::string refresh_token;
+  };
+
   using ConnectionClosedReason =
       TargetDeviceConnectionBroker::ConnectionClosedReason;
   using Pin = std::string;
@@ -68,7 +84,7 @@ class TargetDeviceBootstrapController
                                 QRCode::PixelData,
                                 Pin,
                                 mojom::WifiCredentials,
-                                FidoAssertionInfo>;
+                                GaiaCredentials>;
 
   struct Status {
     Status();
@@ -236,6 +252,10 @@ class TargetDeviceBootstrapController
 
 std::ostream& operator<<(std::ostream& stream,
                          const TargetDeviceBootstrapController::Step& step);
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceBootstrapController::ErrorCode& error_code);
 
 }  // namespace ash::quick_start
 

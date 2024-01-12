@@ -60,8 +60,11 @@ void WaitForNetworkChange() {
 class QuicConnectionMigrationTest : public ContentBrowserTest {
  public:
   QuicConnectionMigrationTest() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kMigrateSessionsOnNetworkChangeV2);
+    feature_list_.InitWithFeatures(
+        // Enabled features
+        {net::features::kQuicMigrationIgnoreDisconnectSignalDuringProbing},
+        // Disabled features
+        {});
   }
   ~QuicConnectionMigrationTest() override = default;
 

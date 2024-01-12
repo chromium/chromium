@@ -54,7 +54,7 @@ class WiFiTest {
     DCHECK_NE(RESULT_PENDING, result);
     result_ = result;
     if (base::CurrentThread::Get())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      loop_.QuitWhenIdle();
   }
 
   void OnNetworksChanged(
@@ -77,6 +77,7 @@ class WiFiTest {
   base::AtExitManager exit_manager_;
 
   Result result_;
+  base::RunLoop loop_;
 };
 
 WiFiTest::Result WiFiTest::Main(int argc, const char* argv[]) {
@@ -201,7 +202,7 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
       wifi_service_->StartConnect(network_guid, &error);
       VLOG(0) << error;
       if (error.empty())
-        base::RunLoop().Run();
+        loop_.Run();
       return true;
     }
   }
@@ -233,7 +234,7 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
         base::BindRepeating(&WiFiTest::OnNetworkListChanged,
                             base::Unretained(this)));
     wifi_service_->RequestNetworkScan();
-    base::RunLoop().Run();
+    loop_.Run();
     return true;
   }
 

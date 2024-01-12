@@ -50,24 +50,11 @@
 
 .text
 
-
-.hidden	OPENSSL_armcap_P
-.globl	sha512_block_data_order
-.hidden	sha512_block_data_order
-.type	sha512_block_data_order,%function
+.globl	sha512_block_data_order_nohw
+.hidden	sha512_block_data_order_nohw
+.type	sha512_block_data_order_nohw,%function
 .align	6
-sha512_block_data_order:
-	AARCH64_VALID_CALL_TARGET
-#ifndef	__KERNEL__
-#if defined(OPENSSL_HWASAN) && __clang_major__ >= 10
-	adrp	x16,:pg_hi21_nc:OPENSSL_armcap_P
-#else
-	adrp	x16,OPENSSL_armcap_P
-#endif
-	ldr	w16,[x16,:lo12:OPENSSL_armcap_P]
-	tst	w16,#ARMV8_SHA512
-	b.ne	.Lv8_entry
-#endif
+sha512_block_data_order_nohw:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
@@ -1031,7 +1018,7 @@ sha512_block_data_order:
 	ldp	x29,x30,[sp],#128
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
-.size	sha512_block_data_order,.-sha512_block_data_order
+.size	sha512_block_data_order_nohw,.-sha512_block_data_order_nohw
 
 .section	.rodata
 .align	6
@@ -1084,10 +1071,13 @@ sha512_block_data_order:
 .align	2
 .text
 #ifndef	__KERNEL__
-.type	sha512_block_armv8,%function
+.globl	sha512_block_data_order_hw
+.hidden	sha512_block_data_order_hw
+.type	sha512_block_data_order_hw,%function
 .align	6
-sha512_block_armv8:
-.Lv8_entry:
+sha512_block_data_order_hw:
+	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
+	AARCH64_VALID_CALL_TARGET
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 
@@ -1601,6 +1591,6 @@ sha512_block_armv8:
 
 	ldr	x29,[sp],#16
 	ret
-.size	sha512_block_armv8,.-sha512_block_armv8
+.size	sha512_block_data_order_hw,.-sha512_block_data_order_hw
 #endif
 #endif  // !OPENSSL_NO_ASM && defined(OPENSSL_AARCH64) && defined(__ELF__)

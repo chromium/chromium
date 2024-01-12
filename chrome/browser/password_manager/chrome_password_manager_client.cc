@@ -379,7 +379,7 @@ void ChromePasswordManagerClient::FocusedInputChanged(
 
   PasswordGenerationController::GetOrCreate(web_contents())
       ->FocusedInputChanged(focused_field_type,
-                            base::AsWeakPtr(content_driver));
+                            content_driver->AsWeakPtrImpl());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -441,7 +441,7 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           GetWebAuthnCredManDelegateForDriver(driver),
           std::make_unique<password_manager::PasswordCredentialFillerImpl>(
               driver->AsWeakPtr(), submission_readiness_params),
-          base::AsWeakPtr(content_driver), is_webauthn_form)) {
+          content_driver->AsWeakPtrImpl(), is_webauthn_form)) {
     return true;
   }
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
@@ -466,7 +466,7 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           .GetCredentials(),
       passkeys, std::move(ttf_controller_autofill_delegate),
       GetWebAuthnCredManDelegateForDriver(driver),
-      base::AsWeakPtr(content_driver));
+      content_driver->AsWeakPtrImpl());
 }
 #endif
 
@@ -505,7 +505,7 @@ void ChromePasswordManagerClient::GeneratePassword(
   // ContentPasswordManagerDriver that holds the connection.
   content_driver->GeneratePassword(base::BindOnce(
       &ChromePasswordManagerClient::GenerationResultAvailable,
-      base::Unretained(this), type, base::AsWeakPtr(content_driver)));
+      base::Unretained(this), type, content_driver->AsWeakPtrImpl()));
 }
 
 void ChromePasswordManagerClient::NotifyUserAutoSignin(
@@ -1100,7 +1100,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
            .GetCredentials()
            .empty();
   generation_controller->OnAutomaticGenerationAvailable(
-      base::AsWeakPtr(driver), ui_data, has_saved_credentials,
+      driver->AsWeakPtrImpl(), ui_data, has_saved_credentials,
       element_bounds_in_screen_space);
   // Trigger password suggestions. This is a fallback case if the field was
   // wrongly classified as new password field.

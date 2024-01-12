@@ -109,8 +109,6 @@ blink_core_sources_loader = [
   "prerender_handle.h",
   "progress_tracker.cc",
   "progress_tracker.h",
-  "resource_cache_impl.cc",
-  "resource_cache_impl.h",
   "resource/css_style_sheet_resource.cc",
   "resource/css_style_sheet_resource.h",
   "resource/font_resource.cc",

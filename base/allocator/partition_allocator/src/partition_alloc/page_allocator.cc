@@ -311,19 +311,20 @@ void DecommitSystemPages(
                       accessibility_disposition);
 }
 
-void DecommitAndZeroSystemPages(uintptr_t address,
+bool DecommitAndZeroSystemPages(uintptr_t address,
                                 size_t length,
                                 PageTag page_tag) {
   PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
   PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
-  internal::DecommitAndZeroSystemPagesInternal(address, length, page_tag);
+  return internal::DecommitAndZeroSystemPagesInternal(address, length,
+                                                      page_tag);
 }
 
-void DecommitAndZeroSystemPages(void* address,
+bool DecommitAndZeroSystemPages(void* address,
                                 size_t length,
                                 PageTag page_tag) {
-  DecommitAndZeroSystemPages(reinterpret_cast<uintptr_t>(address), length,
-                             page_tag);
+  return DecommitAndZeroSystemPages(reinterpret_cast<uintptr_t>(address),
+                                    length, page_tag);
 }
 
 void RecommitSystemPages(

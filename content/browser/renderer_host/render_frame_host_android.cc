@@ -42,7 +42,7 @@ namespace content {
 namespace {
 void OnGetCanonicalUrlForSharing(
     const base::android::JavaRef<jobject>& jcallback,
-    const absl::optional<GURL>& url) {
+    const std::optional<GURL>& url) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!url) {
     base::android::RunObjectCallbackAndroid(jcallback,

@@ -130,6 +130,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -3874,7 +3875,9 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // Release any context visibility before we destroy the LayerTreeFrameSink.
   SetContextVisibility(false);
 
-  bool all_resources_are_lost = layer_tree_frame_sink_->context_provider();
+  bool all_resources_are_lost =
+      layer_tree_frame_sink_->context_provider() ||
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
 
   // Destroy the submit-frame trackers before destroying the frame sink.
   frame_trackers_.ClearAll();
@@ -4659,8 +4662,11 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // For software compositing, shared memory will be allocated and the
   // UIResource will be copied into it.
   base::MappedReadOnlyRegion shm;
+  base::WritableSharedMemoryMapping mapping;
   viz::SharedBitmapId shared_bitmap_id;
   bool overlay_candidate = false;
+  bool use_shared_image =
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
 
   if (layer_tree_frame_sink_->context_provider()) {
     viz::RasterContextProvider* context_provider =
@@ -4678,8 +4684,37 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           gfx::BufferUsage::SCANOUT,
           viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
+  } else if (use_shared_image) {
+    DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
+    // Must not include gpu::SHARED_IMAGE_USAGE_DISPLAY_READ here because
+    // DISPLAY_READ means gpu composition.
+    shared_image_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
+    auto* sii = layer_tree_frame_sink_->shared_image_interface();
+    CHECK(sii);
+
+    const size_t buffer_size = gfx::BufferSizeForBufferFormat(
+        upload_size, gfx::BufferFormat::RGBA_8888);
+    auto shared_memory_region =
+        base::UnsafeSharedMemoryRegion::Create(buffer_size);
+    mapping = shared_memory_region.Map();
+    CHECK(shared_memory_region.IsValid() && mapping.IsValid());
+
+    gfx::GpuMemoryBufferHandle handle;
+    handle.type = gfx::SHARED_MEMORY_BUFFER;
+    handle.offset = 0;
+    handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
+        upload_size.width(), gfx::BufferFormat::RGBA_8888, 0));
+    handle.region = std::move(shared_memory_region);
+
+    client_shared_image = sii->CreateSharedImage(
+        format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
+        std::move(handle));
+    CHECK(client_shared_image);
+    shared_bitmap_id = client_shared_image->mailbox();
   } else {
     shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
+    mapping = std::move(shm.mapping);
     shared_bitmap_id = viz::SharedBitmap::GenerateId();
   }
 
@@ -4703,7 +4738,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
 
       sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
-          dst_info, shm.mapping.memory(), dst_info.minRowBytes());
+          dst_info, mapping.memory(), dst_info.minRowBytes());
       surface->getCanvas()->writePixels(
           src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
           bitmap.row_bytes(), 0, 0);
@@ -4739,7 +4774,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      scaled_surface = SkSurfaces::WrapPixels(dst_info, shm.mapping.memory(),
+      scaled_surface = SkSurfaces::WrapPixels(dst_info, mapping.memory(),
                                               dst_info.minRowBytes());
       CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
@@ -4784,14 +4819,17 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     transferable = viz::TransferableResource::MakeGpu(
         client_shared_image, texture_target, sync_token, upload_size, format,
         overlay_candidate, viz::TransferableResource::ResourceSource::kUI);
+  } else if (use_shared_image) {
+    auto* sii = layer_tree_frame_sink_->shared_image_interface();
+    gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+    transferable = viz::TransferableResource::MakeSoftware(
+        shared_bitmap_id, sync_token, upload_size, format,
+        viz::TransferableResource::ResourceSource::kUI);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                                     shared_bitmap_id);
-    auto* sii = layer_tree_frame_sink_->shared_image_interface();
-    gpu::SyncToken sync_token =
-        sii ? sii->GenVerifiedSyncToken() : gpu::SyncToken();
     transferable = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_id, sync_token, upload_size, format,
+        shared_bitmap_id, gpu::SyncToken(), upload_size, format,
         viz::TransferableResource::ResourceSource::kUI);
   }
   transferable.color_space = color_space;
@@ -4807,8 +4845,10 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   UIResourceData data;
   data.opaque = bitmap.GetOpaque();
   data.format = format;
-  data.shared_bitmap_id = shared_bitmap_id;
-  data.shared_mapping = std::move(shm.mapping);
+  if (!use_shared_image) {
+    data.shared_bitmap_id = shared_bitmap_id;
+    data.shared_mapping = std::move(mapping);
+  }
   data.shared_image = std::move(client_shared_image);
   data.resource_id_for_export = id;
   ui_resource_map_[uid] = std::move(data);
@@ -4843,8 +4883,12 @@ void LayerTreeHostImpl::DeleteUIResourceBacking(
     layer_tree_frame_sink_->DidDeleteSharedBitmap(data.shared_bitmap_id);
   if (data.shared_image) {
     auto* sii =
-        layer_tree_frame_sink_->context_provider()->SharedImageInterface();
-    sii->DestroySharedImage(sync_token, std::move(data.shared_image));
+        layer_tree_frame_sink_->context_provider()
+            ? layer_tree_frame_sink_->context_provider()->SharedImageInterface()
+            : layer_tree_frame_sink_->shared_image_interface();
+    if (sii) {
+      sii->DestroySharedImage(sync_token, std::move(data.shared_image));
+    }
   }
   // |data| goes out of scope and deletes anything it owned.
 }

@@ -43,7 +43,7 @@ testcase.installLinuxPackageDialog = async () => {
     // returns as a single string. These values come from
     // fake_cicerone_client.cc.
     return elements[0] &&
-        elements[0].innerText ==
+        elements[0].innerText ===
             ('Details\n' +
              'Application: Fake Package\n' +
              'Version: 1.0\n' +
@@ -60,7 +60,7 @@ testcase.installLinuxPackageDialog = async () => {
     const elements = await remoteCall.callRemoteTestUtil(
         'queryAllElements', appId, ['.cr-dialog-text']);
     return elements[0] &&
-        elements[0].text == 'Installation successfully started.' ||
+        elements[0].text === 'Installation successfully started.' ||
         pending(caller, 'Waiting for installation to start.');
   });
 

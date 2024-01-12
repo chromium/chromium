@@ -325,8 +325,8 @@ enum AssistiveTechnologyType {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 31
-// Next method id: 45
+// Next version: 32
+// Next method id: 46
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -570,4 +570,8 @@ interface TestController {
   // nullopt is given.
   [MinVersion=30]
   SetAlmanacEndpointUrlForTesting@44(string? override) => ();
+
+  // Checks if a toast with a given `toast_id` is shown.
+  [MinVersion=31]
+  IsToastShown@45(string toast_id) => (bool toast_shown);
 };

@@ -74,12 +74,6 @@ static_library("safe_browsing") {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
     sources += [
-      "certificate_reporting_metrics_provider.cc",
-      "certificate_reporting_metrics_provider.h",
-      "certificate_reporting_service.cc",
-      "certificate_reporting_service.h",
-      "certificate_reporting_service_factory.cc",
-      "certificate_reporting_service_factory.h",
       "chrome_client_side_detection_host_delegate.cc",
       "chrome_client_side_detection_host_delegate.h",
       "chrome_client_side_detection_service_delegate.cc",
@@ -242,8 +236,6 @@ static_library("safe_browsing") {
         "download_protection/path_sanitizer.h",
         "download_protection/ppapi_download_request.cc",
         "download_protection/ppapi_download_request.h",
-        "download_protection/two_phase_uploader.cc",
-        "download_protection/two_phase_uploader.h",
         "extension_telemetry/cookies_get_all_signal.cc",
         "extension_telemetry/cookies_get_all_signal.h",
         "extension_telemetry/cookies_get_all_signal_processor.cc",

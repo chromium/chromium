@@ -151,13 +151,13 @@ class ScreenTimeController
   // SystemClockClient::Observer:
   void SystemClockUpdated() override;
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<content::BrowserContext> context_;
+  raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<Observer> observers_;
 
   // Points to the base::DefaultClock by default.
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Timer scheduled for when the next lock screen state change event is
   // expected to happen, e.g. when bedtime is over or the usage limit ends.

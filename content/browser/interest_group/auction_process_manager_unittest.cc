@@ -6,6 +6,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -70,8 +70,8 @@ class TestAuctionProcessManager
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
       const GURL& script_source_url,
-      const absl::optional<GURL>& bidding_wasm_helper_url,
-      const absl::optional<GURL>& trusted_bidding_signals_url,
+      const std::optional<GURL>& bidding_wasm_helper_url,
+      const std::optional<GURL>& trusted_bidding_signals_url,
       const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
@@ -91,7 +91,7 @@ class TestAuctionProcessManager
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
       const GURL& script_source_url,
-      const absl::optional<GURL>& trusted_scoring_signals_url,
+      const std::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
@@ -308,10 +308,10 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
     Op op;
 
     // Number of handles to request for kRequestHandles operations.
-    absl::optional<size_t> num_handles;
+    std::optional<size_t> num_handles;
 
     // Used for kDestroyHandle and kDestroyHandleAndNextInQueue operations.
-    absl::optional<size_t> index;
+    std::optional<size_t> index;
 
     // The number of total handles expected after this operation. This can be
     // inferred by sum of requested handles requests less handles destroyed
@@ -322,62 +322,62 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
 
   const Operation kOperationList[] = {
       {Operation::Op::kRequestHandles, /*num_handles=*/GetMaxProcesses(),
-       /*index=*/absl::nullopt,
+       /*index=*/std::nullopt,
        /*expected_total_handles=*/GetMaxProcesses()},
 
       // Check destroying intermediate, last, and first handle when there are no
       // queued requests. Keep exactly GetMaxProcesses() requests, to ensure
       // there are in fact first, last, and intermediate requests (as long as
       // GetMaxProcesses() is at least 3).
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/1u, /*expected_total_handles=*/GetMaxProcesses() - 1},
       {Operation::Op::kRequestHandles, /*num_handles=*/1,
-       /*index=*/absl::nullopt,
+       /*index=*/std::nullopt,
        /*expected_total_handles=*/GetMaxProcesses()},
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/0u, /*expected_total_handles=*/GetMaxProcesses() - 1},
       {Operation::Op::kRequestHandles, /*num_handles=*/1,
-       /*index=*/absl::nullopt,
+       /*index=*/std::nullopt,
        /*expected_total_handles=*/GetMaxProcesses()},
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses() - 1,
        /*expected_total_handles=*/GetMaxProcesses() - 1},
       {Operation::Op::kRequestHandles, /*num_handles=*/1,
-       /*index=*/absl::nullopt,
+       /*index=*/std::nullopt,
        /*expected_total_handles=*/GetMaxProcesses()},
 
       // Queue 3 more requests, but delete the last and first of them, to test
       // deleting queued requests.
       {Operation::Op::kRequestHandles, /*num_handles=*/3,
-       /*index=*/absl::nullopt,
+       /*index=*/std::nullopt,
        /*expected_total_handles=*/GetMaxProcesses() + 3},
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses(),
        /*expected_total_handles=*/GetMaxProcesses() + 2},
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses() + 1,
        /*expected_total_handles=*/GetMaxProcesses() + 1},
 
       // Request 4 more processes.
       {Operation::Op::kRequestHandles, /*num_handles=*/4,
-       /*index=*/absl::nullopt,
+       /*index=*/std::nullopt,
        /*expected_total_handles=*/GetMaxProcesses() + 5},
 
       // Destroy the first handle and the first pending in the queue immediately
       // afterwards. The next pending request should get a process.
       {Operation::Op::kDestroyHandleAndNextInQueue,
-       /*num_handles=*/absl::nullopt, /*index=*/0u,
+       /*num_handles=*/std::nullopt, /*index=*/0u,
        /*expected_total_handles=*/GetMaxProcesses() + 3},
 
       // Destroy three more requests that have been asssigned processes, being
       // sure to destroy the first, last, and some request request with nether,
       // amongst requests with assigned processes.
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses() - 1,
        /*expected_total_handles=*/GetMaxProcesses() + 2},
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/0u, /*expected_total_handles=*/GetMaxProcesses() + 1},
-      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+      {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/1u, /*expected_total_handles=*/GetMaxProcesses()},
   };
 
@@ -686,7 +686,7 @@ TEST_F(AuctionProcessManagerTest, PidLookup) {
   // Request PID twice. Should happen asynchronously, but only use one RPC.
   base::RunLoop run_loop0, run_loop1;
   bool got_pid0 = false, got_pid1 = false;
-  absl::optional<base::ProcessId> pid0 =
+  std::optional<base::ProcessId> pid0 =
       handle->GetPid(base::BindLambdaForTesting(
           [&run_loop0, &got_pid0, expected_pid](base::ProcessId pid) {
             EXPECT_EQ(expected_pid, pid);
@@ -694,7 +694,7 @@ TEST_F(AuctionProcessManagerTest, PidLookup) {
             run_loop0.Quit();
           }));
   EXPECT_FALSE(pid0.has_value());
-  absl::optional<base::ProcessId> pid1 =
+  std::optional<base::ProcessId> pid1 =
       handle->GetPid(base::BindLambdaForTesting(
           [&run_loop1, &got_pid1, expected_pid](base::ProcessId pid) {
             EXPECT_EQ(expected_pid, pid);
@@ -714,7 +714,7 @@ TEST_F(AuctionProcessManagerTest, PidLookup) {
   EXPECT_TRUE(got_pid1);
 
   // Next attempt should be synchronous.
-  absl::optional<base::ProcessId> pid2 =
+  std::optional<base::ProcessId> pid2 =
       handle->GetPid(base::BindOnce([](base::ProcessId pid) {
         ADD_FAILURE() << "Should not get to callback in pid2 case";
       }));
@@ -739,13 +739,13 @@ TEST_F(AuctionProcessManagerTest, PidLookupAlreadyRunning) {
   base::ProcessId expected_pid = base::Process::Current().Pid();
 
   // Request PID twice. Should happen asynchronously, but only use one RPC.
-  absl::optional<base::ProcessId> pid0 =
+  std::optional<base::ProcessId> pid0 =
       handle->GetPid(base::BindOnce([](base::ProcessId pid) {
         ADD_FAILURE() << "Should not get to callback in pid0 case";
       }));
   ASSERT_TRUE(pid0.has_value());
   EXPECT_EQ(expected_pid, pid0.value());
-  absl::optional<base::ProcessId> pid1 =
+  std::optional<base::ProcessId> pid1 =
       handle->GetPid(base::BindOnce([](base::ProcessId pid) {
         ADD_FAILURE() << "Should not get to callback in pid1 case";
       }));

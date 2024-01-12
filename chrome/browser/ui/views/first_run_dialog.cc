@@ -127,5 +127,5 @@ void FirstRunDialog::WindowClosing() {
   Done();
 }
 
-BEGIN_METADATA(FirstRunDialog, views::DialogDelegateView)
+BEGIN_METADATA(FirstRunDialog)
 END_METADATA

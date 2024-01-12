@@ -54,7 +54,7 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   gfx::Size originally_configured_size_;
   base::TimeDelta last_frame_timestamp_;
   gfx::ColorSpace last_frame_color_space_;
-  int temporal_svc_frame_index = 0;
+  unsigned int temporal_svc_frame_index_ = 0;
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoFramePool frame_pool_;
   std::vector<uint8_t> resize_buf_;

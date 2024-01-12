@@ -507,7 +507,7 @@ void GpuHostImpl::OnChannelEstablished(
                             gpu::GpuFeatureInfo(),
                             gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuAccessDenied);
-    RecordLogMessage(logging::LOG_WARNING, "WARNING",
+    RecordLogMessage(logging::LOGGING_WARNING, "WARNING",
                      "Hardware acceleration is unavailable.");
     return;
   }

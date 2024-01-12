@@ -43,10 +43,8 @@ std::string GenerateLogWithMinCompressedSize(size_t min_compressed_size) {
   std::string rand_bytes = base::RandBytesAsString(min_compressed_size);
   while (Compress(rand_bytes).size() < min_compressed_size)
     rand_bytes.append(base::RandBytesAsString(min_compressed_size));
-  std::string base64_data_for_logging;
-  base::Base64Encode(rand_bytes, &base64_data_for_logging);
   SCOPED_TRACE(testing::Message()
-               << "Using random data " << base64_data_for_logging);
+               << "Using random data " << base::Base64Encode(rand_bytes));
   return rand_bytes;
 }
 
@@ -527,9 +525,8 @@ TEST_F(UnsentLogStoreTest, Signatures) {
   std::string expected_signature_base64 =
       "DA2Y9+PZ1F5y6Id7wbEEMn77nAexjy/+ztdtgTB/H/8=";
 
-  std::string actual_signature_base64;
-  base::Base64Encode(unsent_log_store.staged_log_signature(),
-                     &actual_signature_base64);
+  std::string actual_signature_base64 =
+      base::Base64Encode(unsent_log_store.staged_log_signature());
   EXPECT_EQ(expected_signature_base64, actual_signature_base64);
 
   // Test a different key results in a different signature.
@@ -547,8 +544,8 @@ TEST_F(UnsentLogStoreTest, Signatures) {
   // signature. To use previous python code change:
   // key = "secret key, don't tell anyone"
   expected_signature_base64 = "DV7z8wdDrjLkQrCzrXR3UjWsR3/YVM97tIhMnhUvfXM=";
-  base::Base64Encode(unsent_log_store_different_key.staged_log_signature(),
-                     &actual_signature_base64);
+  actual_signature_base64 =
+      base::Base64Encode(unsent_log_store_different_key.staged_log_signature());
 
   EXPECT_EQ(expected_signature_base64, actual_signature_base64);
 }

@@ -441,6 +441,18 @@ bool TruncateFile(FILE* file) {
   return true;
 }
 
+int ReadFile(const FilePath& filename, char* data, int max_size) {
+  if (max_size < 0) {
+    return -1;
+  }
+  std::optional<uint64_t> result =
+      ReadFile(filename, make_span(data, static_cast<uint32_t>(max_size)));
+  if (!result) {
+    return -1;
+  }
+  return checked_cast<int>(result.value());
+}
+
 bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   int size = checked_cast<int>(data.size());
   return WriteFile(filename, reinterpret_cast<const char*>(data.data()),

@@ -1324,7 +1324,8 @@ void ApplyParamsToFinalizeOptions(
     options.chromeos_data.emplace();
     options.chromeos_data->show_in_launcher =
         install_params.add_to_applications_menu;
-    options.chromeos_data->show_in_search = install_params.add_to_search;
+    options.chromeos_data->show_in_search_and_shelf =
+        install_params.add_to_search;
     options.chromeos_data->show_in_management =
         install_params.add_to_management;
     options.chromeos_data->is_disabled = install_params.is_disabled;

@@ -156,9 +156,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // animations.
   virtual bool IsAnimatingClosed() const;
 
-  // Returns true if the window supports translucency.
-  virtual bool IsTranslucentWindowOpacitySupported() const;
-
   // Sets opacity of the platform window.
   virtual void SetOpacity(float opacity);
 

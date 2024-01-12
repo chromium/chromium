@@ -204,12 +204,12 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(IOSFamilyLinkUserMetricsProviderTest,
-       NoProfilesAddedShouldNotLogHistogram) {
+TEST_F(IOSFamilyLinkUserMetricsProviderTest, NotSignedInLoggedAsUnsupervised) {
   // Add no profiles
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
-  histogram_tester.ExpectTotalCount(
+  histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      /*expected_count=*/0);
+      supervised_user::LogSegment::kUnsupervised,
+      /*expected_bucket_count=*/1);
 }

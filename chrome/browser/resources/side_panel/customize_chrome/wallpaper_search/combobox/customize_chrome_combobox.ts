@@ -48,6 +48,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
 
   static get properties() {
     return {
+      defaultOptionLabel: String,
       expanded_: {
         type: Boolean,
         value: false,
@@ -56,6 +57,11 @@ export class CustomizeChromeCombobox extends PolymerElement {
       },
       expandedGroups_: Object,
       highlightedElement_: Object,
+      indentDefaultOption_: {
+        type: Boolean,
+        computed: 'computeIndentDefaultOption_(items)',
+        reflectToAttribute: true,
+      },
       items: {
         type: Array,
         value: () => [],
@@ -78,10 +84,12 @@ export class CustomizeChromeCombobox extends PolymerElement {
     };
   }
 
+  defaultOptionLabel: string;
   private expanded_: boolean;
   private expandedGroups_: {[groupIndex: number]: boolean} = {};
   private highlightableElements_: HTMLElement[] = [];
   private highlightedElement_: HTMLElement|null = null;
+  private indentDefaultOption_: boolean;
   items: ComboboxGroup[]|ComboboxItem[];
   label: string;
   private lastHighlightWasByKeyboard_: boolean = false;
@@ -110,8 +118,34 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.domObserver_ = null;
   }
 
+  // The default option needs to be indented with extra padding if it sits
+  // right above an option that is not a group and does not have an image as
+  // these items have extra space for a checkmark icon.
+  private computeIndentDefaultOption_(): boolean {
+    if (this.items.length === 0) {
+      return false;
+    }
+
+    const firstItem = this.items[0];
+    if ('items' in firstItem) {
+      // First item is a group, so not indented.
+      return false;
+    }
+
+    // Only indent if there is no image in the first item.
+    return !('imagePath' in firstItem);
+  }
+
   private getAriaActiveDescendant_(): string|undefined {
     return this.highlightedElement_?.id;
+  }
+
+  private getDefaultItemAriaSelected_(): string {
+    return this.value === undefined ? 'true' : 'false';
+  }
+
+  private getGroupAriaExpanded_(groupIndex: number): string {
+    return this.expandedGroups_[groupIndex] ? 'true' : 'false';
   }
 
   private getGroupIcon_(groupIndex: number): string {
@@ -120,11 +154,16 @@ export class CustomizeChromeCombobox extends PolymerElement {
   }
 
   private getInputLabel_(): string {
-    if (this.selectedElement_) {
+    if (this.selectedElement_ && this.selectedElement_.value &&
+        this.selectedElement_.value === this.value) {
       return this.selectedElement_.textContent!;
     }
 
     return this.label;
+  }
+
+  private getItemAriaSelected_(item: ComboboxItem) {
+    return this.isItemSelected_(item) ? 'true' : 'false';
   }
 
   private highlightElement_(element: HTMLElement|null, byKeyboard: boolean) {

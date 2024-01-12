@@ -150,6 +150,11 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   media::GpuVideoAcceleratorFactories* GetGpuFactories();
 
+  // Create a webrtc Metronome driven by the same source as the decode metronome
+  // passed to the WebRTC PeerConnection, allowing blink events to be coalesced
+  // around the same ticks.
+  virtual std::unique_ptr<webrtc::Metronome> CreateDecodeMetronome();
+
   void Trace(Visitor*) const override;
 
  protected:

@@ -226,7 +226,7 @@ void CoreOobeHandler::HandleUpdateOobeUIState(int state) {
 void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
   if (reverse) {
-    event.set_flags(ui::EF_SHIFT_DOWN);
+    event.SetFlags(ui::EF_SHIFT_DOWN);
   }
   SendEventToSink(&event);
 }

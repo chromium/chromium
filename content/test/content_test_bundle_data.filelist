@@ -2116,6 +2116,7 @@ data/accessibility/event/aria-hidden-descendants-already-ignored.html
 data/accessibility/event/aria-hidden-descendants-expected-uia-win.txt
 data/accessibility/event/aria-hidden-descendants-expected-win.txt
 data/accessibility/event/aria-hidden-descendants.html
+data/accessibility/event/aria-hidden-single-descendant-display-none-expected-auralinux.txt
 data/accessibility/event/aria-hidden-single-descendant-display-none-expected-uia-win.txt
 data/accessibility/event/aria-hidden-single-descendant-display-none-expected-win.txt
 data/accessibility/event/aria-hidden-single-descendant-display-none.html
@@ -2618,6 +2619,7 @@ data/accessibility/event/value-value-changed.html
 data/accessibility/event/visibility-hidden-changed-expected-auralinux.txt
 data/accessibility/event/visibility-hidden-changed-expected-uia-win.txt
 data/accessibility/event/visibility-hidden-changed.html
+data/accessibility/form-controls/aria-owns-child-and-hidden-descendant-crash.html
 data/accessibility/form-controls/bdo-table-cell.html
 data/accessibility/form-controls/contenteditable-descendants-expected-android.txt
 data/accessibility/form-controls/contenteditable-descendants-expected-blink.txt
@@ -2627,6 +2629,7 @@ data/accessibility/form-controls/img-form-expected-blink.txt
 data/accessibility/form-controls/img-form.html
 data/accessibility/form-controls/img-map-pseudo.html
 data/accessibility/form-controls/map-inside-map.html
+data/accessibility/form-controls/progress-meter-crash.html
 data/accessibility/form-controls/role-group-expected-android.txt
 data/accessibility/form-controls/role-group-expected-blink.txt
 data/accessibility/form-controls/role-group.html
@@ -5422,6 +5425,8 @@ data/accessibility/regression/add-child-of-not-included-in-tree-chain-expected-b
 data/accessibility/regression/add-child-of-not-included-in-tree-chain.html
 data/accessibility/regression/add-click-ignored-changed-expected-blink.txt
 data/accessibility/regression/add-click-ignored-changed.html
+data/accessibility/regression/add-display-none-children-expected-blink.txt
+data/accessibility/regression/add-display-none-children.html
 data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree-expected-blink.txt
 data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree.html
 data/accessibility/regression/aria-hidden-tabindex-change-expected-blink.txt
@@ -5579,6 +5584,7 @@ data/attribution_reporting/databases/version_53.sql
 data/attribution_reporting/databases/version_54.sql
 data/attribution_reporting/databases/version_55.sql
 data/attribution_reporting/databases/version_56.sql
+data/attribution_reporting/databases/version_57.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
@@ -6385,6 +6391,8 @@ data/gpu/webcodecs/encoding-modes.html
 data/gpu/webcodecs/encoding-rate-control.html
 data/gpu/webcodecs/encoding-rate-control.js
 data/gpu/webcodecs/frame-qp-encoding.html
+data/gpu/webcodecs/frame-size-change.html
+data/gpu/webcodecs/frame-size-change.js
 data/gpu/webcodecs/svc.html
 data/gpu/webcodecs/tex-image-2d.html
 data/gpu/webcodecs/webcodecs_common.js

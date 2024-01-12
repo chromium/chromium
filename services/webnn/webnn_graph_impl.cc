@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -134,6 +135,15 @@ bool ValidateEluAttributes(const mojom::EluPtr& elu) {
   return true;
 }
 
+bool ValidateHardSigmoidAttributes(const mojom::HardSigmoidPtr& hard_sigmoid) {
+  if (std::isnan(hard_sigmoid->alpha) || std::isnan(hard_sigmoid->beta)) {
+    // The value of alpha and beta should not be NAN.
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateLeakyReluAttributes(const mojom::LeakyReluPtr& leaky_relu) {
   if (std::isnan(leaky_relu->alpha)) {
     // The value of alpha should not be NAN.
@@ -167,6 +177,8 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
       return ValidateClampAttributes(activation->get_clamp());
     case mojom::Activation::Tag::kElu:
       return ValidateEluAttributes(activation->get_elu());
+    case mojom::Activation::Tag::kHardSigmoid:
+      return ValidateHardSigmoidAttributes(activation->get_hard_sigmoid());
     case mojom::Activation::Tag::kLeakyRelu:
       return ValidateLeakyReluAttributes(activation->get_leaky_relu());
     case mojom::Activation::Tag::kLinear:
@@ -176,6 +188,7 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
     case mojom::Activation::Tag::kSoftmax:
+    case mojom::Activation::Tag::kSoftsign:
     case mojom::Activation::Tag::kTanh:
       return true;
   }
@@ -790,6 +803,19 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateHardSigmoid(const IdToOperandMap& id_to_operand_map,
+                         const mojom::HardSigmoidPtr& hard_sigmoid) {
+  if (!ValidateUnaryOperation(id_to_operand_map, hard_sigmoid,
+                              DataTypeConstraint::kFloat)) {
+    return false;
+  }
+  if (!ValidateHardSigmoidAttributes(hard_sigmoid)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateLayerNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::LayerNormalizationPtr& layer_normalization) {
@@ -1277,6 +1303,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateGather(id_to_operand_map, operation->get_gather());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kHardSigmoid:
+      return ValidateHardSigmoid(id_to_operand_map,
+                                 operation->get_hard_sigmoid());
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         operation->get_layer_normalization());
@@ -1313,6 +1342,10 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
     case mojom::Operation::Tag::kSoftplus:
       return ValidateSoftplus(id_to_operand_map, operation->get_softplus());
+    case mojom::Operation::Tag::kSoftsign:
+      return ValidateUnaryOperation(id_to_operand_map,
+                                    operation->get_softsign(),
+                                    DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, operation->get_split());
     case mojom::Operation::Tag::kTanh:
@@ -1324,6 +1357,21 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateWhere(id_to_operand_map, operation->get_where());
   }
   NOTREACHED_NORETURN();
+}
+
+// Return false if the named inputs for computation don't match the built
+// graph's expectation.
+bool ValidateInputsForComputation(
+    const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
+    const base::flat_map<std::string, size_t>& input_name_to_byte_length_map) {
+  return base::ranges::equal(
+      named_inputs, input_name_to_byte_length_map,
+      [](const auto& input, const auto& input_spec) {
+        const auto& [input_name, input_buffer] = input;
+        const auto& [input_spec_name, input_spec_byte_length] = input_spec;
+        return input_name == input_spec_name &&
+               input_buffer.size() == input_spec_byte_length;
+      });
 }
 
 }  // namespace
@@ -1441,17 +1489,18 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
 void WebNNGraphImpl::Compute(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  // Validate the inputs for computation match the built graph's expectation.
-  if (!base::ranges::equal(named_inputs,
-                           compute_resource_info_.input_name_to_byte_length_map,
-                           [](const auto& iter_a, const auto& iter_b) {
-                             // Compare the input name with the key of map and
-                             // the byte length of buffer with value of map.
-                             return iter_a.first == iter_b.first &&
-                                    iter_a.second.size() == iter_b.second;
-                           })) {
-    std::move(callback).Run(mojom::ComputeResult::kInvalidInputs,
-                            absl::nullopt);
+  if (!ValidateInputsForComputation(
+          named_inputs, compute_resource_info_.input_name_to_byte_length_map)) {
+    mojo::ReportBadMessage(
+        "The inputs for computation don't match the built graph's "
+        "expectation.");
+
+    // `mojo::ReportBadMessage()` will kill the renderer process, but Mojo
+    // complains if the callback is not run. Just run it with nonsense
+    // arguments.
+    std::move(callback).Run(mojom::ComputeResult::NewError(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Unexpected inputs received from the caller.")));
     return;
   }
 

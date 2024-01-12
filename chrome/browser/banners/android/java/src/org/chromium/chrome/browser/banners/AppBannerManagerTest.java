@@ -325,28 +325,24 @@ public class AppBannerManagerTest {
 
     private void waitUntilAmbientBadgePromptAppears(
             ChromeActivityTestRule<? extends ChromeActivity> rule) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
             WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        Criteria.checkThat(
-                                MessagesTestHelper.getMessageCount(windowAndroid), Matchers.is(1));
-                        Criteria.checkThat(
-                                MessagesTestHelper.getMessageIdentifier(windowAndroid, 0),
-                                Matchers.is(MessageIdentifier.INSTALLABLE_AMBIENT_BADGE));
-                    });
-        }
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            MessagesTestHelper.getMessageCount(windowAndroid), Matchers.is(1));
+                    Criteria.checkThat(
+                            MessagesTestHelper.getMessageIdentifier(windowAndroid, 0),
+                            Matchers.is(MessageIdentifier.INSTALLABLE_AMBIENT_BADGE));
+                });
     }
 
     private void checkAmbientBadgePromptNotExist(
             ChromeActivityTestRule<? extends ChromeActivity> rule) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
             WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
             TestThreadUtils.runOnUiThreadBlocking(
                     () ->
                             Assert.assertEquals(
                                     0, MessagesTestHelper.getMessageCount(windowAndroid)));
-        }
     }
 
     private void waitForBadgeStatus(Tab tab, int expectedValue) {
@@ -506,7 +502,6 @@ public class AppBannerManagerTest {
 
     private void dismissAmbientBadgeMessage(ChromeActivityTestRule<? extends ChromeActivity> rule)
             throws Exception {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
             WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
 
             MessageDispatcher dispatcher =
@@ -530,7 +525,6 @@ public class AppBannerManagerTest {
                             Criteria.checkThat(
                                     MessagesTestHelper.getMessageCount(windowAndroid),
                                     Matchers.is(0)));
-        }
     }
 
     @Test
@@ -789,12 +783,7 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params="
-                + "Study.Group:installable_ambient_badge_message_throttle_domains_capacity/0"
-    })
+    @CommandLineFlags.Add({"bypass-installable-message-throttle-for-testing"})
     public void testBlockedAmbientBadgeDoesNotAppearAgainForMonths() throws Exception {
         // Visit a site that is a PWA. The ambient badge should show.
         String webBannerUrl = WebappTestPage.getServiceWorkerUrl(mTestServer);
@@ -1094,10 +1083,7 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // add to home screen not supported.
     @CommandLineFlags.Add({
-        "enable-features="
-                + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE
-                + ","
-                + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE,
+        "enable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
         "disable-features=" + ChromeFeatureList.ADD_TO_HOMESCREEN_IPH
     })
     public void testInProductHelp() throws Exception {

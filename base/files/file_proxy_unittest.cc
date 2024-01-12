@@ -322,7 +322,7 @@ TEST_F(FileProxyTest, WriteAndFlush) {
   CreateProxy(File::FLAG_CREATE | File::FLAG_WRITE, &proxy);
 
   const char data[] = "foo!";
-  int data_bytes = std::size(data);
+  size_t data_bytes = std::size(data);
   {
     RunLoop run_loop;
     proxy.Write(0, data, data_bytes,
@@ -331,7 +331,7 @@ TEST_F(FileProxyTest, WriteAndFlush) {
     run_loop.Run();
   }
   EXPECT_EQ(File::FILE_OK, error_);
-  EXPECT_EQ(data_bytes, bytes_written_);
+  EXPECT_EQ(static_cast<int>(data_bytes), bytes_written_);
 
   // Flush the written data.  (So that the following read should always
   // succeed.  On some platforms it may work with or without this flush.)
@@ -345,8 +345,9 @@ TEST_F(FileProxyTest, WriteAndFlush) {
 
   // Verify the written data.
   char buffer[10];
-  EXPECT_EQ(data_bytes, base::ReadFile(TestPath(), buffer, data_bytes));
-  for (int i = 0; i < data_bytes; ++i) {
+  EXPECT_EQ(data_bytes,
+            base::ReadFile(TestPath(), make_span(buffer, data_bytes)));
+  for (size_t i = 0; i < data_bytes; ++i) {
     EXPECT_EQ(data[i], buffer[i]);
   }
 }
@@ -410,7 +411,7 @@ TEST_F(FileProxyTest, SetLength_Shrink) {
   ASSERT_EQ(7, info.size);
 
   char buffer[7];
-  EXPECT_EQ(7, base::ReadFile(TestPath(), buffer, 7));
+  EXPECT_EQ(7, base::ReadFile(TestPath(), buffer));
   int i = 0;
   for (; i < 7; ++i)
     EXPECT_EQ(kTestData[i], buffer[i]);
@@ -438,7 +439,7 @@ TEST_F(FileProxyTest, SetLength_Expand) {
   ASSERT_EQ(53, info.size);
 
   char buffer[53];
-  EXPECT_EQ(53, base::ReadFile(TestPath(), buffer, 53));
+  EXPECT_EQ(53, base::ReadFile(TestPath(), buffer));
   int i = 0;
   for (; i < 10; ++i)
     EXPECT_EQ(kTestData[i], buffer[i]);

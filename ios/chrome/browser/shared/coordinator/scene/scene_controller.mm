@@ -1489,7 +1489,6 @@ void InjectNTP(Browser* browser) {
     SnapshotTabHelper::FromWebState(currentWebState)
         ->UpdateSnapshotWithCallback(nil);
   }
-  [self.mainCoordinator prepareToShowTabGrid];
 }
 
 - (void)displayRegularTabSwitcherInGridLayout {
@@ -2315,6 +2314,22 @@ void InjectNTP(Browser* browser) {
   self.settingsNavigationController =
       [SettingsNavigationController contentSettingsControllerForBrowser:browser
                                                                delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
+- (void)showNotificationsSettings {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController showNotificationsSettings];
+    return;
+  }
+
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      notificationsSettingsControllerForBrowser:browser
+                                       delegate:self];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

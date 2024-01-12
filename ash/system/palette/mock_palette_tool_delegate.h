@@ -21,6 +21,14 @@ class MockPaletteToolDelegate : public PaletteTool::Delegate {
   MOCK_METHOD(void, HidePalette, (), (override));
   MOCK_METHOD(void, HidePaletteImmediately, (), (override));
   MOCK_METHOD(aura::Window*, GetWindow, (), (override));
+  MOCK_METHOD(void,
+              RecordPaletteOptionsUsage,
+              (PaletteTrayOptions option, PaletteInvocationMethod method),
+              (override));
+  MOCK_METHOD(void,
+              RecordPaletteModeCancellation,
+              (PaletteModeCancelType type),
+              (override));
 };
 
 }  // namespace ash

@@ -92,7 +92,7 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
                           policy::ManagedSessionService::Observer>
       managed_session_observation_{this};
 
-  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<base::Clock> clock_;
 
   // To be able to access |kEnableKioskAndGuestLoginLogoutReporting| in tests.
   friend class LoginLogoutTestHelper;

@@ -52,3 +52,17 @@ source_set("eg2_tests") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plus_address_bottom_sheet_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/plus_addresses",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

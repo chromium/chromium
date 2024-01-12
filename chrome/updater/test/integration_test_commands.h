@@ -18,7 +18,7 @@ class GURL;
 namespace base {
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 namespace updater {
 namespace test {
@@ -43,9 +43,10 @@ class IntegrationTestCommands
   virtual void Install() const = 0;
   virtual void InstallUpdaterAndApp(
       const std::string& app_id,
-      const bool is_silent_install,
+      bool is_silent_install,
       const std::string& tag,
-      const std::string& child_window_text_to_find) const = 0;
+      const std::string& child_window_text_to_find,
+      bool always_launch_cmd) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
@@ -150,6 +151,8 @@ class IntegrationTestCommands
 #if BUILDFLAG(IS_MAC)
   virtual void PrivilegedHelperInstall() const = 0;
   virtual void DeleteLegacyUpdater() const = 0;
+  virtual void ExpectPrepareToRunBundleSuccess(
+      const base::FilePath& bundle_path) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
   virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,

@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
   settings_browser->window()->Close();
   // Ensure `settings_browser` is closed.
   TestBrowserClosedWaiter browser_closed_waiter{settings_browser};
-  browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
 
   // No browsers are opened in the chrome app kiosk session.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);

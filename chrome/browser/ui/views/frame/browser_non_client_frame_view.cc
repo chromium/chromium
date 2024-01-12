@@ -317,5 +317,5 @@ int BrowserNonClientFrameView::GetSystemMenuY() const {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-BEGIN_METADATA(BrowserNonClientFrameView, views::NonClientFrameView)
+BEGIN_METADATA(BrowserNonClientFrameView)
 END_METADATA

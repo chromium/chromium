@@ -114,7 +114,7 @@ public class StatusBarColorController
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
                 @Override
-                public void onStartedShowing(int layoutType) {
+                public void onStartedShowing(@LayoutType int layoutType) {
                     if (layoutType != LayoutType.TAB_SWITCHER
                             && layoutType != LayoutType.START_SURFACE) {
                         return;
@@ -127,7 +127,7 @@ public class StatusBarColorController
                 }
 
                 @Override
-                public void onFinishedHiding(int layoutType) {
+                public void onFinishedHiding(@LayoutType int layoutType) {
                     if (layoutType != LayoutType.TAB_SWITCHER
                             && layoutType != LayoutType.START_SURFACE) {
                         return;
@@ -191,7 +191,7 @@ public class StatusBarColorController
                     }
 
                     @Override
-                    public void onDidChangeThemeColor(Tab tab, int color) {
+                    public void onDidChangeThemeColor(Tab tab, @ColorInt int color) {
                         updateStatusBarColor();
                     }
 
@@ -355,7 +355,7 @@ public class StatusBarColorController
 
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
     @Override
-    public void onToolbarColorChanged(int color) {
+    public void onToolbarColorChanged(@ColorInt int color) {
         if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
             return;
         }
@@ -396,7 +396,7 @@ public class StatusBarColorController
     /**
      * @return The current scrim color for the status bar.
      */
-    public int getScrimColorForTesting() {
+    public @ColorInt int getScrimColorForTesting() {
         return mScrimColor;
     }
 
@@ -426,6 +426,7 @@ public class StatusBarColorController
     /** Calculate and update the status bar's color. */
     public void updateStatusBarColor() {
         mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
+        @ColorInt
         int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
         statusBarColor = applyCurrentScrimToColor(statusBarColor);
         setStatusBarColor(mWindow, statusBarColor);
@@ -441,7 +442,8 @@ public class StatusBarColorController
 
     private @ColorInt int calculateBaseStatusBarColor() {
         // Return overridden status bar color from StatusBarColorProvider if specified.
-        final int baseStatusBarColor = mStatusBarColorProvider.getBaseStatusBarColor(mCurrentTab);
+        @ColorInt
+        int baseStatusBarColor = mStatusBarColorProvider.getBaseStatusBarColor(mCurrentTab);
         if (baseStatusBarColor == DEFAULT_STATUS_BAR_COLOR) {
             return calculateDefaultStatusBarColor();
         }
@@ -548,10 +550,7 @@ public class StatusBarColorController
             mScrimColor = context.getColor(R.color.default_scrim_color);
         }
         // Apply a color overlay if the scrim is showing.
-        float scrimColorAlpha = (mScrimColor >>> 24) / 255f;
-        int scrimColorOpaque = mScrimColor | 0xFF000000;
-        return ColorUtils.getColorWithOverlay(
-                color, scrimColorOpaque, mStatusBarScrimFraction * scrimColorAlpha);
+        return ColorUtils.overlayColor(color, mScrimColor, mStatusBarScrimFraction);
     }
 
     /**

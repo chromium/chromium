@@ -385,7 +385,7 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
   }
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 class DriveFsEventRouterImpl : public DriveFsEventRouter {
@@ -462,9 +462,8 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
     extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<const std::map<base::FilePath, std::unique_ptr<FileWatcher>>,
-                ExperimentalAsh>
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<const std::map<base::FilePath, std::unique_ptr<FileWatcher>>>
       file_watchers_;
 };
 

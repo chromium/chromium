@@ -336,7 +336,6 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
       browser, anchor_view, bubble_parameters, std::move(callback));
 }
 
-BEGIN_METADATA(DiceWebSigninInterceptionBubbleView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(DiceWebSigninInterceptionBubbleView)
 ADD_READONLY_PROPERTY_METADATA(bool, Accepted)
 END_METADATA

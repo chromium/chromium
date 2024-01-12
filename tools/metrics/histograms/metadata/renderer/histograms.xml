@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -440,14 +440,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to balance lines of paragraphs.</summary>
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance.Fail" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -456,14 +456,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapPretty" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to optimize line breaks.</summary>
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapPretty.Fail" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to try optimizing lines breaks but failed.</summary>
@@ -511,8 +511,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.PossibleSynchronizedScroll" enum="BooleanSuccess"
-    expires_after="2024-04-28">
+<histogram name="Renderer.PossibleSynchronizedScroll2" enum="BooleanSuccess"
+    expires_after="2024-06-30">
   <owner>vollick@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -531,9 +531,40 @@ chromium-metrics-reviews@google.com.
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Counts the number of unused preloads per ResourceType.
+    Renderer.Preload.UnusedResource2.LinkPreload is an equivalent metric that
+    records as enum values.
 
     Warning: an unexpected reorder happened in Apr 2021
     (https://crrev.com/c/2798954). Please do not trust older reports.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Preload.UnusedResource2{Trigger}" enum="ResourceType"
+    expires_after="2024-03-21">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Counts the number of unused preloads created {Trigger} per ResourceType.
+    Unlike Renderer.Preload.UnusedResource, this records enum value as it is,
+    not BooleanSuccess.
+
+    This is recorded after the document completes.
+  </summary>
+  <token key="Trigger">
+    <variant name="" summary="regardless of whether link preload or not"/>
+    <variant name=".LinkPreload" summary="by link preload"/>
+    <variant name=".NoLinkPreload" summary="by not link preload"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.Preload.UnusedResourceCount" units="count"
+    expires_after="2024-03-21">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Counts the total number of unused preloads.
+
+    This is recorded after the document completes.
   </summary>
 </histogram>
 
@@ -550,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
-    enum="Boolean" expires_after="2024-04-28">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>amanvr@chromium.org</owner>
   <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -564,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -574,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.QueueingDuration.{Priority}Priority"
-    units="microseconds" expires_after="2024-04-28">
+    units="microseconds" expires_after="2024-06-30">
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

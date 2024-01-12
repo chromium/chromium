@@ -147,13 +147,8 @@ class WebStateID;
 // Returns TabGridTransitionItem for the active cell.
 - (TabGridTransitionItem*)transitionItemForActiveCell;
 
-// Notifies the ViewController that its content might soon be displayed.
-- (void)prepareForAppearance;
 // Notifies the ViewController that its content is being displayed.
 - (void)contentWillAppearAnimated:(BOOL)animated;
-- (void)contentDidAppear;
-// Notifies the ViewController that its content is being hidden.
-- (void)contentWillDisappear;
 
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;

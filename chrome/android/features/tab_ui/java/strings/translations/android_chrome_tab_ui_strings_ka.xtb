@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">გსურთ, დახუროთ ძველი ჩანართები?</translation>
 <translation id="1215127405478249895">შეამოწმეთ ჩანართებს</translation>
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
+<translation id="1326271443836399892">შეამოწმეთ დალაგების ამჟამინდელი პარამეტრები.</translation>
 <translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
 <translation id="3008554597174452548">პროდუქტისთვის თვალის მიდევნების შეწყვეტა</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> დაარქივებული ჩანართი გაქვთ}other{<ph name="TABS_COUNT_MANY" /> დაარქივებული ჩანართი გაქვთ}}</translation>
 <translation id="3194464645767632461">შეფასება</translation>
 <translation id="3291470810748040983">თქვენ მიიღებთ გაფრთხილებას, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">ამ მაღაზიის შესახებ ინფორმაცია დახურულია</translation>
 <translation id="9150694013019234766">გადაერთეთ ჩანართებს შორის თქვენს ჩანართების ჯგუფში, ეკრანის ქვედა ნაწილში</translation>
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>
+<translation id="955558140275419384">შეამოწმეთ დასალაგებლად დაარქივებული ყველა ჩანართი ამ რედაქტორზე გადასვლით.</translation>
 <translation id="959682366969460160">იყავით ორგანიზებული</translation>
 </translationbundle>

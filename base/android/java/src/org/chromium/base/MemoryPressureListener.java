@@ -10,6 +10,7 @@ import android.content.ComponentCallbacks2;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureCallback;
 
 /**
@@ -98,6 +99,15 @@ public class MemoryPressureListener {
         }
     }
 
+    public static void onPreFreeze() {
+        // We only need the library to be loaded, not the whole browser
+        // to be initialized because the native side would have no tasks
+        // to run in this case (they are registered at various points by
+        // callers elsewhere).
+        if (!LibraryLoader.getInstance().isInitialized()) return;
+        MemoryPressureListenerJni.get().onPreFreeze();
+    }
+
     /**
      * Used by applications to simulate a memory pressure signal. By throwing certain intent
      * actions.
@@ -139,5 +149,7 @@ public class MemoryPressureListener {
     @NativeMethods
     interface Natives {
         void onMemoryPressure(@MemoryPressureLevel int pressure);
+
+        void onPreFreeze();
     }
 }

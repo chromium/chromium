@@ -32,9 +32,9 @@ namespace payments {
 namespace {
 
 class BorderedRowView : public views::View {
- public:
-  METADATA_HEADER(BorderedRowView);
+  METADATA_HEADER(BorderedRowView, views::View)
 
+ public:
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(views::CreateSolidSidedBorder(
@@ -43,7 +43,7 @@ class BorderedRowView : public views::View {
   }
 };
 
-BEGIN_METADATA(BorderedRowView, views::View)
+BEGIN_METADATA(BorderedRowView)
 END_METADATA
 
 }  // namespace
@@ -400,7 +400,7 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   return row;
 }
 
-BEGIN_METADATA(SecurePaymentConfirmationDialogView, views::DialogDelegateView)
+BEGIN_METADATA(SecurePaymentConfirmationDialogView)
 END_METADATA
 
 }  // namespace payments

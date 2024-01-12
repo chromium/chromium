@@ -89,29 +89,15 @@
     margin-block-start: 16px;
   }
 
+  ::slotted([slot=button-container]) {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
   div#footer {
     display: flex;
     margin-block-start: 32px;
-  }
-
-  div#dots {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
-    gap: 12px;
-    /* TODO(petermarshall): Remove dots or make visible again. */
-    visibility: hidden;
-  }
-
-  div#dots > div {
-    background-color: var(--cros-button-stroke-color-secondary);
-    border-radius: 50%;
-    height: 8px;
-    width: 8px;
-  }
-
-  div#dots > div.active {
-    background-color: var(--cros-sys-primary);
   }
 
   cr-button {
@@ -168,7 +154,6 @@
       <slot name="body"></slot>
     </div>
     <div id="footer">
-      <div id="dots"></div>
       <slot name="button-container"></slot>
     </div>
   </div>

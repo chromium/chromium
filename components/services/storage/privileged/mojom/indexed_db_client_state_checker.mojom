@@ -39,6 +39,9 @@ interface IndexedDBClientStateChecker {
       pending_receiver<IndexedDBClientKeepActive>? keep_active
   ) => (bool was_active);
 
+  // Binds another mojo connection to `this`.
+  MakeClone(pending_receiver<IndexedDBClientStateChecker> receiver);
+
   // Summary of allowed state transitions under different scenarios.
   // There are three possible states for the IndexedDB client: active,
   // inactive and destroyed.

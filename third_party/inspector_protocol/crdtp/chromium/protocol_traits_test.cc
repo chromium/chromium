@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/inspector_protocol/crdtp/test_platform.h"
-
-#include "base/test/values_test_util.h"
 #include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
+
+#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
+#include "third_party/inspector_protocol/crdtp/json.h"
+#include "third_party/inspector_protocol/crdtp/test_platform.h"
 
 namespace crdtp {
 
@@ -151,6 +153,27 @@ TEST(ProtocolTraits, DictValueSerialization) {
               IsJson(base::Value(dict.Clone())));
   EXPECT_THAT(RoundTrip(base::Value(dict.Clone())),
               IsJson(base::Value(dict.Clone())));
+}
+
+TEST(ProtocolTraits, DictValueJSONConversion) {
+  base::Value::Dict dict;
+
+  dict.Set("int", 42);
+  dict.Set("double", 2.718281828459045);
+  dict.Set("string", "foo");
+  dict.Set("list", base::Value(MakeList("bar", 42)));
+  dict.Set("null", base::Value());
+  dict.Set("dict", dict.Clone());
+
+  std::vector<uint8_t> bytes;
+  ProtocolTypeTraits<base::Value::Dict>::Serialize(dict, &bytes);
+
+  std::string json;
+  json::ConvertCBORToJSON(SpanFrom(bytes), &json);
+
+  auto result = base::JSONReader::ReadDict(json);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(*result, base::test::DictionaryHasValues(dict));
 }
 
 }  // namespace

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugués con teclado internacional estadounidense</translation>
 <translation id="1629521517399325891">O certificado de usuario non está dispoñible para a autenticación da rede.</translation>
 <translation id="1641780993263690097">Chinés (pinyin)</translation>
-<translation id="1646019627374511909">Activando acceso sen conexión a <ph name="NUMBER_OF_ITEMS" /> ficheiros</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Tes ocupado todo o espazo de almacenamento de Google Workspace para a unidade compartida.</translation>
 <translation id="1661867754829461514">Non se atopa o PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Folla de cálculo de Google</translation>
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3511705761158917664">Preparando sincronización de <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="3522708245912499433">Portugués</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">A política do administrador bloqueou a función de copiar <ph name="COUNT" /> ficheiros</translation>
 <translation id="6509122719576673235">Noruegués</translation>
 <translation id="6528513914570774834">Permitir que outros usuarios deste dispositivo utilicen esta rede</translation>
-<translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">Produciuse un erro. É posible que non se eliminen algúns elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Concede permiso ás aplicacións de Linux para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Estás sen conexión. Retomarase a sincronización de ficheiros cando teñas conexión a Internet</translation>
 <translation id="7589661784326793847">Espere só un segundo</translation>
-<translation id="7592775719802218421">Activando acceso sen conexión a <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">Serbio</translation>
 <translation id="7603724359189955920">Cuadrícula</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> xa existe. Cámbialle o nome e téntao de novo.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8147028810663464959">A largura do carácter é completa</translation>
 <translation id="8151638057146502721">Configurar</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erro.}other{# erros.}}</translation>
 <translation id="8154842056504218462">Seleccionáronse todas as entradas.</translation>
 <translation id="8157684860301034423">Non se puido recuperar a información da aplicación.</translation>
 <translation id="8175731104491895765">Francés (Bélxica)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Concede permiso a <ph name="VM_NAME" /> para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
+<translation id="8377269993083688872">Deseños de correo electrónico</translation>
 <translation id="8386903983509584791">Finalizou a busca</translation>
 <translation id="8387733224523483503">Extraeuse <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensións</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Selecciona un ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>
-<translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos...</translation>
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>
 <translation id="8790981080411996443">Persoa regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advertencia.}other{# advertencias.}}</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Produciuse un erro na compresión. Xa existe o elemento "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Español (España)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Xa existe un ficheiro denominado "<ph name="FILE_NAME" />". Escolle un nome diferente.</translation>
 <translation id="9046895021617826162">Erro na conexión</translation>
 <translation id="9065512565307033593">Se non levas a cabo a verificación correctamente, desactivaráseche o acceso á rede.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advertencia.}other{<ph name="COUNT" /> advertencias.}}</translation>
 <translation id="908378762078012445">Ruso con teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Número de páxinas</translation>

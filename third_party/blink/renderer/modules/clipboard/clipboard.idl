@@ -13,24 +13,29 @@ dictionary ClipboardUnsanitizedFormats {
     Exposed=Window
 ] interface Clipboard : EventTarget {
     [MeasureAs=AsyncClipboardAPIRead,
-     CallWith=ScriptState
+     CallWith=ScriptState,
+     RaisesException
     ] Promise<sequence<ClipboardItem>> read();
 
     [MeasureAs=AsyncClipboardAPIUnsanitizedRead,
      RuntimeEnabled=ClipboardUnsanitizedContent,
-     CallWith=ScriptState
+     CallWith=ScriptState,
+     RaisesException
     ] Promise<sequence<ClipboardItem>> read(ClipboardUnsanitizedFormats formats);
 
     [MeasureAs=AsyncClipboardAPIReadText,
-     CallWith=ScriptState
+     CallWith=ScriptState,
+     RaisesException
     ] Promise<DOMString> readText();
 
 
     [MeasureAs=AsyncClipboardAPIWrite,
-     CallWith=ScriptState
+     CallWith=ScriptState,
+     RaisesException
     ] Promise<void> write(sequence<ClipboardItem> data);
 
     [MeasureAs=AsyncClipboardAPIWriteText,
-     CallWith=ScriptState
+     CallWith=ScriptState,
+     RaisesException
     ] Promise<void> writeText(DOMString data);
 };

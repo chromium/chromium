@@ -10,9 +10,11 @@
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
@@ -54,7 +56,7 @@ class MockCapturedSurfaceControlPermissionManager
   }
 
  private:
-  absl::optional<CSCPermissionResult> result_;
+  std::optional<CSCPermissionResult> result_;
 };
 
 using MockPermissionManager = MockCapturedSurfaceControlPermissionManager;
@@ -69,6 +71,22 @@ base::OnceCallback<void(CSCResult)> MakeCallbackExpectingResult(
         run_loop->Quit();
       },
       run_loop, expected_result);
+}
+
+// Make a callback that expects `result` and then unblock `run_loop`.
+base::OnceCallback<void(std::optional<int>, CSCResult)>
+MakeGetZoomLevelCallbackExpectingResult(base::RunLoop* run_loop,
+                                        std::optional<int> expected_zoom_level,
+                                        CSCResult expected_result) {
+  return base::BindOnce(
+      [](base::RunLoop* run_loop, std::optional<int> expected_zoom_level,
+         CSCResult expected_result, std::optional<int> zoom_level,
+         CSCResult result) {
+        EXPECT_EQ(zoom_level, expected_zoom_level);
+        EXPECT_EQ(result, expected_result);
+        run_loop->Quit();
+      },
+      run_loop, expected_zoom_level, expected_result);
 }
 
 class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
@@ -116,6 +134,59 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<TestWebContents> capturing_wc_;
   std::unique_ptr<TestWebContents> captured_wc_;
 };
+
+// TODO(crbug.com/1466247): Remove this test suite after the getZoomLevel() API
+// is made synchronous.
+class CapturedSurfaceControllerGetZoomLevelTest
+    : public CapturedSurfaceControllerTestBase {
+ public:
+  ~CapturedSurfaceControllerGetZoomLevelTest() override = default;
+};
+
+TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelSuccess) {
+  content::HostZoomMap::SetZoomLevel(captured_wc_.get(),
+                                     blink::PageZoomFactorToZoomLevel(0.9));
+  base::RunLoop run_loop;
+  controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
+      &run_loop, 90, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelUnknownError) {
+  base::RunLoop run_loop;
+  captured_wc_.reset();
+  controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
+      &run_loop, std::nullopt, CSCResult::kCapturedSurfaceNotFoundError));
+  run_loop.Run();
+}
+
+class CapturedSurfaceControllerSetZoomLevelTest
+    : public CapturedSurfaceControllerTestBase,
+      public ::testing::WithParamInterface<int> {
+ public:
+  CapturedSurfaceControllerSetZoomLevelTest() : zoom_level_(GetParam()) {}
+  const int zoom_level_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CapturedSurfaceControllerSetZoomLevelTest,
+    ::testing::Values(
+        static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)),
+        static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor))));
+
+TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  controller_->SetZoomLevel(
+      zoom_level_, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+
+  EXPECT_EQ(zoom_level_,
+            std::round(100 * blink::PageZoomLevelToZoomFactor(
+                                 content::HostZoomMap::GetZoomLevel(
+                                     captured_wc_.get()))));
+}
 
 enum class CapturedSurfaceControlAPI {
   kSendWheel,

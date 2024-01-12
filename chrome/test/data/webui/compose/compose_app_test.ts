@@ -5,7 +5,7 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeState, ComposeStatus, ConsentState, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeState, ComposeStatus, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -38,16 +38,23 @@ suite('ComposeApp', () => {
 
   function mockResponse(
       result: string = 'some response',
-      status: ComposeStatus = ComposeStatus.kOk): Promise<void> {
+      status: ComposeStatus = ComposeStatus.kOk,
+      onDeviceEvaluationUsed = false): Promise<void> {
     testProxy.remote.responseReceived(
-        {status: status, undoAvailable: false, result});
+        {status: status, undoAvailable: false, result, onDeviceEvaluationUsed});
     return testProxy.remote.$.flushForTesting();
   }
 
-  async function initializeNewAppWithConsentAndMsbbState(
-      consent: ConsentState, msbb: boolean): Promise<ComposeAppElement> {
+  function mockPartialResponse(result: string = 'partial response'):
+      Promise<void> {
+    testProxy.remote.partialResponseReceived({result});
+    return testProxy.remote.$.flushForTesting();
+  }
+
+  async function initializeNewAppWithFirstRunAndMsbbState(
+      fre: boolean, msbb: boolean): Promise<ComposeAppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setOpenMetadata({consentState: consent, msbbState: msbb});
+    testProxy.setOpenMetadata({freComplete: fre, msbbState: msbb});
     const newApp = document.createElement('compose-app');
     document.body.appendChild(newApp);
     await flushTasks();
@@ -96,10 +103,19 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.submitButton));
     assertTrue(app.$.textarea.readonly);
     assertTrue(isVisible(app.$.acceptButton));
+    assertFalse(isVisible(app.$.onDeviceUsedFooter));
 
     // Clicking on accept button calls acceptComposeResult.
     app.$.acceptButton.click();
     await testProxy.whenCalled('acceptComposeResult');
+  });
+
+  test('OnlyOneErrorShows', async () => {
+    mockInput('x'.repeat(2501));
+    app.$.submitButton.click();
+    assertTrue(app.$.submitButton.disabled);
+    assertTrue(isVisible(app.$.textarea.$.tooLongError));
+    assertFalse(isVisible(app.$.textarea.$.tooShortError));
   });
 
   test('AcceptButtonText', async () => {
@@ -152,7 +168,7 @@ suite('ComposeApp', () => {
         app.$.resultContainer.textContent!.includes('Refreshed output.'));
   });
 
-  test('UpdatesScrollableBodyAfterResults', async () => {
+  test('UpdatesScrollableBodyAfterResize', async () => {
     assertTrue(app.$.body.hasAttribute('scrollable'));
 
     mockInput('Some fake input.');
@@ -169,56 +185,55 @@ suite('ComposeApp', () => {
         app.$.body, () => app.$.body.classList.contains('can-scroll'));
     assertEquals(220, app.$.body.offsetHeight);
     assertTrue(220 < app.$.body.scrollHeight);
+
+    // Mock resizing result container down to a 50px height. This should result
+    // in the body changing height, triggering the updates to the CSS classes.
+    // At this point, 50px is too short to scroll, so it should not have the
+    // 'can-scroll' class.
+    app.$.resultContainer.style.minHeight = '50px';
+    app.$.resultContainer.style.height = '50px';
+    app.$.resultContainer.style.overflow = 'hidden';
+    await whenCheck(
+        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
   });
 
-  test('ConsentandMsbbStateDeterminesViewState', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
-    // Check correct visibility for consent view state
-    assertFalse(isVisible(appWithConsentDialog.$.appDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.consentDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.consentFooter));
-    assertFalse(isVisible(appWithConsentDialog.$.disclaimerFooter));
-    assertFalse(isVisible(appWithConsentDialog.$.freMsbbDialog));
+  test('FirstRunAndMsbbStateDetermineViewState', async () => {
+    // Check correct visibility for FRE view state.
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(false, false);
+    assertTrue(isVisible(appWithFirstRunDialog.$.firstRunDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.appDialog));
 
-    const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentAndMsbbState(
-            ConsentState.kExternalConsented, true);
-    // Check correct visibility for disclaimer view state
-    assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.consentFooter));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.disclaimerFooter));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
-
-    const appWithMSBBDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kConsented, false);
-    // Check correct visibility for main app view state
-    assertFalse(isVisible(appWithMSBBDialog.$.appDialog));
-    assertFalse(isVisible(appWithMSBBDialog.$.consentDialog));
+    // Check correct visibility for MSBB view state.
+    const appWithMSBBDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, false);
+    assertFalse(isVisible(appWithMSBBDialog.$.firstRunDialog));
     assertTrue(isVisible(appWithMSBBDialog.$.freMsbbDialog));
+    assertFalse(isVisible(appWithMSBBDialog.$.appDialog));
 
-    const appWithMainDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kConsented, true);
     // Check correct visibility for main app view state
-    assertTrue(isVisible(appWithMainDialog.$.appDialog));
-    assertFalse(isVisible(appWithMainDialog.$.consentDialog));
+    const appWithMainDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, true);
+    assertFalse(isVisible(appWithMainDialog.$.firstRunDialog));
     assertFalse(isVisible(appWithMainDialog.$.freMsbbDialog));
+    assertTrue(isVisible(appWithMainDialog.$.appDialog));
   });
 
-  test('ConsentCloseButton', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
 
-    appWithConsentDialog.$.closeButtonConsent.click();
-    // Close reason should match that given to the consent close button.
+  test('FirstRunCloseButton', async () => {
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, false);
+
+    appWithFirstRunDialog.$.firstRunCloseButton.click();
+    // Close reason should match that given to the FRE close button.
     const closeReason = await testProxy.whenCalled('closeUi');
-    assertEquals(CloseReason.kConsentCloseButton, closeReason);
+    assertEquals(CloseReason.kFirstRunCloseButton, closeReason);
   });
 
   test('MSBBCloseButton', async () => {
-    const appWithMsbbDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kConsented, false);
+    const appWithMsbbDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, false);
 
     appWithMsbbDialog.$.closeButtonMSBB.click();
     // Close reason should match that given to the consent close button.
@@ -226,60 +241,26 @@ suite('ComposeApp', () => {
     assertEquals(CloseReason.kMSBBCloseButton, closeReason);
   });
 
-  test('ConsentNoThanksButton', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
+  test('FirstRunLetsGoButtonToMainDialog', async () => {
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(false, true);
 
-    appWithConsentDialog.$.consentNoThanksButton.click();
-    // Close reason should match that given to the consent no thanks button.
-    const closeReason = await testProxy.whenCalled('closeUi');
-    assertEquals(CloseReason.kPageContentConsentDeclined, closeReason);
+    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    // View state should change from FRE UI to main app UI.
+    assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
+    assertTrue(isVisible(appWithFirstRunDialog.$.appDialog));
   });
 
-  test('ConsentYesButton', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
+  test('FirstRunLetsGoButtonToMSBBDialog', async () => {
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(false, false);
 
-    appWithConsentDialog.$.consentYesButton.click();
-    // View state should change from consent UI to main app UI.
-    assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.appDialog));
-    assertFalse(isVisible(appWithConsentDialog.$.freMsbbDialog));
-  });
-
-  test('ConsentYesButtonWithoutMSBB', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, false);
-
-    appWithConsentDialog.$.consentYesButton.click();
-    // View state should change from consent UI to MSBB UI.
-    assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
-    assertFalse(isVisible(appWithConsentDialog.$.appDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.freMsbbDialog));
-  });
-
-  test('DisclaimerLetsGoButton', async () => {
-    const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentAndMsbbState(
-            ConsentState.kExternalConsented, true);
-
-    appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
-    // View state should change from disclaimer UI to MSBB UI.
-    assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.appDialog));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
-  });
-
-  test('DisclaimerLetsGoButtonWithoutMSBB', async () => {
-    const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentAndMsbbState(
-            ConsentState.kExternalConsented, false);
-
-    appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
-    // View state should change from disclaimer UI to main app UI.
-    assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
+    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    // View state should change from FRE UI to MSBB UI.
+    assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
+    assertTrue(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.appDialog));
   });
 
   test('InitializesWithState', async () => {
@@ -320,6 +301,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertTrue(isVisible(appWithResult.$.resultContainer));
@@ -335,6 +317,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertFalse(appWithUndo.$.undoButton.disabled);
@@ -347,6 +330,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertTrue(isVisible(appWithResultAndLoading.$.loading));
@@ -364,6 +348,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertTrue(isVisible(appEditingPrompt.$.editTextarea));
@@ -582,6 +567,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     testProxy.setUndoResponse({
@@ -590,6 +576,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'some undone result',
+        onDeviceEvaluationUsed: false,
       },
       webuiState: JSON.stringify({
         input: 'my old input',
@@ -625,5 +612,22 @@ suite('ComposeApp', () => {
     }));
     const args = await testProxy.whenCalled('setUserFeedback');
     assertEquals(args.reason, args.UserFeedback);
+  });
+
+  test('PartialResponseIsShown', async () => {
+    mockInput('Some fake input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+
+    // A partial response is shown.
+    await mockPartialResponse('partial response');
+    assertTrue(isVisible(app.$.partialResultText));
+    assertEquals(app.$.partialResultText.innerText.trim(), 'partial response');
+
+    // The final response hides the partial response text.
+    await mockResponse(
+        'some response', ComposeStatus.kOk, /*onDeviceEvaluationUsed=*/ true);
+    assertFalse(isVisible(app.$.partialResultText));
+    assertTrue(isVisible(app.$.onDeviceUsedFooter));
   });
 });

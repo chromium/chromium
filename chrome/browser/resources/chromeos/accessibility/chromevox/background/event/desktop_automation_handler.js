@@ -685,10 +685,16 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         return;
       }
 
-      // Menu items and IME candidates always announce on selection events,
-      // independent of focus.
-      if (AutomationPredicate.menuItem(target) ||
-          target.role === RoleType.IME_CANDIDATE) {
+      // IME candidates are announced, independent of focus.
+      // This shouldn't move ChromeVoxRange to keep editing work.
+      if (target.role === RoleType.IME_CANDIDATE) {
+        const range = CursorRange.fromNode(target);
+        new Output().withRichSpeech(range, null, evt.type).go();
+        return;
+      }
+
+      // Menu items always announce on selection events, independent of focus.
+      if (AutomationPredicate.menuItem(target)) {
         override = true;
       }
 

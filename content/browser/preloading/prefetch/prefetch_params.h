@@ -5,13 +5,12 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
-
 #include "url/gurl.h"
 
 namespace content {
@@ -39,7 +38,7 @@ size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches();
 // The maximum number of prefetch requests to start from a page. A return value
 // of nullopt means unlimited. Negative values given by the field trial return
 // nullopt.
-absl::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage();
+std::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage();
 
 // Returns true if an ineligible prefetch request should be put on the network,
 // but not cached, to disguise the presence of cookies (or other criteria). The

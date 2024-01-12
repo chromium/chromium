@@ -57,6 +57,9 @@ class ModelTypeControllerDelegate {
 
   // Clear metadata if the model is stopped.
   virtual void ClearMetadataIfStopped() = 0;
+
+  // Simulates model error from the bridge.
+  virtual void ReportBridgeErrorForTest() = 0;
 };
 
 }  // namespace syncer

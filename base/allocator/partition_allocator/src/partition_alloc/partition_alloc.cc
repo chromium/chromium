@@ -73,7 +73,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       internal::MaxSystemPagesPerRegularSlotSpan() <= 16,
       "System pages per slot span must be no greater than 16.");
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   STATIC_ASSERT_OR_PA_CHECK(
       internal::GetPartitionRefCountIndexMultiplierShift() <
           std::numeric_limits<size_t>::max() / 2,
@@ -94,7 +94,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
           internal::SystemPageSize(),
       "PartitionRefCount table size must be smaller than or equal to "
       "<= SystemPageSize().");
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   PA_DCHECK(on_out_of_memory);
   internal::g_oom_handling_function = on_out_of_memory;

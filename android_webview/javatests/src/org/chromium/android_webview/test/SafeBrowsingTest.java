@@ -56,7 +56,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
+import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
 import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.safe_browsing.SafetyNetApiHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -70,10 +73,11 @@ import java.util.Arrays;
 /**
  * Test suite for SafeBrowsing.
  *
- * Ensures that interstitials can be successfully created for malicous pages.
+ * <p>Ensures that interstitials can be successfully created for malicious pages.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@EnableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
 public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -204,7 +208,64 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         }
     }
 
-    /** A fake PlatformServiceBridge that allows tests to make safe browsing requests without GMS. */
+    /**
+     * A fake SafeBrowsingApiHandler which treats URLs ending in certain HTML paths as malicious
+     * URLs that should be blocked.
+     */
+    public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
+        private SafeBrowsingApiHandler.Observer mObserver;
+        // Corresponding to SafeBrowsingResponseStatus.SUCCESS_WITH_LOCAL_BLOCKLIST
+        private static final int RESPONSE_STATUS_SUCCESS_WITH_LOCAL_BLOCK_LIST = 0;
+        private static final int NO_THREAT = 0;
+        private static final int PHISHING_CODE = 2;
+        private static final int MALWARE_CODE = 4;
+        private static final int UNWANTED_SOFTWARE_CODE = 3;
+        private static final int BILLING_CODE = 15;
+
+        // Mock time it takes for a lookup request to complete.
+        private static final long CHECK_DELTA_US = 10;
+
+        @Override
+        public void startUriLookup(long callbackId, String uri, int[] threatTypes, int protocol) {
+            final int detectedType;
+            Arrays.sort(threatTypes);
+            if (uri.endsWith(PHISHING_HTML_PATH)
+                    && Arrays.binarySearch(threatTypes, PHISHING_CODE) >= 0) {
+                detectedType = PHISHING_CODE;
+            } else if (uri.endsWith(MALWARE_HTML_PATH)
+                    && Arrays.binarySearch(threatTypes, MALWARE_CODE) >= 0) {
+                detectedType = MALWARE_CODE;
+            } else if (uri.endsWith(UNWANTED_SOFTWARE_HTML_PATH)
+                    && Arrays.binarySearch(threatTypes, UNWANTED_SOFTWARE_CODE) >= 0) {
+                detectedType = UNWANTED_SOFTWARE_CODE;
+            } else if (uri.endsWith(BILLING_HTML_PATH)
+                    && Arrays.binarySearch(threatTypes, BILLING_CODE) >= 0) {
+                detectedType = BILLING_CODE;
+            } else {
+                detectedType = NO_THREAT;
+            }
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    (Runnable)
+                            () ->
+                                    mObserver.onUrlCheckDone(
+                                            callbackId,
+                                            LookupResult.SUCCESS,
+                                            detectedType,
+                                            /* threatAttributes= */ new int[0],
+                                            RESPONSE_STATUS_SUCCESS_WITH_LOCAL_BLOCK_LIST,
+                                            CHECK_DELTA_US));
+        }
+
+        @Override
+        public void setObserver(Observer observer) {
+            mObserver = observer;
+        }
+    }
+
+    /**
+     * A fake PlatformServiceBridge that allows tests to make safe browsing requests without GMS.
+     */
     private static class MockPlatformServiceBridge extends PlatformServiceBridge {
         @Override
         public boolean canUseGms() {
@@ -217,6 +278,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         public MockAwBrowserContext() {
             super(0);
             SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
+            SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         }
     }
 
@@ -529,6 +591,19 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingBlocksUnwantedSoftwarePages() throws Throwable {
+        loadGreenPage();
+        loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
+        assertGreenPageNotShowing();
+        assertTargetPageNotShowing(UNWANTED_SOFTWARE_PAGE_BACKGROUND_COLOR);
+        // Assume that we are rendering the interstitial, since we see neither the previous page nor
+        // the target page
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
+    public void testSafeBrowsingBlocksUnwantedSoftwarePagesWithSafetyNet() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
         assertGreenPageNotShowing();

@@ -74,20 +74,28 @@ MatchingWebAppResult FindMatchingWebApp(
 RemoveInstallUrlJob::RemoveInstallUrlJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
+    base::Value::Dict& debug_value,
     absl::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url)
     : uninstall_source_(uninstall_source),
       profile_(profile),
+      debug_value_(debug_value),
       app_id_(std::move(app_id)),
       install_source_(install_source),
-      install_url_(std::move(install_url)) {}
+      install_url_(std::move(install_url)) {
+  debug_value_->Set("!job", "RemoveInstallUrlJob");
+  debug_value_->Set("uninstall_source", base::ToString(uninstall_source_));
+  debug_value_->Set("install_source", base::ToString(install_source_));
+  debug_value_->Set("install_url", install_url_.spec());
+}
 
 RemoveInstallUrlJob::~RemoveInstallUrlJob() = default;
 
 void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
   lock_ = &lock;
   callback_ = std::move(callback);
+  debug_value_->Set("has_callback", !callback_.is_null());
 
   auto [app, is_only_install_url] = FindMatchingWebApp(
       lock_->registrar(), app_id_, install_source_, install_url_);
@@ -99,7 +107,8 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
 
   if (is_only_install_url) {
     sub_job_ = std::make_unique<RemoveInstallSourceJob>(
-        uninstall_source_, profile_.get(), app->app_id(), install_source_);
+        uninstall_source_, profile_.get(), *debug_value_->EnsureDict("sub_job"),
+        app->app_id(), install_source_);
     sub_job_->Start(
         *lock_, base::BindOnce(&RemoveInstallUrlJob::CompleteAndSelfDestruct,
                                weak_ptr_factory_.GetWeakPtr()));
@@ -118,18 +127,6 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
   CompleteAndSelfDestruct(webapps::UninstallResultCode::kSuccess);
 }
 
-base::Value RemoveInstallUrlJob::ToDebugValue() const {
-  base::Value::Dict dict;
-  dict.Set("!job", "RemoveInstallUrlJob");
-  dict.Set("install_source", base::ToString(install_source_));
-  dict.Set("install_url", install_url_.spec());
-  dict.Set("callback", callback_.is_null());
-  dict.Set("active_sub_job",
-           sub_job_ ? sub_job_->ToDebugValue() : base::Value());
-  dict.Set("completed_sub_job", completed_sub_job_debug_value_.Clone());
-  return base::Value(std::move(dict));
-}
-
 webapps::WebappUninstallSource RemoveInstallUrlJob::uninstall_source() const {
   return uninstall_source_;
 }
@@ -137,12 +134,7 @@ webapps::WebappUninstallSource RemoveInstallUrlJob::uninstall_source() const {
 void RemoveInstallUrlJob::CompleteAndSelfDestruct(
     webapps::UninstallResultCode code) {
   CHECK(callback_);
-
-  if (sub_job_) {
-    completed_sub_job_debug_value_ = sub_job_->ToDebugValue();
-    sub_job_.reset();
-  }
-
+  debug_value_->Set("result", base::ToString(code));
   std::move(callback_).Run(code);
 }
 

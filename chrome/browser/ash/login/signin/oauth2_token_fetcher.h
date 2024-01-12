@@ -63,7 +63,7 @@ class OAuth2TokenFetcher : public GaiaAuthConsumer {
       const GaiaAuthConsumer::ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
-  raw_ptr<OAuth2TokenFetcher::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<OAuth2TokenFetcher::Delegate> delegate_;
   GaiaAuthFetcher auth_fetcher_;
 
   // The retry counter. Increment this only when failure happened.

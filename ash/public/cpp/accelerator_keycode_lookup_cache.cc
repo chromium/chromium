@@ -13,6 +13,8 @@
 namespace ash {
 namespace {
 
+using KeyCodeLookupEntry = AcceleratorKeycodeLookupCache::KeyCodeLookupEntry;
+
 AcceleratorKeycodeLookupCache* g_instance = nullptr;
 
 }  // namespace
@@ -41,25 +43,34 @@ void AcceleratorKeycodeLookupCache::InputMethodChanged(
     input_method::InputMethodManager* manager,
     Profile* profile,
     bool show_message) {
-  key_code_to_string16_cache_.clear();
+  key_code_to_cache_entry_.clear();
 }
 
-std::optional<std::u16string> AcceleratorKeycodeLookupCache::Find(
-    ui::KeyboardCode key_code) {
-  const auto& found_iter = key_code_to_string16_cache_.find(key_code);
-  if (found_iter == key_code_to_string16_cache_.end()) {
+std::optional<KeyCodeLookupEntry> AcceleratorKeycodeLookupCache::Find(
+    ui::KeyboardCode key_code,
+    bool remap_positional_key) {
+  const auto& found_iter =
+      key_code_to_cache_entry_.find({key_code, remap_positional_key});
+  if (found_iter == key_code_to_cache_entry_.end()) {
     return std::nullopt;
   }
   return found_iter->second;
 }
 
-void AcceleratorKeycodeLookupCache::InsertOrAssign(ui::KeyboardCode key_code,
-                                                   std::u16string description) {
-  key_code_to_string16_cache_.insert_or_assign(key_code, description);
+void AcceleratorKeycodeLookupCache::InsertOrAssign(
+    ui::KeyboardCode key_code,
+    bool remap_positional_key,
+    ui::DomCode dom_code,
+    ui::DomKey dom_key,
+    ui::KeyboardCode resulting_key_code,
+    std::u16string description) {
+  key_code_to_cache_entry_.insert_or_assign(
+      {key_code, remap_positional_key},
+      KeyCodeLookupEntry{dom_code, dom_key, resulting_key_code, description});
 }
 
 void AcceleratorKeycodeLookupCache::Clear() {
-  key_code_to_string16_cache_.clear();
+  key_code_to_cache_entry_.clear();
 }
 
 }  // namespace ash

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// See third_party/blink/public/mojom/printing/web_printing.mojom for
+// additional comments.
+
 enum WebPrintingMimeMediaType {
   "application/pdf",
 };
@@ -38,4 +41,48 @@ enum WebPrintQuality {
 enum WebPrintColorMode {
   "color",
   "monochrome",
+};
+
+enum WebPrinterState {
+  "idle",
+  "processing",
+  "stopped",
+};
+
+enum WebPrinterStateReason {
+  "none",
+  "other",
+  "connecting-to-device",
+  "cover-open",
+  "developer-empty",
+  "developer-low",
+  "door-open",
+  "fuser-over-temp",
+  "fuser-under-temp",
+  "input-tray-missing",
+  "interlock-open",
+  "interpreter-resource-unavailable",
+  "marker-supply-empty",
+  "marker-supply-low",
+  "marker-waste-almost-full",
+  "marker-waste-full",
+  "media-empty",
+  "media-jam",
+  "media-low",
+  "media-needed",
+  "moving-to-paused",
+  "opc-life-over",
+  "opc-near-eol",
+  "output-area-almost-full",
+  "output-area-full",
+  "output-tray-missing",
+  "paused",
+  "shutdown",
+  "spool-area-full",
+  "stopped-partly",
+  "stopping",
+  "timed-out",
+  "toner-empty",
+  "toner-low",
+  "cups-pki-expired",
 };

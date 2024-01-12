@@ -25,6 +25,7 @@
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
+#include "components/viz/service/debugger/mojom/viz_debugger.mojom.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/config/gpu_domain_guilt.h"

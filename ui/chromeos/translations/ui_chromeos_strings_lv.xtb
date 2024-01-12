@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugāļu, ar ASV starptautisko tastatūru</translation>
 <translation id="1629521517399325891">Lietotāja sertifikāts nav pieejams tīkla autorizācijai.</translation>
 <translation id="1641780993263690097">Ķīniešu, piņjiņs</translation>
-<translation id="1646019627374511909">Vairāki faili tiek padarīti pieejami bezsaistē (skaits: <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome ierīce</translation>
 <translation id="1661207570040737402">Jūs esat izmantojis visu savu kopīgā diska Google Workspace krātuvi.</translation>
 <translation id="1661867754829461514">Trūkst PIN koda</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google izklājlapa</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3486821258960016770">Mongoļu</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> kļūdas.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums:<ph name="SIGNAL_STRENGTH" />%, informācija</translation>
 <translation id="3511705761158917664">Notiek gatavošanās <ph name="NUMBER_OF_ITEMS" /> faila(-u) sinhronizēšanai…</translation>
 <translation id="3522708245912499433">Portugāļu valoda</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Administratora politika bloķē vairāku failu kopēšanu (skaits: <ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">Norvēģu valoda</translation>
 <translation id="6528513914570774834">Atļaut citiem lietotājiem šajā ierīcē izmantot šo tīklu</translation>
-<translation id="653019979737152879">Notiek faila <ph name="FILE_NAME" /> sinhronizēšana...</translation>
 <translation id="6549689063733911810">Pēdējie</translation>
 <translation id="6558280019477628686">Radās kļūda. Iespējams, netika izdzēsti daži vienumi.</translation>
 <translation id="656398493051028875">Notiek faila “<ph name="FILENAME" />” dzēšana...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux lietotnes saņems atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Šobrīd esat bezsaistē. Failu sinhronizācija tiks atsākta, kad būs izveidots savienojums ar internetu.</translation>
 <translation id="7589661784326793847">Mirkli uzgaidiet!</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> tiek padarīts pieejams bezsaistē</translation>
 <translation id="7600126690270271294">Serbu</translation>
 <translation id="7603724359189955920">Režģi</translation>
 <translation id="7627790789328695202">Diemžēl fails <ph name="FILE_NAME" /> jau pastāv. Pārdēvējiet to un mēģiniet vēlreiz.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
 <translation id="8147028810663464959">Rakstzīmju platums ir pilns.</translation>
 <translation id="8151638057146502721">Konfigurēt</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 kļūda.}zero{# kļūdu.}one{# kļūda.}other{# kļūdas.}}</translation>
 <translation id="8154842056504218462">Atlasīti visi vienumi.</translation>
 <translation id="8157684860301034423">Neizdevās izgūt informāciju par lietotni.</translation>
 <translation id="8175731104491895765">Franču (Beļģija)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Piešķiriet virtuālajai mašīnai <ph name="VM_NAME" /> atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Neatbilstoša WEP atslēga</translation>
 <translation id="8372852072747894550">Grieķu</translation>
+<translation id="8377269993083688872">E-pasta veidnes</translation>
 <translation id="8386903983509584791">Meklēšana ir pabeigta</translation>
 <translation id="8387733224523483503">Vienums <ph name="FILE_NAME" /> ir izvilkts.</translation>
 <translation id="8395901698320285466">Izmēri</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Atlasīt atveramo failu</translation>
 <translation id="8577897833047451336">Horvātu</translation>
 <translation id="8578308463707544055">Indonēziešu</translation>
-<translation id="8579285237314169903">Notiek <ph name="NUMBER_OF_FILES" /> vienumu sinhronizēšana...</translation>
 <translation id="8600173386174225982">Failu saraksts ir mainīts uz sīktēlu skatu.</translation>
 <translation id="8601932370724196034">Crostini attēla fails</translation>
 <translation id="8609695766746872526">Islandiešu</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Ļaut starpniekserveru izmantošanu koplietotajiem tīkliem</translation>
 <translation id="8790981080411996443">Persona laista puķes</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 brīdinājums.}zero{# brīdinājumu.}one{# brīdinājums.}other{# brīdinājumi.}}</translation>
 <translation id="8808686172382650546">Kaķis</translation>
 <translation id="8810671769985673465">Tilpsaspiešana neizdevās, vienums pastāv: <ph name="FILE_NAME" />.</translation>
 <translation id="8813284582615685103">Spāņu (Spānija)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Lūdzu, izvēlieties citu nosaukumu.</translation>
 <translation id="9046895021617826162">Savienojums neizdevās</translation>
 <translation id="9065512565307033593">Ja verifikācija neizdosies, jūsu piekļuve tīklam tiks atspējota.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 brīdinājums.}zero{<ph name="COUNT" /> brīdinājumu.}one{<ph name="COUNT" /> brīdinājums.}other{<ph name="COUNT" /> brīdinājumi.}}</translation>
 <translation id="908378762078012445">Krievu, ar fonētisko AATSEEL tastatūru</translation>
 <translation id="9086302186042011942">Notiek sinhronizācija</translation>
 <translation id="9099674669267916096">Lappušu skaits</translation>

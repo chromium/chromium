@@ -22,7 +22,9 @@ namespace app_list {
 EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
     : primary_profile_(primary_profile) {
   DCHECK(primary_profile_);
-  scoped_observation_.Observe(ash::SessionController::Get());
+  auto* session_controller = ash::SessionController::Get();
+  CHECK(session_controller);
+  scoped_observation_.Observe(session_controller);
 }
 
 EssentialSearchManager::~EssentialSearchManager() = default;

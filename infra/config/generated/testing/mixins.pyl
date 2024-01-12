@@ -7,36 +7,36 @@
 {
   '10-x86-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android29.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android29',
+          'caches': 'android_29_google_apis_x86',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android29',
-          'path': '.android_emulator/generic_android29',
+          'name': 'android_29_google_apis_x86',
+          'path': '.android_emulator/android_29_google_apis_x86',
         },
       ],
     },
   },
   '11-x86-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android30.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android30',
+          'caches': 'android_30_google_apis_x86',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android30',
-          'path': '.android_emulator/generic_android30',
+          'name': 'android_30_google_apis_x86',
+          'path': '.android_emulator/android_30_google_apis_x86',
         },
       ],
     },
@@ -60,19 +60,20 @@
     },
   },
   '12-x64-emulator': {
+    'description': 'Run with android_31_google_apis_x64',
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android31.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android31',
+          'caches': 'android_31_google_apis_x64',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android31',
-          'path': '.android_emulator/generic_android31',
+          'name': 'android_31_google_apis_x64',
+          'path': '.android_emulator/android_31_google_apis_x64',
         },
       ],
     },
@@ -97,18 +98,18 @@
   },
   '12l-x64-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android32_foldable',
+          'caches': 'android_32_google_apis_x64_foldable',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android32_foldable',
-          'path': '.android_emulator/generic_android32_foldable',
+          'name': 'android_32_google_apis_x64_foldable',
+          'path': '.android_emulator/android_32_google_apis_x64_foldable',
         },
       ],
     },
@@ -132,19 +133,20 @@
     },
   },
   '13-x64-emulator': {
+    'description': 'Run with android_33_google_apis_x64',
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android33.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android33',
+          'caches': 'android_33_google_apis_x64',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android33',
-          'path': '.android_emulator/generic_android33',
+          'name': 'android_33_google_apis_x64',
+          'path': '.android_emulator/android_33_google_apis_x64',
         },
       ],
     },
@@ -617,7 +619,7 @@
     'swarming': {
       'dimensions': {
         'gpu': '1002:7340',
-        'os': 'Ubuntu-18.04.6',
+        'os': 'Ubuntu-22.04.3',
         'pool': 'chromium.tests.gpu',
       },
     },
@@ -1022,18 +1024,18 @@
   },
   'pie-x86-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android28.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android28',
+          'caches': 'android_28_google_apis_x86',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android28',
-          'path': '.android_emulator/generic_android28',
+          'name': 'android_28_google_apis_x86',
+          'path': '.android_emulator/android_28_google_apis_x86',
         },
       ],
     },
@@ -1129,6 +1131,22 @@
         'pool': 'chromium.win.uac',
       },
     },
+  },
+  'vaapi_unittest_args': {
+    'args': [
+      '--stop-ui',
+      '--gtest_filter="VaapiTest.*"',
+    ],
+  },
+  'vaapi_unittest_libfake_args': {
+    'args': [
+      '--env-var',
+      'LIBVA_DRIVERS_PATH',
+      './',
+      '--env-var',
+      'LIBVA_DRIVER_NAME',
+      'libfake',
+    ],
   },
   'walleye': {
     'swarming': {
@@ -1264,9 +1282,11 @@
   'win_arm64': {
     'swarming': {
       'dimensions': {
-        'cpu': None,
+        'cpu': 'arm64',
         'os': 'Windows-11',
         'pool': 'chrome.tests.arm64',
+        'gpu': 'qcom:043a',
+        'zone': 'us-sfo',
       },
       'expiration': 64800,
       'hard_timeout': 43200,
@@ -1282,12 +1302,12 @@
   'xcode_15_beta': {
     'args': [
       '--xcode-build-version',
-      '15c65',
+      '15c500b',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15c65',
+          'name': 'xcode_ios_15c500b',
           'path': 'Xcode.app',
         },
       ],

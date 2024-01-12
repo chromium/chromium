@@ -4,6 +4,7 @@
 
 #include "extensions/common/manifest.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -317,27 +318,27 @@ bool Manifest::ValidateManifest(
   return true;
 }
 
-const base::Value* Manifest::FindKey(base::StringPiece key) const {
+const base::Value* Manifest::FindKey(std::string_view key) const {
   return available_values_.Find(key);
 }
 
-const base::Value* Manifest::FindPath(base::StringPiece path) const {
+const base::Value* Manifest::FindPath(std::string_view path) const {
   return available_values_.FindByDottedPath(path);
 }
 
-std::optional<bool> Manifest::FindBoolPath(base::StringPiece path) const {
+std::optional<bool> Manifest::FindBoolPath(std::string_view path) const {
   return available_values_.FindBoolByDottedPath(path);
 }
 
-std::optional<int> Manifest::FindIntPath(base::StringPiece path) const {
+std::optional<int> Manifest::FindIntPath(std::string_view path) const {
   return available_values_.FindIntByDottedPath(path);
 }
 
-const std::string* Manifest::FindStringPath(base::StringPiece path) const {
+const std::string* Manifest::FindStringPath(std::string_view path) const {
   return available_values_.FindStringByDottedPath(path);
 }
 
-const base::Value::Dict* Manifest::FindDictPath(base::StringPiece path) const {
+const base::Value::Dict* Manifest::FindDictPath(std::string_view path) const {
   return available_values_.FindDictByDottedPath(path);
 }
 

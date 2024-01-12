@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -36,7 +37,6 @@
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #import "content/browser/renderer_host/input/synthetic_gesture_target_mac.h"
-#include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
@@ -44,6 +44,7 @@
 #import "content/browser/renderer_host/text_input_client_mac.h"
 #import "content/browser/renderer_host/ui_events_helper.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
+#include "content/common/input/web_input_event_builders_mac.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/render_widget_host.h"
@@ -53,7 +54,6 @@
 #include "media/base/media_switches.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
@@ -715,7 +715,7 @@ void RenderWidgetHostViewMac::OnImeCompositionRangeChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view,
     bool character_bounds_changed,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   const TextInputManager::CompositionRangeInfo* info =
       GetCompositionRangeInfo();
   if (!info)
@@ -1070,7 +1070,7 @@ void RenderWidgetHostViewMac::TakeFallbackContentFrom(
   RenderWidgetHostViewMac* view_mac =
       static_cast<RenderWidgetHostViewMac*>(view);
   ScopedCAActionDisabler disabler;
-  absl::optional<SkColor> color = view_mac->GetBackgroundColor();
+  std::optional<SkColor> color = view_mac->GetBackgroundColor();
   if (color)
     SetBackgroundColor(*color);
 
@@ -1219,7 +1219,7 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
       *actual_range = requested_range;
 
     // Check selection bounds first (currently populated only for EditContext)
-    const absl::optional<gfx::Rect> text_selection_bound =
+    const std::optional<gfx::Rect> text_selection_bound =
         GetTextInputManager()->GetTextSelectionBounds();
     if (text_selection_bound) {
       *rect = text_selection_bound.value();
@@ -1395,8 +1395,8 @@ bool RenderWidgetHostViewMac::AccessibilityHasFocus() {
 }
 
 bool RenderWidgetHostViewMac::LockKeyboard(
-    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
-  absl::optional<std::vector<uint32_t>> uint_dom_codes;
+    std::optional<base::flat_set<ui::DomCode>> dom_codes) {
+  std::optional<std::vector<uint32_t>> uint_dom_codes;
   if (dom_codes) {
     uint_dom_codes.emplace();
     for (const auto& dom_code : *dom_codes)
@@ -1607,14 +1607,13 @@ void RenderWidgetHostViewMac::UpdateBackgroundColor() {
   browser_compositor_->SetBackgroundColor(color);
 }
 
-absl::optional<SkColor> RenderWidgetHostViewMac::GetBackgroundColor() {
+std::optional<SkColor> RenderWidgetHostViewMac::GetBackgroundColor() {
   // This is used to specify a color to temporarily show while waiting for web
   // content. This should never return transparent, since that will cause bugs
   // where views are initialized as having a transparent background
   // inappropriately.
   // https://crbug.com/735407
-  absl::optional<SkColor> color =
-      RenderWidgetHostViewBase::GetBackgroundColor();
+  std::optional<SkColor> color = RenderWidgetHostViewBase::GetBackgroundColor();
   return (color && *color == SK_ColorTRANSPARENT) ? SK_ColorWHITE : color;
 }
 
@@ -1625,7 +1624,7 @@ void RenderWidgetHostViewMac::SetBackgroundLayerColor(SkColor color) {
   ns_view_->SetBackgroundColor(color);
 }
 
-absl::optional<DisplayFeature> RenderWidgetHostViewMac::GetDisplayFeature() {
+std::optional<DisplayFeature> RenderWidgetHostViewMac::GetDisplayFeature() {
   return display_feature_;
 }
 
@@ -1634,7 +1633,7 @@ void RenderWidgetHostViewMac::SetDisplayFeatureForTesting(
   if (display_feature)
     display_feature_ = *display_feature;
   else
-    display_feature_ = absl::nullopt;
+    display_feature_ = std::nullopt;
 }
 
 gfx::NativeViewAccessible
@@ -2106,7 +2105,7 @@ void RenderWidgetHostViewMac::SyncGetFirstRectForRange(
 
 void RenderWidgetHostViewMac::ExecuteEditCommand(const std::string& command) {
   if (host()->delegate()) {
-    host()->delegate()->ExecuteEditCommand(command, absl::nullopt);
+    host()->delegate()->ExecuteEditCommand(command, std::nullopt);
   }
 }
 

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Readable stream synchronously cancels with AbortError if aborted before reading
-  assert_true: Cancel called sync expected true got false
-[FAIL] Clone aborts with original controller
-  assert_array_equals: Abort events fired in correct order expected property 0 to be "original-aborted" but got "clone-aborted" (expected array ["original-aborted", "clone-aborted"] got ["clone-aborted", "original-aborted"])
-Harness: the test ran to completion.
-

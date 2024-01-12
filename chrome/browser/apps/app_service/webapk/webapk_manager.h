@@ -68,10 +68,10 @@ class WebApkManager : public AppRegistryCache::Observer,
   // ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AppServiceProxy, ExperimentalAsh> proxy_;
-  raw_ptr<ash::ApkWebAppService, ExperimentalAsh> apk_service_;
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> app_list_prefs_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AppServiceProxy> proxy_;
+  raw_ptr<ash::ApkWebAppService> apk_service_;
+  raw_ptr<ArcAppListPrefs> app_list_prefs_;
 
   bool initialized_ = false;
 

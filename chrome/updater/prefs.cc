@@ -132,8 +132,9 @@ void UpdaterPrefsImpl::SetMigratedLegacyUpdaters() {
 
 int UpdaterPrefsImpl::CountServerStarts() {
   int starts = prefs_->GetInteger(kPrefServerStarts);
-  if (starts <= kMaxServerStartsBeforeFirstReg)
+  if (starts <= kMaxServerStartsBeforeFirstReg) {
     prefs_->SetInteger(kPrefServerStarts, ++starts);
+  }
   return starts;
 }
 

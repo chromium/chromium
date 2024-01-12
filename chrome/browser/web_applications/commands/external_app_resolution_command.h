@@ -51,10 +51,11 @@ struct WebAppInstallInfo;
 // install_url cannot be installed between the scheduling and running of this
 // command.
 class ExternalAppResolutionCommand
-    : public WebAppCommandTemplate<SharedWebContentsLock> {
+    : public WebAppCommand<SharedWebContentsLock,
+                           ExternallyManagedAppManager::InstallResult> {
  public:
-  using InstalledCallback =
-      base::OnceCallback<void(ExternallyManagedAppManager::InstallResult)>;
+  using InstallResult = ExternallyManagedAppManager::InstallResult;
+  using InstalledCallback = base::OnceCallback<void(InstallResult)>;
 
   ExternalAppResolutionCommand(
       Profile& profile,
@@ -63,15 +64,16 @@ class ExternalAppResolutionCommand
       InstalledCallback installed_callback);
   ~ExternalAppResolutionCommand() override;
 
-  // WebAppCommandTemplate<SharedWebContentsLock>:
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
-  void OnShutdown() override;
-  void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
-
   void SetDataRetrieverForTesting(
       std::unique_ptr<WebAppDataRetriever> data_retriever);
   void SetOnLockUpgradedCallbackForTesting(base::OnceClosure callback);
+
+  // WebAppCommand:
+  void OnShutdown(base::PassKey<WebAppCommandManager>) const override;
+
+ protected:
+  // WebAppCommand:
+  void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
 
  private:
   WebAppProvider& provider() const;
@@ -128,7 +130,7 @@ class ExternalAppResolutionCommand
   void InstallFromInfo();
   void OnInstallFromInfoAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> apps_lock);
-  void OnInstallFromInfoCompleted(const webapps::AppId& app_id,
+  void OnInstallFromInfoCompleted(webapps::AppId app_id,
                                   webapps::InstallResultCode code,
                                   OsHooksErrors os_hook_errors);
   void OnUninstallAndReplaceCompleted(bool is_offline_install,
@@ -143,16 +145,12 @@ class ExternalAppResolutionCommand
 
   // SharedWebContentsLock is held while loading the app contents (and manifest,
   // if possible).
-  std::unique_ptr<SharedWebContentsLockDescription>
-      web_contents_lock_description_;
   std::unique_ptr<SharedWebContentsLock> web_contents_lock_;
 
   // SharedWebContentsWithAppLock is held when the affected app ids are known
   // (i.e. after deciding whether a placeholder install is needed or when the
   // manifest is loaded).
   std::unique_ptr<SharedWebContentsWithAppLock> apps_lock_;
-  std::unique_ptr<SharedWebContentsWithAppLockDescription>
-      apps_lock_description_;
 
   std::unique_ptr<AllAppsLock> all_apps_lock_;
   std::unique_ptr<AllAppsLockDescription> all_apps_lock_description_;
@@ -165,8 +163,6 @@ class ExternalAppResolutionCommand
 
   // `this` must be owned by `profile_`.
   raw_ref<Profile> profile_;
-
-  InstalledCallback installed_callback_;
 
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<WebAppUrlLoader> url_loader_;
@@ -185,8 +181,6 @@ class ExternalAppResolutionCommand
   absl::optional<InstallFromInfoJob> install_from_info_job_;
   absl::optional<RemoveInstallSourceJob> remove_placeholder_job_;
 
-  base::Value::List error_log_;
-  base::Value::Dict debug_value_;
   InstallErrorLogEntry install_error_log_entry_;
 
   base::OnceClosure on_lock_upgraded_callback_for_testing_;

@@ -12,7 +12,7 @@
 export enum TrustSafetyInteraction {
   RAN_SAFETY_CHECK = 0,
   USED_PRIVACY_CARD = 1,
-  OPENED_PRIVACY_SANDBOX = 2,
+  // OPENED_PRIVACY_SANDBOX = 2, // DEPRECATED
   OPENED_PASSWORD_MANAGER = 3,
   COMPLETED_PRIVACY_GUIDE = 4,
   RAN_PASSWORD_CHECK = 5,
@@ -20,6 +20,9 @@ export enum TrustSafetyInteraction {
   OPENED_TOPICS_SUBPAGE = 7,
   OPENED_FLEDGE_SUBPAGE = 8,
   OPENED_AD_MEASUREMENT_SUBPAGE = 9,
+  // <if expr="_google_chrome">
+  OPENED_GET_MOST_CHROME = 10,
+  // </if>
 }
 
 /**

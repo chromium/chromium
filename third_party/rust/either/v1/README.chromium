@@ -1,0 +1,10 @@
+Name: either
+URL: https://crates.io/crates/either
+Description: The enum `Either` with variants `Left` and `Right` is a general purpose sum type with two cases.
+
+Version: 1.9.0
+Security Critical: no
+Shipped: no
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/either-1.9.0/LICENSE-APACHE
+Revision: 7a60ae82de8309d23d9e3fa55668bf713bd916bf

@@ -38,9 +38,9 @@ test("minidump_uploader_test") {
     ":minidump_uploader",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//base/version_info/android:version_constants_java",
     "//components/crash/android:crash_android",
     "//components/version_info",
-    "//components/version_info/android:version_constants_java",
     "//testing/gtest",
     "//third_party/crashpad/crashpad/util:net",
   ]

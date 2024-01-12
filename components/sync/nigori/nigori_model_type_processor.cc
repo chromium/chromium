@@ -495,4 +495,10 @@ void NigoriModelTypeProcessor::ClearMetadataIfStopped() {
   // Nigori is never considered to be stopped.
 }
 
+void NigoriModelTypeProcessor::ReportBridgeErrorForTest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!model_error_.has_value());
+  ReportError(ModelError(FROM_HERE, "Reported error for test"));
+}
+
 }  // namespace syncer

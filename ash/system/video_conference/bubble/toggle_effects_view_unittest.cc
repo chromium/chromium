@@ -120,7 +120,7 @@ TEST_P(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   base::HistogramTester histogram_tester;
 
   // Add one toggle effect.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
 
   // Click to open the bubble, toggle effect button should be visible.
   LeftClickOn(toggle_bubble_button());
@@ -136,13 +136,13 @@ TEST_P(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   histogram_tester.ExpectBucketCount(kTestEffectHistogramName, false, 1);
 
   // Cleanup.
-  controller()->effects_manager().UnregisterDelegate(office_bunny());
+  controller()->GetEffectsManager().UnregisterDelegate(office_bunny());
 }
 
 // Tests that a toggled ToggleButton's tooltip is updated.
 TEST_P(ToggleEffectsViewTest, TooltipIsUpdated) {
   // Add one toggle effect.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
   LeftClickOn(toggle_bubble_button());
 
   EXPECT_EQ(
@@ -163,7 +163,7 @@ TEST_P(ToggleEffectsViewTest, TooltipIsUpdated) {
           l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON)));
 
   // Cleanup.
-  controller()->effects_manager().UnregisterDelegate(office_bunny());
+  controller()->GetEffectsManager().UnregisterDelegate(office_bunny());
 }
 
 }  // namespace ash::video_conference

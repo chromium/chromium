@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">USB құрылғысына жалғанды.</translation>
 <translation id="4194328954146351878">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне рұқсат бермес бұрын сізден сұрау (ұсынылады)</translation>
 <translation id="4200726100658658164">Орналасу параметрлерін ашу</translation>
+<translation id="4212246570487010370">Үздіксіз көру</translation>
 <translation id="4226663524361240545">Хабарландыру келіп түскенде, құрылғы дірілдейді</translation>
 <translation id="4259722352634471385">Навигация тыйылған: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Рұқсат етілген</translation>
@@ -239,6 +240,7 @@
 <translation id="5099358668261120049"><ph name="ORIGIN" /> сақтаған немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="5100237604440890931">Жиылған – жаю үшін басыңыз.</translation>
 <translation id="5123685120097942451">Инкогнито қойындысы</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ашық қойындыларда бағаның төмендеуі туралы хабарландыру}other{Ашық қойындыларда бағаның төмендеуі туралы хабарландырулар}}</translation>
 <translation id="5186036860380548585">Опциялар экранның жоғарғы жағында тұрады</translation>
 <translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
@@ -365,6 +367,7 @@
 <translation id="7141896414559753902">Сайттардың қалқымалы терезе көрсетуіне және бағыттауына тыйым салу (ұсынылады)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
+<translation id="7180865173735832675">Реттеу</translation>
 <translation id="7188508872042490670">Құрылғыдағы сайт деректері</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> доменіндегі барлық сайт немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="7203150201908454328">Кеңейтілген</translation>

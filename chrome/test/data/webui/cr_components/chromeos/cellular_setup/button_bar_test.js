@@ -61,23 +61,29 @@ suite('CellularSetupButtonBarTest', function() {
 
   test('individual buttons appear if enabled', function() {
     setStateForAllButtons(ButtonState.ENABLED);
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#backward')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#cancel')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#forward')));
+    assertTrue(isButtonShownAndEnabled(
+        buttonBar.shadowRoot.querySelector('#backward')));
+    assertTrue(
+        isButtonShownAndEnabled(buttonBar.shadowRoot.querySelector('#cancel')));
+    assertTrue(isButtonShownAndEnabled(
+        buttonBar.shadowRoot.querySelector('#forward')));
   });
 
   test('individual buttons appear but are diabled', function() {
     setStateForAllButtons(ButtonState.DISABLED);
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#backward')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#cancel')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#forward')));
+    assertTrue(isButtonShownAndDisabled(
+        buttonBar.shadowRoot.querySelector('#backward')));
+    assertTrue(isButtonShownAndDisabled(
+        buttonBar.shadowRoot.querySelector('#cancel')));
+    assertTrue(isButtonShownAndDisabled(
+        buttonBar.shadowRoot.querySelector('#forward')));
   });
 
   test('individual buttons are hidden', function() {
     setStateForAllButtons(ButtonState.HIDDEN);
-    assertTrue(isButtonHidden(buttonBar.$$('#backward')));
-    assertTrue(isButtonHidden(buttonBar.$$('#cancel')));
-    assertTrue(isButtonHidden(buttonBar.$$('#forward')));
+    assertTrue(isButtonHidden(buttonBar.shadowRoot.querySelector('#backward')));
+    assertTrue(isButtonHidden(buttonBar.shadowRoot.querySelector('#cancel')));
+    assertTrue(isButtonHidden(buttonBar.shadowRoot.querySelector('#forward')));
   });
 
   test('default focus is on last button if all are enabled', function() {
@@ -86,7 +92,9 @@ suite('CellularSetupButtonBarTest', function() {
 
     flush();
 
-    assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#forward'));
+    assertEquals(
+        buttonBar.shadowRoot.activeElement,
+        buttonBar.shadowRoot.querySelector('#forward'));
   });
 
   test('default focus is on first button if rest are hidden', function() {
@@ -99,7 +107,9 @@ suite('CellularSetupButtonBarTest', function() {
 
     flush();
 
-    assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
+    assertEquals(
+        buttonBar.shadowRoot.activeElement,
+        buttonBar.shadowRoot.querySelector('#backward'));
   });
 
   test(
@@ -115,6 +125,7 @@ suite('CellularSetupButtonBarTest', function() {
         flush();
 
         assertEquals(
-            buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
+            buttonBar.shadowRoot.activeElement,
+            buttonBar.shadowRoot.querySelector('#backward'));
       });
 });

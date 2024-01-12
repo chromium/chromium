@@ -57,9 +57,9 @@ using net::test_server::HungResponse;
 
 namespace update_client {
 namespace {
-static constexpr char kSmallDownloadData[] = "Hello, World!";
-static constexpr char kDownloadUrlSwitchName[] = "download-url";
-static constexpr char kDownloadSessionIdSwitchName[] = "download-session-id";
+constexpr char kSmallDownloadData[] = "Hello, World!";
+constexpr char kDownloadUrlSwitchName[] = "download-url";
+constexpr char kDownloadSessionIdSwitchName[] = "download-session-id";
 
 // Returns the lower range from a range header value.
 int ParseRangeHeader(const std::string& header) {

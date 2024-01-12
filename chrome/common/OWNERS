@@ -49,6 +49,3 @@ per-file crash_keys*=rsesek@chromium.org
 # WebUI. See also chrome/browser/ui/webui/OWNERS.
 per-file webui_url_constants.cc=file://ui/webui/PLATFORM_OWNERS
 per-file webui_url_constants.h=file://ui/webui/PLATFORM_OWNERS
-
-# Thread profiling
-per-file thread_profiler*=wittman@chromium.org

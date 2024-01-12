@@ -75,7 +75,7 @@ sync_pb::CrossUserSharingKeys CrossUserSharingKeys::ToProto() const {
 CrossUserSharingKeys CrossUserSharingKeys::Clone() const {
   CrossUserSharingKeys copy;
   for (const auto& [version, key_pair] : key_pairs_map_) {
-    copy.AddKeyPair(CloneKeyPair(key_pair), version);
+    copy.SetKeyPair(CloneKeyPair(key_pair), version);
   }
   return copy;
 }
@@ -99,16 +99,14 @@ bool CrossUserSharingKeys::AddKeyPairFromProto(
     return false;
   }
 
-  AddKeyPair(std::move(key_pair.value()), key.version());
+  SetKeyPair(std::move(key_pair.value()), key.version());
   return true;
 }
 
-void CrossUserSharingKeys::AddKeyPair(
+void CrossUserSharingKeys::SetKeyPair(
     CrossUserSharingPublicPrivateKeyPair key_pair,
     uint32_t version) {
-  // TODO(crbug.com/1511180): verify that the following emplace does not cause
-  // key loss.
-  key_pairs_map_.emplace(version, std::move(key_pair));
+  key_pairs_map_.insert_or_assign(version, std::move(key_pair));
 }
 
 const CrossUserSharingPublicPrivateKeyPair& CrossUserSharingKeys::GetKeyPair(

@@ -30,13 +30,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.text.SimpleDateFormat;

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">البرتغالية باستخدام لوحة المفاتيح الأمريكية الدولية</translation>
 <translation id="1629521517399325891">شهادة المستخدم غير متاحة لعملية مصادقة الشبكة.</translation>
 <translation id="1641780993263690097">‏الصينية باستخدام لوحة مفاتيح Pinyin</translation>
-<translation id="1646019627374511909">جارٍ إتاحة <ph name="NUMBER_OF_ITEMS" /> ملف بلا إنترنت</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
 <translation id="1661207570040737402">‏لقد استهلكت كل مساحة التخزين السحابي المشتركة في Google Workspace.</translation>
 <translation id="1661867754829461514">رقم التعريف الشخصي غير موجود</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">‏جدول بيانات Google</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3486821258960016770">المنغولية</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> من الأخطاء.</translation>
 <translation id="3509680540198371098">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3511705761158917664">يجري الإعداد لمزامنة <ph name="NUMBER_OF_ITEMS" /> عنصر…</translation>
 <translation id="3522708245912499433">البرتغالية</translation>
@@ -505,6 +503,7 @@
 <translation id="4935975195727477204">زهرة غازانيا</translation>
 <translation id="4943368462779413526">كرة القدم</translation>
 <translation id="4961158930123534723">‏تمّت مشاركة ملف واحد مع نظام Parallels Desktop.</translation>
+<translation id="4965874878399872778">جارٍ التحقّق من الملفات للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
 <translation id="496656650103537022">تمت استعادة <ph name="FILE_NAME" />.</translation>
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4972330214479971536">تعذَّر إكمال إعداد مزامنة الملفات</translation>
@@ -710,6 +709,7 @@
 <translation id="6430271654280079150">يتبقى لديك محاولة واحدة.</translation>
 <translation id="643243556292470964">يجري الآن نقل الملفات المحذوفة إلى المهملات.</translation>
 <translation id="6438480100790416671">جارٍ التحقّق من مساحة التخزين…</translation>
+<translation id="6451527188465304418">جارٍ التحقّق من الملف للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
 <translation id="6485131920355264772">تعذّر جلب معلومات المساحة</translation>
 <translation id="6495925982925244349">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="649877868557234318">جارٍ استخراج الملف <ph name="FILE_NAME" /> إلى المجلّد <ph name="FOLDER_NAME" /></translation>
@@ -717,7 +717,6 @@
 <translation id="6503285896705205014">تحظر سياسة المشرف إمكانية نسخ الملفات البالغ عددها <ph name="COUNT" />.</translation>
 <translation id="6509122719576673235">النرويجية</translation>
 <translation id="6528513914570774834">السماح للمستخدمين الآخرين لهذا الجهاز باستخدام هذه الشبكة</translation>
-<translation id="653019979737152879">جارٍ مزامنة <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">الأحدث</translation>
 <translation id="6558280019477628686">حدث خطأ ما. ربما لم يتمّ حذف بعض العناصر.</translation>
 <translation id="656398493051028875">جارٍ حذف "<ph name="FILENAME" />"...</translation>
@@ -851,7 +850,6 @@
 <translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">جهازك غير متصل بالإنترنت حاليًا. سيتم استئناف مزامنة الملفات بعدما يتصل جهازك بالإنترنت.</translation>
 <translation id="7589661784326793847">انتظر قليلاً</translation>
-<translation id="7592775719802218421">إتاحة <ph name="FILE_NAME" /> بدون اتصال بالإنترنت</translation>
 <translation id="7600126690270271294">الصربية</translation>
 <translation id="7603724359189955920">شبكات</translation>
 <translation id="7627790789328695202">عذرًا، <ph name="FILE_NAME" /> موجود من قبل. يمكنك إعادة تسميته وإعادة المحاولة.</translation>
@@ -935,6 +933,7 @@
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8147028810663464959">عرض الحرف هو عرض بالكامل</translation>
 <translation id="8151638057146502721">إعداد</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{خطأ واحد}zero{# خطأ}two{خطآن (#)}few{# أخطاء}many{# خطأ}other{# خطأ}}</translation>
 <translation id="8154842056504218462">تم اختيار جميع الإدخالات.</translation>
 <translation id="8157684860301034423">تعذّر جلب معلومات التطبيق.</translation>
 <translation id="8175731104491895765">الفرنسية (بلجيكا)</translation>
@@ -968,6 +967,7 @@
 <translation id="83651606385705612">سيتم منح "<ph name="VM_NAME" />" إذن الوصول إلى الملفات في مجلد "<ph name="FOLDER_NAME" />".</translation>
 <translation id="8372369524088641025">‏مفتاح WEP غير صالح</translation>
 <translation id="8372852072747894550">اليونانية</translation>
+<translation id="8377269993083688872">تنسيقات البريد الإلكتروني</translation>
 <translation id="8386903983509584791">اكتملت عملية الفحص.</translation>
 <translation id="8387733224523483503">تم استخراج <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">الأبعاد</translation>
@@ -1006,7 +1006,6 @@
 <translation id="8569764466147087991">اختيار ملف لفتحه</translation>
 <translation id="8577897833047451336">الكرواتية</translation>
 <translation id="8578308463707544055">الإندونيسية</translation>
-<translation id="8579285237314169903">جارٍ مزامنة <ph name="NUMBER_OF_FILES" /> من البنود...</translation>
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
 <translation id="8609695766746872526">الآيسلندية</translation>
@@ -1027,6 +1026,7 @@
 <translation id="8787254343425541995">السماح بالخوادم الوكيلة للشبكات المشتركة</translation>
 <translation id="8790981080411996443">شخص يروي نباتات</translation>
 <translation id="8798099450830957504">التلقائي</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{تحذير واحد}zero{# تحذير}two{تحذيران (#)}few{# تحذيرات}many{# تحذيرًا}other{# تحذير}}</translation>
 <translation id="8808686172382650546">قط</translation>
 <translation id="8810671769985673465">تعذّر الضغط، العناصر الموجودة هي: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">الإسبانية (إسبانيا)</translation>
@@ -1057,7 +1057,6 @@
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>
-<translation id="9083722265619106011">{0,plural, =1{تحذير واحد.}zero{<ph name="COUNT" /> تحذير.}two{تحذيران (<ph name="COUNT" />).}few{<ph name="COUNT" /> تحذيرات.}many{<ph name="COUNT" /> تحذيرًا.}other{<ph name="COUNT" /> تحذير.}}</translation>
 <translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>

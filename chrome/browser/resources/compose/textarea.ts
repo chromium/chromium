@@ -17,6 +17,7 @@ import {getTemplate} from './textarea.html.js';
 export interface ComposeTextareaElement {
   $: {
     editButtonContainer: HTMLElement,
+    editButton: HTMLElement,
     tooShortError: HTMLElement,
     tooLongError: HTMLElement,
     input: HTMLTextAreaElement,
@@ -85,6 +86,10 @@ export class ComposeTextareaElement extends PolymerElement {
     this.$.input.focus();
   }
 
+  focusEditButton() {
+    this.$.editButton.focus();
+  }
+
   private onEditClick_() {
     this.dispatchEvent(
         new CustomEvent('edit-click', {bubbles: true, composed: true}));
@@ -105,9 +110,11 @@ export class ComposeTextareaElement extends PolymerElement {
   validate() {
     const value = this.$.input.value;
     const wordCount = value.match(/\S+/g)?.length || 0;
-    this.tooShort_ = wordCount < this.inputParams.minWordLimit;
     this.tooLong_ = value.length > this.inputParams.maxCharacterLimit ||
         wordCount > this.inputParams.maxWordLimit;
+    // If it's too long, then it can't be too short.
+    this.tooShort_ =
+        wordCount < this.inputParams.minWordLimit && !this.tooLong_;
     this.invalidInput_ = this.tooLong_ || this.tooShort_;
     return !this.invalidInput_;
   }

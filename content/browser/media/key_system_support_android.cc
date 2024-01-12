@@ -80,7 +80,7 @@ void GetAndroidCdmCapability(const std::string& key_system,
   const bool is_secure = robustness == CdmInfo::Robustness::kHardwareSecure;
   if (!MediaDrmBridge::IsKeySystemSupported(key_system)) {
     DVLOG(1) << "Key system " << key_system << " not supported.";
-    std::move(cdm_capability_cb).Run(absl::nullopt);
+    std::move(cdm_capability_cb).Run(std::nullopt);
     return;
   }
 
@@ -94,7 +94,7 @@ void GetAndroidCdmCapability(const std::string& key_system,
     if (!are_overlay_supported || !overlay_fullscreen_video) {
       DVLOG(1) << "Hardware secure codecs not supported for key system"
                << key_system << ".";
-      std::move(cdm_capability_cb).Run(absl::nullopt);
+      std::move(cdm_capability_cb).Run(std::nullopt);
       return;
     }
   }
@@ -158,7 +158,7 @@ void GetAndroidCdmCapability(const std::string& key_system,
     // once they exist.
     DVLOG(1) << "Key system " << key_system
              << " not supported as no hardware secure video codecs available.";
-    std::move(cdm_capability_cb).Run(absl::nullopt);
+    std::move(cdm_capability_cb).Run(std::nullopt);
     return;
   }
 

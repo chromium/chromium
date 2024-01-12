@@ -41,9 +41,9 @@ class OmniboxLacrosProvider : public SearchProvider {
   void OnResultsReceived(std::vector<crosapi::mojom::SearchResultPtr> results);
   void StartWithoutSearchProvider(const std::u16string& query);
 
-  raw_ptr<crosapi::SearchProviderAsh, ExperimentalAsh> search_provider_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  raw_ptr<crosapi::SearchProviderAsh> search_provider_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
 
   AutocompleteInput input_;
 

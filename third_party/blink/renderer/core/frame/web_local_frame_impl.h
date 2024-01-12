@@ -366,9 +366,6 @@ class CORE_EXPORT WebLocalFrameImpl final
           session_storage_area) override;
   void AddHitTestOnTouchStartCallback(
       base::RepeatingCallback<void(const WebHitTestResult&)> callback) override;
-  void SetResourceCacheRemote(
-      CrossVariantMojoRemote<mojom::blink::ResourceCacheInterfaceBase> remote)
-      override;
   void BlockParserForTesting() override;
   void ResumeParserForTesting() override;
   void FlushInputForTesting(base::OnceClosure done_callback) override;

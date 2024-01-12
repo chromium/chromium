@@ -131,11 +131,7 @@ interface WebTestRenderFrame {
   // potentially-renderer-visible changes it needed to make. The frame may now
   // perform any initialization and start running the test.
   StartTest();
-};
 
-// Web test messages related runtime flags sent from the browser process to the
-// renderer. This interface is associated with RenderProcessHost.
-interface WebTestRenderThread {
   // Sets up a renderer in a window other than the main test window. This may
   // be for a window opened by javascript (window.open()) or by the test harness
   // (devtools inspector). This should be called as early as possible (as soon
@@ -235,9 +231,9 @@ interface WebTestControlHost {
   // Trigger a loadURL navigation on the main WebView.
   LoadURLForFrame(url.mojom.Url url, string frame_name);
 
-  // Mark the orientation changed in the browser process for the layout tests
+  // Simulate an orientation change in the browser process for the layout tests
   // that request fullscreen on screen orientation change.
-  SetScreenOrientationChanged();
+  SimulateScreenOrientationChanged();
 
   // Sets the permission for |name| to |status| when queried or requested in
   // |origin| from |embedding_origin|.

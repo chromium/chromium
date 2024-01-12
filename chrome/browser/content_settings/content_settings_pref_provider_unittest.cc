@@ -29,6 +29,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -1140,13 +1141,13 @@ TEST_F(PrefProviderTest, RenewContentSetting) {
   EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(1));
 
   // Wrong ContentSetting, doesn't match.
-  EXPECT_FALSE(provider.RenewContentSetting(primary_url, primary_url,
-                                            ContentSettingsType::STORAGE_ACCESS,
-                                            CONTENT_SETTING_BLOCK));
+  EXPECT_FALSE(provider.RenewContentSetting(
+      primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_BLOCK, PartitionKey::GetDefaultForTesting()));
 
-  EXPECT_TRUE(provider.RenewContentSetting(primary_url, primary_url,
-                                           ContentSettingsType::STORAGE_ACCESS,
-                                           CONTENT_SETTING_ALLOW));
+  EXPECT_TRUE(provider.RenewContentSetting(
+      primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW, PartitionKey::GetDefaultForTesting()));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
                                        &provider, primary_url, primary_url,
@@ -1225,7 +1226,8 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
 
   clock.Advance(base::Days(20));
   provider.UpdateLastVisitTime(primary_pattern, primary_pattern,
-                               ContentSettingsType::GEOLOCATION);
+                               ContentSettingsType::GEOLOCATION,
+                               PartitionKey::GetDefaultForTesting());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
@@ -1235,7 +1237,8 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
 
   // Test resetting the last_visited time.
   provider.ResetLastVisitTime(primary_pattern, primary_pattern,
-                              ContentSettingsType::GEOLOCATION);
+                              ContentSettingsType::GEOLOCATION,
+                              PartitionKey::GetDefaultForTesting());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,

@@ -41,7 +41,7 @@ class ArcMountProvider : public guest_os::GuestOsMountProvider {
   void Prepare(PrepareCallback callback) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const int cid_;
 
   // Note: This should remain the last member so it'll be destroyed and

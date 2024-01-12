@@ -220,7 +220,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   }
 
   IdentityProviderDisplayData CreateIdentityProviderDisplayData(
-      const std::vector<std::pair<std::string, LoginState>>& account_infos) {
+      const std::vector<std::pair<std::string, LoginState>>& account_infos,
+      bool has_login_status_mismatch = false) {
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
@@ -228,10 +229,10 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
                             /*domain_hints=*/std::vector<std::string>(),
                             account_info.second);
     }
-    return IdentityProviderDisplayData(u"", content::IdentityProviderMetadata(),
-                                       content::ClientMetadata(GURL(), GURL()),
-                                       std::move(accounts),
-                                       /*request_permission=*/true);
+    return IdentityProviderDisplayData(
+        u"", content::IdentityProviderMetadata(),
+        content::ClientMetadata(GURL(), GURL()), std::move(accounts),
+        /*request_permission=*/true, has_login_status_mismatch);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
@@ -288,6 +289,25 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         std::move(idp_signin_popup_window));
 
     controller.ShowModalDialog(GURL(u"https://example.com"));
+  }
+
+  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMultiIdp(
+      const std::vector<IdentityProviderDisplayData>& idp_list,
+      SignInMode mode) {
+    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+        delegate_.get(), widget_.get(), bubble_view_.get());
+    std::vector<content::IdentityProviderData> idp_data;
+    for (const auto& idp : idp_list) {
+      idp_data.emplace_back(
+          reinterpret_cast<const char*>(idp.idp_etld_plus_one.data()),
+          idp.accounts, idp.idp_metadata, idp.client_metadata,
+          blink::mojom::RpContext::kSignIn, idp.request_permission,
+          idp.has_login_status_mismatch);
+    }
+    controller->Show(kTopFrameEtldPlusOne,
+                     std::make_optional<std::string>(kIframeEtldPlusOne),
+                     idp_data, mode, /*show_auto_reauthn_checkbox=*/false);
+    return controller;
   }
 
   ui::MouseEvent CreateMouseEvent() {
@@ -1128,4 +1148,57 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
   StubAccountSelectionViewDelegate* delegate =
       static_cast<StubAccountSelectionViewDelegate*>(delegate_.get());
   EXPECT_EQ(delegate->GetDismissReason(), DismissReason::kMoreDetailsButton);
+}
+
+TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
+  const char kAccountId[] = "account_id";
+  std::vector<IdentityProviderDisplayData> idp_list = {
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}}),
+      CreateIdentityProviderDisplayData(/*account_infos=*/{},
+                                        /*has_login_status_mismatch*/ true)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit);
+
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+
+  EXPECT_FALSE(bubble_view_->show_back_button_);
+  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
+            bubble_view_->sheet_type_);
+  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(idp_list[0].accounts[0], idp_list[0],
+                              CreateMouseEvent());
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
+            bubble_view_->sheet_type_);
+  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
+}
+
+// Tests that if a pop-up window is opened in button flow mode, closing the
+// pop-up window triggers the dismiss callback.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowPopupCloseTriggersDismissCallback) {
+  // Initialize a controller but do not trigger any dialogs.
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), widget_.get(), bubble_view_.get());
+  EXPECT_FALSE(widget_->IsVisible());
+
+  // Emulate user clicking on a button to sign in with an IDP via button flow.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"));
+
+  // Emulate user closing the pop-up window.
+  controller->OnPopupWindowDestroyed();
+
+  // Widget should be dismissed.
+  StubAccountSelectionViewDelegate* delegate =
+      static_cast<StubAccountSelectionViewDelegate*>(delegate_.get());
+  EXPECT_EQ(delegate->GetDismissReason(), DismissReason::kOther);
+
+  // Reset the widget explicitly since no widget was shown. Otherwise, the test
+  // will complain that a widget is still open.
+  widget_.reset();
 }

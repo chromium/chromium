@@ -39,13 +39,10 @@ class StructuredMetricsKeyEventsObserver
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
  private:
-  raw_ptr<user_manager::UserManager, LeakedDanglingUntriaged | ExperimentalAsh>
-      user_manager_;
-  raw_ptr<ash::SessionTerminationManager,
-          LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<user_manager::UserManager, LeakedDanglingUntriaged> user_manager_;
+  raw_ptr<ash::SessionTerminationManager, LeakedDanglingUntriaged>
       session_termination_manager_;
-  raw_ptr<chromeos::PowerManagerClient,
-          LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<chromeos::PowerManagerClient, LeakedDanglingUntriaged>
       power_manager_client_;
 };
 

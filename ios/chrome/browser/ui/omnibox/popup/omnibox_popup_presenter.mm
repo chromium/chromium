@@ -172,7 +172,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraintPhone.active = YES;
       self.bottomSeparator.hidden = NO;
-    } else if (!IsIpadPopoutOmniboxEnabled()) {
+    } else {
       self.bottomConstraintTablet.active = YES;
     }
 
@@ -200,6 +200,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     self.bottomConstraintPhone.active = YES;
     self.bottomSeparator.hidden = NO;
+  } else {
+    self.bottomConstraintTablet.active = YES;
   }
 }
 

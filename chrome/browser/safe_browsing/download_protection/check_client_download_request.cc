@@ -364,6 +364,10 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
     return false;
   }
 
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
   if (IsUnderAdvancedProtection(profile) ||
       IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
     return true;

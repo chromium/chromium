@@ -133,7 +133,7 @@ void GradientIndicatorView::SetFrameColor(SkColor4f new_frame_color) {
   SchedulePaint();
 }
 
-BEGIN_METADATA(GradientIndicatorView, views::View)
+BEGIN_METADATA(GradientIndicatorView)
 END_METADATA
 
 GradientOverflowIndicatorStrategy::GradientOverflowIndicatorStrategy(

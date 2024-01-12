@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "media/base/android/jni_hdr_metadata.h"
 #include "media/base/android/media_codec_util.h"
@@ -26,6 +27,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
+#include "media_codec_bridge.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -180,6 +182,105 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
   return true;
 }
 
+// Given |status|, return the appropriate MediaCodecResult::Codes for it. This
+// is needed so that the actual MediaCodecResult object is created next to the
+// call that so that the call stack points at a usable line number, not
+// somewhere in this function.
+MediaCodecResult::Codes ConvertToMediaCodecEnum(MediaCodecStatus status) {
+  switch (status) {
+    case MEDIA_CODEC_OK:
+      return MediaCodecResult::Codes::kOk;
+    case MEDIA_CODEC_TRY_AGAIN_LATER:
+      return MediaCodecResult::Codes::kTryAgainLater;
+    case MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED:
+      return MediaCodecResult::Codes::kOutputBuffersChanged;
+    case MEDIA_CODEC_OUTPUT_FORMAT_CHANGED:
+      return MediaCodecResult::Codes::kOutputFormatChanged;
+    case MEDIA_CODEC_NO_KEY:
+      return MediaCodecResult::Codes::kNoKey;
+    case MEDIA_CODEC_ERROR:
+    case MEDIA_CODEC_KEY_EXPIRED:
+    case MEDIA_CODEC_RESOURCE_BUSY:
+    case MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION:
+    case MEDIA_CODEC_SESSION_NOT_OPENED:
+    case MEDIA_CODEC_UNSUPPORTED_OPERATION:
+    case MEDIA_CODEC_INSUFFICIENT_SECURITY:
+    case MEDIA_CODEC_FRAME_TOO_LARGE:
+    case MEDIA_CODEC_LOST_STATE:
+    case MEDIA_CODEC_GENERIC_OEM:
+    case MEDIA_CODEC_GENERIC_PLUGIN:
+    case MEDIA_CODEC_LICENSE_PARSE:
+    case MEDIA_CODEC_MEDIA_FRAMEWORK:
+    case MEDIA_CODEC_ZERO_SUBSAMPLES:
+    case MEDIA_CODEC_UNKNOWN_CIPHER_MODE:
+    case MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED:
+      return MediaCodecResult::Codes::kError;
+  }
+}
+
+// Given |status|, return an appropriate error message to be included in
+// MediaCodecResult.
+std::string ApplyDescriptiveMessage(MediaCodecStatus status) {
+  switch (status) {
+    case MEDIA_CODEC_OK:
+      return "";
+    case MEDIA_CODEC_TRY_AGAIN_LATER:
+      return "No output buffers are available.";
+    case MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED:
+      return "The output buffers have changed, subsequent data must use the "
+             "new set of output buffers.";
+    case MEDIA_CODEC_OUTPUT_FORMAT_CHANGED:
+      return "The output format has changed, subsequent data will follow the "
+             "new format.";
+    case MEDIA_CODEC_NO_KEY:
+      return "The requested key was not found when trying to perform a decrypt "
+             "operation.";
+    case MEDIA_CODEC_ERROR:
+      return "Unexpected error occurred.";
+    case MEDIA_CODEC_KEY_EXPIRED:
+      return "The key used for decryption is no longer valid due to license "
+             "term expiration.";
+    case MEDIA_CODEC_RESOURCE_BUSY:
+      return "A required crypto resource was not able to be allocated while "
+             "attempting the requested operation.";
+    case MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION:
+      return "The output protection levels supported by the device are not "
+             "sufficient to meet the requirements set by the content owner in "
+             "the license policy.";
+    case MEDIA_CODEC_SESSION_NOT_OPENED:
+      return "Decryption was attempted on a session that is not opened, which "
+             "could be due to a failure to open the session, closing the "
+             "session prematurely, the session being reclaimed by the resource "
+             "manager, or a non-existent session id.";
+    case MEDIA_CODEC_UNSUPPORTED_OPERATION:
+      return "An operation was attempted that could not be supported by the "
+             "crypto system of the device in its current configuration.";
+    case MEDIA_CODEC_INSUFFICIENT_SECURITY:
+      return "The security level of the device is not sufficient to meet the "
+             "requirements set by the content owner in the license policy.";
+    case MEDIA_CODEC_FRAME_TOO_LARGE:
+      return "The video frame being decrypted exceeds the size of the device's "
+             "protected output buffers.";
+    case MEDIA_CODEC_LOST_STATE:
+      return "The session state has been invalidated.";
+    case MEDIA_CODEC_GENERIC_OEM:
+      return "Unexpected error reported by the device OEM subsystem.";
+    case MEDIA_CODEC_GENERIC_PLUGIN:
+      return "Unexpected internal failure in MediaDrm/MediaCrypto.";
+    case MEDIA_CODEC_LICENSE_PARSE:
+      return "The license response was empty, fields are missing or otherwise "
+             "unable to be parsed or decrypted.";
+    case MEDIA_CODEC_MEDIA_FRAMEWORK:
+      return "Failure in the media framework.";
+    case MEDIA_CODEC_ZERO_SUBSAMPLES:
+      return "Input buffer provided with 0 subsamples.";
+    case MEDIA_CODEC_UNKNOWN_CIPHER_MODE:
+      return "Cipher mode is not supported.";
+    case MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED:
+      return "Pattern encryption only supported for 'cbcs' scheme (CBC mode).";
+  }
+}
+
 }  // namespace
 
 VideoCodecConfig::VideoCodecConfig() = default;
@@ -325,54 +426,60 @@ void MediaCodecBridgeImpl::Stop() {
   Java_MediaCodecBridge_stop(env, j_bridge_);
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::Flush() {
+MediaCodecResult MediaCodecBridgeImpl::Flush() {
   JNIEnv* env = AttachCurrentThread();
-  return static_cast<MediaCodecStatus>(
+  MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_flush(env, j_bridge_));
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetOutputSize(gfx::Size* size) {
+MediaCodecResult MediaCodecBridgeImpl::GetOutputSize(gfx::Size* size) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status == MEDIA_CODEC_OK) {
-    size->SetSize(Java_MediaFormatWrapper_width(env, result),
-                  Java_MediaFormatWrapper_height(env, result));
+  if (!result) {
+    return {MediaCodecResult::Codes::kError, "Unable to get output format."};
   }
-  return status;
+
+  size->SetSize(Java_MediaFormatWrapper_width(env, result),
+                Java_MediaFormatWrapper_height(env, result));
+  return OkStatus();
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetOutputSamplingRate(
+MediaCodecResult MediaCodecBridgeImpl::GetOutputSamplingRate(
     int* sampling_rate) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status == MEDIA_CODEC_OK)
-    *sampling_rate = Java_MediaFormatWrapper_sampleRate(env, result);
-  return status;
+  if (!result) {
+    return {MediaCodecResult::Codes::kError, "Unable to get output format."};
+  }
+
+  *sampling_rate = Java_MediaFormatWrapper_sampleRate(env, result);
+  return OkStatus();
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetOutputChannelCount(
+MediaCodecResult MediaCodecBridgeImpl::GetOutputChannelCount(
     int* channel_count) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status == MEDIA_CODEC_OK)
-    *channel_count = Java_MediaFormatWrapper_channelCount(env, result);
-  return status;
+  if (!result) {
+    return {MediaCodecResult::Codes::kError, "Unable to get output format."};
+  }
+
+  *channel_count = Java_MediaFormatWrapper_channelCount(env, result);
+  return OkStatus();
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
+MediaCodecResult MediaCodecBridgeImpl::GetOutputColorSpace(
     gfx::ColorSpace* color_space) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status != MEDIA_CODEC_OK)
-    return status;
+  if (!result) {
+    return {MediaCodecResult::Codes::kError, "Unable to get output format."};
+  }
 
   // TODO(liberato): Consider consolidating these to save JNI hops.  However,
   // since this is called only rarely, it's clearer this way.
@@ -404,7 +511,9 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
     default:
       DVLOG(3) << __func__ << ": unsupported primary in p: " << standard
                << " r: " << range << " t: " << transfer;
-      return MEDIA_CODEC_ERROR;
+      return {MediaCodecResult::Codes::kError,
+              "Unexpected MediaFormat.COLOR_STANDARD of " +
+                  base::NumberToString(standard) + " specified."};
   }
 
   switch (transfer) {
@@ -427,7 +536,9 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
     default:
       DVLOG(3) << __func__ << ": unsupported transfer in p: " << standard
                << " r: " << range << " t: " << transfer;
-      return MEDIA_CODEC_ERROR;
+      return {MediaCodecResult::Codes::kError,
+              "Unexpected MediaFormat.COLOR_TRANSFER of " +
+                  base::NumberToString(transfer) + " specified."};
   }
 
   switch (range) {
@@ -440,31 +551,34 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
     default:
       DVLOG(3) << __func__ << ": unsupported range in p: " << standard
                << " r: " << range << " t: " << transfer;
-      return MEDIA_CODEC_ERROR;
+      return {MediaCodecResult::Codes::kError,
+              "Unexpected MediaFormat.COLOR_RANGE of " +
+                  base::NumberToString(range) + " specified."};
   }
 
   *color_space = gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
 
-  return MEDIA_CODEC_OK;
+  return OkStatus();
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetInputFormat(int* stride,
+MediaCodecResult MediaCodecBridgeImpl::GetInputFormat(int* stride,
                                                       int* slice_height,
                                                       gfx::Size* encoded_size) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
-  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status == MEDIA_CODEC_OK) {
-    *stride = Java_MediaFormatWrapper_stride(env, result);
-    *slice_height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
-    *encoded_size = gfx::Size(Java_MediaFormatWrapper_width(env, result),
-                              Java_MediaFormatWrapper_height(env, result));
+  if (!result) {
+    return {MediaCodecResult::Codes::kError, "Failed to get input format."};
   }
-  return status;
+
+  *stride = Java_MediaFormatWrapper_stride(env, result);
+  *slice_height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
+  *encoded_size = gfx::Size(Java_MediaFormatWrapper_width(env, result),
+                            Java_MediaFormatWrapper_height(env, result));
+  return OkStatus();
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::QueueInputBuffer(
+MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
     int index,
     const uint8_t* data,
     size_t data_size,
@@ -472,17 +586,21 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueInputBuffer(
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
   if (data_size >
       base::checked_cast<size_t>(std::numeric_limits<int32_t>::max())) {
-    return MEDIA_CODEC_ERROR;
+    return {MediaCodecResult::Codes::kError, "Input buffer size is too large."};
   }
-  if (data && !FillInputBuffer(index, data, data_size))
-    return MEDIA_CODEC_ERROR;
+  if (data && !FillInputBuffer(index, data, data_size)) {
+    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
+  }
+
   JNIEnv* env = AttachCurrentThread();
-  return static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
-      env, j_bridge_, index, 0, data_size, presentation_time.InMicroseconds(),
-      0));
+  MediaCodecStatus status =
+      static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
+          env, j_bridge_, index, 0, data_size,
+          presentation_time.InMicroseconds(), 0));
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
+MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     int index,
     const uint8_t* data,
     size_t data_size,
@@ -495,10 +613,11 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
   if (data_size >
       base::checked_cast<size_t>(std::numeric_limits<int32_t>::max())) {
-    return MEDIA_CODEC_ERROR;
+    return {MediaCodecResult::Codes::kError, "Input buffer is too large."};
   }
-  if (data && !FillInputBuffer(index, data, data_size))
-    return MEDIA_CODEC_ERROR;
+  if (data && !FillInputBuffer(index, data, data_size)) {
+    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_key_id = ToJavaByteArray(
@@ -523,7 +642,8 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
       DCHECK(subsamples[i].clear_bytes <= std::numeric_limits<uint16_t>::max());
       if (subsamples[i].cypher_bytes >
           static_cast<uint32_t>(std::numeric_limits<jint>::max())) {
-        return MEDIA_CODEC_ERROR;
+        return {MediaCodecResult::Codes::kError,
+                "Subsample size is too large."};
       }
 
       native_clear_array[i] = subsamples[i].clear_bytes;
@@ -536,7 +656,7 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
   ScopedJavaLocalRef<jintArray> cypher_array = base::android::ToJavaIntArray(
       env, native_cypher_array.get(), num_subsamples);
 
-  return static_cast<MediaCodecStatus>(
+  MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_queueSecureInputBuffer(
           env, j_bridge_, index, 0, j_iv, j_key_id, clear_array, cypher_array,
           num_subsamples, static_cast<int>(encryption_scheme),
@@ -545,6 +665,7 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
           static_cast<int>(
               encryption_pattern ? encryption_pattern->skip_byte_block() : 0),
           presentation_time.InMicroseconds()));
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
 void MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
@@ -554,7 +675,7 @@ void MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
                                          0, 0, kBufferFlagEndOfStream);
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::DequeueInputBuffer(
+MediaCodecResult MediaCodecBridgeImpl::DequeueInputBuffer(
     base::TimeDelta timeout,
     int* index) {
   JNIEnv* env = AttachCurrentThread();
@@ -564,10 +685,10 @@ MediaCodecStatus MediaCodecBridgeImpl::DequeueInputBuffer(
   MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_DequeueInputResult_status(env, result));
   DVLOG(3) << __func__ << ": status: " << status << ", index: " << *index;
-  return status;
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::DequeueOutputBuffer(
+MediaCodecResult MediaCodecBridgeImpl::DequeueOutputBuffer(
     base::TimeDelta timeout,
     int* index,
     size_t* offset,
@@ -598,7 +719,7 @@ MediaCodecStatus MediaCodecBridgeImpl::DequeueOutputBuffer(
   DVLOG(3) << __func__ << ": status: " << status << ", index: " << *index
            << ", offset: " << *offset << ", size: " << *size
            << ", flags: " << flags;
-  return status;
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
 void MediaCodecBridgeImpl::ReleaseOutputBuffer(int index, bool render) {
@@ -607,37 +728,38 @@ void MediaCodecBridgeImpl::ReleaseOutputBuffer(int index, bool render) {
   Java_MediaCodecBridge_releaseOutputBuffer(env, j_bridge_, index, render);
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetInputBuffer(int input_buffer_index,
+MediaCodecResult MediaCodecBridgeImpl::GetInputBuffer(int input_buffer_index,
                                                       uint8_t** data,
                                                       size_t* capacity) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_buffer(
       Java_MediaCodecBridge_getInputBuffer(env, j_bridge_, input_buffer_index));
-  if (j_buffer.is_null())
-    return MEDIA_CODEC_ERROR;
+  if (j_buffer.is_null()) {
+    return {MediaCodecResult::Codes::kError, "Unable to obtain input buffer."};
+  }
 
   *data = static_cast<uint8_t*>(env->GetDirectBufferAddress(j_buffer.obj()));
   *capacity =
       base::checked_cast<size_t>(env->GetDirectBufferCapacity(j_buffer.obj()));
-  return MEDIA_CODEC_OK;
+  return OkStatus();
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::CopyFromOutputBuffer(int index,
+MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(int index,
                                                             size_t offset,
                                                             void* dst,
                                                             size_t num) {
   const uint8_t* src_data = nullptr;
   size_t src_capacity = 0;
-  MediaCodecStatus status =
+  MediaCodecResult result =
       GetOutputBufferAddress(index, offset, &src_data, &src_capacity);
-  if (status == MEDIA_CODEC_OK) {
+  if (result.is_ok()) {
     CHECK_GE(src_capacity, num);
     memcpy(dst, src_data, num);
   }
-  return status;
+  return result;
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetOutputBufferAddress(
+MediaCodecResult MediaCodecBridgeImpl::GetOutputBufferAddress(
     int index,
     size_t offset,
     const uint8_t** addr,
@@ -645,15 +767,16 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputBufferAddress(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_buffer(
       Java_MediaCodecBridge_getOutputBuffer(env, j_bridge_, index));
-  if (j_buffer.is_null())
-    return MEDIA_CODEC_ERROR;
+  if (j_buffer.is_null()) {
+    return {MediaCodecResult::Codes::kError, "Unable to get output buffer."};
+  }
   const size_t total_capacity = env->GetDirectBufferCapacity(j_buffer.obj());
   CHECK_GE(total_capacity, offset);
   *addr = reinterpret_cast<const uint8_t*>(
               env->GetDirectBufferAddress(j_buffer.obj())) +
           offset;
   *capacity = total_capacity - offset;
-  return MEDIA_CODEC_OK;
+  return OkStatus();
 }
 
 void MediaCodecBridgeImpl::OnBuffersAvailable(
@@ -698,7 +821,7 @@ bool MediaCodecBridgeImpl::FillInputBuffer(int index,
                                            size_t size) {
   uint8_t* dst = nullptr;
   size_t capacity = 0;
-  if (GetInputBuffer(index, &dst, &capacity) != MEDIA_CODEC_OK) {
+  if (!GetInputBuffer(index, &dst, &capacity).is_ok()) {
     LOG(ERROR) << "GetInputBuffer failed";
     return false;
   }

@@ -78,6 +78,7 @@ using safe_browsing::DownloadFileType;
 using ReportThreatDetailsResult =
     safe_browsing::PingManager::ReportThreatDetailsResult;
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
+using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 
 namespace {
 
@@ -98,10 +99,10 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
 
   // Whether the download should be displayed in the download shelf. True by
   // default.
-  bool should_show_in_shelf_;
+  bool should_show_in_shelf_ = true;
 
   // Whether the UI has been notified about this download.
-  bool was_ui_notified_;
+  bool was_ui_notified_ = false;
 
   // Whether the download should be opened in the browser vs. the system handler
   // for the file type.
@@ -109,10 +110,10 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
 
   // Danger level of the file determined based on the file type and whether
   // there was a user action associated with the download.
-  DownloadFileType::DangerLevel danger_level_;
+  DownloadFileType::DangerLevel danger_level_ = DownloadFileType::NOT_DANGEROUS;
 
   // Whether the download is currently being revived.
-  bool is_being_revived_;
+  bool is_being_revived_ = false;
 
   // Whether the safe browsing download warning was shown (and recorded) earlier
   // on the UI.
@@ -156,11 +157,7 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
   return data;
 }
 
-DownloadItemModelData::DownloadItemModelData()
-    : should_show_in_shelf_(true),
-      was_ui_notified_(false),
-      danger_level_(DownloadFileType::NOT_DANGEROUS),
-      is_being_revived_(false) {}
+DownloadItemModelData::DownloadItemModelData() = default;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
@@ -909,29 +906,20 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 }
 
 DownloadItemModel::BubbleUIInfo
-DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
-  download::DownloadDangerType danger_type = GetDangerType();
-  TailoredVerdict tailored_verdict = safe_browsing::DownloadProtectionService::
-      GetDownloadProtectionTailoredVerdict(download_);
-
-  // Suspicious archives
-  if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
-      tailored_verdict.tailored_verdict_type() ==
-          TailoredVerdict::SUSPICIOUS_ARCHIVE) {
-    return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
-        l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_ARCHIVE_MALWARE),
-        l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
-  }
-
-  // Cookie theft
-  if (danger_type ==
-          download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
-      tailored_verdict.tailored_verdict_type() ==
-          TailoredVerdict::COOKIE_THEFT) {
-    if (base::Contains(tailored_verdict.adjustments(),
-                       TailoredVerdict::ACCOUNT_INFO_STRING)) {
+DownloadItemModel::GetBubbleUIInfoForTailoredWarning(
+    TailoredWarningType tailored_warning_type) const {
+  switch (tailored_warning_type) {
+    case TailoredWarningType::kSuspiciousArchive:
+      return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_ARCHIVE_MALWARE),
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
+    case TailoredWarningType::kCookieTheft:
+      return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
+    case TailoredWarningType::kCookieTheftWithAccountInfo: {
       auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
       std::string email =
           identity_manager
@@ -948,42 +936,43 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
                 IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
                 base::ASCIIToUTF16(email)));
       }
+      return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
     }
-    return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
-        l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
+    case TailoredWarningType::kNoTailoredWarning: {
+      NOTREACHED();
+      return DownloadUIModel::BubbleUIInfo();
+    }
   }
-
-  NOTREACHED();
-  return DownloadUIModel::BubbleUIInfo();
 }
 
-bool DownloadItemModel::ShouldShowTailoredWarning() const {
+TailoredWarningType DownloadItemModel::GetTailoredWarningType() const {
   if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadTailoredWarnings)) {
-    return false;
+    return TailoredWarningType::kNoTailoredWarning;
   }
-
-  static const struct ValidCombination {
-    download::DownloadDangerType danger_type;
-    TailoredVerdict::TailoredVerdictType tailored_verdict_type;
-  } kValidTailoredWarningCombinations[]{
-      {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-       TailoredVerdict::SUSPICIOUS_ARCHIVE},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       TailoredVerdict::COOKIE_THEFT}};
 
   download::DownloadDangerType danger_type = GetDangerType();
   TailoredVerdict tailored_verdict = safe_browsing::DownloadProtectionService::
       GetDownloadProtectionTailoredVerdict(download_);
-  for (const auto& combination : kValidTailoredWarningCombinations) {
-    if (danger_type == combination.danger_type &&
-        tailored_verdict.tailored_verdict_type() ==
-            combination.tailored_verdict_type) {
-      return true;
-    }
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
+      tailored_verdict.tailored_verdict_type() ==
+          TailoredVerdict::SUSPICIOUS_ARCHIVE) {
+    return TailoredWarningType::kSuspiciousArchive;
   }
 
-  return false;
+  if (danger_type ==
+          download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
+      tailored_verdict.tailored_verdict_type() ==
+          TailoredVerdict::COOKIE_THEFT) {
+    if (base::Contains(tailored_verdict.adjustments(),
+                       TailoredVerdict::ACCOUNT_INFO_STRING)) {
+      return TailoredWarningType::kCookieTheftWithAccountInfo;
+    }
+    return TailoredWarningType::kCookieTheft;
+  }
+
+  return TailoredWarningType::kNoTailoredWarning;
 }
 
 bool DownloadItemModel::ShouldShowInBubble() const {

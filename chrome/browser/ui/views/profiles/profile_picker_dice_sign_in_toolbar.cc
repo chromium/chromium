@@ -25,8 +25,9 @@ namespace {
 constexpr gfx::Insets kToolbarPadding = gfx::Insets(8);
 
 class SimpleBackButton : public ToolbarButton {
+  METADATA_HEADER(SimpleBackButton, ToolbarButton)
+
  public:
-  METADATA_HEADER(SimpleBackButton);
   explicit SimpleBackButton(PressedCallback callback)
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
@@ -44,7 +45,7 @@ class SimpleBackButton : public ToolbarButton {
   ~SimpleBackButton() override = default;
 };
 
-BEGIN_METADATA(SimpleBackButton, ToolbarButton)
+BEGIN_METADATA(SimpleBackButton)
 END_METADATA
 
 }  // namespace
@@ -89,5 +90,5 @@ void ProfilePickerDiceSignInToolbar::UpdateToolbarColor() {
   parent()->SetBackground(views::CreateSolidBackground(background_color));
 }
 
-BEGIN_METADATA(ProfilePickerDiceSignInToolbar, views::View)
+BEGIN_METADATA(ProfilePickerDiceSignInToolbar)
 END_METADATA

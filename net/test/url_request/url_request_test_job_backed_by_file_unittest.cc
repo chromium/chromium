@@ -235,8 +235,7 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
                                          true /*overwrite*/);
   }
   request->Start();
-
-  base::RunLoop().Run();
+  delegate_.RunUntilComplete();
 }
 
 // Helper function to make a character array filled with |size| bytes of

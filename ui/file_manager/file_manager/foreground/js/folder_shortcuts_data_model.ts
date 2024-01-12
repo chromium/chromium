@@ -6,11 +6,11 @@ import {getPreferences} from '../../common/js/api.js';
 import type {PermutationEvent} from '../../common/js/array_data_model.js';
 import {AsyncQueue, Group} from '../../common/js/async_util.js';
 import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
+import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
 
@@ -346,7 +346,7 @@ export class FolderShortcutsDataModel extends
       }
     }
     // If value is not added yet, add it at the last.
-    if (addedIndex == -1) {
+    if (addedIndex === -1) {
       this.array_.push(value);
       addedIndex = this.length;
     }

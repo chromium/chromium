@@ -1,0 +1,8 @@
+Tests that page focus emulation is not reset by unrelated sessions
+hasFocus(session1, before emulation):false
+hasFocus(session2, before emulation):false
+hasFocus(session1, after emulation):true
+hasFocus(session2, after emulation):true
+hasFocus(session1, after emulation, after session2 disconnect):true
+hasFocus(session3, after emulation, after session1 disconnect):false
+

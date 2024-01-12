@@ -65,7 +65,7 @@ TEST(URLRequestJobFactoryTest, NoProtocolHandler) {
                                      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
 
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ(ERR_UNKNOWN_URL_SCHEME, delegate.request_status());
 }
 
@@ -82,7 +82,7 @@ TEST(URLRequestJobFactoryTest, BasicProtocolHandler) {
                                      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
 
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ(OK, delegate.request_status());
 }
 

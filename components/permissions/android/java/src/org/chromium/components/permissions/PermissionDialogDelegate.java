@@ -60,7 +60,7 @@ public class PermissionDialogDelegate {
         return mContentSettingsTypes.clone();
     }
 
-    public boolean isOneTime() {
+    public boolean canShowEphemeralOption() {
         return !mPositiveEphemeralButtonText.isEmpty();
     }
 
@@ -87,6 +87,12 @@ public class PermissionDialogDelegate {
     public void onAccept() {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get().accept(mNativeDelegatePtr, PermissionDialogDelegate.this);
+    }
+
+    public void onAcceptThisTime() {
+        assert mNativeDelegatePtr != 0;
+        PermissionDialogDelegateJni.get()
+                .acceptThisTime(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
     public void onCancel() {

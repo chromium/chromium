@@ -758,6 +758,23 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the expand icon under the tree item to show by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemExpandIconToShowByLabel(label) {
+    const expandIcon =
+        this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
+    const element = await this.remoteCall_.waitForElementStyles(
+        this.appId_,
+        expandIcon,
+        ['visibility'],
+    );
+    chrome.test.assertEq('visible', element.styles['visibility']);
+  }
+
+  /**
    * Wait for the expand icon under the tree item to hide by its label.
    *
    * @param {string} label Label of the tree item.
@@ -1471,8 +1488,9 @@ class DirectoryTreeSelectors_ {
    * @return {boolean}
    */
   isInsideDrive(type) {
-    return type == 'drive_recent' || type == 'drive_shared_with_me' ||
-        type == 'drive_offline' || type == 'shared_drive' || type == 'computer';
+    return type === 'drive_recent' || type === 'drive_shared_with_me' ||
+        type === 'drive_offline' || type === 'shared_drive' ||
+        type === 'computer';
   }
 
   /**
@@ -1504,7 +1522,7 @@ class DirectoryTreeSelectors_ {
     if (typeof modifiers.acceptDrop !== 'undefined') {
       appendedSelectors.push(modifiers.acceptDrop ? '.accepts' : '.denies');
     }
-    if (typeof modifiers.hasChildren != 'undefined') {
+    if (typeof modifiers.hasChildren !== 'undefined') {
       appendedSelectors.push(
           `[has-children="${String(modifiers.hasChildren)}"]`);
     }

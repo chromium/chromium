@@ -17,14 +17,14 @@
 namespace autofill {
 
 CreditCardCvcAuthenticator::CvcAuthenticationResponse::
-    CvcAuthenticationResponse() {}
+    CvcAuthenticationResponse() = default;
 CreditCardCvcAuthenticator::CvcAuthenticationResponse::
-    ~CvcAuthenticationResponse() {}
+    ~CvcAuthenticationResponse() = default;
 
 CreditCardCvcAuthenticator::CreditCardCvcAuthenticator(AutofillClient* client)
     : client_(client) {}
 
-CreditCardCvcAuthenticator::~CreditCardCvcAuthenticator() {}
+CreditCardCvcAuthenticator::~CreditCardCvcAuthenticator() = default;
 
 void CreditCardCvcAuthenticator::Authenticate(
     const CreditCard* card,

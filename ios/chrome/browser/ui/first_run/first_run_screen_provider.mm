@@ -8,13 +8,37 @@
 #import "base/notreached.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
+
+namespace ios {
+namespace first_run {
+
+bool IsSearchEngineChoiceScreenEnabledFre() {
+  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
+    // This branch is only selected in tests that are related to choice screen.
+    return true;
+  }
+  if (tests_hook::DisableDefaultSearchEngineChoice()) {
+    // This branch is taken in every other tests.
+    return false;
+  }
+  if (ios::provider::DisableDefaultSearchEngineChoice()) {
+    // Outside of tests, this view should be disabled upstream.
+    return false;
+  }
+  return search_engines::IsChoiceScreenFlagEnabled(
+      search_engines::ChoicePromo::kFre);
+}
+}  // namespace first_run
+}  // namespace ios
 
 @implementation FirstRunScreenProvider
 
@@ -30,7 +54,7 @@
 
   BrowserStatePolicyConnector* policyConnector =
       browserState->GetPolicyConnector();
-  if (ios::provider::IsSearchEngineChoiceScreenEnabledFre() &&
+  if (ios::first_run::IsSearchEngineChoiceScreenEnabledFre() &&
       search_engines::ShouldShowChoiceScreen(
           *policyConnector->GetPolicyService(),
           /*profile_properties=*/

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
@@ -129,8 +129,8 @@ class CONTENT_EXPORT BackgroundFetchContext
   // internal |icon| is guarnteed to be not null.
   void UpdateUI(
       const BackgroundFetchRegistrationId& registration_id,
-      const absl::optional<std::string>& title,
-      const absl::optional<SkBitmap>& icon,
+      const std::optional<std::string>& title,
+      const std::optional<SkBitmap>& icon,
       blink::mojom::BackgroundFetchRegistrationService::UpdateUICallback
           callback);
 

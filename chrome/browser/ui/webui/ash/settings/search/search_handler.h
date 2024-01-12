@@ -103,9 +103,9 @@ class SearchHandler : public mojom::SearchHandler,
   static bool CompareSearchResults(const mojom::SearchResultPtr& first,
                                    const mojom::SearchResultPtr& second);
 
-  raw_ptr<SearchTagRegistry, ExperimentalAsh> search_tag_registry_;
-  raw_ptr<OsSettingsSections, ExperimentalAsh> sections_;
-  raw_ptr<Hierarchy, ExperimentalAsh> hierarchy_;
+  raw_ptr<SearchTagRegistry> search_tag_registry_;
+  raw_ptr<OsSettingsSections> sections_;
+  raw_ptr<Hierarchy> hierarchy_;
   mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   // Note: Expected to have multiple clients, so ReceiverSet/RemoteSet are used.

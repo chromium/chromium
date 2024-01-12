@@ -501,6 +501,10 @@ void CompanionPageHandler::OnCqJumptagClicked(
       text_directive);
 }
 
+void CompanionPageHandler::OnServerSideUrlFilterEvent() {
+  metrics_logger_->OnServerSideUrlFilterEvent();
+}
+
 void CompanionPageHandler::OpenUrlInBrowser(
     const std::optional<GURL>& url_to_open,
     bool use_new_tab) {

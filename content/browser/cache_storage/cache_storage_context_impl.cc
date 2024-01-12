@@ -173,9 +173,9 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const absl::optional<storage::BucketLocator> bucket =
-      result.has_value() ? absl::make_optional(result->ToBucketLocator())
-                         : absl::nullopt;
+  const std::optional<storage::BucketLocator> bucket =
+      result.has_value() ? std::make_optional(result->ToBucketLocator())
+                         : std::nullopt;
 
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
                                 std::move(coep_reporter), storage_key, bucket,

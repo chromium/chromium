@@ -15,7 +15,7 @@ import {getTemplate} from './emoji_group.html.js';
 import {EmojiImageComponent} from './emoji_image.js';
 import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
-import {CategoryEnum, EmojiVariants, PreferenceMapping} from './types.js';
+import {CategoryEnum, EmojiVariants, Gender, PreferenceMapping, Tone} from './types.js';
 
 // Note - grid-layout and flex-layout names are used directly in CSS.
 export enum EmojiGroupLayoutType {
@@ -55,8 +55,11 @@ export class EmojiGroupComponent extends PolymerElement {
     return {
       data: {type: Array, readonly: true},
       group: {type: String, value: null, readonly: true},
+      globalTone: {type: Number, value: null, readonly: true},
+      globalGender: {type: Number, value: null, readonly: true},
       preferred: {type: Object, value: () => ({})},
       clearable: {type: Boolean, value: false},
+      useGroupedPreference: {type: Boolean, value: false},
       category: {
         type: String,
         value: CategoryEnum.EMOJI,
@@ -75,8 +78,11 @@ export class EmojiGroupComponent extends PolymerElement {
   }
   data: EmojiVariants[];
   group: string|null;
+  private globalTone: Tone|null = null;
+  private globalGender: Gender|null = null;
   preferred: PreferenceMapping;
   clearable: boolean;
+  useGroupedPreference: boolean;
   category: CategoryEnum;
   layoutType: string|null;
   showClearRecents: boolean;
@@ -165,7 +171,7 @@ export class EmojiGroupComponent extends PolymerElement {
 
     // Text-based emoji clicked
     if (emoji.base.string) {
-      const text = this.getDisplayEmojiForEmoji(emoji.base.string);
+      const text = this.getDisplayEmojiForEmoji(emoji.base.string, emoji);
 
       this.dispatchEvent(createCustomEvent(EMOJI_TEXT_BUTTON_CLICK, {
         name: emoji.base.name,
@@ -173,6 +179,8 @@ export class EmojiGroupComponent extends PolymerElement {
         text,
         baseEmoji: emoji.base.string,
         isVariant: text !== emoji.base.string,
+        groupedTone: false,
+        groupedGender: false,
         alternates: emoji.alternates ?? [],
       }));
     } else {
@@ -272,7 +280,7 @@ export class EmojiGroupComponent extends PolymerElement {
     if (emoji.base.string) {
       const emojiLabel = this.isLangEnglish ?
           emoji.base.name :
-          this.getDisplayEmojiForEmoji(emoji.base.string);
+          (this.getDisplayEmojiForEmoji(emoji.base.string, emoji));
       if (emoji.alternates && emoji.alternates.length > 0) {
         return emojiLabel + ' with variants.';
       } else {
@@ -285,8 +293,25 @@ export class EmojiGroupComponent extends PolymerElement {
   /**
    * Returns the character to be shown for the emoji.
    */
-  private getDisplayEmojiForEmoji(baseEmoji: string): string {
-    return this.preferred[baseEmoji] || baseEmoji;
+  private getDisplayEmojiForEmoji(text: string, emoji: EmojiVariants): string {
+    const {alternates, groupedTone, groupedGender} = emoji;
+    const individualPreference = this.preferred[text];
+
+    if (!this.useGroupedPreference || !(groupedTone || groupedGender)) {
+      return individualPreference ?? text;
+    }
+
+    const preference =
+        alternates.find(variant => variant.string === individualPreference);
+    const tone = this.globalTone ?? preference?.tone ?? Tone.DEFAULT;
+    const gender = this.globalGender ?? preference?.gender ?? Gender.DEFAULT;
+
+    const variant = alternates.find(variant => {
+      return (variant.tone ?? tone) === tone &&
+          (variant.gender ?? gender) === gender;
+    });
+
+    return variant?.string ?? text;
   }
 
   /**

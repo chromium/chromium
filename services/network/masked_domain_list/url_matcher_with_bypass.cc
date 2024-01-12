@@ -27,31 +27,6 @@ bool HasSubdomainCoverage(std::string_view domain) {
   return domain.starts_with(".") || domain.starts_with("*");
 }
 
-void AddBypassRulesForDomain(net::SchemeHostPortMatcher& bypass_matcher,
-                             std::string_view domain) {
-  bypass_matcher.AddAsFirstRule(
-      net::SchemeHostPortMatcherRule::FromUntrimmedRawString(domain));
-  if (!HasSubdomainCoverage(domain)) {
-    bypass_matcher.AddAsFirstRule(
-        net::SchemeHostPortMatcherRule::FromUntrimmedRawString(
-            base::StrCat({".", domain})));
-  }
-}
-
-net::SchemeHostPortMatcher BuildBypassMatcher(
-    const masked_domain_list::ResourceOwner& resource_owner) {
-  net::SchemeHostPortMatcher bypass_matcher;
-
-  for (std::string_view property : resource_owner.owned_properties()) {
-    AddBypassRulesForDomain(bypass_matcher, property);
-  }
-  for (const masked_domain_list::Resource& resource :
-       resource_owner.owned_resources()) {
-    AddBypassRulesForDomain(bypass_matcher, resource.domain());
-  }
-  return bypass_matcher;
-}
-
 void AddRulesToMatcher(net::SchemeHostPortMatcher* matcher,
                        std::string_view domain,
                        bool include_subdomains) {
@@ -84,6 +59,28 @@ void AddRulesToMatcher(net::SchemeHostPortMatcher* matcher,
 }  // namespace
 
 // static
+net::SchemeHostPortMatcher UrlMatcherWithBypass::BuildBypassMatcher(
+    const masked_domain_list::ResourceOwner& resource_owner) {
+  net::SchemeHostPortMatcher bypass_matcher;
+
+  // De-dupe domains that are in owned_properties and owned_resources.
+  std::set<std::string_view> domains;
+  for (std::string_view property : resource_owner.owned_properties()) {
+    domains.insert(property);
+  }
+  for (const masked_domain_list::Resource& resource :
+       resource_owner.owned_resources()) {
+    domains.insert(resource.domain());
+  }
+
+  for (std::string_view domain : domains) {
+    AddRulesToMatcher(&bypass_matcher, domain, !HasSubdomainCoverage(domain));
+  }
+
+  return bypass_matcher;
+}
+
+// static
 std::string UrlMatcherWithBypass::PartitionMapKey(std::string_view domain) {
   auto last_dot = domain.rfind(".");
   if (last_dot != std::string::npos) {
@@ -112,7 +109,7 @@ void UrlMatcherWithBypass::AddDomainWithBypass(
 }
 
 void UrlMatcherWithBypass::AddMaskedDomainListRules(
-    const std::vector<std::string>& domains,
+    const std::set<std::string>& domains,
     const std::string& partition_key,
     const masked_domain_list::ResourceOwner& resource_owner) {
   net::SchemeHostPortMatcher matcher;
@@ -134,6 +131,21 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
   // them.
   AddDomainWithBypass(domain, BuildBypassMatcher(resource_owner),
                       !HasSubdomainCoverage(domain));
+}
+
+void UrlMatcherWithBypass::AddRulesWithoutBypass(
+    const std::set<std::string>& domains,
+    const std::string& partition_key) {
+  net::SchemeHostPortMatcher matcher;
+  for (auto domain : domains) {
+    CHECK(PartitionMapKey(domain) == partition_key);
+    AddRulesToMatcher(&matcher, domain, !HasSubdomainCoverage(domain));
+  }
+
+  if (!matcher.rules().empty()) {
+    match_list_with_bypass_map_[partition_key].emplace_back(
+        std::make_pair(std::move(matcher), net::SchemeHostPortMatcher()));
+  }
 }
 
 void UrlMatcherWithBypass::Clear() {

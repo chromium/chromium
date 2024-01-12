@@ -141,28 +141,23 @@ class NET_EXPORT HostResolverManager
       handles::NetworkHandle target_network,
       NetLog* net_log);
 
-  // |resolve_context| must have already been added (via
-  // RegisterResolveContext()). If |optional_parameters| specifies any cache
-  // usage other than LOCAL_ONLY, there must be a 1:1 correspondence between
-  // |resolve_context| and |host_cache|, and both should come from the same
-  // ContextHostResolver.
-  //
-  // TODO(crbug.com/1022059): Use the HostCache out of the ResolveContext
-  // instead of passing it separately.
+  // Creates a host resolution request. `resolve_context` must have already been
+  // added via RegisterResolveContext(). If `optional_parameters` specifies any
+  // cache usage other than LOCAL_ONLY, `resolve_context` should have a valid
+  // `host_cache()` coming from a ContextHostResolver that owns
+  // `resolve_context`.
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       absl::variant<url::SchemeHostPort, HostPortPair> host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       absl::optional<ResolveHostParameters> optional_parameters,
-      ResolveContext* resolve_context,
-      HostCache* host_cache);
+      ResolveContext* resolve_context);
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       absl::optional<ResolveHostParameters> optional_parameters,
-      ResolveContext* resolve_context,
-      HostCache* host_cache);
+      ResolveContext* resolve_context);
   // |resolve_context| is the context to use for the probes, and it is expected
   // to be the context of the calling ContextHostResolver.
   std::unique_ptr<HostResolver::ProbeRequest> CreateDohProbeRequest(

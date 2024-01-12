@@ -802,8 +802,10 @@
     //
     // text-spacing-trim
     //
+    // normal
     "space-all",
     "space-first",
+    "trim-start",
 
     // text-underline-position
     // auto

@@ -119,7 +119,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   int64_t storage_items_total_bytes_[SizeCalculator::kCalculationTypeCount] = {
       0};
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const std::string source_name_;
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>

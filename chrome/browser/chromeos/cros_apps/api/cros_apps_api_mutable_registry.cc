@@ -51,18 +51,6 @@ bool CrosAppsApiMutableRegistry::IsApiEnabledFor(
     return false;
   }
 
-  // TODO(b/311528206): Decide if this scheme check should be removed.
-  //
-  // The following schemes because they share the same origin as their creator
-  // (i.e. the App), and could cause problem during origin matching.
-  //
-  // The app could inadvertently create these URLs that serves third-party (from
-  // the App's perspective) untrustworthy content. Said third-party content
-  // probably shouldn't be treated as same origin as the app.
-  if (url.SchemeIs(url::kBlobScheme) || url.SchemeIs(url::kFileSystemScheme)) {
-    return false;
-  }
-
   const bool are_required_features_enabled = base::ranges::all_of(
       api_info.required_features(), [](const auto& base_feature) {
         return base::FeatureList::IsEnabled(base_feature);

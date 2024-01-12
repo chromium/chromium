@@ -92,6 +92,11 @@ bool PayloadTestComponentInstallerPolicy::AllowCachedCopies() const {
   return false;
 }
 
+bool PayloadTestComponentInstallerPolicy::AllowUpdatesOnMeteredConnections()
+    const {
+  return false;
+}
+
 void RegisterPayloadTestComponent(ComponentUpdateService* cus) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::MakeRefCounted<ComponentInstaller>(

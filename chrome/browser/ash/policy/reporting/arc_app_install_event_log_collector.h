@@ -93,7 +93,7 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   void OnConnectionStateChanged(network::mojom::ConnectionType type) override;
 
  private:
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Set of apps whose push-install is currently pending.
   std::set<std::string> pending_packages_;

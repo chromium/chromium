@@ -126,7 +126,7 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
     if (layout_object->IsText() &&
         To<LayoutText>(layout_object)->ResolvedTextLength()) {
       if (style.ShouldPreserveBreaks()) {
-        const String& text = To<LayoutText>(layout_object)->GetText();
+        const String& text = To<LayoutText>(layout_object)->TransformedText();
         int index = text.length();
         if (previous_node_iterator == start_node && candidate_offset < index)
           index = max(0, candidate_offset);
@@ -241,7 +241,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
         To<LayoutText>(layout_object)->ResolvedTextLength()) {
       auto* const layout_text = To<LayoutText>(layout_object);
       if (style.ShouldPreserveBreaks()) {
-        const String& text = layout_text->GetText();
+        const String& text = layout_text->TransformedText();
         const int length = text.length();
         for (int i = (next_node_iterator == start_node ? candidate_offset : 0);
              i < length; ++i) {

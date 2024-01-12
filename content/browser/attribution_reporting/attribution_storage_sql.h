@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 class Statement;
@@ -47,11 +47,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 56;
+  static constexpr int kCurrentVersionNumber = 57;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 56;
+  static constexpr int kCompatibleVersionNumber = 57;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -112,11 +112,19 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kSourceInvalidEventReportWindows = 23,
     kSourceInvalidMaxEventLevelReports = 24,
     kSourceInvalidEventLevelEpsilon = 25,
-    kSourceDestinationSitesQueryFailed = 25,
-    kSourceInvalidDestinationSites = 26,
-    kStoredSourceConstructionFailed = 27,
+    kSourceDestinationSitesQueryFailed = 26,
+    kSourceInvalidDestinationSites = 27,
+    kStoredSourceConstructionFailed = 28,
     kMaxValue = kStoredSourceConstructionFailed,
   };
+
+  struct DeletionCounts {
+    int sources = 0;
+    int reports = 0;
+  };
+
+  // Deletes corrupt sources/reports if `deletion_counts` is not `nullptr`.
+  void VerifyReports(DeletionCounts* deletion_counts);
 
  private:
   using ReportCorruptionStatusSet =
@@ -124,6 +132,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                     ReportCorruptionStatus::kAnyFieldCorrupted,
                     ReportCorruptionStatus::kMaxValue>;
 
+  struct ReportCorruptionStatusSetAndIds;
   struct StoredSourceData;
 
   enum class DbStatus {
@@ -153,7 +162,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
       int limit = -1) override;
-  absl::optional<base::Time> GetNextReportTime(base::Time time) override;
+  std::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
@@ -162,7 +171,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   bool DeleteReport(AttributionReport::Id report_id) override;
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time) override;
-  absl::optional<base::Time> AdjustOfflineReportTimes() override;
+  std::optional<base::Time> AdjustOfflineReportTimes() override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
@@ -196,7 +205,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of sources in storage.
-  absl::optional<int64_t> NumberOfSources()
+  std::optional<int64_t> NumberOfSources()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ReportAlreadyStoredStatus {
@@ -205,13 +214,11 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  void RecordValidReports() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   ReportAlreadyStoredStatus ReportAlreadyStored(
       StoredSource::Id source_id,
-      absl::optional<uint64_t> dedup_key,
+      std::optional<uint64_t> dedup_key,
       AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -237,10 +244,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionReport& report,
       int num_conversions,
       int64_t conversion_priority,
-      absl::optional<AttributionReport>& replaced_report)
+      std::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
+  std::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool ReadDedupKeys(StoredSource&)
@@ -251,24 +258,27 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                      AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  base::expected<AttributionReport, ReportCorruptionStatusSet>
+  base::expected<AttributionReport, ReportCorruptionStatusSetAndIds>
   ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  base::expected<StoredSourceData, ReportCorruptionStatusSet>
+  base::expected<StoredSourceData, ReportCorruptionStatusSetAndIds>
   ReadSourceFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<StoredSourceData> ReadSourceToAttribute(
+  std::optional<StoredSourceData> ReadSourceToAttribute(
       StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::vector<AttributionReport> GetReportsInternal(base::Time max_report_time,
                                                     int limit)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<base::Time> GetNextReportTime(sql::StatementID id,
-                                               const char* sql,
-                                               base::Time time)
+  [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  std::optional<base::Time> GetNextReportTime(sql::StatementID id,
+                                              const char* sql,
+                                              base::Time time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool AdjustOfflineReportTimes(sql::StatementID id,
@@ -284,7 +294,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   bool FindMatchingSourceForTrigger(
       const AttributionTrigger& trigger,
       base::Time trigger_time,
-      absl::optional<StoredSource::Id>& source_id_to_attribute,
+      std::optional<StoredSource::Id>& source_id_to_attribute,
       std::vector<StoredSource::Id>& source_ids_to_delete,
       std::vector<StoredSource::Id>& source_ids_to_deactivate)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -293,17 +303,17 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionInfo& attribution_info,
       const StoredSource&,
       const AttributionTrigger& trigger,
-      absl::optional<AttributionReport>& report,
-      absl::optional<uint64_t>& dedup_key,
-      absl::optional<int>& max_event_level_reports_per_destination)
+      std::optional<AttributionReport>& report,
+      std::optional<uint64_t>& dedup_key,
+      std::optional<int>& max_event_level_reports_per_destination)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
       AttributionReport& report,
-      absl::optional<uint64_t> dedup_key,
+      std::optional<uint64_t> dedup_key,
       int num_conversions,
-      absl::optional<AttributionReport>& replaced_report,
-      absl::optional<AttributionReport>& dropped_report)
+      std::optional<AttributionReport>& replaced_report,
+      std::optional<AttributionReport>& dropped_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
@@ -368,9 +378,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionInfo& attribution_info,
       const StoredSource&,
       const AttributionTrigger& trigger,
-      absl::optional<AttributionReport>& report,
-      absl::optional<uint64_t>& dedup_key,
-      absl::optional<int>& max_aggregatable_reports_per_destination)
+      std::optional<AttributionReport>& report,
+      std::optional<uint64_t>& dedup_key,
+      std::optional<int>& max_aggregatable_reports_per_destination)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Stores the data associated with the aggregatable report, e.g. budget
@@ -381,8 +391,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport& report,
       int64_t aggregatable_budget_consumed,
       int num_aggregatable_reports,
-      absl::optional<uint64_t> dedup_key,
-      absl::optional<int>& max_aggregatable_reports_per_source)
+      std::optional<uint64_t> dedup_key,
+      std::optional<int>& max_aggregatable_reports_per_source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAttributionReport(AttributionReport& report)
@@ -394,8 +404,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
       const AttributionTrigger&,
       const AttributionInfo&,
-      absl::optional<AttributionReport>& new_aggregatable_report,
-      absl::optional<base::Time>& min_null_aggregatable_report_time)
+      std::optional<AttributionReport>& new_aggregatable_report,
+      std::optional<base::Time>& min_null_aggregatable_report_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Randomly assigns trigger verification data to the given reports.
@@ -416,8 +426,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // at for lazy initialization, and used as a signal for if the database is
   // closed. This is initialized in the first call to LazyInit() to avoid doing
   // additional work in the constructor, see https://crbug.com/1121307.
-  absl::optional<DbStatus> db_init_status_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<DbStatus> db_init_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 

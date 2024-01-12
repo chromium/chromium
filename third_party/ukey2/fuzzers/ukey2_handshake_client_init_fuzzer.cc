@@ -20,7 +20,7 @@ struct Environment {
   Environment() {
     // Disable noisy logging as per "libFuzzer in Chrome" documentation:
     // testing/libfuzzer/getting_started.md#Disable-noisy-error-message-logging.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
 
     // Create instance once to be reused between fuzzing rounds.
     server = securegcm::UKey2Handshake::ForResponder(kCipher);

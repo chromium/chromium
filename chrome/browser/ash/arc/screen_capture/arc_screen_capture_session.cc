@@ -228,8 +228,11 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   auto client_shared_image = sii->CreateSharedImage(
       si_format, size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      // NOTE: This SI will be used as the destination of a copy of the desktop
+      // texture via the raster interface. Hence, it needs RASTER usage as well
+      // as GLES2_WRITE usage for the case where raster is going over GLES2. The
+      // latter can be removed once OOP-R has shipped.
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
       "ArcScreenCapture", std::move(handle));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

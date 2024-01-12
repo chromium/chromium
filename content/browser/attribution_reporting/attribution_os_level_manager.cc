@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
@@ -18,7 +19,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -39,7 +39,7 @@ const base::SequenceChecker& GetSequenceChecker() {
 // This flag is per device and can only be changed by the OS. Currently we don't
 // observe setting changes on the device and the flag is only initialized once
 // on startup. The value may vary in tests.
-absl::optional<ApiState> g_state GUARDED_BY_CONTEXT(GetSequenceChecker());
+std::optional<ApiState> g_state GUARDED_BY_CONTEXT(GetSequenceChecker());
 
 }  // namespace
 
@@ -78,7 +78,7 @@ ApiState AttributionOsLevelManager::GetApiState() {
 }
 
 // static
-void AttributionOsLevelManager::SetApiState(absl::optional<ApiState> state) {
+void AttributionOsLevelManager::SetApiState(std::optional<ApiState> state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
 
   ApiState old_state = GetApiState();
@@ -96,7 +96,7 @@ void AttributionOsLevelManager::SetApiState(absl::optional<ApiState> state) {
 }
 
 ScopedApiStateForTesting::ScopedApiStateForTesting(
-    absl::optional<ApiState> state)
+    std::optional<ApiState> state)
     : previous_(g_state) {
   SetApiState(state);
 }

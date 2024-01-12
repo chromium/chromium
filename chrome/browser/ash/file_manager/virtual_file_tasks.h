@@ -34,8 +34,7 @@ class VirtualTask {
   // started running, if there are async steps.
   virtual bool Execute(Profile* profile,
                        const TaskDescriptor& task,
-                       const std::vector<FileSystemURL>& file_urls,
-                       gfx::NativeWindow modal_parent) const = 0;
+                       const std::vector<FileSystemURL>& file_urls) const = 0;
   // Whether this task should be included in |FindVirtualTasks()|. This can be
   // used to disable tasks based on a flag or other runtime conditions.
   virtual bool IsEnabled(Profile* profile) const = 0;
@@ -76,8 +75,7 @@ void FindVirtualTasks(Profile* profile,
 // Run |task| by calling |Execute()| on the associated VirtualTask.
 bool ExecuteVirtualTask(Profile* profile,
                         const TaskDescriptor& task,
-                        const std::vector<FileSystemURL>& file_urls,
-                        gfx::NativeWindow modal_parent);
+                        const std::vector<FileSystemURL>& file_urls);
 
 // Whether |task| is a virtual task and can be executed using
 // |ExecuteVirtualTask()|. Returns true for disabled tasks, too.

@@ -6,8 +6,7 @@
 #define EXTENSIONS_COMMON_EXTENSIONS_API_PROVIDER_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace extensions {
 class FeatureProvider;
@@ -39,7 +38,7 @@ class ExtensionsAPIProvider {
 
   // Returns a the contents of the generated schema for the given api |name|,
   // or an empty string if this provider doesn't know of the generated API.
-  virtual base::StringPiece GetAPISchema(const std::string& name) = 0;
+  virtual std::string_view GetAPISchema(const std::string& name) = 0;
 
   // Registers permissions for any associated API features.
   virtual void RegisterPermissions(PermissionsInfo* permissions_info) = 0;

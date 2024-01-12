@@ -299,7 +299,7 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
   }
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     browser_view_->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHSidePanelGenericMenuFeature);
   }
@@ -637,7 +637,7 @@ void SidePanelCoordinator::Show(
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature);
 
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    if (features::IsSidePanelPinningEnabled()) {
       // Close IPH for side panel menu, if shown.
       browser_view_->browser()->window()->CloseFeaturePromo(
           feature_engagement::kIPHSidePanelGenericMenuFeature);

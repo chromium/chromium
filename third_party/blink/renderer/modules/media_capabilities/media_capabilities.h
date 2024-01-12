@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"  // for media::VideoCodecProfile
+#include "media/base/video_color_space.h"
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"

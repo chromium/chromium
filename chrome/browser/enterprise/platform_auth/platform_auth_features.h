@@ -10,12 +10,6 @@
 
 namespace enterprise_auth {
 
-#if BUILDFLAG(IS_WIN)
-// Determines whether authentication data beginning with 'x-ms-' should be added
-// to requests as a header instead of a cookie.
-BASE_DECLARE_FEATURE(kCloudApAuthAttachAsHeader);
-#endif  // BUILDFLAG(IS_WIN)
-
 }  // namespace enterprise_auth
 
 #endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_PLATFORM_AUTH_FEATURES_H_

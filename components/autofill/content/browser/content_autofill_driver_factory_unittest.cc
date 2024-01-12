@@ -126,10 +126,6 @@ class MockAutofillAgent : public mojom::AutofillAgent {
   MOCK_METHOD(void, SetQueryPasswordSuggestion, (bool query), (override));
   MOCK_METHOD(void, EnableHeavyFormDataScraping, (), (override));
   MOCK_METHOD(void,
-              SetFieldsEligibleForManualFilling,
-              (const std::vector<FieldRendererId>& fields),
-              (override));
-  MOCK_METHOD(void,
               GetPotentialLastFourCombinationsForStandaloneCvc,
               (base::OnceCallback<void(const std::vector<std::string>&)>),
               (override));

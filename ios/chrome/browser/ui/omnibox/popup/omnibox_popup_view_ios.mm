@@ -52,7 +52,8 @@ OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
 }
 
 void OmniboxPopupViewIOS::UpdatePopupAppearance() {
-  [mediator_ updateWithResults:controller()->result()];
+  [mediator_
+      updateWithResults:controller()->autocomplete_controller()->result()];
 }
 
 bool OmniboxPopupViewIOS::IsOpen() const {

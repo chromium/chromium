@@ -172,8 +172,8 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
     active_tether_component_ = nullptr;
   }
 
-  raw_ptr<FakeTetherComponentWithDestructorCallback, ExperimentalAsh>
-      active_tether_component_ = nullptr;
+  raw_ptr<FakeTetherComponentWithDestructorCallback> active_tether_component_ =
+      nullptr;
   bool was_tether_component_active_ = false;
   TetherComponent::ShutdownReason last_shutdown_reason_;
 };
@@ -216,8 +216,7 @@ class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
 
  private:
   multidevice::RemoteDeviceRefList initial_devices_;
-  raw_ptr<FakeTetherHostFetcher, DanglingUntriaged | ExperimentalAsh>
-      last_created_ = nullptr;
+  raw_ptr<FakeTetherHostFetcher, DanglingUntriaged> last_created_ = nullptr;
 };
 
 class FakeDeviceSyncClientImplFactory
@@ -274,7 +273,7 @@ class FakeMultiDeviceSetupClientImplFactory
   }
 
  private:
-  raw_ptr<multidevice_setup::FakeMultiDeviceSetupClient, ExperimentalAsh>
+  raw_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 };
 
@@ -530,8 +529,7 @@ class TetherServiceTest : public testing::Test {
   const content::BrowserTaskEnvironment task_environment_;
 
   NetworkHandlerTestHelper network_handler_test_helper_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_chrome_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_chrome_user_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
   std::unique_ptr<TestTetherComponentFactory> test_tether_component_factory_;
@@ -539,10 +537,9 @@ class TetherServiceTest : public testing::Test {
       fake_remote_device_provider_factory_;
   std::unique_ptr<FakeTetherHostFetcherFactory>
       fake_tether_host_fetcher_factory_;
-  raw_ptr<FakeNotificationPresenter, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeNotificationPresenter, DanglingUntriaged>
       fake_notification_presenter_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeDeviceSyncClientImplFactory>
       fake_device_sync_client_impl_factory_;

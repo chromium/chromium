@@ -360,7 +360,7 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   const std::string user_id_hash_;
 
   // Local state prefs, not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Used to record how long the migration takes in UMA.
   base::TimeTicks migration_start_time_;

@@ -35,14 +35,13 @@ class InstallPlaceholderJob {
       base::OnceCallback<void(webapps::InstallResultCode code,
                               webapps::AppId app_id)>;
   InstallPlaceholderJob(Profile* profile,
+                        base::Value::Dict& debug_value,
                         const ExternalInstallOptions& install_options,
                         InstallAndReplaceCallback callback,
                         SharedWebContentsWithAppLock& lock);
   virtual ~InstallPlaceholderJob();
 
   void Start();
-
-  base::Value ToDebugValue() const;
 
   void SetDataRetrieverForTesting(
       std::unique_ptr<WebAppDataRetriever> data_retriever);
@@ -67,6 +66,7 @@ class InstallPlaceholderJob {
                           OsHooksErrors os_hooks_errors);
 
   const raw_ref<Profile> profile_;
+  const raw_ref<base::Value::Dict> debug_value_;
   const webapps::AppId app_id_;
 
   // `this` must exist within the scope of a WebCommand's
@@ -79,8 +79,6 @@ class InstallPlaceholderJob {
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-
-  base::Value::Dict debug_value_;
 
   base::WeakPtrFactory<InstallPlaceholderJob> weak_factory_{this};
 };

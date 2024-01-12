@@ -118,8 +118,21 @@ class SpeechMonitor : public content::TtsPlatform {
   // Replays all expectations.
   void Replay();
 
+  // Finishes an in-progress utterance if `send_word_events_and_wait_to_finish`
+  // was set.
+  void FinishSpeech();
+
   // Delayed utterances.
   double GetDelayForLastUtteranceMS();
+
+  // When set to `true`, SpeechMonitor will send `START` and `WORD` events for
+  // each utterance and will wait to send the `END` event until `FinishSpeech()`
+  // is called. When `false` (default), the user does not need to call
+  // `FinishSpeech()` explicitly. This should be called after word events are
+  // consumed and before `ExpectSpeech` and `Replay`.
+  void send_word_events_and_wait_to_finish(bool wait) {
+    send_word_events_and_wait_to_finish_ = wait;
+  }
 
   int stop_count() { return stop_count_; }
 
@@ -193,6 +206,11 @@ class SpeechMonitor : public content::TtsPlatform {
   // Indicates if there were two consecutive utterances that match (i.e.
   // repeated speech).
   std::vector<std::string> repeated_speech_;
+
+  bool send_word_events_and_wait_to_finish_ = false;
+  std::string utterance_ = "";
+  int utterance_id_ = -1;
+  base::OnceCallback<void(bool)> on_speak_finished_;
 
   base::WeakPtrFactory<SpeechMonitor> weak_factory_{this};
 };

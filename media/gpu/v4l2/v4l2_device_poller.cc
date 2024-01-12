@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/thread_restrictions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 
@@ -29,8 +30,10 @@ V4L2DevicePoller::~V4L2DevicePoller() {
   // than expected if e.g. destroying a decoder immediately after creation. The
   // check here is not thread-safe, but using a lock or atomic state doesn't
   // make sense as destruction is never thread-safe.
-  if (poll_thread_.IsRunning())
+  if (poll_thread_.IsRunning()) {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     StopPolling();
+  }
 }
 
 bool V4L2DevicePoller::StartPolling(EventCallback event_callback,
@@ -82,7 +85,10 @@ bool V4L2DevicePoller::StopPolling() {
   }
 
   DVLOGF(3) << "Stop device poll thread";
-  poll_thread_.Stop();
+  {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    poll_thread_.Stop();
+  }
 
   if (!device_->ClearDevicePollInterrupt()) {
     VLOGF(1) << "Failed to clear interrupting device poll.";

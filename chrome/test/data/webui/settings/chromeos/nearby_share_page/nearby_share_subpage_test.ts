@@ -558,15 +558,11 @@ suite('<settings-nearby-share-subpage>', () => {
     // Ensure toggle off UI occurs when toggle off.
     assertTrue(featureToggleButton.checked);
     assertEquals('On', featureToggleButton.label.trim());
-    assertTrue(featureToggleButton.classList.contains('enabled-toggle-on'));
-    assertFalse(featureToggleButton.classList.contains('enabled-toggle-off'));
 
     featureToggleButton.click();
 
     assertFalse(featureToggleButton.checked);
     assertEquals('Off', featureToggleButton.label.trim());
-    assertFalse(featureToggleButton.classList.contains('enabled-toggle-on'));
-    assertTrue(featureToggleButton.classList.contains('enabled-toggle-off'));
   });
 
   test('subpage hidden when feature toggled off', () => {

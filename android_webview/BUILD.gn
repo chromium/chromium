@@ -125,9 +125,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     alias_with_wrapper_script("system_webview_bundle") {
       alias_target = ":system_webview_32_64_bundle"
     }
-    group("system_webview_base_bundle_module") {
-      deps = [ ":system_webview_32_64_base_bundle_module" ]
-    }
   }
   standalone_system_webview_apk_tmpl(
       _main_system_webview_base_bundle_module_target) {
@@ -224,7 +221,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
 } else {
   if (android_64bit_target_cpu) {
     alias_with_wrapper_script("trichrome_webview_apk") {
-      alias_target = ":trichrome_webview_32_64_apk"
+      alias_target = ":trichrome_webview_64_32_apk"
     }
   }
   trichrome_webview_tmpl(_main_trichrome_webview_apk_target) {
@@ -253,10 +250,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
 } else {
   if (android_64bit_target_cpu) {
     alias_with_wrapper_script("trichrome_webview_bundle") {
-      alias_target = ":trichrome_webview_32_64_bundle"
-    }
-    group("trichrome_webview_base_bundle_module") {
-      deps = [ ":trichrome_webview_32_64_base_bundle_module" ]
+      alias_target = ":trichrome_webview_64_32_bundle"
     }
   }
   trichrome_webview_tmpl(_main_trichrome_webview_base_bundle_module_target) {
@@ -696,6 +690,7 @@ android_library("browser_java") {
     ":resources",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//cc/mojom:mojom_java",
     "//components/android_autofill/browser:java",
@@ -717,7 +712,6 @@ android_library("browser_java") {
     "//components/url_formatter/android:url_formatter_java",
     "//components/variations:variations_java",
     "//components/variations/android:variations_java",
-    "//components/version_info/android:version_constants_java",
     "//components/viz/service:service_java",
     "//components/zoom/android:java",
     "//content/public/android:content_java",

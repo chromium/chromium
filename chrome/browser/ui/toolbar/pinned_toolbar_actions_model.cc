@@ -164,11 +164,7 @@ void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
 void PinnedToolbarActionsModel::UnpinAction(
     const actions::ActionId& action_id) {
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
-  updated_pinned_action_ids.erase(
-      std::remove_if(
-          updated_pinned_action_ids.begin(), updated_pinned_action_ids.end(),
-          [action_id](const actions::ActionId id) { return id == action_id; }),
-      updated_pinned_action_ids.end());
+  std::erase(updated_pinned_action_ids, action_id);
 
   // Updating the pref causes `UpdatePinnedActionIds()` to be called.
   UpdatePref(std::move(updated_pinned_action_ids));
@@ -276,13 +272,7 @@ void PinnedToolbarActionsModel::UpdateSearchCompanionDefaultState() {
   if (is_valid_pin) {
     updated_pinned_action_ids.push_back(kActionSidePanelShowSearchCompanion);
   } else if (is_valid_unpin) {
-    updated_pinned_action_ids.erase(
-        std::remove_if(updated_pinned_action_ids.begin(),
-                       updated_pinned_action_ids.end(),
-                       [](const actions::ActionId id) {
-                         return id == kActionSidePanelShowSearchCompanion;
-                       }),
-        updated_pinned_action_ids.end());
+    std::erase(updated_pinned_action_ids, kActionSidePanelShowSearchCompanion);
   }
 
   // Updating the pref causes `UpdatePinnedActionIds()` to be called.

@@ -3,19 +3,16 @@
     --cr-dialog-width: 340px;
   }
 
+  [slot="body"] {
+    /* Add padding to prevent input focus outline from being overlapped. */
+    padding-top: 5px;
+  }
+
   .title {
     color: var(--cros-primary-text-color);
     margin: 0;
     padding-block-end: 24px;
     padding-block-start: 24px;
-  }
-
-  /* TODO(b/281116317) Remove once Jelly is launched */
-  :host-context(body:not(.jelly-enabled)) .title {
-    font-family: 'Google Sans';
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 24px;
   }
 </style>
 <cr-dialog id="dialog">

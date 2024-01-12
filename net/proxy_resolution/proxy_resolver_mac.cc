@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/proxy_resolver_mac.h"
 
+#include <CFNetwork/CFProxySupport.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <memory>
@@ -18,11 +19,10 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
-#include "net/base/proxy_server.h"
+#include "net/proxy_resolution/proxy_chain_util_mac.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolver.h"
-#include "net/proxy_resolution/proxy_server_util_mac.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -55,26 +55,6 @@ static base::LazyInstance<base::Lock>::Leaky g_cfnetwork_pac_runloop_lock =
 void RunLoopObserverCallBackFunc(CFRunLoopObserverRef observer,
                                  CFRunLoopActivity activity,
                                  void* info);
-
-// Utility function to map a CFProxyType to a ProxyServer::Scheme.
-// If the type is unknown, returns ProxyServer::SCHEME_INVALID.
-ProxyServer::Scheme GetProxyServerScheme(CFStringRef proxy_type) {
-  if (CFEqual(proxy_type, kCFProxyTypeNone))
-    return ProxyServer::SCHEME_DIRECT;
-  if (CFEqual(proxy_type, kCFProxyTypeHTTP))
-    return ProxyServer::SCHEME_HTTP;
-  if (CFEqual(proxy_type, kCFProxyTypeHTTPS)) {
-    // The "HTTPS" on the Mac side here means "proxy applies to https://" URLs;
-    // the proxy itself is still expected to be an HTTP proxy.
-    return ProxyServer::SCHEME_HTTP;
-  }
-  if (CFEqual(proxy_type, kCFProxyTypeSOCKS)) {
-    // We can't tell whether this was v4 or v5. We will assume it is
-    // v5 since that is the only version OS X supports.
-    return ProxyServer::SCHEME_SOCKS5;
-  }
-  return ProxyServer::SCHEME_INVALID;
-}
 
 // Callback for CFNetworkExecuteProxyAutoConfigurationURL. |client| is a pointer
 // to a CFTypeRef.  This stashes either |error| or |proxies| in that location.
@@ -348,13 +328,14 @@ int ProxyResolverMac::GetProxyForURL(
 
     CFStringRef proxy_type = base::apple::GetValueFromDictionary<CFStringRef>(
         proxy_dictionary, kCFProxyTypeKey);
-    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-        GetProxyServerScheme(proxy_type), proxy_dictionary, kCFProxyHostNameKey,
-        kCFProxyPortNumberKey);
-    if (!proxy_server.is_valid())
+    ProxyChain proxy_chain =
+        ProxyDictionaryToProxyChain(proxy_type, proxy_dictionary,
+                                    kCFProxyHostNameKey, kCFProxyPortNumberKey);
+    if (!proxy_chain.IsValid()) {
       continue;
+    }
 
-    proxy_list.AddProxyServer(proxy_server);
+    proxy_list.AddProxyChain(proxy_chain);
   }
 
   if (!proxy_list.IsEmpty())

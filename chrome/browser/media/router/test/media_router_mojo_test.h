@@ -99,20 +99,19 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
   MOCK_METHOD0(StartObservingMediaRoutes, void());
   MOCK_METHOD0(EnableMdnsDiscovery, void());
   MOCK_METHOD0(DiscoverSinksNow, void());
-  void CreateMediaRouteController(
+  void BindMediaController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-      CreateMediaRouteControllerCallback callback) override {
-    CreateMediaRouteControllerInternal(route_id, media_controller, observer,
-                                       callback);
+      BindMediaControllerCallback callback) override {
+    BindMediaControllerInternal(route_id, media_controller, observer, callback);
   }
   MOCK_METHOD4(
-      CreateMediaRouteControllerInternal,
+      BindMediaControllerInternal,
       void(const std::string& route_id,
            mojo::PendingReceiver<mojom::MediaController>& media_controller,
            mojo::PendingRemote<mojom::MediaStatusObserver>& observer,
-           CreateMediaRouteControllerCallback& callback));
+           BindMediaControllerCallback& callback));
   void GetState(GetStateCallback callback) override {
     GetStateInternal(callback);
   }
@@ -124,8 +123,7 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
   void RouteRequestSuccess(RouteCallback& cb) const;
   void RouteRequestTimeout(RouteCallback& cb) const;
   void TerminateRouteSuccess(TerminateRouteCallback& cb) const;
-  void CreateMediaRouteControllerSuccess(
-      CreateMediaRouteControllerCallback& cb) const;
+  void BindMediaControllerSuccess(BindMediaControllerCallback& cb) const;
 
   // Sets the route to pass into callbacks.
   void SetRouteToReturn(const MediaRoute& route);

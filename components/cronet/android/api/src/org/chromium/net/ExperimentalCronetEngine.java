@@ -235,7 +235,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
 
         @Override
         public ExperimentalCronetEngine build() {
-            return mBuilderDelegate.build();
+            return buildExperimental();
         }
     }
 

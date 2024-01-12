@@ -14,15 +14,15 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
-    case logging::LOG_VERBOSE:
-    case logging::LOG_INFO:
+    case logging::LOGGING_VERBOSE:
+    case logging::LOGGING_INFO:
       VLOG(2) << message;
       break;
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       VLOG(1) << message;
       break;
-    case logging::LOG_ERROR:
-    case logging::LOG_FATAL:
+    case logging::LOGGING_ERROR:
+    case logging::LOGGING_FATAL:
       VLOG(0) << message;
       break;
   }

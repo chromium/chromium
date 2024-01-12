@@ -78,7 +78,7 @@ void EmbeddedPermissionPromptContentScrimView::OnWidgetBoundsChanged(
   }
 }
 
-BEGIN_METADATA(EmbeddedPermissionPromptContentScrimView, views::View)
+BEGIN_METADATA(EmbeddedPermissionPromptContentScrimView)
 END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptContentScrimView,

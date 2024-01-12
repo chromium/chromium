@@ -1714,7 +1714,7 @@ TEST_F(AccessibilityTest, StitchChildTree) {
                 ax::mojom::blink::StringAttribute::kChildTreeId));
 
   // Fetch the hosting nodes again to ensure that we have their latest
-  // incurnations, if any.
+  // incarnations, if any.
   div = GetAXObjectByElementId("div");
   ASSERT_NE(nullptr, div);
   button = GetAXObjectByElementId("button");
@@ -1725,8 +1725,6 @@ TEST_F(AccessibilityTest, StitchChildTree) {
   EXPECT_TRUE(div->AccessibilityIsIncludedInTree());
   EXPECT_TRUE(div->IsVisible());
   EXPECT_EQ(0, div->ChildCountIncludingIgnored());
-  EXPECT_TRUE(paragraph->IsDetached());
-  EXPECT_TRUE(paragraph_text->IsDetached());
   EXPECT_TRUE(button->AccessibilityIsIncludedInTree())
       << "`button` should switch from ignored due to `display:none`, to "
          "included in the tree.";
@@ -1739,15 +1737,10 @@ TEST_F(AccessibilityTest, StitchChildTree) {
       << "The visibility state should not change, only the inclusion in the "
          "tree.";
   EXPECT_EQ(0, canvas->ChildCountIncludingIgnored());
-  EXPECT_TRUE(ignored_button->IsDetached());
 
   // Re-create the detached objects and check that they are still "hidden by the
   // child tree". We need to do this because Blink will re-create the objects
   // once it walks the DOM tree again.
-  paragraph = GetAXObjectByElementId("paragraph");
-  ASSERT_NE(nullptr, paragraph);
-  ignored_button = GetAXObjectByElementId("ignoredButton");
-  ASSERT_NE(nullptr, ignored_button);
 
   EXPECT_TRUE(paragraph->IsHiddenByChildTree());
   EXPECT_TRUE(paragraph->AccessibilityIsIgnored());
@@ -1755,6 +1748,120 @@ TEST_F(AccessibilityTest, StitchChildTree) {
   EXPECT_TRUE(ignored_button->IsHiddenByChildTree());
   EXPECT_TRUE(ignored_button->AccessibilityIsIgnored());
   EXPECT_FALSE(ignored_button->IsVisible());
+}
+
+TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedLiveProperty) {
+  SetBodyInnerHTML(R"HTML(
+      <main id="main">
+        <p>some text</p>
+        <div>
+          <blockquote>
+            <mark id="mark">
+              nested text
+            </mark>
+          </blockquote>
+        </div>
+      </main>
+      )HTML");
+
+  AXObject* main = GetAXObjectByElementId("main");
+  ASSERT_NE(nullptr, main);
+
+  main->GetElement()->setAttribute(html_names::kAriaLiveAttr, "polite",
+                                   ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  AXObject* mark = GetAXObjectByElementId("mark");
+  ASSERT_NE(nullptr, mark);
+  // Ensure the new live region status has propagated to a deep descendant.
+  ASSERT_NE(nullptr, mark->ContainerLiveRegionStatus());
+}
+
+TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedAriaHiddenProperty) {
+  SetBodyInnerHTML(R"HTML(
+      <main id="main">
+        <p>some text</p>
+        <div>
+          <blockquote>
+            <mark id="mark">
+              nested text
+            </mark>
+          </blockquote>
+        </div>
+      </main>
+      )HTML");
+
+  AXObject* main = GetAXObjectByElementId("main");
+  ASSERT_NE(nullptr, main);
+
+  main->GetElement()->setAttribute(html_names::kAriaHiddenAttr, "true",
+                                   ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  AXObject* mark = GetAXObjectByElementId("mark");
+  ASSERT_NE(nullptr, mark);
+  // Ensure that aria-hidden has propagated to a deep descendant.
+  ASSERT_TRUE(mark->IsAriaHidden());
+
+  main->GetElement()->removeAttribute(html_names::kAriaHiddenAttr);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // Ensure that clearing aria-hidden has propagated to a deep descendant.
+  ASSERT_FALSE(mark->IsAriaHidden());
+}
+
+TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedInertProperty) {
+  SetBodyInnerHTML(R"HTML(
+      <main id="main">
+        <p>some text</p>
+        <div>
+          <blockquote>
+            <mark id="mark">
+              nested text
+            </mark>
+          </blockquote>
+        </div>
+      </main>
+      )HTML");
+
+  AXObject* main = GetAXObjectByElementId("main");
+  ASSERT_NE(nullptr, main);
+
+  main->GetElement()->setAttribute(html_names::kInertAttr, "true",
+                                   ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  AXObject* mark = GetAXObjectByElementId("mark");
+  ASSERT_NE(nullptr, mark);
+  // Ensure inertness has propagated to a deep descendant.
+  ASSERT_TRUE(mark->IsInert());
+}
+
+TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedDisabledProperty) {
+  SetBodyInnerHTML(R"HTML(
+      <fieldset id="fieldset">
+        <p>some text</p>
+        <div>
+          <blockquote>
+            <mark id="mark">
+              nested text
+            </mark>
+          </blockquote>
+        </div>
+      </fieldset>
+      )HTML");
+
+  AXObject* fieldset = GetAXObjectByElementId("fieldset");
+  ASSERT_NE(nullptr, fieldset);
+
+  fieldset->GetElement()->setAttribute(html_names::kAriaDisabledAttr, "true",
+                                       ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  AXObject* mark = GetAXObjectByElementId("mark");
+  ASSERT_NE(nullptr, mark);
+  // Ensure that "ancestor is disabled" has propagated to a deep descendant.
+  ASSERT_TRUE(mark->IsDescendantOfDisabledNode());
 }
 
 }  // namespace test

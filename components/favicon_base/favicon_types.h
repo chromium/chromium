@@ -24,7 +24,7 @@ using FaviconID = int64_t;
 // Defines the icon types.
 //
 // IMPORTANT: these values must stay in sync with the FaviconType enum in
-// tools/metrics/histograms/enum.xml.
+// tools/metrics/histograms/enums.xml.
 // When you update the types please also check if it needs to be reflected in
 // blink::mojom::FaviconIconType enums
 //

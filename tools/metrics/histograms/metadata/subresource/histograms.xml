@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
-    enum="ActivationList" expires_after="2024-04-28">
+    enum="ActivationList" expires_after="2024-06-30">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2024-04-28">
+    enum="SubresourceFilterActivationState" expires_after="2024-06-30">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="2024-04-28">
+    units="resource loads" expires_after="2024-06-30">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration"
-    units="microseconds" expires_after="2024-01-17">
+    units="microseconds" expires_after="2025-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration"
-    units="microseconds" expires_after="2024-01-17">
+    units="microseconds" expires_after="2025-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -399,32 +399,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: This metric expired after M78 and was unexpired 07/2021. Data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention"
-    units="hours" expires_after="M90">
-  <owner>yaoxia@google.com</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Records the time since the last ads intervention when loading a page that
-    has previously triggered an ads intervention. This is limited by the maximum
-    expiry time of intervention data, 7 days. Recorded at the time page
-    activation is computed during page load when a previous intervention was
-    previously recorded and has not expired from the intervention data.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceFilter.RulesetVerificationStatus"
-    enum="RulesetVerificationStatus" expires_after="M77">
-  <owner>yaoxia@chromium.org</owner>
-  <summary>
-    Records the ruleset verification status at some point in a browsing session.
-    If AdTagging is disabled, this happens when the user first visits a site
-    that is failing the Better Ads Standard, and gets ads blocked on that site;
-    if AdTagging is enabled, this happens immediately on startup. Note that this
-    is recorded only once per browsing session (the lifetime of the browser
-    process).
   </summary>
 </histogram>
 
@@ -443,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -463,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.WallDuration"
-    units="microseconds" expires_after="2024-01-17">
+    units="microseconds" expires_after="2025-01-17">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

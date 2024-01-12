@@ -42,9 +42,10 @@ AXScreenAIAnnotatorFactory::AXScreenAIAnnotatorFactory()
 
 AXScreenAIAnnotatorFactory::~AXScreenAIAnnotatorFactory() = default;
 
-KeyedService* AXScreenAIAnnotatorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AXScreenAIAnnotatorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new screen_ai::AXScreenAIAnnotator(context);
+  return std::make_unique<screen_ai::AXScreenAIAnnotator>(context);
 }
 
 // static

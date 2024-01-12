@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/search_engines",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",

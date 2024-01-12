@@ -28,7 +28,7 @@ CoopRelatedGroup::~CoopRelatedGroup() = default;
 
 scoped_refptr<BrowsingInstance>
 CoopRelatedGroup::FindSuitableBrowsingInstanceForCoopPolicy(
-    const absl::optional<url::Origin>& common_coop_origin,
+    const std::optional<url::Origin>& common_coop_origin,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
   for (BrowsingInstance* current_browsing_instance :
        coop_related_browsing_instances_) {
@@ -50,7 +50,7 @@ CoopRelatedGroup::FindSuitableBrowsingInstanceForCoopPolicy(
 
 scoped_refptr<BrowsingInstance>
 CoopRelatedGroup::GetOrCreateBrowsingInstanceForCoopPolicy(
-    const absl::optional<url::Origin>& common_coop_origin,
+    const std::optional<url::Origin>& common_coop_origin,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
   scoped_refptr<BrowsingInstance> browsing_instance =
       FindSuitableBrowsingInstanceForCoopPolicy(common_coop_origin,

@@ -208,12 +208,13 @@ class PackedStruct:
       # ease the transition from legacy mojom syntax where nullable value types
       # were not supported.
       if isinstance(field.kind, mojom.ValueKind) and field.kind.is_nullable:
-        # The suffixes intentionally use Unicode codepoints which are considered
-        # valid C++/Java/JavaScript identifiers, yet are unlikely to be used in
-        # actual user code.
+        # The suffixes start with a '$' to avoid collision with user defined
+        # identifiers.
         has_value_field = copy.copy(field)
         has_value_field.name = f'{field.mojom_name}_$flag'
         has_value_field.kind = mojom.BOOL
+        if field.default:
+          has_value_field.default = 'true'
 
         value_field = copy.copy(field)
         value_field.name = f'{field.mojom_name}_$value'
@@ -255,7 +256,7 @@ class PackedStruct:
         raise Exception(
             "Non-nullable reference fields are only allowed in version 0 of a "
             "struct. %s.%s is defined with [MinVersion=%d]." %
-            (self.struct.name, packed_field.field.name,
+            (self.struct.mojom_name, packed_field.field.mojom_name,
              packed_field.min_version))
 
     src_field = src_fields[0]

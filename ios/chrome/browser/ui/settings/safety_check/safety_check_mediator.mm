@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/model/password_store_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
@@ -420,14 +421,16 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         case UpdateCheckRowStateNetError:      // i tap: Show error popover.
           break;
         case UpdateCheckRowStateOutOfDate: {  // i tap: Go to app store.
-          NSString* updateLocation = [[NSUserDefaults standardUserDefaults]
-              stringForKey:kIOSChromeUpgradeURLKey];
+          PrefService* prefService = GetApplicationContext()->GetLocalState();
+          std::string updateLocation =
+              prefService->GetString(kIOSChromeUpgradeURLKey);
           base::RecordAction(base::UserMetricsAction(
               "Settings.SafetyCheck.RelaunchAfterUpdates"));
           base::UmaHistogramEnumeration(
               kSafetyCheckInteractions,
               SafetyCheckInteractions::kUpdatesRelaunch);
-          [self.handler showUpdateAtLocation:updateLocation];
+          [self.handler
+              showUpdateAtLocation:base::SysUTF8ToNSString(updateLocation)];
           break;
         }
       }
@@ -1018,11 +1021,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     base::UmaHistogramEnumeration(kSafetyCheckMetricsUpdates,
                                   safety_check::UpdateStatus::kOutdated);
 
-    // Valid results, update all NSUserDefaults.
-    [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
-                forKey:kIOSChromeUpgradeURLKey];
-    [defaults setValue:base::SysUTF8ToNSString(details.next_version)
-                forKey:kIOSChromeNextVersionKey];
+    // Valid results, update all prefs.
+    PrefService* prefService = GetApplicationContext()->GetLocalState();
+    prefService->SetString(kIOSChromeNextVersionKey, details.next_version);
+    prefService->SetString(kIOSChromeUpgradeURLKey, upgradeUrl.spec());
 
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.

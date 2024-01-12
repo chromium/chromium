@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_MOCK_PASSWORD_ACCESSORY_CONTROLLER_H_
 
 #include <map>
+#include <optional>
 
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
@@ -46,7 +47,7 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
               RegisterFillingSourceObserver,
               (FillingSourceObserver),
               (override));
-  MOCK_METHOD(absl::optional<autofill::AccessorySheetData>,
+  MOCK_METHOD(std::optional<autofill::AccessorySheetData>,
               GetSheetData,
               (),
               (const, override));

@@ -41,6 +41,13 @@ HRESULT MediaFoundationAudioStream::Create(
           std::move(media_log)));
       break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    case AudioCodec::kAC4:
+      RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAC4AudioStream>(
+          &audio_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
+      break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
     default:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAudioStream>(
           &audio_stream, stream_id, parent_source, demuxer_stream,
@@ -149,4 +156,11 @@ HRESULT MediaFoundationAACAudioStream::TransformSample(
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+HRESULT MediaFoundationAC4AudioStream::GetMediaType(
+    IMFMediaType** media_type_out) {
+  AudioDecoderConfig decoder_config = demuxer_stream_->audio_decoder_config();
+  return GetAC4AudioType(decoder_config, media_type_out);
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 }  // namespace media

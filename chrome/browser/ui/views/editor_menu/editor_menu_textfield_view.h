@@ -31,9 +31,9 @@ class EditorMenuViewDelegate;
 // for inputting text. The icon is a right arrow indicate to send.
 class EditorMenuTextfieldView : public views::View,
                                 public views::TextfieldController {
- public:
-  METADATA_HEADER(EditorMenuTextfieldView);
+  METADATA_HEADER(EditorMenuTextfieldView, views::View)
 
+ public:
   EditorMenuTextfieldView(EditorMenuMode editor_menu_mode,
                           EditorMenuViewDelegate* delegate);
   EditorMenuTextfieldView(const EditorMenuTextfieldView&) = delete;

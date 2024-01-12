@@ -120,9 +120,10 @@ class OmniboxProviderTest : public testing::Test {
     // Create the object to actually test.
     list_controller_ =
         std::make_unique<::test::TestAppListControllerDelegate>();
-    provider_ =
+    auto provider =
         std::make_unique<OmniboxProvider>(profile_, list_controller_.get());
-    provider_->set_controller(search_controller_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
 
     std::unique_ptr<AutocompleteController> controller =
         std::make_unique<MockAutoCompleteController>();
@@ -132,7 +133,7 @@ class OmniboxProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    provider_.reset();
+    provider_ = nullptr;
     search_controller_.reset();
     list_controller_.reset();
     profile_ = nullptr;
@@ -146,7 +147,7 @@ class OmniboxProviderTest : public testing::Test {
 
   // Starts a search and waits for the query to be sent
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_->StartSearch(query);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -168,9 +169,9 @@ class OmniboxProviderTest : public testing::Test {
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
-  std::unique_ptr<OmniboxProvider> provider_;
+  raw_ptr<OmniboxProvider> provider_;
 };
 
 // Test that results each instantiate a Chrome search result.

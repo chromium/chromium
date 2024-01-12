@@ -34,6 +34,12 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               RegisterOptimizationTypes,
               (const std::vector<optimization_guide::proto::OptimizationType>&),
               (override));
+  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
+              CanApplyOptimization,
+              (const GURL&,
+               optimization_guide::proto::OptimizationType,
+               optimization_guide::OptimizationMetadata*),
+              (override));
   MOCK_METHOD(void,
               CanApplyOptimization,
               (const GURL&,
@@ -50,6 +56,9 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
        optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
            callback),
       (override));
+  MOCK_METHOD(std::unique_ptr<Session>,
+              StartSession,
+              (optimization_guide::proto::ModelExecutionFeature feature));
   MOCK_METHOD(
       void,
       ExecuteModel,

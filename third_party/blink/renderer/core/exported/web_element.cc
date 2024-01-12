@@ -145,6 +145,9 @@ bool WebElement::ContainsFrameSelection() const {
                    .GetFrame()
                    ->Selection()
                    .RootEditableElementOrDocumentElement();
+  if (!root) {
+    return false;
+  }
   // For form controls, the selection's root editable is a contenteditable in
   // a shadow DOM tree.
   return (e.IsFormControlElement() ? root->OwnerShadowHost() : root) == e;

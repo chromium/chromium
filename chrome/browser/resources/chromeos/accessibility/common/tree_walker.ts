@@ -63,13 +63,13 @@ export interface AutomationTreeWalkerRestriction {
  */
 export class AutomationTreeWalker {
   // TODO(b/314204374): Convert from null to undefined.
-  private node_: chrome.automation.AutomationNode|null;
+  private node_: AutomationNode|null;
   private phase_: string;
   private dir_: constants.Dir;
-  private initialNode_: chrome.automation.AutomationNode;
+  private initialNode_: AutomationNode;
   // TODO(b/314204374): Convert from null to undefined.
-  private backwardAncestor_: chrome.automation.AutomationNode|null;
-  private visitPred_: (node: any) => any;
+  private backwardAncestor_: AutomationNode|null;
+  private visitPred_: AutomationPredicate.Unary;
   private skipInitialAncestry_: boolean;
   private skipInitialSubtree_: boolean;
   private leafPred_: any;
@@ -77,7 +77,7 @@ export class AutomationTreeWalker {
 
   constructor(
       node: AutomationNode, dir: constants.Dir,
-      optRestrictions?: AutomationTreeWalkerRestriction) {
+      restrictions: AutomationTreeWalkerRestriction = {}) {
     this.node_ = node;
     this.phase_ = AutomationTreeWalkerPhase.INITIAL;
     this.dir_ = dir;
@@ -87,10 +87,18 @@ export class AutomationTreeWalker {
      * Deepest common ancestor of initialNode and node. Valid only when moving
      * backward.
      */
-    this.backwardAncestor_ = node.parent || null;
-    const restrictions: AutomationTreeWalkerRestriction = optRestrictions || {};
+    this.backwardAncestor_ = node.parent ?? null;
 
-    this.visitPred_ = function(node) {
+    this.visitPred_ = this.makeVisitPred_(restrictions);
+    this.leafPred_ = restrictions.leaf ?? falsePredicate;
+    this.rootPred_ = restrictions.root ?? falsePredicate;
+    this.skipInitialAncestry_ = restrictions.skipInitialAncestry ?? false;
+    this.skipInitialSubtree_ = restrictions.skipInitialSubtree ?? false;
+  }
+
+  private makeVisitPred_(restrictions: AutomationTreeWalkerRestriction):
+      AutomationPredicate.Unary {
+    return node => {
       if (this.skipInitialAncestry_ &&
           this.phase_ === AutomationTreeWalkerPhase.ANCESTOR) {
         return false;
@@ -108,23 +116,9 @@ export class AutomationTreeWalker {
 
       return true;
     };
-    /** @private {AutomationPredicate.Unary} */
-    this.leafPred_ = restrictions.leaf ? restrictions.leaf :
-                                         AutomationTreeWalker.falsePredicate_;
-    /** @private {AutomationPredicate.Unary} */
-    this.rootPred_ = restrictions.root ? restrictions.root :
-                                         AutomationTreeWalker.falsePredicate_;
-    /** @private {boolean} */
-    this.skipInitialAncestry_ = restrictions.skipInitialAncestry || false;
-    /** @private {boolean} */
-    this.skipInitialSubtree_ = restrictions.skipInitialSubtree || false;
   }
 
-  private static falsePredicate_(_node: AutomationNode): boolean {
-    return false;
-  }
-
-  get node(): chrome.automation.AutomationNode|null {
+  get node(): AutomationNode|null {
     return this.node_;
   }
 
@@ -168,7 +162,7 @@ export class AutomationTreeWalker {
       }
     }
 
-    let searchNode: chrome.automation.AutomationNode|undefined = node;
+    let searchNode: AutomationNode|undefined = node;
     while (searchNode) {
       // We have crossed out of the initial node's subtree for either a
       // sibling or parent move.
@@ -216,4 +210,10 @@ export class AutomationTreeWalker {
     }
     this.node_ = node.parent || null;
   }
+}
+
+// Local to module.
+
+function falsePredicate(_node: AutomationNode): boolean {
+  return false;
 }

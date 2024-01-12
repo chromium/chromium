@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/goma/ios-device-goma-rbe-canary-clobber/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

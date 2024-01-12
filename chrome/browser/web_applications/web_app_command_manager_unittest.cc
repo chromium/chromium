@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 
+#include <iterator>
 #include <memory>
 #include <vector>
 
@@ -21,7 +22,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/commands/callback_command.h"
+#include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -30,6 +31,9 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_observer_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,48 +47,39 @@ namespace {
 using ::testing::StrictMock;
 
 template <typename LockType>
-class MockCommand : public WebAppCommandTemplate<LockType> {
+class MockCommand : public WebAppCommand<LockType> {
  public:
-  explicit MockCommand(
-      std::unique_ptr<typename LockType::LockDescription> lock_description)
-      : WebAppCommandTemplate<LockType>("MockCommand"),
-        lock_description_(std::move(lock_description)) {}
+  explicit MockCommand(LockType::LockDescription lock_description,
+                       base::OnceClosure on_complete)
+      : WebAppCommand<LockType>("MockCommand",
+                                std::move(lock_description),
+                                std::move(on_complete)) {}
 
   MOCK_METHOD(void, OnDestruction, ());
 
   ~MockCommand() override { OnDestruction(); }
 
-  const LockDescription& lock_description() const override {
-    return *lock_description_;
+  void StartWithLock(std::unique_ptr<LockType> lock) override {
+    lock_ = std::move(lock);
+    StartAfterStoringLock();
   }
 
-  MOCK_METHOD(void, StartWithLock, (std::unique_ptr<LockType>), (override));
-  MOCK_METHOD(void, OnShutdown, (), (override));
+  MOCK_METHOD(void, StartAfterStoringLock, ());
 
   base::WeakPtr<MockCommand> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
-  base::Value ToDebugValue() const override {
-    return base::Value("FakeCommand");
-  }
-
-  void PostSignalCompletionAndSelfDestruct(
-      CommandResult result,
-      base::OnceClosure completion_callback) {
+  void PostCompleteAndSelfDestruct(CommandResult result) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MockCommand::CallSignalCompletionAndSelfDestruct,
-                       weak_factory_.GetWeakPtr(), result,
-                       std::move(completion_callback)));
+        FROM_HERE, base::BindOnce(&MockCommand::CallCompleteAndSelfDestruct,
+                                  weak_factory_.GetWeakPtr(), result));
   }
 
-  void CallSignalCompletionAndSelfDestruct(
-      CommandResult result,
-      base::OnceClosure completion_callback) {
-    WebAppCommand::SignalCompletionAndSelfDestruct(
-        result, std::move(completion_callback));
+  void CallCompleteAndSelfDestruct(CommandResult result) {
+    WebAppCommand<LockType>::CompleteAndSelfDestruct(result);
   }
 
  private:
+  std::unique_ptr<LockType> lock_;
   std::unique_ptr<LockDescription> lock_description_;
 
   base::WeakPtrFactory<MockCommand> weak_factory_{this};
@@ -119,45 +114,37 @@ class WebAppCommandManagerTest : public WebAppTest {
   template <typename LockType1, typename LockType2>
   void CheckCommandsRunInOrder(
       base::WeakPtr<MockCommand<LockType1>> command1_ptr,
-      base::WeakPtr<MockCommand<LockType2>> command2_ptr) {
+      base::test::TestFuture<void>& command1_done,
+      base::WeakPtr<MockCommand<LockType2>> command2_ptr,
+      base::test::TestFuture<void>& command2_done) {
     ASSERT_TRUE(command1_ptr && command2_ptr);
     EXPECT_FALSE(command1_ptr->IsStarted() || command2_ptr->IsStarted());
 
-    testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
     {
-      base::test::TestFuture<void> first_command_done;
       testing::InSequence in_sequence;
-      EXPECT_CALL(*command1_ptr, StartWithLock(testing::_))
+      EXPECT_CALL(*command1_ptr, StartAfterStoringLock())
           .Times(1)
           .WillOnce([&]() {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([&]() {
                   // Post this to catch if the second command runs before this
                   // one completes.
-                  command1_ptr->PostSignalCompletionAndSelfDestruct(
-                      CommandResult::kSuccess,
-                      first_command_done.GetCallback());
+                  command1_ptr->PostCompleteAndSelfDestruct(
+                      CommandResult::kSuccess);
                 }));
           });
 
       EXPECT_CALL(*command1_ptr, OnDestruction()).Times(1);
-      // Wait until the first command is done to verify that the second command
-      // isn't run before this one completes.
-      ASSERT_TRUE(first_command_done.Wait());
 
-      base::RunLoop loop;
-      EXPECT_CALL(*command2_ptr, StartWithLock(testing::_))
+      EXPECT_CALL(*command2_ptr, StartAfterStoringLock())
           .Times(1)
           .WillOnce([&]() {
             EXPECT_FALSE(command1_ptr);
-            command2_ptr->CallSignalCompletionAndSelfDestruct(
-                CommandResult::kSuccess, mock_closure.Get());
+            command2_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
           });
       EXPECT_CALL(*command2_ptr, OnDestruction()).Times(1);
-      EXPECT_CALL(mock_closure, Run()).Times(1).WillOnce([&]() {
-        loop.Quit();
-      });
-      loop.Run();
+      ASSERT_TRUE(command1_done.Wait());
+      ASSERT_TRUE(command2_done.Wait());
     }
     EXPECT_FALSE(command1_ptr);
     EXPECT_FALSE(command2_ptr);
@@ -166,8 +153,9 @@ class WebAppCommandManagerTest : public WebAppTest {
   template <typename LockType1, typename LockType2>
   void CheckCommandsRunInParallel(
       base::WeakPtr<MockCommand<LockType1>> command1_ptr,
-      base::WeakPtr<MockCommand<LockType2>> command2_ptr) {
-    testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
+      base::test::TestFuture<void>& command1_done,
+      base::WeakPtr<MockCommand<LockType2>> command2_ptr,
+      base::test::TestFuture<void>& command2_done) {
     ASSERT_TRUE(command1_ptr && command2_ptr);
     EXPECT_FALSE(command1_ptr->IsStarted() || command2_ptr->IsStarted());
 
@@ -175,34 +163,28 @@ class WebAppCommandManagerTest : public WebAppTest {
       base::RunLoop loop;
       testing::InSequence in_sequence;
 
-      EXPECT_CALL(*command1_ptr, StartWithLock(testing::_)).Times(1);
+      EXPECT_CALL(*command1_ptr, StartAfterStoringLock()).Times(1);
 
       // Only signal completion of command1 after command2 is started to test
       // that starting of command2 is not blocked by command1.
-      EXPECT_CALL(*command2_ptr, StartWithLock(testing::_)).WillOnce([&]() {
-        command2_ptr->CallSignalCompletionAndSelfDestruct(
-            CommandResult::kSuccess, mock_closure.Get());
-        command1_ptr->CallSignalCompletionAndSelfDestruct(
-            CommandResult::kSuccess, mock_closure.Get());
+      EXPECT_CALL(*command2_ptr, StartAfterStoringLock()).WillOnce([&]() {
+        command2_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
+        command1_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
       });
       EXPECT_CALL(*command2_ptr, OnDestruction()).Times(1);
-      EXPECT_CALL(mock_closure, Run()).Times(1);
-
       EXPECT_CALL(*command1_ptr, OnDestruction()).Times(1);
-      EXPECT_CALL(mock_closure, Run()).Times(1).WillOnce([&]() {
-        loop.Quit();
-      });
-      loop.Run();
+      ASSERT_TRUE(command2_done.Wait());
+      ASSERT_TRUE(command1_done.Wait());
     }
   }
 };
 
 TEST_F(WebAppCommandManagerTest, SimpleCommand) {
   // Simple test of a command enqueued, starting, and completing.
-  testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
+  base::test::TestFuture<void> command_complete;
   auto mock_command =
       std::make_unique<::testing::StrictMock<MockCommand<AllAppsLock>>>(
-          std::make_unique<AllAppsLockDescription>());
+          AllAppsLockDescription(), command_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command_ptr =
       mock_command->AsWeakPtr();
 
@@ -212,75 +194,77 @@ TEST_F(WebAppCommandManagerTest, SimpleCommand) {
   {
     base::RunLoop loop;
     testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, StartWithLock(testing::_)).WillOnce([&]() {
+    EXPECT_CALL(*command_ptr, StartAfterStoringLock()).WillOnce([&]() {
       loop.Quit();
     });
     loop.Run();
     EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
-    EXPECT_CALL(mock_closure, Run()).Times(1);
-    command_ptr->CallSignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                                     mock_closure.Get());
+    command_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
   }
+  EXPECT_TRUE(command_complete.Wait());
   EXPECT_FALSE(command_ptr);
 }
 
 TEST_F(WebAppCommandManagerTest, CompleteInStart) {
   // Test to make sure the command can complete & destroy itself in the Start
   // method.
-  testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
+  base::test::TestFuture<void> command_complete;
   auto command =
       std::make_unique<::testing::StrictMock<MockCommand<AllAppsLock>>>(
-          std::make_unique<AllAppsLockDescription>());
+          AllAppsLockDescription(), command_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command_ptr = command->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command));
   {
-    base::RunLoop loop;
     testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, StartWithLock(testing::_))
-        .Times(1)
-        .WillOnce([&]() {
-          ASSERT_TRUE(command_ptr);
-          command_ptr->CallSignalCompletionAndSelfDestruct(
-              CommandResult::kSuccess, mock_closure.Get());
-        });
+    EXPECT_CALL(*command_ptr, StartAfterStoringLock()).Times(1).WillOnce([&]() {
+      ASSERT_TRUE(command_ptr);
+      command_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
+    });
     EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
-    EXPECT_CALL(mock_closure, Run()).Times(1).WillOnce([&]() { loop.Quit(); });
-    loop.Run();
+    EXPECT_TRUE(command_complete.Wait());
   }
 }
 
 TEST_F(WebAppCommandManagerTest, TwoQueues) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
+      AppLockDescription(kTestAppId), command1_complete.GetCallback());
+  base::test::TestFuture<void> command2_complete;
   auto command2 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId2));
+      AppLockDescription(kTestAppId2), command2_complete.GetCallback());
   base::WeakPtr<MockCommand<AppLock>> command1_ptr = command1->AsWeakPtr();
   base::WeakPtr<MockCommand<AppLock>> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
-  CheckCommandsRunInParallel(command1_ptr, command2_ptr);
+  CheckCommandsRunInParallel(command1_ptr, command1_complete, command2_ptr,
+                             command2_complete);
 }
 
 TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command1_complete.GetCallback());
+  base::test::TestFuture<void> command2_complete;
   auto command2 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
+      AppLockDescription(kTestAppId), command2_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command1_ptr = command1->AsWeakPtr();
   base::WeakPtr<MockCommand<AppLock>> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   // Global command blocks app command.
-  CheckCommandsRunInOrder(command1_ptr, command2_ptr);
+  CheckCommandsRunInOrder(command1_ptr, command1_complete, command2_ptr,
+                          command2_complete);
 
+  base::test::TestFuture<void> command3_complete;
   auto command3 = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command3_complete.GetCallback());
+  base::test::TestFuture<void> command4_complete;
   auto command4 =
       std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
-          std::make_unique<SharedWebContentsLockDescription>());
+          SharedWebContentsLockDescription(), command4_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command3_ptr = command3->AsWeakPtr();
   base::WeakPtr<MockCommand<SharedWebContentsLock>> command4_ptr =
       command4->AsWeakPtr();
@@ -289,13 +273,16 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
   manager().ScheduleCommand(std::move(command3));
   manager().ScheduleCommand(std::move(command4));
   // All app lock does not block web contents command.
-  CheckCommandsRunInParallel(command3_ptr, command4_ptr);
+  CheckCommandsRunInParallel(command3_ptr, command3_complete, command4_ptr,
+                             command4_complete);
 
+  base::test::TestFuture<void> command5_complete;
   auto command5 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
+      AppLockDescription(kTestAppId), command5_complete.GetCallback());
+  base::test::TestFuture<void> command6_complete;
   auto command6 =
       std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
-          std::make_unique<SharedWebContentsLockDescription>());
+          SharedWebContentsLockDescription(), command6_complete.GetCallback());
   base::WeakPtr<MockCommand<AppLock>> command5_ptr = command5->AsWeakPtr();
   base::WeakPtr<MockCommand<SharedWebContentsLock>> command6_ptr =
       command6->AsWeakPtr();
@@ -303,68 +290,80 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
   manager().ScheduleCommand(std::move(command5));
   manager().ScheduleCommand(std::move(command6));
   // App command and web contents command queue are independent.
-  CheckCommandsRunInParallel(command5_ptr, command6_ptr);
+  CheckCommandsRunInParallel(command5_ptr, command5_complete, command6_ptr,
+                             command6_complete);
 }
 
 TEST_F(WebAppCommandManagerTest, SingleAppQueue) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
+      AppLockDescription(kTestAppId), command1_complete.GetCallback());
   base::WeakPtr<MockCommand<AppLock>> command1_ptr = command1->AsWeakPtr();
 
+  base::test::TestFuture<void> command2_complete;
   auto command2 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
+      AppLockDescription(kTestAppId), command2_complete.GetCallback());
   base::WeakPtr<MockCommand<AppLock>> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
-  CheckCommandsRunInOrder(command1_ptr, command2_ptr);
+  CheckCommandsRunInOrder(command1_ptr, command1_complete, command2_ptr,
+                          command2_complete);
 }
 
 TEST_F(WebAppCommandManagerTest, GlobalQueue) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command1_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command1_ptr = command1->AsWeakPtr();
 
+  base::test::TestFuture<void> command2_complete;
   auto command2 = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command2_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
-  CheckCommandsRunInOrder(command1_ptr, command2_ptr);
+  CheckCommandsRunInOrder(command1_ptr, command1_complete, command2_ptr,
+                          command2_complete);
 }
 
 TEST_F(WebAppCommandManagerTest, BackgroundWebContentsQueue) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 =
       std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
-          std::make_unique<SharedWebContentsLockDescription>());
+          SharedWebContentsLockDescription(), command1_complete.GetCallback());
   base::WeakPtr<MockCommand<SharedWebContentsLock>> command1_ptr =
       command1->AsWeakPtr();
 
+  base::test::TestFuture<void> command2_complete;
   auto command2 =
       std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
-          std::make_unique<SharedWebContentsLockDescription>());
+          SharedWebContentsLockDescription(), command2_complete.GetCallback());
   base::WeakPtr<MockCommand<SharedWebContentsLock>> command2_ptr =
       command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
-  CheckCommandsRunInOrder(command1_ptr, command2_ptr);
+  CheckCommandsRunInOrder(command1_ptr, command1_complete, command2_ptr,
+                          command2_complete);
 }
 
 TEST_F(WebAppCommandManagerTest, ShutdownPreStartCommand) {
+  base::test::TestFuture<void> on_command_complete;
   auto command = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), on_command_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command_ptr = command->AsWeakPtr();
   manager().ScheduleCommand(std::move(command));
   EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
   manager().Shutdown();
+  EXPECT_TRUE(on_command_complete.Wait());
 }
 
 TEST_F(WebAppCommandManagerTest, ShutdownStartedCommand) {
-  testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
+  base::test::TestFuture<void> command_complete;
   auto mock_command = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command_ptr =
       mock_command->AsWeakPtr();
 
@@ -373,70 +372,59 @@ TEST_F(WebAppCommandManagerTest, ShutdownStartedCommand) {
   EXPECT_FALSE(command_ptr->IsStarted());
   {
     base::RunLoop loop;
-    EXPECT_CALL(*command_ptr, StartWithLock(testing::_)).WillOnce([&]() {
+    EXPECT_CALL(*command_ptr, StartAfterStoringLock()).WillOnce([&]() {
       loop.Quit();
     });
     loop.Run();
   }
-  {
-    testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, OnShutdown()).Times(1);
-    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
-  }
+  testing::InSequence in_sequence;
+  EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
   manager().Shutdown();
+  ASSERT_TRUE(command_complete.Wait());
   EXPECT_FALSE(command_ptr);
 }
 
+TEST_F(WebAppCommandManagerTest, ScheduleAfterShutdown) {
+  base::test::TestFuture<void> command_complete;
+  auto mock_command = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
+      AllAppsLockDescription(), command_complete.GetCallback());
+  base::WeakPtr<MockCommand<AllAppsLock>> command_ptr =
+      mock_command->AsWeakPtr();
+  manager().Shutdown();
+  EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
+  manager().ScheduleCommand(std::move(mock_command));
+  EXPECT_TRUE(command_complete.Wait());
+  ASSERT_FALSE(command_ptr);
+}
+
 TEST_F(WebAppCommandManagerTest, ShutdownQueuedCommand) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command1_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command1_ptr = command1->AsWeakPtr();
 
+  base::test::TestFuture<void> command2_complete;
   auto command2 = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
+      AllAppsLockDescription(), command2_complete.GetCallback());
   base::WeakPtr<MockCommand<AllAppsLock>> command2_ptr = command2->AsWeakPtr();
 
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   {
     base::RunLoop loop;
-    EXPECT_CALL(*command1_ptr, StartWithLock(testing::_)).WillOnce([&]() {
+    EXPECT_CALL(*command1_ptr, StartAfterStoringLock).WillOnce([&]() {
       loop.Quit();
     });
     loop.Run();
   }
-  EXPECT_CALL(*command1_ptr, OnShutdown()).Times(1);
   EXPECT_CALL(*command1_ptr, OnDestruction()).Times(1);
   EXPECT_CALL(*command2_ptr, OnDestruction()).Times(1);
-}
-
-TEST_F(WebAppCommandManagerTest, OnShutdownCallsCompleteAndDestruct) {
-  testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
-  auto command = std::make_unique<StrictMock<MockCommand<AllAppsLock>>>(
-      std::make_unique<AllAppsLockDescription>());
-  base::WeakPtr<MockCommand<AllAppsLock>> command_ptr = command->AsWeakPtr();
-  manager().ScheduleCommand(std::move(command));
-  {
-    base::RunLoop loop;
-    EXPECT_CALL(*command_ptr, StartWithLock(testing::_)).WillOnce([&]() {
-      loop.Quit();
-    });
-    loop.Run();
-  }
-  {
-    testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, OnShutdown()).Times(1).WillOnce([&]() {
-      ASSERT_TRUE(command_ptr);
-      command_ptr->CallSignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                                       mock_closure.Get());
-    });
-    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
-    EXPECT_CALL(mock_closure, Run()).Times(1);
-  }
   manager().Shutdown();
+  ASSERT_TRUE(command1_complete.Wait());
+  ASSERT_TRUE(command2_complete.Wait());
 }
 
-TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
+TEST_F(WebAppCommandManagerTest, MultipleSingleArgCallbackCommands) {
   base::RunLoop loop;
   // Queue multiple callbacks to app queues, and gather output.
   auto barrier = base::BarrierCallback<std::string>(
@@ -445,79 +433,72 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
         loop.Quit();
       }));
   for (auto* app_id : {kTestAppId, kTestAppId2}) {
-    base::OnceCallback<void(AppLock&)> callback =
-        base::BindOnce([](webapps::AppId app_id,
-                          base::RepeatingCallback<void(std::string)> barrier,
-                          AppLock&) { barrier.Run(app_id); },
-                       app_id, barrier);
-    manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
-        "", std::make_unique<AppLockDescription>(app_id), std::move(callback)));
+    base::OnceCallback<std::string(AppLock&, base::Value::Dict&)> callback =
+        base::BindOnce([](webapps::AppId app_id, AppLock&,
+                          base::Value::Dict&) { return app_id; },
+                       app_id);
+    manager().ScheduleCommand(
+        std::make_unique<
+            internal::CallbackCommandWithResult<AppLock, std::string>>(
+            "", AppLockDescription(app_id), std::move(callback),
+            /*on_complete=*/barrier, "shutdown"));
   }
   loop.Run();
 }
 
 TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
+  base::test::TestFuture<void> command1_complete;
   auto command1 = std::make_unique<MockCommand<SharedWebContentsWithAppLock>>(
-      std::make_unique<SharedWebContentsWithAppLockDescription,
-                       base::flat_set<webapps::AppId>>({kTestAppId}));
+      SharedWebContentsWithAppLockDescription({kTestAppId}),
+      command1_complete.GetCallback());
+  base::test::TestFuture<void> command2_complete;
   auto command2 = std::make_unique<MockCommand<AppLock>>(
-      std::make_unique<AppLockDescription>(kTestAppId));
+      AppLockDescription(kTestAppId), command2_complete.GetCallback());
+  base::test::TestFuture<void> command3_complete;
   auto command3 = std::make_unique<MockCommand<SharedWebContentsLock>>(
-      std::make_unique<SharedWebContentsLockDescription>());
+      SharedWebContentsLockDescription(), command3_complete.GetCallback());
   base::WeakPtr<MockCommand<SharedWebContentsWithAppLock>> command1_ptr =
       command1->AsWeakPtr();
   base::WeakPtr<MockCommand<AppLock>> command2_ptr = command2->AsWeakPtr();
   base::WeakPtr<MockCommand<SharedWebContentsLock>> command3_ptr =
       command3->AsWeakPtr();
 
-  testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
-
   // One about:blank load per web contents lock.
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   manager().ScheduleCommand(std::move(command3));
   {
-    base::RunLoop loop;
     testing::InSequence in_sequence;
-    EXPECT_CALL(*command1_ptr, StartWithLock(testing::_))
+    EXPECT_CALL(*command1_ptr, StartAfterStoringLock())
         .Times(1)
         .WillOnce([&]() {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindLambdaForTesting([&]() {
-                command1_ptr->CallSignalCompletionAndSelfDestruct(
-                    CommandResult::kSuccess, mock_closure.Get());
+                command1_ptr->CallCompleteAndSelfDestruct(
+                    CommandResult::kSuccess);
               }));
         });
-    EXPECT_CALL(*command2_ptr, StartWithLock(testing::_)).Times(0);
-    EXPECT_CALL(*command3_ptr, StartWithLock(testing::_)).Times(0);
+    EXPECT_CALL(*command2_ptr, StartAfterStoringLock()).Times(0);
+    EXPECT_CALL(*command3_ptr, StartAfterStoringLock()).Times(0);
     EXPECT_CALL(*command1_ptr, OnDestruction()).Times(1);
-    EXPECT_CALL(mock_closure, Run())
-        .WillOnce(base::test::RunClosure(loop.QuitClosure()));
-    loop.Run();
+    ASSERT_TRUE(command1_complete.Wait());
   }
   EXPECT_FALSE(command1_ptr);
   {
-    EXPECT_CALL(*command2_ptr, StartWithLock(testing::_))
+    EXPECT_CALL(*command2_ptr, StartAfterStoringLock())
         .Times(1)
         .WillOnce([&]() {
-          command2_ptr->CallSignalCompletionAndSelfDestruct(
-              CommandResult::kSuccess, mock_closure.Get());
+          command2_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
         });
-    EXPECT_CALL(*command3_ptr, StartWithLock(testing::_))
+    EXPECT_CALL(*command3_ptr, StartAfterStoringLock())
         .Times(1)
         .WillOnce([&]() {
-          command3_ptr->CallSignalCompletionAndSelfDestruct(
-              CommandResult::kSuccess, mock_closure.Get());
+          command3_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
         });
-    base::RunLoop loop;
-    base::RepeatingClosure barrier =
-        base::BarrierClosure(2, loop.QuitClosure());
     EXPECT_CALL(*command2_ptr, OnDestruction()).Times(1);
     EXPECT_CALL(*command3_ptr, OnDestruction()).Times(1);
-    EXPECT_CALL(mock_closure, Run())
-        .Times(2)
-        .WillRepeatedly(base::test::RunClosure(barrier));
-    loop.Run();
+    ASSERT_TRUE(command2_complete.Wait());
+    ASSERT_TRUE(command3_complete.Wait());
   }
   EXPECT_FALSE(command1_ptr);
   EXPECT_FALSE(command2_ptr);
@@ -525,15 +506,120 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
 }
 
 TEST_F(WebAppCommandManagerTest, ToDebugValue) {
-  base::RunLoop loop;
-  manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
-      "", std::make_unique<AppLockDescription>(kTestAppId),
-      base::BindLambdaForTesting([&](AppLock&) { loop.Quit(); })));
-  manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
-      "", std::make_unique<AppLockDescription>(kTestAppId2),
-      base::DoNothingAs<void(AppLock&)>()));
-  loop.Run();
-  manager().ToDebugValue();
+  base::test::TestFuture<void> on_command_complete;
+  manager().ScheduleCommand(
+      std::make_unique<internal::CallbackCommand<AppLock>>(
+          "", AppLockDescription(kTestAppId),
+          base::DoNothingAs<void(AppLock&, base::Value::Dict&)>(),
+          on_command_complete.GetCallback()));
+  manager().ScheduleCommand(
+      std::make_unique<internal::CallbackCommand<AppLock>>(
+          "", AppLockDescription(kTestAppId2),
+          base::DoNothingAs<void(AppLock&, base::Value::Dict&)>(),
+          base::DoNothing()));
+  EXPECT_TRUE(on_command_complete.Wait());
+
+  // Generally we should not test the output of the debug value, as this seems
+  // fragile & can duplicate testing of the real functionality. However for the
+  // common metadata it seems fine.
+  base::Value::Dict command_manager_debug_value =
+      manager().ToDebugValue().TakeDict();
+
+  auto get_metadata_field_names =
+      [](const base::Value::Dict& command_dict) -> std::vector<std::string> {
+    std::vector<std::string> names;
+    const base::Value::Dict* metadata = command_dict.FindDict("!metadata");
+    std::transform(
+        metadata->cbegin(), metadata->cend(), std::back_inserter(names),
+        [](base::Value::Dict::const_iterator::reference pair) -> std::string {
+          return pair.first;
+        });
+    return names;
+  };
+
+  base::Value::List* log = command_manager_debug_value.FindList("command_log");
+  ASSERT_TRUE(log);
+  ASSERT_GT(log->size(), 0ul);
+  EXPECT_THAT(
+      get_metadata_field_names(log->front().GetDict()),
+      ::testing::UnorderedElementsAre(
+          "command_result", "completion_location", "id", "initial_lock_request",
+          "name", "result", "started", "scheduled_location"));
+
+  base::Value::List* queue =
+      command_manager_debug_value.FindList("command_queue");
+  ASSERT_TRUE(queue);
+  ASSERT_GT(queue->size(), 0ul);
+  EXPECT_THAT(
+      get_metadata_field_names(queue->front().GetDict()),
+      ::testing::UnorderedElementsAre("id", "initial_lock_request", "name",
+                                      "started", "scheduled_location"));
+}
+
+TEST_F(WebAppCommandManagerTest, DestroySharedWebContentsOnPostTask) {
+  base::test::TestFuture<void> command_done;
+  auto mock_command =
+      std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
+          SharedWebContentsLockDescription(), command_done.GetCallback());
+  base::WeakPtr<MockCommand<SharedWebContentsLock>> command_ptr =
+      mock_command->AsWeakPtr();
+
+  // Queue & complete a command with shared web contents.
+  {
+    testing::InSequence in_sequence;
+    manager().ScheduleCommand(std::move(mock_command));
+    ASSERT_TRUE(command_ptr);
+    EXPECT_FALSE(command_ptr->IsStarted());
+    EXPECT_CALL(*command_ptr, StartAfterStoringLock()).WillOnce([&]() {
+      command_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
+    });
+    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
+    ASSERT_TRUE(command_done.Wait());
+  }
+  // Validate web contents is destroyed.
+  {
+    // Verify the shared web contents is not destroyed yet.
+    content::WebContents* web_contents = manager().web_contents_for_testing();
+    EXPECT_TRUE(web_contents);
+    // Wait for web contents to be destroyed.
+    content::WebContentsDestroyedWatcher content_destroyed_observer(
+        web_contents);
+    content_destroyed_observer.Wait();
+    // Verify the web contents is now destroyed.
+    EXPECT_FALSE(manager().web_contents_for_testing());
+  }
+  EXPECT_FALSE(command_ptr);
+}
+
+TEST_F(WebAppCommandManagerTest, DestroySharedWebContentsOnShutdown) {
+  base::test::TestFuture<void> command_done;
+  auto mock_command =
+      std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
+          SharedWebContentsLockDescription(), command_done.GetCallback());
+  base::WeakPtr<MockCommand<SharedWebContentsLock>> command_ptr =
+      mock_command->AsWeakPtr();
+
+  // Queue and complete the command.
+  {
+    testing::InSequence in_sequence;
+    manager().ScheduleCommand(std::move(mock_command));
+    ASSERT_TRUE(command_ptr);
+    EXPECT_FALSE(command_ptr->IsStarted());
+    EXPECT_CALL(*command_ptr, StartAfterStoringLock()).WillOnce([&]() {
+      command_ptr->CallCompleteAndSelfDestruct(CommandResult::kSuccess);
+    });
+
+    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
+    ASSERT_TRUE(command_done.Wait());
+  }
+  // Validate the web contents are not destroyed right away.
+  {
+    EXPECT_TRUE(manager().web_contents_for_testing());
+    // Trigger shutdown and validate web contents is destroyed.
+    manager().Shutdown();
+    EXPECT_FALSE(manager().web_contents_for_testing());
+  }
+  EXPECT_FALSE(command_ptr);
 }
 
 }  // namespace

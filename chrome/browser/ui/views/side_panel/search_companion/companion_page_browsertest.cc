@@ -1983,6 +1983,28 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       ServerSideUrlFilterEventIsRecorded) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  ASSERT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  // Simulate a message that a sensitive URL was filtered out.
+  CompanionScriptBuilder builder(MethodType::kServerSideUrlFilterEvent);
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  WaitForHistogram("Companion.ServerSideUrlFilterEvent");
+  histogram_tester_->ExpectBucketCount("Companion.ServerSideUrlFilterEvent",
+                                       true, 1);
+}
+
 // This test verifies that a new tab that was opened from a page with Search
 // Companion open, also opens Search Companion in the new tab.
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, NewTabFromMainPageOpensCsc) {

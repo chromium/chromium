@@ -6,7 +6,6 @@
 #define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "net/base/request_priority.h"
@@ -16,9 +15,7 @@
 
 namespace prerender {
 
-class NoStatePrefetchURLLoaderThrottle
-    : public blink::URLLoaderThrottle,
-      public base::SupportsWeakPtr<NoStatePrefetchURLLoaderThrottle> {
+class NoStatePrefetchURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   NoStatePrefetchURLLoaderThrottle(
       mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler);

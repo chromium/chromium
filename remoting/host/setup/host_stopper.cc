@@ -59,7 +59,8 @@ void HostStopper::OnStopped(DaemonController::AsyncResult) {
   std::move(on_done_).Run();
 }
 
-void HostStopper::OnHostRegistered(const std::string& authorization_code) {
+void HostStopper::OnHostRegistered(const std::string& host_id,
+                                   const std::string& authorization_code) {
   NOTREACHED();
 }
 

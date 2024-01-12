@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portoghese con tastiera internazionale USA</translation>
 <translation id="1629521517399325891">Il certificato utente non è disponibile per l'autenticazione della rete.</translation>
 <translation id="1641780993263690097">Cinese pinyin</translation>
-<translation id="1646019627374511909">Preparazione per la visualizzazione offline di <ph name="NUMBER_OF_ITEMS" /> file…</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Hai esaurito il tuo spazio di archiviazione Google Workspace su Drive condiviso.</translation>
 <translation id="1661867754829461514">PIN mancante</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Foglio di calcolo Google</translation>
 <translation id="3479552764303398839">Non adesso</translation>
 <translation id="3486821258960016770">Mongolo</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errori.</translation>
 <translation id="3509680540198371098">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="3511705761158917664">Preparazione alla sincronizzazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="3522708245912499433">Portoghese</translation>
@@ -718,7 +716,6 @@
 <translation id="6503285896705205014">La copia di <ph name="COUNT" /> file è bloccata dal criterio dell'amministratore</translation>
 <translation id="6509122719576673235">Norvegese</translation>
 <translation id="6528513914570774834">Consenti ad altri utenti del dispositivo di usare questa rete</translation>
-<translation id="653019979737152879">Sincronizzazione del file <ph name="FILE_NAME" /> in corso...</translation>
 <translation id="6549689063733911810">Recenti</translation>
 <translation id="6558280019477628686">Si è verificato un errore. Alcuni elementi potrebbero non essere stati eliminati.</translation>
 <translation id="656398493051028875">Eliminazione di "<ph name="FILENAME" />"...</translation>
@@ -852,7 +849,6 @@
 <translation id="7553492409867692754">Concedi alle app Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Al momento sei offline. La sincronizzazione dei file riprenderà quando ti connetterai a internet</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
-<translation id="7592775719802218421">Preparazione per la visualizzazione offline del file <ph name="FILE_NAME" />…</translation>
 <translation id="7600126690270271294">Serbo</translation>
 <translation id="7603724359189955920">Griglie</translation>
 <translation id="7627790789328695202">Spiacenti. <ph name="FILE_NAME" /> esiste già. Rinominarlo e riprovare.</translation>
@@ -936,6 +932,7 @@
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8147028810663464959">La larghezza dei caratteri è piena</translation>
 <translation id="8151638057146502721">Configura</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 errore.}other{# errori.}}</translation>
 <translation id="8154842056504218462">Sono stati selezionati tutti gli elementi.</translation>
 <translation id="8157684860301034423">Impossibile recuperare le informazioni sull'app.</translation>
 <translation id="8175731104491895765">Francese (Belgio)</translation>
@@ -969,6 +966,7 @@
 <translation id="83651606385705612">Autorizza <ph name="VM_NAME" /> ad accedere ai file memorizzati nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Chiave WEP non valida</translation>
 <translation id="8372852072747894550">Greco</translation>
+<translation id="8377269993083688872">Layout per email</translation>
 <translation id="8386903983509584791">Scansione completata</translation>
 <translation id="8387733224523483503">Elemento "<ph name="FILE_NAME" />" estratto.</translation>
 <translation id="8395901698320285466">Dimensioni</translation>
@@ -1007,7 +1005,6 @@
 <translation id="8569764466147087991">Seleziona un file da aprire</translation>
 <translation id="8577897833047451336">Croato</translation>
 <translation id="8578308463707544055">Indonesiano</translation>
-<translation id="8579285237314169903">Sincronizzazione di <ph name="NUMBER_OF_FILES" /> elementi...</translation>
 <translation id="8600173386174225982">L'elenco dei file è stato modificato in visualizzazione miniatura.</translation>
 <translation id="8601932370724196034">File immagine Crostini</translation>
 <translation id="8609695766746872526">Islandese</translation>
@@ -1028,6 +1025,7 @@
 <translation id="8787254343425541995">Consenti proxy per reti condivise</translation>
 <translation id="8790981080411996443">Persona che annaffia le piante</translation>
 <translation id="8798099450830957504">Predefinito</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 avviso.}other{# avvisi.}}</translation>
 <translation id="8808686172382650546">Gatto</translation>
 <translation id="8810671769985673465">Compressione non riuscita. Elemento esistente: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spagnolo (Spagna)</translation>
@@ -1058,7 +1056,6 @@
 <translation id="9038620279323455325">Esiste già un file chiamato "<ph name="FILE_NAME" />". Scegli un altro nome.</translation>
 <translation id="9046895021617826162">Connessione non riuscita</translation>
 <translation id="9065512565307033593">Se non superi la verifica, l'accesso alla rete verrà disattivato.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 avviso.}other{<ph name="COUNT" /> avvisi.}}</translation>
 <translation id="908378762078012445">Russo con tastiera fonetica AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9099674669267916096">Numero di pagine</translation>

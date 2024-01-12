@@ -139,7 +139,7 @@ class RefreshRateControllerTest : public AshTestBase {
   std::unique_ptr<RefreshRateController> controller_;
   std::unique_ptr<GameModeController> game_mode_controller_;
   // Owned by DisplayConfigurator.
-  raw_ptr<TestNativeDisplayDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
   base::test::ScopedFeatureList scoped_features_;
 };

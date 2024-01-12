@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -25,9 +26,9 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
     private Context mContext;
     private IncognitoStateProvider mIncognitoStateProvider;
     private float mToolbarAlphaValue;
-    private int mToolbarColor;
+    private @ColorInt int mToolbarColor;
 
-    ToolbarColorObserverManager(Context context, ToolbarLayout toolbarLayout) {
+    ToolbarColorObserverManager(Context context) {
         mContext = context;
         mToolbarAlphaValue = 0;
     }
@@ -51,7 +52,7 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
 
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
     @Override
-    public void onToolbarColorChanged(int color) {
+    public void onToolbarColorChanged(@ColorInt int color) {
         mToolbarColor = color;
         notifyToolbarColorChanged();
     }
@@ -70,7 +71,9 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
     private void notifyToolbarColorChanged() {
         if (mToolbarColorObserver != null && mIncognitoStateProvider != null) {
             boolean isIncognito = mIncognitoStateProvider.isIncognitoSelected();
+            @ColorInt
             int overviewColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
+            @ColorInt
             int toolbarRenderingColor =
                     ColorUtils.getColorWithOverlay(
                             mToolbarColor, overviewColor, mToolbarAlphaValue);

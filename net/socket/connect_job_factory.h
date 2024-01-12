@@ -33,6 +33,25 @@ struct SSLConfig;
 // ConnectJob depending on the passed in parameters.
 class NET_EXPORT_PRIVATE ConnectJobFactory {
  public:
+  // What protocols may be negotiated with the destination SSL server via ALPN.
+  // These do not apply to the proxy server, for which all protocols listed in
+  // CommonConnectJobParams are always allowed to be negotiated, unless
+  // HttpServerProperties forces H1.
+  //
+  // AlpnMode has no impact when not talking to an HTTPS destination server.
+  enum class AlpnMode {
+    // Don't use ALPN mode at all when negotiating a connection. This is used by
+    // non-HTTP consumers.
+    kDisabled,
+    // Only try to negotiate H1. This is only used by WebSockets.
+    kHttp11Only,
+    // Allow negotiating H2 or H1 via ALPN. H2 may only be negotiated if
+    // CommonConnectJobParams allows it. Also, if HttpServerProperties only
+    // allows H1 for the destination server, only H1 will be negotiated, even
+    // if `kHttpAll` is specified.
+    kHttpAll,
+  };
+
   // The endpoint of a connection when the endpoint does not have a known
   // standard scheme.
   struct SchemelessEndpoint {
@@ -67,7 +86,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* base_ssl_config_for_proxies,
+      ConnectJobFactory::AlpnMode alpn_mode,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -86,7 +105,6 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* base_ssl_config_for_proxies,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -103,7 +121,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* base_ssl_config_for_proxies,
+      ConnectJobFactory::AlpnMode alpn_mode,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,

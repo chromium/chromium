@@ -160,8 +160,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> V2Authenticator::GetNextMessage() {
   DCHECK(!pending_messages_.empty());
   while (!pending_messages_.empty()) {
     const std::string& spake_message = pending_messages_.front();
-    std::string base64_message;
-    base::Base64Encode(spake_message, &base64_message);
+    std::string base64_message = base::Base64Encode(spake_message);
 
     jingle_xmpp::XmlElement* eke_tag = new jingle_xmpp::XmlElement(kEkeTag);
     eke_tag->SetBodyText(base64_message);
@@ -173,8 +172,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> V2Authenticator::GetNextMessage() {
   if (!local_cert_.empty() && !certificate_sent_) {
     jingle_xmpp::XmlElement* certificate_tag =
         new jingle_xmpp::XmlElement(kCertificateTag);
-    std::string base64_cert;
-    base::Base64Encode(local_cert_, &base64_cert);
+    std::string base64_cert = base::Base64Encode(local_cert_);
     certificate_tag->SetBodyText(base64_cert);
     message->AddElement(certificate_tag);
     certificate_sent_ = true;

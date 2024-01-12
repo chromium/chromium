@@ -35,7 +35,7 @@
           {
             "type": "string",
             "name": "messageName",
-            "description": "The name of the message, as specified in the <a href='i18n-messages'><code>messages.json</code></a> file."
+            "description": "The name of the message, as specified in the <a href='how-to/ui/localization-message-formats'><code>messages.json</code></a> file."
           },
           {
             "type": "any",

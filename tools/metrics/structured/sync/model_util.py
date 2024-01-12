@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """Utilities for parsing structured.xml.
 
 Functions in this module raise an error if constraints on the format of the
@@ -16,54 +16,60 @@ import collections
 import re
 
 
-BOOLEAN_REGEX = r'(?i)(true|false|)$'
+BOOLEAN_REGEX = r"(?i)(true|false|)$"
 
 
 def error(elem, msg):
   """Raise a nicely formatted error with some context."""
   name = elem.attrib.get("name", None)
   name = name + " " if name else ""
-  msg = "Structured metrics error, {} node {}: {}.".format(elem.tag, name, msg)
+  msg = f"Structured metrics error, {elem.tag} node {name}: {msg}."
   raise ValueError(msg)
 
 
 def get_attr(elem, tag, regex=None):
   """Get an attribute.
 
-  Error if it is missing, optionally error if it doesn't match the provided
-  regex.
-  """
+    Error if it is missing, optionally error if it doesn't match the provided
+    regex.
+    """
   attr = elem.attrib.get(tag, None)
   if not attr:
-    error(elem, "missing attribute '{}'".format(tag))
+    error(elem, f"missing attribute '{tag}'")
   if regex and not re.match(regex, attr):
-    error(elem, ("has '{}' attribute '{}' which does "
-                 "not match regex '{}'").format(tag, attr, regex))
+    error(
+        elem,
+        (f"has '{tag}' attribute '{attr}' which does "
+         "not match regex '{regex}'"),
+    )
   return attr
 
 
 def get_optional_attr(elem, tag, regex=None):
   """Get an attribute.
 
-  Returns None if it doesn't exist.
-  """
+    Returns None if it doesn't exist.
+    """
   attr = elem.attrib.get(tag)
   if not attr:
     return None
   if regex and not re.match(regex, attr):
-    error(elem, ("has '{}' attribute '{}' which does "
-                 "not match regex '{}'").format(tag, attr, regex))
+    error(
+        elem,
+        (f"has '{tag}' attribute '{attr}' which does "
+         "not match regex '{regex}'"),
+    )
   return attr
 
 
 def get_compound_children(elem, tag, allow_missing_children=False):
   """Get all child nodes of `elem` with tag `tag`.
 
-  Error if none exist, or a child is not a compound node.
-  """
+    Error if none exist, or a child is not a compound node.
+    """
   children = elem.findall(tag)
   if not children and not allow_missing_children:
-    error(elem, "missing node '{}'".format(tag))
+    error(elem, f"missing node '{tag}'")
   for child in children:
     if child.text and child.text.strip():
       error(child, "contains text, but shouldn't")
@@ -73,23 +79,23 @@ def get_compound_children(elem, tag, allow_missing_children=False):
 def get_compound_child(elem, tag):
   """Get the child of `elem` with tag `tag`.
 
-  Error if there isn't exactly one matching child, or it isn't compound.
-  """
+    Error if there isn't exactly one matching child, or it isn't compound.
+    """
   children = elem.findall(tag)
   if len(children) != 1:
-    error(elem, "needs exactly one '{}' node".format(tag))
+    error(elem, f"needs exactly one '{tag}' node")
   return children[0]
 
 
 def get_text_children(elem, tag, regex=None):
   """Get the text of all child nodes of `elem` with tag `tag`.
 
-  Error if none exist, or a child is not a text node. Optionally ensure the
-  text matches `regex`.
-  """
+    Error if none exist, or a child is not a text node. Optionally ensure the
+    text matches `regex`.
+    """
   children = elem.findall(tag)
   if not children:
-    error(elem, "missing node '{}'".format(tag))
+    error(elem, f"missing node '{tag}'")
 
   result = []
   for child in children:
@@ -97,10 +103,13 @@ def get_text_children(elem, tag, regex=None):
     check_children(child, set())
     text = child.text.strip()
     if not text:
-      error(elem, "missing text in '{}'".format(tag))
+      error(elem, f"missing text in '{tag}'")
     if regex and not re.match(regex, text):
-      error(elem, ("has '{}' node '{}' which does "
-                   "not match regex '{}'").format(tag, text, regex))
+      error(
+          elem,
+          (f"has '{tag}' node '{text}' which does "
+           "not match regex '{regex}'"),
+      )
     result.append(text)
   return result
 
@@ -108,12 +117,12 @@ def get_text_children(elem, tag, regex=None):
 def get_text_child(elem, tag, regex=None):
   """Get the text of the child of `elem` with tag `tag`.
 
-  Error if there isn't exactly one matching child, or it isn't a text node.
-  Optionally ensure the text matches `regex`.
-  """
+    Error if there isn't exactly one matching child, or it isn't a text node.
+    Optionally ensure the text matches `regex`.
+    """
   result = get_text_children(elem, tag, regex)
   if len(result) != 1:
-    error(elem, "needs exactly one '{}' node".format(tag))
+    error(elem, f"needs exactly one '{tag}' node")
   return result[0]
 
 
@@ -140,9 +149,8 @@ def check_children(elem, expected_children):
 def get_boolean_attr(elem, attr_name):
   maybe_attr = get_optional_attr(elem, attr_name, BOOLEAN_REGEX)
   if maybe_attr:
-    return maybe_attr.lower() == 'true'
-  else:
-    return False
+    return maybe_attr.lower() == "true"
+  return False
 
 
 def check_child_names_unique(elem, tag):
@@ -151,4 +159,4 @@ def check_child_names_unique(elem, tag):
   name_counts = collections.Counter(names)
   has_duplicates = any(c > 1 for c in name_counts.values())
   if has_duplicates:
-    error(elem, "has {} nodes with duplicate names".format(tag))
+    error(elem, f"has {tag} nodes with duplicate names")

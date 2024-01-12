@@ -63,8 +63,6 @@
   // created by other handlers.
   testRunner.log('\nDisconnecting |session3|');
   await session3.disconnect();
-  // TODO(crbug.com/1492129): This call can be removed once the bug is fixed.
-  await dp.Emulation.setFocusEmulationEnabled({enabled: true});
 
   await assertSensorIsOverridden(dp2, 'accelerometer');
   await assertSensorIsOverridden(dp2, 'gravity');
@@ -82,8 +80,6 @@
 
   testRunner.log('\nDisconnecting |session2|');
   await session2.disconnect();
-  // TODO(crbug.com/1492129): This call can be removed once the bug is fixed.
-  await dp.Emulation.setFocusEmulationEnabled({enabled: true});
 
   await assertSensorIsNotOverridden(dp2, 'accelerometer');
   await assertSensorIsNotOverridden(dp2, 'gravity');
@@ -98,8 +94,6 @@
 
   testRunner.log('\nDisconnection session');
   await session.disconnect();
-  // TODO(crbug.com/1492129): This call can be removed once the bug is fixed.
-  await dp.Emulation.setFocusEmulationEnabled({enabled: true});
 
   await assertSensorIsNotOverridden(dp, 'accelerometer');
   await assertSensorIsNotOverridden(dp2, 'gravity');

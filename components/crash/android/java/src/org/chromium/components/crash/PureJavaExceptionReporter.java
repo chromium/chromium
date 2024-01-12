@@ -14,8 +14,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.minidump_uploader.CrashFileManager;
-import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
 import java.io.FileNotFoundException;

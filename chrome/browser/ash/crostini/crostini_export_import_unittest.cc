@@ -187,17 +187,15 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
-  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
-      fake_cicerone_client_;
-  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged | ExperimentalAsh>
-      fake_seneschal_client_;
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
+  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged> fake_seneschal_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester>
       notification_display_service_tester_;
-  raw_ptr<StubNotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StubNotificationDisplayService, DanglingUntriaged>
       notification_display_service_;
 
   guest_os::GuestId default_container_id_;

@@ -72,6 +72,20 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ParentPermissionsInfoDataView,
+                 blink::FencedFrame::ParentPermissionsInfo> {
+  static const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
+  parsed_permissions_policy(
+      const blink::FencedFrame::ParentPermissionsInfo& input);
+  static const url::Origin& origin(
+      const blink::FencedFrame::ParentPermissionsInfo& input);
+
+  static bool Read(blink::mojom::ParentPermissionsInfoDataView data,
+                   blink::FencedFrame::ParentPermissionsInfo* out_data);
+};
+
+template <>
 class BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::PotentiallyOpaqueURLDataView, Prop<GURL>> {
  public:
@@ -249,6 +263,12 @@ struct BLINK_COMMON_EXPORT
     return config.effective_enabled_permissions_;
   }
 
+  static const absl::optional<blink::FencedFrame::ParentPermissionsInfo>&
+  parent_permissions_info(
+      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
+    return config.parent_permissions_info_;
+  }
+
   static bool Read(blink::mojom::FencedFrameConfigDataView data,
                    blink::FencedFrame::RedactedFencedFrameConfig* out_config);
 };
@@ -301,6 +321,12 @@ struct BLINK_COMMON_EXPORT
   effective_enabled_permissions(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.effective_enabled_permissions_;
+  }
+
+  static const absl::optional<blink::FencedFrame::ParentPermissionsInfo>&
+  parent_permissions_info(
+      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
+    return properties.parent_permissions_info_;
   }
 
   static bool Read(

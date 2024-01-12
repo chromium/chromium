@@ -981,11 +981,11 @@ class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
   }
 
   void TearDown() override {
-    native_widget_->CloseNow();
+    native_widget_.ExtractAsDangling()->CloseNow();
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<TestNativeWidgetAura, DanglingUntriaged> native_widget_;
+  raw_ptr<TestNativeWidgetAura> native_widget_ = nullptr;
 };
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetHitTestMaskTest) {

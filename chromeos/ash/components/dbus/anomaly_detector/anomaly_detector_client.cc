@@ -90,7 +90,7 @@ class AnomalyDetectorClientImpl : public AnomalyDetectorClient {
     }
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> anomaly_detector_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> anomaly_detector_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 

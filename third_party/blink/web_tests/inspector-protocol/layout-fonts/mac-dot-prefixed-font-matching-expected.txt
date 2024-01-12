@@ -1,0 +1,12 @@
+Test passes if text elements are rendered using Times font.
+Note: Dot prefixed font names cause error console output when passed to certain CoreText font instantiation methods. Hence we want to filter them on the application side. That's why the text in the test should be displayed in the Times font.
+test
+#times_local_unique:
+"Times" : 4
+
+test
+#times_family:
+"Times" : 4
+
+PASS
+

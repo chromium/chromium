@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
@@ -245,6 +246,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   // The most recent FwupdStatus, used for the purpose of recording metrics.
   FwupdStatus last_fwupd_status_ = FwupdStatus::kUnknown;
+
+  // The most recent DeviceRequest, used for the purpose of recording metrics.
+  firmware_update::mojom::DeviceRequestPtr last_device_request_ = nullptr;
+
+  // Timestamp of when the last device request began. Used to calculate a
+  // duration for metrics.
+  std::optional<base::Time> last_request_started_timestamp_;
 
   // Used to show the firmware update notification and to determine which
   // metric to fire (Startup/Refresh).

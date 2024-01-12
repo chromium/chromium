@@ -54,6 +54,13 @@ bool ShouldSetBounds(PlatformWindowState state) {
          state == PlatformWindowState::kFloated;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsPinnedOrFullscreen(const WaylandWindow::WindowStates& states) {
+  return states.is_fullscreen || states.is_pinned_fullscreen ||
+         states.is_trusted_pinned_fullscreen;
+}
+#endif  // BUILDFLAG(IS_CHOMEOS_LACROS)
+
 }  // namespace
 
 constexpr int kVisibleOnAllWorkspaces = -1;
@@ -418,6 +425,12 @@ bool WaylandToplevelWindow::SupportsConfigureMinimizedState() const {
                                 ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION);
 }
 
+bool WaylandToplevelWindow::SupportsConfigurePinnedState() const {
+  return shell_toplevel_ &&
+         shell_toplevel_->IsSupportedOnAuraToplevel(
+             ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION);
+}
+
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   auto old_scale = applied_state().window_scale;
   WaylandWindow::UpdateWindowScale(update_bounds);
@@ -541,6 +554,12 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     state_ = PlatformWindowState::kMinimized;
   } else if (window_states.is_fullscreen) {
     state_ = PlatformWindowState::kFullScreen;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else if (window_states.is_pinned_fullscreen) {
+    state_ = PlatformWindowState::kPinnedFullscreen;
+  } else if (window_states.is_trusted_pinned_fullscreen) {
+    state_ = PlatformWindowState::kTrustedPinnedFullscreen;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   } else if (window_states.is_maximized) {
     state_ = PlatformWindowState::kMaximized;
   } else if (window_states.is_snapped_primary) {
@@ -558,12 +577,19 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   fullscreen_display_id_ = display::kInvalidDisplayId;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(!window_states.is_immersive_fullscreen || window_states.is_fullscreen);
+  CHECK(!window_states.is_immersive_fullscreen ||
+        IsPinnedOrFullscreen(window_states))
+      << "Immersive state should not be set when it's not fullscreen.";
+
+  // TODO(crbug.com/1512518): Refer to window_states.is_pinned_fullscreen and
+  // is_trusted_window_fullscreen and set kPinned/kTrustedPinned as a fullscreen
+  // type when it's supported.
   PlatformFullscreenType fullscreen_type =
       window_states.is_immersive_fullscreen
           ? PlatformFullscreenType::kImmersive
-          : (window_states.is_fullscreen ? PlatformFullscreenType::kPlain
-                                         : PlatformFullscreenType::kNone);
+          : (IsPinnedOrFullscreen(window_states)
+                 ? PlatformFullscreenType::kPlain
+                 : PlatformFullscreenType::kNone);
   if (fullscreen_type_ != fullscreen_type) {
     // The fullscreen state change has finished and we we need to inform the
     // browser/app that the transition is done.
@@ -585,7 +611,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   const bool did_active_change = is_active_ != window_states.is_activated;
   is_active_ = window_states.is_activated;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // The tiled state affects the window geometry, so apply it here.
   if (window_states.tiled_edges != tiled_state_) {
     // This configure changes the decoration insets.  We should adjust the
@@ -744,7 +770,14 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Size size_dip) {
 }
 
 void WaylandToplevelWindow::AckConfigure(uint32_t serial) {
-  shell_toplevel()->AckConfigure(serial);
+  // We cannot assume the top level wrapper is non-NULL because of a corner case
+  // in drag n' drop. There could be times when the tab strip change is detected
+  // while processing a configure event received from the compositor and hence
+  // destroy the top level wrapper before an ACK is sent.
+  // See crbug.com/1512046 for details.
+  if (shell_toplevel()) {
+    shell_toplevel()->AckConfigure(serial);
+  }
 }
 
 void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
@@ -989,16 +1022,27 @@ void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
 }
 
 void WaylandToplevelWindow::Pin(bool trusted) {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->SetPin(trusted);
-    connection()->Flush();
+  if (SupportsConfigurePinnedState()) {
+    auto new_state = trusted ? PlatformWindowState::kTrustedPinnedFullscreen
+                             : PlatformWindowState::kPinnedFullscreen;
+    SetWindowState(new_state, display::kInvalidDisplayId);
+  } else {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->SetPin(trusted);
+    }
   }
 }
 
 void WaylandToplevelWindow::Unpin() {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->UnsetPin();
-    connection()->Flush();
+  if (SupportsConfigurePinnedState()) {
+    auto new_state = previous_state_ == PlatformWindowState::kMaximized
+                         ? previous_state_
+                         : PlatformWindowState::kNormal;
+    SetWindowState(new_state, display::kInvalidDisplayId);
+  } else {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->UnsetPin();
+    }
   }
 }
 
@@ -1071,8 +1115,19 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   } else if (state_ == PlatformWindowState::kFullScreen) {
     shell_toplevel_->SetFullscreen(
         GetWaylandOutputForDisplayId(fullscreen_display_id_));
+  } else if (state_ == PlatformWindowState::kPinnedFullscreen ||
+             state_ == PlatformWindowState::kTrustedPinnedFullscreen) {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->SetPin(state_ ==
+                            PlatformWindowState::kTrustedPinnedFullscreen);
+    }
   } else if (previous_state_ == PlatformWindowState::kFullScreen) {
     shell_toplevel_->UnSetFullscreen();
+  } else if (previous_state_ == PlatformWindowState::kPinnedFullscreen ||
+             previous_state_ == PlatformWindowState::kTrustedPinnedFullscreen) {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->UnsetPin();
+    }
   } else if (state_ == PlatformWindowState::kMaximized) {
     shell_toplevel_->SetMaximized();
   } else if (state_ == PlatformWindowState::kNormal) {

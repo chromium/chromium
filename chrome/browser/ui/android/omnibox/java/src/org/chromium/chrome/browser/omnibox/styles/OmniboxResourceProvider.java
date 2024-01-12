@@ -416,13 +416,6 @@ public class OmniboxResourceProvider {
                 .getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
-    /** Get the top margin for a suggestion that is the beginning of a group. */
-    public static int getSuggestionGroupTopMargin(Context context) {
-        context = maybeReplaceContextForSmallTabletWindow(context);
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
-    }
-
     /** Get the top padding for the MV carousel. */
     public static @Px int getMostVisitedCarouselTopPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
@@ -457,23 +450,7 @@ public class OmniboxResourceProvider {
     public static @Px int getHeaderStartPadding(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
-                .getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_header_padding_start_modern_smallest);
-    }
-
-    /** Gets the top padding for a header suggestion. */
-    public static int getHeaderTopPadding(Context context) {
-        context = maybeReplaceContextForSmallTabletWindow(context);
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top_smallest);
-    }
-
-    /** Returns the min height of the header view. */
-    public static int getHeaderMinHeight(Context context) {
-        context = maybeReplaceContextForSmallTabletWindow(context);
-        return context.getResources()
-                .getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest);
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
     }
 
     /**

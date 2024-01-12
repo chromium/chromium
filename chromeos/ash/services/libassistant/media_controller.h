@@ -42,7 +42,7 @@ class MediaController : public mojom::MediaController,
  private:
   class GrpcEventsObserver;
 
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
   mojo::Remote<mojom::MediaDelegate> delegate_;

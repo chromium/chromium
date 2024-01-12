@@ -84,13 +84,11 @@ class VpnListForwarder
   void AttachToVpnExtensionObserverAsh();
 
   // The primary user's extension registry, if a user is logged in.
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
 
   // The primary user's app_list::ArcVpnProviderManager, if a user is logged
   // in.
-  raw_ptr<app_list::ArcVpnProviderManager, ExperimentalAsh>
-      arc_vpn_provider_manager_ = nullptr;
+  raw_ptr<app_list::ArcVpnProviderManager> arc_vpn_provider_manager_ = nullptr;
 
   std::unique_ptr<
       mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>>

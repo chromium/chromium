@@ -5,9 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DEVTOOLS_AGENT_HOST_CLIENT_H_
 #define CONTENT_PUBLIC_BROWSER_DEVTOOLS_AGENT_HOST_CLIENT_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -63,7 +64,7 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // This is useful e.g. for Chrome Extensions so that their calls to
   // Page.navigate would be treated as renderer-initiated naviation subject to
   // URL spoofing protection.
-  virtual absl::optional<url::Origin> GetNavigationInitiatorOrigin();
+  virtual std::optional<url::Origin> GetNavigationInitiatorOrigin();
 
   // Determines protocol message format.
   virtual bool UsesBinaryProtocol();

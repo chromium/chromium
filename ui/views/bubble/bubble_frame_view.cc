@@ -346,6 +346,16 @@ void BubbleFrameView::InsertClientView(ClientView* client_view) {
       : AddChildView(client_view);
 }
 
+void BubbleFrameView::UpdateWindowRoundedCorners() {
+  // BubbleFrameView makes the frame round by drawing a rounded border.
+  // Additionally, it rounds `footnote_container_` if present; it makes the
+  // client view contents rounded (if needed) by either applying rounded corners
+  // to the client view layer or applying a mask.  However, certain
+  // implementations of the client view may need to do additional work to have a
+  // rounded window.
+  GetWidget()->client_view()->UpdateWindowRoundedCorners();
+}
+
 void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   DCHECK(title_view);
   if (default_title_) {
@@ -854,6 +864,10 @@ void BubbleFrameView::UpdateInputProtectorTimeStamp() {
 
 void BubbleFrameView::ResetViewShownTimeStampForTesting() {
   input_protector_.ResetForTesting();
+}
+
+gfx::Insets BubbleFrameView::GetClientViewInsets() const {
+  return GetClientInsetsForFrameWidth(GetContentsBounds().width());
 }
 
 gfx::Rect BubbleFrameView::GetAvailableScreenBounds(

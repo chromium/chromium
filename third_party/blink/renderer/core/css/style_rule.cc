@@ -637,14 +637,16 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
                                     String value,
                                     CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
+                                    bool is_within_scope,
                                     StyleSheetContents* style_sheet) {
   auto* parser_context =
       MakeGarbageCollected<CSSParserContext>(*execution_context);
   Vector<CSSParserToken, 32> tokens = CSSTokenizer(value).TokenizeToEOF();
 
   StyleRule* old_parent = style_scope_->RuleForNesting();
-  style_scope_ = StyleScope::Parse(tokens, parser_context, nesting_type,
-                                   parent_rule_for_nesting, style_sheet);
+  style_scope_ =
+      StyleScope::Parse(tokens, parser_context, nesting_type,
+                        parent_rule_for_nesting, is_within_scope, style_sheet);
 
   // Reparent rules within the @scope's body.
   Reparent(old_parent, style_scope_->RuleForNesting());

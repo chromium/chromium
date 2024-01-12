@@ -24,6 +24,8 @@ extern const CGFloat kFaviconImageViewRadius;
 // The space before the fake omnibox field.
 extern const CGFloat kFakeOmniboxFieldLeadingInset;
 
+// Accessibility identifier for the choice screen title.
+extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
 // Prefix for the SearchEngineCell accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 // `Set as Default` button accessibility identifier.

@@ -46,13 +46,19 @@ class ASH_EXPORT LoginShelfButton : public PillButton, public ShelfObserver {
   void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
                                AnimationChangeType change_type) override;
 
-  // Update the button and its icon colors regarding to the background.
-  void UpdateColors(ShelfBackgroundType background_type);
+  void OnActiveChanged();
+
+  void SetIsActive(bool is_active);
+  bool GetIsActive() const;
 
  private:
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observer_{this};
+
   const raw_ref<const gfx::VectorIcon> icon_;
   const int text_resource_id_;
+
+  ShelfBackgroundType background_type_ = ShelfBackgroundType::kDefaultBg;
+  bool is_active_ = false;
 };
 
 }  // namespace ash

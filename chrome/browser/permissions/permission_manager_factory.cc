@@ -43,6 +43,10 @@
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+#include "chrome/browser/printing/web_api/web_printing_permission_context.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+
 namespace {
 
 permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
@@ -141,6 +145,11 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::CAPTURED_SURFACE_CONTROL] =
       std::make_unique<permissions::CapturedSurfaceControlPermissionContext>(
           profile);
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+  permission_contexts[ContentSettingsType::WEB_PRINTING] =
+      std::make_unique<WebPrintingPermissionContext>(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
 
   return permission_contexts;
 }

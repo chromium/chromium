@@ -446,8 +446,7 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
   ssl_config->application_settings = http_session->GetApplicationSettings();
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          /*ssl_config_for_origin=*/std::move(ssl_config),
-          /*base_ssl_config_for_proxies=*/nullptr);
+          /*ssl_config_for_origin=*/std::move(ssl_config));
   int rv = connection->Init(
       ClientSocketPool::GroupId(
           url::SchemeHostPort(url::kHttpsScheme,

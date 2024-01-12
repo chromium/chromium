@@ -246,8 +246,7 @@ class JSChecker {
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
-      web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 // Helper method to create the JSChecker instance from the login/oobe

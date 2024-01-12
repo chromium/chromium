@@ -96,6 +96,10 @@ IpczResult DriverTransport::Activate() {
 }
 
 IpczResult DriverTransport::Deactivate() {
+  if (!transport_.is_valid()) {
+    // The transport is already deactivated. Avoids a null dereference.
+    return IPCZ_RESULT_FAILED_PRECONDITION;
+  }
   return transport_.driver()->DeactivateTransport(transport_.handle(),
                                                   IPCZ_NO_FLAGS, nullptr);
 }

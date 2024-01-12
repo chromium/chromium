@@ -279,8 +279,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If kOpaque, we can perform optimizations based on the widget being fully
     // opaque. Default is based on ViewsDelegate::GetOpacityForInitParams().
     // Defaults to kOpaque for non-window widgets. Translucent windows may not
-    // always be supported. Use IsTranslucentWindowOpacitySupported() to
-    // determine whether they are.
+    // always be supported.
     WindowOpacity opacity = WindowOpacity::kInferred;
 
     bool accept_events = true;
@@ -557,6 +556,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Returns true if the specified type requires a NonClientView.
   static bool RequiresNonClientView(InitParams::Type type);
+
+  static bool IsWindowCompositingSupported();
 
   // Initializes the widget, and in turn, the native widget. |params| should be
   // moved to Init() by the caller.
@@ -1058,9 +1059,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Creates and dispatches synthesized mouse move event using the current
   // mouse location to refresh hovering status in the widget.
   void SynthesizeMouseMoveEvent();
-
-  // Whether the widget supports translucency.
-  bool IsTranslucentWindowOpacitySupported() const;
 
   // Returns the gesture recognizer which can handle touch/gesture events on
   // this.

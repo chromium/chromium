@@ -1090,8 +1090,9 @@ void ShelfView::UpdateSeparatorIndex() {
       break;
     }
 
-    if (item.type == TYPE_APP && item.is_on_active_desk)
+    if (!IsPinnedShelfItemType(item.type) && item.is_on_active_desk) {
       first_unpinned_index = i;
+    }
   }
 
   // If there is no unpinned item in shelf, return -1 as the separator should be

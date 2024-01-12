@@ -12,10 +12,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace sessions {
-class TabRestoreService;
-}  // namespace sessions
-
 namespace ios::sessions {
 
 // Status of the storage migration.
@@ -23,36 +19,6 @@ enum class MigrationStatus {
   kSuccess,
   kFailure,
 };
-
-// Migrates session named `name` in `path` from legacy to optimized.
-//
-// If the legacy session was successfully loaded, but could not be
-// converted (e.g. the disk is full and new file cannot be written),
-// then `restore_service` is used to record the tabs as recently
-// closed.
-//
-// In all case, any files corresponding to the legacy storage are
-// deleted when the migration completes, either successfully or with
-// error.
-void MigrateNamedSessionToOptimized(
-    const base::FilePath& path,
-    const std::string& name,
-    ::sessions::TabRestoreService* restore_service);
-
-// Migrates session named `name` in `path` from optimized to legacy.
-//
-// If the optimized session was successfully loaded, but could not be
-// converted (e.g. the disk is full and new file cannot be written),
-// then `restore_service` is used to record the tabs as recently
-// closed.
-//
-// In all case, any files corresponding to the optimized storage are
-// deleted when the migration completes, either successfully or with
-// error.
-void MigrateNamedSessionToLegacy(
-    const base::FilePath& directory,
-    const std::string& name,
-    ::sessions::TabRestoreService* restore_service);
 
 // Migrates all sessions found in `paths` from legacy to optimized format
 // and returns the status of the migration.

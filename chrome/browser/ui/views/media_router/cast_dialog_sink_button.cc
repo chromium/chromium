@@ -244,7 +244,7 @@ const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(UIMediaSink sink) {
                     : GetVectorIcon(sink.icon_type);
 }
 
-BEGIN_METADATA(CastDialogSinkButton, HoverButton)
+BEGIN_METADATA(CastDialogSinkButton)
 END_METADATA
 
 }  // namespace media_router

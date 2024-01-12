@@ -9,13 +9,13 @@ import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
-import org.chromium.components.version_info.VersionInfo;
 
 /** Settings fragment containing preferences aimed at Chrome and web developers. */
 public class DeveloperSettings extends PreferenceFragmentCompat {

@@ -18,6 +18,7 @@ class TabStripNewTabButton: UIView {
 
     configureButton()
     addSubview(button)
+    button.accessibilityIdentifier = TabStripConstants.NewTabButton.accessibilityIdentifier
 
     NSLayoutConstraint.activate([
       button.leadingAnchor.constraint(

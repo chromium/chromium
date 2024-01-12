@@ -15,6 +15,7 @@
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -77,7 +78,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   void AddFilter(BrowserMessageFilter* filter);
+#endif
 
   RenderProcessHost* GetProcess();
   // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.

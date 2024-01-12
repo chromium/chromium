@@ -187,7 +187,7 @@ void MediaLicenseStorageHost::DidReadFile(
     const media::CdmType& cdm_type,
     const std::string& file_name,
     ReadFileCallback callback,
-    absl::optional<std::vector<uint8_t>> data) {
+    std::optional<std::vector<uint8_t>> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The code only reaches this callback during the migration when this is our

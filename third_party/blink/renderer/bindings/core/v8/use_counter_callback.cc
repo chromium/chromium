@@ -363,6 +363,24 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmJavaScriptPromiseIntegration:
       blink_feature = WebFeature::kV8WasmJavaScriptPromiseIntegration;
       break;
+    case v8::Isolate::kWasmReturnCall:
+      blink_feature = WebFeature::kV8WasmReturnCall;
+      break;
+    case v8::Isolate::kWasmExtendedConst:
+      blink_feature = WebFeature::kV8WasmExtendedConst;
+      break;
+    case v8::Isolate::kWasmRelaxedSimd:
+      blink_feature = WebFeature::kV8WasmRelaxedSimd;
+      break;
+    case v8::Isolate::kWasmTypeReflection:
+      blink_feature = WebFeature::kV8WasmTypeReflection;
+      break;
+    case v8::Isolate::kWasmExnRef:
+      blink_feature = WebFeature::kV8WasmExnRef;
+      break;
+    case v8::Isolate::kWasmTypedFuncRef:
+      blink_feature = WebFeature::kV8WasmTypedFuncRef;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

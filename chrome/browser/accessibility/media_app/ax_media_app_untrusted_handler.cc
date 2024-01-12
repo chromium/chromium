@@ -219,7 +219,7 @@ void AXMediaAppUntrustedHandler::DocumentUpdated(
 }
 
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
-                                                 float scaleFactor) {}
+                                                 float scale_factor) {}
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void AXMediaAppUntrustedHandler::UpdatePageLocation(

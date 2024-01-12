@@ -24,8 +24,8 @@ void DevToolsPrerenderAttempt::SetTriggeringOutcome(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint, outcome,
-      /*prerender_status=*/absl::nullopt,
-      /*disallowed_mojo_interface=*/absl::nullopt,
+      /*prerender_status=*/std::nullopt,
+      /*disallowed_mojo_interface=*/std::nullopt,
       /*mismatched_headers=*/nullptr);
 }
 
@@ -46,7 +46,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint,
       PreloadingTriggeringOutcome::kFailure, prerender_status,
-      /*disallowed_mojo_interface=*/absl::nullopt,
+      /*disallowed_mojo_interface=*/std::nullopt,
       /*mismatched_headers=*/nullptr);
 }
 
@@ -54,7 +54,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
     const PrerenderAttributes& attributes,
     const PrerenderCancellationReason& reason) {
   PrerenderFinalStatus prerender_status = reason.final_status();
-  absl::optional<std::string> disallowed_mojo_interface;
+  std::optional<std::string> disallowed_mojo_interface;
   const std::vector<PrerenderMismatchedHeaders>* mismatched_headers = nullptr;
 
   // Ensured by PrerenderCancellationReason.

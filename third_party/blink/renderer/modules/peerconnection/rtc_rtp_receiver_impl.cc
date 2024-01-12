@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,6 +19,10 @@
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
+
+BASE_FEATURE(kRTCAlignReceivedEncodedVideoTransforms,
+             "RTCAlignReceivedEncodedVideoTransforms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 RtpReceiverState::RtpReceiverState(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -140,7 +145,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   RTCRtpReceiverInternal(rtc::scoped_refptr<webrtc::PeerConnectionInterface>
                              native_peer_connection,
                          RtpReceiverState state,
-                         bool require_encoded_insertable_streams)
+                         bool require_encoded_insertable_streams,
+                         std::unique_ptr<webrtc::Metronome> decode_metronome)
       : native_peer_connection_(std::move(native_peer_connection)),
         main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
@@ -161,7 +167,10 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
       if (webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
         encoded_video_transformer_ =
             std::make_unique<RTCEncodedVideoStreamTransformer>(
-                main_task_runner_);
+                main_task_runner_, base::FeatureList::IsEnabled(
+                                       kRTCAlignReceivedEncodedVideoTransforms)
+                                       ? std::move(decode_metronome)
+                                       : nullptr);
         webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
             encoded_video_transformer_->Delegate());
       }
@@ -273,11 +282,13 @@ uintptr_t RTCRtpReceiverImpl::getId(
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     RtpReceiverState state,
-    bool require_encoded_insertable_streams)
+    bool require_encoded_insertable_streams,
+    std::unique_ptr<webrtc::Metronome> decode_metronome)
     : internal_(base::MakeRefCounted<RTCRtpReceiverInternal>(
           std::move(native_peer_connection),
           std::move(state),
-          require_encoded_insertable_streams)) {}
+          require_encoded_insertable_streams,
+          std::move(decode_metronome))) {}
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(const RTCRtpReceiverImpl& other)
     : internal_(other.internal_) {}

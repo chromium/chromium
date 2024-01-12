@@ -94,8 +94,9 @@ void PingManagerTest::RunThreads() {
 }
 
 void PingManagerTest::Quit() {
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 PingManager::Callback PingManagerTest::MakePingCallback() {
@@ -345,20 +346,20 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(msg);
-      ASSERT_TRUE(root);
-      const base::Value::Dict* request = root->GetDict().FindDict("request");
-      const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
-      const base::Value::Dict& app = app_val.GetDict();
-      EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
-      EXPECT_EQ("1.2.3.4", CHECK_DEREF(app.FindString("version")));
-      const base::Value::Dict& event =
-          CHECK_DEREF(app.FindList("event"))[0].GetDict();
-      EXPECT_EQ(1, event.FindInt("eventresult"));
-      EXPECT_EQ(4, event.FindInt("eventtype"));
-      EXPECT_EQ("1.2.3.4", CHECK_DEREF(event.FindString("previousversion")));
-      EXPECT_EQ(event.FindString("nextversion"), nullptr);
-      interceptor->Reset();
+    const auto root = base::JSONReader::Read(msg);
+    ASSERT_TRUE(root);
+    const base::Value::Dict* request = root->GetDict().FindDict("request");
+    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value::Dict& app = app_val.GetDict();
+    EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("1.2.3.4", CHECK_DEREF(app.FindString("version")));
+    const base::Value::Dict& event =
+        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+    EXPECT_EQ(1, event.FindInt("eventresult"));
+    EXPECT_EQ(4, event.FindInt("eventtype"));
+    EXPECT_EQ("1.2.3.4", CHECK_DEREF(event.FindString("previousversion")));
+    EXPECT_EQ(event.FindString("nextversion"), nullptr);
+    interceptor->Reset();
   }
 
   {
@@ -405,62 +406,62 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(msg);
-      ASSERT_TRUE(root);
-      const base::Value::Dict* request = root->GetDict().FindDict("request");
-      const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
-      const base::Value::Dict& app = app_val.GetDict();
-      EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
-      EXPECT_EQ("1.0", CHECK_DEREF(app.FindString("version")));
-      EXPECT_EQ(4u, CHECK_DEREF(app.FindList("event")).size());
-      {
-        const base::Value::Dict& event =
-            CHECK_DEREF(app.FindList("event"))[0].GetDict();
-        EXPECT_EQ(1, event.FindInt("eventresult"));
-        EXPECT_EQ(3, event.FindInt("eventtype"));
-        EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
-        EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
-      }
-      {
-        const base::Value::Dict& event =
-            CHECK_DEREF(app.FindList("event"))[1].GetDict();
-        EXPECT_EQ(0, event.FindInt("eventresult"));
-        EXPECT_EQ(14, event.FindInt("eventtype"));
-        EXPECT_EQ(987, event.FindDouble("download_time_ms"));
-        EXPECT_EQ(123, event.FindDouble("downloaded"));
-        EXPECT_EQ("direct", CHECK_DEREF(event.FindString("downloader")));
-        EXPECT_EQ(-1, event.FindInt("errorcode"));
-        EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
-        EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
-        EXPECT_EQ(456, event.FindDouble("total"));
-        EXPECT_EQ("http://host1/path1", CHECK_DEREF(event.FindString("url")));
-      }
-      {
-        const base::Value::Dict& event =
-            CHECK_DEREF(app.FindList("event"))[2].GetDict();
-        EXPECT_EQ(1, event.FindInt("eventresult"));
-        EXPECT_EQ(14, event.FindInt("eventtype"));
-        EXPECT_EQ(9870, event.FindDouble("download_time_ms"));
-        EXPECT_EQ(1230, event.FindDouble("downloaded"));
-        EXPECT_EQ("bits", CHECK_DEREF(event.FindString("downloader")));
-        EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
-        EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
-        EXPECT_EQ(4560, event.FindDouble("total"));
-        EXPECT_EQ("http://host2/path2", CHECK_DEREF(event.FindString("url")));
-      }
-      {
-        const base::Value::Dict& event =
-            CHECK_DEREF(app.FindList("event"))[3].GetDict();
-        EXPECT_EQ(1, event.FindInt("eventresult"));
-        EXPECT_EQ(14, event.FindInt("eventtype"));
-        EXPECT_EQ(9007199254740990, event.FindDouble("download_time_ms"));
-        EXPECT_EQ(9007199254740992, event.FindDouble("downloaded"));
-        EXPECT_EQ("bits", CHECK_DEREF(event.FindString("downloader")));
-        EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
-        EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
-        EXPECT_EQ(9007199254740991, event.FindDouble("total"));
-        EXPECT_EQ("http://host3/path3", CHECK_DEREF(event.FindString("url")));
-      }
+    const auto root = base::JSONReader::Read(msg);
+    ASSERT_TRUE(root);
+    const base::Value::Dict* request = root->GetDict().FindDict("request");
+    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value::Dict& app = app_val.GetDict();
+    EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("1.0", CHECK_DEREF(app.FindString("version")));
+    EXPECT_EQ(4u, CHECK_DEREF(app.FindList("event")).size());
+    {
+      const base::Value::Dict& event =
+          CHECK_DEREF(app.FindList("event"))[0].GetDict();
+      EXPECT_EQ(1, event.FindInt("eventresult"));
+      EXPECT_EQ(3, event.FindInt("eventtype"));
+      EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
+      EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
+    }
+    {
+      const base::Value::Dict& event =
+          CHECK_DEREF(app.FindList("event"))[1].GetDict();
+      EXPECT_EQ(0, event.FindInt("eventresult"));
+      EXPECT_EQ(14, event.FindInt("eventtype"));
+      EXPECT_EQ(987, event.FindDouble("download_time_ms"));
+      EXPECT_EQ(123, event.FindDouble("downloaded"));
+      EXPECT_EQ("direct", CHECK_DEREF(event.FindString("downloader")));
+      EXPECT_EQ(-1, event.FindInt("errorcode"));
+      EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
+      EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
+      EXPECT_EQ(456, event.FindDouble("total"));
+      EXPECT_EQ("http://host1/path1", CHECK_DEREF(event.FindString("url")));
+    }
+    {
+      const base::Value::Dict& event =
+          CHECK_DEREF(app.FindList("event"))[2].GetDict();
+      EXPECT_EQ(1, event.FindInt("eventresult"));
+      EXPECT_EQ(14, event.FindInt("eventtype"));
+      EXPECT_EQ(9870, event.FindDouble("download_time_ms"));
+      EXPECT_EQ(1230, event.FindDouble("downloaded"));
+      EXPECT_EQ("bits", CHECK_DEREF(event.FindString("downloader")));
+      EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
+      EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
+      EXPECT_EQ(4560, event.FindDouble("total"));
+      EXPECT_EQ("http://host2/path2", CHECK_DEREF(event.FindString("url")));
+    }
+    {
+      const base::Value::Dict& event =
+          CHECK_DEREF(app.FindList("event"))[3].GetDict();
+      EXPECT_EQ(1, event.FindInt("eventresult"));
+      EXPECT_EQ(14, event.FindInt("eventtype"));
+      EXPECT_EQ(9007199254740990, event.FindDouble("download_time_ms"));
+      EXPECT_EQ(9007199254740992, event.FindDouble("downloaded"));
+      EXPECT_EQ("bits", CHECK_DEREF(event.FindString("downloader")));
+      EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
+      EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
+      EXPECT_EQ(9007199254740991, event.FindDouble("total"));
+      EXPECT_EQ("http://host3/path3", CHECK_DEREF(event.FindString("url")));
+    }
     interceptor->Reset();
   }
 

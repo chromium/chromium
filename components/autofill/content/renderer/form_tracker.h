@@ -69,10 +69,10 @@ class FormTracker : public content::RenderFrameObserver,
   // and submission.
   class Observer {
    public:
-    enum class ElementChangeSource {
-      TEXTFIELD_CHANGED,
-      WILL_SEND_SUBMIT_EVENT,
-      SELECT_CHANGED,
+    enum class SaveFormReason {
+      kTextFieldChanged,
+      kWillSendSubmitEvent,
+      kSelectChanged,
     };
 
     // TODO(crbug.com/1126017): Find a better name for this method.
@@ -83,7 +83,7 @@ class FormTracker : public content::RenderFrameObserver,
     virtual void OnProvisionallySaveForm(
         const blink::WebFormElement& form,
         const blink::WebFormControlElement& element,
-        ElementChangeSource source) = 0;
+        SaveFormReason source) = 0;
 
     // Invoked when the form is probably submitted, the submitted form could be
     // the one saved in OnProvisionallySaveForm() or others in the page.
@@ -170,7 +170,7 @@ class FormTracker : public content::RenderFrameObserver,
   // http://bugs.webkit.org/show_bug.cgi?id=16976 , we also don't want to
   // process element while it is changing.
   void FormControlDidChangeImpl(const blink::WebFormControlElement& element,
-                                Observer::ElementChangeSource change_source);
+                                Observer::SaveFormReason change_source);
   void FireProbablyFormSubmitted();
   void FireFormSubmitted(const blink::WebFormElement& form);
   void FireInferredFormSubmission(mojom::SubmissionSource source);

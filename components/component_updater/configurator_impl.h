@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/update_client/configurator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,10 +33,8 @@ class ConfiguratorImpl {
  public:
   ConfiguratorImpl(const update_client::CommandLineConfigPolicy& config_policy,
                    bool require_encryption);
-
   ConfiguratorImpl(const ConfiguratorImpl&) = delete;
   ConfiguratorImpl& operator=(const ConfiguratorImpl&) = delete;
-
   ~ConfiguratorImpl();
 
   // Delay from calling Start() to the first update check.
@@ -99,7 +98,10 @@ class ConfiguratorImpl {
 
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const;
 
+  bool IsConnectionMetered() const;
+
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
   base::flat_map<std::string, std::string> extra_info_;
   const bool background_downloads_enabled_;
   const bool deltas_enabled_;

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service.h"
+
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -50,9 +52,8 @@ class WallpaperSearchServiceBrowserTest : public InProcessBrowserTest {
 // PRE_ simulates a browser restart.
 IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
                        PRE_EnablingWallpaperSearchEnablesGM3) {
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
-      "test@example.com", signin::ConsentLevel::kSync);
+  optimization_guide::EnableSigninAndModelExecutionCapability(
+      browser()->profile());
 
   // Enable Wallpaper Search via Optimization Guide Prefs.
   // GM3 should enable itself when the browser restarts.

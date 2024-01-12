@@ -192,7 +192,7 @@ class TestAutofillClientTemplate : public T {
   FormDataImporter* GetFormDataImporter() override {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
-          /*client=*/this, /*payments_network_interface=*/nullptr,
+          /*client=*/this,
           /*personal_data_manager=*/nullptr, /*app_locale=*/"en-US"));
     }
 
@@ -281,7 +281,7 @@ class TestAutofillClientTemplate : public T {
   }
 #endif
 
-  void ShowAutofillSettings(PopupType popup_type) override {}
+  void ShowAutofillSettings(FillingProduct main_filling_product) override {}
 
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override {
     return form_data_importer_->GetVirtualCardEnrollmentManager();
@@ -325,11 +325,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure) override {
-    std::move(show_migration_dialog_closure).Run();
-  }
-
   void ConfirmMigrateLocalCardToCloud(
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
@@ -470,7 +465,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   PopupType popup_type,
+                   FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override {}
 
   void HideAutofillPopup(PopupHidingReason reason) override {
@@ -568,11 +563,6 @@ class TestAutofillClientTemplate : public T {
 
   bool GetMandatoryReauthOptInPromptWasReshown() {
     return mandatory_reauth_opt_in_prompt_was_reshown_;
-  }
-
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override {
-    std::move(callback).Run("some risk data");
   }
 
 #if BUILDFLAG(IS_IOS)

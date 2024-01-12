@@ -85,7 +85,7 @@ class UserCreationScreen
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
       scoped_observation_{this};
 
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
+  raw_ptr<ErrorScreen> error_screen_ = nullptr;
 
   // TODO(crbug.com/1154669) Refactor error screen usage
   bool error_screen_visible_ = false;

@@ -347,11 +347,13 @@ external/wpt/feature-policy/reporting/vr-report-only.https.html.headers [ Skip ]
 external/wpt/accname [ Skip ]
 
 # Other manual tests related to accessibility.
+# TODO(accessibility): core-aam has many manual tests and a single non-manual
+# test.  It should be split into subdirectories so that we can import
+# non-manual tests.
 external/wpt/core-aam [ Skip ]
-external/wpt/dpub-aam [ Skip ]
-external/wpt/dpub-aria [ Skip ]
-external/wpt/svg-aam [ Skip ]
-external/wpt/wai-aria [ Skip ]
+external/wpt/dpub-aam/manual [ Skip ]
+external/wpt/dpub-aria/inuse-manual.html [ Skip ]
+external/wpt/wai-aria/manual [ Skip ]
 
 # Manual tests for CSS Paged Media.
 external/wpt/css/css-page/forced-page-breaks-002.xht [ Skip ]

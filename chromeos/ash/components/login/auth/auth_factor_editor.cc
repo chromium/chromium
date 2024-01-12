@@ -122,7 +122,10 @@ void AuthFactorEditor::AddContextKnowledgeKey(
     cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPin,
                                   KeyLabel{key->GetLabel()}};
     cryptohome::AuthFactorCommonMetadata metadata;
-    cryptohome::AuthFactor factor(ref, std::move(metadata));
+    cryptohome::PinMetadata pin_metadata =
+        cryptohome::PinMetadata::CreateWithoutSalt();
+    cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                  std::move(pin_metadata));
 
     cryptohome::AuthFactorInput input(
         cryptohome::AuthFactorInput::Pin{key->GetSecret()});
@@ -132,7 +135,10 @@ void AuthFactorEditor::AddContextKnowledgeKey(
     cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
                                   KeyLabel{key->GetLabel()}};
     cryptohome::AuthFactorCommonMetadata metadata;
-    cryptohome::AuthFactor factor(ref, std::move(metadata));
+    cryptohome::PasswordMetadata password_metadata =
+        cryptohome::PasswordMetadata::CreateWithoutSalt();
+    cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                  std::move(password_metadata));
 
     cryptohome::AuthFactorInput input(
         cryptohome::AuthFactorInput::Password{key->GetSecret()});
@@ -262,7 +268,10 @@ void AuthFactorEditor::AddPinFactor(std::unique_ptr<UserContext> context,
                                 KeyLabel{kCryptohomePinLabel}};
 
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::PinMetadata pin_metadata =
+      cryptohome::PinMetadata::CreateWithoutSalt();
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(pin_metadata));
 
   Key key{std::move(*pin)};
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, std::move(*salt));
@@ -297,7 +306,10 @@ void AuthFactorEditor::ReplacePinFactor(std::unique_ptr<UserContext> context,
                                 KeyLabel{kCryptohomePinLabel}};
 
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::PinMetadata pin_metadata =
+      cryptohome::PinMetadata::CreateWithoutSalt();
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(pin_metadata));
 
   Key key{std::move(*pin)};
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, std::move(*salt));
@@ -352,9 +364,9 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
-          .pub_key = GetRecoveryHsmPublicKey(),
-          .user_gaia_id = context->GetGaiaID(),
-          .device_user_id = context->GetDeviceId()});
+          GetRecoveryHsmPublicKey(), context->GetGaiaID(),
+          context->GetDeviceId(),
+          /*ensure_fresh_recovery_id=*/true});
 
   cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
@@ -369,6 +381,7 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 
 void AuthFactorEditor::RotateRecoveryFactor(
     std::unique_ptr<UserContext> context,
+    bool ensure_fresh_recovery_id,
     AuthOperationCallback callback) {
   CHECK(!context->GetAuthSessionId().empty());
 
@@ -388,9 +401,8 @@ void AuthFactorEditor::RotateRecoveryFactor(
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
-          .pub_key = GetRecoveryHsmPublicKey(),
-          .user_gaia_id = context->GetGaiaID(),
-          .device_user_id = context->GetDeviceId()});
+          GetRecoveryHsmPublicKey(), context->GetGaiaID(),
+          context->GetDeviceId(), ensure_fresh_recovery_id});
 
   cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
@@ -461,7 +473,10 @@ void AuthFactorEditor::SetPasswordFactorImpl(
   cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword, label};
 
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::PasswordMetadata password_metadata =
+      cryptohome::PasswordMetadata::CreateWithoutSalt();
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(password_metadata));
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::Password{std::move(key.GetSecret())});
@@ -490,7 +505,10 @@ void AuthFactorEditor::ReplacePasswordFactorImpl(
   request.set_auth_factor_label(ref.label().value());
 
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::PasswordMetadata password_metadata =
+      cryptohome::PasswordMetadata::CreateWithoutSalt();
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(password_metadata));
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::Password{std::move(key.GetSecret())});
@@ -541,9 +559,10 @@ void AuthFactorEditor::OnListAuthFactors(
     // PIN status, but uses indirect signal of listing no intents instead.
     if (factor.ref().type() == cryptohome::AuthFactorType::kPin) {
       bool locked = factor_with_status_proto.available_for_intents_size() == 0;
-      cryptohome::PinStatus replacment_status{locked};
+      cryptohome::PinStatus replacement_status{locked};
       cryptohome::AuthFactor replacement_factor{
-          factor.ref(), factor.GetCommonMetadata(), replacment_status};
+          factor.ref(), factor.GetCommonMetadata(), factor.GetPinMetadata(),
+          replacement_status};
       factor = replacement_factor;
     }
     factor_list.emplace_back(std::move(factor));

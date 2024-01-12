@@ -118,8 +118,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastSurveyInteractionTime();
   void ShowDialog(const std::string& site_context);
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ref<const HatsConfig, ExperimentalAsh> hats_config_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ref<const HatsConfig> hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::unique_ptr<message_center::Notification> notification_;
   const std::u16string title_;

@@ -110,6 +110,8 @@ String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option);
 
 String ToAacFormat(wc_fuzzer::AacFormat format);
 
+String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode);
+
 String ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type);
 

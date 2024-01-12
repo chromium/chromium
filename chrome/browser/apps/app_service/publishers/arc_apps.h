@@ -233,7 +233,7 @@ class ArcApps : public KeyedService,
   bool IsAppSuspended(const std::string& app_id,
                       const ArcAppListPrefs::AppInfo& app_info);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
 
   PausedApps paused_apps_;

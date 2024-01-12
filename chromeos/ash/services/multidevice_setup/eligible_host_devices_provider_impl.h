@@ -63,7 +63,7 @@ class EligibleHostDevicesProviderImpl
       device_sync::mojom::NetworkRequestResult,
       std::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
 
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
 
   multidevice::RemoteDeviceRefList eligible_devices_from_last_sync_;
   multidevice::DeviceWithConnectivityStatusList

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notreached.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 
 #include <memory>
@@ -11,28 +10,18 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
-#include "chromeos/lacros/lacros_service.h"
 
 class IsolatedWebAppsEnabledPrefObserverLacros
     : public IsolatedWebAppsEnabledPrefObserver {
  public:
-  explicit IsolatedWebAppsEnabledPrefObserverLacros(
-      PrefChangedCallback callback)
-      : callback_(callback) {
-    chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  ~IsolatedWebAppsEnabledPrefObserverLacros() override = default;
 
-    // TODO(crbug/1508716): This workaround is needed for tests without the
-    // mojom::Prefs service, remove it once we have fake mojom::Pref for tests.
-    if (!service || !service->IsAvailable<crosapi::mojom::Prefs>()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&IsolatedWebAppsEnabledPrefObserverLacros::RunCallback,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-
+  void Start(IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback)
+      override {
+    CHECK(!crosapi_observer_);
+    CHECK(!callback_);
+    callback_ = callback;
     crosapi_observer_ = std::make_unique<CrosapiPrefObserver>(
         crosapi::mojom::PrefPath::kIsolatedWebAppsEnabled,
         base::BindRepeating(
@@ -40,21 +29,12 @@ class IsolatedWebAppsEnabledPrefObserverLacros
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  ~IsolatedWebAppsEnabledPrefObserverLacros() override = default;
+  void Reset() override {
+    crosapi_observer_.reset();
+    callback_.Reset();
+  }
 
  private:
-  // TODO(crbug/1508716): Remove |RunCallback()| once we have fake mojom::Pref
-  // for tests.
-  void RunCallback() {
-    chromeos::LacrosService* service = chromeos::LacrosService::Get();
-    if (!service || !service->IsAvailable<crosapi::mojom::Prefs>()) {
-      // For Lacros without the crosapi::mojom::Prefs interface, the value is
-      // assumed to be true.
-      callback_.Run(true);
-      return;
-    }
-    NOTREACHED_NORETURN();
-  }
 
   void CallbackWrapper(base::Value value) {
     CHECK(value.is_bool());
@@ -70,8 +50,6 @@ class IsolatedWebAppsEnabledPrefObserverLacros
 
 // static
 std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
-IsolatedWebAppsEnabledPrefObserver::CreateIsolatedWebAppsEnabledPrefObserver(
-    Profile* profile,
-    IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback) {
-  return std::make_unique<IsolatedWebAppsEnabledPrefObserverLacros>(callback);
+IsolatedWebAppsEnabledPrefObserver::Create(Profile* profile) {
+  return std::make_unique<IsolatedWebAppsEnabledPrefObserverLacros>();
 }

@@ -262,12 +262,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
   user_prefs_registrar_.Add(
-      prefs::kPrivacySandboxApisEnabledV2,
-      base::BindRepeating(
-          &PrivacySandboxServiceImpl::OnPrivacySandboxV2PrefChanged,
-          base::Unretained(this)));
-
-  user_prefs_registrar_.Add(
       prefs::kPrivacySandboxM1TopicsEnabled,
       base::BindRepeating(&PrivacySandboxServiceImpl::OnTopicsPrefChanged,
                           base::Unretained(this)));
@@ -285,9 +279,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   // information. The user must manually enable the sandbox if they stop being
   // restricted.
   if (IsPrivacySandboxRestricted()) {
-    // Disable trials prefs.
-    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-
     // Disable M1 prefs. Measurement pref should not be reset when restricted
     // notice feature is enabled.
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
@@ -414,41 +405,8 @@ void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
   force_chrome_build_for_tests_ = force_chrome_build;
 }
 
-void PrivacySandboxServiceImpl::SetPrivacySandboxEnabled(bool enabled) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlledV2, true);
-  privacy_sandbox_settings_->SetPrivacySandboxEnabled(enabled);
-}
-
-bool PrivacySandboxServiceImpl::IsPrivacySandboxEnabled() {
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
-}
-
-bool PrivacySandboxServiceImpl::IsPrivacySandboxManaged() {
-  return pref_service_->IsManagedPreference(
-      prefs::kPrivacySandboxApisEnabledV2);
-}
-
 bool PrivacySandboxServiceImpl::IsPrivacySandboxRestricted() {
   return privacy_sandbox_settings_->IsPrivacySandboxRestricted();
-}
-
-void PrivacySandboxServiceImpl::OnPrivacySandboxV2PrefChanged() {
-  // If the user has disabled the Privacy Sandbox, any data stored should be
-  // cleared.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)) {
-    return;
-  }
-
-  if (browsing_data_remover_) {
-    browsing_data_remover_->Remove(
-        base::Time::Min(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
-  }
-
-  if (browsing_topics_service_) {
-    browsing_topics_service_->ClearAllTopicsData();
-  }
 }
 
 bool PrivacySandboxServiceImpl::IsRestrictedNoticeEnabled() {
@@ -1025,24 +983,6 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   // then don't show the prompt.
   if (IsM1PrivacySandboxEffectivelyManaged(pref_service)) {
     return PromptType::kNone;
-  }
-
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade) ||
-      pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
-    // If during the trials a previous consent decision was made, or the notice
-    // was already acknowledged, and the privacy sandbox is disabled, set the
-    // PromptSuppressedReason as appropriate and do not show a prompt.
-    if (!pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)) {
-      int suppresed_reason =
-          pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)
-              ? static_cast<int>(
-                    PromptSuppressedReason::kTrialsDisabledAfterNotice)
-              : static_cast<int>(
-                    PromptSuppressedReason::kTrialsConsentDeclined);
-      pref_service->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                               suppresed_reason);
-      return PromptType::kNone;
-    }
   }
 
   // If third party cookies are blocked, set the suppression reason as such, and

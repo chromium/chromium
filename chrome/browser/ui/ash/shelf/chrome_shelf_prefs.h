@@ -160,7 +160,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
 
   // The owner of this class is responsible for ensuring the validity of this
   // pointer.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_

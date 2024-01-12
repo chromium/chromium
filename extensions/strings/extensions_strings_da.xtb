@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Kunne ikke finde den fuldstændige sti til den mappe, der skal pakkes.</translation>
 <translation id="5160071981665899014">Det var ikke muligt at indlæse JavaScript-filen "<ph name="RELATIVE_PATH" />" for scriptet.</translation>
 <translation id="5356315618422219272">Appvisning: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Formede vinduer understøttes ikke.</translation>
 <translation id="5456409301717116725">Denne udvidelse inkluderer nøglefilen "<ph name="KEY_PATH" />". Det ønsker du sandsynligvis ikke at gøre.</translation>
 <translation id="5486326529110362464">Indtastningsværdien for personlig nøgle skal eksistere.</translation>
 <translation id="5972529113578162692">Administratoren af denne maskine kræver, at <ph name="EXTENSION_NAME" /> er installeret. Denne kan ikke afinstalleres.</translation>

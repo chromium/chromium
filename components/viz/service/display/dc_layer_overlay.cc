@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
@@ -598,6 +599,29 @@ bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
   return IsVideoQuad(it) && !IsOverlayRequiredForQuad(it);
 }
 
+bool AllowRemoveClearVideoQuadCandidatesWhenMoving(
+    DisplayResourceProvider* resource_provider,
+    const QuadList::ConstIterator& it) {
+  if (!IsClearVideoQuad(it)) {
+    return false;
+  }
+  // Do not allow remove clear video quad candidates for HDR videos, since there
+  // will always be a huge visual difference between compositor tone-mapping (by
+  // Chrome) and MPO tone-mapping (by Driver).
+  switch (it->material) {
+    case DrawQuad::Material::kYuvVideoContent: {
+      const YUVVideoDrawQuad* quad = YUVVideoDrawQuad::MaterialCast(*it);
+      return !quad->video_color_space.IsHDR();
+    }
+    case DrawQuad::Material::kTextureContent: {
+      const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
+      return !resource_provider->GetColorSpace(quad->resource_id()).IsHDR();
+    }
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 // This is the damage contribution due to previous frame's overlays which can
 // be empty.
 gfx::Rect PreviousFrameOverlayDamageContribution(
@@ -764,6 +788,7 @@ void DCLayerOverlayProcessor::UpdateDamageRect(
 }
 
 void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
+    DisplayResourceProvider* resource_provider,
     RenderPassOverlayDataMap& render_pass_overlay_data_map,
     RenderPassCurrentFrameStateMap& render_pass_state_map) {
   // The number of frames all overlay candidates need to be stable before we
@@ -778,7 +803,8 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
     current_overlay_candidate_rects.reserve(
         current_overlay_candidate_rects.size() + candidates.size());
     for (auto candidate_it : candidates) {
-      if (IsClearVideoQuad(candidate_it)) {
+      if (AllowRemoveClearVideoQuadCandidatesWhenMoving(resource_provider,
+                                                        candidate_it)) {
         gfx::Rect quad_rect_in_target_space =
             ClippedQuadRectangle(*candidate_it);
         gfx::Rect quad_rect_in_root_space =
@@ -808,7 +834,8 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
 
       auto candidate_it = candidates.begin();
       while (candidate_it != candidates.end()) {
-        if (IsClearVideoQuad(*candidate_it)) {
+        if (AllowRemoveClearVideoQuadCandidatesWhenMoving(resource_provider,
+                                                          *candidate_it)) {
           RecordDCLayerResult(DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED,
                               *candidate_it);
           candidate_it = candidates.erase(candidate_it);
@@ -1111,8 +1138,8 @@ void DCLayerOverlayProcessor::Process(
   global_overlay_state.processed_yuv_overlay_count = 0;
 
   if (base::FeatureList::IsEnabled(features::kDisableVideoOverlayIfMoving)) {
-    RemoveClearVideoQuadCandidatesIfMoving(render_pass_overlay_data_map,
-                                           render_pass_state_map);
+    RemoveClearVideoQuadCandidatesIfMoving(
+        resource_provider, render_pass_overlay_data_map, render_pass_state_map);
   }
 
   // Swap the entire map into a local variable. For the rest of this function,

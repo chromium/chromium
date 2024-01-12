@@ -78,7 +78,7 @@ class ArcScreenCaptureBridge : public KeyedService,
   void PermissionPromptCallback(const std::string& package_name,
                                 content::DesktopMediaID desktop_id);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // The string in this map corresponds to the passed in package_name when

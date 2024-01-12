@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Toleo lisilooana la itifaki liligunduliwa. Tafadhali hakikisha kuwa umesakinisha toleo jipya la programu kwenye kompyuta zote mbili na ujaribu tena.</translation>
 <translation id="1008557486741366299">Si Sasa</translation>
 <translation id="1201402288615127009">Endelea</translation>
-<translation id="1296511125400541222">Hakimiliki 2023 Waandishi wa Chromium. Haki Zote zimehifadhiwa.</translation>
 <translation id="1297009705180977556">Hitilafu imetokea wakati wa kuunganisha kwenye <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Kipengele kilichoombwa hakipo.</translation>
 <translation id="1480046233931937785">Mikopo</translation>
@@ -89,7 +88,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="4808503597364150972">Tafadhali ingiza PIN yako ya <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Mpangishi</translation>
 <translation id="4867841927763172006">Tuma PrtScn</translation>
-<translation id="4960795469833295568">Hakimiliki 2023 Google LLC. Haki Zote Zimehifadhiwa.</translation>
 <translation id="4974476491460646149">Muunganisho wa <ph name="HOSTNAME" /> umefungwa</translation>
 <translation id="4985296110227979402">Kwanza unahitaji kuwekea kompyuta yako mipangilio kwa ajili ya ufikiaji wa mbali</translation>
 <translation id="4987330545941822761">Programu ya Chrome ya Ufikiaji wa Kompyuta kutoka Mbali imeshindwa kubaini kivinjari cha kufungua URL kwenye kifaa hiki. Tafadhali kichague kwenye orodha iliyo hapo chini.</translation>
@@ -154,6 +152,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="7693372326588366043">Onyesha upya orodha ya seva pangishi</translation>
 <translation id="7714222945760997814">Ripoti tatizo hili</translation>
 <translation id="7868137160098754906">Tafadhali weka PIN yako ya kompyuta ya mbali.</translation>
+<translation id="7881455334687220899">Hakimiliki 2024 Waandishi wa Chromium. Haki Zote Zimehifadhiwa.</translation>
 <translation id="7895403300744144251">Sera za faragha kuhusu kompyuta ya mbali haziruhusu miunganisho kutoka akaunti yako.</translation>
 <translation id="7936528439960309876">Isalie Kulia</translation>
 <translation id="7970576581263377361">Uidhinishaji haujafaulu. Tafadhali ingia kwenye Chromium tena.</translation>
@@ -185,6 +184,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="8747048596626351634">Kipindi kiliacha kufanya kazi au kilishindwa kuanza. Ikiwa ~/.chrome-remote-desktop-session iko kwenye kompyuta yako ya mbali, hakikisha kwamba inaanza kutekeleza mchakato kwenye skrini utakaochukua muda mrefu kama vile kidhibiti cha dirisha au mazingira ya eneo kazi.</translation>
 <translation id="8804164990146287819">Sera ya Faragha</translation>
 <translation id="8906511416443321782">Idhini ya kufikia maikrofoni inahitajika ili sauti inaswe na itiririshwe kwenye Programu ya kiteja ya Chrome ya Ufikiaji wa Kompyuta kutoka Mbali.</translation>
+<translation id="9042277333359847053">Hakimiliki 2024 Google LLC. Haki Zote Zimehifadhiwa.</translation>
 <translation id="9111855907838866522">Umeunganishwa kwenye kifaa cha mbali. Ili ufungue menyu, tafadhali gusa skrini ukitumia vidole vinne.</translation>
 <translation id="9126115402994542723">Usiulize PIN tena unapounganisha kwenye seva pangishi kutoka kwenye kifaa hiki.</translation>
 <translation id="916856682307586697">Anzisha XSession chaguomsingi</translation>

@@ -764,7 +764,8 @@ Shell::~Shell() {
   }
   RemovePreTargetHandler(system_gesture_filter_.get());
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
     RemovePreTargetHandler(shortcut_input_handler_.get());
   }
   RemovePreTargetHandler(modality_filter_.get());
@@ -785,6 +786,10 @@ Shell::~Shell() {
   // `shortcut_input_handler_` must be cleaned up before
   // `event_rewriter_controller_`.
   shortcut_input_handler_.reset();
+  // `AccessibilityEventRewriter` references objects owned by
+  // EventRewriterController directly, so it must be reset first to avoid
+  // accessing invalid memory (see b/315127220).
+  AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   input_device_settings_dispatcher_.reset();
@@ -1725,7 +1730,8 @@ void Shell::Init(
   }
 
   if (features::AreGlanceablesV2Enabled() ||
-      features::AreGlanceablesV2EnabledForTrustedTesters()) {
+      features::AreGlanceablesV2EnabledForTrustedTesters() ||
+      features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();
   }
   post_login_glanceables_metrics_reporter_ =

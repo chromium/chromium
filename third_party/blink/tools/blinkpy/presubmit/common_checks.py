@@ -10,9 +10,9 @@ from typing import Optional
 def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
     """Run `wpt lint` against the specified directory."""
     repo_root = repo_root or input_api.PresubmitLocalPath()
-    wpt_executable = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                            'third_party', 'wpt_tools', 'wpt',
-                                            'wpt')
+    wpt_root = input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                      'third_party', 'wpt_tools', 'wpt')
+    wpt_executable = input_api.os_path.join(wpt_root, 'wpt')
 
     # TODO(crbug.com/1406669): Changing a test file should also lint its
     # corresponding reference/*-expected.txt file, if any, because the
@@ -32,13 +32,17 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
     # that the file can be opened by name on Windows.
     with tempfile.NamedTemporaryFile('w+', newline='', delete=False) as f:
         for path in paths:
-            f.write('%s\n' % path)
+            f.write(f'{path}\n')
         paths_name = f.name
     args = [
         input_api.python3_executable,
         wpt_executable,
+        # Third-party packages are vended through vpython instead of plain
+        # virtualenv.
+        f'--venv={wpt_root}',
+        '--skip-venv-setup',
         'lint',
-        '--repo-root=%s' % repo_root,
+        f'--repo-root={repo_root}',
         # To avoid false positives, do not lint files not upstreamed from
         # Chromium.
         '--ignore-glob=*-expected.txt',
@@ -46,7 +50,7 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
         '--ignore-glob=config.json',
-        '--paths-file=%s' % paths_name,
+        f'--paths-file={paths_name}',
     ]
 
     proc = input_api.subprocess.Popen(args,

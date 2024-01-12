@@ -358,6 +358,23 @@ TEST_F(ReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
           .empty());
 }
 
+TEST_F(ReadingListModelTest,
+       ReadingListModelCompletedBatchUpdatesShouldBeCalledUponSyncEnabled) {
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled());
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates);
+  model_->GetSyncBridgeForTest()->MergeFullSyncData(
+      model_->GetSyncBridgeForTest()->CreateMetadataChangeList(),
+      /*syncer::EntityChangeList*/ {});
+}
+
+TEST_F(ReadingListModelTest,
+       ReadingListModelCompletedBatchUpdatesShouldBeCalledUponSyncDisabled) {
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled());
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates);
+  model_->GetSyncBridgeForTest()->ApplyDisableSyncChanges(
+      model_->GetSyncBridgeForTest()->CreateMetadataChangeList());
+}
+
 // Tests adding entry.
 TEST_F(ReadingListModelTest, AddEntry) {
   const GURL url("http://example.com");

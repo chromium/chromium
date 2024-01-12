@@ -1300,10 +1300,12 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       supports_multiplanar_rendering = true;
     }
 #endif
-    caps.supports_yuv_rgb_conversion = supports_multiplanar_rendering;
+    caps.supports_yuv_to_rgb_conversion = true;
+    caps.supports_rgb_to_yuv_conversion = supports_multiplanar_rendering;
     caps.supports_yuv_readback = supports_multiplanar_rendering;
   } else {
-    caps.supports_yuv_rgb_conversion = true;
+    caps.supports_yuv_to_rgb_conversion = true;
+    caps.supports_rgb_to_yuv_conversion = true;
     caps.supports_yuv_readback = true;
   }
 
@@ -2339,6 +2341,7 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
 
   std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
 
+  size_t prev_byte_size = 0;
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
     auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
     auto plane_size =
@@ -2348,6 +2351,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
                           SkAlphaType::kPremul_SkAlphaType, nullptr);
 
     if (row_bytes[plane] < src_info.minRowBytes()) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glWritePixelsYUV",
                          "row_bytes must be >= "
                          "SkImageInfo::minRowBytes() for source image.");
@@ -2356,16 +2361,20 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
 
     size_t byte_size = src_info.computeByteSize(row_bytes[plane]);
     if (byte_size > UINT32_MAX) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(
           GL_INVALID_VALUE, "glWritePixelsYUV",
           "Cannot request a memory chunk larger than UINT32_MAX bytes");
       return;
     }
     if (plane > 0 &&
-        plane_offsets[plane] < plane_offsets[plane - 1] + byte_size) {
+        plane_offsets[plane] < plane_offsets[plane - 1] + prev_byte_size) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glWritePixelsYUV",
                          "plane_offsets[plane] must be >= plane_offsets[plane "
-                         "- 1] + byte_size");
+                         "- 1] + prev_byte_size");
       return;
     }
 
@@ -2374,6 +2383,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     void* pixel_data = GetSharedMemoryAs<void*>(
         shm_id, shm_offset + plane_offsets[plane], byte_size);
     if (!pixel_data) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
                          "Couldn't retrieve pixel data.");
       return;
@@ -2381,6 +2392,7 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
 
     // Create an SkPixmap for the plane.
     pixmaps[plane] = SkPixmap(src_info, pixel_data, row_bytes[plane]);
+    prev_byte_size = byte_size;
   }
 
   // Try a direct texture upload without using SkSurface.
@@ -2564,6 +2576,10 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
                        "Invalid plane_index");
     return;
   }
+
+  // Readback is potentially slow, so report progress here.
+  gl::ScopedProgressReporter report_progress(
+      shared_context_state_->progress_reporter());
 
   CopySharedImageHelper helper(&shared_image_representation_factory_,
                                shared_context_state_.get());
@@ -2757,6 +2773,10 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
 
   const SkIRect src_rect = SkIRect::MakeSize(sk_image->dimensions());
   const SkISize dst_size = SkISize::Make(dst_width, dst_height);
+
+  // Readback is potentially slow, so report progress here.
+  gl::ScopedProgressReporter report_progress(
+      shared_context_state_->progress_reporter());
 
   // While this function indicates it's asynchronous, the DoFinish() call below
   // ensures it completes synchronously.

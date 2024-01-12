@@ -258,7 +258,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       RegisterPrefs(&pref_service_)};
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before
   // |test_wallpaper_controller_|.
@@ -382,7 +382,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SendsSeaPenWallpaper) {
   test_wallpaper_controller()->SetSeaPenWallpaper(
       GetTestAccountId(),
       {/*jpg_bytes=*/std::string(), /*id=*/111, manta::proto::RESOLUTION_64},
-      base::DoNothing());
+      /*query_info=*/"test query", base::DoNothing());
 
   ash::personalization_app::mojom::CurrentWallpaper* current =
       current_wallpaper();

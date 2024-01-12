@@ -14,9 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -112,7 +114,8 @@ public class SigninFirstRunMediator
                         this::onSelectedAccountClicked,
                         this::onContinueAsClicked,
                         this::onDismissClicked,
-                        ExternalAuthUtils.getInstance().canUseGooglePlayServices(),
+                        ExternalAuthUtils.getInstance().canUseGooglePlayServices()
+                                && !disableSignInForAutomotiveDevice(),
                         getFooterString(false));
 
         mDelegate
@@ -236,7 +239,8 @@ public class SigninFirstRunMediator
         mModel.set(
                 SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
                 ExternalAuthUtils.getInstance().canUseGooglePlayServices()
-                        && !isSigninDisabledByPolicy);
+                        && !isSigninDisabledByPolicy
+                        && !disableSignInForAutomotiveDevice());
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
 
         mModel.set(
@@ -342,9 +346,7 @@ public class SigninFirstRunMediator
                 IdentityServicesProvider.get()
                         .getSigninManager(
                                 mDelegate.getProfileSupplier().get().getOriginalProfile());
-        signinManager.signin(
-                getSelectedAccount(),
-                SigninAccessPoint.START_PAGE,
+        final SignInCallback signInCallback =
                 new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
@@ -365,7 +367,13 @@ public class SigninFirstRunMediator
                                 false);
                         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
-                });
+                };
+        CoreAccountInfo selectedAccount =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
+                        mSelectedAccountEmail);
+        assert selectedAccount != null;
+        signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
     }
 
     /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}. */
@@ -493,5 +501,11 @@ public class SigninFirstRunMediator
 
         // Apply spans to footer string.
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
+    }
+
+    private static boolean disableSignInForAutomotiveDevice() {
+        return BuildInfo.getInstance().isAutomotive
+                && CommandLine.getInstance()
+                        .hasSwitch(ChromeSwitches.DISABLE_FRE_SIGNIN_ON_AUTOMOTIVE);
     }
 }

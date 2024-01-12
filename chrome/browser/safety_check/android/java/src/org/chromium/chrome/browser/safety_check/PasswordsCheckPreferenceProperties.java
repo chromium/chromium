@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.safety_check;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckNativeException;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -73,6 +77,46 @@ class PasswordsCheckPreferenceProperties {
         return PasswordsState.UNCHECKED;
     }
 
+    static @PasswordsState int passwordsStateFromPasswordCheckResult(
+            PasswordCheckResult passwordSafetyCheckResult) {
+        if (passwordSafetyCheckResult.getError() != null) {
+            Exception error = passwordSafetyCheckResult.getError();
+            if (error instanceof PasswordCheckBackendException
+                    && ((PasswordCheckBackendException) error).errorCode
+                            == CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) {
+                return PasswordsState.BACKEND_VERSION_NOT_SUPPORTED;
+            }
+            if (error instanceof PasswordCheckNativeException) {
+                return passwordsStatefromErrorState(
+                        ((PasswordCheckNativeException) error).errorCode);
+            }
+            return PasswordsState.ERROR;
+        }
+
+        if (passwordSafetyCheckResult.getBreachedCount().isPresent()
+                && passwordSafetyCheckResult.getBreachedCount().getAsInt() > 0) {
+            // If there are some compromised credentials, then password state should be
+            // COMPROMISED_EXIST regardless whether loading passwords is finished.
+            return PasswordsState.COMPROMISED_EXIST;
+        }
+        if (passwordSafetyCheckResult.getTotalPasswordsCount().isPresent()
+                && passwordSafetyCheckResult.getTotalPasswordsCount().getAsInt() == 0) {
+            return PasswordsState.NO_PASSWORDS;
+        }
+        if (!passwordSafetyCheckResult.getTotalPasswordsCount().isPresent()
+                || !passwordSafetyCheckResult.getBreachedCount().isPresent()) {
+            // If passwords loading or password check has not yet finished, then password state is
+            // checking because there can be either no passwords at all or no breached credentials.
+            assert false
+                    : "Non-valid password check result, both total passwords count and breached"
+                            + " count should be present in the result.";
+            return PasswordsState.CHECKING;
+        }
+        // If non of the above checks were hit, that means both the passwords loading is
+        // finished and 0 breached credentials are obtained.
+        return PasswordsState.SAFE;
+    }
+
     static @PasswordsStatus int passwordsStateToNative(@PasswordsState int state) {
         switch (state) {
             case PasswordsState.UNCHECKED:
@@ -80,9 +124,8 @@ class PasswordsCheckPreferenceProperties {
                 assert false : "PasswordsState.UNCHECKED has no native equivalent.";
                 return PasswordsStatus.ERROR;
             case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
-                // This is not used.
-                assert false
-                        : "PasswordsState.BACKEND_VERSION_NOT_SUPPORTED has no native equivalent.";
+                // PasswordsState.BACKEND_VERSION_NOT_SUPPORTED has no native equivalent, so
+                // converting it to just error.
                 return PasswordsStatus.ERROR;
             case PasswordsState.CHECKING:
                 return PasswordsStatus.CHECKING;

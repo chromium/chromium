@@ -19,8 +19,8 @@ namespace web_app {
 
 void ClearWebAppBrowsingData(const base::Time& begin_time,
                              const base::Time& end_time,
-                             base::OnceClosure done,
-                             AllAppsLock& lock) {
+                             AllAppsLock& lock,
+                             base::Value::Dict& debug_value) {
   DCHECK_LE(begin_time, end_time);
 
   WebAppSyncBridge* sync_bridge = &lock.sync_bridge();
@@ -51,14 +51,18 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
       }
     }
   }
+  base::Value::List* launch_time_removed_debug_list =
+      debug_value.EnsureList("last_launch_time_removed");
   for (const webapps::AppId& app_id : ids_to_notify_last_launch_time) {
+    launch_time_removed_debug_list->Append(app_id);
     registrar->NotifyWebAppLastLaunchTimeChanged(app_id, base::Time());
   }
+  base::Value::List* last_badging_time_removed_debug_list =
+      debug_value.EnsureList("last_badging_time_removed");
   for (const webapps::AppId& app_id : ids_to_notify_last_badging_time) {
+    last_badging_time_removed_debug_list->Append(app_id);
     registrar->NotifyWebAppLastBadgingTimeChanged(app_id, base::Time());
   }
-
-  std::move(done).Run();
 }
 
 }  // namespace web_app

@@ -164,8 +164,8 @@ void HanKerning::Compute(const String& text,
   if (!font_data.has_alternate_spacing) {
     return;
   }
-  if (UNLIKELY(font_description.GetTextSpacingTrim() !=
-               TextSpacingTrim::kSpaceFirst)) {
+  if (UNLIKELY(font_description.GetTextSpacingTrim() ==
+               TextSpacingTrim::kSpaceAll)) {
     return;
   }
   for (const hb_feature_t& feature : *features) {

@@ -236,7 +236,7 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
   ~TestLocalPrinterAshWithPrinterConfigurer() override = default;
 
  private:
-  const raw_ptr<ash::FakeCupsPrintersManager, ExperimentalAsh> manager_;
+  const raw_ptr<ash::FakeCupsPrintersManager> manager_;
 };
 
 // Base testing class for `LocalPrinterAsh`.  Contains the base
@@ -435,8 +435,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   TestingProfile profile_;
   scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
   scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
-  raw_ptr<ash::FakeCupsPrintersManager, ExperimentalAsh> printers_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeCupsPrintersManager> printers_manager_ = nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
   base::test::ScopedFeatureList feature_list_;
@@ -1227,11 +1226,9 @@ class LocalPrinterAshWithOAuth2Test : public testing::Test {
 
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
-  raw_ptr<ash::FakeCupsPrintersManager, ExperimentalAsh> printers_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeCupsPrintersManager> printers_manager_ = nullptr;
   raw_ptr<
-      testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>,
-      ExperimentalAsh>
+      testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>>
       auth_manager_ = nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
@@ -1352,8 +1349,7 @@ class TestLocalPrinterAshWithClientInfoCalculator : public TestLocalPrinterAsh {
   }
 
  private:
-  raw_ptr<ash::printing::IppClientInfoCalculator, ExperimentalAsh>
-      client_info_calculator_;
+  raw_ptr<ash::printing::IppClientInfoCalculator> client_info_calculator_;
 };
 
 struct MockIppClientInfoCalculator : ash::printing::IppClientInfoCalculator {
@@ -1413,8 +1409,7 @@ class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
  private:
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
-  raw_ptr<ash::FakeCupsPrintersManager, ExperimentalAsh> printers_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeCupsPrintersManager> printers_manager_ = nullptr;
   NiceMock<MockIppClientInfoCalculator> client_info_calculator_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
 };

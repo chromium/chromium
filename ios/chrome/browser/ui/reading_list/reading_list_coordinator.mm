@@ -684,9 +684,12 @@
   } else {
     const std::string lastSignedInGaiaId =
         _prefService->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-    // If the last signed-in user did not remove data during sign-out, don't
-    // show the signin promo.
-    self.shouldShowSignInPromo = lastSignedInGaiaId.empty();
+    // Show the promo if the last syncing user signed out and chose to clear
+    // data, or if the feature kEnableBatchUploadFromBookmarksManager is
+    // enabled.
+    self.shouldShowSignInPromo =
+        lastSignedInGaiaId.empty() ||
+        base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager);
   }
 }
 

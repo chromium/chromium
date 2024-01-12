@@ -36,7 +36,7 @@ bool ScopedLogMessage::ShouldEmitToStandardLog() const {
   // - The severity is INFO or greater
   // - The Vlog Level for |file_| is at least 1
   // - The --quick-start-verbose-logging switch is enabled
-  return severity_ > logging::LOG_VERBOSE ||
+  return severity_ > logging::LOGGING_VERBOSE ||
          logging::GetVlogLevelHelper(file_, strlen(file_) + 1) > 0 ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              kQuickStartVerboseLoggingSwitch);

@@ -7,6 +7,7 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -106,7 +107,7 @@ class TestAutofillManager : public BrowserAutofillManager {
     submitted_form_ = form;
   }
 
-  absl::optional<FormData> submitted_form() const { return submitted_form_; }
+  std::optional<FormData> submitted_form() const { return submitted_form_; }
 
  private:
   TestAutofillManagerWaiter did_autofill_{
@@ -115,7 +116,7 @@ class TestAutofillManager : public BrowserAutofillManager {
   TestAutofillManagerWaiter form_submitted_{
       *this,
       {AutofillManagerEvent::kFormSubmitted}};
-  absl::optional<FormData> submitted_form_;
+  std::optional<FormData> submitted_form_;
 };
 
 // Fakes an Autofill on of a given form.

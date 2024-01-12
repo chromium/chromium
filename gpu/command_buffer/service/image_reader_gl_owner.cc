@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
@@ -127,7 +126,6 @@ ImageReaderGLOwner::ImageReaderGLOwner(
                    std::move(texture),
                    std::move(context_state)),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
-      loader_(base::android::AndroidImageReader::GetInstance()),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
   DCHECK(context_);
@@ -157,7 +155,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
     usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
 
   // Create a new reader for images of the desired size and format.
-  media_status_t return_code = loader_->AImageReader_newWithUsage(
+  media_status_t return_code = AImageReader_newWithUsage(
       width, height, format, usage, max_images_, &reader);
   if (return_code != AMEDIA_OK) {
     LOG(ERROR) << " Image reader creation failed on device model : "
@@ -184,7 +182,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   listener_->onImageAvailable = &ImageReaderGLOwner::OnFrameAvailable;
 
   // Set the onImageAvailable listener of this image reader.
-  if (loader_->AImageReader_setImageListener(image_reader_, listener_.get()) !=
+  if (AImageReader_setImageListener(image_reader_, listener_.get()) !=
       AMEDIA_OK) {
     LOG(ERROR) << " Failed to register AImageReader listener";
     return;
@@ -208,14 +206,14 @@ void ImageReaderGLOwner::ReleaseResources() {
   // is lost. Cleanup is it hasn't already.
   if (image_reader_) {
     // Now we can stop listening to new images.
-    loader_->AImageReader_setImageListener(image_reader_, nullptr);
+    AImageReader_setImageListener(image_reader_, nullptr);
 
     // Delete all images before closing the associated image reader.
     for (auto& image_ref : image_refs_)
-      loader_->AImage_delete(image_ref.first);
+      AImage_delete(image_ref.first);
 
     // Delete the image reader.
-    loader_->AImageReader_delete(image_reader_);
+    AImageReader_delete(image_reader_);
     image_reader_ = nullptr;
 
     // Clean up the ImageRefs which should now be a no-op since there is no
@@ -242,7 +240,7 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 
   // Get the android native window from the image reader.
   ANativeWindow* window = nullptr;
-  if (loader_->AImageReader_getWindow(image_reader_, &window) != AMEDIA_OK) {
+  if (AImageReader_getWindow(image_reader_, &window) != AMEDIA_OK) {
     DLOG(ERROR) << "unable to get a window from image reader.";
     return nullptr;
   }
@@ -250,7 +248,7 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
   // Get the java surface object from the Android native window.
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_surface = base::android::ScopedJavaLocalRef<jobject>::Adopt(
-      env, loader_->ANativeWindow_toSurface(env, window));
+      env, ANativeWindow_toSurface(env, window));
   DCHECK(j_surface);
 
   // Get the scoped java surface that will call release() on destruction.
@@ -282,11 +280,11 @@ void ImageReaderGLOwner::UpdateTexImage() {
     // is (maxImages - currentAcquiredImages < 2) will not discard as expected.
     // We always have currentAcquiredImages as 1 since we delete a previous
     // image only after acquiring a new image.
-    return_code = loader_->AImageReader_acquireNextImageAsync(
-        image_reader_, &image, &acquire_fence_fd);
+    return_code = AImageReader_acquireNextImageAsync(image_reader_, &image,
+                                                     &acquire_fence_fd);
   } else {
-    return_code = loader_->AImageReader_acquireLatestImageAsync(
-        image_reader_, &image, &acquire_fence_fd);
+    return_code = AImageReader_acquireLatestImageAsync(image_reader_, &image,
+                                                       &acquire_fence_fd);
   }
   base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
                            return_code);
@@ -340,8 +338,7 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
     return nullptr;
 
   AHardwareBuffer* buffer = nullptr;
-  auto error =
-      loader_->AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
+  auto error = AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
   if (!buffer) {
     LOG(ERROR) << "AImage_getHardwareBuffer returned nullptr: " << error;
     return nullptr;
@@ -367,7 +364,7 @@ gfx::Rect ImageReaderGLOwner::GetCropRectLocked() {
   // AImage to be ready by checking the associated image ready fence.
   AImageCropRect crop_rect;
   media_status_t return_code =
-      loader_->AImage_getCropRect(current_image_ref_->image(), &crop_rect);
+      AImage_getCropRect(current_image_ref_->image(), &crop_rect);
   if (return_code != AMEDIA_OK) {
     DLOG(ERROR) << "Error querying crop rectangle from the image : "
                 << return_code;
@@ -422,10 +419,9 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
     return;
 
   if (image_ref.release_fence_fd.is_valid()) {
-    loader_->AImage_deleteAsync(
-        image, std::move(image_ref.release_fence_fd.release()));
+    AImage_deleteAsync(image, std::move(image_ref.release_fence_fd.release()));
   } else {
-    loader_->AImage_delete(image);
+    AImage_delete(image);
   }
 
   image_refs_.erase(it);
@@ -518,7 +514,7 @@ bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
 
   AHardwareBuffer* buffer = nullptr;
   if (current_image_ref_) {
-    loader_->AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
+    AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
     if (!buffer) {
       DLOG(ERROR) << "Unable to get an AHardwareBuffer from the image";
     }

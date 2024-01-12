@@ -52,6 +52,10 @@ void ContentsWebView::SetBackgroundVisible(bool background_visible) {
 }
 
 void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  if (background_radii_ == radii) {
+    return;
+  }
+
   background_radii_ = radii;
   if (GetWidget()) {
     UpdateBackgroundColor();
@@ -153,6 +157,6 @@ void ContentsWebView::RenderViewReady() {
   WebView::RenderViewReady();
 }
 
-BEGIN_METADATA(ContentsWebView, views::WebView)
+BEGIN_METADATA(ContentsWebView)
 ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
 END_METADATA

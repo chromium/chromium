@@ -68,7 +68,7 @@ class DemoModeTestHelper {
   std::unique_ptr<base::ScopedPathOverride> components_path_override_;
 
   // Raw ponter to the FakeCrOSComponentManager once created.
-  raw_ptr<component_updater::FakeCrOSComponentManager, ExperimentalAsh>
+  raw_ptr<component_updater::FakeCrOSComponentManager>
       fake_cros_component_manager_ = nullptr;
 
   // True if this class initialized the ConciergeClient.

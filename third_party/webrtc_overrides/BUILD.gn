@@ -116,7 +116,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:network",
   "//third_party/webrtc/rtc_base:refcount",
   "//third_party/webrtc/rtc_base:rtc_certificate_generator",
-  "//third_party/webrtc/rtc_base:rtc_task_queue",
   "//third_party/webrtc/rtc_base:socket",
   "//third_party/webrtc/rtc_base:socket_address",
   "//third_party/webrtc/rtc_base:socket_factory",

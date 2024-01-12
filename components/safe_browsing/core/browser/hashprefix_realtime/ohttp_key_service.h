@@ -158,11 +158,9 @@ class OhttpKeyService : public KeyedService {
   // Observes changes prefs that configure whether the service is enabled.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Keeps track of the state of the service.
-  //  - When the temporary feature kHashRealTimeOverOhttp is on, the service is
-  //    enabled only when enhanced protection is on.
-  //  - Otherwise, it's enabled when standard protection is on and the policy
-  //    kHashPrefixRealTimeChecksAllowedByPolicy isn't disabled.
+  // Keeps track of the state of the service. It's enabled when standard
+  // protection is on and the policy kHashPrefixRealTimeChecksAllowedByPolicy
+  // isn't disabled.
   bool enabled_ = false;
 
   // Used to schedule async key fetch.

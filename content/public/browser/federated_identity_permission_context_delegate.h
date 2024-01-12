@@ -48,7 +48,7 @@ class FederatedIdentityPermissionContextDelegate {
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
-      const absl::optional<std::string>& account_id) = 0;
+      const std::optional<std::string>& account_id) = 0;
 
   // Determine whether there is an existing permission grant to share identity
   // information for any account to the `relying_party_requester`.
@@ -73,8 +73,8 @@ class FederatedIdentityPermissionContextDelegate {
       const std::string& account_id) = 0;
 
   // Returns whether the user is signed in with the IDP. If unknown, return
-  // absl::nullopt.
-  virtual absl::optional<bool> GetIdpSigninStatus(
+  // std::nullopt.
+  virtual std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) = 0;
 
   // Updates the IDP sign-in status. This could be called by

@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
@@ -323,6 +325,7 @@ public class RootUiCoordinator
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
+    @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
@@ -728,8 +731,14 @@ public class RootUiCoordinator
         }
 
         if (mReadAloudControllerSupplier.hasValue()) {
-            mReadAloudControllerSupplier.get().destroy();
+            if (mContextualSearchManagerSupplier.get() != null) {
+                mContextualSearchManagerSupplier
+                        .get()
+                        .removeObserver(mReadAloudContextualSearchObserver);
+            }
+            var readAloudController = mReadAloudControllerSupplier.get();
             mReadAloudControllerSupplier.set(null);
+            readAloudController.destroy();
         }
 
         if (mEdgeToEdgeController != null) {
@@ -886,9 +895,27 @@ public class RootUiCoordinator
                             mTabModelSelectorSupplier.get().getModel(false),
                             getBottomSheetController(),
                             mBrowserControlsManager,
-                            mLayoutManager);
+                            mLayoutManagerSupplier);
             mReadAloudControllerSupplier.set(controller);
+            mReadAloudContextualSearchObserver =
+                    new ContextualSearchObserver() {
+                        @Override
+                        public void onShowContextualSearch(
+                                @Nullable GSAContextDisplaySelection selectionContext) {
+                            controller.maybeHidePlayer();
+                        }
+
+                        @Override
+                        public void onHideContextualSearch() {
+                            controller.maybeShowPlayer();
+                        }
+                    };
             mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
+            if (mContextualSearchManagerSupplier.get() != null) {
+                mContextualSearchManagerSupplier
+                        .get()
+                        .addObserver(mReadAloudContextualSearchObserver);
+            }
         }
     }
 

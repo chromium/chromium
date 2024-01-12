@@ -39,6 +39,9 @@ void PrepareFileToAnalyze(
       FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
 }
 
+// Helper for destroying a file on another sequence
+void DestroyFile(base::File file) {}
+
 }  // namespace
 
 // static
@@ -108,6 +111,9 @@ void SandboxedZipAnalyzer::AnalyzeFile(base::File file) {
         std::move(file), password_, std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, GetWeakPtr()));
   } else {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DestroyFile, std::move(file)));
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
   }
 }

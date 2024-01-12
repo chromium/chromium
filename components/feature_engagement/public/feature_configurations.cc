@@ -217,6 +217,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHExperimentalAIPromoFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // Show the IPH once per year.
+    config->trigger = EventConfig("iph_experimental_ai_promo_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("iph_experimental_ai_promo_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHTrackingProtectionOffboardingFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -260,7 +273,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
     // Show the promo max 3 times, once per week.
     config->trigger = EventConfig("high_efficiency_prompt_in_trigger",
                                   Comparator(LESS_THAN, 1), 7, 360);
@@ -505,10 +518,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::ALL;
-    config->session_rate_impact = session_rate_impact;
+    config->session_rate = Comparator(ANY, 0);
     // Don't show if user has already seen an IPH this session.
     // Show the promo max once a year if the user hasn't interacted with
     // a dangerous download within the last 21 days.
@@ -519,23 +529,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig("download_bubble_dangerous_download_detected",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 21, 360));
-    return config;
-  }
-
-  if (kIPHDownloadToolbarButtonFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->session_rate_impact = session_rate_impact;
-    // Show the promo max once a year if the user hasn't interacted with the
-    // download bubble within the last 21 days.
-    config->trigger = EventConfig("download_bubble_iph_trigger",
-                                  Comparator(EQUAL, 0), 360, 360);
-    config->used = EventConfig("download_bubble_interaction",
-                               Comparator(EQUAL, 0), 21, 360);
     return config;
   }
 
@@ -555,7 +548,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHComposeMenuNewBadgeFeature.name == feature->name) {
     // A config that allows the new badge attached to the Compose feature
-    // entrypoint in the right-click menu to be shown at most 4 times in a
+    // entrypoint in the right-click menu to be shown at most 10 times in a
     // 10-day window and only while the user has opened the Compose feature less
     // than 3 times.
     absl::optional<FeatureConfig> config = FeatureConfig();
@@ -563,7 +556,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->trigger = EventConfig("compose_menu_new_badge_triggered",
-                                  Comparator(LESS_THAN, 4), 10, 360);
+                                  Comparator(LESS_THAN, 10), 10, 360);
     config->used = EventConfig("compose_menu_item_activated",
                                Comparator(LESS_THAN, 3), 360, 360);
     return config;
@@ -581,6 +574,21 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                   Comparator(LESS_THAN, 4), 10, 360);
     config->used =
         EventConfig("compose_activated", Comparator(LESS_THAN, 3), 360, 360);
+    return config;
+  }
+
+  if (kIPHComposeMSBBSettingsFeature.name == feature->name) {
+    // A config that allows a toast to be displayed in the Settings page when
+    // opened via the Compose MSBB feature
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->trigger = EventConfig("compose_msbb_settings_feature_trigger",
+                                  Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("compose_msbb_settings_feature_used",
+                               Comparator(ANY, 0), 90, 90);
     return config;
   }
 
@@ -1962,9 +1970,10 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
-    // The IPH is shown at most once a week.
-    config->trigger =
-        EventConfig("iph_pull_to_refresh_trigger", Comparator(EQUAL, 0), 7, 7);
+    // The IPH is shown at most once.
+    config->trigger = EventConfig(
+        "iph_pull_to_refresh_trigger", Comparator(EQUAL, 0),
+        kMaxStorageDaysForIOSPullToRefresh, kMaxStorageDaysForIOSPullToRefresh);
     // The user hasn't used the pull-to-refresh feature.
     config->used = EventConfig(
         feature_engagement::events::kIOSPullToRefreshUsed, Comparator(EQUAL, 0),
@@ -1974,11 +1983,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kIOSMultiGestureRefreshUsed,
                     Comparator(GREATER_THAN_OR_EQUAL, 2),
-                    kMaxStorageDaysForIOSPullToRefresh,
-                    kMaxStorageDaysForIOSPullToRefresh));
-    // The IPH is shown at most twice.
-    config->event_configs.insert(
-        EventConfig("iph_pull_to_refresh_trigger", Comparator(LESS_THAN, 2),
                     kMaxStorageDaysForIOSPullToRefresh,
                     kMaxStorageDaysForIOSPullToRefresh));
     return config;
@@ -2042,6 +2046,42 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     feature_engagement::kMaxStoragePeriod);
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
+  if (kIPHiOSTabGridSwipeLeftForIncognito.name == feature->name) {
+    // The IPH of the tab grid swipe feature.
+    //
+    // Note that the IPH is only triggered for users who installed Chrome on iOS
+    // in the last specified number of days, so this could be used as the
+    // maximum storage period of respective events.
+    const uint32_t kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito = 61;
+    // Event constant for IPH trigger for kIPHiOSTabGridSwipeLeftForIncognito
+    // feature.
+    const char kIOSSwipeLeftForIncognitoTrigger[] =
+        "swipe_left_for_incognito_trigger";
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once a week.
+    config->trigger =
+        EventConfig(kIOSSwipeLeftForIncognitoTrigger, Comparator(EQUAL, 0),
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito);
+    // The user hasn't swiped from the regular tab grid to incognito.
+    config->used = EventConfig(
+        feature_engagement::events::kIOSSwipeLeftForIncognitoUsed,
+        Comparator(EQUAL, 0), kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
+        kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito);
+    // The IPH only shows when user taps the "incognito" icon inside the page
+    // control at least twice.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSIncognitoPageControlTapped,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2),
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito));
     return config;
   }
 

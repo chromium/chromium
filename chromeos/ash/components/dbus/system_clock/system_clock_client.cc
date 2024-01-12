@@ -186,7 +186,7 @@ class SystemClockClientImpl : public SystemClockClient {
   // CanSetTime response is received.
   bool can_set_time_;
   bool can_set_time_initialized_;
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> system_clock_proxy_;
+  raw_ptr<dbus::ObjectProxy> system_clock_proxy_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<SystemClockClientImpl> weak_ptr_factory_{this};

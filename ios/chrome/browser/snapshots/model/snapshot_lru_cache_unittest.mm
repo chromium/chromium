@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/snapshot_lru_cache.h"
-
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
@@ -18,8 +17,8 @@ using SnapshotLRUCacheTest = PlatformTest;
 
 // Tests the LRU cache by adding, removing and getting an object by a key.
 TEST_F(SnapshotLRUCacheTest, Basic) {
-  SnapshotLRUCache<NSString*>* cache =
-      [[SnapshotLRUCache alloc] initWithCacheSize:3];
+  LegacySnapshotLRUCache<NSString*>* cache =
+      [[LegacySnapshotLRUCache alloc] initWithCacheSize:3];
 
   NSString* value1 = @"Value 1";
   NSString* value2 = @"Value 2";
@@ -59,8 +58,7 @@ TEST_F(SnapshotLRUCacheTest, Basic) {
 
 // Tests that the LRU cache evicts the least recently "added" value.
 TEST_F(SnapshotLRUCacheTest, EvictLeastRecentlyAddedItem) {
-  SnapshotLRUCacheInSwift* cache =
-      [[SnapshotLRUCacheInSwift alloc] initWithSize:3];
+  SnapshotLRUCache* cache = [[SnapshotLRUCache alloc] initWithSize:3];
   EXPECT_EQ(3, [cache maxCacheSize]);
 
   UIImage* image1 = [[UIImage alloc] init];
@@ -99,8 +97,7 @@ TEST_F(SnapshotLRUCacheTest, EvictLeastRecentlyAddedItem) {
 
 // Tests that the LRU cache evicts the least recently "accessed" value.
 TEST_F(SnapshotLRUCacheTest, EvictLeastRecentlyUsedValue) {
-  SnapshotLRUCacheInSwift* cache =
-      [[SnapshotLRUCacheInSwift alloc] initWithSize:3];
+  SnapshotLRUCache* cache = [[SnapshotLRUCache alloc] initWithSize:3];
   EXPECT_EQ(3, [cache maxCacheSize]);
 
   UIImage* image1 = [[UIImage alloc] init];
@@ -137,8 +134,7 @@ TEST_F(SnapshotLRUCacheTest, EvictLeastRecentlyUsedValue) {
 
 // Tests that the LRU cache overrides the value for the same key.
 TEST_F(SnapshotLRUCacheTest, OverrideValue) {
-  SnapshotLRUCacheInSwift* cache =
-      [[SnapshotLRUCacheInSwift alloc] initWithSize:1];
+  SnapshotLRUCache* cache = [[SnapshotLRUCache alloc] initWithSize:1];
   EXPECT_EQ(1, [cache maxCacheSize]);
 
   UIImage* image1 = [[UIImage alloc] init];
@@ -166,8 +162,7 @@ TEST_F(SnapshotLRUCacheTest, OverrideValue) {
 
 // Tests that the LRU cache does nothing for a non-existing and an evicted key.
 TEST_F(SnapshotLRUCacheTest, DoNothingForNonExistingKey) {
-  SnapshotLRUCacheInSwift* cache =
-      [[SnapshotLRUCacheInSwift alloc] initWithSize:1];
+  SnapshotLRUCache* cache = [[SnapshotLRUCache alloc] initWithSize:1];
   EXPECT_EQ(1, [cache maxCacheSize]);
 
   UIImage* image1 = [[UIImage alloc] init];

@@ -14,10 +14,10 @@ import './base_page.js';
 import './cellular_setup_icons.html.js';
 
 import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
-import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrosNetworkConfig, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -66,146 +66,196 @@ const QR_CODE_FORMAT = 'qr_code';
  */
 const ACTIVATION_CODE_PREFIX = 'LPA:1$';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'activation-code-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ActivationCodePageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ActivationCodePageElement extends ActivationCodePageElementBase {
+  static get is() {
+    return 'activation-code-page';
+  }
 
-  properties: {
-    activationCode: {
-      type: String,
-      notify: true,
-      observer: 'onActivationCodeChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    showError: {
-      type: Boolean,
-      notify: true,
-      observer: 'onShowErrorChanged_',
-    },
+  static get properties() {
+    return {
+      activationCode: {
+        type: String,
+        notify: true,
+        observer: 'onActivationCodeChanged_',
+      },
+
+      showError: {
+        type: Boolean,
+        notify: true,
+        observer: 'onShowErrorChanged_',
+      },
+
+      /**
+       * Readonly property indicating whether the current |activationCode|
+       * was scanned from QR code.
+       */
+      isFromQrCode: {
+        type: Boolean,
+        notify: true,
+        value: false,
+      },
+
+      /**
+       * Indicates the UI is busy with an operation and cannot be interacted
+       * with.
+       */
+      showBusy: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates no profiles were found while scanning.
+       */
+      showNoProfilesFound: {
+        type: Boolean,
+        notify: true,
+      },
+
+      /**
+       * Enum used as an ID for specific UI elements.
+       * A UiElement is passed between html and JS for
+       * certain UI elements to determine their state.
+       *
+       * @type {!UiElement}
+       */
+      UiElement: {
+        type: Object,
+        value: UiElement,
+      },
+
+      /**
+       * @type {!PageState}
+       * @private
+       */
+      state_: {
+        type: Object,
+        value: PageState,
+        observer: 'onStateChanged_',
+      },
+
+      /** @private */
+      cameraCount_: {
+        type: Number,
+        value: 0,
+        observer: 'onHasCameraCountChanged_',
+      },
+
+      /**
+       *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
+       *  becomes available
+       *  @private {?Object}
+       */
+      qrCodeDetector_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * If true, video is expanded.
+       */
+      expanded_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * A11y string used to announce the current status of qr code camera
+       * detection. Used when device web cam is turned on and ready to scan,
+       * and also used after scan has been completed.
+       * @private
+       */
+      qrCodeCameraA11yString_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * If true, device is locked to specific cellular operator.
+       */
+      isDeviceCarrierLocked_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
+
+      /**
+       * Indicates whether or not |activationCode| matches the correct
+       * activation code format. If there is a partial match (i.e. the code is
+       * incomplete but matches the format so far), this will be false.
+       * @private
+       */
+      isActivationCodeInvalidFormat_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  /** @override */
+  constructor() {
+    super();
 
     /**
-     * Readonly property indicating whether the current |activationCode|
-     * was scanned from QR code.
-     */
-    isFromQrCode: {
-      type: Boolean,
-      notify: true,
-      value: false,
-    },
-
-    /**
-     * Indicates the UI is busy with an operation and cannot be interacted with.
-     */
-    showBusy: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates no profiles were found while scanning.
-     */
-    showNoProfilesFound: {
-      type: Boolean,
-      notify: true,
-    },
-
-    /**
-     * Enum used as an ID for specific UI elements.
-     * A UiElement is passed between html and JS for
-     * certain UI elements to determine their state.
-     *
-     * @type {!UiElement}
-     */
-    UiElement: {
-      type: Object,
-      value: UiElement,
-    },
-
-    /**
-     * @type {!PageState}
+     * @type {MediaDevices}
      * @private
      */
-    state_: {
-      type: Object,
-      value: PageState,
-      observer: 'onStateChanged_',
-    },
+    this.mediaDevices_ = null;
 
-    /** @private */
-    cameraCount_: {
-      type: Number,
-      value: 0,
-      observer: 'onHasCameraCountChanged_',
-    },
+    /**
+     * @type {?MediaStream}
+     * @private
+     */
+    this.stream_ = null;
+
+    /**
+     * @type {?number}
+     * @private
+     */
+    this.qrCodeDetectorTimer_ = null;
+
+    /**
+     * The function used to initiate a repeating timer. Can be overwritten in
+     * tests.
+     * @private {function(Function, number)}
+     */
+    this.setIntervalFunction_ = setInterval.bind(window);
 
     /**
      *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
      *  becomes available
-     *  @private {?Object}
+     *  @suppress {undefinedVars|missingProperties}
+     *  @private
      */
-    qrCodeDetector_: {
-      type: Object,
-      value: null,
-    },
+    this.barcodeDetectorClass_ = BarcodeDetector;
 
-    /**
-     * If true, video is expanded.
-     */
-    expanded_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    /**
-     * A11y string used to announce the current status of qr code camera
-     * detection. Used when device web cam is turned on and ready to scan,
-     * and also used after scan has been completed.
-     * @private
-     */
-    qrCodeCameraA11yString_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * If true, device is locked to specific cellular operator.
-     */
-    isDeviceCarrierLocked_: {
-      type: Boolean,
-      value: false,
-    },
-
-    isCellularCarrierLockEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-      },
-    },
-
-    /**
-     * Indicates whether or not |activationCode| matches the correct activation
-     * code format. If there is a partial match (i.e. the code is incomplete but
-     * matches the format so far), this will be false.
-     * @private
-     */
-    isActivationCodeInvalidFormat_: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  /** @private {?CrosNetworkConfigInterface} */
-  networkConfig_: null,
-
-  /** @override */
-  created() {
+    /** @private {typeof ImageCapture} */
+    this.imageCaptureClass_ = ImageCapture;
     if (!this.isCellularCarrierLockEnabled_) {
       return;
     }
+
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     this.networkConfig_.getDeviceStateList().then(response => {
@@ -216,80 +266,51 @@ Polymer({
         this.isDeviceCarrierLocked_ = deviceState.isCarrierLocked;
       }
     });
-  },
-
-  /**
-   * @type {MediaDevices}
-   * @private
-   */
-  mediaDevices_: null,
-
-  /**
-   * @type {?MediaStream}
-   * @private
-   */
-  stream_: null,
-
-  /**
-   * @type {?number}
-   * @private
-   */
-  qrCodeDetectorTimer_: null,
-
-
-  /**
-   * The function used to initiate a repeating timer. Can be overwritten in
-   * tests.
-   * @private {function(Function, number)}
-   */
-  setIntervalFunction_: setInterval.bind(window),
-
-  /**
-   *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
-   *  becomes available
-   *  @suppress {undefinedVars|missingProperties}
-   *  @private
-   */
-  barcodeDetectorClass_: BarcodeDetector,
-
-  /** @private {typeof ImageCapture} */
-  imageCaptureClass_: ImageCapture,
-
-  /**
-   * Function used to play the video. Can be overwritten by
-   * setFakesForTesting().
-   * @private {function()}
-   */
-  playVideo_: function() {
-    this.$$('#video').play();
-  },
-
-  /**
-   * Function used to stop a stream. Can be overwritten by setFakesForTesting().
-   * @private {function(MediaStream)}
-   */
-  stopStream_: function(stream) {
-    if (stream) {
-      stream.getTracks()[0].stop();
-    }
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.setMediaDevices(navigator.mediaDevices);
     this.initBarcodeDetector_();
     this.state_ = PageState.MANUAL_ENTRY;
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.stopStream_(this.stream_);
     if (this.qrCodeDetectorTimer_) {
       this.clearQrCodeDetectorTimer_();
     }
     this.mediaDevices_.removeEventListener(
         'devicechange', this.updateCameraCount_.bind(this));
-  },
+  }
+
+  /**
+   * Function used to play the video. Can be overwritten by
+   * setFakesForTesting().
+   * @private
+   */
+  playVideo_() {
+    const videoElement = this.shadowRoot.querySelector('#video');
+    if (videoElement) {
+      videoElement.play();
+    }
+  }
+
+  /**
+   * Function used to stop a stream. Can be overwritten by setFakesForTesting().
+   * @param {MediaStream} stream
+   * @private
+   */
+  stopStream_(stream) {
+    if (stream) {
+      stream.getTracks()[0].stop();
+    }
+  }
 
   /**
    * @return {boolean}
@@ -297,7 +318,7 @@ Polymer({
    */
   isScanningAvailable_() {
     return this.cameraCount_ > 0 && !!this.qrCodeDetector_;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -305,7 +326,7 @@ Polymer({
    */
   shouldShowCarrierLockWarning_() {
     return this.isCellularCarrierLockEnabled_ && this.isDeviceCarrierLocked_;
-  },
+  }
 
   /**
    * TODO(crbug.com/1093185): Remove suppression when shape_detection extern
@@ -326,7 +347,7 @@ Polymer({
       this.qrCodeDetector_ =
           new this.barcodeDetectorClass_({formats: [QR_CODE_FORMAT]});
     }
-  },
+  }
 
   /**
    * @param {MediaDevices} mediaDevices
@@ -336,7 +357,7 @@ Polymer({
     this.updateCameraCount_();
     this.mediaDevices_.addEventListener(
         'devicechange', this.updateCameraCount_.bind(this));
-  },
+  }
 
   /**
    * TODO(crbug.com/1093185): Add barcodeDetectorClass type when BarcodeDetector
@@ -356,14 +377,14 @@ Polymer({
     this.setIntervalFunction_ = setIntervalFunction;
     this.playVideo_ = playVideoFunction;
     this.stopStream_ = stopStreamFunction;
-  },
+  }
 
   /**
    * @returns {?number}
    */
   getQrCodeDetectorTimerForTest() {
     return this.qrCodeDetectorTimer_;
-  },
+  }
 
   /**
    * @return {string}
@@ -371,7 +392,7 @@ Polymer({
    */
   computeActivationCodeClass_() {
     return this.isScanningAvailable_() ? 'relative' : 'center width-92';
-  },
+  }
 
   /** @private */
   updateCameraCount_() {
@@ -388,7 +409,7 @@ Polymer({
         .catch(e => {
           this.cameraCount_ = 0;
         });
-  },
+  }
 
   /** @private */
   onHasCameraCountChanged_() {
@@ -399,7 +420,7 @@ Polymer({
       this.state_ = PageState.SWITCHING_CAM_ENVIRONMENT_TO_USER;
       this.startScanning_();
     }
-  },
+  }
 
   /** private */
   startScanning_() {
@@ -422,9 +443,11 @@ Polymer({
         .then(stream => {
           this.stream_ = stream;
           if (this.stream_) {
-            const video = this.$$('#video');
-            video.srcObject = stream;
-            this.playVideo_();
+            const video = this.shadowRoot.querySelector('#video');
+            if (video) {
+              video.srcObject = stream;
+              this.playVideo_();
+            }
           }
           this.stopStream_(oldStream);
 
@@ -440,7 +463,7 @@ Polymer({
         .catch(e => {
           this.state_ = PageState.SCANNING_FAILURE;
         });
-  },
+  }
 
   /**
    * Continuously checks stream if it contains a QR code. If a QR code is
@@ -474,7 +497,7 @@ Polymer({
     } catch (error) {
       this.state_ = PageState.SCANNING_FAILURE;
     }
-  },
+  }
 
   /**
    * @param {ImageBitmap} frame
@@ -494,22 +517,28 @@ Polymer({
       return qrCodes[0].rawValue;
     }
     return null;
-  },
+  }
 
   /** @private */
   onActivationCodeChanged_() {
-    this.fire('activation-code-updated', {
-      activationCode: this.validateActivationCode_(this.activationCode) ?
-          this.activationCode :
-          null,
+    const event = new CustomEvent('activation-code-updated', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        activationCode: this.validateActivationCode_(this.activationCode) ?
+            this.activationCode :
+            null,
+      },
     });
-  },
+
+    this.dispatchEvent(event);
+  }
 
   /** @private */
   clearQrCodeDetectorTimer_() {
     clearTimeout(this.qrCodeDetectorTimer_);
     this.qrCodeDetectorTimer_ = null;
-  },
+  }
 
   /**
    * Checks if |activationCode| matches or partially matches the correct format.
@@ -544,7 +573,7 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /** @private */
   onSwitchCameraButtonPressed_() {
@@ -554,7 +583,7 @@ Polymer({
       this.state_ = PageState.SWITCHING_CAM_ENVIRONMENT_TO_USER;
     }
     this.startScanning_();
-  },
+  }
 
   /** @private */
   onShowErrorChanged_() {
@@ -568,7 +597,7 @@ Polymer({
         this.state_ = PageState.SCANNING_INSTALL_FAILURE;
       }
     }
-  },
+  }
 
   /** @private */
   onStateChanged_() {
@@ -603,11 +632,14 @@ Polymer({
     if (this.state_ === PageState.SCANNING_SUCCESS) {
       this.isFromQrCode = true;
       this.qrCodeCameraA11yString_ = this.i18n('qrCodeA11YCameraScanSuccess');
-      this.fire('focus-default-button');
+      this.dispatchEvent(new CustomEvent('focus-default-button', {
+        bubbles: true,
+        composed: true,
+      }));
     }
 
     this.expanded_ = false;
-  },
+  }
 
   /**
    * @param {KeyboardEvent} e
@@ -615,7 +647,10 @@ Polymer({
    */
   onKeyDown_(e) {
     if (e.key === 'Enter') {
-      this.fire('forward-navigation-requested');
+      this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
+        bubbles: true,
+        composed: true,
+      }));
     }
 
     // Prevents barcode detector video from closing if user tabs through
@@ -627,7 +662,7 @@ Polymer({
 
     this.state_ = PageState.MANUAL_ENTRY;
     e.stopPropagation();
-  },
+  }
 
   /**
    * @param {UiElement} uiElement
@@ -661,7 +696,7 @@ Polymer({
       case UiElement.SCAN_INSTALL_FAILURE:
         return state !== PageState.SCANNING_INSTALL_FAILURE;
     }
-  },
+  }
 
   /**
    * @param {UiElement} uiElement
@@ -680,7 +715,7 @@ Polymer({
       default:
         return false;
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -697,7 +732,7 @@ Polymer({
       return this.i18n('scanQRCodeNoProfilesFound');
     }
     return this.i18n('scanQRCode');
-  },
+  }
 
   /**
    * @param {PageState} state
@@ -709,7 +744,7 @@ Polymer({
       return true;
     }
     return state === PageState.MANUAL_ENTRY_INSTALL_FAILURE;
-  },
+  }
 
   /**
    * @param {boolean} showBusy
@@ -724,7 +759,7 @@ Polymer({
     // Because this string contains '<' and '>' characters, we cannot use i18n
     // methods.
     return loadTimeData.getString('scanQrCodeInputSubtitle');
-  },
+  }
 
   /**
    * @return {string}
@@ -734,5 +769,7 @@ Polymer({
     // Because this string contains '<' and '>' characters, we cannot use i18n
     // methods.
     return loadTimeData.getString('scanQrCodeInputError');
-  },
-});
+  }
+}
+
+customElements.define(ActivationCodePageElement.is, ActivationCodePageElement);

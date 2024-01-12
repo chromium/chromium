@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 
@@ -30,9 +31,10 @@ namespace web_app {
 class UpdateManifest;
 class IsolatedWebAppDownloader;
 
-// This component is responsible for installing, uninstalling, updating etc.
-// of the policy installed IWAs.
-class IsolatedWebAppPolicyManager {
+namespace internal {
+
+// This class installs the given collection of IWAs.
+class BulkIwaInstaller {
  public:
   enum class EphemeralAppInstallResult {
     kSuccess,
@@ -79,7 +81,7 @@ class IsolatedWebAppPolicyManager {
     const raw_ptr<web_app::WebAppProvider> provider_;
   };
 
-  IsolatedWebAppPolicyManager(
+  BulkIwaInstaller(
       const base::FilePath& context_dir,
       std::vector<IsolatedWebAppExternalInstallOptions>
           ephemeral_iwa_install_options,
@@ -87,7 +89,7 @@ class IsolatedWebAppPolicyManager {
       std::unique_ptr<IwaInstallCommandWrapper> installer,
       base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
           ephemeral_install_cb);
-  ~IsolatedWebAppPolicyManager();
+  ~BulkIwaInstaller();
 
   // Triggers installing of the IWAs in MGS. There is no callback as so far we
   // don't care about the result of the installation: for MVP it is not critical
@@ -95,9 +97,8 @@ class IsolatedWebAppPolicyManager {
   // several minutes.
   void InstallEphemeralApps();
 
-  IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;
-  IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
-      delete;
+  BulkIwaInstaller(const BulkIwaInstaller&) = delete;
+  BulkIwaInstaller& operator=(const BulkIwaInstaller&) = delete;
 
  private:
   // Creating root directory where the ephemeral apps will be placed.
@@ -153,7 +154,36 @@ class IsolatedWebAppPolicyManager {
   base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
       ephemeral_install_cb_;
 
-  base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_factory_{this};
+  base::WeakPtrFactory<BulkIwaInstaller> weak_factory_{this};
+};
+
+}  // namespace internal
+
+// This class is responsible for installing, uninstalling, updating etc.
+// of the policy installed IWAs.
+class IsolatedWebAppPolicyManager {
+ public:
+  explicit IsolatedWebAppPolicyManager(Profile* profile);
+
+  IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;
+  IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
+      delete;
+  ~IsolatedWebAppPolicyManager();
+
+  void Start(base::OnceClosure on_started_callback);
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
+
+ private:
+  void RefreshPolicyInstalledIsolatedWebApps();
+
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<internal::BulkIwaInstaller> bulk_installer_;
+  base::OnceClosure on_started_callback_;
+
+  base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

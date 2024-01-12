@@ -28,7 +28,7 @@ export class MockFolderShortcutDataModel extends ArrayDataModel {
    * Mock function for FolderShortcutDataModel.compare().
    * @param a First parameter to be compared.
    * @param b Second parameter to be compared with.
-   * @return Negative if a < b, positive if a > b, or zero if a == b.
+   * @return Negative if a < b, positive if a > b, or zero if a === b.
    */
   compare(a: MockEntry, b: MockEntry): number {
     return a.fullPath.localeCompare(b.fullPath);

@@ -767,9 +767,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
           case 0:
             type.profile = VideoCodecProfile::DOLBYVISION_PROFILE0;
             break;
-          case 4:
-            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE4;
-            break;
           case 5:
             type.profile = VideoCodecProfile::DOLBYVISION_PROFILE5;
             break;

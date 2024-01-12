@@ -72,7 +72,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 
 @interface BubblePresenter () <CRWWebStateObserver,
                                SceneStateObserver,
-                               URLLoadingObserver>
+                               URLLoadingObserving>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -201,7 +201,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 }
 
 - (void)presentShareButtonHelpBubbleIfEligible {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return;
   }
@@ -453,7 +453,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
   self.engagementTracker->NotifyEvent(
       feature_engagement::events::kIOSMultiGestureRefreshUsed);
   BOOL userEligibleForPullToRefreshIPH =
-      iph_for_new_chrome_user::IsUserEligible(
+      iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher) &&
       self.engagementTracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSPullToRefreshFeature);
@@ -547,7 +547,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 // `nil` and no bubble is shown. This method requires that `self.browserState`
 // is not NULL.
 - (void)presentNewTabToolbarItemBubble {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return;
   }
@@ -622,7 +622,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 // `nil` and no bubble is shown. This method requires that `self.browserState`
 // is not NULL.
 - (void)presentTabGridToolbarItemBubble {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return;
   }
@@ -916,9 +916,9 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
   }
 }
 
-#pragma mark - URLLoadingObserver
+#pragma mark - URLLoadingObserving
 
-- (void)tabDidLoadURL:(GURL)URL
+- (void)tabDidLoadURL:(const GURL&)URL
        transitionType:(ui::PageTransition)transitionType {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
   if (currentWebState) {
@@ -935,7 +935,8 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
   }
 }
 
-- (void)newTabDidLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
+- (void)newTabDidLoadURL:(const GURL&)URL
+         isUserInitiated:(BOOL)isUserInitiated {
   if (isUserInitiated) {
     [self presentTabGridToolbarItemBubble];
   }

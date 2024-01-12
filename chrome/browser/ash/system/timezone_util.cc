@@ -183,9 +183,6 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return CanSetSystemTimezoneFromManagedGuestSession();
 
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
-
       // No default case means the compiler makes sure we handle new types.
   }
   NOTREACHED();

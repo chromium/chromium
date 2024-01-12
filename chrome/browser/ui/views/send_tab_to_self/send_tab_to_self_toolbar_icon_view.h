@@ -22,8 +22,9 @@ namespace send_tab_to_self {
 class SendTabToSelfToolbarIconView
     : public views::ImageView,
       public SendTabToSelfToolbarIconControllerDelegate {
+  METADATA_HEADER(SendTabToSelfToolbarIconView, views::ImageView)
+
  public:
-  METADATA_HEADER(SendTabToSelfToolbarIconView);
   explicit SendTabToSelfToolbarIconView(BrowserView* browser_view);
   SendTabToSelfToolbarIconView(const SendTabToSelfToolbarIconView&) = delete;
   SendTabToSelfToolbarIconView& operator=(const SendTabToSelfToolbarIconView&) =

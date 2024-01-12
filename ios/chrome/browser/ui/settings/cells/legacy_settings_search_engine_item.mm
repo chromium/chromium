@@ -26,11 +26,15 @@
 
 @implementation LegacySettingsSearchEngineItem
 
+@synthesize enabled = _enabled;
+@synthesize text = _text;
+@synthesize detailText = _detailText;
+
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
-      self.cellClass = TableViewURLCell.class;
-      _enabled = YES;
+    self.cellClass = TableViewURLCell.class;
+    _enabled = YES;
   }
   return self;
 }

@@ -86,12 +86,25 @@ JavaVM* GetVM() {
   return g_jvm;
 }
 
+bool HasException(JNIEnv* env) {
+  return env->ExceptionCheck() != JNI_FALSE;
+}
+
+bool ClearException(JNIEnv* env) {
+  if (!HasException(env)) {
+    return false;
+  }
+  env->ExceptionDescribe();
+  env->ExceptionClear();
+  return true;
+}
+
 void SetExceptionHandler(void (*callback)(JNIEnv*)) {
   g_exception_handler_callback = callback;
 }
 
 void CheckException(JNIEnv* env) {
-  if (env->ExceptionCheck() == JNI_FALSE) {
+  if (!HasException(env)) {
     return;
   }
 

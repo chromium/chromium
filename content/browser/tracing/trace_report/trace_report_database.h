@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_DATABASE_H_
 #define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_DATABASE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -142,14 +142,14 @@ class CONTENT_EXPORT TraceReportDatabase {
   bool UploadSkipped(const base::Token& uuid, SkipUploadReason skip_reason);
 
   // Returns the serialized trace content string if any.
-  absl::optional<std::string> GetTraceContent(const base::Token& uuid);
+  std::optional<std::string> GetTraceContent(const base::Token& uuid);
 
   // Returns the serialize system profile information if any.
-  absl::optional<std::string> GetSystemProfile(const base::Token& uuid);
+  std::optional<std::string> GetSystemProfile(const base::Token& uuid);
 
   // Returns the number of trace for |scenario_name| since |since|.
-  absl::optional<size_t> UploadCountSince(std::string scenario_name,
-                                          base::Time since);
+  std::optional<size_t> UploadCountSince(std::string scenario_name,
+                                         base::Time since);
 
   // Returns the saved count per scenario.
   base::flat_map<std::string, size_t> GetScenarioCounts();
@@ -158,7 +158,7 @@ class CONTENT_EXPORT TraceReportDatabase {
   std::vector<ClientTraceReport> GetAllReports();
 
   // Returns the next report pending upload.
-  absl::optional<ClientTraceReport> GetNextReportPendingUpload();
+  std::optional<ClientTraceReport> GetNextReportPendingUpload();
 
  private:
   bool EnsureTableCreated();

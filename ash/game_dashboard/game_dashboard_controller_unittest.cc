@@ -42,7 +42,7 @@ class GameDashboardControllerTest : public GameDashboardTestBase {
 
     // Verify the window's `GameDashboardContext` is deleted after the game
     // window is closed.
-    aura::Window* old_window = window.get();
+    auto* old_window = window.get();
     window.reset();
     EXPECT_FALSE(GameDashboardController::Get()->game_window_contexts_.contains(
         old_window));
@@ -97,13 +97,14 @@ TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherWindows) {
 }
 
 TEST_F(GameDashboardControllerTest, GameWindowToNonGameWindow) {
-  auto window = CreateAppWindow(TestGameDashboardDelegate::kGameAppId,
-                                AppType::ARC_APP, gfx::Rect(5, 5, 20, 20));
+  const auto window =
+      CreateAppWindow(TestGameDashboardDelegate::kGameAppId, AppType::ARC_APP,
+                      gfx::Rect(5, 5, 20, 20));
   VerifyIsGameWindowProperty(window.get(), /*expected_is_game=*/true);
 
   // Update the window property where the window is no longer considered to be a
   // game.
-  window->SetProperty(ash::kAppIDKey,
+  window->SetProperty(kAppIDKey,
                       std::string(TestGameDashboardDelegate::kOtherAppId));
 
   VerifyIsGameWindowProperty(window.get(), /*expected_is_game=*/false);

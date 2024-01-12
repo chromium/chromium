@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -116,7 +116,7 @@ void SerializeCommonAggregatableData(
     data.verification_token = msg.verification_token();
   }
 
-  absl::optional<std::string> trigger_context_id;
+  std::optional<std::string> trigger_context_id;
   if (msg.has_trigger_context_id()) {
     trigger_context_id = msg.trigger_context_id();
   }
@@ -139,14 +139,14 @@ url::Origin DeserializeOrigin(const std::string& origin) {
   return url::Origin::Create(GURL(origin));
 }
 
-absl::optional<SourceType> DeserializeSourceType(int val) {
+std::optional<SourceType> DeserializeSourceType(int val) {
   switch (val) {
     case static_cast<int>(SourceType::kNavigation):
       return SourceType::kNavigation;
     case static_cast<int>(SourceType::kEvent):
       return SourceType::kEvent;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -194,13 +194,12 @@ std::string SerializeReadOnlySourceData(
   return msg.SerializeAsString();
 }
 
-absl::optional<proto::AttributionReadOnlySourceData>
+std::optional<proto::AttributionReadOnlySourceData>
 DeserializeReadOnlySourceDataAsProto(sql::Statement& stmt, int col) {
-
   proto::AttributionReadOnlySourceData msg;
   if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
       !msg.ParseFromArray(blob.data(), blob.size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return msg;
 }
@@ -218,13 +217,13 @@ std::string SerializeFilterData(
   return msg.SerializeAsString();
 }
 
-absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
+std::optional<attribution_reporting::FilterData> DeserializeFilterData(
     sql::Statement& stmt,
     int col) {
   proto::AttributionFilterData msg;
   if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
       !msg.ParseFromArray(blob.data(), blob.size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   attribution_reporting::FilterValues::container_type filter_values;
@@ -265,12 +264,12 @@ std::string SerializeAggregationKeys(
   return msg.SerializeAsString();
 }
 
-absl::optional<attribution_reporting::AggregationKeys>
+std::optional<attribution_reporting::AggregationKeys>
 DeserializeAggregationKeys(sql::Statement& stmt, int col) {
   proto::AttributionAggregatableSource msg;
   if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
       !msg.ParseFromArray(blob.data(), blob.size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   attribution_reporting::AggregationKeys::Keys::container_type keys;
@@ -278,7 +277,7 @@ DeserializeAggregationKeys(sql::Statement& stmt, int col) {
 
   for (const auto& [id, key] : msg.keys()) {
     if (!IsValid(key)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     keys.emplace_back(id, absl::MakeUint128(key.high_bits(), key.low_bits()));
@@ -383,7 +382,7 @@ bool DeserializeReportMetadata(base::span<const uint8_t> blob,
   return true;
 }
 
-absl::optional<attribution_reporting::EventReportWindows>
+std::optional<attribution_reporting::EventReportWindows>
 DeserializeEventReportWindows(const proto::AttributionReadOnlySourceData& msg) {
   std::vector<base::TimeDelta> end_times;
   end_times.reserve(msg.event_level_report_window_end_times_size());

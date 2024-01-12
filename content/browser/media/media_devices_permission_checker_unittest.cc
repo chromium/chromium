@@ -60,7 +60,7 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
           *blink::OriginWithPossibleWildcards::FromOrigin(origin_));
     }
     navigation->SetPermissionsPolicyHeader({{feature, allowlist,
-                                             /*self_if_matches=*/absl::nullopt,
+                                             /*self_if_matches=*/std::nullopt,
                                              /*matches_all_origins=*/false,
                                              /*matches_opaque_src=*/false}});
     navigation->Commit();

@@ -122,7 +122,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // being open, or internet being disconnected. This gives them a noisy
   // report time to help disassociate them from other reports. Returns null if
   // no delay should be applied, e.g. due to debug mode.
-  virtual absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+  virtual std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const = 0;
 
   // Shuffles reports to provide plausible deniability on the ordering of
@@ -167,7 +167,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
-      absl::optional<base::Time> attributed_source_time) const = 0;
+      std::optional<base::Time> attributed_source_time) const = 0;
 
  protected:
   AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);

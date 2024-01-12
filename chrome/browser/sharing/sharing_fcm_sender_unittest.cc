@@ -176,13 +176,15 @@ class SharingFCMSenderTest : public testing::Test {
   SharingFCMSenderTest()
       : fake_web_push_sender_(new FakeWebPushSender()),
         sync_prefs_(&prefs_, &fake_device_info_sync_service_),
-        sharing_fcm_sender_(base::WrapUnique(fake_web_push_sender_.get()),
-                            &fake_sharing_message_bridge_,
-                            &sync_prefs_,
-                            &vapid_key_manager_,
-                            &fake_gcm_driver_,
-                            &fake_local_device_info_provider_,
-                            &test_sync_service_) {
+        sharing_fcm_sender_(
+            base::WrapUnique(fake_web_push_sender_.get()),
+            &fake_sharing_message_bridge_,
+            &sync_prefs_,
+            &vapid_key_manager_,
+            &fake_gcm_driver_,
+            fake_device_info_sync_service_.GetDeviceInfoTracker(),
+            &fake_local_device_info_provider_,
+            &test_sync_service_) {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 

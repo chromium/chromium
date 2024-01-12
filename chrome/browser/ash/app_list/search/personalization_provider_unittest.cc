@@ -90,14 +90,15 @@ class PersonalizationProviderTest : public testing::Test {
         1;
 
     mock_handler_ = std::make_unique<MockSearchHandler>();
-    provider_ = std::make_unique<PersonalizationProvider>(profile_,
-                                                          mock_handler_.get());
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<PersonalizationProvider>(
+        profile_, mock_handler_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
     task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
-    provider_.reset();
+    provider_ = nullptr;
     search_controller_.reset();
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile("name");
@@ -111,7 +112,7 @@ class PersonalizationProviderTest : public testing::Test {
 
   // Starts a search and waits for the query to be sent.
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_->StartSearch(query);
     task_environment_.RunUntilIdle();
   }
 
@@ -122,10 +123,9 @@ class PersonalizationProviderTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<::apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_proxy_;
-  std::unique_ptr<PersonalizationProvider> provider_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<::apps::AppServiceProxy, DanglingUntriaged> app_service_proxy_;
+  raw_ptr<PersonalizationProvider> provider_;
 };
 
 TEST_F(PersonalizationProviderTest, Basic) {

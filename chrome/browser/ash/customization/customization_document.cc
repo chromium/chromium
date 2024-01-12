@@ -127,7 +127,7 @@ constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
         })");
 
 struct CustomizationDocumentTestOverride {
-  raw_ptr<ServicesCustomizationDocument, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ServicesCustomizationDocument, DanglingUntriaged>
       customization_document = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 };
@@ -234,7 +234,7 @@ class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
  private:
   bool is_apps_set_ = false;
   base::Value::Dict apps_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ServicesCustomizationExternalLoader> weak_ptr_factory_{
       this};
 };
@@ -441,7 +441,7 @@ class ServicesCustomizationDocument::ApplyingTask {
   void Finished(bool success);
 
  private:
-  raw_ptr<ServicesCustomizationDocument, ExperimentalAsh> document_;
+  raw_ptr<ServicesCustomizationDocument> document_;
 
   // This is error-checking flag to prevent destroying unfinished task
   // or double finish.

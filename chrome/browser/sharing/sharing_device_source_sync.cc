@@ -16,6 +16,7 @@
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/service/sync_service.h"
@@ -43,6 +44,24 @@ bool IsStale(const syncer::DeviceInfo& device) {
       base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
 }
+
+std::unique_ptr<SharingTargetDeviceInfo> ConvertDeviceInfo(
+    const syncer::DeviceInfo* device,
+    bool use_short_name) {
+  CHECK(device);
+
+  const send_tab_to_self::SharingDeviceNames device_names =
+      send_tab_to_self::GetSharingDeviceNames(device);
+
+  const std::string& client_name =
+      use_short_name ? device_names.short_name : device_names.full_name;
+
+  return std::make_unique<SharingTargetDeviceInfo>(
+      device->guid(), client_name, GetDevicePlatform(*device),
+      device->pulse_interval(), device->form_factor(),
+      device->last_updated_timestamp());
+}
+
 }  // namespace
 
 SharingDeviceSourceSync::SharingDeviceSourceSync(
@@ -76,28 +95,26 @@ SharingDeviceSourceSync::~SharingDeviceSourceSync() {
   device_info_tracker_->RemoveObserver(this);
 }
 
-std::unique_ptr<syncer::DeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
-    const std::string& guid) {
+std::unique_ptr<SharingTargetDeviceInfo>
+SharingDeviceSourceSync::GetDeviceByGuid(const std::string& guid) {
   if (!IsSyncEnabledForSharing(sync_service_))
     return nullptr;
 
-  std::unique_ptr<syncer::DeviceInfo> device_info =
+  const syncer::DeviceInfo* device_info =
       device_info_tracker_->GetDeviceInfo(guid);
   if (!device_info)
     return nullptr;
 
-  device_info->set_client_name(
-      send_tab_to_self::GetSharingDeviceNames(device_info.get()).full_name);
-  return device_info;
+  return ConvertDeviceInfo(device_info, /*use_short_name=*/false);
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
+std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
 SharingDeviceSourceSync::GetDeviceCandidates(
     SharingSpecificFields::EnabledFeatures required_feature) {
   if (!IsSyncEnabledForSharing(sync_service_) || !IsReady())
     return {};
 
-  return RenameAndDeduplicateDevices(FilterDeviceCandidates(
+  return ConvertAndDeduplicateDevices(FilterDeviceCandidates(
       device_info_tracker_->GetAllDeviceInfo(), required_feature));
 }
 
@@ -137,9 +154,9 @@ void SharingDeviceSourceSync::OnLocalDeviceInfoProviderReady() {
   MaybeRunReadyCallbacks();
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
+std::vector<const syncer::DeviceInfo*>
 SharingDeviceSourceSync::FilterDeviceCandidates(
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<const syncer::DeviceInfo*> devices,
     sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const {
   std::set<SharingSpecificFields::EnabledFeatures> accepted_features{
       required_feature};
@@ -154,10 +171,12 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
   bool can_send_via_sender_id = CanSendViaSenderID(sync_service_);
 
   base::EraseIf(devices, [accepted_features, can_send_via_vapid,
-                          can_send_via_sender_id](const auto& device) {
+                          can_send_via_sender_id](
+                             const syncer::DeviceInfo* device) {
     // Checks if |last_updated_timestamp| is not too old.
-    if (IsStale(*device.get()))
+    if (IsStale(*device)) {
       return true;
+    }
 
     // Checks if device has SharingInfo.
     if (!device->sharing_info())
@@ -186,9 +205,9 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
   return devices;
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
-SharingDeviceSourceSync::RenameAndDeduplicateDevices(
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices) const {
+std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
+SharingDeviceSourceSync::ConvertAndDeduplicateDevices(
+    std::vector<const syncer::DeviceInfo*> devices) const {
   // Sort the devices so the most recently modified devices are first.
   std::sort(devices.begin(), devices.end(),
             [](const auto& device1, const auto& device2) {
@@ -196,7 +215,8 @@ SharingDeviceSourceSync::RenameAndDeduplicateDevices(
                      device2->last_updated_timestamp();
             });
 
-  std::unordered_map<syncer::DeviceInfo*, send_tab_to_self::SharingDeviceNames>
+  std::unordered_map<const syncer::DeviceInfo*,
+                     send_tab_to_self::SharingDeviceNames>
       device_names_map;
   std::unordered_set<std::string> full_names;
   std::unordered_map<std::string, int> short_names_counter;
@@ -208,9 +228,9 @@ SharingDeviceSourceSync::RenameAndDeduplicateDevices(
   // To prevent M78- instances of Chrome with same device model from showing up.
   full_names.insert(*personalizable_local_device_name_);
 
-  for (const auto& device : devices) {
+  for (const syncer::DeviceInfo* device : devices) {
     send_tab_to_self::SharingDeviceNames device_names =
-        send_tab_to_self::GetSharingDeviceNames(device.get());
+        send_tab_to_self::GetSharingDeviceNames(device);
 
     // Only insert the first occurrence of each device name.
     auto inserted = full_names.insert(device_names.full_name);
@@ -218,22 +238,25 @@ SharingDeviceSourceSync::RenameAndDeduplicateDevices(
       continue;
 
     short_names_counter[device_names.short_name]++;
-    device_names_map.insert({device.get(), std::move(device_names)});
+    device_names_map.insert({device, std::move(device_names)});
   }
 
-  // Filter duplicates and rename devices.
-  base::EraseIf(devices, [&device_names_map,
-                          &short_names_counter](auto& device) {
-    auto it = device_names_map.find(device.get());
-    if (it == device_names_map.end())
-      return true;
+  // Filter duplicates and convert devices.
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> converted_devices;
+
+  for (const syncer::DeviceInfo* device : devices) {
+    auto it = device_names_map.find(device);
+    if (it == device_names_map.end()) {
+      continue;
+    }
 
     const send_tab_to_self::SharingDeviceNames& device_names = it->second;
     bool unique_short_name = short_names_counter[device_names.short_name] == 1;
-    device->set_client_name(unique_short_name ? device_names.short_name
-                                              : device_names.full_name);
-    return false;
-  });
 
-  return devices;
+    converted_devices.push_back(
+        ConvertDeviceInfo(device,
+                          /*use_short_name=*/unique_short_name));
+  }
+
+  return converted_devices;
 }

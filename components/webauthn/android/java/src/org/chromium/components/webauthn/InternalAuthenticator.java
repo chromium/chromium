@@ -16,6 +16,7 @@ import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -28,7 +29,7 @@ import java.nio.ByteBuffer;
  * Acts as a bridge from InternalAuthenticator declared in
  * //components/webauthn/android/internal_authenticator_android.h to AuthenticatorImpl.
  *
- * The origin associated with requests on InternalAuthenticator should be set by calling
+ * <p>The origin associated with requests on InternalAuthenticator should be set by calling
  * setEffectiveOrigin() first.
  */
 @JNINamespace("webauthn")
@@ -49,7 +50,8 @@ public class InternalAuthenticator {
                         intentSender,
                         /* createConfirmationUiDelegate= */ null,
                         renderFrameHost,
-                        topOrigin);
+                        topOrigin,
+                        WebauthnMode.CHROME);
     }
 
     public static InternalAuthenticator createForTesting(

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
@@ -1066,6 +1067,51 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
       menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
   EXPECT_FALSE(
       menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+}
+
+// Tests that the extension's site access toggle is always hidden and site
+// permissions button is visible and disabled when site is blocked by policy.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
+  // Add a policy blocked site.
+  extensions::URLPatternSet default_blocked_hosts;
+  extensions::URLPatternSet default_allowed_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*"));
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(browser()->profile()),
+      default_blocked_hosts, default_allowed_hosts);
+
+  // Install extensions that request host permissions.
+  InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  InstallEnterpriseExtension("Enterprise extension",
+                             /*host_permissions=*/{"<all_urls>"});
+
+  // Navigate to the policy-blocked site.
+  const GURL policy_blocked_url("https://www.policy-blocked.com");
+  auto restricted_origin = url::Origin::Create(policy_blocked_url);
+  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+
+  // By default, site settings is set to "customize by extension".
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteSetting(restricted_origin),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  ShowMenu();
+  ASSERT_EQ(menu_items().size(), 2u);
+
+  // Both extensions' site access toggle should be hidden, since site access
+  // cannot be changed.
+  EXPECT_FALSE(menu_items()[0]->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_items()[1]->site_access_toggle_for_testing()->GetVisible());
+
+  // Both extension's site permissions button should be visible and disabled. We
+  // leave them visible because enterprise extensions can still have access to
+  // the site, but disabled because site access cannot be changed.
+  EXPECT_FALSE(
+      menu_items()[0]->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_FALSE(
+      menu_items()[1]->site_permissions_button_for_testing()->GetEnabled());
 }
 
 // Tests that the message section only displays the text container when the

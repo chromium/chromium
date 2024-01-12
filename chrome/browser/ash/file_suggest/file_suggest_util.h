@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -43,6 +44,7 @@ struct FileSuggestData {
   FileSuggestData(FileSuggestionType new_type,
                   const base::FilePath& new_file_path,
                   const std::optional<std::u16string>& new_prediction_reason,
+                  const std::optional<base::Time>& timestamp,
                   std::optional<float> new_score);
   FileSuggestData(FileSuggestData&&);
   FileSuggestData(const FileSuggestData&);
@@ -60,6 +62,9 @@ struct FileSuggestData {
 
   // The reason why the file is suggested.
   std::optional<std::u16string> prediction_reason;
+
+  // Timestamp of when the file was last modified, or viewed.
+  std::optional<base::Time> timestamp;
 
   // Only has a value when `type` == `FileSuggestionType::kLocalFile`.
   std::optional<float> score;

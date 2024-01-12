@@ -1257,4 +1257,63 @@ TEST(TelemetryApiConverters, DisplayInfo) {
   EXPECT_EQ(external_displays[1].display_name, absl::nullopt);
 }
 
+TEST(TelemetryApiConverters, ThermalSensorSource) {
+  EXPECT_EQ(Convert(crosapi::ProbeThermalSensorSource::kUnmappedEnumField),
+            cx_telem::ThermalSensorSource::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::ProbeThermalSensorSource::kEc),
+            cx_telem::ThermalSensorSource::kEc);
+
+  EXPECT_EQ(Convert(crosapi::ProbeThermalSensorSource::kSysFs),
+            cx_telem::ThermalSensorSource::kSysFs);
+}
+
+TEST(TelemetryApiConverters, ThermalInfo) {
+  // Constant values for the first thermal sensor.
+  constexpr char kSensorName1[] = "thermal_sensor_1";
+  constexpr double kSensorTemp1 = 100;
+  constexpr crosapi::ProbeThermalSensorSource kSensorSource1 =
+      crosapi::ProbeThermalSensorSource::kEc;
+
+  // Constant values for the first thermal sensor.
+  constexpr char kSensorName2[] = "thermal_sensor_2";
+  constexpr double kSensorTemp2 = 50;
+  constexpr crosapi::ProbeThermalSensorSource kSensorSource2 =
+      crosapi::ProbeThermalSensorSource::kSysFs;
+
+  auto input = crosapi::ProbeThermalInfo::New();
+  {
+    auto thermal_sensor_1 = crosapi::ProbeThermalSensorInfo::New(
+        kSensorName1, kSensorTemp1, kSensorSource1);
+
+    auto thermal_sensor_2 = crosapi::ProbeThermalSensorInfo::New(
+        kSensorName2, kSensorTemp2, kSensorSource2);
+
+    std::vector<crosapi::ProbeThermalSensorInfoPtr> thermal_sensors;
+    thermal_sensors.push_back(std::move(thermal_sensor_1));
+    thermal_sensors.push_back(std::move(thermal_sensor_2));
+
+    input->thermal_sensors = std::move(thermal_sensors);
+  }
+
+  auto result = ConvertPtr(std::move(input));
+
+  const auto& thermal_sensors = result.thermal_sensors;
+  EXPECT_EQ(thermal_sensors.size(), static_cast<size_t>(2));
+
+  // Check equality for thermal sensor 1
+  EXPECT_EQ(thermal_sensors[0].name, kSensorName1);
+  ASSERT_TRUE(thermal_sensors[0].temperature_celsius);
+  EXPECT_EQ(static_cast<double>(*thermal_sensors[0].temperature_celsius),
+            kSensorTemp1);
+  EXPECT_EQ(thermal_sensors[0].source, Convert(kSensorSource1));
+
+  // Check equality for thermal sensor 2
+  EXPECT_EQ(thermal_sensors[1].name, kSensorName2);
+  ASSERT_TRUE(thermal_sensors[1].temperature_celsius);
+  EXPECT_EQ(static_cast<double>(*thermal_sensors[1].temperature_celsius),
+            kSensorTemp2);
+  EXPECT_EQ(thermal_sensors[1].source, Convert(kSensorSource2));
+}
+
 }  // namespace chromeos::converters::telemetry

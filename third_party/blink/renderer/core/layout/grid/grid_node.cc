@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/grid/grid_node.h"
 
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_placement.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 
 namespace blink {
 
@@ -157,6 +159,24 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
     }
     grid_items->Append(&subgridded_items);
   }
+}
+
+MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
+    const GridSizingSubtree& sizing_subtree,
+    const ConstraintSpace& space) const {
+  auto* layout_grid = To<LayoutGrid>(box_.Get());
+
+  if (!layout_grid->HasCachedMinMaxSizes()) {
+    const auto fragment_geometry = CalculateInitialFragmentGeometry(
+        space, *this, /* break_token */ nullptr, /* is_intrinsic */ true);
+
+    layout_grid->SetCachedMinMaxSizes(
+        GridLayoutAlgorithm({*this, fragment_geometry, space})
+            .ComputeSubgridMinMaxSizes(sizing_subtree));
+  }
+
+  return {layout_grid->CachedMinMaxSizes(),
+          /* depends_on_block_constraints */ false};
 }
 
 }  // namespace blink

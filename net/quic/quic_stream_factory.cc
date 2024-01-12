@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -510,9 +509,7 @@ class QuicStreamFactory::Job {
   bool host_resolution_finished_ = false;
   bool session_creation_finished_ = false;
   bool connection_retried_ = false;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION QuicChromiumClientSession* session_ = nullptr;
+  raw_ptr<QuicChromiumClientSession> session_ = nullptr;
   HostResolverEndpointResult endpoint_result_;
   // If connection migraiton is supported, |network_| denotes the network on
   // which |session_| is created.
@@ -1241,8 +1238,9 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
 
   // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
   // in the constructor after WebRequestActionWithThreadsTest.* tests are fixed.
-  if (!task_runner_)
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault().get();
+  if (!task_runner_) {
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
 
   if (!tick_clock_)
     tick_clock_ = base::DefaultTickClock::GetInstance();
@@ -1857,7 +1855,7 @@ int QuicStreamFactory::CreateSessionSync(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
   TRACE_EVENT0(NetTracingCategory(), "QuicStreamFactory::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
@@ -1897,7 +1895,7 @@ int QuicStreamFactory::CreateSessionAsync(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
   TRACE_EVENT0(NetTracingCategory(), "QuicStreamFactory::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
@@ -1929,7 +1927,7 @@ void QuicStreamFactory::FinishCreateSession(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
     std::unique_ptr<DatagramClientSocket> socket,
     int rv) {
@@ -1961,7 +1959,7 @@ bool QuicStreamFactory::CreateSessionHelper(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
     std::unique_ptr<DatagramClientSocket> socket) {
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
@@ -2008,7 +2006,7 @@ bool QuicStreamFactory::CreateSessionHelper(
                                       server_info);
 
   QuicChromiumPacketWriter* writer =
-      new QuicChromiumPacketWriter(socket.get(), task_runner_);
+      new QuicChromiumPacketWriter(socket.get(), task_runner_.get());
   quic::QuicConnection* connection = new quic::QuicConnection(
       connection_id, quic::QuicSocketAddress(), ToQuicSocketAddress(addr),
       helper_.get(), alarm_factory_.get(), writer, true /* owns_writer */,
@@ -2049,7 +2047,7 @@ bool QuicStreamFactory::CreateSessionHelper(
       params_.max_migrations_to_non_default_network_on_path_degrading,
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
       std::move(crypto_config_handle), dns_resolution_start_time,
-      dns_resolution_end_time, tick_clock_, task_runner_,
+      dns_resolution_end_time, tick_clock_, task_runner_.get(),
       std::move(socket_performance_watcher), endpoint_result,
       net_log.net_log());
 

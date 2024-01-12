@@ -40,16 +40,17 @@ class GetControlledFramePartitionCommandTest : public WebAppTest {
   content::StoragePartitionConfig RunCommand(
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name,
-      bool in_memory = false) {
+      bool in_memory = false,
+      const base::Location location = FROM_HERE) {
     base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
         future;
-    provider().scheduler().ScheduleCallbackWithLock(
-        "GetControlledFramePartition",
-        std::make_unique<AppLockDescription>(url_info.app_id()),
+    provider().scheduler().ScheduleCallbackWithResult(
+        "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
         base::BindOnce(&GetControlledFramePartitionWithLock, profile(),
-                       url_info, partition_name, in_memory,
-                       future.GetCallback()),
-        FROM_HERE);
+                       url_info, partition_name, in_memory),
+        future.GetCallback(), /*arg_for_shutdown=*/
+        absl::optional<content::StoragePartitionConfig>(absl::nullopt),
+        location);
     return future.Get().value();
   }
 

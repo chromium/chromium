@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -42,13 +42,13 @@ const char kReservedLoss[] = "reserved.loss";
 namespace {
 
 // Returns the actual value of `base_value` with corresponding post auction
-// signal such as `winning_bid`. Returns absl::nullopt if corresponding signal
+// signal such as `winning_bid`. Returns std::nullopt if corresponding signal
 // is not available.
-absl::optional<double> GetBaseValue(
+std::optional<double> GetBaseValue(
     auction_worklet::mojom::BaseValue base_value,
     double winning_bid,
     double highest_scoring_other_bid,
-    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
     const PrivateAggregationTimings& timings) {
   // The mojom API declaration should ensure base_value is one of these cases.
   switch (base_value) {
@@ -68,23 +68,23 @@ absl::optional<double> GetBaseValue(
       if (reject_reason.has_value()) {
         return static_cast<int>(reject_reason.value());
       }
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns contribution's bucket calculated from `base`, and `bucket_obj`'s
-// scale and offset. Returns absl::nullopt if `base` is absl::nullopt, or base
+// scale and offset. Returns std::nullopt if `base` is std::nullopt, or base
 // or scale is NaN/infinity. Applies saturation arithmetic (in which all
 // operations are limited to a fixed range) to uint128 bucket (also applied to
 // intermediate results when they are too large to fit into a uint128). The
 // fixed range is 0 to absl::Uint128Max().
-absl::optional<absl::uint128> CalculateBucket(
+std::optional<absl::uint128> CalculateBucket(
     const auction_worklet::mojom::SignalBucketPtr& bucket_obj,
-    absl::optional<double> base) {
+    std::optional<double> base) {
   if (!base.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The multiplication of base value with scale is performed using double
@@ -92,10 +92,10 @@ absl::optional<absl::uint128> CalculateBucket(
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
   double scaled_base_value = base.value() * bucket_obj->scale;
 
-  // Returns absl::nullopt if scaled_base_value is NaN.
+  // Returns std::nullopt if scaled_base_value is NaN.
   // TODO(crbug.com/1410339): Throw a bad message if scale is NaN or infinity.
   if (std::isnan(scaled_base_value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool scaled_base_value_is_negative = std::signbit(scaled_base_value);
@@ -141,19 +141,19 @@ absl::optional<absl::uint128> CalculateBucket(
 
 // Returns contribution's value calculated from `base`, and `value_obj`'s scale
 // and offset. Returns 0 if the calculated value is negative. Returns
-// absl::nullopt if `base` is absl::nullopt, or base or scale is NaN/infinity.
-absl::optional<int32_t> CalculateValue(
+// std::nullopt if `base` is std::nullopt, or base or scale is NaN/infinity.
+std::optional<int32_t> CalculateValue(
     const auction_worklet::mojom::SignalValuePtr& value_obj,
-    absl::optional<double> base) {
+    std::optional<double> base) {
   if (!base.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   double scaled_base_value = base.value() * value_obj->scale;
-  // Returns absl::nullopt if the product of base and scale is NaN.
+  // Returns std::nullopt if the product of base and scale is NaN.
   // TODO(crbug.com/1410339): Throw a bad message if scale is NaN or infinity.
   if (std::isnan(scaled_base_value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Note: truncates the floating point result, without losing precision since
@@ -181,7 +181,7 @@ CalculateContributionBucketAndValue(
         contribution,
     double winning_bid,
     double highest_scoring_other_bid,
-    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
     const PrivateAggregationTimings& timings) {
   absl::uint128 bucket;
   int value;
@@ -191,7 +191,7 @@ CalculateContributionBucketAndValue(
   } else {
     auction_worklet::mojom::SignalBucketPtr& bucket_obj =
         contribution->bucket->get_signal_bucket();
-    absl::optional<absl::uint128> bucket_opt = CalculateBucket(
+    std::optional<absl::uint128> bucket_opt = CalculateBucket(
         bucket_obj,
         GetBaseValue(bucket_obj->base_value, winning_bid,
                      highest_scoring_other_bid, reject_reason, timings));
@@ -215,7 +215,7 @@ CalculateContributionBucketAndValue(
   } else {
     const auction_worklet::mojom::SignalValuePtr& value_obj =
         contribution->value->get_signal_value();
-    absl::optional<int> value_opt = CalculateValue(
+    std::optional<int> value_opt = CalculateValue(
         value_obj,
         GetBaseValue(value_obj->base_value, winning_bid,
                      highest_scoring_other_bid, reject_reason, timings));
@@ -233,7 +233,7 @@ CalculateContributionBucketAndValue(
 
 PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
     auction_worklet::mojom::PrivateAggregationRequestPtr request,
-    absl::optional<std::string> event_type)
+    std::optional<std::string> event_type)
     : request(std::move(request)), event_type(event_type) {}
 
 PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
@@ -247,12 +247,12 @@ bool PrivateAggregationRequestWithEventType::operator==(
 PrivateAggregationRequestWithEventType::
     ~PrivateAggregationRequestWithEventType() = default;
 
-absl::optional<PrivateAggregationRequestWithEventType>
+std::optional<PrivateAggregationRequestWithEventType>
 FillInPrivateAggregationRequest(
     auction_worklet::mojom::PrivateAggregationRequestPtr request,
     double winning_bid,
     double highest_scoring_other_bid,
-    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
     const PrivateAggregationTimings& timings,
     bool is_winner) {
   DCHECK(request);
@@ -261,7 +261,7 @@ FillInPrivateAggregationRequest(
     // value is negative. The worklet code should prevent that, but the worklet
     // process may be compromised.
     PrivateAggregationRequestWithEventType request_with_event_type(
-        std::move(request), /*event_type=*/absl::nullopt);
+        std::move(request), /*event_type=*/std::nullopt);
     return request_with_event_type;
   }
 
@@ -273,7 +273,7 @@ FillInPrivateAggregationRequest(
   DCHECK(contribution->is_for_event_contribution());
   const std::string event_type =
       contribution->get_for_event_contribution()->event_type;
-  absl::optional<std::string> final_event_type = absl::nullopt;
+  std::optional<std::string> final_event_type = std::nullopt;
   if (!base::StartsWith(event_type, "reserved.")) {
     final_event_type = event_type;
   }
@@ -288,7 +288,7 @@ FillInPrivateAggregationRequest(
   if (!final_event_type.has_value() &&
       (event_type != kReservedWin && event_type != kReservedLoss &&
        event_type != kReservedAlways)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Private aggregation requests of non reserved event types are not kept for
@@ -296,14 +296,14 @@ FillInPrivateAggregationRequest(
   if ((is_winner && event_type == kReservedLoss) ||
       (!is_winner &&
        (event_type == kReservedWin || final_event_type.has_value()))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   blink::mojom::AggregatableReportHistogramContributionPtr
       calculated_contribution = CalculateContributionBucketAndValue(
           std::move(contribution->get_for_event_contribution()), winning_bid,
           highest_scoring_other_bid, reject_reason, timings);
   if (!calculated_contribution) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PrivateAggregationRequestWithEventType request_with_event_type(
@@ -319,7 +319,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
-    absl::optional<url::Origin> aggregation_coordinator_origin,
+    std::optional<url::Origin> aggregation_coordinator_origin,
     const url::Origin& main_frame_origin) {
   CHECK_EQ(reporting_origin.scheme(), url::kHttpsScheme);
 
@@ -361,7 +361,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     // Override with the default if a non-default coordinator is specified when
     // the feature is disabled.
-    aggregation_coordinator_origin = absl::nullopt;
+    aggregation_coordinator_origin = std::nullopt;
   }
 
   if (aggregation_coordinator_origin &&
@@ -378,8 +378,8 @@ void SplitContributionsIntoBatchesThenSendToHost(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
         PrivateAggregationBudgetKey::Api::kProtectedAudience,
-        /*context_id=*/absl::nullopt,
-        /*timeout=*/absl::nullopt, aggregation_coordinator_origin,
+        /*context_id=*/std::nullopt,
+        /*timeout=*/std::nullopt, aggregation_coordinator_origin,
         remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID

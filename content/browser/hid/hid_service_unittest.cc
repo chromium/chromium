@@ -1192,7 +1192,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   base::RunLoop read_loop;
   connection->Read(base::BindLambdaForTesting(
       [&](bool success, uint8_t report_id,
-          const absl::optional<std::vector<uint8_t>>& buffer) {
+          const std::optional<std::vector<uint8_t>>& buffer) {
         EXPECT_EQ(success, is_fido_allowed);
         read_loop.Quit();
       }));

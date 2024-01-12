@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 
@@ -30,6 +31,7 @@ class PreloadAppDefinition {
   bool IsDefaultApp() const;
   bool IsOemApp() const;
   bool IsTestApp() const;
+  AppInstallSurface GetInstallSurface() const;
 
   // Returns the Web App manifest URL for the app, which hosts the manifest of
   // the app in a JSON format. The URL could point to a local file, or a web
@@ -46,6 +48,10 @@ class PreloadAppDefinition {
   // identifier of the app. Does not attempt to validate the GURL. Must only be
   // called if `GetPlatform()` returns `AppType::kWeb`.
   GURL GetWebAppManifestId() const;
+
+  std::string GetWebAppId() const;
+
+  AppInstallData ToAppInstallData() const;
 
  private:
   proto::AppPreloadListResponse_App app_proto_;

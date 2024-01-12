@@ -10,7 +10,7 @@
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
-class UrlLoadingObserverBridge;
+class UrlLoadingObserver;
 
 // A class containing static functions to notify observers of url loading
 // state change.
@@ -25,10 +25,10 @@ class UrlLoadingNotifierBrowserAgent
   ~UrlLoadingNotifierBrowserAgent() override;
 
   // Adds `observer` to the list of observers.
-  void AddObserver(UrlLoadingObserverBridge* observer);
+  void AddObserver(UrlLoadingObserver* observer);
 
   // Removes `observer` from the list of observers.
-  void RemoveObserver(UrlLoadingObserverBridge* observer);
+  void RemoveObserver(UrlLoadingObserver* observer);
 
   // The loader will load `url` in the current tab. Next state will be
   // one of: TabFailedToLoadUrl, TabDidPrerenderUrl,
@@ -71,7 +71,7 @@ class UrlLoadingNotifierBrowserAgent
 
   explicit UrlLoadingNotifierBrowserAgent(Browser* browser);
 
-  base::ObserverList<UrlLoadingObserverBridge, true> observers_;
+  base::ObserverList<UrlLoadingObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_URL_LOADING_NOTIFIER_BROWSER_AGENT_H_

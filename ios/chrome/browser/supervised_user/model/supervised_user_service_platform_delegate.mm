@@ -4,9 +4,21 @@
 
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
 
-SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate() {
-}
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-// TODO(crbug.com/1491611): migrate current implementation from
-// IncognitoGridMediator::onPreferenceChanged().
-void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {}
+SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate(
+    ChromeBrowserState* browser_state)
+    : browser_state_(browser_state) {}
+
+void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_);
+  for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
+    browser->GetWebStateList()->CloseAllWebStates(
+        WebStateList::CLOSE_USER_ACTION);
+  }
+}

@@ -63,8 +63,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     // for the first time after the system startup. AppRegistryCache's internal
     // variables haven't been updated, so `states_` and `deltas_in_progress_`
     // are having the old app info, not include any new app info in `delta`.
-    virtual void OnAppsInitialized(const std::vector<AppPtr>& deltas,
-                                   apps::AppType app_type) {}
+    //
+    // Please use OnAppTypeInitialized if possible.
+    virtual void OnAppTypePublishing(const std::vector<AppPtr>& deltas,
+                                     apps::AppType app_type) {}
 
     // Called when the AppRegistryCache object (the thing that this observer
     // observes) will be destroyed. In response, the observer, `this`, should
@@ -162,7 +164,37 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // Returns the set of app types that have so far been initialized.
   const std::set<AppType>& InitializedAppTypes() const;
 
+  // Returns true after the initialization of `app_type` is done and the apps of
+  // `app_type` is ready in AppRegistryCache.
+  //
+  // Note: The app publisher and app platform might be not ready yet when
+  // IsAppTypeInitialized returns true.
+  //
+  // The initialization is considered done when the apps for `app_type` have
+  // been added to AppRegistryCache, when `InitApps` is called by AppStorage or
+  // when `should_notify_initialized` is set as true by the publisher of
+  // `app_type`.
   bool IsAppTypeInitialized(AppType app_type) const;
+
+  // Returns true after both the publisher and the app platform of `app_type`
+  // are ready.
+  //
+  // Note: apps of `app_type` might haven't been added to AppRegistryCache when
+  // IsAppTypePublished returns true.
+  //
+  // The app type published is considered true when the publisher of `app_type`
+  // publishes apps when `should_notify_initialized` is set as true.
+  //
+  // When apps of `app_type` are initialized and added to AppRegistryCache, the
+  // publisher may be not ready yet, so IsAppTypeInitialized could return true,
+  // but IsAppTypePublished could be false. Only when the publisher publishes
+  // apps with `should_notify_initialized` as true, IsAppTypePublished returns
+  // true.
+  //
+  // Please use IsAppTypeInitialized if possible. This interface can be used to
+  // check whether the publisher and the app platform for `app_type` are ready
+  // for `app_type`.
+  bool IsAppTypePublished(AppType app_type) const;
 
   // Returns true if the cache contains an app with id `app_id` whose
   // `Readiness()` corresponds to an installed state.
@@ -188,9 +220,23 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   friend class AppServiceProxyBase;
   friend class AppServiceProxyLacros;
 
+  // Called by AppServiceProxy::OnApps when publishers publish changes on apps,
+  // to notifies all observers of state-and-delta AppUpdate's and then merges
+  // the cached states with the deltas. If `should_notify_initialized` is true,
+  // notify observers `app_type` has been initialized by calling
+  // `OnAppTypeInitialized`.
+  //
+  // Please use AppServiceProxy::OnApps if possible. For tests without Profile,
+  // e.g. unittests, please use OnAppsForTesting.
+  void OnApps(std::vector<AppPtr> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized);
+
   // Notifies all observers of state-and-delta AppUpdate's (the state comes
   // from the internal cache, the delta comes from the argument) and then
-  // merges the cached states with the deltas.
+  // merges the cached states with the deltas. This interface can be used to
+  // update apps for multiple app types, and it won't notify observers the
+  // initialized status.
   //
   // Notification and merging might be delayed until after OnApps returns. For
   // example, suppose that the initial set of states is (a0, b0, c0) for three
@@ -206,14 +252,12 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // The callee will consume the deltas. An apps::AppPtr has the ownership
   // semantics of a unique_ptr, and will be deleted when out of scope. The
   // caller presumably calls OnApps(std::move(deltas)).
-  //
-  // Please use AppServiceProxy::OnApps if possible. For tests without Profile,
-  // e.g. unittests, please use OnAppsForTesting.
-  void OnApps(std::vector<AppPtr> deltas,
-              apps::AppType app_type,
-              bool should_notify_initialized);
+  void OnApps(std::vector<AppPtr> deltas);
 
   void DoOnApps(std::vector<AppPtr> deltas);
+
+  // Notifies all observers that apps of `app_type` have been initialized.
+  void InitApps(apps::AppType app_type);
 
   void OnAppTypeInitialized();
 
@@ -246,8 +290,12 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   std::set<AppType> in_progress_initialized_app_types_;
 
   // Saves app types which have finished initialization, and
-  // OnAppTypeInitialized has be called to notify observers.
+  // OnAppTypeInitialized has been called to notify observers.
   std::set<AppType> initialized_app_types_;
+
+  // Saves app types which have been published by the publisher, and
+  // OnAppTypePublished has been called to notify observers.
+  std::set<AppType> published_app_types_;
 
   AccountId account_id_;
 

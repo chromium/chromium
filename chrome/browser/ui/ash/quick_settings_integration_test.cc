@@ -160,6 +160,10 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
     SetUpCommandLineForLacros(command_line);
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    SetUpLacrosBrowserManager();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };

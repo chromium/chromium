@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/update_client/protocol_handler.h"
+
 #include "components/update_client/protocol_parser_json.h"
 #include "components/update_client/protocol_serializer_json.h"
 

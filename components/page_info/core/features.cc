@@ -12,12 +12,6 @@
 
 namespace page_info {
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPageInfoStoreInfo,
-             "PageInfoStoreInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 const char* default_langs[]{"en", "pt", "fr", "it", "nl", "de", "es"};
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {

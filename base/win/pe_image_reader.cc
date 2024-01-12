@@ -101,10 +101,8 @@ const IMAGE_FILE_HEADER* PeImageReader::GetCoffFileHeader() {
           .data());
 }
 
-const uint8_t* PeImageReader::GetOptionalHeaderData(
-    size_t* optional_header_size) {
-  *optional_header_size = GetOptionalHeaderSize();
-  return GetOptionalHeaderStart();
+span<const uint8_t> PeImageReader::GetOptionalHeaderData() {
+  return make_span(GetOptionalHeaderStart(), GetOptionalHeaderSize());
 }
 
 size_t PeImageReader::GetNumberOfSections() {
@@ -119,61 +117,54 @@ const IMAGE_SECTION_HEADER* PeImageReader::GetSectionHeaderAt(size_t index) {
       (sizeof(IMAGE_SECTION_HEADER) * index));
 }
 
-const uint8_t* PeImageReader::GetExportSection(size_t* section_size) {
-  size_t data_size = 0;
-  const uint8_t* data = GetImageData(IMAGE_DIRECTORY_ENTRY_EXPORT, &data_size);
+span<const uint8_t> PeImageReader::GetExportSection() {
+  span<const uint8_t> data = GetImageData(IMAGE_DIRECTORY_ENTRY_EXPORT);
 
   // The export section data must be big enough for the export directory.
-  if (!data || data_size < sizeof(IMAGE_EXPORT_DIRECTORY))
-    return nullptr;
+  if (data.size() < sizeof(IMAGE_EXPORT_DIRECTORY)) {
+    return span<const uint8_t>();
+  }
 
-  *section_size = data_size;
   return data;
 }
 
 size_t PeImageReader::GetNumberOfDebugEntries() {
-  size_t data_size = 0;
-  const uint8_t* data = GetImageData(IMAGE_DIRECTORY_ENTRY_DEBUG, &data_size);
-  return data ? (data_size / sizeof(IMAGE_DEBUG_DIRECTORY)) : 0;
+  return GetImageData(IMAGE_DIRECTORY_ENTRY_DEBUG).size() /
+         sizeof(IMAGE_DEBUG_DIRECTORY);
 }
 
 const IMAGE_DEBUG_DIRECTORY* PeImageReader::GetDebugEntry(
     size_t index,
-    const uint8_t** raw_data,
-    size_t* raw_data_size) {
+    span<const uint8_t>& raw_data) {
   DCHECK_LT(index, GetNumberOfDebugEntries());
 
   // Get the debug directory.
-  size_t debug_directory_size = 0;
-  const IMAGE_DEBUG_DIRECTORY* entries =
-      reinterpret_cast<const IMAGE_DEBUG_DIRECTORY*>(
-          GetImageData(IMAGE_DIRECTORY_ENTRY_DEBUG, &debug_directory_size));
-  if (!entries)
+  span<const uint8_t> debug_directory_data =
+      GetImageData(IMAGE_DIRECTORY_ENTRY_DEBUG);
+  if (debug_directory_data.empty()) {
     return nullptr;
+  }
 
-  const IMAGE_DEBUG_DIRECTORY& entry = entries[index];
+  const IMAGE_DEBUG_DIRECTORY& entry =
+      reinterpret_cast<const IMAGE_DEBUG_DIRECTORY&>(
+          debug_directory_data[index * sizeof(IMAGE_DEBUG_DIRECTORY)]);
   const uint8_t* debug_data = nullptr;
   if (GetStructureAt(entry.PointerToRawData, entry.SizeOfData, &debug_data)) {
-    *raw_data = debug_data;
-    *raw_data_size = entry.SizeOfData;
+    raw_data = make_span(debug_data, entry.SizeOfData);
   }
   return &entry;
 }
 
 bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
                                      void* context) {
-  size_t data_size = 0;
-  const uint8_t* data =
-      GetImageData(IMAGE_DIRECTORY_ENTRY_SECURITY, &data_size);
-  if (!data)
-    return false;  // Certificate table is out of bounds.
+  span<const uint8_t> data = GetImageData(IMAGE_DIRECTORY_ENTRY_SECURITY);
   const size_t kWinCertificateSize = offsetof(WIN_CERTIFICATE, bCertificate);
-  while (data_size) {
+  while (!data.empty()) {
     const WIN_CERTIFICATE* win_certificate =
-        reinterpret_cast<const WIN_CERTIFICATE*>(data);
-    if (kWinCertificateSize > data_size ||
+        reinterpret_cast<const WIN_CERTIFICATE*>(data.data());
+    if (kWinCertificateSize > data.size() ||
         kWinCertificateSize > win_certificate->dwLength ||
-        win_certificate->dwLength > data_size) {
+        win_certificate->dwLength > data.size()) {
       return false;
     }
     if (!(*callback)(
@@ -183,11 +174,10 @@ bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
       return false;
     }
     size_t padded_length = (win_certificate->dwLength + 7) & ~0x7u;
-    // Don't overflow when recalculating data_size, since padded_length can be
-    // attacker controlled.
-    if (!CheckSub(data_size, padded_length).AssignIfValid(&data_size))
+    if (padded_length > data.size()) {
       return false;
-    data += padded_length;
+    }
+    data = data.subspan(padded_length);
   }
   return true;
 }
@@ -347,11 +337,11 @@ const IMAGE_SECTION_HEADER* PeImageReader::FindSectionFromRva(
   return nullptr;
 }
 
-const uint8_t* PeImageReader::GetImageData(size_t index, size_t* data_length) {
+span<const uint8_t> PeImageReader::GetImageData(size_t index) {
   // Get the requested directory entry.
   const IMAGE_DATA_DIRECTORY* entry = GetDataDirectoryEntryAt(index);
   if (!entry)
-    return nullptr;
+    return span<const uint8_t>();
 
   // The entry for the certificate table is special in that its address is a
   // file pointer rather than an RVA.
@@ -359,31 +349,30 @@ const uint8_t* PeImageReader::GetImageData(size_t index, size_t* data_length) {
     // Does the data fit within the file.
     if (entry->VirtualAddress > image_data_.size() ||
         image_data_.size() - entry->VirtualAddress < entry->Size) {
-      return nullptr;
+      return span<const uint8_t>();
     }
-    *data_length = entry->Size;
-    return image_data_.subspan(entry->VirtualAddress).data();
+    return image_data_.subspan(entry->VirtualAddress, entry->Size);
   }
 
   // Find the section containing the data.
   const IMAGE_SECTION_HEADER* header =
       FindSectionFromRva(entry->VirtualAddress);
   if (!header)
-    return nullptr;
+    return span<const uint8_t>();
 
   // Does the data fit within the section when mapped?
   size_t data_offset = entry->VirtualAddress - header->VirtualAddress;
   if (entry->Size > (header->Misc.VirtualSize - data_offset))
-    return nullptr;
+    return span<const uint8_t>();
 
   // Is the data entirely present on disk (if not it's zeroed out when loaded)?
   if (data_offset >= header->SizeOfRawData ||
       header->SizeOfRawData - data_offset < entry->Size) {
-    return nullptr;
+    return span<const uint8_t>();
   }
 
-  *data_length = entry->Size;
-  return image_data_.subspan(header->PointerToRawData + data_offset).data();
+  return image_data_.subspan(header->PointerToRawData + data_offset,
+                             entry->Size);
 }
 
 }  // namespace win

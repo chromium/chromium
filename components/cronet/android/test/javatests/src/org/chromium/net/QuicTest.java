@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
@@ -101,6 +102,7 @@ public class QuicTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/1515600")
     public void testQuicLoadUrl() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
@@ -181,6 +183,7 @@ public class QuicTest {
     @Test
     @LargeTest
     @SuppressWarnings("deprecation")
+    @DisabledTest(message = "crbug.com/1515600")
     public void testNQEWithQuic() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";

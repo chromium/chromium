@@ -52,6 +52,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.UpdateAccessorySheetDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -124,6 +126,8 @@ public class ManualFillingControllerTest {
     @Mock private BackPressManager mMockBackPressManager;
 
     @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+
+    @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
@@ -303,6 +307,7 @@ public class ManualFillingControllerTest {
                 new BrowserControlsManager(mMockActivity, 0);
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
+        doNothing().when(mMockFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());
         ObservableSupplierImpl<CompositorViewHolder> compositorViewHolderSupplier =
                 new ObservableSupplierImpl<>();
         compositorViewHolderSupplier.set(mMockCompositorViewHolder);
@@ -968,6 +973,35 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testAdjustsOffsetAndHeightForFullscreen() {
+        final int density = 2;
+
+        mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+        Tab tab = addBrowserTab(mMediator, 1234, null);
+
+        // Now simulate showing the accessory bar.
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+        when(mMockKeyboardAccessory.isShown()).thenReturn(true);
+        when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(false);
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        mModel.set(KEYBOARD_EXTENSION_STATE, EXTENDING_KEYBOARD);
+
+        // Ensure it's bottom-aligned and insetting the page with its height.
+        assertEquals(
+                (int) mController.getBottomInsetSupplier().get(), sAccessoryHeightDp * density);
+        verify(mMockKeyboardAccessory).setBottomOffset(0);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        // Simulate entering fullscreen mode (which makes the keyboard overlaying.
+        mFullscreenObserverCaptor
+                .getValue()
+                .onEnterFullscreen(tab, new FullscreenOptions(false, false));
+
+        // Ensure it's not insetting the page.
+        assertEquals((int) mController.getBottomInsetSupplier().get(), 0);
+    }
+
+    @Test
     public void testIsFillingViewShownReturnsTargetValueAheadOfComponentUpdate() {
         // After initialization with one tab, the accessory sheet is closed.
         addBrowserTab(mMediator, 1234, null);
@@ -1278,10 +1312,17 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testCallsHelperToConfirmDeletion() {
-        Runnable testRunnable = () -> {};
-        mMediator.confirmOperation("Suggestion", "Delete it?", testRunnable);
+        Runnable testConfirmRunnable = () -> {};
+        Runnable testDeclineRunnable = () -> {};
+        mMediator.confirmOperation(
+                "Suggestion", "Delete it?", testConfirmRunnable, testDeclineRunnable);
         verify(mMockConfirmationHelper)
-                .showConfirmation("Suggestion", "Delete it?", R.string.ok, testRunnable);
+                .showConfirmation(
+                        "Suggestion",
+                        "Delete it?",
+                        R.string.ok,
+                        testConfirmRunnable,
+                        testDeclineRunnable);
     }
 
     @Test

@@ -46,5 +46,5 @@ void ToggleCameraButton::UpdateImageAndTooltipText() {
   SetTooltipText(l10n_util::GetStringUTF16(text));
 }
 
-BEGIN_METADATA(ToggleCameraButton, OverlayWindowImageButton)
+BEGIN_METADATA(ToggleCameraButton)
 END_METADATA

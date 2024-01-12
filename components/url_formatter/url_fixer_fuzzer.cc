@@ -28,7 +28,7 @@ class Environment {
  public:
   Environment() {
     CHECK(base::i18n::InitializeICU());
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 
  private:

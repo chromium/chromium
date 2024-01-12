@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -46,7 +47,10 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BackPressManager backPressManager,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub) {
-        if (barStub == null || sheetStub == null) return; // The manual filling isn't needed.
+        Context context = windowAndroid.getContext().get();
+        if (barStub == null || sheetStub == null || context == null) {
+            return; // The manual filling isn't needed.
+        }
         // TODO(crbug.com/1448820): Initialize in the xml resources file.
         barStub.setLayoutResource(R.layout.keyboard_accessory);
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
@@ -59,7 +63,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 sheetController,
                 backPressManager,
                 keyboardDelegate,
-                new ConfirmationDialogHelper(windowAndroid.getContext()));
+                new ConfirmationDialogHelper(context));
     }
 
     @VisibleForTesting
@@ -195,8 +199,9 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void confirmOperation(String title, String message, Runnable confirmedCallback) {
-        mMediator.confirmOperation(title, message, confirmedCallback);
+    public void confirmOperation(
+            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
+        mMediator.confirmOperation(title, message, confirmedCallback, declinedCallback);
     }
 
     ManualFillingMediator getMediatorForTesting() {

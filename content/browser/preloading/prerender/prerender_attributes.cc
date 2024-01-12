@@ -19,21 +19,21 @@ PrerenderAttributes::PrerenderAttributes(
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
-    absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     Referrer referrer,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
-    absl::optional<url::Origin> initiator_origin,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<url::Origin> initiator_origin,
     int initiator_process_id,
     base::WeakPtr<WebContents> initiator_web_contents,
-    absl::optional<blink::LocalFrameToken> initiator_frame_token,
+    std::optional<blink::LocalFrameToken> initiator_frame_token,
     int initiator_frame_tree_node_id,
     ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
-    absl::optional<base::RepeatingCallback<bool(const GURL&)>>
+    std::optional<base::RepeatingCallback<bool(const GURL&)>>
         url_match_predicate,
-    absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+    std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
         prerender_navigation_handle_callback,
-    const absl::optional<base::UnguessableToken>&
+    const std::optional<base::UnguessableToken>&
         initiator_devtools_navigation_token)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),

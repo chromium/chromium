@@ -192,8 +192,7 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
       LOG(ERROR) << "Failed to connect to signal: " << signal_name;
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> vm_plugin_dispatcher_proxy_ =
-      nullptr;
+  raw_ptr<dbus::ObjectProxy> vm_plugin_dispatcher_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 

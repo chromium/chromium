@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_PRIVACY_SANDBOX_ATTESTATIONS_COMPONENT_INSTALLER_H_
 
 #include <cstdint>
-
 #include <string>
 #include <vector>
 

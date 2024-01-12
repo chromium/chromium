@@ -99,13 +99,12 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
  private:
   PrefService* GetPrefService() const;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_for_testing_;
+  raw_ptr<PrefService> pref_service_for_testing_;
 
   absl::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
       extension_commands_override_for_testing_;
 
-  raw_ptr<wm::ActivationClient, DanglingUntriaged | ExperimentalAsh>
-      activation_client_;
+  raw_ptr<wm::ActivationClient, DanglingUntriaged> activation_client_;
 
   // Handles showing notifications when deprecated event rewrites occur.
   std::unique_ptr<DeprecationNotificationController> deprecation_controller_;

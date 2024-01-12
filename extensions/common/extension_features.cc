@@ -29,7 +29,7 @@ BASE_FEATURE(kApiUserScripts,
 
 BASE_FEATURE(kApiOdfsConfigPrivate,
              "ApiOdfsConfigPrivate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRestrictFileURLNavigation,
              "RestrictFileURLNavigation",
@@ -56,6 +56,10 @@ BASE_FEATURE(kAvoidEarlyExtensionScriptContextCreation,
 BASE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs,
              "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableWebHidInWebView,
+             "EnableWebHidInWebView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionDynamicURLRedirection,
              "ExtensionDynamicURLRedirection",
@@ -144,7 +148,7 @@ BASE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch,
 
 BASE_FEATURE(kNewWebstoreURL,
              "NewWebstoreURL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",

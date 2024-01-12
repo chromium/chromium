@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 source_set("public") {
   sources = [
     "data_sharing_service.h",
@@ -9,8 +15,16 @@ source_set("public") {
     "features.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/keyed_service/core",
   ]
+}
+
+if (is_android) {
+  android_library("public_java") {
+    sources = [ "android/java/src/org/chromium/components/data_sharing/DataSharingService.java" ]
+
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
+  }
 }

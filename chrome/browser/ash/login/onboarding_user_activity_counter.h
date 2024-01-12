@@ -56,10 +56,10 @@ class OnboardingUserActivityCounter
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
-  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
+  const raw_ptr<PrefService, DanglingUntriaged> prefs_;
   const base::TimeDelta required_activity_time_;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   base::OneShotTimer timer_;
   base::OnceClosure closure_;
 };

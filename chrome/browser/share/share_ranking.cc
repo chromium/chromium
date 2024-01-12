@@ -4,6 +4,8 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include <vector>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -119,12 +121,9 @@ void FillGaps(std::vector<std::string>& ranking,
   // apps used for empty slots.
   std::vector<std::string> unused_available(ranking.begin() + length,
                                             ranking.end());
-
-  unused_available.erase(
-      std::remove_if(
-          unused_available.begin(), unused_available.end(),
-          [&](const std::string& e) { return !RankingContains(available, e); }),
-      unused_available.end());
+  std::erase_if(unused_available, [&](const std::string& e) {
+    return !RankingContains(available, e);
+  });
 
   // Now, append the rest of the system apps (those not already included) to
   // unused_available. These will be the apps that can handle the share type and

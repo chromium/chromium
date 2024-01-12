@@ -31,6 +31,9 @@ std::vector<uint8_t> kEmptyFileValue;
 
 }  // namespace
 
+// TODO(crbug.com/1454512): Add a DeleteFile test once there is a way to check
+// that the db is actually deleted.
+
 class CdmStorageManagerTest : public testing::Test {
  public:
   CdmStorageManagerTest() = default;
@@ -111,7 +114,8 @@ class CdmStorageManagerSingularTest : public CdmStorageManagerTest,
   }
 
   void TearDown() override {
-    cdm_storage_manager_->DeleteDatabase();
+    cdm_storage_manager_->DeleteDataForTimeFrame(
+        base::Time::Min(), base::Time::Max(), base::DoNothing());
 
     // To prevent a memory leak, reset the manager. This may post
     // destruction of other objects, so RunUntilIdle().
@@ -141,8 +145,10 @@ class CdmStorageManagerMultipleTest
   }
 
   void TearDown() override {
-    cdm_storage_manager_->DeleteDatabase();
-    cdm_storage_manager_two_->DeleteDatabase();
+    cdm_storage_manager_->DeleteDataForTimeFrame(
+        base::Time::Min(), base::Time::Max(), base::DoNothing());
+    cdm_storage_manager_two_->DeleteDataForTimeFrame(
+        base::Time::Min(), base::Time::Max(), base::DoNothing());
 
     // To prevent a memory leak, reset the manager. This may post
     // destruction of other objects, so RunUntilIdle().
@@ -212,8 +218,8 @@ TEST_P(CdmStorageManagerSingularTest, DeleteDataForStorageKey) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(kTestStorageKey,
-                                                base::DoNothing());
+  cdm_storage_manager_->DeleteDataForStorageKey(
+      kTestStorageKey, base::Time::Min(), base::Time::Max(), base::DoNothing());
 
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);
@@ -283,8 +289,47 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKey) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(kTestStorageKey,
-                                                base::DoNothing());
+  cdm_storage_manager_->DeleteDataForStorageKey(
+      kTestStorageKey, base::Time::Min(), base::Time::Max(), base::DoNothing());
+
+  ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
+  ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);
+
+  ExpectFileContents(cdm_file_for_remote_two, kPopulatedFileValue);
+}
+
+TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKeyTimeSpecified) {
+  auto time_test_started = base::Time::Now();
+  cdm_storage_manager_->OpenCdmStorage(
+      CdmStorageBindingContext(kTestStorageKey, kCdmType),
+      cdm_storage_.BindNewPipeAndPassReceiver());
+
+  auto cdm_file_for_remote_one = OpenCdmFile(cdm_storage_, kFileName);
+  Write(cdm_file_for_remote_one, kPopulatedFileValue);
+  ASSERT_TRUE(cdm_file_for_remote_one.is_bound());
+
+  auto cdm_file_two_for_remote_one = OpenCdmFile(cdm_storage_, kFileNameTwo);
+  Write(cdm_file_two_for_remote_one, kPopulatedFileValue);
+  ASSERT_TRUE(cdm_file_two_for_remote_one.is_bound());
+
+  cdm_storage_manager_two_->OpenCdmStorage(
+      CdmStorageBindingContext(kTestStorageKey, kCdmType),
+      cdm_storage_two_.BindNewPipeAndPassReceiver());
+
+  auto cdm_file_for_remote_two = OpenCdmFile(cdm_storage_two_, kFileNameTwo);
+  Write(cdm_file_for_remote_two, kPopulatedFileValue);
+  ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
+
+  cdm_storage_manager_->DeleteDataForStorageKey(
+      kTestStorageKey, base::Time::Min(), time_test_started, base::DoNothing());
+
+  ExpectFileContents(cdm_file_for_remote_one, kPopulatedFileValue);
+  ExpectFileContents(cdm_file_two_for_remote_one, kPopulatedFileValue);
+
+  ExpectFileContents(cdm_file_for_remote_two, kPopulatedFileValue);
+
+  cdm_storage_manager_->DeleteDataForStorageKey(
+      kTestStorageKey, base::Time::Min(), base::Time::Now(), base::DoNothing());
 
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);

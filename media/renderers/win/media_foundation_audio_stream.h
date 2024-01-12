@@ -40,6 +40,14 @@ class MediaFoundationAACAudioStream : public MediaFoundationAudioStream {
 };
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+// The AC4 specific audio stream.
+class MediaFoundationAC4AudioStream : public MediaFoundationAudioStream {
+ public:
+  HRESULT GetMediaType(IMFMediaType** media_type_out) override;
+};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
 }  // namespace media
 
 #endif  // MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_AUDIO_STREAM_H_

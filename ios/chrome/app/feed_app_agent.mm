@@ -75,14 +75,11 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 #pragma mark - SceneObservingAppAgent
 
 - (void)appDidEnterBackground {
-  if (IsFeedBackgroundRefreshEnabled() ||
-      IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (IsFeedBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
-  } else if (IsFeedAppCloseForegroundRefreshEnabled()) {
-    if ([self feedServiceIfCreated]) {
-      [self feedServiceIfCreated]->RefreshFeed(
-          FeedRefreshTrigger::kForegroundAppClose);
-    }
+  } else if ([self feedServiceIfCreated]) {
+    [self feedServiceIfCreated]->RefreshFeed(
+        FeedRefreshTrigger::kForegroundAppClose);
   }
 }
 
@@ -148,8 +145,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   // Do not DCHECK whether background refreshes were enabled at startup because
   // this is also called from the background task handler, and the value could
   // have changed during a cold start.
-  if (!IsFeedBackgroundRefreshEnabled() &&
-      !IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (!IsFeedBackgroundRefreshEnabled()) {
     return;
   }
   BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
@@ -169,10 +165,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   if (IsFeedOverrideDefaultsEnabled()) {
     earliestBeginDate = [NSDate
         dateWithTimeIntervalSinceNow:GetBackgroundRefreshIntervalInSeconds()];
-  } else if (IsFeedAppCloseBackgroundRefreshEnabled()) {
-    earliestBeginDate =
-        [NSDate dateWithTimeIntervalSinceNow:
-                    GetAppCloseBackgroundRefreshIntervalInSeconds()];
   } else {
     // This is expected to crash if FeedService is not available.
     earliestBeginDate =
@@ -185,8 +177,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 - (void)handleBackgroundRefreshTask:(BGTask*)task {
   // Do not DCHECK whether background refreshes were enabled at startup because
   // the value could have changed during a cold start.
-  if (!IsFeedBackgroundRefreshEnabled() &&
-      !IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (!IsFeedBackgroundRefreshEnabled()) {
     return;
   }
 
@@ -206,13 +197,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     });
   };
 
-  // The `engagedWithLatestRefreshedContent` criteria only applies to background
-  // app close. Early return if criteria is not met.
-  if (IsFeedAppCloseBackgroundRefreshEnabled() &&
-      ![self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]) {
-    return;
-  }
-
   // Cold starts are killed earlier in this method, so warm and cold starts
   // cannot be recorded at the same time.
   [self recordWarmStartMetrics];
@@ -226,16 +210,9 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 // Records cold start histogram and kills app.
 - (void)handleColdStartAndKillApp {
-  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
-    // Normally check `engagedWithLatestRefreshedContent` whenever background
-    // app close is enabled. However, it doesn't matter for cold starts. Kill
-    // the app in all cold starts.
-    [FeedMetricsRecorder recordFeedRefreshTrigger:
-                             FeedRefreshTrigger::kBackgroundColdStartAppClose];
-  } else {
-    [FeedMetricsRecorder
-        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
-  }
+  [FeedMetricsRecorder
+      recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
+
   // TODO(crbug.com/1396459): Remove this workaround and enable background
   // cold starts.
   [self maybeNotifyRefreshSuccess:NO];
@@ -245,18 +222,8 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 // Record refresh trigger for warm start.
 - (void)recordWarmStartMetrics {
-  CHECK(!IsFeedAppCloseBackgroundRefreshEnabled() ||
-        [self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]);
-
-  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
-    // This is recorded if both app close and regular background refreshes are
-    // enabled.
-    [FeedMetricsRecorder recordFeedRefreshTrigger:
-                             FeedRefreshTrigger::kBackgroundWarmStartAppClose];
-  } else {
     [FeedMetricsRecorder
         recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
-  }
 }
 
 #pragma mark - Refresh Completion Notifications (only enabled by Experimental Settings)

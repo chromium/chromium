@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">නිර්මාපකයින් සඳහා Chromebook හි නව ඩිජිටල් සඟරාව බලන්න</translation>
 <translation id="1270369111467284986">පිවිසුම් දොරටුව සැක කරන ලදි</translation>
 <translation id="1290331692326790741">දුර්වල සංඥාව</translation>
+<translation id="1300115153046603471">APN වර්ගය පෙරනිමි සහ <ph name="ATTACH" /> වේ.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">යාවත්කාලීන කරමින් (<ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි)</translation>
 <translation id="1309341072016605398">විනාඩි <ph name="MINUTES" />ක්</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">බ්‍රව්සර් නිවස</translation>
 <translation id="1526389707933164996">තිර රූ සජීවිකරණය</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
-<translation id="1539242642795599947">APN වර්ග පෙරනිමි කර අමුණන්න</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
 <translation id="1561927818299383735">පසුආලෝක වර්ණය</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">පුරන රූපය</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ඇල්බමය තෝරන ලදි</translation>
 <translation id="2652403576514495859">අනුලේඛනය සබල කරන්න හෝ ටොගල් කරන්න</translation>
+<translation id="2656001153562991489">Chromebook Plus සඳහා සුවිශේෂී</translation>
 <translation id="267442004702508783">නැවුම් කිරීම</translation>
 <translation id="268270014981824665">යතුරු පුවරුව අඳුරු</translation>
 <translation id="2712812801627182647">TLS සත්‍යාපන යතුර</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3862598938296403232">විස්තරය අවශ්‍ය වේ</translation>
+<translation id="386280020966669610">මාව පොළඹවන්න</translation>
 <translation id="3865289341173661845">උදවු අන්තර්ගතය නොමැත.</translation>
 <translation id="3865414814144988605">විභේදනය</translation>
 <translation id="3866249974567520381">විස්තරය</translation>
@@ -405,6 +407,7 @@
 <translation id="4060260348856573701">නව APN</translation>
 <translation id="4093865285251893588">පැතිකඩ රූපය</translation>
 <translation id="409427325554347132">පරීක්ෂණ විස්තර පෙන්වන්න</translation>
+<translation id="409469431304488632">අත්හදා බැලීම</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">ඇල්බමය තෝරන්න <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ස්පර්ශ පුවරුව</translation>
@@ -440,10 +443,12 @@
 <translation id="4289849978083912975">ස්ලයිඩ දැක්ම</translation>
 <translation id="4297501883039923494">නැවතිණි - නොදන්නා දෝෂයකි</translation>
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
+<translation id="4310735698903592804">Google AI මගින් බල ගැන්වෙන මෑත වෝල්පේපර</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
 <translation id="4354430579665871434">යතුර</translation>
 <translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
 <translation id="437294888293595148">සියලු කෙටිමං යළි සකසන්න</translation>
+<translation id="4376423484621194274">ඔබේ පරිපාලකයා <ph name="APP_NAME" /> වැසීමට ඉඩ නොදෙයි</translation>
 <translation id="4378373042927530923">ධාවනය නොවේ</translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -552,6 +557,7 @@
 <translation id="5088172560898466307">සේවාදායක ධාරක නම</translation>
 <translation id="5089810972385038852">ජනපදය</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">සමාන:</translation>
 <translation id="5137451382116112100">පූර්ණ</translation>
 <translation id="5142961317498132443">සත්‍යාපනය</translation>
 <translation id="5145081769226915336">අඳුරු ප්‍රකාරය ස්වයංක්‍රීයව ක්‍රියාත්මක කරන්න ද?</translation>
@@ -613,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">යළි ස්කෑන් කරන්න</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
-<translation id="5584044598279886848">මෙම APN අබල කිරීමට හෝ ඉවත් කිරීමට නොහැක. සබල කළ අමුණා ඇති APNs අබල කර හෝ ඉවත් කර ඇති බවට වග බලා ගන්න.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> යතුර පරීක්ෂා කරන ලදි</translation>
 <translation id="5620281292257375798">අභ්‍යන්තර පමණයි</translation>
 <translation id="5649768706273821470">සවන් දෙන්න</translation>
@@ -644,6 +649,7 @@
 <translation id="5843706793424741864">ෆැරන්හයිට්</translation>
 <translation id="584953448295717128">APN ස්වයංක්‍රීයව අනාවරණය වේ.</translation>
 <translation id="5849570051105887917">නිවෙස් සපයන්නාගේ කේතය</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">කලා ගැලරි ඇල්බමය</translation>
 <translation id="5859969039821714932">කෙටිමඟ නොලැබේ. <ph name="KEY" /> නොමැතිව නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
@@ -659,12 +665,12 @@
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ඔබගේ ගොනුව සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}one{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}other{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}}</translation>
 <translation id="5931523347251946569">ගොනුව හමු නොවිණි</translation>
+<translation id="593880865674747800">මෙම විලාසය තුළ තවත් තනන්න</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
 <translation id="594552776027197022">අහඹු යතුරු යුගල උත්පාදනය කරන්න</translation>
 <translation id="5946538341867151940">ඔබ තවම සම්බන්ධ වී නැත. ඔබේ ජංගම වාහකයා අභිරුචි APN නිර්දේශ කරන්නේ නම්, "+ නව APN" තේරීමෙන් APN තොරතුරු ඇතුළු කරන්න</translation>
 <translation id="5972388717451707488">යන්ත්‍රය යාවත්කාලීන කරන්න</translation>
 <translation id="5984145644188835034">පෙරනිමි වෝල්පේපරය</translation>
-<translation id="6001235009374883388">APN වර්ග ඇමුණුම වේ</translation>
 <translation id="6017514345406065928">කොළ</translation>
 <translation id="6019566113895157499">යතුරු කෙටි මං</translation>
 <translation id="6034694447310538551">ස්වයංක්‍රීය මාසික යළි සැකසීම සබල කරන්න</translation>
@@ -682,6 +688,7 @@
 <translation id="6104112872696127344">ස්කෑන් කිරීම අවලංගු කර ඇත</translation>
 <translation id="6106186594183574873">අවසන් කිරීමට, ඔබේ පැරණි මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="6108689792487843350">වාහල වෙත ළඟා විය නොහැකිය</translation>
+<translation id="6108952804512516814">AI සමග නිර්මාණය කරන්න</translation>
 <translation id="6112878310391905610">මෙම සැකසීම ඔබගේ පරිපාලකයන් විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="6113701710518389813">ඉහළ ඊතලය</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, තව ඇල්බම +<ph name="NUMBER" /></translation>
@@ -750,6 +757,7 @@
 <translation id="6526200165918397681">වෝල්පේපරය ගළපන්න</translation>
 <translation id="6527081081771465939">නොදන්නා Wi-Fi ආරක්ෂක ප්‍රොටොකෝලය</translation>
 <translation id="6535178685492749208">ඔබ නොබැඳි වේ. ප්‍රතිපෝෂණ පසුව යවනු ලැබේ.</translation>
+<translation id="6557784757915238407">APN වර්ගය <ph name="ATTACH" /> වේ.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">විචිත්‍රවත්</translation>
 <translation id="6564646048574748301">අසාර්ථක විය - මුද්‍රණ යන්ත්‍රය වෙත ළඟා විය නොහැකිය</translation>
@@ -809,6 +817,7 @@
 <translation id="7059230779847288458">ආරෝපණය වෙමින්, සම්පූර්ණ වන තෙක් <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> යතුර</translation>
 <translation id="7068619307603204412">ඔබගේ උපාංගය සූදානම් කරන්න</translation>
+<translation id="7076851914315147928">වෝල්පේපරයක් තෝරා ගන්න</translation>
 <translation id="708426984172631313">නවත්වන ලදි</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">අසාර්ථක විය - අනුමැතිය දීම අසාර්ථක විය</translation>
@@ -862,6 +871,7 @@
 <translation id="741244894080940828">පරිවර්තනය</translation>
 <translation id="7415801143053185905">ඉතා ඉහළ HTTP පමාව</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">මෙම APN අබල කිරීමට හෝ ඉවත් කිරීමට නොහැක. සබල කළ <ph name="ATTACH" /> APNs අබල කර හෝ ඉවත් කර ඇති බවට වග බලා ගන්න.</translation>
 <translation id="7458970041932198923">ජාලයකට සම්බන්ධ වී නියුරු බැලීමට සහ සැකසීමට පිටුව නැවත පූරණය කරන්න.</translation>
 <translation id="7469648432129124067">ද්වාරය අනාවරණය කර ගන්නා ලදි</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>
@@ -913,9 +923,11 @@
 <translation id="7799817062559422778">ආලෝක ප්‍රකාරය</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7805768142964895445">තත්වය</translation>
+<translation id="7819831665603418705">අච්චුවක් භාවිත කරන්න</translation>
 <translation id="7819857487979277519">PSK (WPA හෝ RSN)</translation>
 <translation id="7841134249932030522">අඳුරු ප්‍රකාරය සබල කරන්න</translation>
 <translation id="7846634333498149051">යතුරු පුවරුව</translation>
+<translation id="7850847810298646851">Google AI මගින් බල ගැන්වෙන වෝල්පේපරය</translation>
 <translation id="7856267634822906833">බ්ලූටූත් ස්පර්ශ තිරය</translation>
 <translation id="7869143217755017858">අඳුරු ප්‍රකාරය අබල කරන්න</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -958,7 +970,6 @@
 <translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
-<translation id="8183974620058026102">අමුණන්න</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
 <translation id="8208861521865154048">අමතර වාසි</translation>
 <translation id="8226628635270268143">ඔබේ ප්‍රියතම ඡායාරූප සහ ඇල්බම තෝරන්න</translation>
@@ -976,6 +987,7 @@
 <translation id="8318753676953949627">රූප නැත</translation>
 <translation id="8329018942023753850">ගණක යෙදුම</translation>
 <translation id="8336739000755212683">උපාංග ගිණුම් රූපය මාරු කරන්න</translation>
+<translation id="8339024191194156249">ස්වයං දියත් කිරීම පිළිබඳව තව දැන ගන්න</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> හෝ <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
 <translation id="8349826889576450703">දියත්කරණය</translation>

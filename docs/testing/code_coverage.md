@@ -186,8 +186,15 @@ mode, where `N` is the number of raw profiles. With `N = 4`, the total size of
 the raw profiles are limited to a few gigabytes. (If working on Android, the
 .profraw files will be located in ./out/coverage/coverage by default.)
 
+Additionally, we also recommend enabling the continuous mode by adding the `%c`
+pattern to `LLVM_PROFILE_FILE`. The continuous mode updates counters in real
+time instead of flushing to disk at process exit. This recovers coverage data
+from tests that exit abnormally (e.g. death tests). Furthermore, the continuous
+mode is required to recover coverage data for tests that run in sandboxed
+processes. For more information, see crbug.com/1468343.
+
 ```
-$ export LLVM_PROFILE_FILE="out/report/crypto_unittests.%4m.profraw"
+$ export LLVM_PROFILE_FILE="out/report/crypto_unittests.%4m%c.profraw"
 $ ./out/coverage/crypto_unittests
 $ ls out/report/
 crypto_unittests.3657994905831792357_0.profraw

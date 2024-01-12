@@ -684,17 +684,15 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // Picture-in-picture browser windows must have a source contents in order for
   // the window to function correctly. If we have no source contents to work
   // with (e.g. if an extension popup attempts to open a PiP window), we should
-  // cancel the navigation.
-  //
-  // If it does have source contents, only allow the navigation if the scheme of
-  // the URL in the omnibox is either https:// or file://, otherwise the omnibox
-  // displayed in the PiP window may be misleading in certain scenarios (see
-  // https://crbug.com/1460025)
+  // cancel the navigation.  The source URL must also be of a type that's
+  // allowed to open document PiP.  See `PictureInPictureWindowManager` for
+  // details on what's allowed.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
     const GURL& url = params->source_contents
                           ? params->source_contents->GetLastCommittedURL()
                           : GURL();
-    if (!url.SchemeIs(url::kHttpsScheme) && !url.SchemeIsFile()) {
+    if (!PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+            url)) {
       return nullptr;
     }
   }

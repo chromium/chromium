@@ -120,14 +120,14 @@ class NearbyShareClientImpl : public NearbyShareClient {
   // Constructs and executes the actual HTTP request.
   std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow_;
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Fetches the access token authorizing the API calls.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<NearbyShareHttpNotifier, ExperimentalAsh> notifier_ = nullptr;
+  raw_ptr<NearbyShareHttpNotifier> notifier_ = nullptr;
 
   // True if an API call has been started. Remains true even after the API call
   // completes.
@@ -165,10 +165,9 @@ class NearbyShareClientFactoryImpl : public NearbyShareClientFactory {
   std::unique_ptr<NearbyShareClient> CreateInstance() override;
 
  private:
-  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
-      identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<NearbyShareHttpNotifier, ExperimentalAsh> notifier_;
+  raw_ptr<NearbyShareHttpNotifier> notifier_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_CLIENT_IMPL_H_

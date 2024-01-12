@@ -121,7 +121,7 @@ class FakeWebState : public WebState {
   bool HasOpener() const override;
   void SetHasOpener(bool has_opener) override;
   bool CanTakeSnapshot() const override;
-  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) override;
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback) override;
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override;
   void CloseMediaPresentations() override;
 

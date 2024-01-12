@@ -830,7 +830,9 @@ FileUploadDelegate::FileUploadDelegate() {
 }
 
 FileUploadDelegate::~FileUploadDelegate() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Offset weak pointer factory invalidation to UI task runner.
+  ::content::GetUIThreadTaskRunner({})->DeleteSoon(
+      FROM_HERE, std::move(weak_ptr_factory_));
 }
 
 void FileUploadDelegate::InitializeOnce() {
@@ -936,9 +938,10 @@ void FileUploadDelegate::DoInitiate(
   if (!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI)) {
     ::content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&FileUploadDelegate::DoInitiate, GetWeakPtr(),
-                       std::string(origin_path), std::string(upload_parameters),
-                       std::move(result_cb)));
+        base::BindOnce(
+            &FileUploadDelegate::DoInitiate, GetWeakPtr(),
+            std::string(origin_path), std::string(upload_parameters),
+            base::BindPostTaskToCurrentDefault(std::move(result_cb))));
     return;
   }
 
@@ -986,9 +989,10 @@ void FileUploadDelegate::DoNextStep(
   if (!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI)) {
     ::content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&FileUploadDelegate::DoNextStep, GetWeakPtr(), total,
-                       uploaded, std::string(session_token),
-                       std::move(scoped_reservation), std::move(result_cb)));
+        base::BindOnce(
+            &FileUploadDelegate::DoNextStep, GetWeakPtr(), total, uploaded,
+            std::string(session_token), std::move(scoped_reservation),
+            base::BindPostTaskToCurrentDefault(std::move(result_cb))));
     return;
   }
 
@@ -1006,9 +1010,10 @@ void FileUploadDelegate::DoFinalize(
         result_cb) {
   if (!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI)) {
     ::content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FileUploadDelegate::DoFinalize, GetWeakPtr(),
-                       std::string(session_token), std::move(result_cb)));
+        FROM_HERE, base::BindOnce(&FileUploadDelegate::DoFinalize, GetWeakPtr(),
+                                  std::string(session_token),
+                                  base::BindPostTaskToCurrentDefault(
+                                      std::move(result_cb))));
     return;
   }
 
@@ -1025,6 +1030,7 @@ void FileUploadDelegate::DoDeleteFile(std::string_view origin_path) {
 }
 
 base::WeakPtr<FileUploadDelegate> FileUploadDelegate::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+  CHECK(weak_ptr_factory_) << "Factory already invalidated.";
+  return weak_ptr_factory_->GetWeakPtr();
 }
 }  // namespace reporting

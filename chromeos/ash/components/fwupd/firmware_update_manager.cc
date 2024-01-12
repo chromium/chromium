@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -24,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "crypto/sha2.h"
@@ -335,6 +337,8 @@ void FirmwareUpdateManager::ResetInstallState() {
   update_progress_observer_.reset();
   device_request_observer_.reset();
   last_fwupd_status_ = FwupdStatus::kUnknown;
+  last_device_request_ = nullptr;
+  last_request_started_timestamp_ = std::nullopt;
 }
 
 void FirmwareUpdateManager::PrepareForUpdate(
@@ -657,6 +661,20 @@ void FirmwareUpdateManager::OnInstallResponse(bool success) {
                        : firmware_update::mojom::UpdateState::kFailed;
   if (!success) {
     firmware_update::metrics::EmitInstallFailedWithStatus(last_fwupd_status_);
+
+    // If the install failed and the last fwupd status was WaitingForUser,
+    // this install failure probably occurred because of a timeout waiting for
+    // user action from a device request, so we record the duration of that
+    // request.
+    if (last_request_started_timestamp_.has_value() &&
+        !last_request_started_timestamp_->is_null() &&
+        !last_device_request_.is_null() &&
+        last_fwupd_status_ == FwupdStatus::kWaitingForUser) {
+      const base::TimeDelta request_duration =
+          base::Time::Now() - last_request_started_timestamp_.value();
+      firmware_update::metrics::EmitFailedDeviceRequestDuration(
+          request_duration, last_device_request_->id);
+    }
   }
   const auto result =
       success ? firmware_update::metrics::FirmwareUpdateInstallResult::kSuccess
@@ -703,6 +721,10 @@ void FirmwareUpdateManager::OnDeviceRequestResponse(FwupdRequest request) {
   // and pass that request to observers.
   firmware_update::metrics::EmitDeviceRequest(GetDeviceRequest(request));
   device_request_observer_->OnDeviceRequest(GetDeviceRequest(request));
+
+  // Save details about the request for metrics purposes.
+  last_device_request_ = GetDeviceRequest(request);
+  last_request_started_timestamp_ = base::Time::Now();
 }
 
 void FirmwareUpdateManager::OnPropertiesChangedResponse(
@@ -711,6 +733,24 @@ void FirmwareUpdateManager::OnPropertiesChangedResponse(
     return;
   }
   const auto status = FwupdStatus(properties->status.value());
+
+  // If the FwupdStatus just switched from WaitingForUser to anything else,
+  // consider the request successful and record a metric.
+  if (last_fwupd_status_ == FwupdStatus::kWaitingForUser &&
+      status != FwupdStatus::kWaitingForUser &&
+      last_request_started_timestamp_.has_value() &&
+      !last_request_started_timestamp_->is_null() &&
+      !last_device_request_.is_null()) {
+    const base::TimeDelta request_duration =
+        base::Time::Now() - last_request_started_timestamp_.value();
+    firmware_update::metrics::EmitDeviceRequestSuccessfulWithDuration(
+        request_duration, last_device_request_->id);
+
+    // Reset these tracking variables now that we've used them.
+    last_device_request_ = nullptr;
+    last_request_started_timestamp_ = std::nullopt;
+  }
+
   last_fwupd_status_ = status;
   const auto percentage = properties->percentage.value();
   VLOG(1) << "fwupd: OnPropertiesChangedResponse called with Status: "

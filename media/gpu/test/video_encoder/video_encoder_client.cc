@@ -360,7 +360,7 @@ VideoEncoderClient::CreateBitstreamRef(
   LOG_ASSERT(it != bitstream_buffers_.end());
 
   scoped_refptr<DecoderBuffer> decoder_buffer;
-  if (metadata.payload_size_bytes != 0) {
+  if (!metadata.dropped_frame()) {
     decoder_buffer = DecoderBuffer::FromSharedMemoryRegion(
         it->second.Duplicate(), 0u /* offset */, metadata.payload_size_bytes);
     if (!decoder_buffer) {
@@ -386,14 +386,14 @@ void VideoEncoderClient::BitstreamBufferReady(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
   DVLOGF(4) << "frame_index=" << frame_index_
             << ", encoded image size=" << metadata.payload_size_bytes
-            << (metadata.payload_size_bytes > 0 ? "" : " (Drop Frame)");
+            << (metadata.dropped_frame() ? " (Drop Frame)" : "");
   {
     // |metadata.payload_size_bytes| can be zero here, but counts the dropped
     // frame to compute a bitrate from the network point of view.
     base::AutoLock auto_lock(stats_lock_);
     current_stats_.total_num_encoded_frames++;
     current_stats_.total_encoded_frames_size += metadata.payload_size_bytes;
-    if (metadata.payload_size_bytes == 0) {
+    if (metadata.dropped_frame()) {
       current_stats_.num_dropped_frames++;
     }
     if (metadata.vp9.has_value()) {

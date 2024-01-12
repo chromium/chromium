@@ -80,7 +80,7 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     if (head->headers.get()->HasHeader("Ad-Auction-Signals")) {
       received_ad_auction_signals_header_ = true;
     }
@@ -192,8 +192,8 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
   }
 
   network::mojom::URLResponseHeadPtr CreateResponseHead(
-      const absl::optional<std::string>& ad_auction_result_header_value,
-      const absl::optional<std::string>& ad_auction_signals_header_value) {
+      const std::optional<std::string>& ad_auction_result_header_value,
+      const std::optional<std::string>& ad_auction_signals_header_value) {
     auto head = network::mojom::URLResponseHead::New();
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
@@ -245,7 +245,7 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
                         url::Origin::Create(GURL("https://google.com"))),
                     *blink::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo1.com")))},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
 
@@ -344,8 +344,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedBeforeCommit) {
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
+          /*ad_auction_signals_header_value=*/std::nullopt),
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
@@ -390,8 +390,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedAfterCommit) {
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
+          /*ad_auction_signals_header_value=*/std::nullopt),
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
@@ -446,8 +446,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestOnClonedPipeBeforeCommit) {
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
+          /*ad_auction_signals_header_value=*/std::nullopt),
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
@@ -492,8 +492,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromMainFrame) {
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
+          /*ad_auction_signals_header_value=*/std::nullopt),
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
@@ -549,8 +549,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromSubframe) {
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
+          /*ad_auction_signals_header_value=*/std::nullopt),
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
@@ -599,7 +599,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
           /*ad_auction_signals_header_value=*/kLegitimateAdAuctionSignals),
-      /*body=*/{}, absl::nullopt);
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
@@ -657,7 +657,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       redirect_info,
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt));
+          /*ad_auction_signals_header_value=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
@@ -667,7 +667,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},
                                 /*modified_cors_exempt_headers=*/{},
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const std::vector<FollowRedirectParams>& follow_redirect_params =
@@ -686,8 +686,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/absl::nullopt),
-      /*body=*/{}, absl::nullopt);
+          /*ad_auction_signals_header_value=*/std::nullopt),
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
@@ -733,7 +733,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdAuctionSignalsResponseHeader) {
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
           /*ad_auction_signals_header_value=*/kLegitimateAdAuctionSignals),
-      /*body=*/{}, absl::nullopt);
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // The `Ad-Auction-Signals` header was intercepted and stored in the browser.
@@ -804,7 +804,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},
                                 /*modified_cors_exempt_headers=*/{},
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const std::vector<FollowRedirectParams>& follow_redirect_params =
@@ -824,7 +824,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
           /*ad_auction_signals_header_value=*/kLegitimateAdAuctionSignals),
-      /*body=*/{}, absl::nullopt);
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // The `Ad-Auction-Signals` header was ignored and not exposed to the original
@@ -877,7 +877,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdditionalBids) {
           {"00000000-0000-0000-0000-000000000000:e30=",
            "00000000-0000-0000-0000-000000000001:e30=",
            "00000000-0000-0000-0000-000000000001:e2E6IDF9"}),
-      /*body=*/{}, absl::nullopt);
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // The `Ad-Auction-Additional-Bid` header was intercepted and stored in the
@@ -945,7 +945,7 @@ TEST_F(
   pending_request->client->OnReceiveResponse(
       CreateResponseHeadWithAdditionalBids(
           {"00000000-0000-0000-0000-000000000000:e30="}),
-      /*body=*/{}, absl::nullopt);
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // The `Ad-Auction-Additional-Bid` header was intercepted. It's not stored
@@ -1009,7 +1009,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},
                                 /*modified_cors_exempt_headers=*/{},
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const std::vector<FollowRedirectParams>& follow_redirect_params =
@@ -1028,7 +1028,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   pending_request->client->OnReceiveResponse(
       CreateResponseHeadWithAdditionalBids(
           {"00000000-0000-0000-0000-000000000000:e30="}),
-      /*body=*/{}, absl::nullopt);
+      /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // The `Ad-Auction-Additional-Bid` header was ignored and not exposed to the

@@ -35,7 +35,7 @@ suite('ComposeAnimator', () => {
           {width: '50px'},
           {width: '100px'},
         ],
-        {delay: 10, duration: 50, easing: 'ease-in'});
+        {delay: 10, duration: 50, easing: 'ease-in', fill: 'both'});
     assertEquals(2, animations.length);
     await animationsAsPromises(animations);
     animations.forEach((animation) => {
@@ -49,7 +49,7 @@ suite('ComposeAnimator', () => {
   });
 
   test('FadesIn', async () => {
-    const animations = animator.fadeIn('#child1', {duration: 5});
+    const animations = animator.fadeIn('#child1', {duration: 5, fill: 'both'});
     assertEquals(1, animations.length);
     const child = mockRoot.shadowRoot!.querySelector('#child1')!;
     assertEquals('0', window.getComputedStyle(child).opacity);
@@ -58,7 +58,7 @@ suite('ComposeAnimator', () => {
   });
 
   test('FadesOut', async () => {
-    const animations = animator.fadeOut('#child1', {duration: 5});
+    const animations = animator.fadeOut('#child1', {duration: 5, fill: 'both'});
     assertEquals(1, animations.length);
     const child = mockRoot.shadowRoot!.querySelector('#child1')!;
     assertEquals('1', window.getComputedStyle(child).opacity);
@@ -69,7 +69,7 @@ suite('ComposeAnimator', () => {
 
   test('FadesOutAndHides', async () => {
     const animations =
-        animator.fadeOutAndHide('#child1', 'flex', {duration: 5});
+        animator.fadeOutAndHide('#child1', 'flex', {duration: 5, fill: 'both'});
     assertEquals(1, animations.length);
     const child = mockRoot.shadowRoot!.querySelector('#child1')!;
     assertEquals('1', window.getComputedStyle(child).opacity);
@@ -80,7 +80,7 @@ suite('ComposeAnimator', () => {
   });
 
   test('ScalesIn', async () => {
-    const animations = animator.scaleIn('#child1', {duration: 5});
+    const animations = animator.scaleIn('#child1', {duration: 5, fill: 'both'});
     assertEquals(1, animations.length);
     const child = mockRoot.shadowRoot!.querySelector('#child1')!;
     assertEquals(
@@ -91,7 +91,8 @@ suite('ComposeAnimator', () => {
   });
 
   test('SlidesIn', async () => {
-    const animations = animator.slideIn('#child1', 83, {duration: 5});
+    const animations =
+        animator.slideIn('#child1', 83, {duration: 5, fill: 'both'});
     assertEquals(1, animations.length);
     const child = mockRoot.shadowRoot!.querySelector('#child1')!;
     assertEquals(
@@ -102,7 +103,8 @@ suite('ComposeAnimator', () => {
   });
 
   test('SlidesOut', async () => {
-    const animations = animator.slideOut('#child1', 83, {duration: 5});
+    const animations =
+        animator.slideOut('#child1', 83, {duration: 5, fill: 'both'});
     assertEquals(1, animations.length);
     const child = mockRoot.shadowRoot!.querySelector('#child1')!;
     assertEquals(

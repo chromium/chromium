@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">ایک غیر مطابقت پذیر پروٹوکول ورژن کا پتہ چلا تھا۔ براہ کرم یقینی بنائیں کہ آپ کے پاس دونوں کمپیوٹرز پر سافٹ ویئر کا تازہ ترین ورژن انسٹال ہے اور دوبارہ کوشش کریں۔</translation>
 <translation id="1008557486741366299">ابھی نہیں</translation>
 <translation id="1201402288615127009">اگلا</translation>
-<translation id="1296511125400541222">‏کاپی رائٹ 2023 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> سے منسلک ہونے میں خرابی</translation>
 <translation id="1450760146488584666">درخواست کردہ آبجیکٹ موجود نہیں ہے۔</translation>
 <translation id="1480046233931937785">کریڈٹس</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972">‏براہ کرم <ph name="HOSTNAME" /> کیلئے اپنا PIN درج کریں۔</translation>
 <translation id="4812684235631257312">میزبان</translation>
 <translation id="4867841927763172006">‏PrtScn بھیجیں</translation>
-<translation id="4960795469833295568">‏Copyright 2023 Google LLC.‎ جملہ حقوق محفوظ۔</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> سے کنکشن منقطع ہو گیا</translation>
 <translation id="4985296110227979402">آپ کو سب سے پہلے ریموٹ رسائی کیلئے اپنے کمپیوٹر کو ترتیب دینے کی ضرورت ہے</translation>
 <translation id="4987330545941822761">‏Chrome ریموٹ ڈیسک ٹاپ مقامی طور پر URLs کھولنے کے لیے براؤزر کا تعین نہیں کر سکتا۔ براہ کرم اسے نیچے کی فہرست سے منتخب کریں۔</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">میزبانوں کی فہرست ریفریش کریں</translation>
 <translation id="7714222945760997814">اس کی اطلاع دیں</translation>
 <translation id="7868137160098754906">‏براہ کرم ریموٹ کمپیوٹر کیلئے اپنا PIN درج کریں۔</translation>
+<translation id="7881455334687220899">‏کاپی رائٹ 2024 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="7895403300744144251">ریموٹ کمپیوٹر پر موجود سیکیورٹی پالیسیاں آپ کے اکاؤنٹ سے کنکشنز کی اجازت نہیں دیتی ہیں۔</translation>
 <translation id="7936528439960309876">دائیں جانب ڈاک کریں</translation>
 <translation id="7970576581263377361">‏توثیق ناکام ہوگئی۔ براہ کرم Chromium میں دوبارہ سائن ان کریں۔</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">‏سیشن کریش ہو گیا یا آغاز نہیں ہو سکا۔ ریموٹ کمپیوٹر پر ‎~/.chrome-remote-desktop-session موجود ہونے پر، یقینی بنائیں کہ اس سے ڈیسک ٹاپ ماحول یا ونڈو مینیجر جیسی طویل مدت تک چلنے والی فور گراؤنڈ کارروائی کا آغاز ہوتا ہے۔</translation>
 <translation id="8804164990146287819">راز داری کی پالیسی</translation>
 <translation id="8906511416443321782">‏آڈیو کیپچر کرنے اور Chrome ریموٹ ڈیسک ٹاپ کلائنٹ پر اس کی سلسلہ بندی کرنے کیلئے، مائیکروفون تک رسائی درکار ہے۔</translation>
+<translation id="9042277333359847053">‏Copyright 2024 Google LLC.‎ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="9111855907838866522">آپ اپنے ریموٹ آلہ سے منسلک ہیں۔ مینیو کھولنے کیلئے، براہ کرم چار انگلیوں سے اسکرین پر تھپتھپائیں۔</translation>
 <translation id="9126115402994542723">‏اس آلہ سے اس میزبان سے منسلک ہوتے وقت دوبارہ PIN طلب نہ کریں۔</translation>
 <translation id="916856682307586697">‏ڈیفالٹ XSession شروع کریں</translation>

@@ -4,7 +4,6 @@
 
 #include "components/search_engines/search_engine_choice_utils.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/strings/grit/search_engine_descriptions_strings.h"
 
@@ -13,220 +12,166 @@ namespace search_engines {
 // tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify
 // it manually.
 int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::bing.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::bing.keyword) {
     return IDS_BING_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::brave.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::brave.keyword) {
     return IDS_BRAVE_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::duckduckgo.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::duckduckgo.keyword) {
     return IDS_DUCKDUCKGO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::ecosia.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::ecosia.keyword) {
     return IDS_ECOSIA_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::google.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::google.keyword) {
     return IDS_GOOGLE_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::info_com.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::info_com.keyword) {
     return IDS_INFOCOM_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::karma.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::karma.keyword) {
     return IDS_KARMA_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::lilo.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::lilo.keyword) {
     return IDS_LILO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::metager_de.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::metager_de.keyword) {
     return IDS_METAGER_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::mojeek.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::mojeek.keyword) {
     return IDS_MOJEEK_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::nona.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::nona.keyword) {
     return IDS_NONA_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::oceanhero.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::oceanhero.keyword) {
     return IDS_OCEANHERO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::panda.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::panda.keyword) {
     return IDS_PANDA_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::privacywall.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::privacywall.keyword) {
     return IDS_PRIVACYWALL_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::quendu.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::quendu.keyword) {
     return IDS_QUENDU_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::qwant.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::qwant.keyword) {
     return IDS_QWANT_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::seznam_cz.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::seznam_cz.keyword) {
     return IDS_SEZNAM_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::seznam_sk.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::seznam_sk.keyword) {
     return IDS_SEZNAM_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_ar.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_ar.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_at.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_at.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_au.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_au.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_br.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_br.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_ca.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_ca.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_ch.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_ch.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_cl.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_cl.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_co.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_co.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_de.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_de.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_dk.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_dk.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_es.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_es.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_fi.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_fi.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_fr.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_fr.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_hk.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_hk.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_id.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_id.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_in.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_in.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_jp.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_jp.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_mx.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_mx.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_my.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_my.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_nl.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_nl.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_nz.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_nz.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_pe.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_pe.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_ph.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_ph.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_se.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_se.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_sg.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_sg.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_th.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_th.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_tr.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_tr.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_tw.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_tw.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yahoo_uk.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_uk.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yandex_by.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yandex_by.keyword) {
     return IDS_YANDEX_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yandex_com.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yandex_com.keyword) {
     return IDS_YANDEX_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yandex_kz.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yandex_kz.keyword) {
     return IDS_YANDEX_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yandex_ru.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yandex_ru.keyword) {
     return IDS_YANDEX_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yandex_tr.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yandex_tr.keyword) {
     return IDS_YANDEX_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword ==
-      base::WideToUTF16(TemplateURLPrepopulateData::yep.keyword)) {
+  if (engine_keyword == TemplateURLPrepopulateData::yep.keyword) {
     return IDS_YEP_SEARCH_DESCRIPTION;
   }
   return -1;

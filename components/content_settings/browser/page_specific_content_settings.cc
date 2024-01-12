@@ -78,8 +78,10 @@ namespace {
 constexpr auto kMediaIndicatorHoldAfterUseDuration = base::Seconds(1);
 // A minimum delay before media indicator disappears.
 constexpr auto kMediaIndicatorMinimumHoldDuration = base::Seconds(5);
+constexpr auto kMediaIndicatorMinimumHoldDurationPhase2 = base::Seconds(4);
 // A delay before blocked media indicator disappears.
 constexpr auto kBlockedMediaIndicatorDismissDelay = base::Minutes(1);
+constexpr auto kBlockedMediaIndicatorDismissDelayPhase2 = base::Seconds(4);
 
 // Determines which taxonomy is used to generate sample topics for the Topics
 // API.
@@ -1315,10 +1317,10 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
           content_settings::features::kImprovedSemanticsActivityIndicators)) {
     // Camera and/or Mic is blocked, start a blocked indicator's dismiss timer.
     if (microphone_camera_state_.Has(kMicrophoneBlocked)) {
-      OnMediaBlockedIndicatorsShown(ContentSettingsType::MEDIASTREAM_MIC);
+      StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_MIC);
     }
     if (microphone_camera_state_.Has(kCameraBlocked)) {
-      OnMediaBlockedIndicatorsShown(ContentSettingsType::MEDIASTREAM_CAMERA);
+      StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_CAMERA);
     }
   }
 }
@@ -1568,16 +1570,23 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
       base::TimeDelta indicator_display_time =
           base::TimeTicks::Now() - media_indicator_time_;
       base::TimeDelta delay;
+      base::TimeDelta min_delay;
 
       // A total duration of an indicator should never be less than
       // `kMediaIndicatorMinimumHoldDuration`.
-      if (indicator_display_time < kMediaIndicatorMinimumHoldDuration) {
-        delay = kMediaIndicatorMinimumHoldDuration - indicator_display_time;
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kLeftHandSideActivityIndicators)) {
+        min_delay = kMediaIndicatorMinimumHoldDurationPhase2;
+      } else {
+        min_delay = kMediaIndicatorMinimumHoldDuration;
+      }
+
+      if (indicator_display_time < min_delay) {
+        delay = min_delay - indicator_display_time;
         // `delay` should not be smaller than
         // `kMediaIndicatorHoldAfterUseDuration`.
-        delay = std::max(
-            kMediaIndicatorMinimumHoldDuration - indicator_display_time,
-            kMediaIndicatorHoldAfterUseDuration);
+        delay = std::max(min_delay - indicator_display_time,
+                         kMediaIndicatorHoldAfterUseDuration);
       } else {
         delay = kMediaIndicatorHoldAfterUseDuration;
       }
@@ -1657,20 +1666,41 @@ void PageSpecificContentSettings::OnActivityIndicatorBubbleClosed(
             weak_factory_.GetWeakPtr(), type, /*is_capturing=*/false));
   } else if (media_blocked_indicator_timer_.contains(type)) {
     // Blocked indicator timer was stopped, relaunch.
-    OnMediaBlockedIndicatorsShown(type);
+    StartBlockedIndicatorTimer(type);
   }
 }
 
-void PageSpecificContentSettings::OnMediaBlockedIndicatorsShown(
-    ContentSettingsType type) {
-  media_blocked_indicator_timer_[type].Start(
-      FROM_HERE, kBlockedMediaIndicatorDismissDelay,
-      base::BindOnce(
-          &PageSpecificContentSettings::OnMediaBlockedIndicatorsDismiss,
-          weak_factory_.GetWeakPtr(), type));
+bool PageSpecificContentSettings::IsIndicatorVisible(
+    ContentSettingsType type) const {
+  return visible_indicators_.contains(type);
 }
 
-void PageSpecificContentSettings::OnMediaBlockedIndicatorsDismiss(
+void PageSpecificContentSettings::OnPermissionIndicatorShown(
+    ContentSettingsType type) {
+  visible_indicators_.insert(type);
+}
+
+void PageSpecificContentSettings::OnPermissionIndicatorHidden(
+    ContentSettingsType type) {
+  visible_indicators_.erase(type);
+}
+
+void PageSpecificContentSettings::StartBlockedIndicatorTimer(
+    ContentSettingsType type) {
+  base::TimeDelta blocked_indicator_delay;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    blocked_indicator_delay = kBlockedMediaIndicatorDismissDelayPhase2;
+  } else {
+    blocked_indicator_delay = kBlockedMediaIndicatorDismissDelay;
+  }
+  media_blocked_indicator_timer_[type].Start(
+      FROM_HERE, blocked_indicator_delay,
+      base::BindOnce(&PageSpecificContentSettings::HideMediaBlockedIndicator,
+                     weak_factory_.GetWeakPtr(), type));
+}
+
+void PageSpecificContentSettings::HideMediaBlockedIndicator(
     ContentSettingsType type) {
   media_blocked_indicator_timer_.erase(type);
 

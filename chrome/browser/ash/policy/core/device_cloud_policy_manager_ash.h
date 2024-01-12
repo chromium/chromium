@@ -60,7 +60,7 @@ class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
 
-enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED, HANDS_OFF };
+enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED };
 
 // CloudPolicyManager specialization for device policy in Ash.
 class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
@@ -77,7 +77,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // |task_runner| is the runner for policy refresh, heartbeat, and status
   // upload tasks.
   DeviceCloudPolicyManagerAsh(
-      std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
+      std::unique_ptr<DeviceCloudPolicyStoreAsh> device_store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ServerBackedStateKeysBroker* state_keys_broker,
@@ -212,9 +212,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // |lock_unlock_reporter_|.
   void CreateManagedSessionServiceAndReporters();
 
-  // Points to the same object as the base CloudPolicyManager::store(), but with
-  // actual device policy specific type.
-  std::unique_ptr<DeviceCloudPolicyStoreAsh> device_store_;
+  // Points to the object owned by the base CloudPolicyManager, but with actual
+  // device policy specific type.
+  raw_ptr<DeviceCloudPolicyStoreAsh> device_store_;
 
   // Manages external data referenced by device policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
@@ -241,7 +241,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // PrefService instance to read the policy refresh rate from.
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   base::CallbackListSubscription state_keys_update_subscription_;
 

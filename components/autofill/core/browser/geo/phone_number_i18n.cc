@@ -401,9 +401,9 @@ PhoneObject::PhoneObject(const PhoneObject& other) {
   *this = other;
 }
 
-PhoneObject::PhoneObject() {}
+PhoneObject::PhoneObject() = default;
 
-PhoneObject::~PhoneObject() {}
+PhoneObject::~PhoneObject() = default;
 
 const std::u16string& PhoneObject::GetFormattedNumber() const {
   if (i18n_number_ && formatted_number_.empty()) {

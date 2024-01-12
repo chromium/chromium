@@ -215,35 +215,35 @@ found in the LICENSE file.
   <div id="animation-outer-container" slot="content">
     <div id="animation-inner-container" class="flex layout horizontal">
       <div id="email-section" class="section"
-          on-animationend="onSlideAnimationEnd_">
+          on-animationend="onSlideAnimationEnd">
         <div class="title-container layout vertical end-justified">
           <h1>[[i18nDynamic(locale, 'loginWelcomeMessage')]]</h1>
         </div>
         <div id="managedBy" class="enterprise-info" hidden$="[[!manager]]">
           [[i18nDynamic(locale, 'enterpriseInfoMessage', manager)]]
         </div>
-        <cr-input id="emailInput" value="{{email_}}"
-            on-keydown="onKeyDown_" disabled="[[disabled]]"
+        <cr-input id="emailInput" value="{{email}}"
+            on-keydown="onKeyDown" disabled="[[disabled]]"
             required error-message="[[i18nDynamic(
                 locale, 'offlineLoginInvalidEmail')]]"
             placeholder="[[i18nDynamic(locale, 'offlineLoginEmail')]]">
-          <span slot="inline-suffix">[[displayDomain_]]</span>
+          <span slot="inline-suffix">[[displayDomain]]</span>
         </cr-input>
       </div>
       <div id="password-section" class="section">
         <div class="title-container layout vertical">
           <img src="chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" alt
               class="self-start">
-          <div id="passwordSectionEmailHeader">[[fullEmail_]]</div>
+          <div id="passwordSectionEmailHeader">[[fullEmail]]</div>
         </div>
-        <cr-input id="passwordInput" value="{{password_}}"
-            on-keydown="onKeyDown_" disabled="[[disabled]]"
+        <cr-input id="passwordInput" value="{{password}}"
+            on-keydown="onKeyDown" disabled="[[disabled]]"
             type="password" required error-message="[[i18nDynamic(
                 locale, 'offlineLoginInvalidPassword')]]"
             placeholder="[[i18nDynamic(locale, 'offlineLoginPassword')]]">
         </cr-input>
         <div class="layout horizontal-reverse">
-          <gaia-button on-click="onForgotPasswordClicked_" link
+          <gaia-button on-click="onForgotPasswordClicked" link
               disabled="[[disabled]]">
             [[i18nDynamic(locale, 'offlineLoginForgotPasswordBtn')]]
           </gaia-button>
@@ -253,35 +253,35 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton" disabled="[[disabled]]"
-        on-click="onBackButtonClicked_"></oobe-back-button>
+        on-click="onBackButtonClicked"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="nextButton" disabled="[[disabled]]"
-        on-click="onNextButtonClicked_"></oobe-next-button>
+        on-click="onNextButtonClicked"></oobe-next-button>
   </div>
 </oobe-content-dialog>
 <cr-dialog id="forgotPasswordDlg"
-    on-close="onDialogOverlayClosed_">
+    on-close="onDialogOverlayClosed">
   <div slot="body">
     [[i18nDynamic(locale, 'offlineLoginForgotPasswordDlg')]]
   </div>
   <div slot="button-container">
-    <cr-button autofocus on-click="onForgotPasswordCloseTap_"
+    <cr-button autofocus on-click="onForgotPasswordCloseClicked"
         class="action-button">
       [[i18nDynamic(locale, 'offlineLoginCloseBtn')]]
     </cr-button>
   </div>
 </cr-dialog>
 <cr-dialog id="onlineRequiredDialog"
-    on-close="onDialogOverlayClosed_">
+    on-close="onDialogOverlayClosed">
   <div slot="title">
     [[i18nDynamic(locale, 'offlineLoginWarningTitle')]]
   </div>
   <div slot="body">
-    [[i18nDynamic(locale, 'offlineLoginWarning', manager, email_)]]
+    [[i18nDynamic(locale, 'offlineLoginWarning', manager, email)]]
   </div>
   <div slot="button-container">
-    <cr-button autofocus on-click="onOnlineRequiredDialogCloseTap_"
+    <cr-button autofocus on-click="onOnlineRequiredDialogCloseClicked"
         id="offlineWarningBackButton" class="action-button">
       [[i18nDynamic(locale, 'offlineLoginOkBtn')]]
     </cr-button>

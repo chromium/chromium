@@ -4,10 +4,8 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {ExifEntry} from '../../../externs/exif_entry.js';
-
 import {ByteOrder, ByteReader} from './byte_reader.js';
-import {ExifTag} from './exif_constants.js';
+import {type ExifEntry, ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
 import type {MetadataParserLogger} from './metadata_parser.js';
 
@@ -123,7 +121,7 @@ class ByteWriter {
    */
   writeString(str: string) {
     this.validateWrite(str.length);
-    for (let i = 0; i != str.length; i++) {
+    for (let i = 0; i !== str.length; i++) {
       this.view_.setUint8(this.pos_++, str.charCodeAt(i));
     }
   }
@@ -245,12 +243,12 @@ function parseExifData(bytes: ArrayBufferView): Record<ExifTag, ExifEntry> {
 export function testWithoutNullCharacterTermination() {
   // Create exif with a value that does not end with null character.
   const data = new Uint8Array(0x10000);
-  writeDirectory(data,{
-                    id: ExifTag.MAKE,   // Manufacturer Id.
-                    format: 2,          // String format.
-                    componentCount: 8,  // Length of value 'Manufact'.
-                    value: 'Manufact',
-                  });
+  writeDirectory(data, {
+    id: ExifTag.MAKE,   // Manufacturer Id.
+    format: 2,          // String format.
+    componentCount: 8,  // Length of value 'Manufact'.
+    value: 'Manufact',
+  });
 
   // Parse the exif data.
   const tags = parseExifData(data);

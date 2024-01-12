@@ -89,7 +89,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
       profile_.source() != AutofillProfile::Source::kAccount) {
     return std::u16string();
   }
-  absl::optional<AccountInfo> account =
+  std::optional<AccountInfo> account =
       identity_manager->FindExtendedAccountInfo(
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));

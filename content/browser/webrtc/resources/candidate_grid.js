@@ -126,7 +126,7 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
   const localCandidate = stats.get(candidatePair.localCandidateId);
   ['id', 'type', 'address', 'port', 'candidateType',
       'priority'].forEach((stat, index) => {
-    // Relay protocol is only set for local relay candidates.
+    // `relayProtocol` is only set for local relay candidates.
     if (stat == 'candidateType' && localCandidate.relayProtocol) {
       localRow.children[index].innerText = localCandidate[stat] +
           '(' + localCandidate.relayProtocol + ')';
@@ -143,20 +143,21 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
           '\n' + (priority >> 24) +
           ' | ' + ((priority >> 8) & 0xFFFF) +
           ' | ' + (priority & 0xFF);
-
+    } else if (stat === 'address') {
+      localRow.children[index].innerText = localCandidate[stat] || '(not set)';
     } else {
       localRow.children[index].innerText = localCandidate[stat];
     }
   });
-  // Network type is only for the local candidate so put it into the pair
-  // row above the address. Also highlight VPN adapters.
+  // `networkType` is only known for the local candidate so put it into the
+  // pair row above the address. Also highlight VPN adapters.
   pairRow.children[2].innerText = localCandidate.networkType;
-  if (localCandidate['vpn*'] === true) {
+  if (localCandidate['vpn'] === true) {
     pairRow.children[2].innerText += ' (VPN)';
   }
-  // protocol must always be the same for the pair
+  // `protocol` must always be the same for the pair
   // so put it into the pair row above the candidate type.
-  // Add tcpType for local candidates.
+  // Add `tcpType` for local candidates.
   pairRow.children[4].innerText = localCandidate.protocol;
   if (localCandidate.tcpType) {
     pairRow.children[4].innerText += ' ' + localCandidate.tcpType;
@@ -172,6 +173,9 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
     if (stat === 'priority') {
       remoteRow.children[index].innerText = '0x' +
           parseInt(remoteCandidate[stat], 10).toString(16);
+    } else if (stat === 'address') {
+      remoteRow.children[index].innerText = remoteCandidate[stat] ||
+          '(not set)';
     } else {
       remoteRow.children[index].innerText = remoteCandidate[stat];
     }

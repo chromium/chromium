@@ -32,8 +32,7 @@ class PasswordManagerInterface;
 
 // Interface that allows PasswordManager core code to interact with its driver
 // (i.e., obtain information from it and give information to it).
-class PasswordManagerDriver
-    : public base::SupportsWeakPtr<PasswordManagerDriver> {
+class PasswordManagerDriver {
  public:
 #if BUILDFLAG(IS_ANDROID)
   using ToShowVirtualKeyboard =
@@ -156,6 +155,9 @@ class PasswordManagerDriver
   // corresponding HTML attributes. It is used only for debugging.
   virtual void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) {}
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<PasswordManagerDriver> AsWeakPtr() = 0;
 };
 
 }  // namespace password_manager

@@ -89,8 +89,7 @@ class ExtensionIncomingNativeMessagingTest
   }
 
  private:
-  raw_ptr<const extensions::Extension, DanglingUntriaged | ExperimentalAsh>
-      extension_ = nullptr;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
 };
 
 // Tests that the extension receives the onConnectNative event when the native

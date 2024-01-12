@@ -1,4 +1,4 @@
-#!/bin/bash -p
+@SHEBANG_GUARD@#!/bin/bash -p
 
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -22,7 +22,7 @@ readonly FRAMEWORK_DIR="@FRAMEWORK_DIR@"
 
 # Uses "defaults read" to obtain the value of a key in a property list.
 #
-# See /chrome/installer/mac/keystone_install.sh for more details.
+# See chrome/installer/mac/keystone_install.sh for more details.
 infoplist_read() {
   __CFPREFERENCES_AVOID_DAEMON=1 defaults read "${@}"
 }
@@ -70,15 +70,12 @@ product="$(infoplist_read "${CHROME_APP_INFO_PLIST}" \
                           "${KS_PRODUCT_KEY}")"
 version="$(infoplist_read "${CHROME_APP_INFO_PLIST}" \
                           "${KS_VERSION_KEY}")"
-update_url="$(infoplist_read "${CHROME_APP_INFO_PLIST}" \
-                             "${KS_URL_KEY}")"
 
 ksadmin_args=(
   --register
   --productid "${product}"
   --version "${version}"
   --xcpath "${CHROME_APP_LOCATION}"
-  --url "${update_url}"
   --tag-path "${CHROME_APP_INFO_PLIST}"
   --tag-key "${KS_CHANNEL_KEY}"
   --version-path "${CHROME_APP_INFO_PLIST}"

@@ -29,7 +29,6 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
-#include "media/base/scopedfd_helper.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
@@ -405,17 +404,21 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       break;
     case VideoFrame::STORAGE_DMABUFS: {
       const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
-      std::vector<base::ScopedFD> duped_fds =
-          DuplicateFDs(video_frame->DmabufFds());
-      // TODO(crbug.com/1036174): Replace this duplication with a check.
-      // Duplicate the fd of the last plane until the number of fds are the same
-      // as the number of planes.
-      while (num_planes != duped_fds.size()) {
-        int duped_fd = -1;
-        duped_fd = HANDLE_EINTR(dup(duped_fds.back().get()));
+      std::vector<base::ScopedFD> duped_fds;
+      for (size_t i = 0; i < num_planes; ++i) {
+        // TODO(crbug.com/1036174): Replace this duplication with a check.
+        // Duplicate the FD's that are present. If there are more planes than
+        // FD's, then duplicate the fd of the last plane until the number of
+        // fds are the same as the number of planes.
+        const base::ScopedFD& source_fd = (i < video_frame->NumDmabufFds())
+                                              ? video_frame->GetDmabufFd(i)
+                                              : duped_fds.back();
+
+        base::ScopedFD dup_fd =
+            base::ScopedFD(HANDLE_EINTR(dup(source_fd.get())));
         // TODO(crbug.com/1097956): handle a failure gracefully.
-        PCHECK(duped_fd >= 0) << "Failed duplicating a dma-buf fd";
-        duped_fds.emplace_back(duped_fd);
+        PCHECK(dup_fd.is_valid());
+        duped_fds.push_back(std::move(dup_fd));
       }
 
       handle.type = gfx::NATIVE_PIXMAP;

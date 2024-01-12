@@ -630,9 +630,10 @@ void DOMWindow::InstallCoopAccessMonitor(
   monitor->is_in_same_virtual_coop_related_group =
       is_in_same_virtual_coop_related_group;
 
+  // `task_runner` is used for handling disconnect, and it uses
+  // `TaskType::kInternalDefault` to match the main frame receiver.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      execution_context->GetTaskRunner(
-          TaskType::kInternalHighPriorityLocalFrame);
+      execution_context->GetTaskRunner(TaskType::kInternalDefault);
   monitor->reporter.Bind(std::move(coop_reporter_params->reporter),
                          std::move(task_runner));
   // CoopAccessMonitor are cleared when their reporter are gone. This avoids
@@ -658,6 +659,9 @@ void DOMWindow::InstallCoopAccessMonitor(
     if (old->accessing_main_frame == monitor->accessing_main_frame &&
         network::IsAccessFromCoopPage(old->report_type) ==
             network::IsAccessFromCoopPage(monitor->report_type)) {
+      // Eagerly reset the connection to prevent the disconnect handler from
+      // running, which could remove this new entry.
+      old->reporter.reset();
       old = monitor;
       return;
     }
@@ -764,6 +768,7 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
     // CoopAccessMonitor are used once and destroyed. This avoids sending
     // multiple reports for the same access.
+    (*it)->reporter.reset();
     it = coop_access_monitor_.erase(it);
   }
 }

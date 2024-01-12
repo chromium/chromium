@@ -26,7 +26,7 @@ export async function testAsyncQueueOrder() {
   };
 
   queue.run(firstTask);
-  await waitUntil(() => taskTrace.length == 2);
+  await waitUntil(() => taskTrace.length === 2);
   assertArrayEquals(['1', '2'], taskTrace);
 }
 

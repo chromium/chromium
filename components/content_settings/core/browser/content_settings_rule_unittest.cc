@@ -43,24 +43,24 @@ TEST(RuleTest, ConcatenationIterator) {
   base::Time validTime = base::Time::Now() - base::Seconds(101);
 
   std::list<std::unique_ptr<Rule>> rules1;
-  rules1.push_back(std::make_unique<OwnedRule>(
+  rules1.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("a"),
       ContentSettingsPattern::Wildcard(), base::Value(0), RuleMetaData{}));
   RuleMetaData metadata;
   metadata.SetExpirationAndLifetime(expiredTime, base::Seconds(60));
   metadata.set_session_model(content_settings::SessionModel::UserSession);
-  rules1.push_back(std::make_unique<OwnedRule>(
+  rules1.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("b"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
   std::list<std::unique_ptr<Rule>> rules2;
   metadata.SetExpirationAndLifetime(validTime, base::Seconds(60));
   metadata.set_session_model(content_settings::SessionModel::Durable);
-  rules2.push_back(std::make_unique<OwnedRule>(
+  rules2.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("c"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
   metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
   metadata.set_session_model(content_settings::SessionModel::UserSession);
-  rules2.push_back(std::make_unique<OwnedRule>(
+  rules2.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("d"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
 

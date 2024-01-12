@@ -387,8 +387,9 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
 
 bool PersistedData::RemoveApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_)
+  if (!pref_service_) {
     return false;
+  }
 
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
@@ -406,27 +407,31 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   const base::Value::Dict& dict =
       pref_service_->GetDict(update_client::kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
-  if (!apps)
+  if (!apps) {
     return {};
+  }
   std::vector<std::string> app_ids;
   for (auto it = apps->begin(); it != apps->end(); ++it) {
     const auto& app_id = it->first;
     const auto pv = GetProductVersion(app_id);
-    if (pv.IsValid())
+    if (pv.IsValid()) {
       app_ids.push_back(app_id);
+    }
   }
   return app_ids;
 }
 
 const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_)
+  if (!pref_service_) {
     return nullptr;
+  }
   const base::Value::Dict& dict =
       pref_service_->GetDict(update_client::kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
-  if (!apps)
+  if (!apps) {
     return nullptr;
+  }
   return apps->FindDict(base::ToLowerASCII(id));
 }
 
@@ -434,11 +439,13 @@ std::string PersistedData::GetString(const std::string& id,
                                      const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value::Dict* app_key = GetAppKey(id);
-  if (!app_key)
+  if (!app_key) {
     return {};
+  }
   const std::string* value = app_key->FindString(key);
-  if (!value)
+  if (!value) {
     return {};
+  }
   return *value;
 }
 
@@ -485,8 +492,9 @@ void PersistedData::SetString(const std::string& id,
                               const std::string& key,
                               const std::string& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_)
+  if (!pref_service_) {
     return;
+  }
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->Set(key, value);
@@ -499,8 +507,9 @@ bool PersistedData::GetHadApps() const {
 
 void PersistedData::SetHadApps() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_)
+  if (pref_service_) {
     pref_service_->SetBoolean(kHadApps, true);
+  }
 }
 
 bool PersistedData::GetUsageStatsEnabled() const {
@@ -522,8 +531,9 @@ base::Time PersistedData::GetLastChecked() const {
 
 void PersistedData::SetLastChecked(const base::Time& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_)
+  if (pref_service_) {
     pref_service_->SetTime(kLastChecked, time);
+  }
 }
 
 base::Time PersistedData::GetLastStarted() const {
@@ -533,8 +543,9 @@ base::Time PersistedData::GetLastStarted() const {
 
 void PersistedData::SetLastStarted(const base::Time& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_)
+  if (pref_service_) {
     pref_service_->SetTime(kLastStarted, time);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -545,8 +556,9 @@ std::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
   const std::string encoded_os_version =
       pref_service_->GetString(kLastOSVersion);
 
-  if (encoded_os_version.empty())
+  if (encoded_os_version.empty()) {
     return std::nullopt;
+  }
 
   const std::optional<std::vector<uint8_t>> decoded_os_version =
       base::Base64Decode(encoded_os_version);
@@ -561,13 +573,15 @@ std::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
 void PersistedData::SetLastOSVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!pref_service_)
+  if (!pref_service_) {
     return;
+  }
 
   // Get and set the current OS version.
   std::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
-  if (!os_version)
+  if (!os_version) {
     return;
+  }
 
   // The os version is internally stored as a base-64-encoded string.
   std::string encoded_os_version;

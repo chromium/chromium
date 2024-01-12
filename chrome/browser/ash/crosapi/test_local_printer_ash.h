@@ -28,7 +28,7 @@ class TestLocalPrinterAsh : public crosapi::LocalPrinterAsh {
   scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile) override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const scoped_refptr<chromeos::PpdProvider> ppd_provider_;
 };
 

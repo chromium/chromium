@@ -463,6 +463,9 @@ TEST(URLUtilTest, BasicCoverage) {
   // must be followed by '://'.
   EXPECT_TRUE(MatchFilters({"file://*"}, "file:///abc.txt"));
   EXPECT_TRUE(MatchFilters({"file:*"}, "file:///usr/local/boot.txt"));
+  EXPECT_TRUE(MatchFilters(
+      {"data:*"},
+      "data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"/>"));
   EXPECT_TRUE(MatchFilters({"https://*"}, "https:///abc.txt"));
   EXPECT_TRUE(MatchFilters({"ftp://*"}, "ftp://ftp.txt"));
   EXPECT_TRUE(MatchFilters({"chrome://*"}, "chrome:policy"));
@@ -653,7 +656,13 @@ INSTANTIATE_TEST_SUITE_P(
                          std::string(),
                          true,
                          0u,
-                         "/whatever")));
+                         "/whatever"),
+        FilterTestParams("data:image/png",
+                         "data",
+                         std::string(),
+                         true,
+                         0u,
+                         "image/png")));
 
 TEST_P(FilterToComponentsTest, FilterToComponents) {
   std::string scheme;

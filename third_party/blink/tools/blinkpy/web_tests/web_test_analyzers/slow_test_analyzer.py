@@ -22,10 +22,20 @@ builder2 : timeout count: 5, slow count: 32, slow ratio: 1.00, avg duration: 5.2
 """
 
 import argparse
+import re
+import urllib.parse
 
+from blinkpy.common.host import Host
+from blinkpy.common.net.luci_auth import LuciAuth
+from blinkpy.w3c.monorail import MonorailAPI
 from blinkpy.web_tests.web_test_analyzers import analyzer
+from blinkpy.web_tests.web_test_analyzers import data_types
 from blinkpy.web_tests.web_test_analyzers import queries
 from blinkpy.web_tests.web_test_analyzers import results
+
+
+DASHBOARD_BASE_URL = 'go/slow_test_dashboard'
+RESULT_TITLE = 'Slow Test Analyzer result:'
 
 
 def ParseArgs() -> argparse.Namespace:
@@ -46,6 +56,7 @@ def ParseArgs() -> argparse.Namespace:
         " hit for a test to be considered slow.")
     parser.add_argument(
         '--timeout-result-threshold',
+        type=int,
         default=5,
         help="An int denoting the number of timeout results necessary"
         " for a test to be considered slow. Both thresholds must "
@@ -59,6 +70,16 @@ def ParseArgs() -> argparse.Namespace:
     parser.add_argument(
         '--test-path',
         help='The test path that contains the tests to do slowness analysis.')
+    parser.add_argument(
+        '--check-bugs-only',
+        action='store_true',
+        help='Only checks the slow tests result on existing bugs in the'
+        ' LUCI analysis database.')
+    parser.add_argument(
+        '--attach-analysis-result',
+        action='store_true',
+        help='Attach the slow test analysis result to the corresponding bug.'
+        ' Only used with --check-bugs-only flag.')
     args = parser.parse_args()
     return args
 
@@ -67,20 +88,90 @@ def main() -> int:
     args = ParseArgs()
 
     querier_instance = queries.Querier(args.sample_period, args.project)
-    query_results = (querier_instance.get_overall_slowness_ci_tests(
-        args.test_path))
-    results_processor = results.ResultProcessor()
-    aggregated_results = results_processor.aggregate_test_slowness_results(
-        query_results)
+    # Find all bug ids or save empty id if it does not check all bugs.
+    if args.check_bugs_only:
+        bugs_info = querier_instance.get_web_test_flaky_bugs()
+        bugs = {}
+        for bug in bugs_info:
+            test_path_list = [
+                re.sub('ninja://:blink_w(eb|pt)_tests/', '', test_id)
+                for test_id in bug['test_ids']
+            ]
+            if bug['bug_id']:
+                # Only check for monorail for now.
+                bug_id = bug['bug_id'].partition('chromium/')[2]
+                if bug_id:
+                    bugs[bug_id] = test_path_list
+        if args.attach_analysis_result:
+            token = LuciAuth(Host()).get_access_token()
+            monorail_api = MonorailAPI(access_token=token)
+    else:
+        bugs = {'': [args.test_path]}
 
+    results_processor = results.ResultProcessor()
     slowness_analyzer = analyzer.SlowTestAnalyzer(
         args.slow_result_ratio_threshold, args.timeout_result_threshold)
+    bug_ids = []
+    for bug_id, test_list in bugs.items():
+        bug_result_string = ''
+        for test_path in test_list:
+            query_results = (
+                querier_instance.get_overall_slowness_ci_tests(test_path))
+            aggregated_results = (
+                results_processor.aggregate_test_slowness_results(
+                    query_results))
+            bug_result_string += analyze_aggregated_results(
+                aggregated_results, slowness_analyzer, bug_id,
+                args.attach_analysis_result)
+        # Attach the analysis result for this bug.
+        if bug_id and args.attach_analysis_result and bug_result_string:
+            bug_result_string = RESULT_TITLE + bug_result_string
+            if RESULT_TITLE not in str(
+                    monorail_api.get_comment_list('chromium', bug_id)):
+                monorail_api.insert_comment('chromium', bug_id,
+                                            bug_result_string)
+                bug_ids.append(bug_id)
+
+    # Insert bug attachment results to database.
+    if bug_ids:
+        querier_instance.insert_web_test_analyzer_result(
+            data_types.SLOW_TEST_ANALYZER, data_types.MONORAIL, bug_ids)
+
+    return 0
+
+
+def analyze_aggregated_results(
+        aggregated_results: data_types.AggregatedSlownessResultsType,
+        slowness_analyzer: analyzer.SlowTestAnalyzer, bug_id: str,
+        attach_analysis_result: bool) -> str:
+    """Analyze the input slow test results.
+
+        Args:
+          aggregated_results: Slow test results.
+          slowness_analyzer: The analyzer to check slowness of results.
+          bug_id: The bug id of test results.
+          attach_analysis_result: Attach the result to bug or not.
+
+        Returns:
+          A string of the final analysis result.
+        """
+    res = ''
     for test_name, test_data in aggregated_results.items():
         test_analysis_result = slowness_analyzer.run_analyzer(test_data)
         if test_analysis_result.is_analyzed:
             result_string = ''
-            result_string += '\nTest name: %s\n' % test_name
-            result_string += test_analysis_result.analysis_result
-            print(result_string)
-
-    return 0
+            if bug_id and not attach_analysis_result:
+                result_string = result_string + f'\nBug number: {bug_id}'
+            dashboard_link = (DASHBOARD_BASE_URL + '?f=test_name_h4s6v6:re:' +
+                              urllib.parse.quote(test_name, safe=''))
+            result_string = result_string + (
+                f'\nTest name: {test_name}'
+                f'\nTest Result: {test_analysis_result.analysis_result}'
+                f'\nTest is slow, suggested to make the test smaller or add'
+                f' this test to SlowTestExpectation.'
+                f'\nDashboard link: {dashboard_link}\n')
+            if not attach_analysis_result:
+                print(result_string)
+            else:
+                res = res + result_string
+    return res

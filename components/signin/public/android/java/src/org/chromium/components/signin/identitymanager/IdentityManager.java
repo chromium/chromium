@@ -14,10 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
-
-import java.util.List;
 
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 public class IdentityManager {
@@ -158,14 +155,11 @@ public class IdentityManager {
     }
 
     /**
-     * Refreshes extended {@link AccountInfo} with image for the given
-     * list of {@link CoreAccountInfo} if the existing ones are stale.
+     * Refreshes extended {@link AccountInfo} with image for the given list of {@link
+     * CoreAccountInfo} if the existing ones are stale.
      */
-    public void refreshAccountInfoIfStale(List<CoreAccountInfo> accountInfos) {
-        for (CoreAccountInfo accountInfo : accountInfos) {
-            IdentityManagerJni.get()
-                    .refreshAccountInfoIfStale(mNativeIdentityManager, accountInfo.getId());
-        }
+    public void refreshAccountInfoIfStale() {
+        IdentityManagerJni.get().refreshAccountInfoIfStale(mNativeIdentityManager);
     }
 
     /** Returns true if the primary account can be cleared/removed from the browser. */
@@ -199,7 +193,7 @@ public class IdentityManager {
 
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
 
-        void refreshAccountInfoIfStale(long nativeIdentityManager, CoreAccountId coreAccountId);
+        void refreshAccountInfoIfStale(long nativeIdentityManager);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);
     }

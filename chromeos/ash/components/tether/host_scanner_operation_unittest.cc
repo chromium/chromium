@@ -133,8 +133,7 @@ class HostScannerOperationTest : public testing::Test {
   const multidevice::RemoteDeviceRef local_device_;
   const multidevice::RemoteDeviceRef remote_device_;
 
-  raw_ptr<secure_channel::FakeConnectionAttempt,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<secure_channel::FakeConnectionAttempt, DanglingUntriaged>
       connection_attempt_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   secure_channel::FakeSecureChannelClient fake_secure_channel_client_;

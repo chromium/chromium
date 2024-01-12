@@ -22,6 +22,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
@@ -53,32 +54,44 @@
 namespace ash {
 namespace {
 
+constexpr int kAddNewTaskIconSize = 24;
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr int kInteriorGlanceableBubbleMargin = 16;
-constexpr int kListViewBetweenChildSpacing = 2;
+constexpr int kScrollViewBottomMargin = 12;
+constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
+constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
 
-std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
-    views::Button::PressedCallback callback) {
-  auto add_new_task_button = std::make_unique<views::LabelButton>(
-      std::move(callback),
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL));
-  add_new_task_button->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
-  add_new_task_button->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
-                                     cros_tokens::kFocusRingColor));
-  add_new_task_button->SetImageLabelSpacing(18);
-  add_new_task_button->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(13, 18)));
-  add_new_task_button->SetEnabledTextColorIds(cros_tokens::kFocusRingColor);
-  return add_new_task_button;
-}
+class AddNewTaskButton : public views::LabelButton {
+  METADATA_HEADER(AddNewTaskButton, views::LabelButton)
+ public:
+  explicit AddNewTaskButton(views::Button::PressedCallback callback)
+      : views::LabelButton(
+            std::move(callback),
+            l10n_util::GetStringUTF16(
+                IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL)) {
+    SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
+    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kGlanceablesTasksAddNewTaskIcon,
+                      cros_tokens::kCrosSysPrimary, kAddNewTaskIconSize));
+    SetImageLabelSpacing(14);
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, 0)));
+    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosButton2));
+  }
+
+  AddNewTaskButton(const AddNewTaskButton&) = delete;
+  AddNewTaskButton& operator=(const AddNewTaskButton&) = delete;
+  ~AddNewTaskButton() override = default;
+};
+
+BEGIN_METADATA(AddNewTaskButton)
+END_METADATA
 
 }  // namespace
 
@@ -131,11 +144,16 @@ GlanceablesTasksView::GlanceablesTasksView(
           .WithWeight(1));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
+      /*inside_border_insets=*/
+      gfx::Insets::TLBR(0, 0, kScrollViewBottomMargin, 0),
+      kListViewBetweenChildSpacing));
 
-  add_new_task_button_ = list_view->AddChildView(CreateAddNewTaskButton(
-      base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
-                          base::Unretained(this))));
+  add_new_task_button_ =
+      list_view->AddChildView(std::make_unique<AddNewTaskButton>(
+          base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
+                              base::Unretained(this))));
+  // Hide `add_new_task_button_` until the initial task list update.
+  add_new_task_button_->SetVisible(false);
 
   task_items_container_view_ =
       list_view->AddChildView(std::make_unique<views::View>());
@@ -153,7 +171,7 @@ GlanceablesTasksView::GlanceablesTasksView(
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
                               TasksLaunchSource::kHeaderButton),
-          IconButton::Type::kMedium, &kGlanceablesTasksIcon,
+          IconButton::Type::kSmall, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
@@ -177,14 +195,17 @@ GlanceablesTasksView::GlanceablesTasksView(
   task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &GlanceablesTasksView::SelectedTasksListChanged, base::Unretained(this)));
 
-  list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
-      base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
-                          base::Unretained(this),
-                          TasksLaunchSource::kFooterButton)));
+  list_footer_view_ =
+      list_view->AddChildView(std::make_unique<GlanceablesListFooterView>(
+          l10n_util::GetStringUTF16(
+              IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
+          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
+                              base::Unretained(this),
+                              TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
+  list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
+  list_footer_view_->SetVisible(false);
 
   ScheduleUpdateTasksList(/*initial_update=*/true);
 }
@@ -214,7 +235,6 @@ void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
-  add_new_task_button_->SetState(views::Button::ButtonState::STATE_DISABLED);
   const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
@@ -268,6 +288,7 @@ void GlanceablesTasksView::UpdateTasksList(
     bool initial_update,
     const ui::ListModel<api::Task>* tasks) {
   if (initial_update) {
+    add_new_task_button_->SetVisible(true);
     base::UmaHistogramCounts100(
         "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",
         tasks->item_count());
@@ -279,7 +300,6 @@ void GlanceablesTasksView::UpdateTasksList(
   task_items_container_view_->RemoveAllChildViews();
 
   size_t num_tasks_shown = 0;
-  size_t num_tasks = 0;
 
   for (const auto& task : *tasks) {
     if (task->completed) {
@@ -291,12 +311,9 @@ void GlanceablesTasksView::UpdateTasksList(
           CreateTaskView(task_list_id, task.get()));
       ++num_tasks_shown;
     }
-    ++num_tasks;
   }
   task_items_container_view_->SetVisible(num_tasks_shown > 0);
-
-  list_footer_view_->UpdateItemsCount(num_tasks_shown, num_tasks);
-  list_footer_view_->SetVisible(num_tasks_shown > 0);
+  list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
@@ -355,7 +372,6 @@ void GlanceablesTasksView::SaveTask(
     // Empty `task_id` means that the task has not yet been created. Verify that
     // this task has a non-empty title, otherwise just delete the `view` from
     // the scrollable container.
-    add_new_task_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
     if (title.empty() && view) {
       task_items_container_view_->RemoveChildViewT(view.get());
       return;
@@ -391,6 +407,8 @@ void GlanceablesTasksView::OnTaskSaved(
   }
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
   std::move(callback).Run(task);
+  list_footer_view_->SetVisible(task_items_container_view_->children().size() >=
+                                kMaximumTasks);
 }
 
 BEGIN_METADATA(GlanceablesTasksView, views::View)

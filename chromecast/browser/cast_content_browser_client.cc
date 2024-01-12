@@ -171,8 +171,12 @@ CastContentBrowserClient::CastContentBrowserClient(
     // Use the software decoder provided by MediaCodec instead of the built in
     // software decoder. This can improve av sync quality.
     extra_enable_features.push_back(&::media::kAllowMediaCodecSoftwareDecoder);
-    // Disable AAudio on ATV for a better av sync quality, before we root cause
-    // the issue.
+    // For ATV HDMI dongle devices, it's hard to get an accurate audio latency.
+    // The OpenSL ES output path has a way to adjust the audio timestamp by
+    // querying AudioManager.getOutputLatency. Based on the experiment, this
+    // combination has a better av sync performance compared to the AAudio path
+    // on ATV devices.
+    extra_enable_features.push_back(&::media::kUseAudioLatencyFromHAL);
     extra_disable_features.push_back(&::features::kUseAAudioDriver);
   }
 #endif
@@ -387,9 +391,6 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
 
   return false;
 }
-
-void CastContentBrowserClient::SiteInstanceGotProcess(
-    content::SiteInstance* site_instance) {}
 
 void CastContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
@@ -887,7 +888,8 @@ CastContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
     // No support for service workers.

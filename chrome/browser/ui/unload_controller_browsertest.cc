@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -67,11 +68,14 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);
-  EXPECT_NE(kShouldPreventClose, unload_controller.ShouldCloseWindow());
+  EXPECT_EQ(kShouldPreventClose ? BrowserClosingStatus::kDeniedByPolicy
+                                : BrowserClosingStatus::kPermitted,
+            unload_controller.GetBrowserClosingStatus());
 
   if (kShouldPreventClose) {
     ClearWebAppSettings();
-    EXPECT_EQ(true, unload_controller.ShouldCloseWindow());
+    EXPECT_EQ(BrowserClosingStatus::kPermitted,
+              unload_controller.GetBrowserClosingStatus());
   }
 }
 
@@ -87,5 +91,6 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);
-  EXPECT_TRUE(unload_controller.ShouldCloseWindow());
+  EXPECT_EQ(BrowserClosingStatus::kPermitted,
+            unload_controller.GetBrowserClosingStatus());
 }

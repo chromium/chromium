@@ -20,7 +20,6 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -748,8 +747,9 @@ PDFiumFormFiller::EngineInIsolateScopeFactory::EngineInIsolateScopeFactory(
                                 PDFiumFormFiller::ScriptOption::kNoJavaScript
                             ? v8::Isolate::TryGetCurrent()
                             : nullptr) {
-  if (callback_isolate_)
-    CHECK_EQ(blink::MainThreadIsolate(), callback_isolate_);
+  if (callback_isolate_) {
+    CHECK_EQ(engine_->client_->GetIsolate(), callback_isolate_);
+  }
 }
 
 PDFiumFormFiller::EngineInIsolateScopeFactory::~EngineInIsolateScopeFactory() =

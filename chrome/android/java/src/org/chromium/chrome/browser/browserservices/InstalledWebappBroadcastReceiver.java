@@ -9,11 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 
 import java.util.Arrays;

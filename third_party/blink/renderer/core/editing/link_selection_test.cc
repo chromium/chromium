@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/base/cursor/cursor.h"
@@ -47,6 +48,8 @@ class LinkSelectionTestBase : public testing::Test {
                         int count = 1);
 
   String GetSelectionText();
+
+  test::TaskEnvironment task_environment_;
 
   frame_test_helpers::WebViewHelper helper_;
   WebViewImpl* web_view_ = nullptr;

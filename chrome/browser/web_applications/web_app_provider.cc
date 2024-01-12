@@ -57,6 +57,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/migrations/adobe_express_oem_to_default_migration.h"
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #endif
@@ -239,6 +240,11 @@ WebAppRunOnOsLoginManager& WebAppProvider::run_on_os_login_manager() {
   CheckIsConnected();
   return *web_app_run_on_os_login_manager_;
 }
+
+IsolatedWebAppPolicyManager& WebAppProvider::iwa_policy_manager() {
+  CheckIsConnected();
+  return *isolated_web_app_policy_manager_;
+}
 #endif
 
 WebAppUiManager& WebAppProvider::ui_manager() {
@@ -376,6 +382,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_ =
       std::make_unique<WebAppRunOnOsLoginManager>(profile);
+  isolated_web_app_policy_manager_ =
+      std::make_unique<IsolatedWebAppPolicyManager>(profile);
 #endif
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
@@ -404,6 +412,7 @@ void WebAppProvider::ConnectSubsystems() {
   iwa_update_manager_->SetProvider(pass_key, *this);
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_policy_manager_->SetProvider(pass_key, *this);
 #endif
   icon_manager_->SetProvider(pass_key, *this);
   translation_manager_->SetProvider(pass_key, *this);
@@ -430,7 +439,11 @@ void WebAppProvider::OnSyncBridgeReady() {
 
   // Note: This does not wait for the call from the ChromeOS
   // SystemWebAppManager, which is a separate keyed service.
-  int num_barrier_calls = 2;
+#if BUILDFLAG(IS_CHROMEOS)
+  const int num_barrier_calls = 3;
+#else
+  const int num_barrier_calls = 2;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   base::RepeatingClosure external_manager_barrier = base::BarrierClosure(
       num_barrier_calls,
       base::BindOnce(
@@ -467,6 +480,9 @@ void WebAppProvider::OnSyncBridgeReady() {
   ui_manager_->Start();
   generated_icon_fix_manager_->Start();
   command_manager_->Start();
+#if BUILDFLAG(IS_CHROMEOS)
+  isolated_web_app_policy_manager_->Start(external_manager_barrier);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   on_registry_ready_.Signal();
   is_registry_ready_ = true;

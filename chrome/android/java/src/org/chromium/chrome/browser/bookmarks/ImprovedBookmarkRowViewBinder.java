@@ -72,6 +72,8 @@ public class ImprovedBookmarkRowViewBinder {
             row.setEndImageRes(model.get(ImprovedBookmarkRowProperties.END_IMAGE_RES));
         } else if (key == ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION) {
             row.setContentDescription(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+        } else if (key == ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK) {
+            row.setIsLocalBookmark(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
         } else if (key == ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR) {
             folderView.setStartAreaBackgroundColor(
                     model.get(ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR));

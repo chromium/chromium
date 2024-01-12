@@ -242,12 +242,11 @@ class FloatingWorkspaceService : public KeyedService,
   // initialized.
   bool AreRequiredAppTypesInitialized();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
 
-  raw_ptr<sync_sessions::SessionSyncService, ExperimentalAsh>
-      session_sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 

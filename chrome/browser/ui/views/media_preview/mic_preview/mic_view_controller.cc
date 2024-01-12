@@ -65,7 +65,7 @@ MediaView& MicViewController::GetLiveFeedContainer() {
 
 void MicViewController::UpdateAudioSourceInfos(
     std::vector<AudioSourceInfo> audio_source_infos) {
-  bool has_devices = !audio_source_infos.empty();
+  auto audio_source_info_count = audio_source_infos.size();
   combobox_model_->UpdateDeviceList(std::move(audio_source_infos));
-  base_controller_->AdjustComboboxEnabledState(has_devices);
+  base_controller_->OnDeviceListChanged(audio_source_info_count);
 }

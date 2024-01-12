@@ -19,7 +19,6 @@ namespace updater {
 class UpdateServiceInternal;
 class GlobalPrefs;
 class UpdateService;
-struct RegistrationRequest;
 
 // Returns true if the command line has the switch `--service update-internal`.
 bool IsInternalService();
@@ -69,11 +68,6 @@ class AppServer : public App {
 
   // Sets up all non-side-by-side registration to point to the new version.
   virtual bool SwapInNewVersion() = 0;
-
-  // Imports metadata from legacy updaters, then replaces them with shims.
-  virtual bool MigrateLegacyUpdaters(
-      base::RepeatingCallback<void(const RegistrationRequest&)>
-          register_callback) = 0;
 
   // As part of initialization, the server may detect and repair problems. This
   // is called only for the active updater instance, and while the global prefs

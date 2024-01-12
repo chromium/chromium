@@ -573,10 +573,13 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   std::vector<gfx::BufferPlane> planes;
 
+  // The SharedImages here are used to back VideoFrames. They may be read by
+  // the raster interface for format conversion, which will entail GLES2_READ
+  // if OOP-R is not enabled.
+  // NOTE: GLES2_READ can be removed once OOP-R ships definitively.
   uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #if BUILDFLAG(IS_APPLE)
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif

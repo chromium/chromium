@@ -37,7 +37,7 @@ class TestMainExtraPart : public ChromeBrowserMainExtraParts {
   }
 
  private:
-  const raw_ptr<LocalStateMixin::Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<LocalStateMixin::Delegate> delegate_;
 };
 
 }  // namespace

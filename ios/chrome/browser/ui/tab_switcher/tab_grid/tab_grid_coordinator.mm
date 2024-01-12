@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/main/model/browser_util.h"
@@ -44,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -61,7 +63,7 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
@@ -357,8 +359,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)setActivePage:(TabGridPage)page {
   DCHECK(page != TabGridPageRemoteTabs);
-  self.baseViewController.activePage = page;
   [_mediator setPage:page];
+  self.baseViewController.activePage = page;
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -374,14 +376,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (BOOL)isTabGridActive {
   return self.bvcContainer == nil && !self.firstPresentation;
-}
-
-- (void)prepareToShowTabGrid {
-  // No-op if the BVC isn't being presented.
-  if (!self.bvcContainer)
-    return;
-  [base::apple::ObjCCast<TabGridViewController>(self.baseViewController)
-      prepareForAppearance];
 }
 
 - (void)showTabGrid {
@@ -695,8 +689,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  ChromeBrowserState* browser_state = self.regularBrowser->GetBrowserState();
   _mediator = [[TabGridMediator alloc]
-      initWithPrefService:self.regularBrowser->GetBrowserState()->GetPrefs()];
+           initWithPrefService:browser_state->GetPrefs()
+      featureEngagementTracker:feature_engagement::TrackerFactory::
+                                   GetForBrowserState(browser_state)];
 
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
@@ -708,6 +705,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
   baseViewController.mutator = _mediator;
+  // TODO(crbug.com/1515084): Remove once sync bug have beeen solved.
+  baseViewController.provider = _mediator;
   _baseViewController = baseViewController;
 
   _mediator.consumer = _baseViewController;
@@ -1114,24 +1113,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 #pragma mark - TabGridViewControllerDelegate
 
-- (TabGridPage)activePageForTabGridViewController:
-    (TabGridViewController*)tabGridViewController {
-  return [self.delegate activePageForTabGrid:self];
-}
-
-- (void)tabGridViewControllerDidDismiss:
-    (TabGridViewController*)tabGridViewController {
-  [self.delegate tabGridDismissTransitionDidEnd:self];
-}
-
 - (void)openLinkWithURL:(const GURL&)URL {
   id<ApplicationCommands> handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
   [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL]];
-}
-
-- (void)setBVCAccessibilityViewModal:(BOOL)modal {
-  self.bvcContainer.view.accessibilityViewIsModal = modal;
 }
 
 - (void)openSearchResultsPageForSearchText:(NSString*)searchText {
@@ -1333,11 +1318,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
-- (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier {
+- (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
+                              incognito:(BOOL)incognito {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a new tab group outside the Tab "
          "Groups experiment.";
   // TODO(crbug.com/1501837): Display the tab group creation view.
+  std::set<web::WebStateID> webStateIDSet = {identifier};
+  if (incognito) {
+    [_incognitoGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
+  } else {
+    [_regularGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
+  }
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier

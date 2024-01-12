@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/utility_process_host.h"
+
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -151,8 +154,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     service_->WriteToPreloadedPipe();
     char buf[4];
-    ASSERT_TRUE(base::ReadFromFD(read_fd.get(), buf, sizeof(buf)));
-    base::StringPiece msg(buf, sizeof(buf));
+    ASSERT_TRUE(base::ReadFromFD(read_fd.get(), buf));
+    std::string_view msg(buf, sizeof(buf));
     ASSERT_EQ(msg, "test");
     OnSomething();
   }

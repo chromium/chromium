@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Der er registreret en inkompatibel version af protokollen. Kontrollér, at du har den nyeste version af softwaren installeret på begge computere, og prøv igen.</translation>
 <translation id="1008557486741366299">Ikke nu</translation>
 <translation id="1201402288615127009">Næste</translation>
-<translation id="1296511125400541222">Copyright 2023 Udviklerne af Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="1297009705180977556">Der opstod en fejl under forsøget på at oprette forbindelse til <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Det ønskede objekt findes ikke.</translation>
 <translation id="1480046233931937785">Medvirkende</translation>
@@ -89,7 +88,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="4808503597364150972">Angiv din pinkode til <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Send PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="4974476491460646149">Forbindelsen til <ph name="HOSTNAME" /> er lukket</translation>
 <translation id="4985296110227979402">Du skal først konfigurere din computer til fjernadgang</translation>
 <translation id="4987330545941822761">Chrome Fjernskrivebord kan ikke identificere den browser, der skal åbne webadresser lokalt. Vælg den på listen nedenfor.</translation>
@@ -143,7 +141,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7359298090707901886">Den valgte browser kan ikke bruges til at åbne webadresser på den lokale maskine.</translation>
 <translation id="7401733114166276557">Chrome Fjernskrivebord</translation>
 <translation id="7434397035092923453">Adgang nægtet for klient: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="7444276978508498879">Tilsluttet klient: <ph name="CLIENT_USERNAME" /> .</translation>
+<translation id="7444276978508498879">Forbundet klient: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7526139040829362392">Skift konto</translation>
 <translation id="7535110896613603182">Åbn indstillinger for standardapps</translation>
 <translation id="7628469622942688817">Husk min pinkode på denne enhed.</translation>
@@ -154,6 +152,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7693372326588366043">Opdater listen over værter</translation>
 <translation id="7714222945760997814">Rapportér dette</translation>
 <translation id="7868137160098754906">Angiv din pinkode til fjerncomputeren.</translation>
+<translation id="7881455334687220899">Copyright 2024 Udviklerne af Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="7895403300744144251">Sikkerhedspolitikkerne på fjerncomputeren tillader ikke forbindelser fra din konto.</translation>
 <translation id="7936528439960309876">Fastgør til højre</translation>
 <translation id="7970576581263377361">Godkendelse mislykkedes. Log ind på Chromium igen.</translation>
@@ -185,6 +184,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="8747048596626351634">Sessionen gik ned eller kunne ikke startes. Hvis ~/.chrome-remote-desktop-session findes på fjerncomputeren, skal du sørge for, at den starter en proces, der er længe åben i forgrunden, f.eks. et computermiljø eller en vinduesadministrator.</translation>
 <translation id="8804164990146287819">Privatlivspolitik</translation>
 <translation id="8906511416443321782">Der kræves adgang til mikrofonen for at optage lyd og caste lyden til klienten Chrome Fjernskrivebord.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="9111855907838866522">Du har forbindelse til din fjernenhed. Åbn menuen ved at trykke på skærmen med fire fingre.</translation>
 <translation id="9126115402994542723">Bed ikke om en pinkode igen, når der oprettes forbindelse til denne host fra denne enhed.</translation>
 <translation id="916856682307586697">Start XSessions standardsession</translation>

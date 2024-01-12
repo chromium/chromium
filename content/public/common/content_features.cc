@@ -346,6 +346,14 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
              "EnableServiceWorkersForChromeScheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// If enabled use the expanded range for the prefetch cmd line option.
+BASE_FEATURE(kExpandedPrefetchRange,
+             "ExpandedPrefetchRange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif  // BUILDFLAG(IS_WIN)
+
 // Enables JavaScript API to intermediate federated identity requests.
 // Note that actual exposure of the FedCM API to web content is controlled
 // by the flag in RuntimeEnabledFeatures on the blink side. See also
@@ -430,7 +438,7 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
 // eTLD+1.
 BASE_FEATURE(kFedCmSkipWellKnownForSameSite,
              "FedCmSkipWellKnownForSameSite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
@@ -637,7 +645,12 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
 // Setting to control overscroll history navigation.
 BASE_FEATURE(kOverscrollHistoryNavigationSetting,
              "OverscrollHistoryNavigationSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync,
@@ -668,6 +681,11 @@ BASE_FEATURE(kPersistentOriginTrials,
 BASE_FEATURE(kPrefetchNewLimits,
              "PrefetchNewLimits",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, then redirects will be followed when prefetching.
+BASE_FEATURE(kPrefetchRedirects,
+             "PrefetchRedirects",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
@@ -1235,6 +1253,12 @@ BASE_FEATURE(kAccessibilityPageZoom,
 const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
     &kAccessibilityPageZoom, "AdjustForOSLevel", true};
 
+// Enables the use of enhancements to the Page Zoom feature based on user
+// feedback from the v1 version (e.g. reset button, better IPH, etc).
+BASE_FEATURE(kAccessibilityPageZoomEnhancements,
+             "AccessibilityPageZoomEnhancements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1265,7 +1289,7 @@ BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
 // Request Desktop Site based on window width for Android.
 BASE_FEATURE(kRequestDesktopSiteWindowSetting,
              "RequestDesktopSiteWindowSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
 // when desktop user agent is used.
@@ -1294,6 +1318,12 @@ BASE_FEATURE(kUserMediaScreenCapturing,
 // using the kEnableExperimentalWebPlatformFeatures flag.
 // https://w3c.github.io/web-nfc/
 BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill switch for allowing webview to suppress tap immediately after fling,
+// matching chrome behavior.
+BASE_FEATURE(kWebViewSuppressTapDuringFling,
+             "WebViewSuppressTapDuringFling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

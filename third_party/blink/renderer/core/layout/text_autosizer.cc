@@ -158,7 +158,7 @@ static bool BlockIsRowOfLinks(const LayoutBlock* block) {
     if (!IsPotentialClusterRoot(layout_object)) {
       if (layout_object->IsText() &&
           To<LayoutText>(layout_object)
-                  ->GetText()
+                  ->TransformedText()
                   .LengthWithStrippedWhiteSpace() > 3) {
         return false;
       }
@@ -811,9 +811,10 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
       // resolvedTextLength() because the lineboxes will not be built until
       // layout. These values can be different.
       // Note: This is an approximation assuming each character is 1em wide.
-      length +=
-          To<LayoutText>(descendant)->GetText().LengthWithStrippedWhiteSpace() *
-          descendant->StyleRef().SpecifiedFontSize();
+      length += To<LayoutText>(descendant)
+                    ->TransformedText()
+                    .LengthWithStrippedWhiteSpace() *
+                descendant->StyleRef().SpecifiedFontSize();
 
       if (length >= minimum_text_length_to_autosize) {
         cluster->has_enough_text_to_autosize_ = kHasEnoughText;

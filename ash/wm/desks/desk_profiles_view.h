@@ -36,7 +36,7 @@ class DeskProfilesButton : public views::ImageButton, public Desk::Observer {
   void OnDeskNameChanged(const std::u16string& new_name) override {}
 
   // views::ImageButton:
-  void OnMouseReleased(const ui::MouseEvent& event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:

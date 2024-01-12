@@ -86,7 +86,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/compose/buildflags.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -330,9 +329,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   const bool is_eea_country = search_engines::IsEeaChoiceCountry(
       search_engines::GetSearchEngineChoiceCountryId(profile->GetPrefs()));
   html_source->AddBoolean("useLargeSearchEngineIcons", is_eea_country);
-  if (is_search_engine_choice_settings_ui) {
-    AddGeneratedIconResources(html_source, /*directory=*/"images/");
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
@@ -395,11 +391,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
           base::FeatureList::IsEnabled(
               companion::features::kCompanionEnablePageContent));
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-  html_source->AddBoolean("enableComposeSetting",
-                          ComposeEnabling::IsEnabledForProfile(profile));
-#endif
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
@@ -528,6 +519,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       onboarding_service && onboarding_service->IsOffboarded() &&
           base::FeatureList::IsEnabled(
               privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice));
+  html_source->AddBoolean(
+      "isProactiveTopicsBlockingEnabled",
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
@@ -716,7 +711,10 @@ void SettingsUI::CreateHelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{kEnhancedProtectionSettingElementId});
+      std::vector<ui::ElementIdentifier>{
+          kEnhancedProtectionSettingElementId,
+          kAnonymizedUrlCollectionPersonalizationSettingId,
+      });
 }
 
 void SettingsUI::CreateCustomizeColorSchemeModeHandler(

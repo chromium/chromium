@@ -457,10 +457,10 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
         cellular_network_iccid,
         base::BindOnce(&NetworkConnectionHandlerImpl::
                            OnPrepareCellularNetworkForConnectionSuccess,
-                       AsWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&NetworkConnectionHandlerImpl::
                            OnPrepareCellularNetworkForConnectionFailure,
-                       AsWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -475,7 +475,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
   configuration_handler_->GetShillProperties(
       service_path,
       base::BindOnce(&NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect,
-                     AsWeakPtr(), check_error_state));
+                     weak_ptr_factory_.GetWeakPtr(), check_error_state));
 }
 
 void NetworkConnectionHandlerImpl::OnPrepareCellularNetworkForConnectionSuccess(
@@ -628,7 +628,7 @@ void NetworkConnectionHandlerImpl::StartConnectTimer(
   request->timer->Start(
       FROM_HERE, timeout,
       base::BindOnce(&NetworkConnectionHandlerImpl::OnConnectTimeout,
-                     AsWeakPtr(), request));
+                     weak_ptr_factory_.GetWeakPtr(), request));
 }
 
 void NetworkConnectionHandlerImpl::OnConnectTimeout(ConnectRequest* request) {
@@ -836,10 +836,10 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     configuration_handler_->SetShillProperties(
         service_path, config_properties,
         base::BindOnce(&NetworkConnectionHandlerImpl::CallShillConnect,
-                       AsWeakPtr(), service_path),
+                       weak_ptr_factory_.GetWeakPtr(), service_path),
         base::BindOnce(
             &NetworkConnectionHandlerImpl::OnSetShillPropertiesFailed,
-            AsWeakPtr(), service_path));
+            weak_ptr_factory_.GetWeakPtr(), service_path));
     return;
   }
 
@@ -883,7 +883,7 @@ void NetworkConnectionHandlerImpl::QueueConnectRequest(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NetworkConnectionHandlerImpl::CheckCertificatesLoaded,
-                     AsWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr()),
       kMaxCertLoadTimeSeconds);
 }
 
@@ -939,9 +939,9 @@ void NetworkConnectionHandlerImpl::CallShillConnect(
   ShillServiceClient::Get()->Connect(
       dbus::ObjectPath(service_path),
       base::BindOnce(&NetworkConnectionHandlerImpl::HandleShillConnectSuccess,
-                     AsWeakPtr(), service_path),
+                     weak_ptr_factory_.GetWeakPtr(), service_path),
       base::BindOnce(&NetworkConnectionHandlerImpl::HandleShillConnectFailure,
-                     AsWeakPtr(), service_path));
+                     weak_ptr_factory_.GetWeakPtr(), service_path));
 }
 
 void NetworkConnectionHandlerImpl::OnSetShillPropertiesFailed(
@@ -1165,7 +1165,8 @@ void NetworkConnectionHandlerImpl::CallShillDisconnect(
       dbus::ObjectPath(service_path),
       base::BindOnce(
           &NetworkConnectionHandlerImpl::HandleShillDisconnectSuccess,
-          AsWeakPtr(), service_path, std::move(success_callback)),
+          weak_ptr_factory_.GetWeakPtr(), service_path,
+          std::move(success_callback)),
       base::BindOnce(&network_handler::ShillErrorCallbackFunction,
                      kErrorDisconnectFailed, service_path,
                      std::move(error_callback)));

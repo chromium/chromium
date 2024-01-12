@@ -64,8 +64,7 @@ class AppTimeController : public SystemClockClient::Observer,
     AppActivityRegistry* app_registry();
 
    private:
-    const raw_ptr<AppTimeController, DanglingUntriaged | ExperimentalAsh>
-        controller_;
+    const raw_ptr<AppTimeController, DanglingUntriaged> controller_;
   };
 
   // Registers preferences
@@ -143,7 +142,7 @@ class AppTimeController : public SystemClockClient::Observer,
                               std::optional<base::TimeDelta> time_limit,
                               std::optional<gfx::ImageSkia> icon);
   // Profile
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // The time of the day when app time limits should be reset.
   // Defaults to 6am local time.

@@ -87,7 +87,7 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
     }
   }
 
-  absl::optional<AudioFocusType> GetCurrentFocusType() const override {
+  std::optional<AudioFocusType> GetCurrentFocusType() const override {
     return audio_focus_type_;
   }
 
@@ -124,7 +124,7 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
   const bool async_mode_ = false;
 
   std::list<AudioFocusType> requests_;
-  absl::optional<AudioFocusType> audio_focus_type_;
+  std::optional<AudioFocusType> audio_focus_type_;
 };
 
 }  // namespace
@@ -211,7 +211,7 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
 
   bool IsActive() { return media_session_->IsActive(); }
 
-  absl::optional<AudioFocusType> GetSessionAudioFocusType() {
+  std::optional<AudioFocusType> GetSessionAudioFocusType() {
     return mock_audio_focus_delegate_->GetCurrentFocusType();
   }
 

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -90,6 +92,7 @@ public class HubPaneHostViewUnitTest {
                         R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, mOnActionButton);
         mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
+        assertTrue(mActionButton.isEnabled());
 
         mActionButton.callOnClick();
         verify(mOnActionButton).run();
@@ -99,5 +102,19 @@ public class HubPaneHostViewUnitTest {
 
         mActionButton.callOnClick();
         verifyNoInteractions(mOnActionButton);
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptyActionButtonCallbackDisablesButton() {
+        DisplayButtonData displayButtonData =
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
+        FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, null);
+        mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
+        assertFalse(mActionButton.isEnabled());
+
+        // Verify this doesn't crash if no button data Runnable exists.
+        mActionButton.callOnClick();
     }
 }

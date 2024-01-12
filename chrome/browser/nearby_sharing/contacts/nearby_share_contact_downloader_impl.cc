@@ -4,8 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 
-#include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -194,14 +194,11 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
   // Remove device contacts if the feature flag is disabled.
   if (!base::FeatureList::IsEnabled(features::kNearbySharingDeviceContacts)) {
     size_t initial_num_contacts = contacts_.size();
-    contacts_.erase(
-        std::remove_if(
-            contacts_.begin(), contacts_.end(),
-            [](const nearby::sharing::proto::ContactRecord& contact) {
-              return contact.type() ==
-                     nearby::sharing::proto::ContactRecord::DEVICE_CONTACT;
-            }),
-        contacts_.end());
+    std::erase_if(
+        contacts_, [](const nearby::sharing::proto::ContactRecord& contact) {
+          return contact.type() ==
+                 nearby::sharing::proto::ContactRecord::DEVICE_CONTACT;
+        });
     CD_LOG(VERBOSE, Feature::NS)
         << __func__ << ": Removed " << initial_num_contacts - contacts_.size()
         << " device contacts.";
@@ -209,12 +206,10 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
 
   // Remove unreachable contacts.
   size_t initial_num_contacts = contacts_.size();
-  contacts_.erase(
-      std::remove_if(contacts_.begin(), contacts_.end(),
-                     [](const nearby::sharing::proto::ContactRecord& contact) {
-                       return !contact.is_reachable();
-                     }),
-      contacts_.end());
+  std::erase_if(contacts_,
+                [](const nearby::sharing::proto::ContactRecord& contact) {
+                  return !contact.is_reachable();
+                });
   uint32_t num_unreachable_contacts_filtered_out =
       initial_num_contacts - contacts_.size();
   CD_LOG(VERBOSE, Feature::NS)

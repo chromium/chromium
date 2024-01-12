@@ -21,7 +21,7 @@ suite('CrComponentsProvisioningPageTest', function() {
   });
 
   test('Base test', function() {
-    const basePage = provisioningPage.$$('base-page');
+    const basePage = provisioningPage.shadowRoot.querySelector('base-page');
     assertTrue(!!basePage);
   });
 });

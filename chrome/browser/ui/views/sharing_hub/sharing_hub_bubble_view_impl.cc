@@ -144,7 +144,7 @@ void SharingHubBubbleViewImpl::OnWindowClosing() {
   }
 }
 
-BEGIN_METADATA(SharingHubBubbleViewImpl, LocationBarBubbleDelegateView)
+BEGIN_METADATA(SharingHubBubbleViewImpl)
 END_METADATA
 
 }  // namespace sharing_hub

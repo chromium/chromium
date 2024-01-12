@@ -129,7 +129,7 @@ class NotificationProcessor {
   void RemoveNotificationsAndProcessNextRequest(
       base::flat_set<int64_t> removed_notification_ids);
 
-  raw_ptr<NotificationManager, ExperimentalAsh> notification_manager_;
+  raw_ptr<NotificationManager> notification_manager_;
   base::queue<base::OnceClosure> pending_notification_requests_;
   base::flat_map<int64_t, NotificationImages> id_to_images_map_;
   std::unique_ptr<ImageDecoderDelegate> delegate_;

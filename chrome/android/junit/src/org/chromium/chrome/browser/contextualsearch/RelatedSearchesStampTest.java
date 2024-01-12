@@ -58,7 +58,6 @@ public class RelatedSearchesStampTest {
     public void setup() {
         mFeatureListValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatureListValues);
-        mFeatureListValues.addFeatureFlagOverride(ChromeFeatureList.RELATED_SEARCHES, true);
         mPolicy = new ContextualSearchPolicy(null, null);
         mStamp = new RelatedSearchesStamp(mPolicy);
     }

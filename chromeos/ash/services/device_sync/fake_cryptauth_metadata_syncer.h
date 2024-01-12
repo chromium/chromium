@@ -113,9 +113,8 @@ class FakeCryptAuthMetadataSyncerFactory
 
   std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, VectorExperimental>>
       instances_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
-      nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> last_pref_service_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> last_client_factory_ = nullptr;
+  raw_ptr<PrefService> last_pref_service_ = nullptr;
 };
 
 }  // namespace device_sync

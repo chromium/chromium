@@ -232,10 +232,6 @@ class PersonalDataManager : public KeyedService,
   // Removes |observer| as an observer of this PersonalDataManager.
   virtual void RemoveObserver(PersonalDataManagerObserver* observer);
 
-  // Notifies test observers that an address or credit card could not be
-  // imported from a form.
-  void MarkObserversInsufficientFormDataForImport();
-
   // Called to indicate |profile_or_credit_card| was used (to fill in a form).
   // Updates the database accordingly.
   virtual void RecordUseOf(

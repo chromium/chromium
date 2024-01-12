@@ -19,6 +19,9 @@ public class ContentFeatureList {
     // Field trial param associated with the Page Zoom feature.
     public static final String ACCESSIBILITY_PAGE_ZOOM_PARAM = "AdjustForOSLevel";
 
+    public static final String ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS =
+            "AccessibilityPageZoomEnhancements";
+
     public static final String ACCESSIBILITY_PERFORMANCE_FILTERING =
             "AccessibilityPerformanceFiltering";
 

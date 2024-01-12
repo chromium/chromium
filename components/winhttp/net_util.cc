@@ -22,8 +22,9 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
                         WINHTTP_NO_OUTPUT_BUFFER, &num_bytes,
                         WINHTTP_NO_HEADER_INDEX);
   auto hr = HRESULTFromLastError();
-  if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
+  if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER)) {
     return hr;
+  }
   std::vector<wchar_t> buffer(num_bytes / sizeof(wchar_t));
   if (!::WinHttpQueryHeaders(request_handle, info_level, name, &buffer.front(),
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {

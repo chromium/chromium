@@ -199,15 +199,20 @@ std::unique_ptr<CastMediaSource> CastMediaSourceForTabMirroring(
 
 std::unique_ptr<CastMediaSource> CastMediaSourceForDesktopMirroring(
     const MediaSource& source) {
-  // TODO(https://crbug.com/849335): Add back audio-only devices for desktop
-  // mirroring when proper support is implemented.
-  CastAppInfo info = CastAppInfo::ForCastStreaming();
-  if (info.required_capabilities.Has(CastDeviceCapability::kAudioOut) &&
-      !source.IsDesktopSourceWithAudio()) {
-    info.required_capabilities.Remove(CastDeviceCapability::kAudioOut);
+  std::vector<CastAppInfo> app_infos;
+  CastAppInfo audio_video_info = CastAppInfo::ForCastStreaming();
+  if (source.IsDesktopSourceWithAudio()) {
+    // Screen capture will result in audio and video streams.  Include
+    // audio-only Cast Streaming receivers.
+    app_infos.push_back(audio_video_info);
+    app_infos.push_back(CastAppInfo::ForCastStreamingAudio());
+  } else {
+    // Screen capture will result in a video stream only.
+    audio_video_info.required_capabilities.Remove(
+        CastDeviceCapability::kAudioOut);
+    app_infos.push_back(audio_video_info);
   }
-  return std::make_unique<CastMediaSource>(source.id(),
-                                           std::vector<CastAppInfo>({info}));
+  return std::make_unique<CastMediaSource>(source.id(), app_infos);
 }
 
 std::unique_ptr<CastMediaSource> CastMediaSourceForRemotePlayback(

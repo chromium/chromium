@@ -193,6 +193,30 @@ Developers can check the related HTTP request and response headers
 - [cbrbug.com/1479809](crbug.com/1479809): Can't use large (>8MB) dictionaries
   for Shared Zstd. Fixed in M118.
 
+## Following spec changes
+
+Currently there are two backend implementations, V1 and V2. V2 is under active
+construction to catch up the following spec changes:
+
+- Change Content-Encoding name "br-d" "zstd-d"
+  - Stauts: Not yet implemented.
+- Changed match to use URLPattern
+  - Stauts: Not yet implemented.
+- Added support for a server-provided dictionary id
+  - Stauts: Not yet implemented.
+- Updated the default dictionary ttl to 14 days since last fetched
+  - Stauts: Not yet implemented.
+- Removed support for hash negotiation and force use of sha-256
+  - Stauts: Not yet implemented.
+- Added the dictionary hash to the compressed response
+  - Stauts: Not yet implemented.
+- Dictionary hashes changed to sf-binary
+  - Stauts: Not yet implemented.
+
+You can try the experimental V2 implementation by selecting
+"Enabled experimental V2" in
+[chrome://flags/#enable-compression-dictionary-transport-backend][backend-flag].
+
 ## Demo sites
 
 There are a few demo sites that you can use to test the feature:

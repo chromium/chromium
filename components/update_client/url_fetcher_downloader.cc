@@ -5,6 +5,7 @@
 #include "components/update_client/url_fetcher_downloader.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -112,8 +113,9 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
 
   Result result;
   result.error = error;
-  if (!error)
+  if (!error) {
     result.response = file_path_;
+  }
 
   DownloadMetrics download_metrics;
   download_metrics.url = url();

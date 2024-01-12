@@ -39,10 +39,10 @@ class TokenHolder {
 
   // Returns a weak pointer to the token that can be used to post requests for
   // it. The pointer should only be dereferenced on the IO thread.
-  base::WeakPtr<internal::KcerTokenImplNss> GetWeakPtr() { return weak_ptr_; }
+  base::WeakPtr<internal::KcerToken> GetWeakPtr() { return weak_ptr_; }
 
  private:
-  base::WeakPtr<internal::KcerTokenImplNss> weak_ptr_;
+  base::WeakPtr<internal::KcerToken> weak_ptr_;
   std::unique_ptr<internal::KcerTokenImplNss> io_token_;
   crypto::ScopedTestNSSDB nss_slot_;
   bool is_initialized_ = false;

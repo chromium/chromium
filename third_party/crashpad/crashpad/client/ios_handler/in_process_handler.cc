@@ -468,9 +468,12 @@ InProcessHandler::ScopedReport::ScopedReport(
       num_frames_(num_frames),
       rootMap_(writer) {
   DCHECK(writer);
+  // Grab the report creation time before writing the report.
+  uint64_t report_time_nanos = ClockMonotonicNanoseconds();
   InProcessIntermediateDumpHandler::WriteHeader(writer);
   InProcessIntermediateDumpHandler::WriteProcessInfo(writer, annotations);
-  InProcessIntermediateDumpHandler::WriteSystemInfo(writer, system_data);
+  InProcessIntermediateDumpHandler::WriteSystemInfo(
+      writer, system_data, report_time_nanos);
 }
 
 InProcessHandler::ScopedReport::~ScopedReport() {

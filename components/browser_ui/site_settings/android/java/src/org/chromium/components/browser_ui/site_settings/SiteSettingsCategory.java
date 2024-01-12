@@ -391,7 +391,8 @@ public class SiteSettingsCategory {
         // TODO(dullweber): Why do we only check these types?
         if (mCategory == Type.DEVICE_LOCATION
                 || mCategory == Type.CAMERA
-                || mCategory == Type.MICROPHONE) {
+                || mCategory == Type.MICROPHONE
+                || mCategory == Type.SITE_DATA) {
             return WebsitePreferenceBridge.isContentSettingManagedByCustodian(
                     getBrowserContextHandle(), getContentSettingsType());
         }

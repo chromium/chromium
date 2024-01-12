@@ -90,7 +90,6 @@ class LocalCardMigrationManager {
   // The parameters should outlive the LocalCardMigrationManager.
   LocalCardMigrationManager(
       AutofillClient* client,
-      payments::PaymentsNetworkInterface* payments_network_interface,
       const std::string& app_locale,
       PersonalDataManager* personal_data_manager);
 
@@ -181,10 +180,6 @@ class LocalCardMigrationManager {
       const std::string& display_text);
 
   const raw_ptr<AutofillClient> client_;
-
-  // Handles Payments service requests.
-  // Owned by BrowserAutofillManager.
-  raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
  private:
   friend class LocalCardMigrationBrowserTest;

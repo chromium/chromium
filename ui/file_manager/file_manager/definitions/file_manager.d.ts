@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {FileManagerBase} from '../background/js/file_manager_base.js';
-import type {VolumeManager} from '../externs/volume_manager.js';
+import type {VolumeManager} from '../background/js/volume_manager.js';
 import type {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
@@ -43,8 +43,6 @@ declare global {
     IN_TEST: boolean;
     JSErrorCount: number;
     store: Store;
-    /** Log action data in the console for debugging purpose. */
-    DEBUG_STORE: boolean;
 
     /** Namespace used for test utils. */
     test: any;

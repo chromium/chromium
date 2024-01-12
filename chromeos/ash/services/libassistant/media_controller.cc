@@ -209,7 +209,7 @@ class MediaController::GrpcEventsObserver
 
   mojom::MediaDelegate& delegate() { return *parent_->delegate_; }
 
-  const raw_ptr<MediaController, ExperimentalAsh> parent_;
+  const raw_ptr<MediaController> parent_;
 };
 
 MediaController::MediaController()

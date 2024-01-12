@@ -409,7 +409,7 @@ void EditableCombobox::SetText(const std::u16string& text) {
   HandleNewContent(text);
 }
 
-std::u16string EditableCombobox::GetPlaceholderText() const {
+const std::u16string& EditableCombobox::GetPlaceholderText() const {
   return textfield_->GetPlaceholderText();
 }
 

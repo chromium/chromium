@@ -51,7 +51,7 @@
       {
         "name": "getAll",
         "type": "function",
-        "description": "Returns all the registered extension commands for this extension and their shortcut (if active).",
+        "description": "Returns all the registered extension commands for this extension and their shortcut (if active). Before Chrome 110, this command did not return <code>_execute_action</code>.",
         "parameters": [],
         "returns_async": {
           "name": "callback",

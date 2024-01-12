@@ -11,10 +11,10 @@ import {ChromeVoxRange} from '../chromevox_range.js';
 
 import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
-import {AutomationRichEditableText} from './rich_editable_text.js';
+import {RichEditableText} from './rich_editable_text.js';
 
 import AutomationIntent = chrome.automation.AutomationIntent;
-import AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 import Dir = constants.Dir;
 import IntentCommandType = chrome.automation.IntentCommandType;
 import RoleType = chrome.automation.RoleType;
@@ -82,7 +82,7 @@ export class TextEditHandler {
     EditableLine.includeOffscreen = !isTextArea || !firstStaticText ||
         firstStaticText.children.length < MAX_INLINE_TEXT_BOXES;
 
-    return useRichText ? new AutomationRichEditableText(this.node) :
+    return useRichText ? new RichEditableText(this.node) :
                          new AutomationEditableText(this.node);
   }
 

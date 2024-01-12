@@ -17,4 +17,9 @@ specific_include_rules = {
   ".*fuzz.*": [
     "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
   ],
+
+  # Exceptionally allow viz debugger header inclusion.
+  "gpu_host_impl.h": [
+    "+components/viz/service/debugger/mojom",
+  ],
 }

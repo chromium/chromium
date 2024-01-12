@@ -84,4 +84,8 @@ blink_modules_sources("accessibility") {
       "ax_debug_utils.h",
     ]
   }
+
+  if (is_android) {
+    defines = [ " REDUCE_AX_INLINE_TEXTBOXES " ]
+  }
 }

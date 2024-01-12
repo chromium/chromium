@@ -160,39 +160,11 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
         features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
   };
 
-  // If the feature `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`
-  // is enabled, the believed autocomplete attributes will depend on its
-  // parameterization via `kPrecedenceOverAutocompleteScope` for either
-  // heuristics or server prediction, and whether the corresponding prediction
-  // gives a street name or house number prediction. This util function takes
-  // care of removing the HtmlFieldType's that should be overridden.
-  auto override_html_types =
-      [&believed_html_types](features::PrecedenceOverAutocompleteScope scope) {
-        switch (scope) {
-          case features::PrecedenceOverAutocompleteScope::kSpecified:
-            believed_html_types.clear();
-            break;
-          case features::PrecedenceOverAutocompleteScope::kRecognized:
-            believed_html_types = {HtmlFieldType::kUnrecognized};
-            break;
-          case features::PrecedenceOverAutocompleteScope::kAddressLine1And2:
-            believed_html_types.erase_all(
-                {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
-            break;
-          case features::PrecedenceOverAutocompleteScope::kNone:
-            break;
-        }
-      };
-
-  if (IsStreetNameOrHouseNumberType(heuristic_prediction) &&
+  if ((IsStreetNameOrHouseNumberType(heuristic_prediction) ||
+       IsStreetNameOrHouseNumberType(server_prediction)) &&
       is_precedence_feature_enabled()) {
-    override_html_types(
-        features::kAutofillHeuristicPrecedenceScopeOverAutocomplete.Get());
-  }
-  if (IsStreetNameOrHouseNumberType(server_prediction) &&
-      is_precedence_feature_enabled()) {
-    override_html_types(
-        features::kAutofillServerPrecedenceScopeOverAutocomplete.Get());
+    believed_html_types.erase_all(
+        {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
   }
   // If the field is credit-card related or the feature
   // `kAutofillPredictionsForAutocompleteUnrecognized` is enabled, we always

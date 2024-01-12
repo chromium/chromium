@@ -6,11 +6,11 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileListModel} from './file_list_model.js';

@@ -47,6 +47,37 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
                                   ContentSettingsType::POPUPS));
 }
 
+TEST(OriginIdentifierValueMapTest, GetRule) {
+  content_settings::OriginIdentifierValueMap map;
+  base::AutoLock lock(map.GetLock());
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
+                                 GURL("http://www.google.com"),
+                                 ContentSettingsType::COOKIES));
+
+  map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
+               ContentSettingsPattern::FromString("[*.]google.com"),
+               ContentSettingsType::COOKIES, base::Value(1), {});
+
+  auto rule =
+      map.GetRule(GURL("http://www.google.com"), GURL("http://www.google.com"),
+                  ContentSettingsType::COOKIES);
+  ASSERT_TRUE(rule);
+  EXPECT_EQ(base::Value(1), rule->value);
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
+                                 GURL("http://www.youtube.com"),
+                                 ContentSettingsType::COOKIES));
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.youtube.com"),
+                                 GURL("http://www.google.com"),
+                                 ContentSettingsType::COOKIES));
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
+                                 GURL("http://www.google.com"),
+                                 ContentSettingsType::POPUPS));
+}
+
 TEST(OriginIdentifierValueMapTest, SetValueReturnsChanges) {
   content_settings::OriginIdentifierValueMap map;
   base::AutoLock lock(map.GetLock());
@@ -214,13 +245,13 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   ASSERT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(sub_pattern, rule->primary_pattern);
-  EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
+  EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value));
   EXPECT_EQ(t2, rule->metadata.last_modified());
 
   ASSERT_TRUE(rule_iterator->HasNext());
   rule = rule_iterator->Next();
   EXPECT_EQ(pattern, rule->primary_pattern);
-  EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value()));
+  EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value));
   EXPECT_EQ(t1, rule->metadata.last_modified());
 }
 
@@ -252,7 +283,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     ASSERT_TRUE(rule_iterator->HasNext());
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule->primary_pattern);
-    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t1, rule->metadata.last_modified());
     ASSERT_FALSE(rule->metadata.expiration().is_null());
     EXPECT_GT(rule->metadata.expiration(), base::Time::Now());
@@ -261,7 +292,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
 
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
-    EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t1, rule->metadata.last_modified());
     ASSERT_TRUE(rule->metadata.expiration().is_null());
     EXPECT_EQ(rule->metadata.session_model(),
@@ -280,11 +311,11 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     ASSERT_TRUE(rule_iterator->HasNext());
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule->primary_pattern);
-    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t1, rule->metadata.last_modified());
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
-    EXPECT_EQ(3, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(3, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t2, rule->metadata.last_modified());
     ASSERT_FALSE(rule_iterator->HasNext());
   }

@@ -14,20 +14,22 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/mock_download_status_updater_client.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/profile_notification.h"
@@ -36,7 +38,7 @@
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,6 +50,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash::download_status {
 
@@ -60,6 +63,7 @@ using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::WithArg;
@@ -142,7 +146,8 @@ AshNotificationView* GetPopupView(Profile* profile,
 
 }  // namespace
 
-class NotificationDisplayClientBrowserTest : public InProcessBrowserTest {
+class NotificationDisplayClientBrowserTest
+    : public SystemWebAppBrowserTestBase {
  public:
   NotificationDisplayClientBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -164,9 +169,9 @@ class NotificationDisplayClientBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  // InProcessBrowserTest:
+  // SystemWebAppBrowserTestBase:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    SystemWebAppBrowserTestBase::SetUpOnMainThread();
 
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindDownloadStatusUpdater(
         download_status_updater_remote_.BindNewPipeAndPassReceiver());
@@ -180,7 +185,7 @@ class NotificationDisplayClientBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     service_observation_.Reset();
-    InProcessBrowserTest::TearDownOnMainThread();
+    SystemWebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -275,6 +280,99 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
 
   // After download cancellation, the associated notification should be removed.
   EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
+}
+
+// Verifies clicking a completed download's notification.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
+                       DISABLED_ClickCompletedDownload) {
+  // Test setup:
+  // 1. Wait until test system apps are installed so that opening a download
+  //    file is handled.
+  // 2. Minimize the browser window before clicking a notification to ensure the
+  //    activation change.
+  // NOTE: Perform setup tasks before showing the notification popup to avoid
+  // the flakiness when the popup is dismissed due to timeout.
+  WaitForTestSystemAppInstall();
+  browser()->window()->Minimize();
+
+  // Add a completed download and cache its notification ID.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/1024,
+                                     /*target_bytes=*/1024);
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  AshNotificationView* const notification_view =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(notification_view);
+
+  // Observe the `activation_client` so we can detect windows becoming active as
+  // a result of opening the download file.
+  NiceMock<MockActivationChangeObserver> activation_mock_observer;
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_observation{&activation_mock_observer};
+  auto* const activation_client =
+      wm::GetActivationClient(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(activation_client);
+  activation_observation.Observe(activation_client);
+
+  // The command that shows downloads in browser should not be performed.
+  EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
+
+  // Click `notification_view` and wait until window activation updates.
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(activation_mock_observer, OnWindowActivated)
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  test::Click(notification_view, ui::EF_NONE);
+  future.Get();
+  Mock::VerifyAndClearExpectations(&activation_mock_observer);
+  Mock::VerifyAndClearExpectations(&download_status_updater_client());
+}
+
+// Verifies clicking an in-progress download's notification.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
+                       ClickInProgressDownload) {
+  // Add an in-progress download and cache its notification ID.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  AshNotificationView* const notification_view =
+      GetPopupView(profile, notification_id);
+  ASSERT_TRUE(notification_view);
+
+  // Click `notification_view` and wait until showing downloads in browser.
+  base::RunLoop run_loop;
+  EXPECT_CALL(download_status_updater_client(),
+              ShowInBrowser(download->guid, _))
+      .WillOnce(
+          [&run_loop](
+              const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::ShowInBrowserCallback
+                  callback) {
+            std::move(callback).Run(/*handled=*/true);
+            run_loop.Quit();
+          });
+  test::Click(notification_view, ui::EF_NONE);
+  run_loop.Run();
+  Mock::VerifyAndClearExpectations(&download_status_updater_client());
 }
 
 // Verifies that when an in-progress download completes, its notification should

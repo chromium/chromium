@@ -283,6 +283,16 @@ mediaApp.ClientApiDelegate.prototype.reloadMainFrame = function() {};
  * @type {function()|undefined}
  */
 mediaApp.ClientApiDelegate.prototype.maybeTriggerPdfHats = function() {};
+/**
+ * Called whenever the viewport changes, e.g. due to scrolling, zooming,
+ * resizing the window, or opening and closing toolbars/panels.
+ * @param {!mediaApp.Rect} viewportBox The new bounding box of the viewport.
+ * @param {number} scaleFactor The ratio between CSS pixels (i.e. ignoring
+ *     browser and pinch zoom) and ink units. Larger numbers indicate the
+ *     document is more zoomed in.
+ */
+mediaApp.ClientApiDelegate.prototype.viewportUpdated = function(
+    viewportBox, scaleFactor) {};
 
 /**
  * The client Api for interacting with the media app instance.

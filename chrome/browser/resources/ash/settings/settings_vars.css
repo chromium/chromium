@@ -24,12 +24,12 @@ html {
 
   --cr-radio-group-item-padding: 0;
 
+  --settings-base-bg-color: var(--cros-sys-app_base_shaded);
+
   --settings-menu-width: 250px;
   --settings-menu-item-border-width: 2px;
 
   --settings-row-min-height: var(--cr-section-min-height);
-
-  --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height));
 
   --settings-toolbar-height: var(--cr-toolbar-height);
   --settings-toolbar-padding-inline-end: 10px;
@@ -45,8 +45,12 @@ html {
 /* TODO(b/302374851) Move these vars into the html block above once the feature
  * is fully launched and can be cleaned up.
  */
-body.revamp-wayfinding-enabled {
+html:has(body.revamp-wayfinding-enabled) {
+  --settings-base-bg-color: var(--cros-sys-surface3);
+
   --settings-container-padding-top: 8px;
+
+  --settings-content-backdrop-bg-color: var(--cros-sys-surface1);
 
   --settings-menu-item-width: 256px;
 
@@ -58,9 +62,6 @@ body.revamp-wayfinding-enabled {
       var(--settings-menu-padding-inline-start));
 
   --settings-row-min-height: 64px;
-
-  --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height) -
-      var(--settings-container-padding-top));
 
   --settings-toolbar-height: 72px;
   --settings-toolbar-padding-inline-end: 16px;
@@ -76,5 +77,11 @@ body.revamp-wayfinding-enabled {
   html {
     --iron-icon-fill-color: var(--google-grey-500);
     --settings-error-color: var(--google-red-300);
+  }
+
+  html:has(body.revamp-wayfinding-enabled) {
+    --settings-base-bg-color: var(--cros-sys-app_base_shaded);
+
+    --settings-content-backdrop-bg-color: var(--cros-sys-app_base);
   }
 }

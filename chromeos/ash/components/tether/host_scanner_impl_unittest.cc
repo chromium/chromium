@@ -120,8 +120,7 @@ class FakeHostScannerOperationFactory : public HostScannerOperation::Factory {
   }
 
  private:
-  const raw_ref<const multidevice::RemoteDeviceRefList, ExperimentalAsh>
-      expected_devices_;
+  const raw_ref<const multidevice::RemoteDeviceRefList> expected_devices_;
   std::vector<raw_ptr<FakeHostScannerOperation, VectorExperimental>>
       created_operations_;
 };

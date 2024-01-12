@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -204,6 +205,11 @@ bool PopupViewViews::Show(
     absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }
+  // Compose popups are announced separately.
+  if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
+    AxAnnounce(
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW));
+  }
 
   return true;
 }
@@ -235,43 +241,7 @@ std::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
 
 void PopupViewViews::SetSelectedCell(std::optional<CellIndex> cell_index,
                                      PopupCellSelectionSource source) {
-  std::optional<CellIndex> old_index = GetSelectedCell();
-  if (old_index == cell_index) {
-    return;
-  }
-
-  if (old_index) {
-    GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
-  }
-
-  if (open_sub_popup_timer_.IsRunning()) {
-    open_sub_popup_timer_.Stop();
-  }
-
-  if (cell_index && HasPopupRowViewAt(cell_index->first)) {
-    has_keyboard_focus_ = true;
-
-    row_with_selected_cell_ = cell_index->first;
-    PopupRowView& new_row = GetPopupRowViewAt(cell_index->first);
-    new_row.SetSelectedCell(cell_index->second);
-    new_row.ScrollViewToVisible();
-
-    bool can_open_sub_popup =
-        cell_index->second == PopupRowView::CellType::kControl &&
-        !controller_->GetSuggestionAt(cell_index->first).children.empty();
-    std::optional<size_t> row_with_open_sub_popup =
-        can_open_sub_popup ? std::optional(cell_index->first) : std::nullopt;
-    base::TimeDelta delay = source == PopupCellSelectionSource::kMouse
-                                ? kMouseOpenSubPopupDelay
-                                : kNonMouseOpenSubPopupDelay;
-    open_sub_popup_timer_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&PopupViewViews::SetRowWithOpenSubPopup,
-                       weak_ptr_factory_.GetWeakPtr(), row_with_open_sub_popup,
-                       source));
-  } else {
-    row_with_selected_cell_ = std::nullopt;
-  }
+  SetSelectedCell(cell_index, source, AutoselectFirstSuggestion(false));
 }
 
 bool PopupViewViews::HandleKeyPressEvent(
@@ -298,6 +268,10 @@ bool PopupViewViews::HandleKeyPressEvent(
     if (GetPopupRowViewAt(selected_cell->first).HandleKeyPressEvent(event)) {
       return true;
     }
+  }
+
+  if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
+    return HandleKeyPressEventForCompose(event);
   }
 
   const bool kHasShiftModifier =
@@ -385,6 +359,42 @@ bool PopupViewViews::HandleKeyPressEvent(
   }
 }
 
+bool PopupViewViews::HandleKeyPressEventForCompose(
+    const content::NativeWebKeyboardEvent& event) {
+  CHECK_EQ(controller_->GetMainFillingProduct(), FillingProduct::kCompose);
+  const bool kHasShiftModifier =
+      (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
+  switch (event.windows_key_code) {
+    case ui::VKEY_ESCAPE:
+      controller_->Hide(PopupHidingReason::kUserAborted);
+      return true;
+    case ui::VKEY_TAB:
+      if (GetSelectedCell()) {
+        if (kHasShiftModifier) {
+          // Shift+TAB should remove the selection, but keep the popup open.
+          SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
+          return true;
+        }
+        // TAB should close the popup and focus the next HTML element if the
+        // Compose entry is selected.
+        controller_->Hide(PopupHidingReason::kUserAborted);
+        return false;
+      }
+
+      // If the Compose suggestion is not selected, Shift+TAB should not be
+      // handled, but TAB should select the suggestion.
+      if (kHasShiftModifier) {
+        return false;
+      }
+      // Compose nudges have a single entry - select it.
+      SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
+                      PopupCellSelectionSource::kKeyboard);
+      return true;
+    default:
+      return false;
+  }
+}
+
 void PopupViewViews::SelectPreviousRow() {
   DCHECK(!rows_.empty());
   std::optional<CellIndex> old_index = GetSelectedCell();
@@ -430,7 +440,7 @@ bool PopupViewViews::SelectNextHorizontalCell() {
         row.GetExpandChildSuggestionsView()) {
       SetSelectedCell(
           CellIndex{selected_cell->first, PopupRowView::CellType::kControl},
-          PopupCellSelectionSource::kKeyboard);
+          PopupCellSelectionSource::kKeyboard, AutoselectFirstSuggestion(true));
       return true;
     }
   }
@@ -494,7 +504,7 @@ void PopupViewViews::OnSuggestionsChanged() {
   if (open_sub_popup_timer_.IsRunning()) {
     open_sub_popup_timer_.Stop();
   }
-  SetRowWithOpenSubPopup(std::nullopt, PopupCellSelectionSource::kNonUserInput);
+  SetRowWithOpenSubPopup(std::nullopt);
 
   CreateChildViews();
   DoUpdateBoundsAndRedrawPopup();
@@ -588,6 +598,52 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
+}
+
+void PopupViewViews::SetSelectedCell(
+    std::optional<CellIndex> cell_index,
+    PopupCellSelectionSource source,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
+  std::optional<CellIndex> old_index = GetSelectedCell();
+  if (old_index == cell_index) {
+    return;
+  }
+
+  if (old_index) {
+    GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
+  }
+
+  if (open_sub_popup_timer_.IsRunning()) {
+    open_sub_popup_timer_.Stop();
+  }
+
+  if (cell_index && HasPopupRowViewAt(cell_index->first)) {
+    has_keyboard_focus_ = true;
+
+    row_with_selected_cell_ = cell_index->first;
+    PopupRowView& new_selected_row = GetPopupRowViewAt(cell_index->first);
+    new_selected_row.SetSelectedCell(cell_index->second);
+    new_selected_row.ScrollViewToVisible();
+
+    bool can_open_sub_popup =
+        cell_index->second == PopupRowView::CellType::kControl;
+
+    CHECK(!can_open_sub_popup ||
+          !controller_->GetSuggestionAt(cell_index->first).children.empty());
+
+    std::optional<size_t> row_with_open_sub_popup =
+        can_open_sub_popup ? std::optional(cell_index->first) : std::nullopt;
+    base::TimeDelta delay = source == PopupCellSelectionSource::kMouse
+                                ? kMouseOpenSubPopupDelay
+                                : kNonMouseOpenSubPopupDelay;
+    open_sub_popup_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&PopupViewViews::SetRowWithOpenSubPopup,
+                       weak_ptr_factory_.GetWeakPtr(), row_with_open_sub_popup,
+                       autoselect_first_suggestion));
+  } else {
+    row_with_selected_cell_ = std::nullopt;
+  }
 }
 
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
@@ -709,16 +765,20 @@ void PopupViewViews::CreateChildViews() {
     return;
   }
 
-  // Footer items need to be in their own container because they should not be
-  // affected by scrolling behavior (they are "sticky" at the bottom) and
-  // because they have a special background color
-  footer_container_ = content_view->AddChildView(
+  auto footer_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBackground(
               views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
-          .Build());
-  content_view->SetFlexForView(footer_container_, 0);
+          .Build();
+
+  if (IsFooterScrollable()) {
+    footer_container_ =
+        body_container_->AddChildView(std::move(footer_container));
+  } else {
+    footer_container_ = content_view->AddChildView(std::move(footer_container));
+    content_view->SetFlexForView(footer_container_, 0);
+  }
 
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
     DCHECK(IsFooterItem(kSuggestions, current_line_number));
@@ -888,7 +948,15 @@ void PopupViewViews::OnMouseExitedInChildren() {
       FROM_HERE, kNoSelectionHideSubPopupDelay,
       base::BindRepeating(&PopupViewViews::SetRowWithOpenSubPopup,
                           weak_ptr_factory_.GetWeakPtr(), std::nullopt,
-                          PopupCellSelectionSource::kNonUserInput));
+                          AutoselectFirstSuggestion(false)));
+}
+
+bool PopupViewViews::IsFooterScrollable() const {
+  // Footer items of a root popup are expected to be more prioritized and
+  // therefore "sticky", i.e. not being scrollable with the whole popup content.
+  // `body_container_` is the container of regular suggestions, it must exist
+  // to place the footer there and thus make it scrollable too.
+  return parent_ && body_container_;
 }
 
 bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
@@ -901,7 +969,8 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
   if (body_container_ && !body_container_->children().empty()) {
     min_height += body_container_->children()[0]->GetPreferredSize().height();
   }
-  if (footer_container_ && !footer_container_->children().empty()) {
+  if (footer_container_ && !footer_container_->children().empty() &&
+      !IsFooterScrollable()) {
     // The footer is not scrollable, its full height should be considered.
     min_height += footer_container_->GetPreferredSize().height();
   }
@@ -911,7 +980,7 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
 
 void PopupViewViews::SetRowWithOpenSubPopup(
     std::optional<size_t> row_index,
-    PopupCellSelectionSource selection_source) {
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
   if (row_with_open_sub_popup_ == row_index) {
     return;
   }
@@ -932,13 +1001,12 @@ void PopupViewViews::SetRowWithOpenSubPopup(
     CHECK(!suggestion.children.empty());
 
     PopupRowView& row = GetPopupRowViewAt(*row_index);
-    if (controller_->OpenSubPopup(
-            row.GetControlCellBounds(), suggestion.children,
-            AutoselectFirstSuggestion(selection_source ==
-                                      PopupCellSelectionSource::kKeyboard))) {
+    if (controller_->OpenSubPopup(row.GetControlCellBounds(),
+                                  suggestion.children,
+                                  autoselect_first_suggestion)) {
       row.SetChildSuggestionsDisplayed(true);
       row_with_open_sub_popup_ = row_index;
-      if (selection_source == PopupCellSelectionSource::kKeyboard) {
+      if (autoselect_first_suggestion) {
         row.SetSelectedCell(std::nullopt);
       }
     }

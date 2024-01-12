@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "ui/views/widget/widget.h"
 
@@ -59,7 +60,8 @@ bool IsNonGameBorealisApp(const std::string& app_id);
 //
 // TODO(b/288176160): Valve probably shouldn't be doing this, we want a more
 // thorough fix long term.
-bool ShouldHideIrrelevantApp(const std::string& desktop_name);
+bool ShouldHideIrrelevantApp(
+    const guest_os::GuestOsRegistryService::Registration& registration);
 
 // Returns a Steam Game ID parsed from |exec|, or nullopt on failure.
 // These are the numeric "App IDs" described at

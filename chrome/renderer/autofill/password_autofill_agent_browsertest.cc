@@ -342,7 +342,13 @@ enum PasswordFormSourceType {
   PasswordFormSameDocumentNavigation,
 };
 
-enum class FieldChangeSource { USER, AUTOFILL, USER_AUTOFILL };
+enum class FieldChangeSource {
+  USER,
+  AUTOFILL_SINGLE_FIELD,
+  USER_AUTOFILL_SINGLE_FIELD,
+  AUTOFILL_FORM,
+  USER_AUTOFILL_FORM
+};
 
 class PasswordAutofillAgentTest : public ChromeRenderViewTest {
  public:
@@ -587,7 +593,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     SimulateUserInputChangeForElement(&password_element_, password);
   }
 
-  void SimulateUsernameFieldAutofill(const std::u16string& text) {
+  void SimulateUsernameSingleFieldAutofill(const std::u16string& text) {
     // Simulate set |username_element_| in focus.
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
@@ -597,17 +603,41 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         form_util::GetFieldRendererId(username_element_), text);
   }
 
+  void SimulateUsernameFormAutofill(const std::u16string& text) {
+    // Simulate set |username_element_| in focus.
+    static_cast<content::RenderFrameObserver*>(autofill_agent_)
+        ->FocusedElementChanged(username_element_);
+    // Fill the form.
+    std::vector<autofill::FormFieldData> field_data;
+    FormFieldData field;
+    field.value = text;
+    field.is_autofilled = true;
+    field.unique_renderer_id = form_util::GetFieldRendererId(username_element_);
+    field_data.push_back(field);
+
+    autofill_agent_->ApplyFormAction(
+        mojom::ActionType::kFill, mojom::ActionPersistence::kFill,
+        form_util::GetFormRendererId(username_element_.Form()), field_data);
+  }
+
   void SimulateUsernameFieldChange(FieldChangeSource change_source) {
     switch (change_source) {
       case FieldChangeSource::USER:
         SimulateUsernameTyping("Alice");
         break;
-      case FieldChangeSource::AUTOFILL:
-        SimulateUsernameFieldAutofill(u"Alice");
+      case FieldChangeSource::AUTOFILL_SINGLE_FIELD:
+        SimulateUsernameSingleFieldAutofill(u"Alice");
         break;
-      case FieldChangeSource::USER_AUTOFILL:
+      case FieldChangeSource::USER_AUTOFILL_SINGLE_FIELD:
         SimulateUsernameTyping("A");
-        SimulateUsernameFieldAutofill(u"Alice");
+        SimulateUsernameSingleFieldAutofill(u"Alice");
+        break;
+      case FieldChangeSource::AUTOFILL_FORM:
+        SimulateUsernameFormAutofill(u"Alice");
+        break;
+      case FieldChangeSource::USER_AUTOFILL_FORM:
+        SimulateUsernameTyping("A");
+        SimulateUsernameFormAutofill(u"Alice");
         break;
     }
   }
@@ -3611,8 +3641,10 @@ TEST_F(PasswordAutofillAgentTest, ShowSuggestionForNonUsernameFieldForms) {
 TEST_F(PasswordAutofillAgentTest,
        UsernameChangedAfterPasswordInput_AJAXSucceeded) {
   for (auto change_source :
-       {FieldChangeSource::USER, FieldChangeSource::AUTOFILL,
-        FieldChangeSource::USER_AUTOFILL}) {
+       {FieldChangeSource::USER, FieldChangeSource::AUTOFILL_SINGLE_FIELD,
+        FieldChangeSource::USER_AUTOFILL_SINGLE_FIELD,
+        FieldChangeSource::AUTOFILL_FORM,
+        FieldChangeSource::USER_AUTOFILL_FORM}) {
     LoadHTML(kNoFormHTML);
     UpdateUsernameAndPasswordElements();
 
@@ -3666,8 +3698,10 @@ TEST_F(PasswordAutofillAgentTest,
 TEST_F(PasswordAutofillAgentTest,
        UsernameChangedAfterPasswordInput_FormSubmitted) {
   for (auto change_source :
-       {FieldChangeSource::USER, FieldChangeSource::AUTOFILL,
-        FieldChangeSource::USER_AUTOFILL}) {
+       {FieldChangeSource::USER, FieldChangeSource::AUTOFILL_SINGLE_FIELD,
+        FieldChangeSource::USER_AUTOFILL_SINGLE_FIELD,
+        FieldChangeSource::AUTOFILL_FORM,
+        FieldChangeSource::USER_AUTOFILL_FORM}) {
     LoadHTML(kFormHTML);
     UpdateUsernameAndPasswordElements();
     SimulateUsernameTyping("Bob");

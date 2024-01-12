@@ -219,7 +219,7 @@ class CONTENT_EXPORT FedCmMetrics {
   // the IDP based on observing signin/signout HTTP headers matches the
   // information returned by the accounts endpoint.
   void RecordIdpSigninMatchStatus(
-      absl::optional<bool> idp_signin_status,
+      std::optional<bool> idp_signin_status,
       IdpNetworkRequestManager::ParseStatus accounts_endpoint_status);
 
   // Records whether the user selected account is for sign-in or not.
@@ -242,12 +242,12 @@ class CONTENT_EXPORT FedCmMetrics {
   // |has_single_returning_account| is nullopt when we are recording the metrics
   // during a failure that happened before the accounts fetch.
   void RecordAutoReauthnMetrics(
-      absl::optional<bool> has_single_returning_account,
+      std::optional<bool> has_single_returning_account,
       const IdentityRequestAccount* auto_signin_account,
       bool auto_reauthn_success,
       bool is_auto_reauthn_setting_blocked,
       bool is_auto_reauthn_embargoed,
-      absl::optional<base::TimeDelta> time_from_embargo,
+      std::optional<base::TimeDelta> time_from_embargo,
       bool requires_user_mediation);
 
   // Records a sample when an accounts dialog is shown.

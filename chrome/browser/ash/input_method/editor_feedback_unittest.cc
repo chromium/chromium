@@ -45,7 +45,9 @@ class MockUploader : public feedback::FeedbackUploader {
   MockUploader& operator=(const MockUploader&) = delete;
 
   // feedback::FeedbackUploader:
-  void QueueReport(std::unique_ptr<std::string> data, bool has_email) override {
+  void QueueReport(std::unique_ptr<std::string> data,
+                   bool has_email,
+                   int product_id) override {
     if (data != nullptr) {
       userfeedback::ExtensionSubmit feedback_data;
       feedback_data.ParseFromString(*data);

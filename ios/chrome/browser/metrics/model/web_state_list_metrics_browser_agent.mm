@@ -146,20 +146,6 @@ void WebStateListMetricsBrowserAgent::DidFinishNavigation(
 void WebStateListMetricsBrowserAgent::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  switch (GetInterfaceOrientation()) {
-    case UIInterfaceOrientationPortrait:
-    case UIInterfaceOrientationPortraitUpsideDown:
-      UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", YES);
-      break;
-    case UIInterfaceOrientationLandscapeLeft:
-    case UIInterfaceOrientationLandscapeRight:
-      UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", NO);
-      break;
-    case UIInterfaceOrientationUnknown:
-      // TODO(crbug.com/228832): Convert from a boolean histogram to an
-      // enumerated histogram and log this case as well.
-      break;
-  }
   base::UmaHistogramBoolean("Tab.HasThemeColor",
                             web_state->GetThemeColor() != nil);
   // By default the underpage color is white. Only consider color as custom if

@@ -100,6 +100,21 @@ TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseModelExecutionFeatures) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_model_execution_features(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  EXPECT_EQ(capabilities.can_use_model_execution_features(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_model_execution_features(false);
+  EXPECT_EQ(capabilities.can_use_model_execution_features(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, IsAllowedForMachineLearning) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.is_allowed_for_machine_learning(),

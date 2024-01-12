@@ -41,7 +41,7 @@ constexpr const base::TimeDelta kIdleTimeDelta = base::Minutes(3);
 
 // These values should not be renumbered and numeric values should never
 // be reused. This must be kept in sync with ChromeOSHiddenUserPodsOfflineLogin
-// in tools/metrics/histogram/enums.xml
+// in tools/metrics/histograms/enums.xml
 enum class OfflineLoginEvent {
   kOfflineLoginEnabled = 0,
   kOfflineLoginBlockedByTimeLimit = 1,

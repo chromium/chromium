@@ -72,8 +72,8 @@ void ImeService::BindInputEngineManager(
 }
 
 void ImeService::ResetAllBackendConnections() {
-  decoder_engine_.reset();
-  system_engine_.reset();
+  proto_mode_shared_lib_engine_.reset();
+  mojo_mode_shared_lib_engine_.reset();
 }
 
 void ImeService::ConnectToImeEngine(
@@ -91,16 +91,17 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (system_engine_ && system_engine_->IsConnected()) {
+  if (mojo_mode_shared_lib_engine_ &&
+      mojo_mode_shared_lib_engine_->IsConnected()) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
   ResetAllBackendConnections();
 
-  decoder_engine_ = std::make_unique<DecoderEngine>(
+  proto_mode_shared_lib_engine_ = std::make_unique<DecoderEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
-  bool bound = decoder_engine_->BindRequest(
+  bool bound = proto_mode_shared_lib_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
   std::move(callback).Run(bound);
 }
@@ -110,10 +111,10 @@ void ImeService::InitializeConnectionFactory(
     InitializeConnectionFactoryCallback callback) {
   ResetAllBackendConnections();
 
-  system_engine_ = std::make_unique<SystemEngine>(
+  mojo_mode_shared_lib_engine_ = std::make_unique<SystemEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
-  bool bound =
-      system_engine_->BindConnectionFactory(std::move(connection_factory));
+  bool bound = mojo_mode_shared_lib_engine_->BindConnectionFactory(
+      std::move(connection_factory));
   std::move(callback).Run(bound);
 }
 

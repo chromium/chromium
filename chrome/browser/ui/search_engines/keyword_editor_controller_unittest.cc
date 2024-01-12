@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -180,14 +181,16 @@ TEST_F(KeywordEditorControllerTest, MakeDefault) {
   ClearChangeCount();
 
   const TemplateURL* turl = util()->model()->GetTemplateURLForKeyword(kB);
-  controller()->MakeDefaultTemplateURL(index);
+  controller()->MakeDefaultTemplateURL(
+      index, search_engines::ChoiceMadeLocation::kOther);
   // Making an item the default sends a handful of changes. Which are sent isn't
   // important, what is important is 'something' is sent.
   VerifyChanged();
   ASSERT_EQ(turl, util()->model()->GetDefaultSearchProvider());
 
   // Making it default a second time should fail.
-  controller()->MakeDefaultTemplateURL(index);
+  controller()->MakeDefaultTemplateURL(
+      index, search_engines::ChoiceMadeLocation::kOther);
   EXPECT_EQ(turl, util()->model()->GetDefaultSearchProvider());
 }
 
@@ -246,7 +249,8 @@ TEST_P(KeywordEditorControllerManagedDSPTest, SetDefaultWhileRecommended) {
 
   // Update the default search provider.
   EXPECT_NE(turl2, util()->model()->GetDefaultSearchProvider());
-  controller()->MakeDefaultTemplateURL(index);
+  controller()->MakeDefaultTemplateURL(
+      index, search_engines::ChoiceMadeLocation::kOther);
   VerifyChanged();
   EXPECT_EQ(turl2, util()->model()->GetDefaultSearchProvider());
 
@@ -365,7 +369,8 @@ TEST_F(KeywordEditorControllerNoWebDataTest, MakeDefaultNoWebData) {
   ClearChangeCount();
 
   // This should not result in a crash.
-  controller()->MakeDefaultTemplateURL(index);
+  controller()->MakeDefaultTemplateURL(
+      index, search_engines::ChoiceMadeLocation::kOther);
   const TemplateURL* turl = util()->model()->GetTemplateURLForKeyword(kB);
   EXPECT_EQ(turl, util()->model()->GetDefaultSearchProvider());
 }

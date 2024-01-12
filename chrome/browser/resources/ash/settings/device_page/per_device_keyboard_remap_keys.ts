@@ -434,11 +434,11 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       this.set('f12KeyPref.value', searchedKeyboard.settings?.f12);
       this.f11KeyPref = {
         ...this.f11KeyPref,
-        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies?.extendedFkeysPolicy),
       };
       this.f12KeyPref = {
         ...this.f12KeyPref,
-        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies?.extendedFkeysPolicy),
       };
     }
 
@@ -664,11 +664,11 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     if (this.shouldShowFkeys()) {
       this.f11KeyPref = {
         ...this.f11KeyPref,
-        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies?.extendedFkeysPolicy),
       };
       this.f12KeyPref = {
         ...this.f12KeyPref,
-        ...getFkeyPrefPolicyFields(this.keyboardPolicies.extendedFkeysPolicy),
+        ...getFkeyPrefPolicyFields(this.keyboardPolicies?.extendedFkeysPolicy),
       };
     }
   }

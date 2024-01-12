@@ -53,6 +53,14 @@ std::optional<Promo> PromoForName(base::StringPiece promo) {
     return promos_manager::Promo::OmniboxPosition;
   }
 
+  if (promo == "promos_manager::Promo::DockingPromo") {
+    return promos_manager::Promo::DockingPromo;
+  }
+
+  if (promo == "promos_manager::Promo::DockingPromoRemindMeLater") {
+    return promos_manager::Promo::DockingPromoRemindMeLater;
+  }
+
   return std::nullopt;
 }
 
@@ -82,6 +90,10 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "DefaultBrowserRemindMeLater";
     case promos_manager::Promo::OmniboxPosition:
       return "OmniboxPosition";
+    case promos_manager::Promo::DockingPromo:
+      return "DockingPromo";
+    case promos_manager::Promo::DockingPromoRemindMeLater:
+      return "DockingPromoRemindMeLater";
   }
 }
 

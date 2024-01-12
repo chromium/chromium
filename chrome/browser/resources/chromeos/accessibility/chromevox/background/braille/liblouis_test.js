@@ -24,7 +24,7 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
     ]);
 
     const path = chrome.extension.getURL(
-        'chromevox/background/braille/liblouis_wrapper.js');
+        'chromevox/third_party/liblouis/liblouis_wrapper.js');
     this.liblouis = await LibLouis.create(path, '');
   }
 

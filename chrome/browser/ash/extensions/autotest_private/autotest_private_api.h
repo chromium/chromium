@@ -897,7 +897,7 @@ class AutotestPrivateAPI : public BrowserContextKeyedAPI,
   base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
       clipboard_observation_{this};
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   bool test_mode_;  // true for AutotestPrivateApiTest.AutotestPrivate test.
 };
 

@@ -748,6 +748,8 @@ Called by update_extension_histograms.py.-->
   <int value="551" label="ODFS_CONFIG_PRIVATE_MOUNT_CHANGED"/>
   <int value="552" label="ODFS_CONFIG_PRIVATE_ACCOUNT_RESTRICTIONS_CHANGED"/>
   <int value="553" label="PDF_VIEWER_PRIVATE_ON_SAVE"/>
+  <int value="554"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFromWebstoreInconcistencyEnum">
@@ -2697,6 +2699,12 @@ Called by update_extension_histograms.py.-->
   <int value="1859" label="DOCUMENTSCAN_READSCANDATA"/>
   <int value="1860" label="DOCUMENTSCAN_SETOPTIONS"/>
   <int value="1861" label="DOCUMENTSCAN_GETOPTIONGROUPS"/>
+  <int value="1862" label="ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKFOCUS"/>
+  <int value="1863"
+      label="DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION"/>
+  <int value="1864" label="CONTROLLEDFRAMEINTERNAL_CONTEXTMENUSCREATE"/>
+  <int value="1865" label="ODFSCONFIGPRIVATE_SHOWAUTOMATEDMOUNTERROR"/>
+  <int value="1866" label="OS_TELEMETRY_GETTHERMALINFO"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
@@ -3242,6 +3250,13 @@ Called by update_extension_permission.py.-->
   <int value="11" label="Invalid version"/>
   <int value="12" label="Bad Update specification"/>
   <int value="13" label="Bad App Status"/>
+</enum>
+
+<enum name="ManifestVersionPopulationSplit">
+  <int value="0" label="No extensions"/>
+  <int value="1" label="Manifest Version 2 extensions only"/>
+  <int value="2" label="Manifest Version 2 and Manifest Version 3 extensions"/>
+  <int value="3" label="Manifest Version 3 extensions only"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">

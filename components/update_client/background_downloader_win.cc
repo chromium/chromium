@@ -6,11 +6,11 @@
 
 #include <objbase.h>
 #include <shlobj_core.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <windows.h>
 #include <winerror.h>
 
-#include <stddef.h>
-#include <stdint.h>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -112,7 +112,7 @@ namespace {
 
 // All jobs created by this module have a specific description so they can
 // be found at run-time or by using system administration tools.
-static constexpr wchar_t kJobName[] = L"Chrome Component Updater";
+constexpr wchar_t kJobName[] = L"Chrome Component Updater";
 
 // How often the code looks for changes in the BITS job state.
 constexpr int kJobPollingIntervalSec = 4;
@@ -142,9 +142,9 @@ constexpr int kPurgeStaleJobsIntervalBetweenChecksDays = 1;
 constexpr int kMaxQueuedJobs = 10;
 
 // Prefix used for naming the temporary directories for downloads.
-static constexpr base::FilePath::CharType kDownloadDirectoryPrefix[] =
+constexpr base::FilePath::CharType kDownloadDirectoryPrefix[] =
     FILE_PATH_LITERAL("chrome_BITS_");
-static constexpr base::FilePath::CharType kDownloadDirectoryPrefixMatcher[] =
+constexpr base::FilePath::CharType kDownloadDirectoryPrefixMatcher[] =
     FILE_PATH_LITERAL("chrome_BITS_*");
 
 // Returns the status code from a given BITS error.

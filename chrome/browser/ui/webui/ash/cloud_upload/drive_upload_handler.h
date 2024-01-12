@@ -128,12 +128,11 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   // the timeout for getting the alternate URL is hit.
   void CheckAlternateUrl(bool timed_out);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  raw_ptr<::file_manager::io_task::IOTaskController, ExperimentalAsh>
-      io_task_controller_ = nullptr;
-  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
-      drive_integration_service_;
+  raw_ptr<::file_manager::io_task::IOTaskController> io_task_controller_ =
+      nullptr;
+  const raw_ptr<drive::DriveIntegrationService> drive_integration_service_;
   const UploadType upload_type_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;

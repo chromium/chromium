@@ -4,9 +4,10 @@
 
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -47,13 +48,13 @@ bool RunFunctionImpl(v8::Local<v8::Function> function,
 
 }  // namespace
 
-std::string ReplaceSingleQuotes(base::StringPiece str) {
+std::string ReplaceSingleQuotes(std::string_view str) {
   std::string result;
   base::ReplaceChars(str, "'", "\"", &result);
   return result;
 }
 
-base::Value ValueFromString(base::StringPiece str) {
+base::Value ValueFromString(std::string_view str) {
   std::optional<base::Value> value =
       base::JSONReader::Read(ReplaceSingleQuotes(str));
   if (!value) {
@@ -63,7 +64,7 @@ base::Value ValueFromString(base::StringPiece str) {
   return std::move(value.value());
 }
 
-base::Value::List ListValueFromString(base::StringPiece str) {
+base::Value::List ListValueFromString(std::string_view str) {
   base::Value value = ValueFromString(str);
   if (value.is_none()) {
     return base::Value::List();
@@ -77,7 +78,7 @@ base::Value::List ListValueFromString(base::StringPiece str) {
   return std::move(value).TakeList();
 }
 
-base::Value::Dict DictValueFromString(base::StringPiece str) {
+base::Value::Dict DictValueFromString(std::string_view str) {
   base::Value value = ValueFromString(str);
   if (value.is_none()) {
     return base::Value::Dict();
@@ -114,7 +115,7 @@ std::string V8ToString(v8::Local<v8::Value> value,
 }
 
 v8::Local<v8::Value> V8ValueFromScriptSource(v8::Local<v8::Context> context,
-                                             base::StringPiece source) {
+                                             std::string_view source) {
   v8::MaybeLocal<v8::Script> maybe_script = v8::Script::Compile(
       context, gin::StringToV8(context->GetIsolate(), source));
   v8::Local<v8::Script> script;
@@ -124,7 +125,7 @@ v8::Local<v8::Value> V8ValueFromScriptSource(v8::Local<v8::Context> context,
 }
 
 v8::Local<v8::Function> FunctionFromString(v8::Local<v8::Context> context,
-                                           base::StringPiece source) {
+                                           std::string_view source) {
   v8::Local<v8::Value> value = V8ValueFromScriptSource(context, source);
   v8::Local<v8::Function> function;
   EXPECT_TRUE(gin::ConvertFromV8(context->GetIsolate(), value, &function));
@@ -208,7 +209,7 @@ void RunFunctionAndExpectError(v8::Local<v8::Function> function,
 
 v8::Local<v8::Value> GetPropertyFromObject(v8::Local<v8::Object> object,
                                            v8::Local<v8::Context> context,
-                                           base::StringPiece key) {
+                                           std::string_view key) {
   v8::Local<v8::Value> result;
   EXPECT_TRUE(object->Get(context, gin::StringToV8(context->GetIsolate(), key))
                   .ToLocal(&result));
@@ -218,13 +219,13 @@ v8::Local<v8::Value> GetPropertyFromObject(v8::Local<v8::Object> object,
 std::unique_ptr<base::Value> GetBaseValuePropertyFromObject(
     v8::Local<v8::Object> object,
     v8::Local<v8::Context> context,
-    base::StringPiece key) {
+    std::string_view key) {
   return V8ToBaseValue(GetPropertyFromObject(object, context, key), context);
 }
 
 std::string GetStringPropertyFromObject(v8::Local<v8::Object> object,
                                         v8::Local<v8::Context> context,
-                                        base::StringPiece key) {
+                                        std::string_view key) {
   return V8ToString(GetPropertyFromObject(object, context, key), context);
 }
 

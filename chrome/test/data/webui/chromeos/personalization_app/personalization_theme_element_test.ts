@@ -6,7 +6,9 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -129,5 +131,137 @@ suite('PersonalizationThemeTest', function() {
     // reclicking the button does not disable auto mode.
     radioButton.click();
     assertEquals(radioButton.getAttribute('aria-checked'), 'true');
+  });
+
+  test('shows geolocation warning on location disabled', async () => {
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
+
+    // Disable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: false});
+
+    // Check that geolocation content is not displayed on any configuration.
+    for (const geolocationPermission of [true, false]) {
+      for (const darkModeEnabled of [true, false]) {
+        for (const autoScheduleEnabled of [true, false]) {
+          personalizationStore.data.theme.geolocationPermissionEnabled =
+              geolocationPermission;
+          personalizationStore.data.theme.darkModeEnabled = darkModeEnabled;
+          personalizationStore.data.theme.colorModeAutoScheduleEnabled =
+              autoScheduleEnabled;
+          personalizationStore.notifyObservers();
+          await waitAfterNextRender(personalizationThemeElement);
+
+          const warningElement =
+              personalizationThemeElement.shadowRoot!.getElementById(
+                  'geolocationWarningDiv');
+          assertFalse(!!warningElement);
+        }
+      }
+    }
+
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    // Check that warning should not be present when geolocation permission
+    // is granted.
+    personalizationStore.data.theme.geolocationPermissionEnabled = true;
+    // Iterate over all color mode variations.
+    for (const darkModeEnabled of [true, false]) {
+      for (const autoScheduleEnabled of [true, false]) {
+        personalizationStore.data.theme.darkModeEnabled = darkModeEnabled;
+        personalizationStore.data.theme.colorModeAutoScheduleEnabled =
+            autoScheduleEnabled;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(personalizationThemeElement);
+
+        const warningElement =
+            personalizationThemeElement.shadowRoot!.getElementById(
+                'geolocationWarningDiv');
+        assertFalse(!!warningElement);
+      }
+    }
+
+    // Disable geolocation.
+    personalizationStore.data.theme.geolocationPermissionEnabled = false;
+    // Check that warning is only shown when Auto Schedule is selected.
+    // Iterate over all color mode variations.
+    for (const darkModeEnabled of [true, false]) {
+      for (const autoScheduleEnabled of [true, false]) {
+        personalizationStore.data.theme.darkModeEnabled = darkModeEnabled;
+        personalizationStore.data.theme.colorModeAutoScheduleEnabled =
+            autoScheduleEnabled;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(personalizationThemeElement);
+
+        const warningElement =
+            personalizationThemeElement.shadowRoot!.getElementById(
+                'geolocationWarningDiv');
+        if (autoScheduleEnabled) {
+          assertTrue(!!warningElement);
+        } else {
+          assertFalse(!!warningElement);
+        }
+      }
+    }
+  });
+
+  test('show Geolocation dialog and click allow', async () => {
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
+
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    // Disable geolocation and select Auto Schedule; This should show the
+    // warning message.
+    personalizationStore.data.theme.geolocationPermissionEnabled = false;
+    personalizationStore.data.theme.colorModeAutoScheduleEnabled = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(personalizationThemeElement);
+
+    // Check warning message is present.
+    let warningElement = personalizationThemeElement.shadowRoot!.getElementById(
+        'geolocationWarningDiv');
+    assertTrue(!!warningElement);
+
+    // Click the anchor to display the geolocation dialog.
+    const localizedLink = warningElement.querySelector('localized-link');
+    assertTrue(!!localizedLink);
+    const testDetail = {event: {preventDefault: () => {}}};
+    localizedLink.dispatchEvent(
+        new CustomEvent('link-clicked', {bubbles: false, detail: testDetail}));
+    flush();
+    await waitAfterNextRender(personalizationThemeElement);
+
+    // Check dialog has popped up.
+    let geolocationDialog =
+        personalizationThemeElement.shadowRoot!.getElementById(
+            'geolocationDialog');
+    assertTrue(!!geolocationDialog);
+    const confirmButton =
+        geolocationDialog.shadowRoot!.getElementById('confirmButton');
+    assertTrue(!!confirmButton);
+
+    // Confirm the dialog; this should enable the geolocation permission,
+    // resulting in both the dialog and warning text disappearing.
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(
+        ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED);
+    confirmButton.click();
+    const action = await personalizationStore.waitForAction(
+                       ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
+        SetGeolocationPermissionEnabledActionForTheme;
+
+    // Check the geolocation permission value has updated.
+    assertTrue(action.enabled);
+    assertTrue(personalizationStore.data.theme.geolocationPermissionEnabled);
+
+    // Check that both warning text and dialog has diappeared.
+    await waitAfterNextRender(personalizationThemeElement);
+    warningElement = personalizationThemeElement.shadowRoot!.getElementById(
+        'geolocationWarningDiv');
+    geolocationDialog = personalizationThemeElement.shadowRoot!.getElementById(
+        'geolocationDialog');
+    assertFalse(!!warningElement);
+    assertFalse(!!geolocationDialog);
   });
 });

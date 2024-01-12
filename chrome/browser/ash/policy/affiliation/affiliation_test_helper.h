@@ -82,7 +82,7 @@ class AffiliationTestHelper {
   // ASSERTs on pointer validity.
   void CheckPreconditions();
 
-  raw_ptr<ash::FakeSessionManagerClient, ExperimentalAsh>
+  raw_ptr<ash::FakeSessionManagerClient>
       fake_session_manager_client_;  // Not owned.
 };
 

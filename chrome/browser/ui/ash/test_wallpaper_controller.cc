@@ -217,6 +217,7 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
 void TestWallpaperController::SetSeaPenWallpaper(
     const AccountId& account_id,
     const ash::SeaPenImage& sea_pen_image,
+    const std::string& query_info,
     SetWallpaperCallback callback) {
   ++sea_pen_wallpaper_count_;
   wallpaper_info_ = ash::WallpaperInfo();

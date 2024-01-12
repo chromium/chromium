@@ -11,17 +11,54 @@ namespace content {
 
 void MockCapturedSurfaceController::SetSendWheelResponse(
     blink::mojom::CapturedSurfaceControlResult send_wheel_result) {
-  result_ = send_wheel_result;
+  send_wheel_result_ = send_wheel_result;
 }
 
 void MockCapturedSurfaceController::SendWheel(
     blink::mojom::CapturedWheelActionPtr action,
     base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
         reply_callback) {
-  CHECK(result_);
-  const blink::mojom::CapturedSurfaceControlResult send_wheel_result = *result_;
-  result_ = absl::nullopt;
+  CHECK(send_wheel_result_);
+  const blink::mojom::CapturedSurfaceControlResult send_wheel_result =
+      *send_wheel_result_;
+  send_wheel_result_ = std::nullopt;
   std::move(reply_callback).Run(send_wheel_result);
+}
+
+void MockCapturedSurfaceController::SetGetZoomLevelResponse(
+    std::optional<int> get_zoom_level_value,
+    blink::mojom::CapturedSurfaceControlResult get_zoom_level_result) {
+  get_zoom_level_result_ =
+      std::make_pair(get_zoom_level_value, get_zoom_level_result);
+}
+
+void MockCapturedSurfaceController::GetZoomLevel(
+    base::OnceCallback<void(std::optional<int> zoom_level,
+                            blink::mojom::CapturedSurfaceControlResult result)>
+        reply_callback) {
+  CHECK(get_zoom_level_result_);
+  const std::pair<std::optional<int>,
+                  blink::mojom::CapturedSurfaceControlResult>
+      get_zoom_level_result = *get_zoom_level_result_;
+  get_zoom_level_result_ = std::nullopt;
+  std::move(reply_callback)
+      .Run(get_zoom_level_result.first, get_zoom_level_result.second);
+}
+
+void MockCapturedSurfaceController::SetSetZoomLevelResponse(
+    blink::mojom::CapturedSurfaceControlResult set_zoom_level_result) {
+  set_zoom_level_result_ = set_zoom_level_result;
+}
+
+void MockCapturedSurfaceController::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+        reply_callback) {
+  CHECK(set_zoom_level_result_);
+  const blink::mojom::CapturedSurfaceControlResult set_zoom_level_result =
+      *set_zoom_level_result_;
+  set_zoom_level_result_ = std::nullopt;
+  std::move(reply_callback).Run(set_zoom_level_result);
 }
 
 }  // namespace content

@@ -41,8 +41,11 @@ std::string GetWakeLaunchdName(UpdaterScope scope);
 // Removes the wake launch job.
 bool RemoveWakeJobFromLaunchd(UpdaterScope scope);
 
-// Recursively remove quarantine attributes on the path.
-bool RemoveQuarantineAttributes(const base::FilePath& path);
+// Prepare the macOS bundle at the specified path to subsequently run without
+// propmpting the user (currently, this refers to Gatekeeper prompts). If some
+// steps fail, this continues to run the rest anyway, preparing the bundle to
+// run as best as it can. Returns whether every applicable prep step succeeded.
+bool PrepareToRunBundle(const base::FilePath& bundle_path);
 
 std::string GetDomain(UpdaterScope scope);
 

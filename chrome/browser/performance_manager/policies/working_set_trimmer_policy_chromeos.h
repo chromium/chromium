@@ -173,7 +173,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
  private:
-  raw_ptr<Graph, ExperimentalAsh> graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
   bool trim_on_freeze_ = false;
   bool trim_arc_on_memory_pressure_ = false;

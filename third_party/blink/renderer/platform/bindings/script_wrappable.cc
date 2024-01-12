@@ -19,6 +19,28 @@ struct SameSizeAsScriptWrappable {
 
 ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);
 
+v8::MaybeLocal<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
+  v8::Local<v8::Value> wrapper =
+      DOMDataStore::GetWrapper(this, script_state->GetIsolate());
+  if (LIKELY(!wrapper.IsEmpty())) {
+    return wrapper;
+  }
+  return Wrap(script_state);
+}
+
+v8::MaybeLocal<v8::Value> ScriptWrappable::ToV8(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context_object) {
+  v8::Local<v8::Value> wrapper = DOMDataStore::GetWrapper(this, isolate);
+  if (LIKELY(!wrapper.IsEmpty())) {
+    return wrapper;
+  }
+  CHECK(!creation_context_object.IsEmpty());
+  ScriptState* script_state =
+      ScriptState::From(creation_context_object->GetCreationContextChecked());
+  return Wrap(script_state);
+}
+
 v8::MaybeLocal<v8::Value> ScriptWrappable::Wrap(ScriptState* script_state) {
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 

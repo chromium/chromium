@@ -17,6 +17,7 @@
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
+#include "media/base/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -40,8 +41,36 @@ enum MediaCodecStatus {
   MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED,
   MEDIA_CODEC_OUTPUT_FORMAT_CHANGED,
   MEDIA_CODEC_NO_KEY,
-  MEDIA_CODEC_ERROR
+  MEDIA_CODEC_ERROR,
+  MEDIA_CODEC_KEY_EXPIRED,
+  MEDIA_CODEC_RESOURCE_BUSY,
+  MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION,
+  MEDIA_CODEC_SESSION_NOT_OPENED,
+  MEDIA_CODEC_UNSUPPORTED_OPERATION,
+  MEDIA_CODEC_INSUFFICIENT_SECURITY,
+  MEDIA_CODEC_FRAME_TOO_LARGE,
+  MEDIA_CODEC_LOST_STATE,
+  MEDIA_CODEC_GENERIC_OEM,
+  MEDIA_CODEC_GENERIC_PLUGIN,
+  MEDIA_CODEC_LICENSE_PARSE,
+  MEDIA_CODEC_MEDIA_FRAMEWORK,
+  MEDIA_CODEC_ZERO_SUBSAMPLES,
+  MEDIA_CODEC_UNKNOWN_CIPHER_MODE,
+  MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED,
 };
+
+struct MediaCodecResultTraits {
+  enum class Codes : StatusCodeType {
+    kOk,
+    kTryAgainLater,
+    kOutputBuffersChanged,
+    kOutputFormatChanged,
+    kNoKey,
+    kError,
+  };
+  static constexpr StatusGroupType Group() { return "MediaCodecResult"; }
+};
+using MediaCodecResult = TypedStatus<MediaCodecResultTraits>;
 
 // An interface for a bridge to an Android MediaCodec.
 class MEDIA_EXPORT MediaCodecBridge {
@@ -59,43 +88,43 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void Stop() = 0;
 
   // Calls MediaCodec#flush(). The codec takes ownership of all input and output
-  // buffers previously dequeued when this is called. Returns MEDIA_CODEC_ERROR
-  // if an unexpected error happens, or MEDIA_CODEC_OK otherwise.
-  virtual MediaCodecStatus Flush() = 0;
+  // buffers previously dequeued when this is called. Returns kError
+  // if an unexpected error happens, or kOk otherwise.
+  virtual MediaCodecResult Flush() = 0;
 
   // Returns the output size. This is valid after DequeueOutputBuffer()
   // signals a format change by returning OUTPUT_FORMAT_CHANGED.
-  // Returns MEDIA_CODEC_ERROR if an error occurs, or MEDIA_CODEC_OK otherwise.
-  virtual MediaCodecStatus GetOutputSize(gfx::Size* size) = 0;
+  // Returns kError if an error occurs, or kOk otherwise.
+  virtual MediaCodecResult GetOutputSize(gfx::Size* size) = 0;
 
   // Gets the sampling rate. This is valid after DequeueOutputBuffer()
-  // signals a format change by returning INFO_OUTPUT_FORMAT_CHANGED.
-  // Returns MEDIA_CODEC_ERROR if an error occurs, or MEDIA_CODEC_OK otherwise.
-  virtual MediaCodecStatus GetOutputSamplingRate(int* sampling_rate) = 0;
+  // signals a format change by returning kOutputFormatChanged.
+  // Returns kError if an error occurs, or kOk otherwise.
+  virtual MediaCodecResult GetOutputSamplingRate(int* sampling_rate) = 0;
 
   // Fills |channel_count| with the number of audio channels.  This is valid
   // after DequeueOutputBuffer() signals a format change by returning
-  // INFO_OUTPUT_FORMAT_CHANGED. Returns MEDIA_CODEC_ERROR if an error occurs,
-  // or MEDIA_CODEC_OK otherwise.
-  virtual MediaCodecStatus GetOutputChannelCount(int* channel_count) = 0;
+  // kOutputFormatChanged. Returns kError if an error occurs,
+  // or kOk otherwise.
+  virtual MediaCodecResult GetOutputChannelCount(int* channel_count) = 0;
 
   // Fills in |color_space| with the color space of the decoded video.  This
   // is valid after DequeueOutputBuffer() signals a format change.  Will return
-  // MEDIA_CODEC_OK on success, with |color_space| initialized, or
-  // MEDIA_CODEC_ERROR with |color_space| unmodified otherwise.
-  virtual MediaCodecStatus GetOutputColorSpace(
+  // kOk on success, with |color_space| initialized, or
+  // kError with |color_space| unmodified otherwise.
+  virtual MediaCodecResult GetOutputColorSpace(
       gfx::ColorSpace* color_space) = 0;
 
   // Fills in |stride| with required Y-plane stride in the encoder's input
-  // buffer. Returns MEDIA_CODEC_OK on success, with |stride| initialized, or
-  // MEDIA_CODEC_ERROR with |stride| unmodified otherwise.
+  // buffer. Returns kOk on success, with |stride| initialized, or
+  // kError with |stride| unmodified otherwise.
   // Fills in |slice_height| with required Y-plane height in the encoder's input
   // buffer. (i.e. the number of rows that must be skipped to get from the top
   // of the Y plane to the top of the UV plane in the bytebuffer.)
   // Fills in |encoded_size| with actual size the encoder was configured for,
   // which may differ if the codec requires 16x16 aligned resolutions.
   // (see MediaFormat#KEY_STRIDE for more details)
-  virtual MediaCodecStatus GetInputFormat(int* stride,
+  virtual MediaCodecResult GetInputFormat(int* stride,
                                           int* slice_height,
                                           gfx::Size* encoded_size) = 0;
 
@@ -103,7 +132,7 @@ class MEDIA_EXPORT MediaCodecBridge {
   // available buffer from DequeueInputBuffer(). If |data| is NULL, it assumes
   // the input buffer has already been populated (but still obeys |size|).
   // |data_size| must be less than kint32max (because Java).
-  virtual MediaCodecStatus QueueInputBuffer(
+  virtual MediaCodecResult QueueInputBuffer(
       int index,
       const uint8_t* data,
       size_t data_size,
@@ -111,7 +140,7 @@ class MEDIA_EXPORT MediaCodecBridge {
 
   // As above but for encrypted buffers. NULL |subsamples| indicates the
   // whole buffer is encrypted.
-  virtual MediaCodecStatus QueueSecureInputBuffer(
+  virtual MediaCodecResult QueueSecureInputBuffer(
       int index,
       const uint8_t* data,
       size_t data_size,
@@ -126,10 +155,10 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void QueueEOS(int input_buffer_index) = 0;
 
   // Returns:
-  // MEDIA_CODEC_OK if an input buffer is ready to be filled with valid data,
-  // MEDIA_CODEC_ENQUEUE_INPUT_AGAIN_LATER if no such buffer is available, or
-  // MEDIA_CODEC_ERROR if unexpected error happens.
-  virtual MediaCodecStatus DequeueInputBuffer(base::TimeDelta timeout,
+  // kOk if an input buffer is ready to be filled with valid data,
+  // kTryAgainLater if no such buffer is available, or
+  // kError if unexpected error happens.
+  virtual MediaCodecResult DequeueInputBuffer(base::TimeDelta timeout,
                                               int* index) = 0;
 
   // Dequeues an output buffer, block for up to |timeout|.
@@ -137,7 +166,7 @@ class MEDIA_EXPORT MediaCodecBridge {
   // parameters should be populated. Otherwise, the values of output parameters
   // should not be used.  Output parameters other than index/offset/size are
   // optional and only set if not NULL.
-  virtual MediaCodecStatus DequeueOutputBuffer(
+  virtual MediaCodecResult DequeueOutputBuffer(
       base::TimeDelta timeout,
       int* index,
       size_t* offset,
@@ -151,15 +180,15 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void ReleaseOutputBuffer(int index, bool render) = 0;
 
   // Returns an input buffer's base pointer and capacity.
-  virtual MediaCodecStatus GetInputBuffer(int input_buffer_index,
+  virtual MediaCodecResult GetInputBuffer(int input_buffer_index,
                                           uint8_t** data,
                                           size_t* capacity) = 0;
 
   // Copies |num| bytes from output buffer |index|'s |offset| into the memory
   // region pointed to by |dst|. To avoid overflows, the size of both source
   // and destination must be at least |num| bytes, and should not overlap.
-  // Returns MEDIA_CODEC_ERROR if an error occurs, or MEDIA_CODEC_OK otherwise.
-  virtual MediaCodecStatus CopyFromOutputBuffer(int index,
+  // Returns kError if an error occurs, or kOk otherwise.
+  virtual MediaCodecResult CopyFromOutputBuffer(int index,
                                                 size_t offset,
                                                 void* dst,
                                                 size_t num) = 0;

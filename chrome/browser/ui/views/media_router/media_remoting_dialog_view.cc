@@ -126,7 +126,7 @@ void MediaRemotingDialogView::ReportPermission(bool allowed) {
   std::move(permission_callback_).Run(allowed);
 }
 
-BEGIN_METADATA(MediaRemotingDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(MediaRemotingDialogView)
 END_METADATA
 
 }  // namespace media_router

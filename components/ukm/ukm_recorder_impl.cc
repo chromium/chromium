@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/crc32.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -188,7 +189,8 @@ void UkmRecorderImpl::Recordings::SourceCounts::Reset() {
 }
 
 void UkmRecorderImpl::UpdateRecording(ukm::UkmConsentState state) {
-  DVLOG(1) << "UkmRecorderImpl::UpdateRecording: " << state.ToEnumBitmask();
+  DVLOG(DebuggingLogLevel::Rare)
+      << "UpdateRecording [state_bit_mask=" << state.ToEnumBitmask() << "]";
   recording_state_ = state;
   EnableRecording();
 }
@@ -199,7 +201,7 @@ void UkmRecorderImpl::EnableRecording() {
 }
 
 void UkmRecorderImpl::DisableRecording() {
-  DVLOG(1) << "UkmRecorderImpl::DisableRecording";
+  DVLOG(DebuggingLogLevel::Rare) << "DisableRecording";
   if (recording_enabled())
     recording_is_continuous_ = false;
   recording_enabled_ = false;
@@ -222,6 +224,7 @@ bool UkmRecorderImpl::IsSamplingConfigured() const {
 }
 
 void UkmRecorderImpl::Purge() {
+  DVLOG(DebuggingLogLevel::Rare) << "Purge";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recordings_.Reset();
   recording_is_continuous_ = false;
@@ -231,6 +234,8 @@ void UkmRecorderImpl::Purge() {
 
 void UkmRecorderImpl::PurgeRecordingsWithUrlScheme(
     const std::string& url_scheme) {
+  DVLOG(DebuggingLogLevel::Rare)
+      << "PurgeRecordingsWithUrlScheme [scheme=" << url_scheme << "]";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Discard all sources that have a URL with the given URL scheme as well as
@@ -251,6 +256,8 @@ void UkmRecorderImpl::PurgeRecordingsWithUrlScheme(
 
 void UkmRecorderImpl::PurgeRecordingsWithSourceIdType(
     ukm::SourceIdType source_id_type) {
+  DVLOG(DebuggingLogLevel::Rare) << "PurgeRecordingsWithSourceIdType [type="
+                                 << static_cast<int>(source_id_type) << "]";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unordered_set<SourceId> relevant_source_ids;
 
@@ -265,6 +272,7 @@ void UkmRecorderImpl::PurgeRecordingsWithSourceIdType(
 }
 
 void UkmRecorderImpl::PurgeRecordingsWithMsbbSources() {
+  DVLOG(DebuggingLogLevel::Rare) << "PurgeRecordingsWithMsbbSources";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unordered_set<SourceId> relevant_source_ids;
 
@@ -292,6 +300,8 @@ void UkmRecorderImpl::PurgeSourcesAndEventsBySourceIds(
 }
 
 void UkmRecorderImpl::MarkSourceForDeletion(SourceId source_id) {
+  DVLOG(DebuggingLogLevel::Frequent)
+      << "MarkSourceForDeletion [source_id=" << source_id << "]";
   if (source_id == kInvalidSourceId)
     return;
   recordings_.obsolete_source_ids.insert(source_id);
@@ -346,6 +356,7 @@ void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
 }
 
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
+  DVLOG(DebuggingLogLevel::Rare) << "StoreRecordingsInReport starts";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Set of source ids seen by entries in recordings_.
@@ -419,10 +430,11 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     num_serialized_sources += source_type_and_count.second;
   }
 
+  int num_serialized_entries = recordings_.entries.size();
   UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.SerializedCount2",
                             num_serialized_sources);
   UMA_HISTOGRAM_COUNTS_100000("UKM.Entries.SerializedCount2",
-                              recordings_.entries.size());
+                              num_serialized_entries);
   UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.UnsentSourcesCount",
                             num_sources_unsent);
   UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.UnmatchedSourcesCount",
@@ -514,6 +526,9 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   if (entry_filter_) {
     entry_filter_->OnStoreRecordingsInReport();
   }
+  DVLOG(DebuggingLogLevel::Rare)
+      << "StoreRecordingsInReport done [num_serialized_entries="
+      << num_serialized_entries << "]";
 }
 
 int UkmRecorderImpl::PruneData(std::set<SourceId>& source_ids_seen) {
@@ -784,6 +799,9 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
                      std::vector<GURL>{sanitized_url});
 
   if (!ShouldRecordUrl(source_id, sanitized_url)) {
+    DVLOG(DebuggingLogLevel::Frequent)
+        << "URL not recorded: [source_id=" << source_id
+        << " sanitized_url=" << sanitized_url << "]";
     return;
   }
   RecordSource(std::make_unique<UkmSource>(source_id, sanitized_url));
@@ -993,8 +1011,9 @@ bool UkmRecorderImpl::ShouldRecordUrl(SourceId source_id,
   if (!HasSupportedScheme(sanitized_url)) {
     RecordDroppedSource(has_recorded_reason,
                         DroppedDataReason::UNSUPPORTED_URL_SCHEME);
-    DVLOG(2) << "Dropped Unsupported UKM URL:" << source_id << ":"
-             << sanitized_url.spec();
+    DVLOG(DebuggingLogLevel::Medium)
+        << "Dropped Unsupported UKM URL:" << source_id << ":"
+        << sanitized_url.spec();
     return false;
   }
 
@@ -1020,15 +1039,22 @@ bool UkmRecorderImpl::ShouldRecordUrl(SourceId source_id,
 void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
   SourceId source_id = source->id();
   if (!recording_enabled()) {
+    DVLOG(DebuggingLogLevel::Frequent)
+        << "RecordSource skipped due to disabled recording.";
     return;
   }
 
   const auto required_consent = GetConsentType(GetSourceIdType(source_id));
 
   if (!recording_enabled(required_consent)) {
+    DVLOG(DebuggingLogLevel::Frequent)
+        << "RecordSource skipped due to missing UkmConsentType="
+        << required_consent << "]";
     return;
   }
 
+  DVLOG(DebuggingLogLevel::Medium) << "RecordSource [source_id=" << source_id
+                                   << " url=" << source->url() << "]";
   if (GetSourceIdType(source_id) == SourceIdType::NAVIGATION_ID)
     recordings_.source_counts.navigation_sources++;
   recordings_.source_counts.observed++;
@@ -1086,18 +1112,27 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
     return;
   }
 
-  // Log a corresponding entry to UMA so we get a per-metric breakdown of UKM
+  // Log a corresponding entry to UMA so we get a per-event breakdown of UKM
   // entry counts.
   // Truncate the unsigned 64-bit hash to 31 bits, to
   // make it a suitable histogram sample.
   UMA_HISTOGRAM_SPARSE("UKM.Entries.Recorded.ByEntryHash",
                        entry->event_hash & 0x7fffffff);
 
+  // Translate to human-readable event name for console logging.
+  // A DCHECK above ensures that this does not result in a nullptr dereference.
+  DVLOG(DebuggingLogLevel::Medium)
+      << "AddEntry recorded: [source_id=" << entry->source_id
+      << " event_hash=" << entry->event_hash
+      << " event_name=" << decode_map_.find(entry->event_hash)->second.name
+      << "]";
+
   recordings_.entries.push_back(std::move(entry));
 }
 
 void UkmRecorderImpl::LoadExperimentSamplingInfo() {
   // This should be called only if a sampling rate hasn't been loaded.
+  DVLOG(DebuggingLogLevel::Rare) << "LoadExperimentSamplingInfo";
   DCHECK_LT(default_sampling_rate_, 0);
 
   // Default rate must be >= 0 to indicate that load is complete.
@@ -1105,6 +1140,9 @@ void UkmRecorderImpl::LoadExperimentSamplingInfo() {
 
   // If we don't have the feature, no parameters to load.
   if (!base::FeatureList::IsEnabled(kUkmSamplingRateFeature)) {
+    DVLOG(DebuggingLogLevel::Rare)
+        << "Missing feature kUkmSamplingRateFeature. Events will be "
+           "dropped.";
     return;
   }
 
@@ -1118,33 +1156,41 @@ void UkmRecorderImpl::LoadExperimentSamplingInfo() {
 void UkmRecorderImpl::LoadExperimentSamplingParams(
     const std::map<std::string, std::string>& params) {
   for (const auto& kv : params) {
-    const std::string& key = kv.first;
-    if (key.length() == 0)
+    const std::string& event_name = kv.first;
+    const std::string& event_param = kv.second;
+    if (event_name.empty()) {
       continue;
+    }
 
-    // Keys starting with an underscore are global configuration.
-    if (key.at(0) == '_') {
-      if (key == "_default_sampling") {
-        int sampling;
-        // We only load non-negative global sampling rates.
-        if (base::StringToInt(kv.second, &sampling) && sampling >= 0)
-          default_sampling_rate_ = sampling;
+    int sampling_rate = -1;
+
+    // Special string value used in the experiment configs for the default
+    // global configuration.
+    if (event_name == "_default_sampling") {
+      // Sampling rates must be non-negative integers.
+      if (base::StringToInt(event_param, &sampling_rate) &&
+          sampling_rate >= 0) {
+        default_sampling_rate_ = sampling_rate;
       }
       continue;
     }
 
     // Anything else is an event name.
-    int sampling;
-    auto hash = base::HashMetricName(key);
-    if (base::StringToInt(kv.second, &sampling)) {
-      // If the parameter is a number then that's the sampling rate.
-      if (sampling >= 0)
-        event_sampling_rates_[hash] = sampling;
+    auto event_hash = base::HashMetricName(event_name);
+    // TODO(b/298075109#comment9): decouple numerical parameters and event
+    // groupings.
+    if (base::StringToInt(event_param, &sampling_rate)) {
+      // If the parameter parses as a non-negative integer N, it's the sampling
+      // rate meaning that the event should be sampled 1-in-N.
+      if (sampling_rate >= 0) {
+        event_sampling_rates_[event_hash] = sampling_rate;
+      }
     } else {
-      // If the parameter is a string then it's the name of another metric
-      // to which it should be slaved. This allows different metrics to be
-      // sampled in or out together.
-      event_sampling_master_[hash] = base::HashMetricName(kv.second);
+      // If the parameter of an event E is a string, then it's the
+      // name of some other event F. This means that event E should be sampled
+      // at the same rate, and sampled in and out together with event F at the
+      // page load level.
+      event_sampling_master_[event_hash] = base::HashMetricName(event_param);
     }
   }
 }

@@ -39,19 +39,19 @@ BaseQueue::~BaseQueue() {
   }
 }
 
-bool BaseQueue::AllocateBuffers(uint32_t num_planes) {
+bool BaseQueue::AllocateBuffers(uint32_t num_planes, size_t num_buffers) {
   DVLOGF(4);
   CHECK(device_);
   CHECK(num_planes);
 
   const auto count =
-      device_->RequestBuffers(buffer_type_, memory_type_, BufferMinimumCount());
+      device_->RequestBuffers(buffer_type_, memory_type_, num_buffers);
 
   if (!count) {
     return false;
   }
 
-  DVLOGF(2) << BufferMinimumCount() << " buffers request " << *count
+  DVLOGF(2) << num_buffers << " buffers request " << *count
             << " buffers allocated for " << Description() << " queue.";
   buffers_.reserve(*count);
 
@@ -152,9 +152,9 @@ bool InputQueue::SetupFormat(const gfx::Size resolution) {
   return true;
 }
 
-bool InputQueue::PrepareBuffers() {
+bool InputQueue::PrepareBuffers(size_t num_buffers) {
   DVLOGF(4);
-  return AllocateBuffers(kNumberInputPlanes);
+  return AllocateBuffers(kNumberInputPlanes, num_buffers);
 }
 
 void InputQueue::Reclaim(Buffer& buffer) {
@@ -237,14 +237,6 @@ std::string InputQueue::Description() {
   return "input";
 }
 
-uint32_t InputQueue::BufferMinimumCount() {
-  // TODO: This number has been cargo culting around for a while. One buffer
-  // could be enough as there is buffering elsewhere in the system. This
-  // number should be revisited after end to end playback is completed and
-  // performance tuning is done.
-  return 8;
-}
-
 std::unique_ptr<OutputQueue> OutputQueue::Create(
     scoped_refptr<StatelessDevice> device) {
   std::unique_ptr<OutputQueue> queue = std::make_unique<OutputQueue>(device);
@@ -284,10 +276,10 @@ bool OutputQueue::NegotiateFormat() {
       if (device_->TryOutputFormat(try_format)) {
         auto chosen_format = device_->SetOutputFormat(try_format);
         if (chosen_format) {
-          DVLOGF(2) << "Preferred format " << chosen_format->fourcc.ToString()
-                    << " choosen for output queue through negotiation. "
-                    << "Initial format was "
-                    << initial_format->fourcc.ToString() << ".";
+          DVLOGF(2) << "Preferred format " << chosen_format->ToString()
+                    << " chosen for output queue through negotiation. "
+                    << "Initial format was " << initial_format->ToString()
+                    << ".";
           buffer_format_ = *chosen_format;
           return true;
         } else {
@@ -296,8 +288,8 @@ bool OutputQueue::NegotiateFormat() {
       }
     }
   } else {
-    DVLOGF(2) << "Initial format " << initial_format->fourcc.ToString()
-              << " choosen for output queue.";
+    DVLOGF(2) << "Initial format " << initial_format->ToString()
+              << " chosen for output queue.";
     auto chosen_format = device_->SetOutputFormat(*initial_format);
     if (chosen_format) {
       buffer_format_ = *chosen_format;
@@ -368,10 +360,10 @@ scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(uint32_t index) {
       std::move(dmabuf_fds), base::TimeDelta());
 }
 
-bool OutputQueue::PrepareBuffers() {
+bool OutputQueue::PrepareBuffers(size_t num_buffers) {
   DVLOGF(4);
 
-  if (!AllocateBuffers(buffer_format_.NumPlanes())) {
+  if (!AllocateBuffers(buffer_format_.NumPlanes(), num_buffers)) {
     return false;
   }
 
@@ -469,10 +461,6 @@ bool OutputQueue::QueueBufferByFrameID(uint64_t frame_id) {
 
 std::string OutputQueue::Description() {
   return "output";
-}
-
-uint32_t OutputQueue::BufferMinimumCount() {
-  return 4;
 }
 
 }  // namespace media

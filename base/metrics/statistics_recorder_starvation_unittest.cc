@@ -14,6 +14,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -216,7 +217,16 @@ class StatisticsRecorderStarvationTest
 // StatisticsRecorder. When switching to a Read/Write lock (see crbug/1123627),
 // we encountered such a starvation issue, where a thread trying to write to the
 // internal map was starved out for 10+ seconds by readers on iOS.
-TEST_P(StatisticsRecorderStarvationTest, StatisticsRecorderNoStarvation) {
+// TODO(crbug.com/1516818): StatisticsRecorderNoStarvation continuously emits a
+// new histogram which can cause the app memory footprint to grow unbounded and
+// watchdog kill the unit test on iOS devices.
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
+#define MAYBE_StatisticsRecorderNoStarvation \
+  DISABLED_StatisticsRecorderNoStarvation
+#else
+#define MAYBE_StatisticsRecorderNoStarvation StatisticsRecorderNoStarvation
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
+TEST_P(StatisticsRecorderStarvationTest, MAYBE_StatisticsRecorderNoStarvation) {
   // Start reader and writer threads.
   StartThreads();
 

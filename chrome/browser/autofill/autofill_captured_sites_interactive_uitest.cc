@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -163,7 +164,7 @@ class AutofillCapturedSitesInteractiveTest
                     const std::vector<std::string>& iframe_path,
                     const int attempts,
                     content::RenderFrameHost* frame,
-                    absl::optional<FieldType> triggered_field_type) override {
+                    std::optional<FieldType> triggered_field_type) override {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame);
     auto& autofill_manager = static_cast<BrowserAutofillManager&>(
@@ -210,7 +211,7 @@ class AutofillCapturedSitesInteractiveTest
       }
       DoNothingAndWait(base::Milliseconds(500));
 
-      absl::optional<std::u16string> cvc = profile_controller_->cvc();
+      std::optional<std::u16string> cvc = profile_controller_->cvc();
       // If CVC is available in the Action Recorder receipts and this is a
       // payment form, this means it's running the test with a server card. So
       // the "Enter CVC" dialog will pop up for card autofill.

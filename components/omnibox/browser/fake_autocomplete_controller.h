@@ -90,7 +90,6 @@ class FakeAutocompleteController : public AutocompleteController {
 
   // AutocompleteController (methods):
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
-  using AutocompleteController::RunBatchUrlScoringModel;
   using AutocompleteController::UpdateResult;
 
   // AutocompleteController (fields):

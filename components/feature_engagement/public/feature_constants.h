@@ -30,6 +30,7 @@ BASE_DECLARE_FEATURE(kIPHBatterySaverModeFeature);
 BASE_DECLARE_FEATURE(kIPHCompanionSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature);
 BASE_DECLARE_FEATURE(kIPHComposeMenuNewBadgeFeature);
+BASE_DECLARE_FEATURE(kIPHComposeMSBBSettingsFeature);
 BASE_DECLARE_FEATURE(kIPHComposeNewBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature);
@@ -37,7 +38,7 @@ BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature);
 BASE_DECLARE_FEATURE(kIPHDownloadEsbPromoFeature);
-BASE_DECLARE_FEATURE(kIPHDownloadToolbarButtonFeature);
+BASE_DECLARE_FEATURE(kIPHExperimentalAIPromoFeature);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 BASE_DECLARE_FEATURE(kIPHExtensionsMenuFeature);
 BASE_DECLARE_FEATURE(kIPHExtensionsRequestAccessButtonFeature);
@@ -147,7 +148,6 @@ BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPaymentFillingFeature);
 BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPaymentOfferFeature);
 BASE_DECLARE_FEATURE(kIPHLowUserEngagementDetectorFeature);
 BASE_DECLARE_FEATURE(kIPHMicToolbarFeature);
-BASE_DECLARE_FEATURE(kIPHNewTabPageHomeButtonFeature);
 BASE_DECLARE_FEATURE(kIPHPageInfoFeature);
 BASE_DECLARE_FEATURE(kIPHPageInfoStoreInfoFeature);
 BASE_DECLARE_FEATURE(kIPHPageZoomFeature);
@@ -233,6 +233,9 @@ BASE_DECLARE_FEATURE(kIPHiOSPullToRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos);
 BASE_DECLARE_FEATURE(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature);
 BASE_DECLARE_FEATURE(kIPHiOSInlinePromoEnhancedSafeBrowsingFeature);
+BASE_DECLARE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito);
+BASE_DECLARE_FEATURE(kIPHiOSDockingPromoFeature);
+BASE_DECLARE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

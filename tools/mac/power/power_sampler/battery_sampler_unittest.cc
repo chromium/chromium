@@ -31,9 +31,9 @@ class BatterySamplerTest : public testing::Test {
  protected:
   using BatteryData = TestBatterySampler::BatteryData;
 
-  void SetUp() override { set_battery_data(absl::nullopt); }
+  void SetUp() override { set_battery_data(std::nullopt); }
 
-  static void set_battery_data(absl::optional<BatteryData> battery_data) {
+  static void set_battery_data(std::optional<BatteryData> battery_data) {
     battery_data_ = battery_data;
   }
 
@@ -62,18 +62,18 @@ class BatterySamplerTest : public testing::Test {
  private:
   friend class TestBatterySampler;
 
-  static absl::optional<BatteryData> GetStaticBatteryData(
+  static std::optional<BatteryData> GetStaticBatteryData(
       io_service_t power_source) {
     return battery_data_;
   }
 
   static int64_t GetSecondsSinceEpoch() { return seconds_since_epoch_; }
 
-  static absl::optional<BatteryData> battery_data_;
+  static std::optional<BatteryData> battery_data_;
   static int64_t seconds_since_epoch_;
 };
 
-absl::optional<BatterySamplerTest::BatteryData>
+std::optional<BatterySamplerTest::BatteryData>
     BatterySamplerTest::battery_data_;
 
 int64_t BatterySamplerTest::seconds_since_epoch_;

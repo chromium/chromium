@@ -31,9 +31,6 @@ BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
 BASE_DECLARE_FEATURE(kAmbientBadgeSuppressFirstVisit);
 extern const base::FeatureParam<base::TimeDelta>
     kAmbientBadgeSuppressFirstVisit_Period;
-BASE_DECLARE_FEATURE(kInstallableAmbientBadgeMessage);
-extern const base::FeatureParam<int>
-    kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity;
 BASE_DECLARE_FEATURE(kInstallPromptGlobalGuardrails);
 extern const base::FeatureParam<int>
     kInstallPromptGlobalGuardrails_DismissCount;
@@ -43,8 +40,6 @@ extern const base::FeatureParam<int> kInstallPromptGlobalGuardrails_IgnoreCount;
 extern const base::FeatureParam<base::TimeDelta>
     kInstallPromptGlobalGuardrails_IgnorePeriod;
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
-BASE_DECLARE_FEATURE(kWebApkInstallFailureRetry);
-BASE_DECLARE_FEATURE(kBlockInstallPromptIfIgnoreRecently);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);

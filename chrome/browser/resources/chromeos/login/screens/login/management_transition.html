@@ -21,16 +21,16 @@ found in the LICENSE file.
 
 </style>
 <oobe-adaptive-dialog id="managementTransitionDialog" role="dialog"
-    aria-label$="[[getDialogTitle_(locale, arcTransition_, managementEntity_)]]"
+    aria-label$="[[getDialogTitle(locale, arcTransition, managementEntity)]]"
     for-step="progress">
   <iron-icon slot="icon" icon="oobe-32:enterprise" aria-hidden="true"
-    hidden="[[isChildTransition_(arcTransition_)]]">
+    hidden="[[isChildTransition(arcTransition)]]">
   </iron-icon>
   <iron-icon slot="icon" src="images/supervision_icon.png"
-    aria-hidden="true" hidden="[[!isChildTransition_(arcTransition_)]]">
+    aria-hidden="true" hidden="[[!isChildTransition(arcTransition)]]">
   </iron-icon>
   <h1 slot="title">
-    [[getDialogTitle_(locale, arcTransition_, managementEntity_)]]
+    [[getDialogTitle(locale, arcTransition, managementEntity)]]
   </h1>
   <div slot="subtitle">
     [[i18nDynamic(locale, 'managementTransitionIntroMessage')]]
@@ -45,10 +45,10 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale,'managementTransitionErrorTitle')]]"
     for-step="error">
   <iron-icon slot="icon" icon="oobe-32:enterprise" aria-hidden="true"
-    hidden="[[isChildTransition_(arcTransition_)]]">
+    hidden="[[isChildTransition(arcTransition)]]">
   </iron-icon>
   <iron-icon slot="icon" src="images/supervision_icon.png"
-    aria-hidden="true" hidden="[[!isChildTransition_(arcTransition_)]]">
+    aria-hidden="true" hidden="[[!isChildTransition(arcTransition)]]">
   </iron-icon>
   <h1 slot="title">
     [[i18nDynamic(locale, 'managementTransitionErrorTitle')]]
@@ -61,7 +61,7 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="accept-button" on-click="onAcceptAndContinue_"
+    <oobe-text-button id="accept-button" on-click="onAcceptAndContinue"
         text-key="managementTransitionErrorButton" class="focus-on-show"
         inverse>
     </oobe-text-button>

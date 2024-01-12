@@ -38,7 +38,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
        int render_process_id,
        URLLoaderFactoryType type,
        const url::Origin& request_initiator,
-       absl::optional<int64_t> navigation_id,
+       std::optional<int64_t> navigation_id,
        ukm::SourceIdObj ukm_source_id,
        mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
            factory_receiver,
@@ -97,7 +97,7 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
                 return request_initiator.IsSameOriginWith(kReferringUrl);
               },
               true),
-          testing::Eq(absl::nullopt),
+          testing::Eq(std::nullopt),
           ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
           testing::NotNull(), testing::NotNull(), testing::NotNull(),
           testing::IsNull(), testing::IsNull(), testing::IsNull()))
@@ -131,7 +131,7 @@ TEST_F(PrefetchNetworkContextTest,
                 return request_initiator.IsSameOriginWith(kReferringUrl);
               },
               true),
-          testing::Eq(absl::nullopt),
+          testing::Eq(std::nullopt),
           ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
           testing::NotNull(), testing::NotNull(), testing::NotNull(),
           testing::IsNull(), testing::IsNull(), testing::IsNull()))

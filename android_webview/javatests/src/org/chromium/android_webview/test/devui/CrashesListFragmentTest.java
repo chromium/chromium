@@ -149,20 +149,13 @@ public class CrashesListFragmentTest {
                 new CrashFileManager(SystemWideCrashDirectories.getOrCreateWebViewCrashDir());
         File dir = crashFileManager.getCrashDirectory();
         dir.mkdirs();
-        String suffix;
-        switch (crashInfo.uploadState) {
-            case UPLOADED:
-                suffix = ".up";
-                break;
-            case SKIPPED:
-                suffix = ".skipped";
-                break;
-            case PENDING_USER_REQUESTED:
-                suffix = ".forced";
-                break;
-            default:
-                suffix = ".dmp";
-        }
+        String suffix =
+                switch (crashInfo.uploadState) {
+                    case UPLOADED -> ".up";
+                    case SKIPPED -> ".skipped";
+                    case PENDING_USER_REQUESTED -> ".forced";
+                    default -> ".dmp";
+                };
         return File.createTempFile(
                 "test_minidump", "-" + crashInfo.localId + suffix + ".try0", dir);
     }

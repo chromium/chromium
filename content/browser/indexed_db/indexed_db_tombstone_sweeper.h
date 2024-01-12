@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -18,7 +19,6 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -115,16 +115,16 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
 
     // Stores the random starting database seed. Not bounded.
     size_t start_database_seed = 0;
-    absl::optional<WrappingIterator<DatabaseMetadataVector>> database_it;
+    std::optional<WrappingIterator<DatabaseMetadataVector>> database_it;
 
     // Stores the random starting object store seed. Not bounded.
     size_t start_object_store_seed = 0;
-    absl::optional<WrappingIterator<ObjectStoreMetadataMap>> object_store_it;
+    std::optional<WrappingIterator<ObjectStoreMetadataMap>> object_store_it;
 
     // Stores the random starting object store seed. Not bounded.
     size_t start_index_seed = 0;
-    absl::optional<WrappingIterator<IndexMetadataMap>> index_it;
-    absl::optional<IndexDataKey> index_it_key;
+    std::optional<WrappingIterator<IndexMetadataMap>> index_it;
+    std::optional<IndexDataKey> index_it_key;
   };
 
   // Accumulated metrics that are reported at the end of sweeping.
@@ -153,8 +153,8 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   // of the sweeper.
   // Exactly one optional argument must be populated.
   void RecordUMAStats(
-      absl::optional<IndexedDBPreCloseTaskQueue::StopReason> stop_reason,
-      absl::optional<Status> status,
+      std::optional<IndexedDBPreCloseTaskQueue::StopReason> stop_reason,
+      std::optional<Status> status,
       const leveldb::Status& leveldb_error);
 
   leveldb::Status FlushDeletions();
@@ -182,7 +182,7 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
 
   // Used to measure total time of the task.
   raw_ptr<const base::TickClock> clock_for_testing_ = nullptr;
-  absl::optional<base::TimeTicks> start_time_;
+  std::optional<base::TimeTicks> start_time_;
 
   bool has_writes_ = false;
   leveldb::WriteBatch round_deletion_batch_;

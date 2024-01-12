@@ -125,7 +125,7 @@ class EmulationHandler : public DevToolsDomainHandler,
                       bool* user_agent_overridden,
                       bool* accept_language_overridden);
   bool ApplyUserAgentMetadataOverrides(
-      absl::optional<blink::UserAgentMetadata>* override_out);
+      std::optional<blink::UserAgentMetadata>* override_out);
   void ApplyNetworkOverridesForDownload(
       download::DownloadUrlParameters* parameters);
 
@@ -147,7 +147,7 @@ class EmulationHandler : public DevToolsDomainHandler,
   // |user_agent_metadata_| is meaningful if |user_agent_| is non-empty.
   // In that case nullopt will disable sending of client hints, and a
   // non-nullopt value will be sent.
-  absl::optional<blink::UserAgentMetadata> user_agent_metadata_;
+  std::optional<blink::UserAgentMetadata> user_agent_metadata_;
   std::string accept_language_;
   // If |prefers_color_scheme_| is either "light" or "dark", it is used to
   // override the "prefers-color-scheme" client hint header, when present.

@@ -15,8 +15,7 @@
 #include "ui/base/cocoa/tracking_area.h"
 
 namespace {
-using LocationUpdateCallback =
-    base::RepeatingCallback<void(const NSPoint&, bool cursor_within_surface)>;
+using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
 }  // namespace;
 
 // Uses a CrTrackingArea to monitor for mouse events and forwards them to the
@@ -30,6 +29,7 @@ using LocationUpdateCallback =
 @implementation MouseCursorOverlayTracker {
   LocationUpdateCallback _callback;
   ui::ScopedCrTrackingArea _trackingArea;
+  id __strong _monitorId;
 }
 
 - (instancetype)initWithCallback:(LocationUpdateCallback)callback
@@ -47,26 +47,43 @@ using LocationUpdateCallback =
                                     userInfo:nil];
     _trackingArea.reset(trackingArea);
     [nsView addTrackingArea:trackingArea];
+    NSEvent* (^mouseDragged)(NSEvent*) = ^NSEvent*(NSEvent* event) {
+      self->_callback.Run([event locationInWindow]);
+      return event;
+    };
+
+    const NSEventMask drag_mask = NSEventMaskLeftMouseDragged |
+                                  NSEventMaskRightMouseDragged |
+                                  NSEventMaskOtherMouseDragged;
+    _monitorId = [NSEvent addLocalMonitorForEventsMatchingMask:drag_mask
+                                                       handler:mouseDragged];
   }
   return self;
 }
 
 - (void)stopTracking:(NSView*)nsView {
+  // Tracking is managed by the lifetime of ::Observer which is reset each time
+  // a target view is set through the public API of the overlay controller. This
+  // method should only be called after initWithCallback(), and only once per
+  // initWithCallback() call.
+  CHECK(_trackingArea.get());
+  CHECK(_callback);
+  [NSEvent removeMonitor:_monitorId];
   [nsView removeTrackingArea:_trackingArea.get()];
   _trackingArea.reset();
   _callback.Reset();
 }
 
 - (void)mouseMoved:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow], /*cursor_within_surface=*/true);
+  _callback.Run([theEvent locationInWindow]);
 }
 
 - (void)mouseEntered:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow], /*cursor_within_surface=*/true);
+  _callback.Run([theEvent locationInWindow]);
 }
 
 - (void)mouseExited:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow], /*cursor_within_surface=*/false);
+  _callback.Run([theEvent locationInWindow]);
 }
 
 @end
@@ -107,8 +124,10 @@ class MouseCursorOverlayController::Observer {
   }
 
  private:
-  void OnMouseMoved(const NSPoint& location_in_window,
-                    bool cursor_within_surface) {
+  void OnMouseMoved(const NSPoint& location_in_window) {
+    const bool cursor_within_surface =
+        NSPointInRect(location_in_window, NSRectFromCGRect([view_ bounds]));
+
     // Compute the location within the view using Aura conventions: (0,0) is the
     // upper-left corner. So, if the NSView is flipped in Cocoa, it's not
     // flipped in Aura.
@@ -216,9 +235,7 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 // static
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
-  return skia::NSImageToSkBitmapWithColorSpace(
-      cursor.Get().image, /*is_opaque=*/false,
-      base::mac::GetSystemColorSpace());
+  return skia::NSImageToSkBitmap(cursor.Get().image, /*is_opaque=*/false);
 }
 
 }  // namespace content

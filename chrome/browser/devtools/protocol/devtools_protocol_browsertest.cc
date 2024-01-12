@@ -147,6 +147,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   // Should not crash by this point.
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateInDefaultContextById) {
+  AttachToBrowserTarget();
+  const base::Value::Dict* result = SendCommandSync("Target.getTargets");
+  const base::Value::List* list = result->FindList("targetInfos");
+  ASSERT_TRUE(list->size() == 1);
+  const std::string context_id =
+      *list->front().GetDict().FindString("browserContextId");
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  params.Set("browserContextId", context_id);
+  result = SendCommandSync("Target.createTarget", std::move(params));
+  ASSERT_TRUE(result);
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        InputDispatchEventsToCorrectTarget) {
   Attach();

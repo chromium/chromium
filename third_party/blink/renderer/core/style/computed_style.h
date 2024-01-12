@@ -818,7 +818,7 @@ class ComputedStyle final : public ComputedStyleBase {
            CustomStyleCallbackDependsOnFont();
   }
   bool CachedPseudoElementStylesDependOnFontMetrics() const;
-  bool HighlightPseudoElementStylesDependOnFontMetrics() const;
+  bool HighlightPseudoElementStylesDependOnRelativeUnits() const;
 
   // font-size
   int FontSize() const { return GetFontDescription().ComputedPixelSize(); }

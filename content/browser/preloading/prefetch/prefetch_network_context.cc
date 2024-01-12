@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
@@ -30,7 +32,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -60,7 +61,7 @@ network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
           service->GetBrowserContext()
               ->GetDefaultStoragePartition()
               ->GetNetworkContext(),
-          url_factory_remote.InitWithNewPipeAndPassReceiver(), absl::nullopt);
+          url_factory_remote.InitWithNewPipeAndPassReceiver(), std::nullopt);
       url_loader_factory_ = network::SharedURLLoaderFactory::Create(
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
               std::move(url_factory_remote)));
@@ -170,7 +171,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
 
   CreateNewURLLoaderFactory(
       service->GetBrowserContext(), network_context_.get(),
-      isolated_factory_remote.InitWithNewPipeAndPassReceiver(), absl::nullopt);
+      isolated_factory_remote.InitWithNewPipeAndPassReceiver(), std::nullopt);
   url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
           std::move(isolated_factory_remote)));
@@ -180,7 +181,7 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
     BrowserContext* browser_context,
     network::mojom::NetworkContext* network_context,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-    absl::optional<net::IsolationInfo> isolation_info) {
+    std::optional<net::IsolationInfo> isolation_info) {
   CHECK(network_context);
 
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
@@ -208,7 +209,7 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
       referring_render_frame_host->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       url::Origin::Create(referrer_.url),
-      /*navigation_id=*/absl::nullopt,
+      /*navigation_id=*/std::nullopt,
       ukm::SourceIdObj::FromInt64(
           referring_render_frame_host->GetPageUkmSourceId()),
       &pending_receiver, &header_client, &bypass_redirect_checks,

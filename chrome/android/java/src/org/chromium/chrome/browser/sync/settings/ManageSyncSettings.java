@@ -560,6 +560,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         }
         SignOutDialogCoordinator.show(
                 requireContext(),
+                getProfile(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 this,
                 SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
@@ -574,6 +575,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         }
         SignOutDialogCoordinator.show(
                 requireContext(),
+                getProfile(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 this,
                 SignOutDialogCoordinator.ActionType.REVOKE_SYNC_CONSENT,
@@ -698,6 +700,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             case SyncError.OTHER_ERRORS:
                 SignOutDialogCoordinator.show(
                         requireContext(),
+                        profile,
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         this,
                         profile.isChild()

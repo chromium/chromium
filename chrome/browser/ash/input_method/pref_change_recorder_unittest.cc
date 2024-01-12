@@ -46,7 +46,7 @@ class FakeInputMethodOptions {
   }
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   const std::string engine_id_;
 };
 

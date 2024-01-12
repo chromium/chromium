@@ -9,8 +9,16 @@
 var contextMenuNatives = requireNative('context_menus');
 
 // Add the bindings to the contextMenus API.
-function createContextMenusHandlers(isWebview) {
-  var eventName = isWebview ? 'webViewInternal.contextMenus' : 'contextMenus';
+function createContextMenusHandlers(webViewNamespace) {
+  var eventName = '';
+  var isWebview = !!webViewNamespace;
+  if (isWebview) {
+    eventName = webViewNamespace === 'chromeWebViewInternal' ?
+        'webViewInternal.contextMenus' :
+        webViewNamespace + '.contextMenus';
+  } else {
+    eventName = 'contextMenus';
+  }
   // Some dummy value for chrome.contextMenus instances.
   // Webviews use positive integers, and 0 to denote an invalid webview ID.
   // The following constant is -1 to avoid any conflicts between webview IDs and
@@ -114,7 +122,7 @@ function createContextMenusHandlers(isWebview) {
     };
     if (isWebview) {
       bindingUtil.sendRequest(
-          'chromeWebViewInternal.contextMenusCreate',
+          webViewNamespace + '.contextMenusCreate',
           [instanceId, createProperties, callback], optArgs);
     } else {
       bindingUtil.sendRequest(

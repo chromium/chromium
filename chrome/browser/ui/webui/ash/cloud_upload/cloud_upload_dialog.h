@@ -26,6 +26,7 @@
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
@@ -107,7 +108,6 @@ class CloudOpenTask : public BrowserListObserver,
   static bool Execute(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
                       const CloudProvider cloud_provider,
-                      gfx::NativeWindow modal_parent,
                       std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
   // Set the local tasks that are passed to the File Handler dialog. Normally
@@ -159,7 +159,6 @@ class CloudOpenTask : public BrowserListObserver,
   CloudOpenTask(Profile* profile,
                 std::vector<storage::FileSystemURL> file_urls,
                 const CloudProvider cloud_provider,
-                gfx::NativeWindow modal_parent,
                 std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
   ~CloudOpenTask() override;
@@ -231,14 +230,13 @@ class CloudOpenTask : public BrowserListObserver,
       std::unique_ptr<std::vector<std::string>> mime_types);
   void RecordUploadLatencyUMA();
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::vector<storage::FileSystemURL> file_urls_;
   CloudProvider cloud_provider_;
-  gfx::NativeWindow modal_parent_;
   std::unique_ptr<CloudOpenMetrics> cloud_open_metrics_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   size_t pending_uploads_ = 0;
-  raw_ptr<CloudUploadDialog, ExperimentalAsh> pending_dialog_ = nullptr;
+  raw_ptr<CloudUploadDialog> pending_dialog_ = nullptr;
   base::ElapsedTimer upload_timer_;
   int64_t upload_total_size_ = 0;
   bool has_upload_errors_ = false;

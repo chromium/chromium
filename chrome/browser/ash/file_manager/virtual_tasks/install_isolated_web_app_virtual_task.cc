@@ -25,7 +25,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
-#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace file_manager::file_tasks {
@@ -57,8 +56,7 @@ GURL InstallIsolatedWebAppVirtualTask::icon_url() const {
 bool InstallIsolatedWebAppVirtualTask::Execute(
     Profile* profile,
     const TaskDescriptor& task,
-    const std::vector<storage::FileSystemURL>& file_urls,
-    gfx::NativeWindow modal_parent) const {
+    const std::vector<storage::FileSystemURL>& file_urls) const {
   if (file_urls.empty()) {
     return false;
   }
@@ -74,7 +72,7 @@ bool InstallIsolatedWebAppVirtualTask::Execute(
       // extensions were selected. `AsUTF8Unsafe()` is safe on ChromeOS.
       DCHECK(apps_util::ExtensionMatched(path.BaseName().AsUTF8Unsafe(),
                                          matcher_file_extensions_[0]));
-      web_app_provider->ui_manager().LaunchIsolatedWebAppInstaller(
+      web_app_provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(
           file_url.path());
     }
     return true;

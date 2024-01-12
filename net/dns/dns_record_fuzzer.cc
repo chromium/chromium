@@ -18,8 +18,8 @@
 
 void InitLogging() {
   // For debugging, it may be helpful to enable verbose logging by setting the
-  // minimum log level to (-LOG_FATAL).
-  logging::SetMinLogLevel(logging::LOG_FATAL);
+  // minimum log level to (-LOGGING_FATAL).
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
 
   logging::LoggingSettings settings;
   settings.logging_dest =

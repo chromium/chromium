@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/sharing_device_registration.h"
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/base64url.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/vapid_key_manager.h"

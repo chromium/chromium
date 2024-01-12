@@ -16,9 +16,11 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -49,7 +52,7 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
-#import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
+#import "ios/chrome/browser/ui/bookmarks/home/synced_bookmarks_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -121,6 +124,11 @@ bool IsABookmarkNodeSectionForIdentifier(
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
   // List of nodes selected by the user when being in the edit mode.
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
+}
+
++ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
+  registry->RegisterBooleanPref(
+      prefs::kIosBookmarkUploadSyncLeftBehindCompleted, false);
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -443,6 +451,11 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)triggerBatchUpload {
   self.syncService->TriggerLocalDataMigration(
       syncer::ModelTypeSet({syncer::BOOKMARKS}));
+
+  ChromeBrowserState* browserState = [self originalBrowserState];
+  PrefService* prefService = browserState->GetPrefs();
+  prefService->SetBoolean(prefs::kIosBookmarkUploadSyncLeftBehindCompleted,
+                          true);
 }
 
 - (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
@@ -737,7 +750,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Show batch upload section only if kEnableBatchUploadFromBookmarksManager
   // flag is enabled.
   if (!base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
-    return false;
+    return NO;
   }
   // Do not show if profile section is empty.
   BOOL showProfileSection =
@@ -746,11 +759,39 @@ bool IsABookmarkNodeSectionForIdentifier(
     return NO;
   }
   // Do not show if sync is disabled or is paused.
+  // This implicitly covers the case when Bookmarks are disabled by
+  // SyncTypesListDisabled.
   if (!self.syncService || self.syncService->GetAccountInfo().IsEmpty() ||
       !self.syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kBookmarks) ||
       self.syncService->GetTransportState() ==
           syncer::SyncService::TransportState::PAUSED) {
+    return NO;
+  }
+  // Do not show if last syncing account is different from the current one.
+  // Note that the "last syncing" account pref is cleared during the migration
+  // of syncing users to the signed-in state, but these users should also be
+  // covered here, so check the "migrated syncing user" pref too.
+  // This implicitly covers the case when SyncDisabled policy is enabled, as
+  // kGoogleServicesLastSyncingGaiaId will be empty.
+  ChromeBrowserState* browserState = [self originalBrowserState];
+  const std::string lastSyncingGaiaId = browserState->GetPrefs()->GetString(
+      prefs::kGoogleServicesLastSyncingGaiaId);
+  const std::string migratedGaiaId = browserState->GetPrefs()->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  if (self.syncService->GetAccountInfo().gaia != lastSyncingGaiaId &&
+      self.syncService->GetAccountInfo().gaia != migratedGaiaId) {
+    return NO;
+  }
+  // Do not show if the user is in an error state that makes data upload
+  // impossible.
+  if (self.syncService->GetUserActionableError() !=
+      syncer::SyncService::UserActionableError::kNone) {
+    return NO;
+  }
+  // Do not show if the user has already uploaded the left-behind bookmarks.
+  if (browserState->GetPrefs()->GetBoolean(
+          prefs::kIosBookmarkUploadSyncLeftBehindCompleted)) {
     return NO;
   }
   return YES;

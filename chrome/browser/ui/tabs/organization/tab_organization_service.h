@@ -103,6 +103,10 @@ class TabOrganizationService
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // Returns true if the profile that owns this service should be able to create
+  // requests to the TabOrganizationRequest object, otherwise returns false.
+  bool CanStartRequest() const;
+
  private:
   // KeyedService:
   void Shutdown() override;

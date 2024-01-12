@@ -71,6 +71,11 @@ const ProxyChain kHttpsProxyChain{kHttpsProxyServer};
 const ProxyChain kHttpsNestedProxyChain{
     {kHttpsProxyServer, kHttpsNestedProxyServer}};
 
+constexpr char kTestHeaderName[] = "Foo";
+// Note: `kTestSpdyHeaderName` should be a lowercase version of
+// `kTestHeaderName`.
+constexpr char kTestSpdyHeaderName[] = "foo";
+
 }  // namespace
 
 class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
@@ -288,6 +293,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
   // have been created.
   void InitProxyDelegate() {
     proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+    proxy_delegate_->set_extra_header_name(kTestHeaderName);
     InitCommonConnectJobParams();
   }
 
@@ -421,7 +427,7 @@ TEST_P(HttpProxyConnectJobTest, NoTunnel) {
         CreateConnectJobForHttpRequest(&test_delegate);
     test_delegate.StartJobExpectingResult(connect_job.get(), OK,
                                           io_mode == SYNCHRONOUS);
-    EXPECT_FALSE(proxy_delegate_->on_before_tunnel_request_called());
+    EXPECT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 0u);
 
     // Proxies should not set any DNS aliases.
     EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
@@ -615,7 +621,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
       "Host: www.endpoint.test:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
       "%s: %s\r\n\r\n",
-      TestProxyDelegate::kTestHeaderName, proxy_server_uri.c_str());
+      kTestHeaderName, proxy_server_uri.c_str());
   MockWrite writes[] = {
       MockWrite(ASYNC, 0, http1_request.c_str()),
   };
@@ -631,7 +637,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
   };
 
   const char* const kExtraRequestHeaders[] = {
-      TestProxyDelegate::kTestSpdyHeaderName,
+      kTestSpdyHeaderName,
       proxy_server_uri.c_str(),
   };
   const char* const kExtraResponseHeaders[] = {
@@ -686,13 +692,13 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
       "Host: last-hop-https-proxy.example.test:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
       "%s: %s\r\n\r\n",
-      TestProxyDelegate::kTestHeaderName, first_hop_proxy_server_uri.c_str());
+      kTestHeaderName, first_hop_proxy_server_uri.c_str());
   std::string second_hop_http1_request = base::StringPrintf(
       "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
       "Host: www.endpoint.test:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
       "%s: %s\r\n\r\n",
-      TestProxyDelegate::kTestHeaderName, second_hop_proxy_server_uri.c_str());
+      kTestHeaderName, second_hop_proxy_server_uri.c_str());
 
   const char kResponseHeaderName[] = "bar";
   std::string first_hop_http1_response = base::StringPrintf(
@@ -716,11 +722,11 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
   };
 
   const char* const kFirstHopExtraRequestHeaders[] = {
-      TestProxyDelegate::kTestSpdyHeaderName,
+      kTestSpdyHeaderName,
       first_hop_proxy_server_uri.c_str(),
   };
   const char* const kSecondHopExtraRequestHeaders[] = {
-      TestProxyDelegate::kTestSpdyHeaderName,
+      kTestSpdyHeaderName,
       second_hop_proxy_server_uri.c_str(),
   };
   const char* const kFirstHopExtraResponseHeaders[] = {

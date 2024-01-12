@@ -159,10 +159,14 @@ bool BookmarkPermanentNode::IsVisible() const {
 // static
 std::unique_ptr<BookmarkPermanentNode> BookmarkPermanentNode::CreateBookmarkBar(
     int64_t id,
-    bool visible_when_empty) {
+    bool visible_when_empty,
+    bool is_account_bookmark_folder) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, BOOKMARK_BAR, base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+      id, BOOKMARK_BAR,
+      is_account_bookmark_folder
+          ? base::Uuid::GenerateRandomV4()
+          : base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME),
       visible_when_empty));
 }
@@ -170,10 +174,14 @@ std::unique_ptr<BookmarkPermanentNode> BookmarkPermanentNode::CreateBookmarkBar(
 // static
 std::unique_ptr<BookmarkPermanentNode>
 BookmarkPermanentNode::CreateOtherBookmarks(int64_t id,
-                                            bool visible_when_empty) {
+                                            bool visible_when_empty,
+                                            bool is_account_bookmark_folder) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, OTHER_NODE, base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+      id, OTHER_NODE,
+      is_account_bookmark_folder
+          ? base::Uuid::GenerateRandomV4()
+          : base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME),
       visible_when_empty));
 }
@@ -181,10 +189,14 @@ BookmarkPermanentNode::CreateOtherBookmarks(int64_t id,
 // static
 std::unique_ptr<BookmarkPermanentNode>
 BookmarkPermanentNode::CreateMobileBookmarks(int64_t id,
-                                             bool visible_when_empty) {
+                                             bool visible_when_empty,
+                                             bool is_account_bookmark_folder) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, MOBILE, base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+      id, MOBILE,
+      is_account_bookmark_folder
+          ? base::Uuid::GenerateRandomV4()
+          : base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME),
       visible_when_empty));
 }

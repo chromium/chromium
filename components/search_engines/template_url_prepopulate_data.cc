@@ -8,6 +8,7 @@
 #include <random>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -1645,20 +1646,30 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
     }
   }
 
-  uint64_t profile_seed = prefs->GetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
-  int seed_version_number = prefs->GetInteger(
-      prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone);
-  int current_version_number = version_info::GetMajorVersionNumberAsInt();
-  // Ensure that the generated seed is not 0 to avoid accidental re-seeding and
-  // re-shuffle on every chrome update.
-  while (profile_seed == 0 || current_version_number != seed_version_number) {
-    profile_seed = base::RandUint64();
-    prefs->SetInt64(prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed,
-                    profile_seed);
-    prefs->SetInteger(prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone,
-                      current_version_number);
-    seed_version_number = current_version_number;
+  uint64_t profile_seed;
+  if (prefs) {
+    profile_seed = prefs->GetInt64(
+        prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
+    int seed_version_number = prefs->GetInteger(
+        prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone);
+    int current_version_number = version_info::GetMajorVersionNumberAsInt();
+    // Ensure that the generated seed is not 0 to avoid accidental re-seeding
+    // and re-shuffle on every chrome update.
+    while (profile_seed == 0 || current_version_number != seed_version_number) {
+      profile_seed = base::RandUint64();
+      prefs->SetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed,
+          profile_seed);
+      prefs->SetInteger(
+          prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone,
+          current_version_number);
+      seed_version_number = current_version_number;
+    }
+  } else {
+    // TODO(crbug.com/1499181): Avoid passing null prefs and unbranch the code.
+    CHECK_IS_TEST();
+    // Choosing a fixed magic number to ensure a stable shuffle in tests too.
+    profile_seed = 42;
   }
 
   // Randomize all vectors using the generated seed.
@@ -1815,16 +1826,15 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService* prefs,
 #if BUILDFLAG(IS_ANDROID)
 
 std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
-    const std::string& locale) {
-  int country_id = country_codes::CountryStringToCountryID(locale);
+    const std::string& country_code,
+    PrefService& prefs) {
+  int country_id = country_codes::CountryStringToCountryID(country_code);
   if (country_id == country_codes::kCountryIDUnknown) {
-    LOG(ERROR) << "Unknown country code specified: " << locale;
+    LOG(ERROR) << "Unknown country code specified: " << country_code;
     return std::vector<std::unique_ptr<TemplateURLData>>();
   }
 
-  // TODO(b/303632061): Pass the correct PrefService to this method to fetch the
-  // search engines for Android.
-  return GetPrepopulatedTemplateURLData(country_id, nullptr);
+  return GetPrepopulatedTemplateURLData(country_id, &prefs);
 }
 
 #endif

@@ -232,8 +232,8 @@ int DoSetup(UpdaterScope scope) {
   if (!install_dir) {
     return kErrorFailedToGetInstallDir;
   }
-  if (!RemoveQuarantineAttributes(*install_dir)) {
-    VLOG(1) << "RemoveQuarantineAttributes failed. Gatekeeper may prompt.";
+  if (!PrepareToRunBundle(*install_dir)) {
+    VLOG(1) << "PrepareToRunBundle failed. Gatekeeper may prompt.";
   }
 
   // If there is no Current symlink, create one now.
@@ -274,8 +274,9 @@ int DoSetup(UpdaterScope scope) {
 
 int Setup(UpdaterScope scope) {
   int error = DoSetup(scope);
-  if (error)
+  if (error) {
     CleanAfterInstallFailure(scope);
+  }
   return error;
 }
 
@@ -306,8 +307,9 @@ int PromoteCandidate(UpdaterScope scope) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
 
-  if (!InstallKeystone(scope))
+  if (!InstallKeystone(scope)) {
     return kErrorFailedToInstallLegacyUpdater;
+  }
 
   return kErrorOk;
 }

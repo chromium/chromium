@@ -5,6 +5,7 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
 
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
@@ -530,6 +531,22 @@ struct Gemm {
   bool b_transpose = false;
 };
 
+// Represents an operation which performs a hard sigmoid function on every
+// element in InputTensor, placing the result into the corresponding
+// element of OutputTensor:
+// Output = max(0, min(alpha * input + beta, 1))
+struct HardSigmoid {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // A float scalar multiplier. The default value is 0.2.
+  float alpha = 0.2;
+  // A float scalar addition. The default value is 0.5.
+  float beta = 0.5;
+};
+
 // Represents an operation of normalizing the input across the feature
 // dimensions for each individual sample in a batch, where the feature
 // dimensions are the input dimensions indexed by `axes`.
@@ -656,6 +673,15 @@ struct Softplus {
   float steepness = 1.0;
 };
 
+// Corresponds to `MLOperand softsign(MLOperand x)` that computes the softsign
+// function of the input tensor following the expression x / (1 + |x|).
+struct Softsign {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
 // Represents a split operation that splits an input tensor into multiple
 // output tensors. The shape of the outputs and the specified axis determine
 // how the split will be performed. Since axis specifies which input dimension
@@ -753,12 +779,14 @@ struct Where {
 union Activation {
   Clamp clamp;
   Elu elu;
+  HardSigmoid hard_sigmoid;
   LeakyRelu leaky_relu;
   Linear linear;
   Relu relu;
   Sigmoid sigmoid;
   Softmax softmax;
   Softplus softplus;
+  Softsign softsign;
   Tanh tanh;
 };
 
@@ -776,6 +804,7 @@ union Operation {
   Expand expand;
   Gather gather;
   Gemm gemm;
+  HardSigmoid hard_sigmoid;
   LayerNormalization layer_normalization;
   InstanceNormalization instance_normalization;
   LeakyRelu leaky_relu;
@@ -792,6 +821,7 @@ union Operation {
   Slice slice;
   Softmax softmax;
   Softplus softplus;
+  Softsign softsign;
   Split split;
   Tanh tanh;
   Transpose transpose;
@@ -815,12 +845,11 @@ struct GraphInfo {
   map<uint64, mojo_base.mojom.BigBuffer> constant_id_to_buffer_map;
 };
 
-enum ComputeResult {
-  kOk,
-  // The input for inference is invalid.
-  kInvalidInputs,
-  // Something has gone wrong during execution of the graph.
-  kUnknownError,
+// Represents the return value of `WebNNGraph::Compute()`. Let it be
+// `named_outputs` if the computation was successful and `error` otherwise.
+union ComputeResult {
+  map<string, mojo_base.mojom.BigBuffer> named_outputs;
+  Error error;
 };
 
 // WebNNGraph runs in the GPU process and is called by the renderer process to
@@ -836,7 +865,6 @@ interface WebNNGraph {
   // TODO(crbug.com/1488162): Remove [Sync] the standard groups decides that
   // the WebNN sync APIs are not required.
   [Sync]
-  Compute(map<string, mojo_base.mojom.BigBuffer>  named_inputs)
-      => (ComputeResult result,
-          map<string, mojo_base.mojom.BigBuffer>? named_outputs);
+  Compute(map<string, mojo_base.mojom.BigBuffer> named_inputs)
+      => (ComputeResult result);
 };

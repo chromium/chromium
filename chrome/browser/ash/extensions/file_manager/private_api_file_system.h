@@ -326,7 +326,7 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   std::vector<storage::FileSystemURL> source_urls_;
   storage::FileSystemURL destination_url_;

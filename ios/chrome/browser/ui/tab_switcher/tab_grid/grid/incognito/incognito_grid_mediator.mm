@@ -135,24 +135,37 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
 }
 
 - (void)configureToolbarsButtons {
+  if (!_selected) {
+    return;
+  }
   // Start to configure the delegate, so configured buttons will depend on the
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
   BOOL authenticationRequired = self.reauthSceneAgent.authenticationRequired;
   if (_incognitoDisabled || authenticationRequired) {
-    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
-                                                      disabledConfiguration]];
+    [self.toolbarsMutator
+        setToolbarConfiguration:
+            [TabGridToolbarsConfiguration
+                disabledConfigurationForPage:TabGridPageIncognitoTabs]];
     return;
   }
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
-  toolbarsConfiguration.doneButton = !self.webStateList->empty();
-  toolbarsConfiguration.newTabButton = YES;
-  toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
+      [[TabGridToolbarsConfiguration alloc]
+          initWithPage:TabGridPageIncognitoTabs];
+  toolbarsConfiguration.mode = self.currentMode;
+
+  if (self.currentMode == TabGridModeSelection) {
+    [self configureButtonsInSelectionMode:toolbarsConfiguration];
+  } else {
+    toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
+    toolbarsConfiguration.doneButton = !self.webStateList->empty();
+    toolbarsConfiguration.newTabButton = YES;
+    toolbarsConfiguration.searchButton = YES;
+    toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
+  }
+
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
@@ -165,11 +178,8 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
       _incognitoDisabled = isDisabled;
       [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
     }
-    if (isDisabled) {
-      // Close all incognito tabs for supervised users. If the user was on an
-      // incognito tab, the disabled tab grid will be displayed.
-      [self closeAllItems];
-    }
+
+    [self configureToolbarsButtons];
   }
 }
 

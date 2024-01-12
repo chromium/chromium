@@ -12,6 +12,10 @@ HTMLBDIElement::HTMLBDIElement(Document& document)
   // https://html.spec.whatwg.org/C/#the-bdi-element
   SetSelfOrAncestorHasDirAutoAttribute();
   GetDocument().SetHasDirAttribute();
+  if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
+    CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+    SetDirAutoInheritsFromParent();
+  }
 }
 
 }  // namespace blink

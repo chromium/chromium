@@ -29,15 +29,19 @@ export class Magnifier {
   private isInitializing_ = true;
   /** Last time mouse has moved (from last onMouseMovedOrDragged). */
   private lastMouseMovedTime_: Date|undefined;
+  private lastFocusSelectionOrCaretMove_: Date|undefined;
   private focusHandler_: EventHandler;
   private activeDescendantHandler_: EventHandler;
   private selectionHandler_: EventHandler;
   private onCaretBoundsChangedHandler: EventHandler;
   private onMagnifierBoundsChangedHandler_:
       ChromeEventHandler<[bounds: ScreenRect]>;
+  private onSelectToSpeakFocusChangedHandler_:
+      ChromeEventHandler<[bounds: ScreenRect]>;
   private updateFromPrefsHandler_: ChromeEventHandler<[prefs: PrefObject[]]>;
   private onMouseMovedHandler_: EventHandler;
   private onMouseDraggedHandler_: EventHandler;
+  private lastSelectToSpeakBounds_: ScreenRect|undefined;
   private onLoadDesktopCallbackForTest_: (() => void)|null;
 
   constructor(type: Magnifier.Type) {
@@ -61,6 +65,10 @@ export class Magnifier {
         chrome.accessibilityPrivate.onMagnifierBoundsChanged,
         bounds => this.onMagnifierBoundsChanged_(bounds));
 
+    this.onSelectToSpeakFocusChangedHandler_ = new ChromeEventHandler(
+        chrome.accessibilityPrivate.onSelectToSpeakFocusChanged,
+        bounds => this.onSelectToSpeakFocusChanged_(bounds));
+
     this.updateFromPrefsHandler_ = new ChromeEventHandler(
         chrome.settingsPrivate.onPrefsChanged,
         prefs => this.updateFromPrefs_(prefs));
@@ -78,16 +86,20 @@ export class Magnifier {
     this.init_();
   }
 
-  /** Destructor to remove listener. */
+  /** Destructor to remove listeners. */
   onMagnifierDisabled(): void {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
     this.selectionHandler_.stop();
     this.onCaretBoundsChangedHandler.stop();
     this.onMagnifierBoundsChangedHandler_.stop();
+    this.onSelectToSpeakFocusChangedHandler_.stop();
     this.updateFromPrefsHandler_.stop();
     this.onMouseMovedHandler_.stop();
     this.onMouseDraggedHandler_.stop();
+    this.lastMouseMovedTime_ = undefined;
+    this.lastSelectToSpeakBounds_ = undefined;
+    this.lastFocusSelectionOrCaretMove_ = undefined;
   }
 
   /** Initializes Magnifier. */
@@ -115,6 +127,7 @@ export class Magnifier {
     });
 
     this.onMagnifierBoundsChangedHandler_.start();
+    this.onSelectToSpeakFocusChangedHandler_.start();
 
     chrome.accessibilityPrivate.enableMouseEvents(true);
 
@@ -138,6 +151,33 @@ export class Magnifier {
             color: '#22d',
           }],
           chrome.accessibilityPrivate.AssistiveTechnologyType.MAGNIFIER);
+    }
+  }
+
+  private onSelectToSpeakFocusChanged_(bounds: ScreenRect): void {
+    // Don't follow select to speak if focus following is off.
+    if (!this.shouldFollowFocus()) {
+      return;
+    }
+
+    // Don't follow select to speak focus if the mouse, keyboard focus or caret
+    // has moved too recently.
+    // TODO(b/259363112): Add a test for this.
+    const now = new Date().getTime();
+    if ((this.lastMouseMovedTime_ !== undefined &&
+         now - this.lastMouseMovedTime_.getTime() <
+             Magnifier.IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS) ||
+        (this.lastFocusSelectionOrCaretMove_ !== undefined &&
+         now - this.lastFocusSelectionOrCaretMove_.getTime() <
+             Magnifier.IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS)) {
+      return;
+    }
+
+    // Select to Speak refreshes the UI occasionally. We can
+    // ignore repeated updates.
+    if (bounds !== this.lastSelectToSpeakBounds_) {
+      this.lastSelectToSpeakBounds_ = bounds;
+      chrome.accessibilityPrivate.moveMagnifierToRect(bounds);
     }
   }
 
@@ -207,6 +247,7 @@ export class Magnifier {
       return;
     }
 
+    this.lastFocusSelectionOrCaretMove_ = new Date();
     chrome.accessibilityPrivate.moveMagnifierToRect(node.location);
   }
 
@@ -254,6 +295,7 @@ export class Magnifier {
       return;
     }
 
+    this.lastFocusSelectionOrCaretMove_ = new Date();
     const caretBoundsCenter = RectUtil.center(target.caretBounds);
     chrome.accessibilityPrivate.magnifierCenterOnPoint(caretBoundsCenter);
   }
@@ -301,4 +343,10 @@ export namespace Magnifier {
    * updates, to prevent the magnified region from jumping.
    */
   export const IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS = 250;
+
+  /**
+   * Duration of time directly after a mouse move or drag to ignore Select
+   * to Speak focus updates, to prevent the magnified region from jumping.
+   */
+  export const IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS = 1500;
 }

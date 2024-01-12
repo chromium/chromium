@@ -33,7 +33,7 @@ class ScopedTestWindow {
  private:
   base::UnguessableToken instance_id_;
   std::unique_ptr<aura::Window> window_;
-  raw_ptr<borealis::BorealisWindowManager, ExperimentalAsh> manager_;
+  raw_ptr<borealis::BorealisWindowManager> manager_;
 };
 
 // Creates a window for use in testing.

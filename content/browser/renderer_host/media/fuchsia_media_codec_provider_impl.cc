@@ -9,18 +9,19 @@
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
 
-absl::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
+std::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
   switch (codec) {
     case media::VideoCodec::kH264:
       return "video/h264";
@@ -38,7 +39,7 @@ absl::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
     case media::VideoCodec::kMPEG4:
     case media::VideoCodec::kTheora:
     case media::VideoCodec::kDolbyVision:
-      return absl::nullopt;
+      return std::nullopt;
 
     case media::VideoCodec::kUnknown:
       break;

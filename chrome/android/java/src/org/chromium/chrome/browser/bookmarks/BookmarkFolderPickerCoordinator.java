@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -63,9 +64,17 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                 new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.registerType(
-                BookmarkFolderPickerMediator.FOLDER_ROW,
-                this::buildFolderRow,
+                ViewType.IMPROVED_BOOKMARK_VISUAL,
+                BookmarkManagerCoordinator::buildVisualImprovedBookmarkRow,
                 ImprovedBookmarkRowViewBinder::bind);
+        mAdapter.registerType(
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                BookmarkManagerCoordinator::buildCompactImprovedBookmarkRow,
+                ImprovedBookmarkRowViewBinder::bind);
+        mAdapter.registerType(
+                ViewType.SECTION_HEADER,
+                BookmarkManagerCoordinator::buildSectionHeaderView,
+                BookmarkManagerViewBinder::bindSectionHeaderView);
 
         PropertyModel model = new PropertyModel(BookmarkFolderPickerProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(model, mView, BookmarkFolderPickerViewBinder::bind);

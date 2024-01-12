@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -92,6 +93,7 @@ class LocalFrameClientImplTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   LocalFrameMockWebFrameClient web_frame_client_;
   frame_test_helpers::WebViewHelper helper_;
 };

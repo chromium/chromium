@@ -427,7 +427,7 @@ class ProgressNotificationDelegate : public NearbyNotificationDelegate {
   }
 
  private:
-  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
+  raw_ptr<NearbyNotificationManager> manager_;
   bool awaiting_remote_acceptance_ = false;
 };
 
@@ -464,7 +464,7 @@ class ConnectionRequestNotificationDelegate
   }
 
  private:
-  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
+  raw_ptr<NearbyNotificationManager> manager_;
 };
 
 class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
@@ -655,8 +655,8 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
     }
   }
 
-  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<NearbyNotificationManager> manager_;
+  raw_ptr<Profile> profile_;
   ShareTarget share_target_;
   NearbyNotificationManager::ReceivedContentType type_;
   SkBitmap image_;
@@ -698,7 +698,7 @@ class NearbyDeviceTryingToShareNotificationDelegate
   }
 
  private:
-  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
+  raw_ptr<NearbyNotificationManager> manager_;
 };
 
 class NearbyVisibilityReminderNotificationDelegate
@@ -736,7 +736,7 @@ class NearbyVisibilityReminderNotificationDelegate
   }
 
  private:
-  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
+  raw_ptr<NearbyNotificationManager> manager_;
 };
 
 bool ShouldShowNearbyDeviceTryingToShareNotification(

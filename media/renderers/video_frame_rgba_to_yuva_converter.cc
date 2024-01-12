@@ -139,7 +139,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   // calls will fail on the service side with no ability to detect failure on
   // the client side. Check for support here and early out if it's unsupported.
   if (!provider->GrContext() &&
-      !provider->ContextCapabilities().supports_yuv_rgb_conversion) {
+      !provider->ContextCapabilities().supports_rgb_to_yuv_conversion) {
     DVLOG(1) << "RGB->YUV conversion not supported";
     return false;
   }
@@ -152,7 +152,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (provider->ContextCapabilities().supports_yuv_rgb_conversion &&
+  if (provider->ContextCapabilities().supports_rgb_to_yuv_conversion &&
       src_mailbox_holder.mailbox.IsSharedImage()) {
     ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
     if (dst_video_frame->shared_image_format_type() ==

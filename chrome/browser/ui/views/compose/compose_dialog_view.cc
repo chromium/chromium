@@ -8,6 +8,8 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -18,6 +20,9 @@ constexpr int kComposeMaxDialogHeightPx = 366;
 constexpr int kComposeMaxDialogWidthPx = 448;
 
 }  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kComposeWebviewElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ComposeDialogView, kComposeDialogId);
 
 ComposeDialogView::~ComposeDialogView() = default;
 
@@ -31,7 +36,11 @@ ComposeDialogView::ComposeDialogView(
                             anchor_bounds,
                             anchor_position),
       anchor_bounds_(anchor_bounds),
-      bubble_wrapper_(std::move(bubble_wrapper)) {}
+      bubble_wrapper_(std::move(bubble_wrapper)) {
+  SetProperty(views::kElementIdentifierKey, kComposeDialogId);
+  web_view()->SetProperty(views::kElementIdentifierKey,
+                          kComposeWebviewElementId);
+}
 
 void ComposeDialogView::OnBeforeBubbleWidgetInit(
     views::Widget::InitParams* params,

@@ -4,6 +4,8 @@
 
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_piece.h"
@@ -17,7 +19,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
@@ -66,7 +67,7 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   EXPECT_EQ(WaitAndGetResult().FindEntry(
                 net::SchemefulSite(GURL("https://example.test")),
                 net::FirstPartySetsContextConfig()),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidVersion) {
@@ -80,7 +81,7 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidVersion) {
   EXPECT_EQ(WaitAndGetResult().FindEntry(
                 net::SchemefulSite(GURL("https://example.test")),
                 net::FirstPartySetsContextConfig()),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
@@ -103,11 +104,11 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
                                      net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt)),
+                            example, net::SiteType::kPrimary, std::nullopt)),
           Pair(associated1,
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)),
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            absl::nullopt)),
+                                            std::nullopt)),
           Pair(associated2,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
 }
@@ -139,9 +140,9 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
                                      net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt)),
+                            example, net::SiteType::kPrimary, std::nullopt)),
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            absl::nullopt))));
+                                            std::nullopt))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
@@ -155,8 +156,8 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
   loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
       /*set_entries=*/base::flat_map<net::SchemefulSite,
                                      net::FirstPartySetEntry>({
-          {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
-                                        absl::nullopt)},
+          {bar,
+           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
           {associated2,
            net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
       }),
@@ -176,8 +177,8 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
   loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
       /*set_entries=*/base::flat_map<net::SchemefulSite,
                                      net::FirstPartySetEntry>({
-          {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
-                                        absl::nullopt)},
+          {bar,
+           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
           {associated1,
            net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
       }),
@@ -187,8 +188,8 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
   loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
       /*set_entries=*/base::flat_map<net::SchemefulSite,
                                      net::FirstPartySetEntry>({
-          {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary,
-                                        absl::nullopt)},
+          {bar,
+           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
           {associated2,
            net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
       }),

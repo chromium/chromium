@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsBlockedFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsLearnMoreFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionBridge.java",
   ]
   deps = [
@@ -159,7 +160,9 @@ android_resources("java_resources") {
     "java/res/xml/privacy_sandbox_preferences.xml",
     "java/res/xml/privacy_sandbox_preferences_restricted.xml",
     "java/res/xml/topics_learn_more_preference.xml",
+    "java/res/xml/topics_manage_preference.xml",
     "java/res/xml/topics_preference.xml",
+    "java/res/xml/topics_preference_v2.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

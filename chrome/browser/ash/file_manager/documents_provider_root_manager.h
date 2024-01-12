@@ -126,8 +126,8 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   // Notifies observers that an existing root is removed.
   void NotifyRootRemoved(const RootInfo& root_info);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<arc::ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<arc::ArcFileSystemOperationRunner> runner_;
   bool is_enabled_ = false;
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::vector<RootInfo> current_roots_;

@@ -200,14 +200,12 @@ class ShillToONCTranslator {
   // for debugging.
   std::string GetName();
 
-  raw_ptr<const base::Value::Dict, ExperimentalAsh> shill_dictionary_;
+  raw_ptr<const base::Value::Dict> shill_dictionary_;
   ::onc::ONCSource onc_source_;
-  raw_ptr<const chromeos::onc::OncValueSignature, ExperimentalAsh>
-      onc_signature_;
-  raw_ptr<const FieldTranslationEntry, ExperimentalAsh>
-      field_translation_table_;
+  raw_ptr<const chromeos::onc::OncValueSignature> onc_signature_;
+  raw_ptr<const FieldTranslationEntry> field_translation_table_;
   base::Value::Dict onc_object_;
-  raw_ptr<const NetworkState, ExperimentalAsh> network_state_;
+  raw_ptr<const NetworkState> network_state_;
 };
 
 base::Value::Dict ShillToONCTranslator::CreateTranslatedONCObject() {

@@ -44,8 +44,7 @@ class CpuAnswerResult : public SystemInfoAnswerResult,
  private:
   SystemInfoCardProvider::UpdateCpuResultCallback callback_;
   std::unique_ptr<base::RepeatingTimer> timer_;
-  raw_ptr<SystemInfoCardProvider, DanglingUntriaged | ExperimentalAsh>
-      provider_;
+  raw_ptr<SystemInfoCardProvider, DanglingUntriaged> provider_;
   base::WeakPtrFactory<CpuAnswerResult> weak_factory_{this};
 };
 

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "content/common/content_export.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
@@ -183,7 +183,7 @@ class CONTENT_EXPORT AuctionV8Helper
    private:
     raw_ptr<TimeLimit> script_timeout_;
 
-    absl::optional<v8::Isolate::SafeForTerminationScope>
+    std::optional<v8::Isolate::SafeForTerminationScope>
         safe_for_termination_scope_;
     bool resumed_ = false;
   };
@@ -281,7 +281,7 @@ class CONTENT_EXPORT AuctionV8Helper
       const std::string& src,
       const GURL& src_url,
       const DebugId* debug_id,
-      absl::optional<std::string>& error_out);
+      std::optional<std::string>& error_out);
 
   // Compiles the provided WASM module from bytecode. A context must be active
   // for this method to be invoked, and the object would be created for it (but
@@ -295,7 +295,7 @@ class CONTENT_EXPORT AuctionV8Helper
       const std::string& payload,
       const GURL& src_url,
       const DebugId* debug_id,
-      absl::optional<std::string>& error_out);
+      std::optional<std::string>& error_out);
 
   // Creates a fresh object describing the same WASM module as `in`, which must
   // not be empty. Can return an empty handle on an error.
@@ -311,7 +311,7 @@ class CONTENT_EXPORT AuctionV8Helper
   // If `script_timeout` has no value, kScriptTimeout will be used as the
   // default timeout.
   std::unique_ptr<TimeLimit> CreateTimeLimit(
-      absl::optional<base::TimeDelta> script_timeout);
+      std::optional<base::TimeDelta> script_timeout);
 
   // Returns the currently active time limit, if any.
   TimeLimit* GetTimeLimit();

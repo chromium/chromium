@@ -50,11 +50,8 @@ int SetAuthTokenFromBinaryToken(std::string* auth_token,
   if (next_token.empty())
     return ERR_UNEXPECTED;
 
-  std::string encode_output;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(next_token.data()),
-                        next_token.size()),
-      &encode_output);
+  std::string encode_output = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(next_token.data()), next_token.size()));
 
   *auth_token = std::string("NTLM ") + encode_output;
   return OK;

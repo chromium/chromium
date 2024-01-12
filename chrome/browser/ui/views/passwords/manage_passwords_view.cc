@@ -25,6 +25,7 @@
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/sync/base/features.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view_class_properties.h"
@@ -324,3 +325,6 @@ void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsView, kTopView);
+
+BEGIN_METADATA(ManagePasswordsView)
+END_METADATA

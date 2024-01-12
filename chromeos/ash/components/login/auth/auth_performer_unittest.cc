@@ -284,6 +284,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
                                            cryptohome::KeyLabel("pin"));
   cryptohome::AuthFactor pin_factor(
       std::move(pin_factor_ref), cryptohome::AuthFactorCommonMetadata(),
+      cryptohome::PinMetadata::CreateWithoutSalt(),
       cryptohome::PinStatus{.auth_locked = false});
   context_->SetSessionAuthFactors(SessionAuthFactors({std::move(pin_factor)}));
 

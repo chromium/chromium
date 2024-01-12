@@ -92,6 +92,13 @@ void ApnMigrator::NetworkListChanged() {
       continue;
     }
 
+    if (network->iccid().empty()) {
+      // If the network somehow has no iccid, don't attempt to migrate.
+      NET_LOG(DEBUG) << "Network has no iccid, not migrating: "
+                     << network->guid();
+      continue;
+    }
+
     // The network has already been updated in Shill with the correct logic
     // depending on if the flag is enabled or disabled. Finish early so we don't
     // redundantly update Shill.

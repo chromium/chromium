@@ -6,16 +6,15 @@ import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_
 import type {Switch} from 'chrome://resources/cros_components/switch/switch.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {isNonModifiable} from '../../common/js/entry_utils.js';
 import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {State} from '../../externs/ts/state.js';
-import {Store} from '../../externs/ts/store.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
-import {getStore} from '../../state/store.js';
+import {type State} from '../../state/state.js';
+import {getStore, type Store} from '../../state/store.js';
 import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
 import {ICON_TYPES} from './constants.js';
@@ -231,19 +230,19 @@ export class ToolbarController {
     this.updateRefreshCommand_();
 
     // Update the label "x files selected." on the header.
-    let text: string = '';
+    let text = '';
     if (selection.totalCount === 0) {
       text = '';
     } else if (selection.totalCount === 1) {
-      if (selection.directoryCount == 0) {
+      if (selection.directoryCount === 0) {
         text = str('ONE_FILE_SELECTED');
-      } else if (selection.fileCount == 0) {
+      } else if (selection.fileCount === 0) {
         text = str('ONE_DIRECTORY_SELECTED');
       }
     } else {
-      if (selection.directoryCount == 0) {
+      if (selection.directoryCount === 0) {
         text = strf('MANY_FILES_SELECTED', selection.fileCount);
-      } else if (selection.fileCount == 0) {
+      } else if (selection.fileCount === 0) {
         text = strf('MANY_DIRECTORIES_SELECTED', selection.directoryCount);
       } else {
         text = strf('MANY_ENTRIES_SELECTED', selection.totalCount);
@@ -269,7 +268,7 @@ export class ToolbarController {
     }
 
     // Update visibility of the restore-from-trash button.
-    this.restoreFromTrashButton_.hidden = (selection.totalCount == 0) ||
+    this.restoreFromTrashButton_.hidden = (selection.totalCount === 0) ||
         this.directoryModel_.getCurrentRootType() !== RootType.TRASH;
 
     this.togglePinnedCommand_.canExecuteChange(this.listContainer_.currentList);
@@ -284,7 +283,7 @@ export class ToolbarController {
       const bodyClassList =
           this.filesSelectedLabel_.ownerDocument.body.classList;
       bodyClassList.toggle('selecting', selection.totalCount > 0);
-      if (bodyClassList.contains('check-select') !=
+      if (bodyClassList.contains('check-select') !==
           (this.directoryModel_.getFileListSelection() as
            FileListSelectionModel)
               .getCheckSelectMode()) {

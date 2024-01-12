@@ -51,8 +51,7 @@ class AudioMediaDataSource : public assistant::mojom::AssistantMediaDataSource {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  raw_ptr<assistant_client::AudioOutput::Delegate, ExperimentalAsh> delegate_ =
-      nullptr;
+  raw_ptr<assistant_client::AudioOutput::Delegate> delegate_ = nullptr;
 
   std::vector<uint8_t> source_buffer_;
 

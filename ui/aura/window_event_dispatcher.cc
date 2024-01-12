@@ -899,7 +899,7 @@ DispatchDetails WindowEventDispatcher::PreDispatchLocatedEvent(
   int flags = event->flags();
   if (IsNonClientLocation(target, event->location()))
     flags |= ui::EF_IS_NON_CLIENT;
-  event->set_flags(flags);
+  event->SetFlags(flags);
 
   if (!is_dispatched_held_event(*event) &&
       (event->IsMouseEvent() || event->IsScrollEvent()) &&

@@ -243,10 +243,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
   std::unique_ptr<AffiliatedInvalidationServiceProvider>
       affiliated_invalidation_service_provider_;
-  raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh>
-      device_cloud_policy_manager_ = nullptr;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_ =
-      nullptr;
+  raw_ptr<DeviceCloudPolicyManagerAsh> device_cloud_policy_manager_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
@@ -285,7 +283,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // after login.
   // The provider is owned by the base class; this field is just a typed weak
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
-  raw_ptr<ProxyPolicyProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ProxyPolicyProvider, DanglingUntriaged>
       global_user_cloud_policy_provider_ = nullptr;
 
   std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>

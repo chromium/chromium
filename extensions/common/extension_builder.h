@@ -9,10 +9,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
+
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest.h"
@@ -120,12 +121,12 @@ class ExtensionBuilder {
   // Can be used in conjuction with chained base::Value::List and
   // base::Value::Dict to create complex values.
   template <typename T>
-  ExtensionBuilder& SetManifestKey(base::StringPiece key, T&& value) {
+  ExtensionBuilder& SetManifestKey(std::string_view key, T&& value) {
     SetManifestKeyImpl(key, base::Value(std::forward<T>(value)));
     return *this;
   }
   template <typename T>
-  ExtensionBuilder& SetManifestPath(base::StringPiece path, T&& value) {
+  ExtensionBuilder& SetManifestPath(std::string_view path, T&& value) {
     SetManifestPathImpl(path, base::Value(std::forward<T>(value)));
     return *this;
   }
@@ -137,7 +138,7 @@ class ExtensionBuilder {
   // for instance:
   // builder.AddJSON(R"("content_scripts": [...], "action": {})");
   // Keys specified in `json` take precedence over previously-set values.
-  ExtensionBuilder& AddJSON(base::StringPiece json);
+  ExtensionBuilder& AddJSON(std::string_view json);
 
   //////////////////////////////////////////////////////////////////////////////
   // Utility methods for use with custom manifest construction.
@@ -170,8 +171,8 @@ class ExtensionBuilder {
  private:
   struct ManifestData;
 
-  void SetManifestKeyImpl(base::StringPiece key, base::Value value);
-  void SetManifestPathImpl(base::StringPiece path, base::Value value);
+  void SetManifestKeyImpl(std::string_view key, base::Value value);
+  void SetManifestPathImpl(std::string_view path, base::Value value);
 
   // Information for constructing the manifest; either metadata about the
   // manifest which will be used to construct it, or the dictionary itself. Only

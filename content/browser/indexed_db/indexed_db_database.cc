@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_database.h"
 
 #include <math.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
@@ -160,27 +162,6 @@ PartitionedLockManager* IndexedDBDatabase::lock_manager() {
   return bucket_context_->lock_manager();
 }
 
-std::vector<PartitionedLockManager::PartitionedLockRequest>
-IndexedDBDatabase::BuildLockRequestsFromTransaction(
-    IndexedDBTransaction* transaction) const {
-  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
-  lock_requests.reserve(1 + transaction->scope().size());
-  lock_requests.emplace_back(
-      GetDatabaseLockId(name()),
-      transaction->mode() == blink::mojom::IDBTransactionMode::VersionChange
-          ? PartitionedLockManager::LockType::kExclusive
-          : PartitionedLockManager::LockType::kShared);
-  PartitionedLockManager::LockType lock_type =
-      transaction->mode() == blink::mojom::IDBTransactionMode::ReadOnly
-          ? PartitionedLockManager::LockType::kShared
-          : PartitionedLockManager::LockType::kExclusive;
-  for (int64_t object_store : transaction->scope()) {
-    lock_requests.emplace_back(GetObjectStoreLockId(id(), object_store),
-                               lock_type);
-  }
-  return lock_requests;
-}
-
 void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
     IndexedDBTransaction* current_transaction,
     std::vector<PartitionedLockManager::PartitionedLockRequest>&
@@ -193,22 +174,22 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
   }
 
   for (IndexedDBConnection* connection : connections_) {
-    bool should_require_connection_to_be_active = false;
-    for (const auto& [existing_transaction_id, existing_transaction] :
-         connection->transactions()) {
-      if (connection->id() == current_transaction->connection()->id() &&
-          existing_transaction_id == current_transaction->id()) {
-        // This is the current transaction itself, we skip the check.
-        continue;
-      }
-      for (PartitionedLockId blocked_lock_id : blocked_lock_ids) {
-        if (existing_transaction->lock_ids().contains(blocked_lock_id)) {
-          should_require_connection_to_be_active = true;
-          break;
-        }
-      }
-    }
-    if (should_require_connection_to_be_active) {
+    // If any of the connection's transactions is holding one of the blocked
+    // lock IDs, require that client to be active.
+    if (std::any_of(
+            connection->transactions().begin(),
+            connection->transactions().end(),
+            [&](const std::pair<const int64_t,
+                                std::unique_ptr<IndexedDBTransaction>>&
+                    existing_transaction) {
+              if (existing_transaction.second.get() == current_transaction) {
+                return false;
+              }
+              return !base::STLSetIntersection<std::vector<PartitionedLockId>>(
+                          blocked_lock_ids,
+                          existing_transaction.second->lock_ids())
+                          .empty();
+            })) {
       connection->DisallowInactiveClient(
           storage::mojom::DisallowInactiveClientReason::
               kTransactionIsBlockingOthers,
@@ -221,8 +202,11 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RegisterAndScheduleTransaction",
                "txn.id", transaction->id());
+  // Locks for version change transactions are covered by `ConnectionRequest`.
+  DCHECK_NE(transaction->mode(),
+            blink::mojom::IDBTransactionMode::VersionChange);
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-      BuildLockRequestsFromTransaction(transaction);
+      transaction->BuildLockRequests();
 
   RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
 
@@ -368,10 +352,8 @@ void IndexedDBDatabase::TransactionFinished(
 }
 
 void IndexedDBDatabase::ScheduleOpenConnection(
-    std::unique_ptr<IndexedDBPendingConnection> connection,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
-  connection_coordinator_.ScheduleOpenConnection(
-      std::move(connection), std::move(client_state_checker));
+    std::unique_ptr<IndexedDBPendingConnection> connection) {
+  connection_coordinator_.ScheduleOpenConnection(std::move(connection));
 }
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
@@ -1520,7 +1502,8 @@ Status IndexedDBDatabase::OpenInternal() {
 
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
+    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker) {
   auto connection = std::make_unique<IndexedDBConnection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,

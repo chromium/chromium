@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_CONTEXT_IMPL_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -24,7 +26,6 @@
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 
 class GURL;
@@ -114,7 +115,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                               DeleteResultCallback callback) override;
   void DeleteAllNotificationDataWithTag(
       const std::string& tag,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       const GURL& origin,
       DeleteAllResultCallback callback) override;
   void DeleteAllNotificationDataForBlockedOrigins(
@@ -294,7 +295,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void DoDeleteAllNotificationDataForOrigins(
       std::set<GURL> origins,
       const std::string& tag,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       DeleteAllResultCallback callback,
       bool initialized);
 
@@ -346,7 +347,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   NotificationIdGenerator notification_id_generator_;
 
   // Keeps track of the next trigger timestamp.
-  absl::optional<base::Time> next_trigger_;
+  std::optional<base::Time> next_trigger_;
 
   // Calls through to PlatformNotificationService methods.
   std::unique_ptr<PlatformNotificationServiceProxy> service_proxy_;

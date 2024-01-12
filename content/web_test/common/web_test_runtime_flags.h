@@ -30,7 +30,7 @@ class WebTestRuntimeFlags {
 
 #define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)             \
   bool name() const {                                       \
-    absl::optional<bool> result =                           \
+    std::optional<bool> result =                            \
         dict_.current_values().FindBoolByDottedPath(#name); \
     DCHECK(result);                                         \
     return *result;                                         \
@@ -39,7 +39,7 @@ class WebTestRuntimeFlags {
 
 #define DEFINE_INT_WEB_TEST_RUNTIME_FLAG(name)             \
   int name() const {                                       \
-    absl::optional<int> result =                           \
+    std::optional<int> result =                            \
         dict_.current_values().FindIntByDottedPath(#name); \
     DCHECK(result);                                        \
     return *result;                                        \

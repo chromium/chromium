@@ -83,14 +83,13 @@ class DrawQuadPerfTest : public testing::Test {
       gfx::PointF uv_top_left(0, 0);
       gfx::PointF uv_bottom_right(1, 1);
       SkColor4f background_color = SkColors::kRed;
-      float vertex_opacity[4] = {1.f, 1.f, 1.f, 1.f};
       bool y_flipped = false;
       bool nearest_neighbor = true;
 
       quad->SetNew(shared_state_, rect, rect, needs_blending, resource_id,
                    premultiplied_alpha, uv_top_left, uv_bottom_right,
-                   background_color, vertex_opacity, y_flipped,
-                   nearest_neighbor, /*secure_output_only=*/false,
+                   background_color, y_flipped, nearest_neighbor,
+                   /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);
       quads->push_back(quad);
     }

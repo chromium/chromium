@@ -99,7 +99,7 @@ BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out);
 
 // A scoper that sets the specified key to value for the lifetime of the
 // object, and clears it on destruction.
-class BASE_EXPORT ScopedCrashKeyString {
+class BASE_EXPORT [[nodiscard]] ScopedCrashKeyString {
  public:
   ScopedCrashKeyString(CrashKeyString* crash_key, base::StringPiece value);
   ScopedCrashKeyString(ScopedCrashKeyString&& other);

@@ -51,6 +51,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
   relevant_origin_ = main_frame_origin;
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
+  modal_shown_time_ = clock_->Now();
   if (!suppress_ui_for_testing_) {
     view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
                                                              &GetWebContents());
@@ -67,6 +68,8 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
   CHECK(plus_profile_.has_value());
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
+  RecordModalShownDuration(
+      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
     return;
@@ -88,6 +91,8 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
 void PlusAddressCreationControllerAndroid::OnCanceled() {
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
+  RecordModalShownDuration(
+      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
 }
 
 void PlusAddressCreationControllerAndroid::OnDialogDestroyed() {
@@ -107,7 +112,9 @@ PlusAddressCreationControllerAndroid::get_plus_profile_for_testing() {
 
 void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (!suppress_ui_for_testing_) {
+  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
+  // prior to service response, `view_` will be null.
+  if (view_) {
     view_->ShowReserveResult(maybe_plus_profile);
   }
   if (maybe_plus_profile.has_value()) {
@@ -117,12 +124,22 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
 
 void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (!suppress_ui_for_testing_) {
+  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
+  // prior to service response, `view_` will be null.
+  if (view_) {
     view_->ShowConfirmResult(maybe_plus_profile);
   }
   if (maybe_plus_profile.has_value()) {
     std::move(callback_).Run(maybe_plus_profile->plus_address);
   }
+}
+
+void PlusAddressCreationControllerAndroid::RecordModalShownDuration(
+    const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
+  CHECK(modal_shown_time_.has_value());
+  PlusAddressMetrics::RecordModalShownDuration(
+      status, clock_->Now() - modal_shown_time_.value());
+  modal_shown_time_.reset();
 }
 
 base::WeakPtr<PlusAddressCreationControllerAndroid>

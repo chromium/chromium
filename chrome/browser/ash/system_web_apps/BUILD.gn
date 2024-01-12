@@ -27,7 +27,6 @@ source_set("system_web_apps") {
     "//ash/webui/camera_app_ui",
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/eche_app_ui",
-    "//ash/webui/face_ml_app_ui",
     "//ash/webui/file_manager:file_manager_ui",
     "//ash/webui/firmware_update_ui",
     "//ash/webui/help_app_ui",

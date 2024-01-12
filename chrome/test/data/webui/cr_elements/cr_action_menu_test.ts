@@ -453,7 +453,7 @@ suite('CrActionMenu', function() {
           // Anchored at right-top by default.
           menu.showAt(dots);
           assertTrue(dialog.open);
-          let menuRect = menu.getBoundingClientRect();
+          let menuRect = dialog.getBoundingClientRect();
           assertEquals(
               Math.round(dotsRect.left + dotsRect.width),
               Math.round(menuRect.left + menuRect.width));
@@ -464,7 +464,7 @@ suite('CrActionMenu', function() {
 
           menu.addEventListener('cr-action-menu-repositioned', () => {
             assertTrue(dialog.open);
-            menuRect = menu.getBoundingClientRect();
+            menuRect = dialog.getBoundingClientRect();
             // Test that menu width got larger.
             assertTrue(menuRect.width > lastMenuWidth);
             // Test that menu upper-left moved further left.
@@ -481,6 +481,54 @@ suite('CrActionMenu', function() {
           items[0]!.textContent = 'this is a long string to make menu wide';
         });
   })();
+
+  test('accessibilityLabel', function() {
+    document.body.innerHTML = getTrustedStaticHtml`
+      <cr-action-menu accessibility-label="foo">
+        <button class="dropdown-item">Un</button>
+      </cr-action-menu>`;
+    menu = document.querySelector('cr-action-menu')!;
+
+    // Check initial state, populated from HTML markup.
+    assertEquals('foo', menu.accessibilityLabel);
+    assertEquals('foo', menu.$.wrapper.getAttribute('aria-label'));
+
+    // Check value provided with direct assignment.
+    const label: string = 'dummy label';
+    menu.accessibilityLabel = label;
+    assertEquals(label, menu.$.wrapper.ariaLabel);
+    assertEquals(label, menu.$.wrapper.getAttribute('aria-label'));
+
+    // Check setting to undefined.
+    menu.accessibilityLabel = undefined;
+    assertEquals(null, menu.$.wrapper.ariaLabel);
+    assertFalse(menu.$.wrapper.hasAttribute('aria-label'));
+  });
+
+  test('roleDescription', function() {
+    document.body.innerHTML = getTrustedStaticHtml`
+      <cr-action-menu role-description="foo">
+        <button class="dropdown-item">Un</button>
+      </cr-action-menu>`;
+    menu = document.querySelector('cr-action-menu')!;
+
+    // Check initial state, populated from HTML markup.
+    assertEquals('foo', menu.roleDescription);
+    assertEquals('foo', menu.$.dialog.ariaRoleDescription);
+    assertEquals('foo', menu.$.dialog.getAttribute('aria-roledescription'));
+
+    // Check value provided with direct assignment.
+    const description: string = 'dummy description';
+    menu.roleDescription = description;
+    assertEquals(description, menu.$.dialog.ariaRoleDescription);
+    assertEquals(
+        description, menu.$.dialog.getAttribute('aria-roledescription'));
+
+    // Check setting to undefined.
+    menu.roleDescription = undefined;
+    assertEquals(null, menu.$.dialog.ariaRoleDescription);
+    assertFalse(menu.$.dialog.hasAttribute('aria-roledescription'));
+  });
 
   suite('offscreen scroll positioning', function() {
     const bodyHeight = 10000;

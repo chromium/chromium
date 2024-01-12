@@ -54,25 +54,9 @@ class WaylandDataDeviceBase {
   // Resets the data offer.
   void ResetDataOffer();
 
-  // Reads selection data from the file descriptor |fd|.
-  PlatformClipboard::Data ReadFromFD(base::ScopedFD fd) const;
-
-  // Registers DeferredReadCallback as display sync callback listener, to
-  // ensure there is no pending operation to be performed by the compositor,
-  // otherwise read(..) could block awaiting data to be sent to pipe. It is
-  // reset once it's called.
-  void RegisterDeferredReadCallback();
-
-  void RegisterDeferredReadClosure(base::OnceClosure closure);
-
   void NotifySelectionOffer(WaylandDataOfferBase* offer) const;
 
  private:
-  // wl_callback_listener callbacks:
-  static void OnSyncDone(void* data, wl_callback* cb, uint32_t time);
-
-  void DoDeferredRead(wl_callback* cb, uint32_t time);
-
   SelectionOfferCallback selection_offer_callback_;
 
   // Used to call out to WaylandConnection once clipboard data has been
@@ -82,10 +66,6 @@ class WaylandDataDeviceBase {
   // Offer that holds the most-recent clipboard selection, or null if no
   // clipboard data is available.
   std::unique_ptr<WaylandDataOfferBase> data_offer_;
-
-  // Before blocking on read(), make sure server has written data on the pipe.
-  base::OnceClosure deferred_read_closure_;
-  wl::Object<wl_callback> sync_callback_;
 };
 
 }  // namespace ui

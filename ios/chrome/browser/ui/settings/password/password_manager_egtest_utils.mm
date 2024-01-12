@@ -7,6 +7,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -154,6 +155,14 @@ id<GREYMatcher> PasswordSettingsTableView() {
   return grey_accessibilityID(kPasswordsSettingsTableViewId);
 }
 
+id<GREYMatcher> PasswordDetailsTableViewMatcher() {
+  return grey_accessibilityID(kPasswordDetailsTableViewID);
+}
+
+id<GREYMatcher> PasswordDetailsShareButtonMatcher() {
+  return grey_accessibilityID(kPasswordShareButtonID);
+}
+
 GREYElementInteraction* GetInteractionForIssuesListItem(
     id<GREYMatcher> matcher,
     GREYDirection direction) {
@@ -216,9 +225,9 @@ void SaveMutedCompromisedPasswordFormToProfileStore(NSString* origin,
                                                     NSString* username,
                                                     NSString* password) {
   GREYAssert([PasswordSettingsAppInterface
-                 saveMutedCompromisedPasswordToProfilePassword:password
-                                                      username:username
-                                                        origin:origin],
+                 saveMutedCompromisedPasswordToProfileStore:password
+                                                   username:username
+                                                     origin:origin],
              kPasswordStoreErrorMessage);
 }
 

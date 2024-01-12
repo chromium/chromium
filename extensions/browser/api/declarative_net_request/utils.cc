@@ -317,9 +317,8 @@ re2::RE2::Options CreateRE2Options(bool is_case_sensitive,
 
   options.set_log_errors(false);
 
-  // Limit the maximum memory per regex to 2 Kb. This means given 1024 rules,
-  // the total usage would be 2 Mb.
-  options.set_max_mem(2 << 10);
+  // Limit the maximum memory per regex.
+  options.set_max_mem(kRegexMaxMemKb << 10);
 
   return options;
 }

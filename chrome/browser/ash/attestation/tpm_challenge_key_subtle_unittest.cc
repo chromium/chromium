@@ -246,9 +246,9 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   // A sign-in Profile is always created in SetUp().
-  raw_ptr<TestingProfile, ExperimentalAsh> signin_profile_ = nullptr;
+  raw_ptr<TestingProfile> signin_profile_ = nullptr;
   // The profile that will be passed to TpmChallengeKeySubtle - can be nullptr.
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
 };
 
 TpmChallengeKeySubtleTestBase::TpmChallengeKeySubtleTestBase(

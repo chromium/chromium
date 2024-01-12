@@ -96,6 +96,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -334,6 +335,14 @@ void SubmitInjectedPasswordForm(content::WebContents* web_contents,
   observer.SetPathToWaitFor(action_url.path());
   ASSERT_TRUE(content::ExecJs(frame, submit_form));
   ASSERT_TRUE(observer.Wait());
+}
+
+void SetUrlAsTrustworthy(const std::string& url) {
+  std::vector<std::string> rejected_patterns;
+  network::SecureOriginAllowlist::GetInstance().SetAuxiliaryAllowlist(
+      url, &rejected_patterns);
+  // Check that the url was not rejected.
+  EXPECT_THAT(rejected_patterns, testing::IsEmpty());
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -977,8 +986,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
   // the test to hang on Mac.
   autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
 
+  // The form should not be hosted on localhost to enable sending
+  // crowdsourcing votes.
+  const std::string kTestSignonRealm = "example.com";
+  // This fixture is needed to allow password filling on page load.
+  SetUrlAsTrustworthy(
+      embedded_test_server()->GetURL(kTestSignonRealm, "/").spec());
+
   // Visit a signup form.
-  NavigateToFile("/password/signup_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kTestSignonRealm,
+                                                "/password/signup_form.html")));
 
   // Enter a password and save it.
   PasswordsNavigationObserver first_observer(WebContents());
@@ -1000,7 +1018,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
   }
 
   // Now navigate to a login form that has similar HTML markup.
-  NavigateToFile("/password/password_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     kTestSignonRealm, "/password/password_form.html")));
 
   // Simulate a user click to force an autofill of the form's DOM value, not
   // just the suggested value.
@@ -1206,10 +1226,21 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get();
-  password_manager::PasswordForm signin_form;
-  signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.url = embedded_test_server()->base_url();
-  signin_form.action = embedded_test_server()->base_url();
+
+  // The form should not be hosted on localhost to enable using server
+  // predictions.
+  const std::string kTestSignonRealm =
+      embedded_test_server()->GetURL("example.com", "/").spec();
+  // This fixture is needed to allow filling on page load.
+  SetUrlAsTrustworthy(kTestSignonRealm);
+
+  PasswordForm signin_form;
+  signin_form.signon_realm = kTestSignonRealm;
+  const GURL kFormUrl = embedded_test_server()->GetURL(
+      "example.com", "/password/nonplaceholder_username.html");
+  signin_form.url = kFormUrl;
+  signin_form.action =
+      embedded_test_server()->GetURL("example.com", "/password/done.html");
   signin_form.username_value = u"example@example.com";
   signin_form.password_value = u"savedPass";
   password_store->AddLogin(signin_form);
@@ -1229,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       CreateFieldPrediction(autofill::FieldType::PASSWORD)};
 
   // Navigate to the page
-  NavigateToFile("/password/nonplaceholder_username.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
 
   // Use server predictions.
   password_manager::ContentPasswordManagerDriver* driver =
@@ -1266,10 +1297,21 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get();
-  password_manager::PasswordForm signin_form;
-  signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.url = embedded_test_server()->base_url();
-  signin_form.action = embedded_test_server()->base_url();
+
+  // The form should not be hosted on localhost to enable using server
+  // predictions.
+  const std::string kTestSignonRealm =
+      embedded_test_server()->GetURL("example.com", "/").spec();
+  // This is needed to allow filling on page load.
+  SetUrlAsTrustworthy(kTestSignonRealm);
+
+  PasswordForm signin_form;
+  signin_form.signon_realm = kTestSignonRealm;
+  const GURL kFormUrl = embedded_test_server()->GetURL(
+      "example.com", "/password/nonplaceholder_username.html");
+  signin_form.url = kFormUrl;
+  signin_form.action =
+      embedded_test_server()->GetURL("example.com", "/password/done.html");
   signin_form.username_value = u"example@example.com";
   signin_form.password_value = u"savedPass";
   password_store->AddLogin(signin_form);
@@ -1290,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       autofill::test::CreateFieldPrediction(autofill::FieldType::PASSWORD)};
 
   // Navigate to the page
-  NavigateToFile("/password/nonplaceholder_username.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kFormUrl));
 
   // Use server predictions.
   password_manager::ContentPasswordManagerDriver* driver =
@@ -3987,6 +4029,24 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(client);
   ASSERT_NO_FATAL_FAILURE(client->NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, FormWithoutTextInputs) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a page with a form without text inputs.
+  NavigateToFile("/password/no_text_inputs.html");
+
+  // Submit the form.
+  PasswordsNavigationObserver observer(WebContents());
+  std::string submit_pw_form =
+      "document.getElementById('input_submit_button').click();";
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit_pw_form));
+  ASSERT_TRUE(observer.Wait());
+
+  // Verify that no form was seen on the browser side.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormVisited.PerProfileType", 0);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

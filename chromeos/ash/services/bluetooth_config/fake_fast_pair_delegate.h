@@ -62,9 +62,8 @@ class FakeFastPairDelegate : public FastPairDelegate {
   base::flat_map<std::string, DeviceImageInfo> mac_address_to_images_;
   base::flat_map<std::string, std::string> mac_address_to_nickname_;
   std::vector<std::string> forgotten_device_addresses_;
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_ =
-      nullptr;
-  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_ = nullptr;
+  raw_ptr<AdapterStateController> adapter_state_controller_ = nullptr;
+  raw_ptr<DeviceNameManager> device_name_manager_ = nullptr;
   std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>
       fast_pairable_device_properties_;
 };

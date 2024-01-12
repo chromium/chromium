@@ -1,0 +1,172 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.pwd_check_wrapper;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.CollectionUtil;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
+import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelperFactoryImpl;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStoreType;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
+
+import java.util.OptionalInt;
+import java.util.concurrent.ExecutionException;
+
+/** Unit tests for {@link GmsCorePasswordCheckController}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class GmsCorePasswordCheckControllerTest {
+    private static final String TEST_EMAIL_ADDRESS = "test@example.com";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private SyncService mSyncService;
+    @Mock private PasswordStoreBridge mPasswordStoreBridge;
+    @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
+
+    private GmsCorePasswordCheckController mController;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        setupUserProfileWithMockPrefService();
+        configureMockSyncServiceToSyncPasswords();
+        configurePasswordManagerBackendSupport();
+        setFakePasswordCheckupClientHelper();
+        mController = new GmsCorePasswordCheckController(mSyncService, mPasswordStoreBridge);
+    }
+
+    private void configurePasswordManagerBackendSupport() {
+        mJniMocker.mock(
+                PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(true, mPrefService))
+                .thenReturn(true);
+
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+    }
+
+    private void configureMockSyncServiceToSyncPasswords() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
+        when(mSyncService.getAccountInfo())
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+    }
+
+    private void setFakePasswordCheckupClientHelper() {
+        FakePasswordCheckupClientHelperFactoryImpl passwordCheckupClientHelperFactory =
+                new FakePasswordCheckupClientHelperFactoryImpl();
+        mPasswordCheckupClientHelper =
+                (FakePasswordCheckupClientHelper) passwordCheckupClientHelperFactory.createHelper();
+        PasswordCheckupClientHelperFactory.setFactoryForTesting(passwordCheckupClientHelperFactory);
+    }
+
+    private void setupUserProfileWithMockPrefService() {
+        Profile.setLastUsedProfileForTesting(mProfile);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+    }
+
+    /**
+     * The flow: checkPasswords is called -> as a result of password check 0 breached credentials
+     * are obtained -> 10 passwords overall have been loaded.
+     */
+    @Test
+    public void passwordCheckResultIsCompleteNoBreachedCredentials()
+            throws ExecutionException, InterruptedException {
+        // Set fake to return 0 breached credentials.
+        mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
+        mController.onSavedPasswordsChanged(10);
+
+        PasswordCheckResult passwordCheckResult =
+                mController.checkPasswords(PasswordStoreType.PROFILE_STORE).get();
+
+        Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getBreachedCount());
+        Assert.assertEquals(OptionalInt.of(10), passwordCheckResult.getTotalPasswordsCount());
+        Assert.assertEquals(null, passwordCheckResult.getError());
+    }
+
+    /**
+     * The flow: passwords loading has finished and there are 0 passwords -> as a result of password
+     * check 0 breached credentials are obtained.
+     */
+    @Test
+    public void passwordCheckResultIsCompleteNoCredentials()
+            throws ExecutionException, InterruptedException {
+        // Set fake to return 0 breached credentials.
+        mController.onSavedPasswordsChanged(0);
+        mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
+
+        PasswordCheckResult passwordCheckResult =
+                mController.checkPasswords(PasswordStoreType.ACCOUNT_STORE).get();
+
+        Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getBreachedCount());
+        Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getTotalPasswordsCount());
+        Assert.assertEquals(null, passwordCheckResult.getError());
+    }
+
+    /**
+     * The flow: passwords loading has finished -> checkPasswords throws an error.
+     */
+    @Test
+    public void passwordCheckThrowsError() throws ExecutionException, InterruptedException {
+        final Exception error = new Exception("Simulate that password check throws an exception");
+        mPasswordCheckupClientHelper.setError(error);
+
+        PasswordCheckResult passwordCheckResult =
+                mController.checkPasswords(PasswordStoreType.PROFILE_STORE).get();
+
+        Assert.assertEquals(OptionalInt.empty(), passwordCheckResult.getBreachedCount());
+        Assert.assertEquals(OptionalInt.empty(), passwordCheckResult.getTotalPasswordsCount());
+        Assert.assertEquals(error, passwordCheckResult.getError());
+    }
+
+    @Test
+    public void passwordCheckControllerIsDestroyedProperly() {
+        mController.checkPasswords(PasswordStoreType.PROFILE_STORE);
+
+        mController.destroy();
+        verify(mPasswordStoreBridge).removeObserver(mController);
+    }
+}

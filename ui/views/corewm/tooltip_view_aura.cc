@@ -4,6 +4,8 @@
 
 #include "ui/views/corewm/tooltip_view_aura.h"
 
+#include <utility>
+
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -46,9 +48,9 @@ void TooltipViewAura::SetText(const std::u16string& text) {
 
   // Replace tabs with whitespace to avoid placeholder character rendering
   // where previously it did not. crbug.com/993100
-  std::u16string newText(text);
-  base::ReplaceChars(newText, u"\t", u"        ", &newText);
-  render_text_->SetText(newText);
+  std::u16string new_text(text);
+  base::ReplaceChars(new_text, u"\t", u"        ", &new_text);
+  render_text_->SetText(std::move(new_text));
   SchedulePaint();
 }
 

@@ -52,15 +52,15 @@ class EmbeddedWorkerInstanceTest : public EmbeddedWorkerInstanceTestHarness,
 
   struct EventLog {
     EventType type;
-    absl::optional<blink::EmbeddedWorkerStatus> status;
-    absl::optional<blink::mojom::ServiceWorkerStartStatus> start_status;
+    std::optional<blink::EmbeddedWorkerStatus> status;
+    std::optional<blink::mojom::ServiceWorkerStartStatus> start_status;
   };
 
   void RecordEvent(
       EventType type,
-      absl::optional<blink::EmbeddedWorkerStatus> status = absl::nullopt,
-      absl::optional<blink::mojom::ServiceWorkerStartStatus> start_status =
-          absl::nullopt) {
+      std::optional<blink::EmbeddedWorkerStatus> status = std::nullopt,
+      std::optional<blink::mojom::ServiceWorkerStartStatus> start_status =
+          std::nullopt) {
     EventLog log = {type, status, start_status};
     events_.push_back(log);
   }
@@ -74,7 +74,7 @@ class EmbeddedWorkerInstanceTest : public EmbeddedWorkerInstanceTestHarness,
                  bool has_hid_event_handlers,
                  bool has_usb_event_handlers) override {
     fetch_handler_type_ = fetch_handler_type;
-    RecordEvent(STARTED, absl::nullopt, status);
+    RecordEvent(STARTED, std::nullopt, status);
   }
   void OnStopped(blink::EmbeddedWorkerStatus old_status) override {
     RecordEvent(STOPPED, old_status);

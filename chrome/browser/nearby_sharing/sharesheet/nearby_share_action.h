@@ -46,7 +46,7 @@ class NearbyShareAction : public sharesheet::ShareAction {
  private:
   bool IsNearbyShareDisabledByPolicy();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   absl::optional<bool> nearby_share_disabled_by_policy_for_testing_ =
       absl::nullopt;
 };

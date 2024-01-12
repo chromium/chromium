@@ -51,8 +51,7 @@ class SigninHelper : public GaiaAuthConsumer {
     bool is_account_addition_ = false;
     // A non-owning pointer to AccountAppsAvailability which is a KeyedService
     // and should outlive this class.
-    raw_ptr<AccountAppsAvailability, ExperimentalAsh>
-        account_apps_availability_ = nullptr;
+    raw_ptr<AccountAppsAvailability> account_apps_availability_ = nullptr;
   };
 
   SigninHelper(
@@ -118,10 +117,9 @@ class SigninHelper : public GaiaAuthConsumer {
   // The user's refresh token fetched in `this` object.
   std::string refresh_token_;
   // A non-owning pointer to Chrome OS AccountManager.
-  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
-      account_manager_;
+  const raw_ptr<account_manager::AccountManager> account_manager_;
   // A non-owning pointer to AccountManagerMojoService.
-  const raw_ptr<crosapi::AccountManagerMojoService, ExperimentalAsh>
+  const raw_ptr<crosapi::AccountManagerMojoService>
       account_manager_mojo_service_;
   // Sets the ARC availability
   // after account addition. Owned by this class.

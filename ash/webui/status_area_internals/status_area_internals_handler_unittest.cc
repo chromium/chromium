@@ -16,8 +16,8 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/fake_system_tray_model.h"
 #include "ash/system/model/scoped_fake_system_tray_model.h"
-#include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
@@ -82,7 +82,7 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  SystemTrayModel* GetFakeModel() {
+  FakeSystemTrayModel* GetFakeModel() {
     return handler_->scoped_fake_model_->fake_model();
   }
 
@@ -223,6 +223,40 @@ TEST_F(StatusAreaInternalsHandlerTest, SetActiveDirectoryManaged) {
                    ->quick_settings_view()
                    ->header_for_testing()
                    ->GetManagedButtonForTest()
+                   ->GetVisible());
+}
+
+TEST_F(StatusAreaInternalsHandlerTest, SetIsInUserChildSession) {
+  handler_remote()->SetIsInUserChildSession(/*in_child_session=*/true);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(GetFakeModel()->IsInUserChildSession());
+
+  // Make sure that the supervised UI is visible.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()
+                  ->bubble()
+                  ->quick_settings_view()
+                  ->header_for_testing()
+                  ->GetSupervisedButtonForTest()
+                  ->GetVisible());
+
+  // Close the quick settings bubble.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+
+  // Test the reset case.
+  handler_remote()->SetIsInUserChildSession(/*in_child_session=*/false);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(GetFakeModel()->IsInUserChildSession());
+
+  // Make sure that the supervised UI is not visible.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()
+                   ->bubble()
+                   ->quick_settings_view()
+                   ->header_for_testing()
+                   ->GetSupervisedButtonForTest()
                    ->GetVisible());
 }
 

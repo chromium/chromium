@@ -18,8 +18,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -41,7 +41,7 @@ constexpr char kTestDownloadFolder[] = "test_download_folder";
 class ScreensaverImageDownloaderTest : public testing::Test {
  public:
   using ImageListUpdatedFuture =
-      base::test::RepeatingTestFuture<const std::vector<base::FilePath>&>;
+      base::test::TestFuture<const std::vector<base::FilePath>&>;
 
   ScreensaverImageDownloaderTest() = default;
 
@@ -61,7 +61,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
         std::make_unique<ScreensaverImageDownloader>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_),
-            test_download_folder_, image_list_updated_future_.GetCallback());
+            test_download_folder_,
+            image_list_updated_future_.GetRepeatingCallback());
   }
 
   ScreensaverImageDownloader* screensaver_image_downloader() {
@@ -90,7 +91,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
+    auto hash = base::SHA1HashSpan(base::as_byte_span(url));
     const std::string encoded_hash = base::HexEncode(hash);
     return test_download_folder_.AppendASCII(encoded_hash + kCacheFileExt);
   }

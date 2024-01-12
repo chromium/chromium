@@ -70,8 +70,9 @@ std::map<std::string, std::string> ParseCommandLine(int argc,
         result[key] = "";
       }
     } else {
-      if (!key.empty())
+      if (!key.empty()) {
         result[key] = arg;
+      }
       key = "";
     }
   }
@@ -104,8 +105,9 @@ constexpr char kCommandXCPath[] = "xcpath";
 
 bool HasSwitch(const std::string& arg,
                const std::map<std::string, std::string>& switches) {
-  if (base::Contains(switches, arg))
+  if (base::Contains(switches, arg)) {
     return true;
+  }
   static const base::NoDestructor<
       std::map<std::string, std::vector<std::string>>>
       aliases{{
@@ -120,8 +122,9 @@ bool HasSwitch(const std::string& arg,
           {kCommandUserInitiated, {"F"}},
           {kCommandUserStore, {"U"}},
       }};
-  if (!base::Contains(*aliases, arg))
+  if (!base::Contains(*aliases, arg)) {
     return false;
+  }
   for (const auto& alias : aliases->at(arg)) {
     if (base::Contains(switches, alias)) {
       return true;
@@ -132,8 +135,9 @@ bool HasSwitch(const std::string& arg,
 
 std::string SwitchValue(const std::string& arg,
                         const std::map<std::string, std::string>& switches) {
-  if (base::Contains(switches, arg))
+  if (base::Contains(switches, arg)) {
     return switches.at(arg);
+  }
   static const base::NoDestructor<std::map<std::string, std::string>> aliases{{
       {kCommandBrandKey, "b"},
       {kCommandBrandPath, "B"},
@@ -146,8 +150,9 @@ std::string SwitchValue(const std::string& arg,
       {kCommandVersionPath, "a"},
       {kCommandXCPath, "x"},
   }};
-  if (!base::Contains(*aliases, arg))
+  if (!base::Contains(*aliases, arg)) {
     return "";
+  }
   const std::string& alias = aliases->at(arg);
   return base::Contains(switches, alias) ? switches.at(alias) : "";
 }
@@ -161,8 +166,9 @@ std::string KeystoneTicketStorePath(UpdaterScope scope) {
 
 bool IsSystemShim() {
   base::FilePath executable_path;
-  if (!base::PathService::Get(base::FILE_EXE, &executable_path))
+  if (!base::PathService::Get(base::FILE_EXE, &executable_path)) {
     return false;
+  }
 
   return base::StartsWith(
       executable_path.value(),
@@ -170,10 +176,12 @@ bool IsSystemShim() {
 }
 
 UpdaterScope Scope(const std::map<std::string, std::string>& switches) {
-  if (HasSwitch(kCommandSystemStore, switches))
+  if (HasSwitch(kCommandSystemStore, switches)) {
     return UpdaterScope::kSystem;
-  if (HasSwitch(kCommandUserStore, switches))
+  }
+  if (HasSwitch(kCommandUserStore, switches)) {
     return UpdaterScope::kUser;
+  }
 
   if (HasSwitch(kCommandStorePath, switches)) {
     return SwitchValue(kCommandStorePath, switches) ==
@@ -332,8 +340,9 @@ void KSAdminApp::ChooseService(
     scope = std::make_optional(UpdaterScope::kSystem);
   } else {
     const std::string app_id = SwitchValue(kCommandProductId);
-    if (app_id.empty())
+    if (app_id.empty()) {
       scope = std::make_optional(UpdaterScope::kSystem);
+    }
   }
 
   if (scope) {
@@ -358,8 +367,9 @@ void KSAdminApp::ChooseService(
 }
 
 void KSAdminApp::PrintUsage(const std::string& error_message) {
-  if (!error_message.empty())
+  if (!error_message.empty()) {
     LOG(ERROR) << error_message;
+  }
   const std::string usage_message =
       "Usage: ksadmin [action...] [option...]\n"
       "Actions:\n"

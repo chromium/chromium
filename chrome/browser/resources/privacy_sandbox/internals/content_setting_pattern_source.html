@@ -1,0 +1,108 @@
+<style>
+table.hidden {
+  display: none;
+}
+
+td {
+  width: auto;
+  font-size: 0.7rem;
+}
+
+td.label {
+  font-weight: 600;
+  text-align: right;
+  vertical-align: top;
+  padding-right: 1em;
+}
+
+div.content-setting {
+  padding: 10px;
+}
+
+.pattern {
+  border: 1px solid lightgray;
+  padding: 5px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-left: 2rem;
+}
+
+.pattern:first-of-type {
+  margin-left: 0rem;
+}
+
+span.block {
+  display: block;
+}
+
+.id-primary-pattern,
+.id-secondary-pattern {
+  font-weight: bold;
+}
+
+.id-primary-pattern,
+.id-secondary-pattern,
+.id-source {
+  font-size: 0.75rem;
+}
+
+.pattern-type {
+  font-size: 0.5rem;
+}
+</style>
+<div class="content-setting">
+
+<button type="button" id="expand-button">Details</button>
+
+<div class="pattern">
+<span class="block pattern-type">Primary</span>
+<span class="block id-primary-pattern"></span>
+</div>
+
+<div class="pattern">
+<span class="block pattern-type">Secondary</span>
+<span class="block id-secondary-pattern"></span>
+</div>
+
+<div class="pattern">
+<span class="block pattern-type">Source</span>
+<span class="block id-source"></span>
+</div>
+
+<table id="metadata">
+  <tbody>
+    <tr>
+      <td class="label">Value:</td>
+      <td class="value id-value"></td>
+    </tr>
+    <tr>
+      <td class="label">Incognito:</td>
+      <td class="value id-incognito"></td>
+    </tr>
+    <tr>
+      <td class="label">Last Modified:</td>
+      <td class="value id-last-modified"></td>
+    </tr>
+    <tr>
+      <td class="label">Last Used:</td>
+      <td class="value id-last-used"></td>
+    </tr>
+    <tr>
+      <td class="label">Last Visited:</td>
+      <td class="value id-last-visited"></td>
+    </tr>
+    <tr>
+      <td class="label">Expiration:</td>
+      <td class="value id-expiration"></td>
+    </tr>
+    <tr>
+      <td class="label">Session Model:</td>
+      <td class="value id-session-model"></td>
+    </tr>
+    <tr>
+      <td class="label">Lifetime:</td>
+      <td class="value id-lifetime"></td>
+    </tr>
+  </tbody>
+</table>
+</div>

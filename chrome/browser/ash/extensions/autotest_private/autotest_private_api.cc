@@ -715,6 +715,10 @@ api::autotest_private::WindowStateType ToWindowStateType(
       return api::autotest_private::WindowStateType::kPrimarySnapped;
     case chromeos::WindowStateType::kSecondarySnapped:
       return api::autotest_private::WindowStateType::kSecondarySnapped;
+    case chromeos::WindowStateType::kPinned:
+      return api::autotest_private::WindowStateType::kPinned;
+    case chromeos::WindowStateType::kTrustedPinned:
+      return api::autotest_private::WindowStateType::kTrustedPinned;
     case chromeos::WindowStateType::kPip:
       return api::autotest_private::WindowStateType::kPip;
     case chromeos::WindowStateType::kFloated:
@@ -1335,7 +1339,7 @@ class EventGenerator {
   }
 
   std::unique_ptr<ui::SystemInputInjector> input_injector_;
-  raw_ptr<aura::WindowTreeHost, ExperimentalAsh> host_;
+  raw_ptr<aura::WindowTreeHost> host_;
   base::TimeTicks next_event_timestamp_;
   const base::TimeDelta interval_;
   base::OnceClosure closure_;
@@ -4845,7 +4849,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
                           webapps::AppBannerManager::Observer>
       observation_{this};
   base::OnceCallback<void()> callback_;
-  raw_ptr<webapps::AppBannerManager, ExperimentalAsh> app_banner_manager_;
+  raw_ptr<webapps::AppBannerManager> app_banner_manager_;
 };
 
 // Used to notify when a PWA is installed.
@@ -4888,7 +4892,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
-  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> provider_;
+  raw_ptr<web_app::WebAppProvider> provider_;
   base::OnceCallback<void(const webapps::AppId&)> callback_;
   base::WeakPtrFactory<
       AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver>

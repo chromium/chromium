@@ -77,11 +77,13 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @Override
     public void accessibilityFocusCleared() {}
 
-    private void onDeletionConfirmed() {
+    private void onDeletionDialogClosed(boolean confirmed) {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .deletionConfirmed(
-                        mNativeAutofillKeyboardAccessory, AutofillKeyboardAccessoryViewBridge.this);
+                .onDeletionDialogClosed(
+                        mNativeAutofillKeyboardAccessory,
+                        AutofillKeyboardAccessoryViewBridge.this,
+                        confirmed);
     }
 
     /**
@@ -134,7 +136,11 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @CalledByNative
     private void confirmDeletion(String title, String body) {
         assert mManualFillingComponent != null;
-        mManualFillingComponent.confirmOperation(title, body, this::onDeletionConfirmed);
+        mManualFillingComponent.confirmOperation(
+                title,
+                body,
+                () -> this.onDeletionDialogClosed(/* confirmed= */ true),
+                () -> this.onDeletionDialogClosed(/* confirmed= */ false));
     }
 
     @CalledByNative
@@ -219,8 +225,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 AutofillKeyboardAccessoryViewBridge caller,
                 int listIndex);
 
-        void deletionConfirmed(
+        void onDeletionDialogClosed(
                 long nativeAutofillKeyboardAccessoryView,
-                AutofillKeyboardAccessoryViewBridge caller);
+                AutofillKeyboardAccessoryViewBridge caller,
+                boolean confirmed);
     }
 }

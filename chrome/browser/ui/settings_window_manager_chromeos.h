@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/sessions/core/session_id.h"
@@ -56,6 +57,12 @@ class SettingsWindowManager {
   // As above, but shows a settings sub-page.
   void ShowOSSettings(Profile* profile,
                       const std::string& sub_page,
+                      int64_t display_id = display::kInvalidDisplayId);
+
+  // As above, but links to a specific setting.
+  void ShowOSSettings(Profile* profile,
+                      const std::string& sub_page,
+                      const chromeos::settings::mojom::Setting setting_id,
                       int64_t display_id = display::kInvalidDisplayId);
 
   // If a Browser settings window for |profile| has already been created,

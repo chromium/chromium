@@ -5,11 +5,12 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRELOADING_ATTEMPT_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_ATTEMPT_IMPL_H_
 
+#include <optional>
+
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -135,12 +136,12 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // The time between the creation of the attempt and the start of the next
   // navigation, whether accurate or not. The latency is reported as standard
   // buckets, of 1.15 spacing.
-  absl::optional<base::TimeDelta> time_to_next_navigation_;
+  std::optional<base::TimeDelta> time_to_next_navigation_;
 
   // Represents the duration between the attempt creation and its
   // `triggering_outcome_` becoming `kReady`. The latency is reported as
   // standard buckets, of 1.15 spacing.
-  absl::optional<base::TimeDelta> ready_time_;
+  std::optional<base::TimeDelta> ready_time_;
 
   // The random seed used to determine if a preloading attempt should be sampled
   // in UKM logs. We use a different random seed for each session (that is the
@@ -153,7 +154,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   // Eagerness of this preloading attempt (specified by a speculation rule).
   // This is only set for attempts that are triggered by speculation rules.
-  absl::optional<blink::mojom::SpeculationEagerness> eagerness_ = absl::nullopt;
+  std::optional<blink::mojom::SpeculationEagerness> eagerness_ = std::nullopt;
 
   // Describes the type of check we did for to find out if the attempt's URL
   // is under a Service Worker's path. The simplest check is: does the URL's
@@ -162,10 +163,10 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // URL under one of these Service Workers.
   // This is only set for prefetch attempts that are triggered by speculation
   // rules.
-  absl::optional<ServiceWorkerRegisteredCheck>
-      service_worker_registered_check_ = absl::nullopt;
-  absl::optional<base::TimeDelta> service_worker_registered_check_duration_ =
-      absl::nullopt;
+  std::optional<ServiceWorkerRegisteredCheck> service_worker_registered_check_ =
+      std::nullopt;
+  std::optional<base::TimeDelta> service_worker_registered_check_duration_ =
+      std::nullopt;
 
   base::WeakPtrFactory<PreloadingAttemptImpl> weak_factory_{this};
 };

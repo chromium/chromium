@@ -42,11 +42,13 @@ class ScopedWinHttpProxyInfo {
   }
 
   ~ScopedWinHttpProxyInfo() {
-    if (proxy_info_.lpszProxy)
+    if (proxy_info_.lpszProxy) {
       ::GlobalFree(proxy_info_.lpszProxy);
+    }
 
-    if (proxy_info_.lpszProxyBypass)
+    if (proxy_info_.lpszProxyBypass) {
       ::GlobalFree(proxy_info_.lpszProxyBypass);
+    }
   }
 
   bool IsValid() const { return proxy_info_.lpszProxy; }
@@ -58,15 +60,17 @@ class ScopedWinHttpProxyInfo {
   wchar_t* proxy() const { return proxy_info_.lpszProxy; }
 
   void set_proxy(const std::wstring& proxy) {
-    if (proxy.empty())
+    if (proxy.empty()) {
       return;
+    }
 
     proxy_info_.lpszProxy = GlobalAlloc(proxy);
   }
 
   void set_proxy_bypass(const std::wstring& proxy_bypass) {
-    if (proxy_bypass.empty())
+    if (proxy_bypass.empty()) {
       return;
+    }
 
     proxy_info_.lpszProxyBypass = GlobalAlloc(proxy_bypass);
   }

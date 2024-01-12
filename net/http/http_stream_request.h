@@ -54,51 +54,33 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
     // This is the success case for RequestStream.
     // |stream| is now owned by the delegate.
-    // |used_ssl_config| indicates the actual SSL configuration used for this
-    // stream, since the HttpStreamRequest may have modified the configuration
-    // during stream processing.
     // |used_proxy_info| indicates the actual ProxyInfo used for this stream,
     // since the HttpStreamRequest performs the proxy resolution.
-    virtual void OnStreamReady(const SSLConfig& used_ssl_config,
-                               const ProxyInfo& used_proxy_info,
+    virtual void OnStreamReady(const ProxyInfo& used_proxy_info,
                                std::unique_ptr<HttpStream> stream) = 0;
 
     // This is the success case for RequestWebSocketHandshakeStream.
     // |stream| is now owned by the delegate.
-    // |used_ssl_config| indicates the actual SSL configuration used for this
-    // stream, since the HttpStreamRequest may have modified the configuration
-    // during stream processing.
     // |used_proxy_info| indicates the actual ProxyInfo used for this stream,
     // since the HttpStreamRequest performs the proxy resolution.
     virtual void OnWebSocketHandshakeStreamReady(
-        const SSLConfig& used_ssl_config,
         const ProxyInfo& used_proxy_info,
         std::unique_ptr<WebSocketHandshakeStreamBase> stream) = 0;
 
     virtual void OnBidirectionalStreamImplReady(
-        const SSLConfig& used_ssl_config,
         const ProxyInfo& used_proxy_info,
         std::unique_ptr<BidirectionalStreamImpl> stream) = 0;
 
     // This is the failure to create a stream case.
-    // |used_ssl_config| indicates the actual SSL configuration used for this
-    // stream, since the HttpStreamRequest may have modified the configuration
-    // during stream processing.
     // |used_proxy_info| indicates the actual ProxyInfo used for this stream,
     // since the HttpStreamRequest performs the proxy resolution.
     virtual void OnStreamFailed(int status,
                                 const NetErrorDetails& net_error_details,
-                                const SSLConfig& used_ssl_config,
                                 const ProxyInfo& used_proxy_info,
                                 ResolveErrorInfo resolve_error_info) = 0;
 
     // Called when we have a certificate error for the request.
-    // |used_ssl_config| indicates the actual SSL configuration used for this
-    // stream, since the HttpStreamRequest may have modified the configuration
-    // during stream processing.
-    virtual void OnCertificateError(int status,
-                                    const SSLConfig& used_ssl_config,
-                                    const SSLInfo& ssl_info) = 0;
+    virtual void OnCertificateError(int status, const SSLInfo& ssl_info) = 0;
 
     // This is the failure case where we need proxy authentication during
     // proxy tunnel establishment.  For the tunnel case, we were unable to
@@ -114,12 +96,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // after the lifetime of this callback.  The delegate may take a reference
     // to |auth_controller| if it is needed beyond the lifetime of this
     // callback.
-    //
-    // |used_ssl_config| indicates the actual SSL configuration used for this
-    // stream, since the HttpStreamRequest may have modified the configuration
-    // during stream processing.
     virtual void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
-                                  const SSLConfig& used_ssl_config,
                                   const ProxyInfo& used_proxy_info,
                                   HttpAuthController* auth_controller) = 0;
 
@@ -127,8 +104,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // Ownership of |cert_info| is retained by the HttpStreamRequest.  The
     // delegate may take a reference if it needs the cert_info beyond the
     // lifetime of this callback.
-    virtual void OnNeedsClientAuth(const SSLConfig& used_ssl_config,
-                                   SSLCertRequestInfo* cert_info) = 0;
+    virtual void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) = 0;
 
     // Called when finding all QUIC alternative services are marked broken for
     // the origin in this request which advertises supporting QUIC.

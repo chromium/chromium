@@ -12,6 +12,7 @@
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
 
+<if expr="not chromeos_ash">
   #labels[disabled] {
     color: var(--paper-grey-400);
   }
@@ -21,12 +22,13 @@
       color: var(--google-grey-500);
     }
   }
+</if>
 
-  <if expr='chromeos_ash'>
-  :host-context(body.jelly-enabled) #labels[disabled] {
+<if expr="chromeos_ash">
+  #labels[disabled] {
     color: var(--cros-sys-disabled);
   }
-  </if>
+</if>
 
   div.outer {
     align-items: stretch;

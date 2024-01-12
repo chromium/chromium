@@ -141,7 +141,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
-    absl::optional<IdentityProviderData> data;
+    std::optional<IdentityProviderData> data;
   };
 
   struct IdentityProviderLoginUrlInfo {
@@ -238,7 +238,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnFetchDataForIdpFailed(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       blink::mojom::FederatedAuthRequestResult result,
-      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      std::optional<content::FedCmRequestIdTokenStatus> token_status,
       bool should_delay_callback);
 
   // Called when there is an error fetching information to show the prompt for a
@@ -253,18 +253,18 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void ShowModalDialog(const GURL& url);
   void ShowErrorDialog(const GURL& idp_config_url,
                        IdpNetworkRequestManager::FetchStatus status,
-                       absl::optional<TokenError> error);
-  // Called when we should show a failure dialog since all IDP account fetches
-  // resulted in a mismatch with the accounts fetch.
-  void ShowIdpFailureDialog();
+                       std::optional<TokenError> error);
+  // Called when we should show a failure dialog in the case where a single IDP
+  // account fetch resulted in a mismatch with its login status.
+  void ShowSingleIdpFailureDialog();
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
   void HandleAccountsFetchFailure(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      absl::optional<bool> old_idp_signin_status,
+      std::optional<bool> old_idp_signin_status,
       blink::mojom::FederatedAuthRequestResult result,
-      absl::optional<content::FedCmRequestIdTokenStatus> token_status);
+      std::optional<content::FedCmRequestIdTokenStatus> token_status);
 
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -278,14 +278,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnDismissErrorDialog(
       const GURL& idp_config_url,
       IdpNetworkRequestManager::FetchStatus status,
-      absl::optional<TokenError> token_error,
+      std::optional<TokenError> token_error,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void CompleteTokenRequest(const GURL& idp_config_url,
                             IdpNetworkRequestManager::FetchStatus status,
-                            absl::optional<std::string> token,
-                            absl::optional<TokenError> token_error,
+                            std::optional<std::string> token,
+                            std::optional<TokenError> token_error,
                             bool should_delay_callback);
   void OnTokenResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
@@ -298,24 +298,24 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
-      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
-      absl::optional<TokenError> token_error,
+      std::optional<content::FedCmRequestIdTokenStatus> token_status,
+      std::optional<TokenError> token_error,
       bool should_delay_callback);
 
   // Completes request. Displays a dialog if there is an error and the error is
   // during a fetch triggered by an IdP sign-in status change.
   void CompleteRequest(
       blink::mojom::FederatedAuthRequestResult result,
-      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
-      absl::optional<TokenError> token_error,
-      const absl::optional<GURL>& selected_idp_config_url,
+      std::optional<content::FedCmRequestIdTokenStatus> token_status,
+      std::optional<TokenError> token_error,
+      const std::optional<GURL>& selected_idp_config_url,
       const std::string& token,
       bool should_delay_callback);
   void CompleteUserInfoRequest(
       FederatedAuthUserInfoRequest* request,
       RequestUserInfoCallback callback,
       blink::mojom::RequestUserInfoStatus status,
-      absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
+      std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
   void CompleteDigitalCredentialRequest(std::string response);
 
   // Notifies metrics endpoint that either the user did not select the IDP in
@@ -359,8 +359,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
   // the only returning account. Returns false if there are multiple returning
   // accounts or no returning account.
-  bool GetSingleReturningAccount(const IdentityProviderData** out_idp_data,
-                                 const IdentityRequestAccount** out_account);
+  bool GetAccountForAutoReauthn(const IdentityProviderData** out_idp_data,
+                                const IdentityRequestAccount** out_account);
 
   // Check if auto re-authn is available so we can skip fetching accounts if the
   // auto re-authn flow is guaranteed to fail.
@@ -382,9 +382,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void RecordErrorMetrics(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       IdpNetworkRequestManager::FedCmTokenResponseType token_response_type,
-      absl::optional<IdpNetworkRequestManager::FedCmErrorDialogType>
+      std::optional<IdpNetworkRequestManager::FedCmErrorDialogType>
           error_dialog_type,
-      absl::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
+      std::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
           error_url_type);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
@@ -463,7 +463,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FetchData fetch_data_;
 
   // List of config URLs of IDPs in the same order as the providers specified in
-  // the navigator.credentials.get call.
+  // the navigator.credentials.get call. This vector is reset to a single IDP
+  // when the user logins to an IDP, so as to only show the newly logged in
+  // account.
   std::vector<GURL> idp_order_;
 
   // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP.
@@ -476,7 +478,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   IdpNetworkRequestManager::FetchStatus token_request_status_;
 
   // If dialog_type_ is kError, this is the token error.
-  absl::optional<TokenError> token_error_;
+  std::optional<TokenError> token_error_;
 
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;
@@ -487,13 +489,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   RequestTokenCallback digital_credential_request_callback_;
 
   // Time when the accounts dialog is last shown for metrics purposes.
-  absl::optional<base::TimeTicks> accounts_dialog_shown_time_;
+  std::optional<base::TimeTicks> accounts_dialog_shown_time_;
 
   // Time when the mismatch dialog is last shown for metrics purposes.
-  absl::optional<base::TimeTicks> mismatch_dialog_shown_time_;
+  std::optional<base::TimeTicks> mismatch_dialog_shown_time_;
 
   // Type of error URL for metrics and devtools issue purposes.
-  absl::optional<IdpNetworkRequestManager::FedCmErrorUrlType> error_url_type_;
+  std::optional<IdpNetworkRequestManager::FedCmErrorUrlType> error_url_type_;
 
   // Number of navigator.credentials.get() requests made for metrics purposes.
   // Requests made when there is a pending FedCM request or for the purpose of

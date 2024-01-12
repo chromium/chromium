@@ -161,7 +161,7 @@ class WebAppsCrosapi : public KeyedService,
 
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
   mojo::Remote<crosapi::mojom::AppController> controller_;
-  const raw_ptr<AppServiceProxy, ExperimentalAsh> proxy_;
+  const raw_ptr<AppServiceProxy> proxy_;
   bool should_notify_initialized_ = true;
 
   base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};

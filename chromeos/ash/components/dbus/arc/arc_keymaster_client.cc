@@ -58,7 +58,7 @@ class ArcKeymasterClientImpl : public ArcKeymasterClient {
 
  private:
   // Owned by the D-Bus implementation, who outlives this class.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 };
 
 }  // namespace

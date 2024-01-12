@@ -21,9 +21,6 @@ BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 
-// Enables logging new phishing prevention data.
-BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
-
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the
@@ -31,21 +28,6 @@ BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
 // while we fix the root cause. This will also halt the model distribution from
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
-
-// The client side detection model is a flatbuffer.
-BASE_DECLARE_FEATURE(kClientSideDetectionModelIsFlatBuffer);
-
-// Determines the tag to pass to Omaha to get a client side detection model.
-BASE_DECLARE_FEATURE(kClientSideDetectionModelTag);
-
-// The parameter name used for getting the tag values from client side detection
-// features, `kClientSideDetectionModelTag` and
-// `kClientSideDetectionModelHighMemoryTag`.
-const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
-
-// Enables force request CSD-P ping when RT Lookup Response has FORCE_REQUEST in
-// the client_side_detection_type field
-BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 
 // Creates and sends CSBRRs when warnings are first shown to users.
 BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
@@ -117,21 +99,8 @@ BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection);
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);
 
 // This parameter controls the relay URL that will forward the lookup requests
-// to the Safe Browsing server. This is similar to the
-// kHashRealTimeOverOhttpRelayUrl parameter, but it applies to the
-// kHashPrefixRealTimeLookups feature.
+// to the Safe Browsing server.
 extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
-
-// For hash-prefix real-time lookup requests that are triggered by the lookup
-// mechanism experiment (see kSafeBrowsingLookupMechanismExperiment), enables
-// sending the requests over OHTTP to anonymize the source of the requests.
-BASE_DECLARE_FEATURE(kHashRealTimeOverOhttp);
-
-// This parameter controls the relay URL that will forward the lookup requests
-// to the Safe Browsing server. This is similar to the
-// kHashPrefixRealTimeLookupsRelayUrl parameter, but it applies to the
-// kHashRealTimeOverOhttp feature.
-extern const base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl;
 
 // UX improvements to download warnings on chrome://downloads page.
 BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
@@ -169,20 +138,6 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
 BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
-
-// Controls whether the lookup mechanism experiment is enabled, which runs all
-// three lookup mechanisms instead of just real-time URL lookups for ESB users.
-// The other two lookup mechanisms are run in the background, and the results
-// of the three are logged for comparison purposes. This experiment is also
-// known as the hash-prefix real-time lookup experiment, since that mechanism is
-// the main comparison anchor.
-BASE_DECLARE_FEATURE(kSafeBrowsingLookupMechanismExperiment);
-// Controls whether the SafeBrowsingLookupMechanismExperiment (AKA HPRT
-// experiment) conditionally logs a Client Safe Browsing Report when the
-// experiment ends for URL-level validation purposes. This is only relevant
-// while the HPRT experiment is running, which is only enabled for ESB users.
-extern const base::FeatureParam<bool>
-    kUrlLevelValidationForHprtExperimentEnabled;
 
 #if BUILDFLAG(IS_ANDROID)
 // Use new GMSCore API for hash database check on browser URLs.
@@ -264,10 +219,6 @@ BASE_DECLARE_FEATURE(kThreatDomDetailsTagAndAttributeFeature);
 BASE_DECLARE_FEATURE(kVisualFeaturesSizes);
 
 base::Value::List GetFeatureStatusList();
-
-// Returns the tag used for Client Side Phishing Detection models, as
-// computed from the current feature flags.
-std::string GetClientSideDetectionTag();
 
 // Enables new ESB specific threshold fields in Visual TF Lite model files
 BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);

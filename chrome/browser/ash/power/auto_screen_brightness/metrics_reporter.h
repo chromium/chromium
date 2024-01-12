@@ -103,7 +103,7 @@ class MetricsReporter : public chromeos::PowerManagerClient::Observer {
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;  // Not owned.
+  raw_ptr<PrefService> pref_service_;  // Not owned.
 
   std::unique_ptr<metrics::DailyEvent> daily_event_;
 

@@ -78,7 +78,7 @@ void FakeRemoteFrame::IntrinsicSizingInfoOfChildChanged(
     blink::mojom::IntrinsicSizingInfoPtr sizing_info) {}
 
 void FakeRemoteFrame::UpdateOpener(
-    const absl::optional<blink::FrameToken>& opener_frame_token) {}
+    const std::optional<blink::FrameToken>& opener_frame_token) {}
 
 void FakeRemoteFrame::DetachAndDispose() {}
 
@@ -96,7 +96,7 @@ void FakeRemoteFrame::ChildProcessGone() {}
 
 void FakeRemoteFrame::CreateRemoteChild(
     const blink::RemoteFrameToken& token,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
+    const std::optional<blink::FrameToken>& opener_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replication_state,
     blink::mojom::FrameOwnerPropertiesPtr owner_properties,

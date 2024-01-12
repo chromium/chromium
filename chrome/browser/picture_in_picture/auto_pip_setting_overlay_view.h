@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -77,7 +78,25 @@ class AutoPipSettingOverlayView : public views::View,
     observers_.RemoveObserver(observer);
   }
 
+  // Ignore events on `web_contents` until the user takes an action that hides
+  // the UI.  `web_contents` is presumably for the pip window.  Optional; this
+  // is intended for document pip, since video pip doesn't have a WebContents.
+  void IgnoreInputEvents(content::WebContents* web_contents);
+
  private:
+  // Callback used to hide the semi-opaque background layer.
+  void OnHideView();
+
+  // Perform a linear fade in of |layer|.
+  void FadeInLayer(ui::Layer* layer);
+
+  // Returns true if |show_timer_| is currently running.
+  bool IsShowTimerRunning();
+
+  // Called whenever the AutoPipSettingOverlayView is hidden, in order to notify
+  // observers.
+  void NotifyAutoPipSettingOverlayViewHidden();
+
   // We temporarily own the setting view during init, but usually this is null.
   // Keep it separate so one doesn't accidentally use it.  It's likely that you
   // really want `auto_pip_setting_view_`, outside this struct.
@@ -91,20 +110,13 @@ class AutoPipSettingOverlayView : public views::View,
   gfx::Size bubble_size_;
   std::unique_ptr<base::OneShotTimer> show_timer_;
   base::ObserverList<AutoPipSettingOverlayViewObserver> observers_;
+
+  // Optional closure to re-enable input events, to be run when the user
+  // dismisses the UI via any button.  Only used for document pip.
+  absl::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
+
   base::WeakPtrFactory<AutoPipSettingOverlayView> weak_factory_{this};
-
-  // Callback used to hide the semi-opaque background layer.
-  void OnHideView();
-
-  // Perform a linear fade in of |layer|.
-  void FadeInLayer(ui::Layer* layer);
-
-  // Returns true if |show_timer_| is currently running.
-  bool IsShowTimerRunning();
-
-  // Called whenever the AutoPipSettingOverlayView is hidden, in order to notify
-  // observers.
-  void NotifyAutoPipSettingOverlayViewHidden();
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PIP_SETTING_OVERLAY_VIEW_H_

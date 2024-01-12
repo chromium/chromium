@@ -88,7 +88,11 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
         vertex_shader_(nullptr),
         fragment_shader_(nullptr),
         shader_cache_count_(0) {}
-  ~MemoryProgramCacheTest() override { shader_manager_.Destroy(false); }
+  ~MemoryProgramCacheTest() override {
+    vertex_shader_ = nullptr;
+    fragment_shader_ = nullptr;
+    shader_manager_.Destroy(false);
+  }
 
   void OnConsoleMessage(int32_t id, const std::string& message) override {}
   void CacheBlob(gpu::GpuDiskCacheType type,
@@ -204,8 +208,9 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   GpuProcessShmCount use_shader_cache_shm_count_;
   std::unique_ptr<MemoryProgramCache> cache_;
   ShaderManager shader_manager_;
-  raw_ptr<Shader, DanglingUntriaged> vertex_shader_;
-  raw_ptr<Shader, DanglingUntriaged> fragment_shader_;
+  // These shaders are owned by |shader_manager_|.
+  raw_ptr<Shader> vertex_shader_;
+  raw_ptr<Shader> fragment_shader_;
   int32_t shader_cache_count_;
   std::string shader_cache_shader_;
   std::vector<std::string> varyings_;

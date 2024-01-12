@@ -36,6 +36,9 @@ class TestPickerClient : public PickerClient {
     return web_view_factory_.Create(params);
   }
 
+  void DownloadGifToString(const GURL& url,
+                           DownloadGifToStringCallback callback) override {}
+
  private:
   TestAshWebViewFactory web_view_factory_;
   raw_ptr<PickerController> controller_ = nullptr;
@@ -77,14 +80,14 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
   EXPECT_TRUE(controller.widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, SetClientToNullDestroysWidgetImmediately) {
+TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
 
   controller.SetClient(nullptr);
 
-  EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_TRUE(controller.widget_for_testing());
 }
 
 TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {

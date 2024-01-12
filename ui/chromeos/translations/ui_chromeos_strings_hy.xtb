@@ -76,7 +76,6 @@
 <translation id="162175252992296058">պորտուգալերեն՝ ԱՄՆ միջազգային ստեղնաշարով</translation>
 <translation id="1629521517399325891">Օգտատիրոջ հավաստագիրը հասանելի չէ ցանցային նույնականացման համար։</translation>
 <translation id="1641780993263690097">չինարեն (փինյին)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ֆայլ շուտով հասանելի կդառնա անցանց ռեժիմում</translation>
 <translation id="164969095109328410">Chrome սարք</translation>
 <translation id="1661207570040737402">Դուք օգտագործել եք Google Workspace-ի ձեր ամբողջ ընդհանուր դրայվը։</translation>
 <translation id="1661867754829461514">PIN կոդը բացակայում է</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google աղյուսակ</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
 <translation id="3509680540198371098">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="3511705761158917664">Պատրաստվում ենք համաժամացնել <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="3522708245912499433">պորտուգալերեն</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Ադմինիստրատորն արգելել է պատճենել <ph name="COUNT" /> ֆայլ</translation>
 <translation id="6509122719576673235">Նորվեգական</translation>
 <translation id="6528513914570774834">Թույլատրել սարքի մյուս օգտատերերին օգտագործել այս ցանցը</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" />-ի համաժամացում…</translation>
 <translation id="6549689063733911810">Վերջին</translation>
 <translation id="6558280019477628686">Սխալ առաջացավ: Հնարավոր է՝ որոշ տարրեր չեն ջնջվել:</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»-ը ջնջվում է…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Լինուքսին</translation>
 <translation id="7555339735447658365">Այս պահին դուք օֆլայն եք։ Ֆայլերի համաժամացումը կվերսկսվի, երբ միանաք ինտերնետին։</translation>
 <translation id="7589661784326793847">Մեկ վայրկյան</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> ֆայլը ներբեռնվում է</translation>
 <translation id="7600126690270271294">սերբերեն</translation>
 <translation id="7603724359189955920">Ցանց</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> անունով ֆայլ արդեն առկա է: Վերանվանեք այն և նորից փորձեք:</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Նախապատրաստվում է...</translation>
 <translation id="8147028810663464959">Նիշերի լայնությունը՝ լիալայքն</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 սխալ։}one{# սխալ։}other{# սխալ։}}</translation>
 <translation id="8154842056504218462">Բոլոր գրառումներն ընտրվեցին:</translation>
 <translation id="8157684860301034423">Չհաջողվեց բեռնել հավելվածի մասին տեղեկությունները։</translation>
 <translation id="8175731104491895765">ֆրանսերեն (Բելգիա)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Դուք հասանելի եք դարձնում «<ph name="FOLDER_NAME" />» պանակի ֆայլերը <ph name="VM_NAME" />-ին</translation>
 <translation id="8372369524088641025">WEP բանալին սխալ է</translation>
 <translation id="8372852072747894550">հունարեն</translation>
+<translation id="8377269993083688872">Նամակների ձևանմուշներ</translation>
 <translation id="8386903983509584791">Որոնումն ավարտվեց</translation>
 <translation id="8387733224523483503">Ֆայլը (<ph name="FILE_NAME" />) դուրս բերվեց։</translation>
 <translation id="8395901698320285466">Չափեր</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Ընտրեք ֆայլ</translation>
 <translation id="8577897833047451336">խորվաթերեն</translation>
 <translation id="8578308463707544055">ինդոնեզերեն</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> տարրի համաժամացում…</translation>
 <translation id="8600173386174225982">Ֆայլերի ցանկն այժմ ցուցադրված է մանրապատկերների տեսքով:</translation>
 <translation id="8601932370724196034">Crostini գրաֆիկական ֆայլ</translation>
 <translation id="8609695766746872526">իսլանդերեն</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Օգտագործել պրոքսի-սերվերներ՝ համօգտագործվող ցանցերի համար</translation>
 <translation id="8790981080411996443">Բույսեր ջրող մարդ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 նախազգուշացում։}one{# նախազգուշացում։}other{# նախազգուշացում։}}</translation>
 <translation id="8808686172382650546">Կատու</translation>
 <translation id="8810671769985673465">Չհաջողվեց արխիվացնել։ Տարրն արդեն արխիվում է՝ «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">իսպաներեն (Իսպանիա)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ընտրեք այլ անուն:</translation>
 <translation id="9046895021617826162">Չհաջողվեց միանալ</translation>
 <translation id="9065512565307033593">Եթե չկարողանաք հաստատել, ցանցն անհասանելի կդառնա։</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 նախազգուշացում։}one{<ph name="COUNT" /> նախազգուշացում։}other{<ph name="COUNT" /> նախազգուշացում։}}</translation>
 <translation id="908378762078012445">ռուսերեն (AATSEEL հնչյունային ստեղնաշար)</translation>
 <translation id="9086302186042011942">Համաժամացում</translation>
 <translation id="9099674669267916096">Էջերի քանակը</translation>

@@ -247,20 +247,6 @@ int ShapeResultBuffer::OffsetForPosition(
   return total_offset;
 }
 
-void ShapeResultBuffer::ExpandRangeToIncludePartialGlyphs(int* from,
-                                                          int* to) const {
-  int offset = 0;
-  for (unsigned j = 0; j < results_.size(); j++) {
-    const scoped_refptr<const ShapeResult> result = results_[j];
-    for (unsigned i = 0; i < result->runs_.size(); i++) {
-      if (!result->runs_[i])
-        continue;
-      result->runs_[i]->ExpandRangeToIncludePartialGlyphs(offset, from, to);
-      offset += result->runs_[i]->num_characters_;
-    }
-  }
-}
-
 Vector<ShapeResult::RunFontData> ShapeResultBuffer::GetRunFontData() const {
   Vector<ShapeResult::RunFontData> font_data;
   for (const auto& result : results_)

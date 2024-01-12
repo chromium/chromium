@@ -28,7 +28,7 @@
 namespace ash {
 
 constexpr char kGuestTosId[] = "guest-tos";
-const test::UIPath kLoadedDialog = {kGuestTosId, "loaded"};
+const test::UIPath kOverviewDialog = {kGuestTosId, "overview"};
 const test::UIPath kGuestTosAcceptButton = {kGuestTosId, "acceptButton"};
 
 // Tests guest user log in.
@@ -57,7 +57,7 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
     ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
     OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
-    test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
     test::OobeJS().ClickOnPath(kGuestTosAcceptButton);
   }
 

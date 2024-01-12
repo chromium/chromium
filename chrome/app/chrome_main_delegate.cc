@@ -235,6 +235,7 @@
 #include "chromeos/startup/browser_postlogin_params.h"  // nogncheck
 #include "chromeos/startup/startup.h"                   // nogncheck
 #include "chromeos/startup/startup_switches.h"          // nogncheck
+#include "components/crash/core/app/client_upload_info.h"
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -459,6 +460,15 @@ void RedirectLacrosLogging() {
   }
 }
 
+// When prelaunching Lacros at login screen, the initialization of Crashpad
+// relies on the consent preferences of Ash. After login, we can rely on
+// the user-specific preferences. This function updates the user consent
+// preferences from the default location (the user's cryptohome).
+void SetCrashpadUploadConsentPostLogin() {
+  crash_reporter::SetUploadConsent(
+      crash_reporter::GetClientCollectStatsConsent());
+}
+
 void AddFeatureFlagsToCommandLine(
     const chromeos::BrowserParamsProxy& init_params) {
   base::ScopedAddFeatureFlags flags(base::CommandLine::ForCurrentProcess());
@@ -680,6 +690,43 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// If Lacros was prelaunched at login screen, this method blocks waiting
+// for the user to login. It can be called before or after the Zygotes
+// have been forked.
+void MaybeBlockAtLoginScreen(bool after_zygotes_fork) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+
+  if (process_type.empty() && chromeos::IsLaunchedWithPostLoginParams()) {
+    // NOTE: When prelaunching Lacros, this is as far as Lacros's initialization
+    // will go at the login screen. The browser process will block here.
+    //
+    // IMPORTANT NOTE: If your code requires access to post-login parameters
+    // (which are only known after login), please place them *after* this call.
+    chromeos::BrowserParamsProxy::WaitForLogin();
+
+    // NOTE: When launching Lacros at login screen, after this point,
+    // the user should have logged in. The cryptohome is now accessible.
+    if (chrome::ProcessNeedsProfileDir(process_type)) {
+      InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
+    }
+
+    // Redirect logs from system directory to cryptohome.
+    RedirectLacrosLogging();
+
+    // If Lacros blocked after forking the zygotes, Crashpad has
+    // already been initialized, but we need to update the upload
+    // consent based on the user's preferences.
+    if (after_zygotes_fork) {
+      // Update upload consent to reflect the user's preference.
+      SetCrashpadUploadConsentPostLogin();
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if !BUILDFLAG(IS_ANDROID)
 void InitLogging(const std::string& process_type) {
   logging::OldFileDeletionState file_state = logging::APPEND_TO_OLD_LOG_FILE;
@@ -871,6 +918,14 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Initialize D-Bus for Lacros.
   chromeos::LacrosInitializeDBus();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableLacrosForkZygotesAtLoginScreen)) {
+    // If prelaunched at login screen, block waiting for the user to login.
+    MaybeBlockAtLoginScreen(/*after_zygotes_fork=*/true);
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1361,8 +1416,6 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       // Recovery has failed somehow, so we exit.
       return recovery_exit_code;
     }
-  } else {  // Not running diagnostics or recovery.
-    diagnostics::DiagnosticsController::GetInstance()->RecordRegularStartup();
   }
 #endif
 
@@ -1437,22 +1490,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
   crash_reporter::InitializeCrashKeys();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (process_type.empty() && chromeos::IsLaunchedWithPostLoginParams()) {
-    // NOTE: When prelaunching Lacros, this is as far as Lacros's initialization
-    // will go at the login screen. The browser process will block here.
-    //
-    // IMPORTANT NOTE: If your code requires access to post-login parameters
-    // (which are only known after login), please place them *after* this call.
-    chromeos::BrowserParamsProxy::WaitForLogin();
-
-    // NOTE: When launching Lacros at login screen, after this point,
-    // the user should have logged in. The cryptohome is now accessible.
-    if (chrome::ProcessNeedsProfileDir(process_type)) {
-      InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
-    }
-
-    // Redirect logs from system directory to cryptohome.
-    RedirectLacrosLogging();
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableLacrosForkZygotesAtLoginScreen)) {
+    // If prelaunched at login screen, block waiting for the user to login.
+    MaybeBlockAtLoginScreen(/*after_zygotes_fork=*/false);
   }
 #endif
 

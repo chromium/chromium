@@ -291,12 +291,11 @@ gfx::RectF LayoutSVGText::ObjectBoundingBox() const {
         continue;
       }
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != FragmentItem::kSvgText) {
-          continue;
+        if (item.IsSvgText()) {
+          // Do not use item.RectInContainerFragment() in order to avoid
+          // precision loss.
+          bbox.Union(item.ObjectBoundingBox(*fragment.Items()));
         }
-        // Do not use item.RectInContainerFragment() in order to avoid
-        // precision loss.
-        bbox.Union(item.ObjectBoundingBox(*fragment.Items()));
       }
     }
     bounding_box_ = bbox;

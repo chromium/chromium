@@ -10,6 +10,7 @@
 namespace manta {
 
 // Please do not renumber these.
+// Should match ash/webui/common/mojom/sea_pen.mojom.
 enum class MantaStatusCode {
   kOk = 0,
   kGenericError = 1,

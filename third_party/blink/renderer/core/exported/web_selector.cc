@@ -49,8 +49,8 @@ WebString CanonicalizeSelector(WebString web_selector,
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
-      web_selector, arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+      /*is_within_scope=*/false, nullptr, web_selector, arena);
   if (selector_vector.empty()) {
     // Parse error.
     return {};

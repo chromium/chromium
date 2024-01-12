@@ -1377,16 +1377,15 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::unique_ptr<ash::ShelfModel> model_;
 
   // |item_delegate_manager_| owns |test_controller_|.
-  raw_ptr<ash::ShelfItemDelegate, DanglingUntriaged | ExperimentalAsh>
-      test_controller_ = nullptr;
+  raw_ptr<ash::ShelfItemDelegate, DanglingUntriaged> test_controller_ = nullptr;
 
-  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
       extension_registry_ = nullptr;
 
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged | ExperimentalAsh>
-      extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
 
-  raw_ptr<app_list::AppListSyncableService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<app_list::AppListSyncableService, DanglingUntriaged>
       app_list_syncable_service_ = nullptr;
 
   PinAssertionMap pin_assertions_;
@@ -1547,11 +1546,9 @@ class ChromeShelfControllerLacrosOnlyTest
   apps::AppServiceProxy* proxy() { return proxy_; }
 
  private:
-  raw_ptr<StandaloneBrowserExtensionAppShelfItemController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
       chrome_app_shelf_item_ = nullptr;
-  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh> proxy_ =
-      nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged> proxy_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1621,7 +1618,7 @@ class V2App {
   // The app window which represents the application. Note that the window
   // deletes itself asynchronously after window_->GetBaseWindow()->Close() gets
   // called.
-  raw_ptr<extensions::AppWindow, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<extensions::AppWindow, DanglingUntriaged> window_;
 };
 
 // The testing framework to test multi profile scenarios.
@@ -6297,7 +6294,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   SkBitmap result_bitmap = *item->image.bitmap();
   SkBitmap expected_bitmap =
-      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kNone);
+      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kCrOsStandardMask);
   EXPECT_TRUE(gfx::BitmapsAreEqual(result_bitmap, expected_bitmap));
 }
 

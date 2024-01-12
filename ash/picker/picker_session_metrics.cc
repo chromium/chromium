@@ -5,6 +5,8 @@
 #include "ash/picker/picker_session_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "ui/compositor/presentation_time_recorder.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -12,8 +14,26 @@ PickerSessionMetrics::PickerSessionMetrics(
     const base::TimeTicks trigger_start_timestamp)
     : trigger_start_timestamp_(trigger_start_timestamp) {}
 
+PickerSessionMetrics::~PickerSessionMetrics() = default;
+
+void PickerSessionMetrics::StartRecording(views::Widget& widget) {
+  // Initialize a presentation time recorder based on the new widget's
+  // compositor. After this, a presentation latency metric is recorded every
+  // time `RequestNext` is called on the recorder.
+  search_field_presentation_time_recorder_ =
+      CreatePresentationTimeHistogramRecorder(
+          widget.GetCompositor(),
+          "Ash.Picker.Session.PresentationLatency.SearchField");
+
+  is_recording_ = true;
+}
+
+void PickerSessionMetrics::StopRecording() {
+  is_recording_ = false;
+}
+
 void PickerSessionMetrics::MarkInputFocus() {
-  if (marked_first_focus_) {
+  if (!is_recording_ || marked_first_focus_) {
     return;
   }
 
@@ -22,6 +42,12 @@ void PickerSessionMetrics::MarkInputFocus() {
       /*sample=*/base::TimeTicks::Now() - trigger_start_timestamp_,
       /*min=*/base::Seconds(0), /*max=*/base::Seconds(5), /*buckets=*/100);
   marked_first_focus_ = true;
+}
+
+void PickerSessionMetrics::MarkContentsChanged() {
+  if (is_recording_ && search_field_presentation_time_recorder_ != nullptr) {
+    search_field_presentation_time_recorder_->RequestNext();
+  }
 }
 
 }  // namespace ash

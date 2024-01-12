@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/risk_util.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
@@ -357,8 +356,7 @@ signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
   if (!form_data_importer_) {
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, GetPaymentsNetworkInterface(), GetPersonalDataManager(),
-        GetPersonalDataManager()->app_locale());
+        this, GetPersonalDataManager(), GetPersonalDataManager()->app_locale());
   }
   return form_data_importer_.get();
 }
@@ -497,36 +495,43 @@ ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
-  DCHECK(popup_type != PopupType::kPasswords);
+void ChromeAutofillClient::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
+  DCHECK(main_filling_product != FillingProduct::kPassword);
 #if BUILDFLAG(IS_ANDROID)
-  switch (popup_type) {
-    case PopupType::kAddresses:
+  switch (main_filling_product) {
+    case FillingProduct::kAddress:
       ShowAutofillProfileSettings(web_contents());
       return;
-    case PopupType::kCreditCards:
+    case FillingProduct::kCreditCard:
       ShowAutofillCreditCardSettings(web_contents());
       return;
-    case PopupType::kAutocomplete:
-    case PopupType::kIbans:
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+    case FillingProduct::kIban:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPassword:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kNone:
       NOTREACHED();
   }
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
-    switch (popup_type) {
-      case PopupType::kAddresses:
+    switch (main_filling_product) {
+      case FillingProduct::kAddress:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
-      case PopupType::kCreditCards:
-      case PopupType::kIbans:
+      case FillingProduct::kCreditCard:
+      case FillingProduct::kIban:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
-      case PopupType::kAutocomplete:
-      case PopupType::kPasswords:
-      case PopupType::kUnspecified:
+      case FillingProduct::kAutocomplete:
+      case FillingProduct::kCompose:
+      case FillingProduct::kMerchantPromoCode:
+      case FillingProduct::kPassword:
+      case FillingProduct::kPlusAddresses:
+      case FillingProduct::kNone:
         NOTREACHED();
     }
   }
@@ -682,14 +687,6 @@ void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::ShowLocalCardMigrationDialog(
-    base::OnceClosure show_migration_dialog_closure) {
-  ManageMigrationUiController::CreateForWebContents(web_contents());
-  ManageMigrationUiController* controller =
-      ManageMigrationUiController::FromWebContents(web_contents());
-  controller->ShowBubble(std::move(show_migration_dialog_closure));
-}
-
 void ChromeAutofillClient::ConfirmMigrateLocalCardToCloud(
     const LegalMessageLines& legal_message_lines,
     const std::string& user_email,
@@ -901,7 +898,17 @@ void ChromeAutofillClient::ConfirmUploadIbanToCloud(
 #endif
 }
 
-void ChromeAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
+void ChromeAutofillClient::CreditCardUploadCompleted(bool card_saved) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    if (SaveCardBubbleControllerImpl* controller =
+            SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
+      controller->HideIconAndBubbleAfterUpload();
+    }
+  }
+#endif
+}
 
 void ChromeAutofillClient::ConfirmCreditCardFillAssist(
     const CreditCard& card,
@@ -1099,18 +1106,18 @@ ChromeAutofillClient::GetPopupScreenLocation() const {
 
 void ChromeAutofillClient::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!popup_controller_.get())
     return;  // Update only if there is a popup.
 
   // When a form changes dynamically, |popup_controller_| may hold a delegate of
   // the wrong type, so updating the popup would call into the wrong delegate.
-  // Hence, just close the existing popup (crbug/1113241).
-  // The cast is needed to access AutofillPopupController::GetPopupType().
-  if (popup_type !=
+  // Hence, just close the existing popup (crbug/1113241). The cast is needed to
+  // access AutofillPopupController::GetMainFillingProduct().
+  if (main_filling_product !=
       static_cast<const AutofillPopupController*>(popup_controller_.get())
-          ->GetPopupType()) {
+          ->GetMainFillingProduct()) {
     popup_controller_->Hide(PopupHidingReason::kStaleData);
     return;
   }
@@ -1307,11 +1314,6 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #else
   return nullptr;
 #endif
-}
-
-void ChromeAutofillClient::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  risk_util::LoadRiskData(0, web_contents(), std::move(callback));
 }
 
 void ChromeAutofillClient::PrimaryMainFrameWasResized(bool width_changed) {

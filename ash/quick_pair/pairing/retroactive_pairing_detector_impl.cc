@@ -25,6 +25,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace {
 
@@ -142,8 +143,9 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
   // initial Fast Pair pairing protocol and if it doesn't exist,
   // then it wasn't properly paired during initial Fast Pair
   // pairing.
-  if (!device->classic_address())
+  if (!device->classic_address()) {
     return;
+  }
 
   // The Bluetooth Adapter system event `DevicePairedChanged` fires before
   // Fast Pair's `OnDevicePaired`, and a Fast Pair pairing is expected to have
@@ -235,6 +237,8 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
   // only remaining parameter needed is the model ID, which we retrieve via GATT
   // characteristic.
   if (ash::features::IsFastPairHIDEnabled() &&
+      // Fast Pair HID only works on Floss.
+      floss::features::IsFlossEnabled() &&
       device->GetType() == device::BLUETOOTH_TRANSPORT_LE &&
       base::Contains(device->GetUUIDs(), kFastPairBluetoothUuid)) {
     CD_LOG(VERBOSE, Feature::FP)
@@ -248,8 +252,9 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
   // already connected.
   MessageStream* message_stream =
       message_stream_lookup_->GetMessageStream(classic_address);
-  if (!message_stream)
+  if (!message_stream) {
     return;
+  }
 
   message_streams_[classic_address] = message_stream;
   GetModelIdAndAddressFromMessageStream(classic_address, message_stream);
@@ -356,11 +361,13 @@ void RetroactivePairingDetectorImpl::OnMessageStreamConnected(
     const std::string& device_address,
     MessageStream* message_stream) {
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ":" << device_address;
-  if (!message_stream)
+  if (!message_stream) {
     return;
+  }
 
-  if (!base::Contains(potential_retroactive_addresses_, device_address))
+  if (!base::Contains(potential_retroactive_addresses_, device_address)) {
     return;
+  }
 
   message_streams_[device_address] = message_stream;
   GetModelIdAndAddressFromMessageStream(device_address, message_stream);
@@ -396,8 +403,9 @@ void RetroactivePairingDetectorImpl::GetModelIdAndAddressFromMessageStream(
   // fires before FastPair's |OnDevicePaired|, it might be possible for us to
   // find a false positive for a retroactive pairing scenario which we mitigate
   // here.
-  if (!base::Contains(potential_retroactive_addresses_, device_address))
+  if (!base::Contains(potential_retroactive_addresses_, device_address)) {
     return;
+  }
 
   // Iterate over messages for ble address and model id, which is what we
   // need for retroactive pairing.
@@ -594,8 +602,9 @@ void RetroactivePairingDetectorImpl::VerifyDeviceFound(
   CD_LOG(INFO, Feature::FP)
       << __func__ << ": Found device for Retroactive Pairing " << device;
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnRetroactivePairFound(device);
+  }
 
   DCHECK(device->classic_address());
   RemoveDeviceInformation(device->classic_address().value());

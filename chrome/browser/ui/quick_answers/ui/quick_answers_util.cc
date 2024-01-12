@@ -18,7 +18,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -140,34 +140,40 @@ View* AddHorizontalUiElements(
   return labels_container;
 }
 
-View* AddFillLayoutChildView(View* container,
-                             std::unique_ptr<views::View> view) {
-  View* child_view = container->AddChildView(std::move(view));
-  child_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  return child_view;
+std::unique_ptr<views::BoxLayoutView> CreateVerticalBoxLayoutView() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
+      .SetBetweenChildSpacing(kContentSingleSpacing)
+      .Build();
 }
 
-std::unique_ptr<views::FlexLayoutView> CreateHorizontalLayoutView() {
-  std::unique_ptr<views::FlexLayoutView> child_view =
+std::unique_ptr<views::BoxLayoutView> CreateHorizontalBoxLayoutView() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+      .SetBetweenChildSpacing(kContentSingleSpacing)
+      .Build();
+}
+
+std::unique_ptr<views::FlexLayoutView> CreateHorizontalFlexLayoutView() {
+  std::unique_ptr<views::FlexLayoutView> horizontal_view =
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .Build();
-  child_view->SetDefault(views::kMarginsKey, kViewHorizontalSpacingMargins);
+  horizontal_view->SetDefault(views::kMarginsKey,
+                              kViewHorizontalSpacingMargins);
 
-  return child_view;
+  return horizontal_view;
 }
 
 std::unique_ptr<views::Separator> CreateSeparatorView() {
-  std::unique_ptr<views::Separator> separator =
-      views::Builder<views::Separator>()
-          .SetOrientation(views::Separator::Orientation::kHorizontal)
-          .SetColorId(cros_tokens::kSeparatorColor)
-          .Build();
-  separator->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(kContentSingleSpacing, 0, kContentSingleSpacing, 0));
-  return separator;
+  return views::Builder<views::Separator>()
+      .SetOrientation(views::Separator::Orientation::kHorizontal)
+      .SetColorId(cros_tokens::kSeparatorColor)
+      .SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(kContentSingleSpacing, 0, kContentSingleSpacing, 0))
+      .Build();
 }
 
 std::unique_ptr<views::ImageButton> CreateImageButtonView(

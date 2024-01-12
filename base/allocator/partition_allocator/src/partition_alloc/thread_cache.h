@@ -9,8 +9,10 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "build/build_config.h"
+#include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
@@ -399,6 +401,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     ClearBucket(bucket, limit);
   }
 
+  internal::LightweightQuarantineBranch& GetSchedulerLoopQuarantineBranch() {
+    PA_DCHECK(scheduler_loop_quarantine_branch_.has_value());
+    return *scheduler_loop_quarantine_branch_;
+  }
+
  private:
   friend class tools::HeapDumper;
   friend class tools::ThreadCacheInspector;
@@ -467,6 +474,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // allocate.
   ThreadCache* next_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
   ThreadCache* prev_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
+
+  std::optional<internal::LightweightQuarantineBranch>
+      scheduler_loop_quarantine_branch_;
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;

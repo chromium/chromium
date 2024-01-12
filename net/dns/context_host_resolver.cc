@@ -80,7 +80,7 @@ ContextHostResolver::CreateRequest(
   return manager_->CreateRequest(
       Host(std::move(host)), std::move(network_anonymization_key),
       std::move(source_net_log), std::move(optional_parameters),
-      resolve_context_.get(), resolve_context_->host_cache());
+      resolve_context_.get());
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -94,9 +94,9 @@ ContextHostResolver::CreateRequest(
   if (shutting_down_)
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
 
-  return manager_->CreateRequest(
-      host, network_anonymization_key, source_net_log, optional_parameters,
-      resolve_context_.get(), resolve_context_->host_cache());
+  return manager_->CreateRequest(host, network_anonymization_key,
+                                 source_net_log, optional_parameters,
+                                 resolve_context_.get());
 }
 
 std::unique_ptr<HostResolver::ProbeRequest>

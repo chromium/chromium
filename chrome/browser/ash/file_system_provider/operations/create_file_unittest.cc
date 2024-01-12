@@ -33,8 +33,8 @@ const base::FilePath::CharType kFilePath[] =
 
 class FileSystemProviderOperationsCreateFileTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsCreateFileTest() {}
-  ~FileSystemProviderOperationsCreateFileTest() override {}
+  FileSystemProviderOperationsCreateFileTest() = default;
+  ~FileSystemProviderOperationsCreateFileTest() override = default;
 
   void SetUp() override {
     MountOptions mount_options(kFileSystemId, "" /* display_name */);

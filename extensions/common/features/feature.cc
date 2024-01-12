@@ -5,10 +5,10 @@
 #include "extensions/common/features/feature.h"
 
 #include <map>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -50,15 +50,15 @@ Feature::Feature() : no_parent_(false) {}
 
 Feature::~Feature() = default;
 
-void Feature::set_name(base::StringPiece name) {
+void Feature::set_name(std::string_view name) {
   name_ = std::string(name);
 }
 
-void Feature::set_alias(base::StringPiece alias) {
+void Feature::set_alias(std::string_view alias) {
   alias_ = std::string(alias);
 }
 
-void Feature::set_source(base::StringPiece source) {
+void Feature::set_source(std::string_view source) {
   source_ = std::string(source);
 }
 

@@ -43,10 +43,6 @@ bool PlatformWindow::IsAnimatingClosed() const {
   return false;
 }
 
-bool PlatformWindow::IsTranslucentWindowOpacitySupported() const {
-  return false;
-}
-
 void PlatformWindow::SetOpacity(float opacity) {}
 
 void PlatformWindow::SetVisibilityChangedAnimationsEnabled(bool enabled) {}

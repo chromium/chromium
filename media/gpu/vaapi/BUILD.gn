@@ -13,6 +13,9 @@ import("//tools/generate_stubs/rules.gni")
 assert(is_linux || is_chromeos)
 assert(use_vaapi)
 
+# Ensure Ozone is the default configuration.
+assert(use_ozone)
+
 generate_stubs("libva_stubs") {
   extra_header = "va_stub_header.fragment"
   sigs = [ "va.sigs" ]
@@ -166,13 +169,6 @@ source_set("common") {
     "//ui/gfx:memory_buffer",
     "//ui/gfx/linux:drm",
   ]
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
-  }
-
-  if (use_vaapi_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 
   configs += [ "//build/config/linux/libva" ]
 }
@@ -318,10 +314,6 @@ test("vaapi_unittest") {
       ":jpeg_decoder_unit_test",
       ":webp_decoder_unit_test",
     ]
-  }
-
-  if (use_ozone && is_linux) {
-    deps += [ "//ui/ozone" ]
   }
 }
 

@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切換為錄影模式</translation>
 <translation id="313467653172006084">每秒影格數：30</translation>
+<translation id="3158534262962737808">加入「<ph name="WIFINAME" />」</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3354465018370944241">相片設定</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">相片顯示比例</translation>
 <translation id="5057360777601936059">目前無法使用相機。
         請檢查相機是否已正確連接。</translation>
+<translation id="5157591164390831335">偵測到網址。</translation>
 <translation id="5163387177077603948">向右移動</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">文件左上角</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">感謝你針對相機應用程式提供意見回饋。
 
 如果你的意見是有關圖片或影片品質，請在附件中包含示例相片或影片，並且說明問題 (例如相片太暗或拍攝主體失焦)。</translation>
+<translation id="6519884562954018934">加入「<ph name="WIFINAME" />」</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6617916774429601017">顯示所有解析度</translation>
 <translation id="6631515515009660915">關閉鏡像</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">將麥克風切換為靜音。靜音功能已開啟</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8732462232047530626">預覽中繼資料</translation>
+<translation id="874854738381978209">偵測到 Wi-Fi 網路。</translation>
 <translation id="8815966864175525708">切換為肖像相片拍攝模式</translation>
 <translation id="8828441885228359828">繼續錄影</translation>
 <translation id="8870695351537079478">無法開始錄影</translation>

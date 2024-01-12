@@ -19,10 +19,7 @@ namespace syncer {
 
 class SyncChangeProcessor;
 
-// TODO(zea): remove SupportsWeakPtr in favor of having all SyncableService
-// implementers provide a way of getting a weak pointer to themselves.
-// See crbug.com/100114.
-class SyncableService : public base::SupportsWeakPtr<SyncableService> {
+class SyncableService {
  public:
   SyncableService() = default;
 
@@ -78,6 +75,9 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
   virtual absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<SyncableService> AsWeakPtr() = 0;
 };
 
 }  // namespace syncer

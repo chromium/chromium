@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PinnedModeExtension {
   // Releases the pinned mode and allows the user to do other things again.
   virtual void Unpin() = 0;
 
+  // Returns true if the configure event can handle
+  // PlatformWindowState::kPinnedFullscreen/kTrustedPinnedFullscreen.
+  virtual bool SupportsConfigurePinnedState() const = 0;
+
  protected:
   virtual ~PinnedModeExtension();
 

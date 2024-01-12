@@ -373,10 +373,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.signoutActionSheetCoordinator.delegate = self;
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
-    if (!success) {
-      return;
+    [weakSelf.signoutActionSheetCoordinator stop];
+    weakSelf.signoutActionSheetCoordinator = nil;
+    if (success) {
+      [weakSelf closeManageSyncSettings];
     }
-    [weakSelf closeManageSyncSettings];
   };
   [self.signoutActionSheetCoordinator start];
 }

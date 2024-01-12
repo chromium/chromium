@@ -19,12 +19,16 @@
 
 namespace app_list::federated {
 
-constexpr char kHistogramSearchSessionConclusion[] =
+inline constexpr char kHistogramSearchSessionConclusion[] =
     "Apps.AppList.Search.Federated.SearchSessionConclusion";
-constexpr char kHistogramInitStatus[] =
+inline constexpr char kHistogramInitStatus[] =
     "Apps.AppList.Search.Federated.InitStatus";
-constexpr char kHistogramReportStatus[] =
+inline constexpr char kHistogramQueryLengthOnStorageSuccess[] =
+    "Apps.AppList.Search.Federated.QueryLengthOnStorageSuccess";
+inline constexpr char kHistogramReportStatus[] =
     "Apps.AppList.Search.Federated.ReportStatus";
+
+const int kMaxLoggedQueryLengthOnStorageSuccess = 20;
 
 // Records launcher search backend federated analytics.
 // Requires that OnDefaultSearchIsGoogleSet() is called after class creation and

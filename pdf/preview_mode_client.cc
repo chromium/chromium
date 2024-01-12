@@ -125,6 +125,10 @@ std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
   return nullptr;
 }
 
+v8::Isolate* PreviewModeClient::GetIsolate() {
+  NOTREACHED_NORETURN();
+}
+
 std::vector<PDFEngine::Client::SearchStringResult>
 PreviewModeClient::SearchString(const char16_t* string,
                                 const char16_t* term,

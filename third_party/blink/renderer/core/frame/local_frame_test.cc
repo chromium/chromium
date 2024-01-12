@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #if BUILDFLAG(IS_MAC)
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
@@ -68,7 +69,10 @@ class TestTextInputHostWaiter : public mojom::blink::TextInputHost {
 
 }  // namespace
 
-class LocalFrameTest : public testing::Test {};
+class LocalFrameTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 namespace {
 

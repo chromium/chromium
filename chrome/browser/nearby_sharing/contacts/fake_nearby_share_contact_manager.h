@@ -67,13 +67,12 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
 
     std::vector<raw_ptr<FakeNearbyShareContactManager, VectorExperimental>>
         instances_;
-    raw_ptr<PrefService, ExperimentalAsh> latest_pref_service_ = nullptr;
-    raw_ptr<NearbyShareClientFactory, DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<PrefService> latest_pref_service_ = nullptr;
+    raw_ptr<NearbyShareClientFactory, DanglingUntriaged>
         latest_http_client_factory_ = nullptr;
-    raw_ptr<NearbyShareLocalDeviceDataManager,
-            DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<NearbyShareLocalDeviceDataManager, DanglingUntriaged>
         latest_local_device_data_manager_ = nullptr;
-    raw_ptr<NearbyShareProfileInfoProvider, DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<NearbyShareProfileInfoProvider, DanglingUntriaged>
         latest_profile_info_provider_ = nullptr;
   };
 

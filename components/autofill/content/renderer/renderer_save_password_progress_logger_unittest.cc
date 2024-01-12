@@ -24,7 +24,7 @@ const char kTestText[] = "test";
 class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
  public:
   FakeContentPasswordManagerDriver() : called_record_save_(false) {}
-  ~FakeContentPasswordManagerDriver() override {}
+  ~FakeContentPasswordManagerDriver() override = default;
 
   mojo::PendingRemote<mojom::PasswordManagerDriver>
   CreatePendingRemoteAndBind() {

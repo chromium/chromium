@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -67,7 +68,6 @@ source_set("browser_sources") {
     "bluetooth_scanning_prompt.cc",
     "bluetooth_scanning_prompt.h",
     "browser_accessibility_state.h",
-    "browser_associated_interface.h",
     "browser_child_process_host.h",
     "browser_child_process_host_delegate.cc",
     "browser_child_process_host_delegate.h",
@@ -79,8 +79,6 @@ source_set("browser_sources") {
     "browser_main_parts.cc",
     "browser_main_parts.h",
     "browser_main_runner.h",
-    "browser_message_filter.cc",
-    "browser_message_filter.h",
     "browser_or_resource_context.cc",
     "browser_or_resource_context.h",
     "browser_plugin_guest_delegate.cc",
@@ -111,6 +109,8 @@ source_set("browser_sources") {
     "client_hints.h",
     "client_hints_controller_delegate.cc",
     "client_hints_controller_delegate.h",
+    "clipboard_types.cc",
+    "clipboard_types.h",
     "commit_deferring_condition.cc",
     "commit_deferring_condition.h",
     "console_message.cc",
@@ -364,6 +364,7 @@ source_set("browser_sources") {
     "responsiveness_calculator_delegate.h",
     "restore_type.h",
     "save_page_type.h",
+    "scoped_accessibility_mode.h",
     "scoped_authenticator_environment_for_testing.h",
     "screen_orientation_delegate.h",
     "screenlock_observer.h",
@@ -449,8 +450,6 @@ source_set("browser_sources") {
     "weak_document_ptr.h",
     "web_contents.cc",
     "web_contents.h",
-    "web_contents_ax_mode_notifier.cc",
-    "web_contents_ax_mode_notifier.h",
     "web_contents_delegate.cc",
     "web_contents_delegate.h",
     "web_contents_media_capture_id.cc",
@@ -501,6 +500,13 @@ source_set("browser_sources") {
   if (rtc_use_pipewire) {
     configs +=
         [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
+  }
+
+  if (content_enable_legacy_ipc) {
+    sources += [
+      "browser_message_filter.cc",
+      "browser_message_filter.h",
+    ]
   }
 
   public_deps = [

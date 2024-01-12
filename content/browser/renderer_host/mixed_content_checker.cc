@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -263,12 +262,6 @@ bool MixedContentChecker::ShouldBlockInternal(
   // TODO(https://crbug.com/1030307): decide whether CORS-enabled is really the
   // right way to draw this distinction.
   if (!ShouldTreatURLSchemeAsCorsEnabled(url)) {
-    // Record non-webby mixed content to see if it is rare enough that it can be
-    // gated behind an enterprise policy. This excludes URLs that are considered
-    // potentially-secure such as blob: and filesystem:, which are special-cased
-    // in `IsUrlPotentiallySecure()` and cause an early-return because of the
-    // `InWhichFrameIsContentMixed()` check above.
-    UMA_HISTOGRAM_BOOLEAN("SSL.NonWebbyMixedContentLoaded", true);
     return false;
   }
 

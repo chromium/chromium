@@ -1263,3 +1263,51 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 };
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestDefaultSearch, SearchProtected);
+
+// Verifies that we handle a protected Dict preference being changed to an
+// unexpected type (int). See https://crbug.com/1512724.
+class PrefHashBrowserTestExtensionDictTypeChanged
+    : public PrefHashBrowserTestBase {
+ public:
+  void SetupPreferences() override {
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"), 1,
+                                      browser());
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    base::Value::Dict* const selected_prefs =
+        protection_level_ >= PROTECTION_ENABLED_EXTENSIONS
+            ? protected_preferences
+            : unprotected_preferences;
+    // |selected_prefs| should never be NULL under the protection level picking
+    // it.
+    ASSERT_TRUE(selected_prefs);
+    EXPECT_TRUE(selected_prefs->FindDictByDottedPath(
+        extensions::pref_names::kExtensions));
+    // Overwrite with an int (wrong type).
+    selected_prefs->SetByDottedPath(extensions::pref_names::kExtensions, 13);
+    EXPECT_EQ(13, selected_prefs
+                      ->FindIntByDottedPath(extensions::pref_names::kExtensions)
+                      .value());
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    // Setting the extensions dict to an invalid type gets noticed regardless
+    // of protection level. This implementation just happened to be easier and
+    // it doesn't seem important to not protect the kExtensions from being the
+    // wrong type at any protection level. PrefService will correct the type
+    // either way.
+    EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
+              GetTrackedPrefHistogramCount(
+                  user_prefs::tracked::kTrackedPrefHistogramCleared,
+                  BEGIN_ALLOW_SINGLE_BUCKET + 5));
+
+    // Expect a dictionary for extensions. This shouldn't somehow explode.
+    profile()->GetPrefs()->GetDict(extensions::pref_names::kExtensions);
+  }
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestExtensionDictTypeChanged,
+                       ExtensionDictTypeChanged);

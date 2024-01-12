@@ -4,14 +4,14 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../externs/ts/state.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import {DialogType} from '../../state/state.js';
 
 import type {FileFilter} from './directory_contents.js';
 import type {DirectoryModel} from './directory_model.js';
@@ -249,8 +249,8 @@ export class DialogActionController {
       }
     };
     // Record the root types of chosen files in OPEN dialog.
-    if (this.dialogType_ == DialogType.SELECT_OPEN_FILE ||
-        this.dialogType_ == DialogType.SELECT_OPEN_MULTI_FILE) {
+    if (this.dialogType_ === DialogType.SELECT_OPEN_FILE ||
+        this.dialogType_ === DialogType.SELECT_OPEN_MULTI_FILE) {
       recordEnum('OpenFiles.RootType', currentRootType, RootTypesForUMA);
     }
     if (selection.multiple) {

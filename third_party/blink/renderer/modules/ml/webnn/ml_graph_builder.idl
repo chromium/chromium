@@ -70,6 +70,11 @@ dictionary MLGemmOptions {
   boolean bTranspose = false;
 };
 
+dictionary MLHardSigmoidOptions {
+  float alpha = 0.2;
+  float beta = 0.5;
+};
+
 dictionary MLLayerNormalizationOptions {
   MLOperand scale;
   MLOperand bias;
@@ -219,6 +224,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
 
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
+
+  [RaisesException] MLOperand hardSigmoid(MLOperand x, optional MLHardSigmoidOptions options = {});
+  [RaisesException] MLActivation hardSigmoid(optional MLHardSigmoidOptions options = {});
 
   [RaisesException] MLOperand hardSwish(MLOperand x);
   [RaisesException] MLActivation hardSwish();

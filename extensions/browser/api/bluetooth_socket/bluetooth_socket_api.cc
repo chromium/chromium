@@ -553,9 +553,7 @@ ExtensionFunction::ResponseAction BluetoothSocketSendFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   io_buffer_size_ = params_->data.size();
-  io_buffer_ = base::MakeRefCounted<net::WrappedIOBuffer>(
-      reinterpret_cast<const char*>(params_->data.data()),
-      params_->data.size());
+  io_buffer_ = base::MakeRefCounted<net::WrappedIOBuffer>(params_->data);
 
   BluetoothApiSocket* socket = GetSocket(params_->socket_id);
   if (!socket)

@@ -56,6 +56,8 @@ namespace {
 const FourCharCode kWeightTag = 'wght';
 const FourCharCode kWidthTag = 'wdth';
 
+const int kCTNormalTraitsValue = 0;
+
 const NSFontTraitMask SYNTHESIZED_FONT_TRAITS =
     (NSBoldFontMask | NSItalicFontMask);
 
@@ -203,22 +205,28 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
       continue;
     }
 
+    int candidate_traits = kCTNormalTraitsValue;
+    int candidate_weight = kNormalWeightValue;
     ScopedCFTypeRef<CFDictionaryRef> traits_dict(CFCast<CFDictionaryRef>(
         CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute)));
+    if (traits_dict) {
+      CFNumberRef candidate_symbolic_traits_num =
+          GetValueFromDictionary<CFNumberRef>(traits_dict.get(),
+                                              kCTFontSymbolicTrait);
+      if (candidate_symbolic_traits_num) {
+        CFNumberGetValue(candidate_symbolic_traits_num, kCFNumberIntType,
+                         &candidate_traits);
+      }
 
-    CFNumberRef candidate_symbolic_traits_num =
-        GetValueFromDictionary<CFNumberRef>(traits_dict.get(),
-                                            kCTFontSymbolicTrait);
-    int candidate_traits;
-    CFNumberGetValue(candidate_symbolic_traits_num, kCFNumberIntType,
-                     &candidate_traits);
-
-    CFNumberRef candidate_weight_num = GetValueFromDictionary<CFNumberRef>(
-        traits_dict.get(), kCTFontWeightTrait);
-    float candidate_ct_weight;
-    CFNumberGetValue(candidate_weight_num, kCFNumberFloatType,
-                     &candidate_ct_weight);
-    int candidate_weight = ToCSSFontWeight(candidate_ct_weight);
+      CFNumberRef candidate_weight_num = GetValueFromDictionary<CFNumberRef>(
+          traits_dict.get(), kCTFontWeightTrait);
+      if (candidate_weight_num) {
+        float candidate_ct_weight;
+        CFNumberGetValue(candidate_weight_num, kCFNumberFloatType,
+                         &candidate_ct_weight);
+        candidate_weight = ToCSSFontWeight(candidate_ct_weight);
+      }
+    }
 
     if (!matched_font_in_family ||
         BetterChoiceCT(desired_traits, desired_weight, chosen_traits,
@@ -628,6 +636,25 @@ int ToCSSFontWeight(float ct_font_weight) {
     }
   }
   return kNormalWeightValue;
+}
+
+float ToCTFontWeight(int css_weight) {
+  if (css_weight <= 50 || css_weight >= 950) {
+    return 0.0;
+  }
+  const float weights[] = {
+      -0.80,  // Thin (Hairline)
+      -0.60,  // Extra Light (Ultra Light)
+      -0.40,  // Light
+      0.0,    // Normal (Regular)
+      0.23,   // Medium
+      0.30,   // Semi Bold (Demi Bold)
+      0.40,   // Bold
+      0.56,   // Extra Bold (Ultra Bold)
+      0.62,   // Black (Heavy)
+  };
+  int index = (css_weight - 50) / 100;
+  return weights[index];
 }
 
 }  // namespace blink

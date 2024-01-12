@@ -81,6 +81,10 @@ class WebViewPermissionHelper {
   void RequestGeolocationPermission(const GURL& requesting_frame,
                                     bool user_gesture,
                                     base::OnceCallback<void(bool)> callback);
+  // Requests permission from the embedder to request access to Human
+  // Interface Devices.
+  void RequestHidPermission(const GURL& requesting_frame,
+                            base::OnceCallback<void(bool)> callback);
 
   void RequestFileSystemPermission(const GURL& url,
                                    bool allowed_by_default,

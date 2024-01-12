@@ -70,8 +70,7 @@ class FakeNearbyShareDeviceDataUpdaterFactory
   std::vector<raw_ptr<FakeNearbyShareDeviceDataUpdater, VectorExperimental>>
       instances_;
   base::TimeDelta latest_timeout_;
-  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> latest_client_factory_ =
-      nullptr;
+  raw_ptr<NearbyShareClientFactory> latest_client_factory_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_FAKE_NEARBY_SHARE_DEVICE_DATA_UPDATER_H_

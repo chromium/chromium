@@ -17,8 +17,25 @@
 
 namespace views {
 
+class VIEWS_EXPORT DialogModelSectionHost : public BoxLayoutView,
+                                            public ui::DialogModelFieldHost {
+  METADATA_HEADER(DialogModelSectionHost, BoxLayoutView)
+
+ public:
+  [[nodiscard]] static std::unique_ptr<DialogModelSectionHost> Create(
+      ui::DialogModelSection* section,
+      ui::ElementIdentifier initially_focused_field_id =
+          ui::ElementIdentifier());
+
+ protected:
+  // Prevent accidentally constructing this and not using ::Create().
+  using BoxLayoutView::BoxLayoutView;
+};
+
 // TODO(pbos): Find a better name and move to a file separate from
-// BubbleDialogModelHost.
+// BubbleDialogModelHost. See if we can have BubbleDialogModelHost use
+// DialogModelSectionHost directly (by removing more calls into
+// BubbleDialogModelHostContentsView).
 class BubbleDialogModelHostContentsView;
 
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which

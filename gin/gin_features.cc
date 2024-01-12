@@ -249,6 +249,11 @@ BASE_FEATURE(kJavaScriptRegExpModifiers,
              "JavaScriptRegExpModifiers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the `with` syntax for the Import Attributes proposal.
+BASE_FEATURE(kJavaScriptImportAttributes,
+             "kJavaScriptImportAttributes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:

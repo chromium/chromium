@@ -73,7 +73,7 @@ class MockUpgradeObserver : public UpgradeObserver {
   MOCK_METHOD1(OnRelaunchOverriddenToRequired, void(bool overridden));
 
  private:
-  const raw_ptr<UpgradeDetector, ExperimentalAsh> upgrade_detector_;
+  const raw_ptr<UpgradeDetector> upgrade_detector_;
 };
 
 }  // namespace
@@ -207,7 +207,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   std::unique_ptr<base::Environment> env_;
   absl::optional<std::string> original_tz_;
 
-  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged>
       fake_update_engine_client_;  // Not owned.
 };
 

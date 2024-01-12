@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import {getParentEntry} from '../../common/js/api.js';
 import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
-import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue, isDebugStoreEnabled} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH, shouldProvideIcons, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import {EntryLocation} from '../../externs/entry_location.js';
-import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {CurrentDirectory, DialogType, EntryType, FileData, State, Volume, VolumeMap} from '../../externs/ts/state.js';
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, ICON_TYPES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
 import {keepLatest, keyedKeepLatest} from '../../lib/concurrency_models.js';
+import {type CurrentDirectory, DialogType, EntryType, type FileData, type State, type Volume, type VolumeMap} from '../../state/state.js';
 import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
@@ -106,12 +105,16 @@ function clearCachedEntriesReducer(state: State): State {
     }
   }
 
+  const isDebugStore = isDebugStoreEnabled();
   for (const key of Object.keys(entries)) {
     if (entriesToKeep.has(key)) {
       continue;
     }
 
     delete entries[key];
+    if (isDebugStore) {
+      console.log(`Clear entry: ${key}`);
+    }
   }
 
   return state;

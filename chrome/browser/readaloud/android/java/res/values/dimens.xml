@@ -22,7 +22,6 @@ found in the LICENSE file.
 
     <!-- Header -->
     <dimen name="readaloud_sheet_drag_bar_margin">8dp</dimen>
-    <dimen name="readaloud_close_button_margin">12dp</dimen>
     <dimen name="readaloud_now_playing_spacing">20dp</dimen>
 
     <!-- Title -->
@@ -49,6 +48,10 @@ found in the LICENSE file.
     <dimen name="readaloud_control_button_diameter">72dp</dimen>
     <dimen name="readaloud_play_button_width">104dp</dimen>
     <dimen name="readaloud_control_button_spacing">12dp</dimen>
+
+    <!-- Menu buttons -->
+    <dimen name="readaloud_menu_buttons_width">28dp</dimen>
+    <dimen name="readaloud_menu_buttons_height">28dp</dimen>
 
     <!-- Menus -->
     <!-- Shared -->

@@ -26,7 +26,8 @@ using chromeos::federated::mojom::Example;
 using chromeos::federated::mojom::ExamplePtr;
 using chromeos::federated::mojom::Features;
 
-constexpr char kClientName[] = "launcher_query_analytics_v1";
+constexpr char kClientNameVersion1[] = "launcher_query_analytics_v1";
+constexpr char kClientNameVersion2[] = "launcher_query_analytics_v2";
 
 std::string SearchSessionConclusionToString(
     ash::SearchSessionConclusion conclusion) {
@@ -52,6 +53,12 @@ void LogInitStatus(FederatedMetricsManager::InitStatus status) {
 
 void LogReportStatus(FederatedMetricsManager::ReportStatus status) {
   base::UmaHistogramEnumeration(kHistogramReportStatus, status);
+}
+
+void LogQueryLength(int query_length) {
+  base::UmaHistogramExactLinear(kHistogramQueryLengthOnStorageSuccess,
+                                query_length,
+                                kMaxLoggedQueryLengthOnStorageSuccess);
 }
 
 ExamplePtr CreateExamplePtr(const std::string& query,
@@ -181,11 +188,24 @@ void FederatedMetricsManager::LogExample(const std::string& query) {
   } else if (!federated_service_.is_connected()) {
     LogReportStatus(ReportStatus::kFederatedServiceNotConnected);
   } else {
-    // Federated service available and connected.
-    ExamplePtr example = CreateExamplePtr(
+    // Federated service is available and connected.
+
+    // Store example for launcher FA version 1.
+    ExamplePtr example_1 = CreateExamplePtr(
         query, SearchSessionConclusionToString(session_result_));
-    federated_service_->ReportExample(kClientName, std::move(example));
+    federated_service_->ReportExample(kClientNameVersion1,
+                                      std::move(example_1));
+
+    // Store example for launcher FA version 2.
+    // TODO(b/318575870): De-duplicate query collection once support is
+    // available on the infrastructure side.
+    ExamplePtr example_2 = CreateExamplePtr(
+        query, SearchSessionConclusionToString(session_result_));
+    federated_service_->ReportExample(kClientNameVersion2,
+                                      std::move(example_2));
+
     LogReportStatus(ReportStatus::kOk);
+    LogQueryLength(query.length());
   }
 }
 

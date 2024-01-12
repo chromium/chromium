@@ -4,6 +4,7 @@
 
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

@@ -146,35 +146,46 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     bool use_fallback,
     base::WeakPtr<WebAppUiManager> ui_manager,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : WebAppCommandTemplate<NoopLock>("FetchManifestAndInstallCommand"),
-      noop_lock_description_(std::make_unique<NoopLockDescription>()),
+    : WebAppCommand<NoopLock,
+                    const webapps::AppId&,
+                    webapps::InstallResultCode>(
+          "FetchManifestAndInstallCommand",
+          NoopLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(webapps::AppId(),
+                          webapps::InstallResultCode::
+                              kCancelledOnWebAppProviderShuttingDown)),
       install_surface_(install_surface),
       web_contents_(contents),
       dialog_callback_(std::move(dialog_callback)),
-      install_callback_(std::move(callback)),
       use_fallback_(use_fallback),
       ui_manager_(ui_manager),
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/false,
                                install_surface_) {
   Observe(web_contents_.get());
-  debug_log_.Set("visible_url", web_contents_->GetVisibleURL().spec());
-  debug_log_.Set("last_committed_url",
-                 web_contents_->GetLastCommittedURL().spec());
-  debug_log_.Set("initial_visibility",
-                 static_cast<int>(web_contents()->GetVisibility()));
+  GetMutableDebugValue().Set("visible_url",
+                             web_contents_->GetVisibleURL().spec());
+  GetMutableDebugValue().Set("last_committed_url",
+                             web_contents_->GetLastCommittedURL().spec());
+  GetMutableDebugValue().Set("initial_visibility",
+                             static_cast<int>(web_contents()->GetVisibility()));
+  GetMutableDebugValue().Set("install_surface",
+                             static_cast<int>(install_surface_));
+  GetMutableDebugValue().Set("use_fallback", use_fallback_);
 }
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 
-const LockDescription& FetchManifestAndInstallCommand::lock_description()
-    const {
-  DCHECK(noop_lock_description_ || app_lock_description_);
+void FetchManifestAndInstallCommand::OnShutdown(
+    base::PassKey<WebAppCommandManager>) const {
+  webapps::InstallableMetrics::TrackInstallResult(false);
+}
 
-  if (app_lock_description_)
-    return *app_lock_description_;
-
-  return *noop_lock_description_;
+content::WebContents* FetchManifestAndInstallCommand::GetInstallingWebContents(
+    base::PassKey<WebAppCommandManager>) {
+  return web_contents_.get();
 }
 
 void FetchManifestAndInstallCommand::StartWithLock(
@@ -212,23 +223,6 @@ void FetchManifestAndInstallCommand::StartWithLock(
   } else {
     FetchManifest();
   }
-}
-
-void FetchManifestAndInstallCommand::OnShutdown() {
-  Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-}
-
-content::WebContents*
-FetchManifestAndInstallCommand::GetInstallingWebContents() {
-  return web_contents_.get();
-}
-
-base::Value FetchManifestAndInstallCommand::ToDebugValue() const {
-  auto debug_value = debug_log_.Clone();
-  debug_value.Set("app_id", app_id_);
-  debug_value.Set("install_surface", static_cast<int>(install_surface_));
-  debug_value.Set("used_fallback", use_fallback_);
-  return base::Value(std::move(debug_value));
 }
 
 void FetchManifestAndInstallCommand::DidFinishNavigation(
@@ -282,14 +276,10 @@ void FetchManifestAndInstallCommand::WebContentsDestroyed() {
 }
 
 void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
-  if (!install_callback_)
-    return;
-  debug_log_.Set("result_code", base::ToString(code));
+  GetMutableDebugValue().Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   Observe(nullptr);
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), webapps::AppId(), code));
+  CompleteAndSelfDestruct(CommandResult::kFailure, webapps::AppId(), code);
 }
 
 bool FetchManifestAndInstallCommand::IsWebContentsDestroyed() {
@@ -377,14 +367,12 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
       opt_manifest_ && !opt_manifest_->icons.empty();
 
   app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
-
-  app_lock_description_ =
-      command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(noop_lock_), {app_id_},
-          base::BindOnce(&FetchManifestAndInstallCommand::
-                             CheckForPlayStoreIntentOrGetIcons,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
-                         skip_page_favicons));
+  command_manager()->lock_manager().UpgradeAndAcquireLock(
+      std::move(noop_lock_), {app_id_},
+      base::BindOnce(
+          &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
+          weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
+          skip_page_favicons));
 }
 
 void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
@@ -561,10 +549,6 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab,
           weak_ptr_factory_.GetWeakPtr()));
-
-  // Check that the finalizer hasn't called OnInstallFinalizedMaybeReparentTab
-  // synchronously:
-  DCHECK(install_callback_);
 }
 
 void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
@@ -622,18 +606,17 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
           install_error_log_entry_.TakeErrorDict());
     }
   }
-  debug_log_.Set("result_code", base::ToString(code));
+  GetMutableDebugValue().Set("result_code", base::ToString(code));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
-  SignalCompletionAndSelfDestruct(
-      webapps::IsSuccess(code) ? CommandResult::kSuccess
-                               : CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), app_id, code));
+  CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
+                                                   : CommandResult::kFailure,
+                          app_id, code);
 }
 
 void FetchManifestAndInstallCommand::LogInstallInfo() {
-  debug_log_.Set("manifest_id", web_app_info_->manifest_id.spec());
-  debug_log_.Set("start_url", web_app_info_->start_url.spec());
-  debug_log_.Set("name", web_app_info_->title);
+  GetMutableDebugValue().Set("manifest_id", web_app_info_->manifest_id.spec());
+  GetMutableDebugValue().Set("start_url", web_app_info_->start_url.spec());
+  GetMutableDebugValue().Set("name", web_app_info_->title);
 }
 }  // namespace web_app

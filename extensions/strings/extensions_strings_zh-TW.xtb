@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">找不到封裝使用的目錄絕對路徑。</translation>
 <translation id="5160071981665899014">無法載入指令碼的 JavaScript「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="5356315618422219272">Appview：<ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">系統不支援造型視窗。</translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。你不妨重新考慮是否仍要進行。</translation>
 <translation id="5486326529110362464">私密金鑰必須存在輸入項目值。</translation>
 <translation id="5972529113578162692">這個裝置的管理員要求安裝「<ph name="EXTENSION_NAME" />」，因此無法解除安裝這個擴充功能。</translation>

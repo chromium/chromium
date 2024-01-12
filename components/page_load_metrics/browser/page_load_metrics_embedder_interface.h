@@ -34,6 +34,7 @@ class PageLoadMetricsEmbedderInterface {
   virtual bool IsNoStatePrefetch(content::WebContents* web_contents) = 0;
   virtual bool IsExtensionUrl(const GURL& url) = 0;
   virtual bool IsSidePanel(content::WebContents* web_contents) = 0;
+  virtual bool IsNonTabWebUI() = 0;
 
   // Returns the PageLoadMetricsMemoryTracker for the given BrowserContext if
   // tracking is enabled.

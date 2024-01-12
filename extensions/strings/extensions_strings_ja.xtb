@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">圧縮するディレクトリの絶対パスが見つかりません。</translation>
 <translation id="5160071981665899014">スクリプトの JavaScript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="5356315618422219272">アプリビュー: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">形状指定ウィンドウはサポートされていません。</translation>
 <translation id="5456409301717116725">この拡張機能には、鍵ファイル「<ph name="KEY_PATH" />」が含まれていますが、おそらくその必要性はありません。</translation>
 <translation id="5486326529110362464">秘密鍵の入力値が存在している必要があります。</translation>
 <translation id="5972529113578162692">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> をインストールすることが要件として指定されています。この拡張機能はアンインストールできません。</translation>

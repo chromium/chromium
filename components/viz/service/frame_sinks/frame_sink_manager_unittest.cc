@@ -788,9 +788,8 @@ TEST_F(FrameSinkManagerTest,
   ASSERT_TRUE(surface_observer_.IsSurfaceDamaged(surface_id1));
 
   // `request` is emplaced at the end of the root RenderPass.
-  const auto& preserved_request = *(surface1->GetActiveOrInterpolatedFrame()
-                                        .render_pass_list.back()
-                                        ->copy_requests.back());
+  const auto& preserved_request = *(
+      surface1->GetActiveFrame().render_pass_list.back()->copy_requests.back());
   // Expect the identical `CopyOutputRequest`.
   ASSERT_EQ(&preserved_request, request_ptr);
 
@@ -839,9 +838,8 @@ TEST_F(FrameSinkManagerTest, ExactCopyOutputRequestTakenBySurfaceRightAway) {
                                /*capture_exact_surface_id=*/true);
   ASSERT_TRUE(surface_observer_.IsSurfaceDamaged(surface_id1));
   // `request` is emplaced at the end of the root RenderPass.
-  const auto& preserved_request = *(surface1->GetActiveOrInterpolatedFrame()
-                                        .render_pass_list.back()
-                                        ->copy_requests.back());
+  const auto& preserved_request = *(
+      surface1->GetActiveFrame().render_pass_list.back()->copy_requests.back());
   // Expect the identical `CopyOutputRequest`.
   ASSERT_EQ(&preserved_request, request_ptr);
 

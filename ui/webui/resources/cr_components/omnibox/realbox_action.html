@@ -50,8 +50,7 @@
   }
 
   :host(:hover) {
-    background-color: var(--action-bg-hovered,
-                          rgba(var(--google-grey-900-rgb), .1));
+    background-color: var(--color-realbox-results-button-hover);
   }
 
   :host-context(.focus-outline-visible):host(:focus) {
@@ -59,8 +58,7 @@
     box-shadow: inset 0 0 0 2px var(--google-blue-600);
   }
 
-  :host-context([expanded-state-layout-chrome-refresh]):host-context(
-      .focus-outline-visible):host(:focus) {
+  :host-context([expanded-state-layout-chrome-refresh]):host(:focus) {
     margin: 2px;
     margin-inline-end: 2px;
     border: solid 1px var(--color-realbox-results-action-chip);
@@ -69,7 +67,8 @@
 
 </style>
 <div class="contents" title="[[tooltip_]]" on-click="onActionClick_"
-                     on-keydown="onActionKeyDown_">
+                     on-keydown="onActionKeyDown_"
+                     on-mousedown="onActionMouseDown_">
   <div id="action-icon" style$="-webkit-mask-image: url([[action.iconUrl]])"
       hidden="[[!showCr23ActionIcon_()]]"></div>
   <img id="action-icon" src$="[[action.iconUrl]]"

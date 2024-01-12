@@ -52,11 +52,9 @@ class FieldTrialTest {
 
   virtual ~FieldTrialTest();
 
-  void SetFeatureParams(
-      bool enable,
-      float query_probability,
-      NetworkTimeTracker::FetchBehavior fetch_behavior,
-      NetworkTimeTracker::ClockDriftSamples clock_drift_samples);
+  void SetFeatureParams(bool enable,
+                        float query_probability,
+                        NetworkTimeTracker::FetchBehavior fetch_behavior);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

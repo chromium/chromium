@@ -5,6 +5,8 @@
 import {ActionManager} from './action_manager.js';
 import {AutoScanManager} from './auto_scan_manager.js';
 import {Navigator} from './navigator.js';
+import {SwitchAccess} from './switch_access.js';
+import {ErrorType} from './switch_access_constants.js';
 
 import Command = chrome.accessibilityPrivate.SwitchAccessCommand;
 
@@ -25,7 +27,9 @@ export class SACommands {
 
   static init(): void {
     if (SACommands.instance) {
-      throw new Error('Cannot create more than one SACommands instance.');
+      throw SwitchAccess.error(
+          ErrorType.DUPLICATE_INITIALIZATION,
+          'Cannot create more than one SACommands instance.');
     }
     SACommands.instance = new SACommands();
   }

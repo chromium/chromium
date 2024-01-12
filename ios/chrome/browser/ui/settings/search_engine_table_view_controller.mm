@@ -18,6 +18,7 @@
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -28,10 +29,12 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -41,9 +44,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
+  // Used for LegacySettingsSearchEngineItem.
   ItemTypeLegacyPrepopulatedEngine = kItemTypeEnumZero,
   ItemTypeHeader,
+  // Used for LegacySettingsSearchEngineItem.
   ItemTypeLegacyCustomEngine,
+  // Used for SettingsSearchEngineItem.
+  ItemTypePrepopulatedEngine,
+  // Used for SettingsSearchEngineItem.
+  ItemTypeCustomEngine,
 };
 
 const CGFloat kTableViewSeparatorLeadingInset = 56;
@@ -241,9 +250,14 @@ const char kUmaSelectDefaultSearchEngine[] =
     }
 
     for (const TemplateURL* templateURL : _firstList) {
-      [model addItem:[self createSettingsSearchEngineItemFromTemplateURL:
-                               templateURL]
-          toSectionWithIdentifier:SectionIdentifierFirstList];
+      TableViewItem* item = nil;
+      if (_shouldShowUpdatedSettings) {
+        item = [self createSettingsSearchEngineItemFromTemplateURL:templateURL];
+      } else {
+        item = [self
+            createLegacySettingsSearchEngineItemFromTemplateURL:templateURL];
+      }
+      [model addItem:item toSectionWithIdentifier:SectionIdentifierFirstList];
     }
   }
 
@@ -260,9 +274,14 @@ const char kUmaSelectDefaultSearchEngine[] =
 
     for (const TemplateURL* templateURL : _secondList) {
       DCHECK(templateURL->prepopulate_id() == 0);
-      [model addItem:[self createSettingsSearchEngineItemFromTemplateURL:
-                               templateURL]
-          toSectionWithIdentifier:SectionIdentifierSecondList];
+      TableViewItem* item = nil;
+      if (_shouldShowUpdatedSettings) {
+        item = [self createSettingsSearchEngineItemFromTemplateURL:templateURL];
+      } else {
+        item = [self
+            createLegacySettingsSearchEngineItemFromTemplateURL:templateURL];
+      }
+      [model addItem:item toSectionWithIdentifier:SectionIdentifierSecondList];
     }
   }
 }
@@ -313,6 +332,10 @@ const char kUmaSelectDefaultSearchEngine[] =
   return [self.tableViewModel hasItemForItemType:ItemTypeLegacyCustomEngine
                                sectionIdentifier:SectionIdentifierFirstList] ||
          [self.tableViewModel hasItemForItemType:ItemTypeLegacyCustomEngine
+                               sectionIdentifier:SectionIdentifierSecondList] ||
+         [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
+                               sectionIdentifier:SectionIdentifierFirstList] ||
+         [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
                                sectionIdentifier:SectionIdentifierSecondList];
 }
 
@@ -341,13 +364,12 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   // Only search engine items can be selected.
   DCHECK(selectedItem.type == ItemTypeLegacyPrepopulatedEngine ||
-         selectedItem.type == ItemTypeLegacyCustomEngine);
+         selectedItem.type == ItemTypeLegacyCustomEngine ||
+         selectedItem.type == ItemTypePrepopulatedEngine ||
+         selectedItem.type == ItemTypeCustomEngine);
 
   // Do nothing if the tapped engine was already the default.
-  LegacySettingsSearchEngineItem* selectedTextItem =
-      base::apple::ObjCCastStrict<LegacySettingsSearchEngineItem>(selectedItem);
-  if (selectedTextItem.accessoryType == UITableViewCellAccessoryCheckmark) {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  if (selectedItem.accessoryType == UITableViewCellAccessoryCheckmark) {
     return;
   }
 
@@ -355,10 +377,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   if ([model hasSectionForSectionIdentifier:SectionIdentifierFirstList]) {
     for (TableViewItem* item in
          [model itemsInSectionWithIdentifier:SectionIdentifierFirstList]) {
-      LegacySettingsSearchEngineItem* textItem =
-          base::apple::ObjCCastStrict<LegacySettingsSearchEngineItem>(item);
-      if (textItem.accessoryType == UITableViewCellAccessoryCheckmark) {
-        textItem.accessoryType = UITableViewCellAccessoryNone;
+      if (item.accessoryType == UITableViewCellAccessoryCheckmark) {
+        item.accessoryType = UITableViewCellAccessoryNone;
         UITableViewCell* cell =
             [tableView cellForRowAtIndexPath:[model indexPathForItem:item]];
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -368,11 +388,10 @@ const char kUmaSelectDefaultSearchEngine[] =
   if ([model hasSectionForSectionIdentifier:SectionIdentifierSecondList]) {
     for (TableViewItem* item in
          [model itemsInSectionWithIdentifier:SectionIdentifierSecondList]) {
-      DCHECK(item.type == ItemTypeLegacyCustomEngine);
-      LegacySettingsSearchEngineItem* textItem =
-          base::apple::ObjCCastStrict<LegacySettingsSearchEngineItem>(item);
-      if (textItem.accessoryType == UITableViewCellAccessoryCheckmark) {
-        textItem.accessoryType = UITableViewCellAccessoryNone;
+      DCHECK(item.type == ItemTypeLegacyCustomEngine ||
+             item.type == ItemTypeCustomEngine);
+      if (item.accessoryType == UITableViewCellAccessoryCheckmark) {
+        item.accessoryType = UITableViewCellAccessoryNone;
         UITableViewCell* cell =
             [tableView cellForRowAtIndexPath:[model indexPathForItem:item]];
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -381,10 +400,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
 
   // Show the checkmark on the new default engine.
-
-  LegacySettingsSearchEngineItem* newDefaultEngine =
-      base::apple::ObjCCastStrict<LegacySettingsSearchEngineItem>(
-          [model itemAtIndexPath:indexPath]);
+  TableViewItem* newDefaultEngine = [model itemAtIndexPath:indexPath];
   newDefaultEngine.accessoryType = UITableViewCellAccessoryCheckmark;
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
   cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -394,19 +410,15 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (indexPath.section ==
       [model sectionForSectionIdentifier:SectionIdentifierFirstList]) {
     _templateURLService->SetUserSelectedDefaultSearchProvider(
-        _firstList[indexPath.row]);
+        _firstList[indexPath.row],
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   } else {
     _templateURLService->SetUserSelectedDefaultSearchProvider(
-        _secondList[indexPath.row]);
+        _secondList[indexPath.row],
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   }
   [self recordUmaOfDefaultSearchEngine];
   self.updatingBackend = NO;
-
-  // For choice screen eligible users, set the corresponding timestamp pref if
-  // it wasn't already set before.
-  search_engines::RecordChoiceMade(
-      _prefService, search_engines::ChoiceMadeLocation::kSearchEngineSettings,
-      _templateURLService);
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -429,6 +441,10 @@ const char kUmaSelectDefaultSearchEngine[] =
     return cell;
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if (item.type == ItemTypePrepopulatedEngine ||
+      item.type == ItemTypeCustomEngine) {
+    return cell;
+  }
   DCHECK(item.type == ItemTypeLegacyPrepopulatedEngine ||
          item.type == ItemTypeLegacyCustomEngine);
   LegacySettingsSearchEngineItem* engineItem =
@@ -463,7 +479,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  return item.type == ItemTypeLegacyCustomEngine;
+  return item.type == ItemTypeLegacyCustomEngine ||
+         item.type == ItemTypeCustomEngine;
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -551,9 +568,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 }
 
 // Creates a LegacySettingsSearchEngineItem for `templateURL`.
-- (LegacySettingsSearchEngineItem*)
-    createSettingsSearchEngineItemFromTemplateURL:
-        (const TemplateURL*)templateURL {
+- (TableViewItem*)createLegacySettingsSearchEngineItemFromTemplateURL:
+    (const TemplateURL*)templateURL {
   if (_settingsAreDismissed)
     return nil;
 
@@ -582,6 +598,44 @@ const char kUmaSelectDefaultSearchEngine[] =
     [item setAccessoryType:UITableViewCellAccessoryCheckmark];
   }
   return item;
+}
+
+// Creates a SettingsSearchEngineItem for `templateURL`.
+- (TableViewItem*)createSettingsSearchEngineItemFromTemplateURL:
+    (const TemplateURL*)templateURL {
+  SettingsSearchEngineItem* item = nil;
+  if (templateURL->prepopulate_id() > 0) {
+    item = [[SettingsSearchEngineItem alloc]
+        initWithType:ItemTypePrepopulatedEngine];
+    UIImage* image = SearchEngineFaviconFromTemplateURL(*templateURL);
+    FaviconAttributes* attributes =
+        [FaviconAttributes attributesWithImage:image];
+    item.faviconAttributes = attributes;
+  } else {
+    item = [[SettingsSearchEngineItem alloc] initWithType:ItemTypeCustomEngine];
+    // Use icon URL for favicons of custom search engines.
+    GURL URL = templateURL->favicon_url();
+    __weak __typeof(self) weakSelf = self;
+    _faviconLoader->FaviconForIconUrl(
+        URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+        ^(FaviconAttributes* attributes) {
+          [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
+        });
+  }
+  item.text = base::SysUTF16ToNSString(templateURL->short_name());
+  item.detailText = base::SysUTF16ToNSString(templateURL->keyword());
+  if ([self isItem:item
+          equalForTemplateURL:_templateURLService
+                                  ->GetDefaultSearchProvider()]) {
+    [item setAccessoryType:UITableViewCellAccessoryCheckmark];
+  }
+  return item;
+}
+
+- (void)faviconReceivedFor:(SettingsSearchEngineItem*)item
+         faviconAttributes:(FaviconAttributes*)attributes {
+  item.faviconAttributes = attributes;
+  [self reconfigureCellsForItems:@[ item ]];
 }
 
 // Records the type of the selected default search engine.
@@ -614,7 +668,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     if (path.section == firstSection) {
       TableViewItem* item = [self.tableViewModel itemAtIndexPath:path];
       // Only custom search engine can be deleted.
-      DCHECK(item.type == ItemTypeLegacyCustomEngine);
+      DCHECK(item.type == ItemTypeLegacyCustomEngine ||
+             item.type == ItemTypeCustomEngine);
       if (_shouldShowUpdatedSettings) {
         // The custom search engine in the first section should be the first
         // one.
@@ -721,13 +776,19 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
 
-  NSArray<NSIndexPath*>* indexPaths = [self.tableViewModel
+  NSArray<NSIndexPath*>* legacyIndexPaths = [self.tableViewModel
       indexPathsForItemType:ItemTypeLegacyPrepopulatedEngine
           sectionIdentifier:SectionIdentifierFirstList];
-  for (NSIndexPath* indexPath in indexPaths) {
+  NSArray<NSIndexPath*>* indexPaths =
+      [self.tableViewModel indexPathsForItemType:ItemTypePrepopulatedEngine
+                               sectionIdentifier:SectionIdentifierFirstList];
+  NSArray<NSIndexPath*>* allIndexPaths =
+      [legacyIndexPaths arrayByAddingObjectsFromArray:indexPaths];
+  for (NSIndexPath* indexPath in allIndexPaths) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    LegacySettingsSearchEngineItem* engineItem =
-        base::apple::ObjCCastStrict<LegacySettingsSearchEngineItem>(item);
+    TableViewItem<SettingsSearchEngineItem>* engineItem =
+        base::apple::ObjCCastStrict<TableViewItem<SettingsSearchEngineItem>>(
+            item);
     engineItem.enabled = !editing;
     if (!editing && [self isItem:engineItem
                         equalForTemplateURL:_templateURLService
@@ -737,13 +798,13 @@ const char kUmaSelectDefaultSearchEngine[] =
       engineItem.accessoryType = UITableViewCellAccessoryNone;
     }
   }
-  [self.tableView reloadRowsAtIndexPaths:indexPaths
+  [self.tableView reloadRowsAtIndexPaths:allIndexPaths
                         withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 // Returns whether the `item` is the same as an item that would be created
 // from `templateURL`.
-- (BOOL)isItem:(LegacySettingsSearchEngineItem*)item
+- (BOOL)isItem:(id<SettingsSearchEngineItem>)item
     equalForTemplateURL:(const TemplateURL*)templateURL {
   if (!templateURL) {
     return NO;

@@ -92,8 +92,7 @@ class CertProvisioningInvalidationHandler
   const CertScope scope_;
 
   // An invalidation service providing the handler with incoming invalidations.
-  const raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
-      invalidation_service_;
+  const raw_ptr<invalidation::InvalidationService> invalidation_service_;
 
   // A topic representing certificate invalidations.
   const invalidation::Topic topic_;
@@ -161,7 +160,7 @@ class CertProvisioningUserInvalidatorFactory
   std::unique_ptr<CertProvisioningInvalidator> Create() override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 //=============== CertProvisioningUserInvalidator ==============================
@@ -174,7 +173,7 @@ class CertProvisioningUserInvalidator : public CertProvisioningInvalidator {
                 OnInvalidationCallback on_invalidation_callback) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 //=============== CertProvisioningDeviceInvalidatorFactory =====================
@@ -189,8 +188,8 @@ class CertProvisioningDeviceInvalidatorFactory
   std::unique_ptr<CertProvisioningInvalidator> Create() override;
 
  private:
-  raw_ptr<policy::AffiliatedInvalidationServiceProvider, ExperimentalAsh>
-      service_provider_ = nullptr;
+  raw_ptr<policy::AffiliatedInvalidationServiceProvider> service_provider_ =
+      nullptr;
 };
 
 //=============== CertProvisioningDeviceInvalidator ============================
@@ -214,8 +213,8 @@ class CertProvisioningDeviceInvalidator
 
   invalidation::Topic topic_;
   OnInvalidationCallback on_invalidation_callback_;
-  raw_ptr<policy::AffiliatedInvalidationServiceProvider, ExperimentalAsh>
-      service_provider_ = nullptr;
+  raw_ptr<policy::AffiliatedInvalidationServiceProvider> service_provider_ =
+      nullptr;
 };
 
 }  // namespace ash::cert_provisioning

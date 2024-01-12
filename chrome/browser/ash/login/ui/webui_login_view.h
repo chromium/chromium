@@ -176,7 +176,7 @@ class WebUILoginView : public views::View,
   base::WeakPtr<LoginDisplayHostWebUI> controller_;
 
   // WebView for rendering a webpage as a webui login.
-  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
 
   // Converts keyboard events on the WebContents to accelerators.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

@@ -68,7 +68,7 @@ class AudioStreamHandler : public assistant::mojom::AssistantAudioDecoderClient,
   void Decode();
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  raw_ptr<assistant_client::AudioOutput::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<assistant_client::AudioOutput::Delegate> delegate_;
 
   mojo::Receiver<AssistantAudioDecoderClient> client_receiver_{this};
   std::unique_ptr<AudioMediaDataSource> media_data_source_;
@@ -83,7 +83,7 @@ class AudioStreamHandler : public assistant::mojom::AssistantAudioDecoderClient,
   bool stopped_ = false;
 
   // Temporary storage of |buffer| passed by |FillBuffer|.
-  raw_ptr<void, ExperimentalAsh> buffer_to_copy_ = nullptr;
+  raw_ptr<void> buffer_to_copy_ = nullptr;
   // Temporary storage of |buffer_size| passed by |FillBuffer|.
   int size_to_copy_ = 0;
   // Temporary storage of |on_filled| passed by |FillBuffer|.

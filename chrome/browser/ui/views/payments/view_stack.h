@@ -24,8 +24,9 @@ class PaymentRequestBrowserTestBase;
 // call Push/Pop to animate views in and out.
 class ViewStack : public views::BoundsAnimatorObserver,
                   public views::View {
+  METADATA_HEADER(ViewStack, views::View)
+
  public:
-  METADATA_HEADER(ViewStack);
   ViewStack();
   ViewStack(const ViewStack&) = delete;
   ViewStack& operator=(const ViewStack&) = delete;

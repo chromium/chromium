@@ -180,7 +180,7 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   DCHECK(rval);
   RunScreenshotCompleteCallback(result_code, bounds, img);
 #else
-  ui::GrabWindowSnapshotAsyncCallback screenshot_callback =
+  ui::GrabSnapshotImageCallback screenshot_callback =
       base::BindOnce(&ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_,
                      result_code, bounds);
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();

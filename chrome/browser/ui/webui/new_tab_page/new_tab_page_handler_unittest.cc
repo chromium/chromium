@@ -318,8 +318,7 @@ class NewTabPageHandlerTest : public testing::Test {
     }
     webui::SetThemeProviderForTesting(&mock_theme_provider_);
     web_contents_->SetColorProviderSource(&mock_color_provider_source_);
-    const std::vector<std::pair<const std::string, int>> module_id_names = {
-        {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
+
     EXPECT_FALSE(
         mock_customize_chrome_tab_helper_->IsCustomizeChromeEntryShowing());
     handler_ = std::make_unique<NewTabPageHandler>(
@@ -328,7 +327,7 @@ class NewTabPageHandlerTest : public testing::Test {
         &mock_ntp_custom_background_service_, &mock_theme_service_,
         &mock_logo_service_, web_contents_,
         std::move(mock_feature_promo_helper_ptr_), base::Time::Now(),
-        module_id_names);
+        &module_id_names);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -400,6 +399,8 @@ class NewTabPageHandlerTest : public testing::Test {
   RAW_PTR_EXCLUSION PromoServiceObserver* promo_service_observer_;
 
  private:
+  const std::vector<std::pair<const std::string, int>> module_id_names = {
+      {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
   raw_ptr<MockHatsService> mock_hats_service_;
 };
 

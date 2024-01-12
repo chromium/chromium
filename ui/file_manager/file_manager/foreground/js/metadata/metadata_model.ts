@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
-import type {VolumeManager} from '../../../externs/volume_manager.js';
+import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {getStore} from '../../../state/store.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';

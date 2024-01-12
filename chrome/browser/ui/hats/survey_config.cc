@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 
@@ -22,8 +23,13 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
+constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
+    "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kHatsSurveyTriggerGetMostChrome[] = "get-most-chrome";
+#endif
 constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
 constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
 constexpr char kHatsSurveyTriggerM1FledgeSubpage[] = "m1-fledge-subpage";
@@ -44,11 +50,11 @@ constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
 // simultaneously. Each trigger increments a counter at the end -->
 // "permission-prompt0", "permission-prompt1", ...
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
-constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
+constexpr char kHatsSurveyTriggerExtensions[] = "extensions";
 constexpr char kHatsSurveyTriggerSuggestedPasswordsExperiment[] =
     "suggested-passwords-experiment";
 constexpr char kHatsSurveyTriggerTrackingProtectionControlImmediate[] =
@@ -183,26 +189,25 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
       kHatsSurveyTriggerSettingsPrivacy,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"3P cookies blocked",
-                               "Privacy Sandbox enabled"});
+      std::vector<std::string>{"3P cookies blocked"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForSecurityPage,
       kHatsSurveyTriggerSettingsSecurity,
       /*presupplied_trigger_id=*/
       features::kHappinessTrackingSurveysForSecurityPageTriggerId.Get(),
       std::vector<std::string>{},
-      std::vector<std::string>{
-          "Security Page User Action", "Safe Browsing Setting Before Trigger",
-          "Safe Browsing Setting After Trigger", "Client Channel"});
+      std::vector<std::string>{"Security Page User Action",
+                               "Safe Browsing Setting Before Trigger",
+                               "Safe Browsing Setting After Trigger",
+                               "Client Channel", "Time On Page"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
-  survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
-      kHatsSurveyTriggerPrivacySandbox,
-      /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"3P cookies blocked",
-                               "Privacy Sandbox enabled"});
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  survey_configs.emplace_back(&features::kHappinessTrackingSurveysGetMostChrome,
+                              kHatsSurveyTriggerGetMostChrome);
+#endif
 
   const auto ad_privacy_product_specific_bits_data =
       std::vector<std::string>{"3P cookies blocked", "Topics enabled",
@@ -392,8 +397,32 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "User proceeded past interstitial", "Enhanced protection enabled",
           "Threat is phishing", "Threat is malware",
           "Threat is unwanted software", "Threat is billing"});
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysExtensionsSafetyHub,
+      kHatsSurveyTriggerExtensions,
+      features::kHappinessTrackingSurveysExtensionsSafetyHubTriggerId.Get(),
+      std::vector<std::string>{},
+      std::vector<std::string>{
+          "Average extension age in days",
+          "Time since last extension was installed in days",
+          "Number of extensions installed", "Time on extension page in minutes",
+          "Number of extensions removed", "Number of extensions kept",
+          "Number of non-trigger extensions removed", "Client Channel"});
 
   // Autofill surveys.
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillAddressUserPerceptionSurvey,
+      kHatsSurveyTriggerAutofillAddressUserPerception, std::nullopt,
+      std::vector<std::string>{"granular filling available"},
+      std::vector<std::string>{
+          "Accepted fields", "Corrected to same type",
+          "Corrected to a different type", "Corrected to an unknown type",
+          "Corrected to empty", "Manually filled to same type",
+          "Manually filled to a different type",
+          "Manually filled to an unknown type", "Total corrected",
+          "Total filled", "Total unfilled", "Total manually filled",
+          "Total number of fields"});
+
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,
                               kHatsSurveyTriggerAutofillAddress);
   survey_configs.emplace_back(&features::kAutofillCardSurvey,

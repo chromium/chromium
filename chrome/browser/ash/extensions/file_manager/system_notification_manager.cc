@@ -665,64 +665,6 @@ NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
   return notification;
 }
 
-NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
-    const Event& event) {
-  DCHECK(!event.event_args.empty());
-  auto status = fmp::FileTransferStatus::FromValue(event.event_args[0]);
-  if (!status) {
-    LOG(ERROR) << "Cannot parse FileTransferStatus from "
-               << event.event_args[0];
-    return nullptr;
-  }
-
-  // Work out if this is a sync or pin update.
-  const bool is_sync_operation =
-      (event.histogram_value == FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
-
-  constexpr char kDriveSyncId[] = "swa-drive-sync";
-  constexpr char kDrivePinId[] = "swa-drive-pin";
-
-  // Close if notifications are disabled for this transfer.
-  if (!status->show_notification) {
-    GetNotificationDisplayService()->Close(
-        NotificationHandler::Type::TRANSIENT,
-        is_sync_operation ? kDriveSyncId : kDrivePinId);
-    return nullptr;
-  }
-
-  using enum fmp::TransferState;
-  if (status->transfer_state == fmp::TransferState::kCompleted ||
-      status->transfer_state == fmp::TransferState::kFailed) {
-    // We only close when there are no jobs left, we could have received
-    // a TRANSFER_STATE_COMPLETED event when there are more jobs to run.
-    if (status->num_total_jobs == 0) {
-      GetNotificationDisplayService()->Close(
-          NotificationHandler::Type::TRANSIENT,
-          is_sync_operation ? kDriveSyncId : kDrivePinId);
-    }
-
-    return nullptr;
-  }
-
-  std::u16string message =
-      status->num_total_jobs == 1
-          ? GetStringFUTF16(
-                is_sync_operation ? IDS_FILE_BROWSER_SYNC_FILE_NAME
-                                  : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE,
-                util::GetDisplayableFileName16(GURL(status->file_url)))
-          : GetStringFUTF16(
-                is_sync_operation
-                    ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
-                    : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL,
-                base::NumberToString16(status->num_total_jobs));
-
-  return CreateProgressNotification(
-      is_sync_operation ? kDriveSyncId : kDrivePinId,
-      GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE),
-      std::move(message),
-      static_cast<int>((status->processed / status->total) * 100.0));
-}
-
 void SystemNotificationManager::HandleEvent(const Event& event) {
   if (event.event_args.empty()) {
     DLOG(WARNING) << "Ignored empty Event {name: " << event.event_name
@@ -742,11 +684,6 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
     case FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
       notification = MakeDriveConfirmDialogNotification(event);
       force_as_system_notification = true;
-      break;
-
-    case FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
-    case FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
-      notification = UpdateDriveSyncNotification(event);
       break;
 
     case FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:

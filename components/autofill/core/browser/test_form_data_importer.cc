@@ -12,14 +12,12 @@ namespace autofill {
 
 TestFormDataImporter::TestFormDataImporter(
     AutofillClient* client,
-    payments::PaymentsNetworkInterface* payments_network_interface,
     std::unique_ptr<CreditCardSaveManager> credit_card_save_manager,
     std::unique_ptr<IbanSaveManager> iban_save_manager,
     PersonalDataManager* personal_data_manager,
     const std::string& app_locale,
     std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager)
     : FormDataImporter(client,
-                       payments_network_interface,
                        personal_data_manager,
                        app_locale) {
   test_api(*this).set_credit_card_save_manager(

@@ -559,6 +559,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kComputePressure);
   }
 
+  if (trial_name == "SoftNavigationHeuristics") {
+    return base::FeatureList::IsEnabled(features::kSoftNavigationDetection);
+  }
+
   return true;
 }
 

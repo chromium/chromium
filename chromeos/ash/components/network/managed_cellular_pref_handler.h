@@ -94,11 +94,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
 
   void NotifyManagedCellularPrefChanged();
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
 
   // Initialized to null and set once SetDevicePrefs() is called.
-  raw_ptr<PrefService, ExperimentalAsh> device_prefs_ = nullptr;
+  raw_ptr<PrefService> device_prefs_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 };

@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Включить или отключить Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Не удалось войти в аккаунт на устройстве Chromebook.</translation>
 <translation id="2367972762794486313">Показать сервисы</translation>
+<translation id="2368828502825385061">Найти</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
 <translation id="2382875860893882175">Трансляция приостановлена. Ее можно в любое время возобновить или завершить.</translation>
 <translation id="2386292613071805067">Выделить все содержимое страницы</translation>
@@ -1132,6 +1133,7 @@
 <translation id="5537725057119320332">Трансляция</translation>
 <translation id="5546397813406633847">Восстановить пользователя</translation>
 <translation id="554893713779400387">Включение голосового ввода</translation>
+<translation id="5550417424894892620">Чтобы добавить файлы в раздел "<ph name="HOLDING_SPACE_TITLE" />", перетащите их на рабочий стол. Вы не можете хранить файлы на рабочем столе.</translation>
 <translation id="5551456515017410630">Открыть или закрыть календарь</translation>
 <translation id="5551974246223970793">Перейти к следующему результату поиска по странице</translation>
 <translation id="5555639311269196631">Отключить точку доступа</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
 <translation id="7029814467594812963">Завершить сеанс</translation>
+<translation id="7031303610220416229">Показать все задачи в Google Задачах</translation>
 <translation id="7032161822340700104">Максимальное количество шаблонов – 6. Удалите один из шаблонов, чтобы сохранить новый.</translation>
 <translation id="7034025838182392395">Приложению "<ph name="APP_NAME" />" нужно разрешение (<ph name="DEVICE_NAME" />). Чтобы дать разрешение (<ph name="DEVICE_NAME" />), используйте физический переключатель.</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
@@ -1816,6 +1819,7 @@
 <translation id="8351131234907093545">Создать заметку</translation>
 <translation id="8367948981300340152">Используется <ph name="CAPTURE_MEDIUM" /></translation>
 <translation id="8369166482916924789">Сохраненный рабочий стол "<ph name="SAVE_AND_RECALL_DESK_NAME" />"</translation>
+<translation id="8370414029565771236">Искать "<ph name="TEXT" />"</translation>
 <translation id="8371779926711439835">Вперед на одну букву</translation>
 <translation id="8371991222807690464">Производительность периферийных устройств в гостевом режиме может быть ограничена.</translation>
 <translation id="8374601332003098278">Нажмите Ввод, чтобы записать видео с части экрана</translation>
@@ -1871,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Упорядочить приложения по названию или цвету</translation>
 <translation id="8609384513243082612">Открыть новую вкладку</translation>
+<translation id="8612216344243590325">Храните важные файлы в разделе "<ph name="HOLDING_SPACE_TITLE" />". Для этого просто перетащите их в раздел "<ph name="HOLDING_SPACE_TITLE" />".</translation>
 <translation id="8614517853887502247">Уведомления "<ph name="APP_1_TITLE" />" и "<ph name="APP_2_TITLE" />" скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="8619138598101195078">Уменьшить громкость</translation>
 <translation id="8627191004499078455">Подключено устройство "<ph name="DEVICE_NAME" />"</translation>

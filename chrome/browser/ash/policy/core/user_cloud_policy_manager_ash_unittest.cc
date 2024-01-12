@@ -372,9 +372,8 @@ class UserCloudPolicyManagerAshTest
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
-  raw_ptr<MockCloudPolicyStore, DanglingUntriaged | ExperimentalAsh>
-      store_;  // Not owned.
-  raw_ptr<MockCloudExternalDataManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockCloudPolicyStore, DanglingUntriaged> store_;  // Not owned.
+  raw_ptr<MockCloudExternalDataManager, DanglingUntriaged>
       external_data_manager_;  // Not owned.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   SchemaRegistry schema_registry_;
@@ -383,14 +382,13 @@ class UserCloudPolicyManagerAshTest
 
   // Required by ProfileHelper to get the signin Profile context.
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<TestingProfile, ExperimentalAsh> signin_profile_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> signin_profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   user_manager::UserType user_type_ = user_manager::UserType::USER_TYPE_REGULAR;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   // This is automatically checked in TearDown() to ensure that we get a
   // fatal error iff |fatal_error_expected_| is true.

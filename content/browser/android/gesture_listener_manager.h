@@ -101,7 +101,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   JavaObjectWeakGlobalRef java_ref_;
 
   // Highest update frequency requested by any of the listeners.
-  absl::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
+  std::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
       root_scroll_offset_update_frequency_;
 };
 

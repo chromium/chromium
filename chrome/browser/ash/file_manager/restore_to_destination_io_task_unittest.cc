@@ -298,8 +298,7 @@ class RestoreToDestinationIOTaskWithDLPTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager> mock_rules_manager_ = nullptr;
 };
 
 TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {

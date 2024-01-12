@@ -89,7 +89,7 @@ export class XfSplitter extends XfBase {
         this.afterResizingElement_.clientWidth;
     this.classList.add('splitter-active');
     this.isRTLlayout_ =
-        window.getComputedStyle(this).getPropertyValue('direction') == 'rtl';
+        window.getComputedStyle(this).getPropertyValue('direction') === 'rtl';
   }
 
   private finishDrag_() {

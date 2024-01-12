@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_UMA_BROWSING_ACTIVITY_OBSERVER_H_
 
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_stats_recorder.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -32,7 +33,9 @@ class UMABrowsingActivityObserver {
     ~TabHelper() override;
 
     // content::WebContentsObserver
-    void NavigationEntryCommitted(
+    // TODO(crbug.com/1510023): These annotations are for investigating the
+    // linked crash bug.
+    NOINLINE NOMERGE NOT_TAIL_CALLED void NavigationEntryCommitted(
         const content::LoadCommittedDetails& load_details) override;
 
    private:

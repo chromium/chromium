@@ -822,8 +822,15 @@ id<SystemIdentity> GetDisplayedIdentity(
   self.signinPromoViewVisible = YES;
   switch (self.signinPromoAction) {
     case SigninPromoAction::kReviewAccountSettings:
-      // TODO(crbug.com/1459255): Record user impression metrics for this promo
-      // action.
+      if (self.accessPoint ==
+          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+        base::RecordAction(base::UserMetricsAction(
+            "ReviewAccountSettings_Impression_FromBookmarkManager"));
+      } else if (self.accessPoint ==
+                 signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+        base::RecordAction(base::UserMetricsAction(
+            "ReviewAccountSettings_Impression_FromReadingListManager"));
+      }
       // This action should not contribute to the DisplayedCount pref.
       return;
     case SigninPromoAction::kSync:
@@ -1180,7 +1187,15 @@ id<SystemIdentity> GetDisplayedIdentity(
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kReviewAccountSettings:
-      // TODO(crbug.com/1459255): Record metrics for this promo action.
+      if (self.accessPoint ==
+          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+        base::RecordAction(base::UserMetricsAction(
+            "ReviewAccountSettings_Tapped_FromBookmarkManager"));
+      } else if (self.accessPoint ==
+                 signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+        base::RecordAction(base::UserMetricsAction(
+            "ReviewAccountSettings_Tapped_FromReadingListManager"));
+      }
       [self showAccountSettings];
       return;
   }

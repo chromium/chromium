@@ -127,6 +127,10 @@
     padding-inline-start: 5px;
   }
 
+  #button-sign-in {
+    margin-left: 10px;
+  }
+
   @media (prefers-color-scheme: dark) {
     .profile-item,
     #addProfile.profile-item {
@@ -189,10 +193,14 @@
   <div slot="body" class="warning-message">
     [[forceSigninErrorDialogBody_]]
   </div>
-  <div slot="button-container">
-    <cr-button class="action-button"
+  <div slot="button-container" class="button-container">
+    <cr-button id="cancel-button"
         on-click="onForceSigninErrorDialogOkButtonClicked_">
-    $i18n{ok}
+      $i18n{ok}
+    </cr-button>
+    <cr-button id="button-sign-in" class="action-button"
+        on-click="onReauthClicked_" hidden="[[!shouldShownSigninButton_]]">
+      $i18n{needsSigninPrompt}
     </cr-button>
   </div>
 </cr-dialog>

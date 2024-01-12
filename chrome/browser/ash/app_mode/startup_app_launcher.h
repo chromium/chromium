@@ -73,7 +73,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   void OnKioskExtensionLoadedInCache(const std::string& app_id) override;
   void OnKioskExtensionDownloadFailed(const std::string& app_id) override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const std::string app_id_;
   const bool should_skip_install_;
 

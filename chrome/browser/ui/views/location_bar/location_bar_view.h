@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/security_state/core/security_state.h"
@@ -48,6 +49,7 @@ class OmniboxPopupView;
 class OmniboxViewViews;
 class PageActionIconController;
 class PageActionIconContainerView;
+class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
 
@@ -77,9 +79,9 @@ class LocationBarView : public LocationBar,
                         public device::GeolocationManager::PermissionObserver,
 #endif
                         public PageActionIconView::Delegate {
- public:
-  METADATA_HEADER(LocationBarView);
+  METADATA_HEADER(LocationBarView, views::View)
 
+ public:
   class Delegate {
    public:
     // Should return the current web contents.
@@ -171,11 +173,13 @@ class LocationBarView : public LocationBar,
   // accessibility.
   bool ActivateFirstInactiveBubbleForAccessibility();
 
-  // Adds chip into the LocationBarView in the first position.
-  void CreateChip();
+  // Controls the chip in the LocationBarView.
+  ChipController* GetChipController();
 
-  // Controls the chip in the LocationBarView
-  ChipController* chip_controller() { return chip_controller_.get(); }
+  // Controls the permission dashboard in the LocationBarView.
+  PermissionDashboardController* permission_dashboard_controller() {
+    return permission_dashboard_controller_.get();
+  }
 
   IntentChipButton* intent_chip() { return intent_chip_; }
 
@@ -412,6 +416,10 @@ class LocationBarView : public LocationBar,
   // A controller for a view that contains a chip button which is used for
   // permission information and requests.
   std::unique_ptr<ChipController> chip_controller_ = nullptr;
+
+  std::unique_ptr<PermissionDashboardController>
+      permission_dashboard_controller_;
+  raw_ptr<PermissionDashboardView> permission_dashboard_view_;
 
   // An icon to the left of the edit field: the HTTPS lock, blank page icon,
   // search icon, EV HTTPS bubble, etc.

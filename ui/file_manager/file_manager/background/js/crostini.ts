@@ -9,8 +9,9 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
+import type {FilesAppEntry} from '../../common/js//files_app_entry_types.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
  * Default Crostini VM is 'termina'.
@@ -44,7 +45,7 @@ const VALID_ROOT_TYPES_FOR_SHARE = new Map<RootType, string>([
 /**
  * Implementation of Crostini shared path state handler.
  */
-export class CrostiniImpl {
+export class Crostini {
   /**
    * Keys maintaining enablement state for VMs that is keyed by vm then subkeyed
    * by the container name.
@@ -102,7 +103,7 @@ export class CrostiniImpl {
   /**
    * Get the root type for the supplied `entry`.
    */
-  private getRoot_(entry: Entry) {
+  private getRoot_(entry: Entry|FilesAppEntry) {
     const info =
         this.volumeManager_ && this.volumeManager_.getLocationInfo(entry);
     return info && info.rootType;
@@ -135,7 +136,7 @@ export class CrostiniImpl {
   private unregisterSharedPath_(vmName: string, path: string) {
     const vms = this.sharedPaths_[path];
     if (vms) {
-      const newVms = vms.filter(vm => vm != vmName);
+      const newVms = vms.filter(vm => vm !== vmName);
       if (newVms.length > 0) {
         this.sharedPaths_[path] = newVms;
       } else {
@@ -180,7 +181,7 @@ export class CrostiniImpl {
    * Returns true if entry is shared with the specified VM. Returns true if path
    * is shared either by a direct share or from one of its ancestor directories.
    */
-  isPathShared(vmName: string, entry: Entry) {
+  isPathShared(vmName: string, entry: Entry|FilesAppEntry) {
     // Check path and all ancestor directories.
     let path = entry.toURL();
     let root = path;
@@ -202,7 +203,8 @@ export class CrostiniImpl {
   /**
    * Returns true if entry can be shared with the specified VM.
    */
-  canSharePath(vmName: string, entry: Entry, persist: boolean): boolean {
+  canSharePath(vmName: string, entry: Entry|FilesAppEntry, persist: boolean):
+      boolean {
     if (!this.isEnabled(vmName)) {
       return false;
     }

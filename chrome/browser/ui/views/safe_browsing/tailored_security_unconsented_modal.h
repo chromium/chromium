@@ -22,9 +22,9 @@ namespace safe_browsing {
 // TODO(crbug.com/1336052): Remove this modal after launching
 // `TailoredSecurityDesktopModal`.
 class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(TailoredSecurityUnconsentedModal);
+  METADATA_HEADER(TailoredSecurityUnconsentedModal, views::DialogDelegateView)
 
+ public:
   // Show this dialog for the given |web_contents|.
   static void ShowForWebContents(content::WebContents* web_contents);
 

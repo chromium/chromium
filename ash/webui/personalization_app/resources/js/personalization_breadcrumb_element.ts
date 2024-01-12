@@ -9,16 +9,18 @@
  */
 
 import '/strings.m.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../css/common.css.js';
-import '../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
+import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
@@ -30,8 +32,6 @@ import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween} from './utils.js';
-import {getSeaPenTemplates, SeaPenTemplate} from './wallpaper/sea_pen/constants.js';
-import {isSeaPenEnabled} from './wallpaper/sea_pen/load_time_booleans.js';
 import {findAlbumById} from './wallpaper/utils.js';
 
 /** Event interface for dom-repeat. */
@@ -223,13 +223,11 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        // TODO(b/308200616): Add real text
-        breadcrumbs.push('Sea Pen');
+        breadcrumbs.push(this.i18n('seaPenLabel'));
         break;
       case Paths.SEA_PEN_RESULTS:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        // TODO(b/308200616): Add real text
-        breadcrumbs.push('Sea Pen');
+        breadcrumbs.push(this.i18n('seaPenLabel'));
         if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
               template => template.id === this.seaPenTemplateId);
@@ -292,18 +290,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
 
   private onClickMenuIcon_(e: Event) {
     const targetElement = e.currentTarget as HTMLElement;
-    const menuIconContainerRect = targetElement.getBoundingClientRect();
     const config = {
-      // 8px is the padding of .menu-icon-container.
-      top: menuIconContainerRect.top - 8,
-      left: menuIconContainerRect.left - menuIconContainerRect.width / 2,
-      height: menuIconContainerRect.height,
-      width: menuIconContainerRect.width,
-      anchorAlignmentX: AnchorAlignment.CENTER,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_START,
     };
     const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
-    menuElement!.showAtPosition(config);
+    menuElement!.showAt(targetElement, config);
   }
 
   private onClickMenuItem_(e: Event) {

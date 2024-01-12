@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,6 +47,26 @@ class DiceInterceptedSessionStartupHelper;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
+
+// This enum gets the result of `MaybeShouldShowChromeSigninBubble()`, which
+// could be `ShouldShow` or `ShouldNotShow`. When the result is `ShouldNotShow`
+// the reason is also added to differentiate the cases of not showing the
+// bubble. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class ShouldShowChromeSigninBubbleWithReason {
+  // The bubble should be shown.
+  kShouldShow = 0,
+
+  // The bubble should not be shown: multiple reasons listed below with order of
+  // priority.
+  kShouldNotShowMaxShownCountReached = 1,
+  kShouldNotShowAlreadySignedIn = 2,
+  kShouldNotShowSecondaryAccount = 3,
+  kShouldNotShowUnknownAccessPoint = 4,
+  kShouldNotShowNotFromWebSignin = 5,
+
+  kMaxValue = kShouldNotShowNotFromWebSignin,
+};
 
 // Called after web signed in, after a successful token exchange through Dice.
 // The DiceWebSigninInterceptor may offer the user to create a new profile or

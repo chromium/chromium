@@ -251,10 +251,9 @@ class AppServiceAppWindowBrowserTest
     return apps::InstanceState::kUnknown;
   }
 
-  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
-  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_proxy_ = nullptr;
+  raw_ptr<ChromeShelfController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged> app_service_proxy_ =
+      nullptr;
 };
 
 // Test that we have the correct instance for Chrome apps.

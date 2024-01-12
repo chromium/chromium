@@ -59,12 +59,23 @@ module.exports = {
                 selector: 'classMethod',
                 format: ['strictCamelCase'],
                 modifiers: ['public'],
+                filter: {
+                  regex: '^(' +
+                      // Exclude initialism JSON
+                      'toJSON' +
+                      ')$',
+                  match: false,
+                },
               },
               {
                 selector: 'classMethod',
                 format: ['strictCamelCase'],
                 modifiers: ['private'],
                 trailingUnderscore: 'allow',
+                filter: {
+                  regex: '^createITutorial_$',
+                  match: false,
+                },
               },
               {
                 selector: 'classProperty',

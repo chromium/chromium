@@ -498,7 +498,7 @@ void QRCodeGeneratorBubble::BackButtonPressed() {
   std::move(on_back_button_pressed_).Run();
 }
 
-BEGIN_METADATA(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)
+BEGIN_METADATA(QRCodeGeneratorBubble)
 END_METADATA
 
 }  // namespace qrcode_generator

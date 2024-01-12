@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Uyğun gəlməyən protokol versiyası aşkarlanmışdı. Hər iki kompüterdə quraşdırılmış proqram təminatının ən son versiyasına malik olduğunuza əmin olun.</translation>
 <translation id="1008557486741366299">İndi yox</translation>
 <translation id="1201402288615127009">Növbəti</translation>
-<translation id="1296511125400541222">Copyright 2023 Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> hostuna qoşularkən xəta baş verdi</translation>
 <translation id="1450760146488584666">Tələb olunan obyekt yoxdur.</translation>
 <translation id="1480046233931937785">Kreditlər</translation>
@@ -89,7 +88,6 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="4808503597364150972"><ph name="HOSTNAME" /> üçün PIN kodunuzu daxil edin.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">PrtScn göndərin</translation>
-<translation id="4960795469833295568">2023 Müəllif hüququ: Google LLC. Bütün hüquqlar qorunur.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> bağlantısı bitdi</translation>
 <translation id="4985296110227979402">Uzaqdan giriş üçün ilk olaraq kompüterinizi quraşdırmalısınız</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop keçidləri lokal olaraq açacaq brauzeri təyin edə bilmir. Aşağıdakı siyahıdan onu seçin.</translation>
@@ -154,6 +152,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="7693372326588366043">Host siyahısını yeniləyin</translation>
 <translation id="7714222945760997814">Bunu bildirin</translation>
 <translation id="7868137160098754906">Uzaq kompüter üçün PİN kodu daxil edin.</translation>
+<translation id="7881455334687220899">Müəllif hüququ 2024 Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="7895403300744144251">Uzaqdan idarə olunan kompüterdəki təhlükəsizlik siyasəti hesabınızdan olan bağlantılara icazə vermir.</translation>
 <translation id="7936528439960309876">Sağa Birləşdirin</translation>
 <translation id="7970576581263377361">Doğrulama uğursuz oldu. Lütfən, yenidən Chromium'a daxil olun.</translation>
@@ -185,6 +184,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="8747048596626351634">Sessiyada xəta baş verdi və ya başlaya bilmədi. ~/.chrome-remote-desktop-sessiyası uzaqdan idarə olunan kompüterdə mövcuddursa, əmin olun ki, o masaüstü mühiti və ya pəncərə meneceri kimi uzun müddət davam edən ön plan prosesi kimi başlayır.</translation>
 <translation id="8804164990146287819">Məxfilik Siyasəti</translation>
 <translation id="8906511416443321782">Audio yazmaq və Chrome Remote Desktop proqramına ötürmək üçün mikrofona giriş tələb olunur.</translation>
+<translation id="9042277333359847053">Müəllif hüququ 2024 Google LLC. Bütün hüquqlar qorunur.</translation>
 <translation id="9111855907838866522">Uzaqdan idarə edilən cihaza qoşulmusunuz. Menyunu açmaq üçün 4 barmağınıza ekrana toxunun.</translation>
 <translation id="9126115402994542723">Bu cihazdan bu hosta qoşulan zaman PIN istənilməsin.</translation>
 <translation id="916856682307586697">Defolt XSession'ı başladın</translation>

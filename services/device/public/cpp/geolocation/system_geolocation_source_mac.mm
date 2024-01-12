@@ -107,12 +107,6 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
   return LocationSystemPermissionStatus::kDenied;
 }
 
-void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
-#if BUILDFLAG(IS_IOS)
-  RequestPermission();
-#endif
-}
-
 void SystemGeolocationSourceMac::OpenSystemPermissionSetting() {
 #if BUILDFLAG(IS_MAC)
   base::mac::OpenSystemSettingsPane(

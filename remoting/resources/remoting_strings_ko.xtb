@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">호환되지 않는 프로토콜 버전이 감지되었습니다. 양쪽 컴퓨터 모두에서 소프트웨어가 최신 버전인지 확인한 뒤 다시 시도해 주세요.</translation>
 <translation id="1008557486741366299">나중에 하기</translation>
 <translation id="1201402288615127009">다음</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> 연결 중 오류가 발생했습니다</translation>
 <translation id="1450760146488584666">요청한 개체가 없습니다.</translation>
 <translation id="1480046233931937785">크레딧</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972"><ph name="HOSTNAME" />의 PIN을 입력하세요.</translation>
 <translation id="4812684235631257312">호스트</translation>
 <translation id="4867841927763172006">PrtScn 전송</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. All Rights Reserved.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> 연결이 종료되었습니다</translation>
 <translation id="4985296110227979402">먼저 컴퓨터를 원격으로 액세스할 수 있도록 설정해야 합니다.</translation>
 <translation id="4987330545941822761">Chrome 원격 데스크톱은 로컬에서 URL을 여는 데 사용할 브라우저를 결정할 수 없습니다. 아래 목록에서 브라우저를 선택하세요.</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">호스트 목록 새로고침</translation>
 <translation id="7714222945760997814">신고하기</translation>
 <translation id="7868137160098754906">원격 컴퓨터의 PIN을 입력하세요.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="7895403300744144251">원격 컴퓨터의 보안 정책으로 인해 내 계정에서 연결할 수 없습니다.</translation>
 <translation id="7936528439960309876">오른쪽에 고정</translation>
 <translation id="7970576581263377361">인증에 실패했습니다. Chromium에 다시 로그인하세요.</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">세션이 다운되었거나 시작되지 못했습니다. 원격 컴퓨터에 ~/.chrome-remote-desktop-session이 있는 경우, 세션에서 데스크톱 환경이나 창 관리자와 같이 오랫동안 실행되는 포그라운드 프로세스가 시작되어야 합니다.</translation>
 <translation id="8804164990146287819">개인정보처리방침</translation>
 <translation id="8906511416443321782">오디오를 캡처하고 Chrome 원격 데스크톱 클라이언트로 스트리밍하려면 마이크 액세스 권한이 필요합니다.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. All Rights Reserved.</translation>
 <translation id="9111855907838866522">원격 기기에 연결되었습니다. 메뉴를 열려면 네 손가락으로 화면을 탭하세요.</translation>
 <translation id="9126115402994542723">이 기기에서 이 호스트로 연결할 때 PIN을 다시 요청하지 않습니다.</translation>
 <translation id="916856682307586697">기본 XSession 실행</translation>

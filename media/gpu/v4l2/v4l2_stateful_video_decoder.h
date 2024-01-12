@@ -185,7 +185,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Weak factories associated with the main thread (|sequence_checker|).
   base::WeakPtrFactory<V4L2StatefulVideoDecoder> weak_ptr_factory_for_events_;
   base::WeakPtrFactory<V4L2StatefulVideoDecoder>
-      weak_ptr_factory_for_frame_pool_;
+      weak_ptr_factory_for_CAPTURE_availability_;
 };
 
 }  // namespace media

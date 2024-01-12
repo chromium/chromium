@@ -73,7 +73,7 @@ class UpdateTimeEstimator {
   base::TimeTicks stage_started_time_;
   update_engine::Operation current_stage_ = update_engine::Operation::IDLE;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 };
 
 }  // namespace ash

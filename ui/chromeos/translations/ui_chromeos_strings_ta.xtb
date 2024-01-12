@@ -76,7 +76,6 @@
 <translation id="162175252992296058">போர்ச்சுகீஸ் - யூஎஸ் சர்வதேசக் கீபோர்டு</translation>
 <translation id="1629521517399325891">நெட்வொர்க் அங்கீகாரத்திற்குப் பயனர் சான்றிதழ் கிடைக்கவில்லை.</translation>
 <translation id="1641780993263690097">சீனம் (பின்யின்)</translation>
-<translation id="1646019627374511909">ஆஃப்லைனில் பயன்படுத்த <ph name="NUMBER_OF_ITEMS" /> ஃபைல்களைப் பதிவிறக்குகிறது</translation>
 <translation id="164969095109328410">Chrome சாதனம்</translation>
 <translation id="1661207570040737402">பகிர்ந்த இயக்ககத்தின் Google Workspace சேமிப்பகத்தை முழுமையாகப் பயன்படுத்திவிட்டீர்கள்.</translation>
 <translation id="1661867754829461514">PIN இல்லை</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google விரிதாள்</translation>
 <translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
 <translation id="3486821258960016770">மங்கோலியன்</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> பிழைகள்.</translation>
 <translation id="3509680540198371098">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ஆவணங்களை ஒத்திசைக்கத் தயாராகிறது...</translation>
 <translation id="3522708245912499433">போர்ச்சுகீஸ்</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> ஃபைல்களை நகலெடுப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="6509122719576673235">நார்வேஜியன்</translation>
 <translation id="6528513914570774834">இந்தச் சாதனத்தின் பிற பயனர்களையும் இந்த நெட்வொர்க்கைப் பயன்படுத்த அனுமதி</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> ஐ ஒத்திசைக்கிறது...</translation>
 <translation id="6549689063733911810">சமீபத்தியவை</translation>
 <translation id="6558280019477628686">பிழை ஏற்பட்டது. சில உருப்படிகள் நீக்கப்படாமல் இருக்கக்கூடும்.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ஐ நீக்குகிறது...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ஃபோல்டரில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸுக்கு வழங்கவும்</translation>
 <translation id="7555339735447658365">தற்போது ஆஃப்லைனில் உள்ளீர்கள். இணைய இணைப்பு கிடைத்ததும் ஃபைல் ஒத்திசைவு மீண்டும் தொடங்கும்</translation>
 <translation id="7589661784326793847">ஒரு வினாடி காத்திருக்கவும்</translation>
-<translation id="7592775719802218421">ஆஃப்லைனில் பயன்படுத்த <ph name="FILE_NAME" /> ஃபைலைப் பதிவிறக்குகிறது</translation>
 <translation id="7600126690270271294">செர்பியன்</translation>
 <translation id="7603724359189955920">கட்டங்கள்</translation>
 <translation id="7627790789328695202">அடடா, <ph name="FILE_NAME" /> ஏற்கனவே உள்ளது. இதற்கு மறுபெயரிட்டு மீண்டும் முயற்சிக்கவும்.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">துவக்குகிறது...</translation>
 <translation id="8147028810663464959">முழுமையான எழுத்துக்களின் அகலம்</translation>
 <translation id="8151638057146502721">உள்ளமை</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 பிழை.}other{# பிழைகள்.}}</translation>
 <translation id="8154842056504218462">அனைத்து உள்ளீடுகளும் தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
 <translation id="8157684860301034423">ஆப்ஸ் தகவலை மீட்டெடுக்க முடியவில்லை.</translation>
 <translation id="8175731104491895765">ஃபிரெஞ்சு (பெல்ஜியம்)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="FOLDER_NAME" /> ஃபோல்டரில் உள்ள ஃபைல்களை அணுக <ph name="VM_NAME" />க்கு அனுமதி வழங்குங்கள்</translation>
 <translation id="8372369524088641025">மோசமான WEP விசை</translation>
 <translation id="8372852072747894550">கிரேக்கம்</translation>
+<translation id="8377269993083688872">மின்னஞ்சல் லேயவுட்கள்</translation>
 <translation id="8386903983509584791">ஸ்கேன் செய்வது முடிந்தது</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> பிரிக்கப்பட்டது.</translation>
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">திறப்பதற்கு ஒரு ஃபைலைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="8577897833047451336">குரோஷியன்</translation>
 <translation id="8578308463707544055">இந்தோனேஷியன்</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> உருப்படிகளை ஒத்திசைக்கிறது...</translation>
 <translation id="8600173386174225982">ஃபைல் பட்டியல் சிறுபடக் காட்சிக்கு மாறியுள்ளது.</translation>
 <translation id="8601932370724196034">Crostini பட ஃபைல்</translation>
 <translation id="8609695766746872526">ஐஸ்லாண்டிக்</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">பகிர்ந்த பிணையங்களில் புராக்ஸிகளை அனுமதி</translation>
 <translation id="8790981080411996443">செடிகளுக்கு நீர் ஊற்றும் நபர்</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 எச்சரிக்கை.}other{# எச்சரிக்கைகள்.}}</translation>
 <translation id="8808686172382650546">பூனை</translation>
 <translation id="8810671769985673465">ஜிப் செய்தல் ரத்தானது, இருக்கும் உள்ளடக்கம்: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ஸ்பானிஷ் (ஸ்பெயின்)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" என்ற பெயருள்ள ஃபைல் ஏற்கனவே உள்ளது. வேறொரு பெயரைத் தேர்வுசெய்யவும்.</translation>
 <translation id="9046895021617826162">இணைப்பு தோல்வியடைந்தது</translation>
 <translation id="9065512565307033593">சரிபார்க்கத் தவறினால் உங்கள் நெட்வொர்க் அணுகல் முடக்கப்படும்.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 எச்சரிக்கை.}other{<ph name="COUNT" /> எச்சரிக்கைகள்.}}</translation>
 <translation id="908378762078012445">ரஷ்யன் - ஒலிப்புமுறை (AATSEEL) கீபோர்டு</translation>
 <translation id="9086302186042011942">ஒத்திசைக்கிறது</translation>
 <translation id="9099674669267916096">பக்க எண்ணிக்கை</translation>

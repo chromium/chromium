@@ -231,13 +231,26 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
   // Note that if we determine that this particular navigation should not be
   // classified at all (as opposed to deferring it until we get an IPC or
   // the load completes), we discard the page text since it won't be needed.
-  if (!classifier_->is_ready() && !awaiting_retry_) {
-    awaiting_retry_ = true;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PhishingClassifierDelegate::OnRetryTimeout,
-                       weak_factory_.GetWeakPtr()),
-        base::Seconds(kClientSideDetectionRetryLimitTime.Get()));
+  if (!classifier_->is_ready()) {
+    // We should only retry if a phishing detection has been requested, which
+    // is tracked by |is_phishing_detection_running_|.
+    if (base::FeatureList::IsEnabled(kClientSideDetectionRetryLimit) &&
+        is_phishing_detection_running_ && !awaiting_retry_) {
+      awaiting_retry_ = true;
+
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PhishingClassifierDelegate::OnRetryTimeout,
+                         weak_factory_.GetWeakPtr()),
+          base::Seconds(kClientSideDetectionRetryLimitTime.Get()));
+    } else {
+      is_phishing_detection_running_ = false;
+      // Keep classifier_page_text_, in case a Scorer is set later.
+      if (!callback_.is_null()) {
+        std::move(callback_).Run(
+            mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, "");
+      }
+    }
     return;
   }
 

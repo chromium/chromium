@@ -87,7 +87,7 @@ class ProximityMonitorImpl : public ProximityMonitor {
 
   // Used to communicate with the remote device to gauge its proximity via RSSI
   // measurement.
-  raw_ptr<ash::secure_channel::ClientChannel, ExperimentalAsh> channel_;
+  raw_ptr<ash::secure_channel::ClientChannel> channel_;
 
   // The Bluetooth adapter that will be polled for connection info.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

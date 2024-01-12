@@ -88,7 +88,7 @@ class InstallEventLoggerBase {
  protected:
   // The profile whose install requests to log.
   // This applies both to ARC++ apps and extensions.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Adds |event| to the log for all apps in |ids|.
   virtual void AddForSetOfApps(const std::set<AppId>& ids,

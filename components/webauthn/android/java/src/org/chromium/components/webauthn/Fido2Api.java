@@ -5,6 +5,7 @@
 package org.chromium.components.webauthn;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcel;
@@ -48,43 +49,81 @@ import java.util.concurrent.TimeUnit;
 /**
  * Fido2Api contains functions for serialising/deserialising the structures that make up Play
  * Services' FIDO2 API.
- * <p>
- * These structures are made with the {@link Parcel} class. Parcel is a linear, binary format that
- * doesn't contain type information. I.e. it knows how to write strings, ints, byte[], etc, but the
- * reading side has to know what order the values come in rather than being able to generically
+ *
+ * <p>These structures are made with the {@link Parcel} class. Parcel is a linear, binary format
+ * that doesn't contain type information. I.e. it knows how to write strings, ints, byte[], etc, but
+ * the reading side has to know what order the values come in rather than being able to generically
  * parse like, e.g., JSON. (Parcel can also write Bundles, which are a dict-like object, but that is
  * not used in this API.)
- * <p>
- * Building on top of {@link Parcel} is a format called SafeParcelable. It adds a tag-length-value
- * structure that allows for optional fields and future extensions. Tags and lengths are encoded in
- * one or two ints. The bottom 16 bits of the first int are the tag number. The top 16 bits are
- * either the length, or else the value 0xffff, which indicates that the length is contained in a
- * following int. The single-int format is never encoded by this code so that we never have to
- * shuffle data around in the case that it's longer than 0xfffe bytes.
- * <p>
- * The function {@link writeHeader} writes a tag and placeholder length, returning the offset of the
- * length that can be filled in with a later call to {@link writeLength}. Thus encoding is one-pass:
- * the code doesn't need to calculate lengths before starting to serialise.
- * <p>
- * Objects start with a tag and length where the tag is the special value {@link OBJECT_MAGIC}. Then
- * they contain a series of tag-length-value structures. The tag communicates the type of the value.
- * If the tag is unknown then the length permits it to be skipped over.
- * <p>
- * Since these structures come from Play Services, they should be trustworthy. However, things are a
- * little more dicey than one would hope. {@link Parcel} JNIs to native code and setting a position
- * is accepted without checking if it's in bounds[1]. (There's a check for values > 2^31, to catch
- * negative ints from Java, but that's not in all Android versions.) When reading, there's a bounds
- * check, not until after a potentially overflowing addition[2]. Therefore we are careful when
- * setting the data position and always add lengths parsed from the data using {@link
+ *
+ * <p>Building on top of {@link Parcel} is a format called SafeParcelable. It adds a
+ * tag-length-value structure that allows for optional fields and future extensions. Tags and
+ * lengths are encoded in one or two ints. The bottom 16 bits of the first int are the tag number.
+ * The top 16 bits are either the length, or else the value 0xffff, which indicates that the length
+ * is contained in a following int. The single-int format is never encoded by this code so that we
+ * never have to shuffle data around in the case that it's longer than 0xfffe bytes.
+ *
+ * <p>The function {@link writeHeader} writes a tag and placeholder length, returning the offset of
+ * the length that can be filled in with a later call to {@link writeLength}. Thus encoding is
+ * one-pass: the code doesn't need to calculate lengths before starting to serialise.
+ *
+ * <p>Objects start with a tag and length where the tag is the special value {@link OBJECT_MAGIC}.
+ * Then they contain a series of tag-length-value structures. The tag communicates the type of the
+ * value. If the tag is unknown then the length permits it to be skipped over.
+ *
+ * <p>Since these structures come from Play Services, they should be trustworthy. However, things
+ * are a little more dicey than one would hope. {@link Parcel} JNIs to native code and setting a
+ * position is accepted without checking if it's in bounds[1]. (There's a check for values > 2^31,
+ * to catch negative ints from Java, but that's not in all Android versions.) When reading, there's
+ * a bounds check, not until after a potentially overflowing addition[2]. Therefore we are careful
+ * when setting the data position and always add lengths parsed from the data using {@link
  * addLengthToParcelPosition}.
- * <p>
- * [1]
+ *
+ * <p>[1]
  * https://android.googlesource.com/platform/frameworks/native/+/3cf307284a620c67b9eb024439583fc1c42574ee/libs/binder/Parcel.cpp#370
  * [2]
  * https://android.googlesource.com/platform/frameworks/native/+/3cf307284a620c67b9eb024439583fc1c42574ee/libs/binder/Parcel.cpp#1545
  */
 @JNINamespace("webauthn")
 public final class Fido2Api {
+    public interface Calls {
+        /**
+         * Serialize a browser's or an app's makeCredential request to a {@link Parcel}. Apps should
+         * not set {@param origin}.
+         *
+         * @param options the options passed from the renderer.
+         * @param origin the origin that the request should act as.
+         * @param clientDataHash (optional) override the ClientDataJSON generated by Play Services.
+         * @param parcel the {@link Parcel} to append the output to.
+         * @throws NoSuchAlgorithmException when options requests an impossible-to-satisfy
+         *     public-key algorithm.
+         */
+        void makeCredential(
+                PublicKeyCredentialCreationOptions options,
+                @Nullable Uri uri,
+                @Nullable byte[] clientDataHash,
+                Parcel parcel)
+                throws NoSuchAlgorithmException;
+
+        /**
+         * Serialize a browser's or an app's getAssertion request to a {@link Parcel}. Apps should
+         * not set {@param origin}.
+         *
+         * @param options the options passed from the renderer.
+         * @param origin the origin that the request should act as.
+         * @param clientDataHash (optional) override the ClientDataJSON generated by Play Services.
+         * @param tunnelId (optional) used when making server-linked (i.e. accounts.google.com,
+         *     phone-as-a-security-key) requests
+         * @param parcel the {@link Parcel} to append the output to.
+         */
+        void getAssertion(
+                PublicKeyCredentialRequestOptions options,
+                @Nullable Uri uri,
+                @Nullable byte[] clientDataHash,
+                @Nullable byte[] tunnelId,
+                Parcel parcel);
+    }
+
     // Error codes returned by the API.
     public static final int SECURITY_ERR = 18;
     public static final int TIMEOUT_ERR = 23;
@@ -137,7 +176,7 @@ public final class Fido2Api {
      * @param clientDataHash (optional) override the ClientDataJSON generated by Play Services.
      * @param parcel the {@link Parcel} to append the output to.
      * @throws NoSuchAlgorithmException when options requests an impossible-to-satisfy public-key
-     *         algorithm.
+     *     algorithm.
      */
     public static void appendBrowserMakeCredentialOptionsToParcel(
             PublicKeyCredentialCreationOptions options,
@@ -173,11 +212,12 @@ public final class Fido2Api {
      * @param options the options passed from the renderer.
      * @param parcel the {@link Parcel} to append the output to.
      * @throws NoSuchAlgorithmException when options requests an impossible-to-satisfy public-key
-     *         algorithm.
+     *     algorithm.
      */
-    private static void appendMakeCredentialOptionsToParcel(
+    static void appendMakeCredentialOptionsToParcel(
             PublicKeyCredentialCreationOptions options, Parcel parcel)
             throws NoSuchAlgorithmException {
+
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
@@ -547,9 +587,8 @@ public final class Fido2Api {
     /**
      * Hash a PRF input.
      *
-     * The WebAuthn spec says (https://w3c.github.io/webauthn/#prf-extension)
-     * that PRF inputs are hashed with a prefix to provide domain separation.
-     * This function performs that transform.
+     * <p>The WebAuthn spec says (https://w3c.github.io/webauthn/#prf-extension) that PRF inputs are
+     * hashed with a prefix to provide domain separation. This function performs that transform.
      */
     private static byte[] hashPrfInput(MessageDigest h, byte[] input) {
         h.reset();
@@ -560,10 +599,9 @@ public final class Fido2Api {
     /**
      * Convert PRF inputs from renderer to Play Services form.
      *
-     * The WebAuthn spec says (https://w3c.github.io/webauthn/#prf-extension)
-     * that PRF inputs are hashed with a prefix to provide domain separation.
-     * Additionally, Play Services wants the inputs concatenated. This function
-     * takes care of that.
+     * <p>The WebAuthn spec says (https://w3c.github.io/webauthn/#prf-extension) that PRF inputs are
+     * hashed with a prefix to provide domain separation. Additionally, Play Services wants the
+     * inputs concatenated. This function takes care of that.
      */
     private static byte[] hashPrfInputs(PrfValues input) {
         MessageDigest hash;
@@ -619,8 +657,8 @@ public final class Fido2Api {
 
     /**
      * Write a SafeParcelable-style header.
-     * <p>
-     * See the class comment for a description of this function works.
+     *
+     * <p>See the class comment for a description of this function works.
      *
      * @param tag the tag number to encode (<65536).
      * @param parcel the {@link Parcel} to append to.
@@ -634,8 +672,8 @@ public final class Fido2Api {
 
     /**
      * Write a SafeParcelable-style length.
-     * <p>
-     * See the class comment for a description of this function works.
+     *
+     * <p>See the class comment for a description of this function works.
      *
      * @param parcel the {@link Parcel} to append to.
      * @return the offset of the placeholder length.
@@ -648,8 +686,8 @@ public final class Fido2Api {
 
     /**
      * Fill in a previous placeholder length.
-     * <p>
-     * See the class comment for a description of this function works.
+     *
+     * <p>See the class comment for a description of this function works.
      *
      * @param pos the return value from {@link writeHeader} or {@link writeLength}.
      * @param parcel the {@link Parcel} to append to.
@@ -667,13 +705,13 @@ public final class Fido2Api {
         assert AuthenticatorAttachment.MAX_VALUE == AuthenticatorAttachment.CROSS_PLATFORM;
 
         switch (attachment) {
-            case AuthenticatorAttachment.NO_PREFERENCE:
-            default:
-                return null;
             case AuthenticatorAttachment.PLATFORM:
                 return "platform";
             case AuthenticatorAttachment.CROSS_PLATFORM:
                 return "cross-platform";
+            case AuthenticatorAttachment.NO_PREFERENCE:
+            default:
+                return null;
         }
     }
 
@@ -708,9 +746,6 @@ public final class Fido2Api {
         assert AuthenticatorTransport.MAX_VALUE == AuthenticatorTransport.INTERNAL;
 
         switch (transport) {
-            case AuthenticatorTransport.USB:
-            default:
-                return "usb";
             case AuthenticatorTransport.NFC:
                 return "nfc";
             case AuthenticatorTransport.BLE:
@@ -719,6 +754,9 @@ public final class Fido2Api {
                 return "internal";
             case AuthenticatorTransport.HYBRID:
                 return "cable";
+            case AuthenticatorTransport.USB:
+            default:
+                return "usb";
         }
     }
 
@@ -730,11 +768,11 @@ public final class Fido2Api {
         switch (uv) {
             case UserVerificationRequirement.REQUIRED:
                 return "required";
+            case UserVerificationRequirement.DISCOURAGED:
+                return "discouraged";
             case UserVerificationRequirement.PREFERRED:
             default:
                 return "preferred";
-            case UserVerificationRequirement.DISCOURAGED:
-                return "discouraged";
         }
     }
 
@@ -761,15 +799,15 @@ public final class Fido2Api {
                 == AttestationConveyancePreference.ENTERPRISE;
 
         switch (attestationPref) {
-            case AttestationConveyancePreference.NONE:
-            default:
-                return "none";
             case AttestationConveyancePreference.INDIRECT:
                 return "indirect";
             case AttestationConveyancePreference.DIRECT:
                 return "direct";
             case AttestationConveyancePreference.ENTERPRISE:
                 return "direct"; // cannot be represented in the GMS Core API.
+            case AttestationConveyancePreference.NONE:
+            default:
+                return "none";
         }
     }
 
@@ -795,7 +833,7 @@ public final class Fido2Api {
      *
      * @param data the Intent, as passed to {@link Activity.onActivityResult}.
      * @param attestationAcceptable if expecting a makeCredential response, this controls whether
-     *         attestation of the primary credential will be included.
+     *     attestation of the primary credential will be included.
      * @return see {@link parseResponse}.
      * @throws IllegalArgumentException if there was a parse error.
      */
@@ -821,10 +859,10 @@ public final class Fido2Api {
      *
      * @param responseBytes an encoded PublicKeyCredential object.
      * @param attestationAcceptable if expecting a makeCredential response, this controls whether
-     *         attestation of the primary credential will be included.
+     *     attestation of the primary credential will be included.
      * @return One of the following: 1) a Pair&lt;Integer, String&gt;, if the response is an error.
-     *         (The first value is the error code, the second is an optional error message.) 2) a
-     *         MakeCredentialAuthenticatorResponse. 3) a GetAssertionAuthenticatorResponse.
+     *     (The first value is the error code, the second is an optional error message.) 2) a
+     *     MakeCredentialAuthenticatorResponse. 3) a GetAssertionAuthenticatorResponse.
      * @throws IllegalArgumentException if there was a parse error.
      */
     public static Object parseResponse(byte[] responseBytes, boolean attestationAcceptable)
@@ -1372,9 +1410,9 @@ public final class Fido2Api {
 
     /**
      * Return a position that is `length` bytes after the current {@link Parcel} position.
-     * <p>
-     * This function safely adds an untrusted length to a {@link Parcel} position, watching
-     * for overflow and for exceeding the bounds of the data.
+     *
+     * <p>This function safely adds an untrusted length to a {@link Parcel} position, watching for
+     * overflow and for exceeding the bounds of the data.
      *
      * @throws IllegalArgumentException when running off the end of the data.
      */
@@ -1389,6 +1427,7 @@ public final class Fido2Api {
 
     /**
      * Base64 encodes the raw id.
+     *
      * @param keyHandle the raw id (key handle of the credential).
      * @return Base64-encoded id.
      */
@@ -1434,18 +1473,18 @@ public final class Fido2Api {
     }
 
     /**
-     * Parse a {@link WebAuthnCredentialDetails} list from a parcel.
+     * Parse a {@link WebauthnCredentialDetails} list from a parcel.
      *
      * @param parcel the {@link parcel} with current position set to the beginning of the list.
-     * @return The list of {@link WebAuthnCredentialDetails} if successfully parsed.
+     * @return The list of {@link WebauthnCredentialDetails} if successfully parsed.
      * @throws IllegalArgumentException if a parsing error is encountered.
      */
-    public static ArrayList<WebAuthnCredentialDetails> parseCredentialList(Parcel parcel)
+    public static ArrayList<WebauthnCredentialDetails> parseCredentialList(Parcel parcel)
             throws IllegalArgumentException {
         int numCredentials = parcel.readInt();
-        ArrayList<WebAuthnCredentialDetails> credentials = new ArrayList<>();
+        ArrayList<WebauthnCredentialDetails> credentials = new ArrayList<>();
         for (int i = 0; i < numCredentials; i++) {
-            WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+            WebauthnCredentialDetails details = new WebauthnCredentialDetails();
 
             // The array is as written by `Parcel.writeArray`. Each element of the array is prefixed
             // by the class name of that element. The class names will be

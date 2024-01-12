@@ -145,7 +145,8 @@ AppProvisioningComponentInstallerPolicy::GetAppWithLocaleInstalledPath(
   return base.Append(kAppWithLocaleBinaryPbFileName);
 }
 
-void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
+void RegisterAppProvisioningComponent(
+    component_updater::ComponentUpdateService* cus) {
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
     VLOG(1) << "Registering App Provisioning component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(

@@ -53,7 +53,7 @@ void FakeBluetoothDelegate::ShowDevicePairPrompt(
     const std::u16string& device_identifier,
     PairPromptCallback callback,
     PairingKind pairing_kind,
-    const absl::optional<std::u16string>& pin) {
+    const std::optional<std::u16string>& pin) {
   std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
       content::BluetoothDelegate::PairPromptStatus::kCancelled));
 }

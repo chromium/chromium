@@ -12,36 +12,46 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './confirmation_code_page.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'confirmation-code-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ConfirmationCodePageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ConfirmationCodePageElement extends ConfirmationCodePageElementBase {
+  static get is() {
+    return 'confirmation-code-page';
+  }
 
-  properties: {
-    /**
-     * @type {?ESimProfileProperties}
-     */
-    profileProperties: {
-      type: Object,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    confirmationCode: {
-      type: String,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {?ESimProfileProperties}
+       */
+      profileProperties: Object,
 
-    showError: {
-      type: Boolean,
-    },
-  },
+      confirmationCode: {
+        type: String,
+        notify: true,
+      },
+
+      showError: Boolean,
+    };
+  }
 
   /**
    * @param {KeyboardEvent} e
@@ -49,10 +59,13 @@ Polymer({
    */
   onKeyDown_(e) {
     if (e.key === 'Enter') {
-      this.fire('forward-navigation-requested');
+      this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
+        bubbles: true,
+        composed: true,
+      }));
     }
     e.stopPropagation();
-  },
+  }
 
   /**
    * @return {string}
@@ -63,5 +76,8 @@ Polymer({
       return '';
     }
     return mojoString16ToString(this.profileProperties.name);
-  },
-});
+  }
+}
+
+customElements.define(
+    ConfirmationCodePageElement.is, ConfirmationCodePageElement);

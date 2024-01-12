@@ -31,7 +31,7 @@ import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundle
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CheckupSectionElement} from './checkup_section.js';
-import type {PasswordRemovedEvent} from './credential_details/password_details_card.js';
+import type {PasswordMovedEvent, PasswordRemovedEvent} from './credential_details/password_details_card.js';
 import type {FocusConfig} from './focus_config.js';
 import {getTemplate} from './password_manager_app.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
@@ -63,7 +63,7 @@ export interface PasswordManagerAppElement {
     drawerTemplate: DomIf,
     passwords: PasswordsSectionElement,
     prefs: SettingsPrefsElement,
-    removalToast: CrToastElement,
+    toast: CrToastElement,
     settings: SettingsSectionElement,
     sidebar: PasswordManagerSideBarElement,
     toolbar: PasswordManagerToolbarElement,
@@ -276,18 +276,25 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     // TODO(crbug.com/1350947): Show different message if account store user.
     this.showUndo_ = true;
     this.toastMessage_ = this.i18n('passwordDeleted');
-    this.$.removalToast.show();
+    this.$.toast.show();
   }
 
   private onPasskeyRemoved_() {
     this.showUndo_ = false;
     this.toastMessage_ = this.i18n('passkeyDeleted');
-    this.$.removalToast.show();
+    this.$.toast.show();
+  }
+
+  private onPasswordMoved_(event: PasswordMovedEvent) {
+    this.showUndo_ = false;
+    this.toastMessage_ =
+        this.i18n('passwordMovedToastMessage', event.detail.accountEmail);
+    this.$.toast.show();
   }
 
   private onUndoButtonClick_() {
     PasswordManagerImpl.getInstance().undoRemoveSavedPasswordOrException();
-    this.$.removalToast.hide();
+    this.$.toast.hide();
   }
 
   private onSearchEnterClick_() {

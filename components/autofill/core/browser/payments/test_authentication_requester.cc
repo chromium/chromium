@@ -11,9 +11,9 @@
 
 namespace autofill {
 
-TestAuthenticationRequester::TestAuthenticationRequester() {}
+TestAuthenticationRequester::TestAuthenticationRequester() = default;
 
-TestAuthenticationRequester::~TestAuthenticationRequester() {}
+TestAuthenticationRequester::~TestAuthenticationRequester() = default;
 
 base::WeakPtr<TestAuthenticationRequester>
 TestAuthenticationRequester::GetWeakPtr() {

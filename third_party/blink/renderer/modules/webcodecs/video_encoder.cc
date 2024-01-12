@@ -331,26 +331,24 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->hw_pref = StringToHardwarePreference(
       IDLEnumAsString(config->hardwareAcceleration()));
 
-  bool is_codec_ambiguous = true;
   result->codec = media::VideoCodec::kUnknown;
   result->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
   result->level = 0;
   result->codec_string = config->codec();
 
+  auto parse_result = media::ParseVideoCodecString(
+      "", config->codec().Utf8(), /*allow_ambiguous_matches=*/false);
+  if (!parse_result) {
+    return result;
+  }
+
   // Some codec strings provide color space info, but for WebCodecs this is
   // ignored. Instead, the VideoFrames given to encode() are the source of truth
   // for input color space. Note also that the output color space is up to the
   // underlying codec impl. See https://github.com/w3c/webcodecs/issues/345.
-  media::VideoColorSpace codec_string_color_space;
-
-  bool parse_succeeded = media::ParseVideoCodecString(
-      "", config->codec().Utf8(), &is_codec_ambiguous, &result->codec,
-      &result->profile, &result->level, &codec_string_color_space);
-
-  if (!parse_succeeded || is_codec_ambiguous) {
-    result->codec = media::VideoCodec::kUnknown;
-    return result;
-  }
+  result->codec = parse_result->codec;
+  result->profile = parse_result->profile;
+  result->level = parse_result->level;
 
   // We are done with the parsing.
   if (!config->hasAvc() && !config->hasHevc())
@@ -1161,6 +1159,14 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request->StartTracing();
 
+  String js_error_message;
+  if (!VerifyCodecSupport(request->config, &js_error_message)) {
+    QueueHandleError(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, js_error_message));
+    request->EndTracing();
+    return;
+  }
+
   auto reconf_done_callback = [](VideoEncoder* self, Request* req,
                                  media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
@@ -1201,6 +1207,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     }
 
     self->active_config_ = req->config;
+
     auto output_cb =
         ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
             &VideoEncoder::CallOutputCallback,

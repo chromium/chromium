@@ -92,7 +92,7 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
   }
 
  protected:
-  raw_ptr<WaitingFakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<WaitingFakeConciergeClient, DanglingUntriaged>
       waiting_fake_concierge_client_;
 };
 

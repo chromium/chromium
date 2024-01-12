@@ -18,8 +18,8 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
  public:
   virtual ~ContextLifecycleNotifier();
 
-  virtual void AddContextLifecycleObserver(ContextLifecycleObserver*);
-  virtual void RemoveContextLifecycleObserver(ContextLifecycleObserver*);
+  void AddContextLifecycleObserver(ContextLifecycleObserver*);
+  void RemoveContextLifecycleObserver(ContextLifecycleObserver*);
 
   void Trace(Visitor* visitor) const override;
 

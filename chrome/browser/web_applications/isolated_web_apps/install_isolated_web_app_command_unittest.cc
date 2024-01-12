@@ -342,7 +342,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
       std::move(command_helper));
 
   EXPECT_THAT(
-      command->lock_description(),
+      command->InitialLockRequestForTesting(),
       AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),
             Property(&LockDescription::app_ids,
                      UnorderedElementsAre(url_info.app_id()))));

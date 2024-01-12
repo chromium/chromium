@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_XR_SERVICE_XR_FRAME_SINK_CLIENT_IMPL_H_
 #define CONTENT_BROWSER_XR_SERVICE_XR_FRAME_SINK_CLIENT_IMPL_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,7 +18,6 @@
 #include "components/viz/host/host_frame_sink_client.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -38,7 +39,7 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
       device::DomOverlaySetup dom_setup,
       base::OnceClosure on_initialized) override;
   void SurfaceDestroyed() override;
-  absl::optional<viz::SurfaceId> GetDOMSurface() override;
+  std::optional<viz::SurfaceId> GetDOMSurface() override;
   viz::FrameSinkId FrameSinkId() override;
 
  private:
@@ -63,7 +64,7 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
   viz::FrameSinkId root_frame_sink_id_;
   bool initialized_ = false;
 
-  absl::optional<viz::SurfaceId> dom_surface_id_;
+  std::optional<viz::SurfaceId> dom_surface_id_;
   base::Lock dom_surface_lock_;
 #if BUILDFLAG(IS_ANDROID)
   base::CallbackListSubscription surface_id_changed_subscription_;

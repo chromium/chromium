@@ -2,14 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+
+#include <pk11pub.h>
+#include <stdint.h>
+
+#include <memory>
+#include <string>
 #include <vector>
 
-#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+#include "base/base64.h"
+#include "base/containers/span.h"
+#include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace chromeos {
@@ -50,22 +67,35 @@ scoped_refptr<net::X509Certificate> GetTestCert() {
   return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
 }
 
-KeyData BuildBasicKeyData() {
+bssl::UniquePtr<EVP_PKEY> GeneratePkey(int type) {
+  bssl::UniquePtr<EVP_PKEY_CTX> ctx(EVP_PKEY_CTX_new_id(type, /*e=*/nullptr));
+  CHECK(EVP_PKEY_keygen_init(ctx.get()));
+  switch (type) {
+    case EVP_PKEY_RSA:
+      CHECK(EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(), 2048));
+      break;
+    case EVP_PKEY_EC:
+      CHECK(EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx.get(),
+                                                   NID_X9_62_prime256v1));
+      break;
+  }
+  EVP_PKEY* key = nullptr;
+  CHECK(EVP_PKEY_keygen(ctx.get(), &key));
+  return bssl::UniquePtr<EVP_PKEY>(key);
+}
+
+KeyData BuildKeyDataWithEmptyPkey() {
   KeyData key_data;
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  key_data.key = std::move(pkey);
+  key_data.key = bssl::UniquePtr<EVP_PKEY>(EVP_PKEY_new());
   return key_data;
 }
 
 bssl::UniquePtr<EVP_PKEY> GenerateRsaKey() {
-  EVP_PKEY* key_ptr = EVP_PKEY_new();
-  EVP_PKEY_CTX* ctx;
-  ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
-  EVP_PKEY_keygen_init(ctx);
-  EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, 2048);
-  EVP_PKEY_keygen(ctx, &key_ptr);
-  EVP_PKEY_CTX_free(ctx);
-  return bssl::UniquePtr<EVP_PKEY>(key_ptr);
+  return GeneratePkey(EVP_PKEY_RSA);
+}
+
+bssl::UniquePtr<EVP_PKEY> GenerateEcKey() {
+  return GeneratePkey(EVP_PKEY_EC);
 }
 
 // Tests for testing methods in chaps_util_helper.cc
@@ -134,6 +164,31 @@ class Pkcs12ReaderTest : public ::testing::Test {
 
     // Common name
     SetFieldToX509Name(X509_name, "CN", common_name_);
+  }
+
+  // Build ScopedX509 and set its public key to provided value.
+  ScopedX509 BuildScopedX509AndSetPublicKey(
+      const bssl::UniquePtr<EVP_PKEY>& key) {
+    ScopedX509 cert = X509New();
+    X509_set_pubkey(cert.get(), key.get());
+    return cert;
+  }
+
+  // Create KeyData, set RSA key, set rsa_key_modulus_bytes and
+  // rsa_public_exp_bytes, so RSA KeyData looks same like EnrichKeyData()
+  // was executed on it.
+  KeyData BuildRsaKeyData() {
+    KeyData key_data;
+    key_data.key = GenerateRsaKey();
+    return key_data;
+  }
+
+  // Create KeyData, set EC key, set ec_key_public_bytes, so
+  // KeyData looks same like EnrichKeyData() was executed on it.
+  KeyData BuildEcKeyData() {
+    KeyData key_data;
+    key_data.key = GenerateEcKey();
+    return key_data;
   }
 
   unsigned char common_name_[12] = "common name";
@@ -464,7 +519,8 @@ TEST_F(Pkcs12ReaderTest, GetLabel) {
 }
 
 TEST_F(Pkcs12ReaderTest, isCertsWithNicknamesInSlots) {
-  // Empty nickname, isCertsWithNicknamesInSlot returns fail.
+  // Empty nickname, isCertsWithNicknamesInSlot() returns failure.
+  // Operation will fail.
   {
     std::string nickname = "";
     bool is_nickname_present = false;
@@ -475,7 +531,8 @@ TEST_F(Pkcs12ReaderTest, isCertsWithNicknamesInSlots) {
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12MissedNickname);
   }
 
-  // Not defined nickname, isCertsWithNicknamesInSlot returns fail.
+  // Not defined nickname, isCertsWithNicknamesInSlot() returns failure.
+  // Operation will fail.
   {
     std::string not_defined_nickname;
     bool is_nickname_present = false;
@@ -560,9 +617,7 @@ TEST_F(Pkcs12ReaderTest, DoesKeyForDerCertExist) {
   }
 }
 
-TEST_F(Pkcs12ReaderTest, EnrichKeyData) {
-  crypto::ScopedTestNSSDB nss_test_db_;
-
+TEST_F(Pkcs12ReaderTest, EnrichKeyDataCommonErrors) {
   // Empty key_data, operation will fail.
   {
     KeyData key_data;
@@ -572,6 +627,29 @@ TEST_F(Pkcs12ReaderTest, EnrichKeyData) {
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kKeyDataMissed);
   }
 
+  // Empty key data - not RSA and not EC keys, operation will fail.
+  {
+    KeyData key_data;
+    key_data.key = bssl::UniquePtr<EVP_PKEY>(EVP_PKEY_new());
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NotSupportedKeyType);
+  }
+
+  // NONE type of key, operation will fail.
+  {
+    KeyData key_data;
+    EVP_PKEY* key = EVP_PKEY_new();
+    EVP_PKEY_set_type(key, EVP_PKEY_NONE);
+    key_data.key = bssl::UniquePtr<EVP_PKEY>(key);
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NotSupportedKeyType);
+  }
+}
+
+TEST_F(Pkcs12ReaderTest, EnrichRsaKeyData) {
   // RSA is NULL. Operation will fail.
   {
     KeyData key_data;
@@ -581,17 +659,6 @@ TEST_F(Pkcs12ReaderTest, EnrichKeyData) {
     Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
 
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kRsaKeyExtractionFailed);
-  }
-
-  // RSA is present, but empty. Operation will fail.
-  {
-    KeyData key_data;
-    key_data.key = GenerateRsaKey();
-    EVP_PKEY_assign_RSA(key_data.key.get(), RSA_new());
-
-    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
-
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12RsaModulusEmpty);
   }
 
   // Normal RSA key, operation will succeed.
@@ -605,7 +672,43 @@ TEST_F(Pkcs12ReaderTest, EnrichKeyData) {
   }
 }
 
-TEST_F(Pkcs12ReaderTest, CheckRelation) {
+TEST_F(Pkcs12ReaderTest, EnrichEcKeyData) {
+  // EC in key_data is NULL. Operation will fail.
+  {
+    KeyData key_data;
+    key_data.key = GenerateEcKey();
+    EVP_PKEY_assign_EC_KEY(key_data.key.get(), nullptr);
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kEcKeyExtractionFailed);
+  }
+
+  // EC is present, but empty. Operation will fail.
+  {
+    KeyData key_data;
+    key_data.key = GenerateEcKey();
+    EVP_PKEY_assign_EC_KEY(key_data.key.get(), EC_KEY_new());
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kEcKeyBytesEmpty);
+  }
+
+  // Normal EC key, operation will succeed.
+  {
+    KeyData key_data;
+    key_data.key = GenerateEcKey();
+
+    Pkcs12ReaderStatusCode result = pkcs12Reader_->EnrichKeyData(key_data);
+
+    // Key is randomly generated, so not checking key_data here. It is
+    // checked from the higher level test chaps_util_impl_unittest.cc
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+  }
+}
+
+TEST_F(Pkcs12ReaderTest, CheckKeyRelationCommonErrors) {
   // Empty key_data, operation will fail.
   {
     KeyData key_data;
@@ -621,7 +724,7 @@ TEST_F(Pkcs12ReaderTest, CheckRelation) {
 
   // Empty cert, operation will fail.
   {
-    KeyData key_data = BuildBasicKeyData();
+    KeyData key_data = BuildKeyDataWithEmptyPkey();
     X509* cert = nullptr;
     bool is_related = true;
 
@@ -634,8 +737,8 @@ TEST_F(Pkcs12ReaderTest, CheckRelation) {
 
   // No key RSA data and no EC key data, operation will fail.
   {
-    KeyData key_data = BuildBasicKeyData();
-    ScopedX509 cert = X509New();
+    KeyData key_data = BuildKeyDataWithEmptyPkey();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateRsaKey());
     bool is_related = true;
 
     Pkcs12ReaderStatusCode result =
@@ -645,30 +748,27 @@ TEST_F(Pkcs12ReaderTest, CheckRelation) {
     EXPECT_FALSE(is_related);
   }
 
-  // RSA key modulus is present in key_data, but cert has no public key,
-  // operation will fail.
+  // Cert has no public key, operation will fail.
   {
-    KeyData key_data = BuildBasicKeyData();
-    key_data.rsa_key_modulus_bytes = {1, 2, 3, 4};  // Not a real modulus.
+    KeyData key_data = BuildRsaKeyData();
     ScopedX509 cert = X509New();
     bool is_related = true;
 
     Pkcs12ReaderStatusCode result =
         pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
 
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12PKeyMissed);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPKeyExtractionFailed);
     EXPECT_FALSE(is_related);
   }
+}
 
-  // RSA key modulus is present in the key_data, cert has a public key,
-  // public key is not the same as private key, operation will fail.
+TEST_F(Pkcs12ReaderTest, CheckRelationRsaKey) {
+  // RSA key is empty in key_data, operation will return
+  // kPkcs12NoValidCertificatesFound.
   {
-    KeyData key_data = BuildBasicKeyData();
-    key_data.rsa_key_modulus_bytes = {1, 2, 3, 4};  // Not a real modulus.
-    ScopedX509 cert = X509New();
-    bssl::UniquePtr<EVP_PKEY> pub_key = GenerateRsaKey();
-    ;
-    X509_set_pubkey(cert.get(), pub_key.get());
+    KeyData key_data = BuildRsaKeyData();
+    EVP_PKEY_assign_RSA(key_data.key.get(), RSA_new());
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateRsaKey());
     bool is_related = true;
 
     Pkcs12ReaderStatusCode result =
@@ -678,19 +778,39 @@ TEST_F(Pkcs12ReaderTest, CheckRelation) {
     EXPECT_FALSE(is_related);
   }
 
-  // RSA key modulus is present in the key_data, cert has a public key,
-  // public key modulus is the same as private key modulus, operation will
-  // succeed.
+  // Regular RSA key, cert has a public key not related to private key.
+  // Operation will return kPkcs12NoValidCertificatesFound.
   {
-    KeyData key_data;
-    key_data.key = GenerateRsaKey();
-    const RSA* rsa_key = EVP_PKEY_get0_RSA(key_data.key.get());
-    key_data.rsa_key_modulus_bytes =
-        pkcs12Reader_->BignumToBytes(RSA_get0_n(rsa_key));
-    ScopedX509 cert = X509New();
-    // Set a cert's key to the same value as private key, so modulus will
-    // be equal.
-    X509_set_pubkey(cert.get(), key_data.key.get());
+    KeyData key_data = BuildRsaKeyData();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateRsaKey());
+    bool is_related = true;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound);
+    EXPECT_FALSE(is_related);
+  }
+
+  // Regular RSA key, cert has other type (EC) of public key.
+  // Operation will fail.
+  {
+    KeyData key_data = BuildRsaKeyData();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
+    bool is_related = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
+    EXPECT_FALSE(is_related);
+  }
+
+  // Regular RSA key, cert has a public key related to private key,
+  // operation will succeed.
+  {
+    KeyData key_data = BuildRsaKeyData();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(key_data.key);
     bool is_related = false;
 
     Pkcs12ReaderStatusCode result =
@@ -701,8 +821,134 @@ TEST_F(Pkcs12ReaderTest, CheckRelation) {
   }
 }
 
+TEST_F(Pkcs12ReaderTest, CheckRelationEcKey) {
+  // EC key is null in key_data, operation will fail.
+  {
+    KeyData key_data = BuildEcKeyData();
+    EVP_PKEY_assign_EC_KEY(key_data.key.get(), nullptr);
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
+    bool is_related = true;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
+    EXPECT_FALSE(is_related);
+  }
+
+  // EC key is empty in key_data, operation will fail.
+  {
+    KeyData key_data = BuildEcKeyData();
+    EVP_PKEY_assign_EC_KEY(key_data.key.get(), EC_KEY_new());
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
+    bool is_related = true;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
+    EXPECT_FALSE(is_related);
+  }
+
+  // Regular EC key_data, public key in cert is other type of key.
+  // Operation will fail.
+  {
+    KeyData key_data = BuildEcKeyData();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateRsaKey());
+    bool is_related = true;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
+    EXPECT_FALSE(is_related);
+  }
+
+  // Regular EC key_data, public key in cert is not related to
+  // the private key. Operation will fail.
+  {
+    KeyData key_data = BuildEcKeyData();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
+    bool is_related = true;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound);
+    EXPECT_FALSE(is_related);
+  }
+
+  // Regular EC key_data, public key in cert is related to private key.
+  // Operation will succeed.
+  {
+    KeyData key_data = BuildEcKeyData();
+    ScopedX509 cert = BuildScopedX509AndSetPublicKey(key_data.key);
+    bool is_related = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_TRUE(is_related);
+  }
+}
+
+TEST_F(Pkcs12ReaderTest, IsCertInSlot) {
+  crypto::ScopedTestNSSDB nss_test_db_;
+
+  // Empty cert, operation will fail.
+  {
+    PK11SlotInfo* slot = nss_test_db_.slot();
+    scoped_refptr<net::X509Certificate> cert = nullptr;
+    bool is_cert_present = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(slot, cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kCertificateDataMissed);
+  }
+
+  // Empty slot, operation will fail.
+  {
+    PK11SlotInfo* slot = nullptr;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+    bool is_cert_present = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(slot, cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kMissedSlotInfo);
+  }
+
+  // Slot and cert provided, slot is empty, cert will be not found.
+  {
+    bool is_cert_present = true;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(nss_test_db_.slot(), cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_FALSE(is_cert_present);
+  }
+
+  // Slot and cert provided, cert is already stored in slot, cert will be found.
+  {
+    bool is_cert_present = false;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+    PK11SlotInfo* slot = nss_test_db_.slot();
+    net::ImportClientCertToSlot(cert.get(), slot);
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(slot, cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_TRUE(is_cert_present);
+  }
+}
+
 TEST_F(Pkcs12ReaderTest, GetCertFromDerData) {
-  // Cert data is empty, valid cert can not be extracted.
+  // Cert data is empty, valid cert can not be extracted. Operation will fail.
   {
     const unsigned char* der_cert_data = nullptr;
     int der_cert_len = 1;
@@ -714,7 +960,7 @@ TEST_F(Pkcs12ReaderTest, GetCertFromDerData) {
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound);
   }
 
-  // Cert len is 0, valid cert can not be extracted.
+  // Cert len is 0, valid cert can not be extracted. Operation will fail.
   {
     const unsigned char der_cert_data[1024] = {1, 2};
     int der_cert_len = 0;
@@ -726,7 +972,8 @@ TEST_F(Pkcs12ReaderTest, GetCertFromDerData) {
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound);
   }
 
-  // Cert data is not empty, but it is not a valid cert, cert creation failed.
+  // Cert data is not empty, but it is not a valid cert.
+  // Operation will fail.
   {
     const unsigned char der_cert_data[1024] = {1, 2};
     int der_cert_len = 2;

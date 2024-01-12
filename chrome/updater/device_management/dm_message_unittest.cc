@@ -5,6 +5,7 @@
 #include "chrome/updater/device_management/dm_message.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

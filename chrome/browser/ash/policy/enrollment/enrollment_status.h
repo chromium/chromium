@@ -43,9 +43,8 @@ class EnrollmentStatus {
     kAttributeUpdateFailed = 14,        // Device attribute update failed.
     kRegistrationCertFetchFailed = 15,  // Cannot obtain registration cert.
     kNoMachineIdentification = 16,      // Machine model or serial missing.
-    kActiveDirectoryPolicyFetchFailed = 17,  // Failed to fetch Active
-                                             // Directory policy via
-                                             // authpolicyd.
+    /* kActiveDirectoryPolicyFetchFailed = 17, */  // Unused since ChromeAD
+                                                   // deprecated.
     kDmTokenStoreFailed = 18,             // Failed to store DM token into the
                                           // local state.
     /* kLicenseRequestFailed = 19, */     // Unused: Failed to get available

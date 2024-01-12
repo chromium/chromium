@@ -60,8 +60,8 @@ LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(
 
 void LegacyRenderWidgetHostHWND::Destroy() {
   // Delete DirectManipulationHelper before the window is destroyed.
-  if (direct_manipulation_helper_)
-    direct_manipulation_helper_.reset();
+  direct_manipulation_helper_.reset();
+  window_tree_host_prop_.reset();
   host_ = nullptr;
   if (::IsWindow(hwnd()))
     ::DestroyWindow(hwnd());
@@ -144,9 +144,7 @@ void LegacyRenderWidgetHostHWND::OnFinalMessage(HWND hwnd) {
 
 LegacyRenderWidgetHostHWND::LegacyRenderWidgetHostHWND(
     RenderWidgetHostViewAura* host)
-    : mouse_tracking_enabled_(false),
-      host_(host),
-      did_return_uia_object_(false) {}
+    : host_(host) {}
 
 LegacyRenderWidgetHostHWND::~LegacyRenderWidgetHostHWND() {
   // WindowImpl will clean up the hwnd value on WM_NCDESTROY.
@@ -220,6 +218,11 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
   base::win::DisableFlicks(hwnd());
 
   host_->UpdateTooltip(std::u16string());
+
+  // Instruct aura::WindowTreeHost to use the HWND's parent for lookup.
+  window_tree_host_prop_ = std::make_unique<ui::ViewProp>(
+      hwnd(), aura::WindowTreeHost::kWindowTreeHostUsesParent,
+      reinterpret_cast<HANDLE>(true));
 
   return true;
 }

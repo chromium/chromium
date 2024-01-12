@@ -15,6 +15,10 @@ class TemplateURL;
 class TemplateURLService;
 class TemplateURLTableModel;
 
+namespace search_engines {
+enum class ChoiceMadeLocation;
+}
+
 class KeywordEditorController {
  public:
   explicit KeywordEditorController(Profile* profile);
@@ -75,7 +79,9 @@ class KeywordEditorController {
 
   // Make the TemplateURL at the specified index (into the TableModel) the
   // default search provider.
-  void MakeDefaultTemplateURL(int index);
+  void MakeDefaultTemplateURL(
+      int index,
+      search_engines::ChoiceMadeLocation choice_location);
 
   // Activates the TemplateURL at the specified index in the TableModel if
   // `is_active` is true or deactivates it if false.

@@ -34,7 +34,6 @@ namespace webnn_features = webnn::mojom::features;
 
 // Helper struct to create faked mojom result of inference.
 struct ComputeResult {
-  blink_mojom::ComputeResult result;
   WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> output;
 };
 
@@ -86,7 +85,8 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
       mojo_outputs.insert(
           name, base::make_span(output_data.data(), output_data.size()));
     }
-    std::move(callback).Run(compute_result.result, std::move(mojo_outputs));
+    std::move(callback).Run(
+        blink_mojom::ComputeResult::NewNamedOutputs(std::move(mojo_outputs)));
   }
 
   const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
@@ -500,6 +500,8 @@ TEST_P(MLGraphTestMojo, ConcatTest) {
 struct Activation {
   MLOperator::OperatorKind kind;
   absl::optional<ClampTester::ClampOptions> clamp_options;
+  absl::optional<float> hard_sigmoid_alpha;
+  absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
   absl::optional<float> softplus_steepness;
@@ -524,6 +526,18 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->elu(elu_options, scope.GetExceptionState());
     }
+    case MLOperator::OperatorKind::kHardSigmoid: {
+      auto* hard_sigmoid_options = MLHardSigmoidOptions::Create();
+      CHECK(hard_sigmoid_options);
+      if (activation.hard_sigmoid_alpha.has_value()) {
+        hard_sigmoid_options->setAlpha(activation.hard_sigmoid_alpha.value());
+      }
+      if (activation.hard_sigmoid_beta.has_value()) {
+        hard_sigmoid_options->setBeta(activation.hard_sigmoid_beta.value());
+      }
+      return builder->hardSigmoid(hard_sigmoid_options,
+                                  scope.GetExceptionState());
+    }
     case MLOperator::OperatorKind::kLeakyRelu: {
       auto* leaky_relu_options = MLLeakyReluOptions::Create();
       CHECK(leaky_relu_options);
@@ -546,6 +560,8 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->softplus(softplus_options, scope.GetExceptionState());
     }
+    case MLOperator::OperatorKind::kSoftsign:
+      return builder->softsign(scope.GetExceptionState());
     case MLOperator::OperatorKind::kTanh:
       return builder->tanh(scope.GetExceptionState());
     default:
@@ -572,6 +588,18 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       CHECK(elu);
       CHECK(expected_activation.elu_alpha.has_value());
       EXPECT_EQ(elu->alpha, expected_activation.elu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kHardSigmoid: {
+      ASSERT_TRUE(mojom_activation->is_hard_sigmoid());
+      auto& hard_sigmoid = mojom_activation->get_hard_sigmoid();
+      CHECK(hard_sigmoid);
+      CHECK(expected_activation.hard_sigmoid_alpha.has_value());
+      EXPECT_EQ(hard_sigmoid->alpha,
+                expected_activation.hard_sigmoid_alpha.value());
+      CHECK(expected_activation.hard_sigmoid_beta.has_value());
+      EXPECT_EQ(hard_sigmoid->beta,
+                expected_activation.hard_sigmoid_beta.value());
       break;
     }
     case MLOperator::OperatorKind::kLeakyRelu: {
@@ -601,6 +629,9 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
                 expected_activation.softplus_steepness.value());
       break;
     }
+    case MLOperator::OperatorKind::kSoftsign:
+      EXPECT_TRUE(mojom_activation->is_softsign());
+      break;
     case MLOperator::OperatorKind::kTanh:
       EXPECT_TRUE(mojom_activation->is_tanh());
       break;
@@ -903,6 +934,32 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .Test(*this, scope, builder);
   }
   {
+    // Test batchNormalization with hardSigmoid activation with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind =
+                                       MLOperator::OperatorKind::kHardSigmoid}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kHardSigmoid,
+                            .hard_sigmoid_alpha = 0.2,
+                            .hard_sigmoid_beta = 0.5}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test batchNormalization with leaky relu activation with default options.
     BatchNormalizationTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
@@ -1044,6 +1101,30 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                         .kind =
                                             MLOperator::OperatorKind::kSoftplus,
                                         .softplus_steepness = 1.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with softsign activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind =
+                                       MLOperator::OperatorKind::kSoftsign}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSoftsign}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1365,6 +1446,33 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .Test(*this, scope, builder);
   }
   {
+    // Test conv2d with hardSigmoid activation with default alpha = 0.1 and beta
+    // = -1.0.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind = MLOperator::OperatorKind::kHardSigmoid,
+                            .hard_sigmoid_alpha = 0.1,
+                            .hard_sigmoid_beta = -1.0}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kHardSigmoid,
+                            .hard_sigmoid_alpha = 0.1,
+                            .hard_sigmoid_beta = -1.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test conv2d with leaky relu activation with default options.
     Conv2dTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
@@ -1494,6 +1602,28 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                                         .kind =
                                             MLOperator::OperatorKind::kSoftplus,
                                         .softplus_steepness = 2.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with softsign activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{.kind =
+                                       MLOperator::OperatorKind::kSoftsign}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSoftsign}}}
         .Test(*this, scope, builder);
   }
   {
@@ -2376,6 +2506,113 @@ TEST_P(MLGraphTestMojo, GemmTest) {
              .beta = 3.0,
              .a_transpose = false,
              .b_transpose = false}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct HardSigmoidTester {
+  OperandInfoBlink input;
+  absl::optional<float> alpha;
+  absl::optional<float> beta;
+  OperandInfoMojo expected_output;
+  float expected_alpha;
+  float expected_beta;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    MLHardSigmoidOptions* hard_sigmoid_options = MLHardSigmoidOptions::Create();
+    if (alpha) {
+      hard_sigmoid_options->setAlpha(alpha.value());
+    }
+    if (beta) {
+      hard_sigmoid_options->setBeta(beta.value());
+    }
+    auto* output_operand = builder->hardSigmoid(
+        input_operand, hard_sigmoid_options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_hard_sigmoid());
+    auto& hard_sigmoid = operation->get_hard_sigmoid();
+
+    // Verify the alpha and beta.
+    EXPECT_FLOAT_EQ(hard_sigmoid->alpha, expected_alpha);
+    EXPECT_FLOAT_EQ(hard_sigmoid->beta, expected_beta);
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions,
+              expected_output.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_output.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+  }
+};
+
+TEST_P(MLGraphTestMojo, HardSigmoidTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn_features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building hardSigmoid with default options.
+    HardSigmoidTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 4}},
+        .expected_output = {.data_type =
+                                blink_mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 4}},
+        .expected_alpha = 0.2,
+        .expected_beta = 0.5}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building hardSigmoid with alpha = 0.5, beta = -3.
+    HardSigmoidTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 5}},
+        .alpha = 0.5,
+        .beta = -3,
+        .expected_output = {.data_type =
+                                blink_mojom::Operand::DataType::kFloat16,
+                            .dimensions = {1, 5}},
+        .expected_alpha = 0.5,
+        .expected_beta = -3}
         .Test(*this, scope, builder);
   }
 }
@@ -4313,6 +4550,91 @@ TEST_P(MLGraphTestMojo, SoftplusTest) {
   }
 }
 
+struct SoftsignTester {
+  OperandInfoBlink input;
+  OperandInfoMojo expected_output;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->softsign(input_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_softsign());
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions,
+              expected_output.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_output.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_output.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+  }
+};
+
+TEST_P(MLGraphTestMojo, SoftsignTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn_features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building softsign with float32 input.
+    SoftsignTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 4}},
+        .expected_output = {.data_type =
+                                blink_mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building softsign with float16 input.
+    SoftsignTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 3, 5}},
+        .expected_output = {.data_type =
+                                blink_mojom::Operand::DataType::kFloat16,
+                            .dimensions = {1, 3, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct TransposeTester {
   OperandInfoBlink input;
   absl::optional<Vector<uint32_t>> permutation;
@@ -5450,7 +5772,6 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   {
     // Compute successfully.
     SetComputeResult(ComputeResult{
-        .result = blink_mojom::ComputeResult::kOk,
         .output = {{"output", Vector<uint8_t>(number_of_elements, 2)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
@@ -5459,7 +5780,6 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
 
     // Compute again successfully.
     SetComputeResult(ComputeResult{
-        .result = blink_mojom::ComputeResult::kOk,
         .output = {{"output", Vector<uint8_t>(number_of_elements, 7)}}});
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
@@ -5477,13 +5797,13 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   }
   {
     // Unknown error.
-    SetComputeResult(
-        ComputeResult{.result = blink_mojom::ComputeResult::kUnknownError});
+    SetComputeResult(ComputeResult{});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(compute_exception, nullptr);
     EXPECT_EQ(compute_exception->name(), "OperationError");
-    EXPECT_EQ(compute_exception->message(),
-              "Failed to obtain the computation result.");
+    EXPECT_EQ(
+        compute_exception->message(),
+        "There is an unknown output tensor in the computation result: output");
   }
   {
     // Reset the inputs which are detached in above failed tests.
@@ -5492,8 +5812,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
     // Output name in computation result isn't expected.
     SetComputeResult(
-        ComputeResult{.result = blink_mojom::ComputeResult::kOk,
-                      .output = {{"a_different_out_name",
+        ComputeResult{.output = {{"a_different_out_name",
                                   Vector<uint8_t>(number_of_elements)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(compute_exception, nullptr);
@@ -5509,8 +5828,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
     // The size of output in computation result isn't expected.
     SetComputeResult(
-        ComputeResult{.result = blink_mojom::ComputeResult::kOk,
-                      .output = {{"output", Vector<uint8_t>(20)}}});
+        ComputeResult{.output = {{"output", Vector<uint8_t>(20)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(compute_exception, nullptr);
     EXPECT_EQ(compute_exception->name(), "UnknownError");

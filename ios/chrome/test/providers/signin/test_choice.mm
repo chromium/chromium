@@ -11,12 +11,10 @@
 namespace ios {
 namespace provider {
 
-bool IsChoiceEnabled() {
-  return false;
-}
-
-bool IsSearchEngineChoiceScreenEnabledFre() {
-  return false;
+bool DisableDefaultSearchEngineChoice() {
+  // The search engine choice should not be automatically displayed for unit
+  // tests.
+  return true;
 }
 
 }  // namespace provider

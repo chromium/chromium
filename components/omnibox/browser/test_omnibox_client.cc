@@ -43,6 +43,8 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
       .WillRepeatedly(testing::Return(std::vector<std::u16string>()));
   EXPECT_CALL(*provider_client, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(scheme_classifier_));
+  EXPECT_CALL(*provider_client, GetApplicationLocale())
+      .WillRepeatedly(testing::Return("en-US"));
 
   auto template_url_service = std::make_unique<TemplateURLService>(
       nullptr /* PrefService */, std::make_unique<SearchTermsData>(),

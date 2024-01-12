@@ -50,8 +50,10 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
 
   // Register/unregister a delegate that hosts one or more effects. When VcDlcUi
   // is enabled, tile controllers will be added/removed for supported effects.
+  // Note: `UnregisterDelegate()` should only be overridden for testing
+  // purposes, and only by `FakeVideoConferenceTrayEffectsManager`.
   void RegisterDelegate(VcEffectsDelegate* delegate);
-  void UnregisterDelegate(VcEffectsDelegate* delegate);
+  virtual void UnregisterDelegate(VcEffectsDelegate* delegate);
 
   // Returns 'true' if `delegate` is registered, 'false' otherwise.
   bool IsDelegateRegistered(VcEffectsDelegate* delegate);
@@ -96,7 +98,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // given `effect_id`. May return nullptr, for instance if there is no
   // associated UI controller for the given `effect_id`.
   // Should only be called when `VcDlcUi` is enabled.
-  video_conference::VcTileUiController* GetUiControllerForEffectId(
+  // Note: This should only be overridden for testing purposes, and only by
+  // `FakeVideoConferenceTrayEffectsManager`.
+  virtual video_conference::VcTileUiController* GetUiControllerForEffectId(
       VcEffectId effect_id);
 
  private:
@@ -109,9 +113,6 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // necessarily have an associated tile controller.
   void RemoveTileControllers(VcEffectsDelegate* delegate);
 
-  // This list of registered effect delegates, unowned.
-  std::vector<raw_ptr<VcEffectsDelegate, VectorExperimental>> effect_delegates_;
-
   // A map from `VcEffectId` to (unique pointer to)
   // `video_conference::VcTileUiController`. This (potentially) gets updated
   // whenever a client requests a tile controller or whenever a
@@ -119,6 +120,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   base::flat_map<VcEffectId,
                  std::unique_ptr<video_conference::VcTileUiController>>
       controller_for_effect_id_;
+
+  // This list of registered effect delegates, unowned.
+  std::vector<raw_ptr<VcEffectsDelegate, VectorExperimental>> effect_delegates_;
 
   base::ObserverList<Observer> observers_;
 };

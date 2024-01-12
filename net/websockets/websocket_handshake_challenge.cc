@@ -11,10 +11,8 @@
 namespace net {
 
 std::string ComputeSecWebSocketAccept(const std::string& key) {
-  std::string accept;
   std::string hash = base::SHA1HashString(key + websockets::kWebSocketGuid);
-  base::Base64Encode(hash, &accept);
-  return accept;
+  return base::Base64Encode(hash);
 }
 
 }  // namespace net

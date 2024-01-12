@@ -6,50 +6,54 @@
   }
 
   button {
+    background: var(--table-header);
+    color: var(--text-color);
     font-size: 125%;
     font-weight: bold;
     padding: 5px;
-    border: 1px solid rgba(0, 0, 0, .06);
-    border-radius: 0 0 15px 15px;
+    border: 1px solid var(--table-border);
+    border-radius: 0 0 var(--element-border-radius)
+                    var(--element-border-radius);
     box-sizing: border-box;
     width: 100%;
   }
 
   button:hover {
-    filter: brightness(90%);
+    filter: brightness(var(--action-row-button-hover-brightness));
   }
 
   button:active {
-    filter: brightness(85%);
+    filter: brightness(var(--action-row-button-active-brightness));
   }
 
   /* Table view for wide screen */
   @media only screen and (min-width: 711px) {
     .table {
       display: table;
-      border: 1px solid rgba(0, 0, 0, .06);
-      border-radius: 15px 15px 0 0;
+      border: 1px solid var(--table-border);
+      border-radius: var(--element-border-radius)
+                    var(--element-border-radius) 0 0;
       border-bottom: none;
     }
 
     header {
       display: table-row;
-      background-color: rgb(240, 240, 240);
+      background-color: var(--table-header);
       font-size: 100%;
     }
 
     .cell {
-      border-right: 1px solid rgba(0, 0, 0, .06);
+      border-right: 1px solid var(--table-border);
       display: table-cell;
       padding: 12px 7px;
     }
 
     #name-header {
-      border-radius: 15px 0 0 0;
+      border-radius: var(--element-border-radius) 0 0 0;
     }
 
     #header-remove-btn-cell {
-      border-radius: 0 15px 0 0;
+      border-radius: 0 var(--element-border-radius) 0 0;
       border-right: none;
     }
   }

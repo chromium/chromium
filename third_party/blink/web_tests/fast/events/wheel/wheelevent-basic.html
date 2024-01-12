@@ -23,8 +23,8 @@
 <div id="console"></div>
 </body>
 <script>
-var deltaX = 0;
-var deltaY = 0;
+let deltaX = 0;
+let deltaY = 0;
 
 promise_test(async () => {
   // Basic checks.
@@ -34,23 +34,23 @@ promise_test(async () => {
   assert_equals(WheelEvent.DOM_DELTA_LINE, 0x01);
   assert_equals(WheelEvent.DOM_DELTA_PAGE, 0x02);
 
-  var testDiv = document.getElementById('target');
+  const testDiv = document.getElementById('target');
   assert_equals(window.onwheel, null);
   assert_equals(document.onwheel, null);
   assert_equals(testDiv.onwheel, null);
   testDiv.addEventListener('wheel', wheelHandler);
-  var x = testDiv.offsetLeft + 5;
-  var y = testDiv.offsetTop + 5;
+  const x = testDiv.offsetLeft + 5;
+  const y = testDiv.offsetTop + 5;
   await mouseMoveTo(x, y);
   const pixelsToScroll = 40;
-  await smoothScroll(
-    pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT, !isPercentBasedScrollingEnabled()
-  );
+
+  await gestureScroll(() => {
+    return smoothScroll(
+      pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT, !isPercentBasedScrollingEnabled()
+    );
+  }, testDiv);
 
   if (isPercentBasedScrollingEnabled()) {
-    await waitForAnimationEndTimeBased(() => { return testDiv.scrollTop; });
-    await waitForAnimationEndTimeBased(() => { return testDiv.scrollLeft; });
-
     const {
       x: expectedScrollLeft,
       y: expectedScrollTop,
@@ -60,14 +60,14 @@ promise_test(async () => {
     assert_approx_equals(testDiv.scrollTop, expectedScrollTop, 0.05);
     assert_approx_equals(testDiv.scrollLeft, expectedScrollLeft, 0.1);
   } else {
-    await waitFor( () => {
-      return deltaX > 0 && deltaY > 0 && deltaX == testDiv.scrollLeft &&
-          deltaY == testDiv.scrollTop;
-    });
+    assert_true(!!deltaX);
+    assert_true(!!deltaY);
+    assert_equals(testDiv.scrollLeft, deltaX);
+    assert_equals(testDiv.scrollTop, deltaY);
   }
 }, "Tests the basic functionality of the standard wheel event");
 
-var testEvent;
+let testEvent;
 function wheelHandler(e) {
   testEvent = e;
   assert_equals(testEvent.__proto__, WheelEvent.prototype);

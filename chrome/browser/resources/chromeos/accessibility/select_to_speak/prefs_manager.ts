@@ -603,31 +603,26 @@ export namespace PrefsManager {
 
   /**
    * Extension ID of the enhanced network TTS voices extension.
-   * @const {string}
    */
   export const ENHANCED_TTS_EXTENSION_ID = 'jacnkoglebceckolkoapelihnglgaicd';
 
   /**
    * Extension ID of the Google TTS voices extension.
-   * @const {string}
    */
   export const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 
   /**
    * Extension ID of the eSpeak TTS voices extension.
-   * @const {string}
    */
   export const ESPEAK_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
 
   /**
    * Default speech rate for both Select-to-Speak and global prefs.
-   * @type {number}
    */
   export const DEFAULT_RATE = 1.0;
 
   /**
    * Default speech pitch for both Select-to-Speak and global prefs.
-   * @type {number}
    */
   export const DEFAULT_PITCH = 1.0;
 

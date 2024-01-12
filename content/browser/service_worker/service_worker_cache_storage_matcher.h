@@ -34,7 +34,7 @@ class ServiceWorkerInstalledScriptsSender;
 class CONTENT_EXPORT ServiceWorkerCacheStorageMatcher {
  public:
   ServiceWorkerCacheStorageMatcher(
-      absl::optional<std::string> cache_name,
+      std::optional<std::string> cache_name,
       blink::mojom::FetchAPIRequestPtr request,
       scoped_refptr<ServiceWorkerVersion> version,
       ServiceWorkerFetchDispatcher::FetchCallback fetch_callback);
@@ -57,7 +57,7 @@ class CONTENT_EXPORT ServiceWorkerCacheStorageMatcher {
                    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
                    blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
 
-  absl::optional<std::string> cache_name_;
+  std::optional<std::string> cache_name_;
   blink::mojom::FetchAPIRequestPtr request_;
   scoped_refptr<ServiceWorkerVersion> version_;
   ServiceWorkerFetchDispatcher::FetchCallback fetch_callback_;

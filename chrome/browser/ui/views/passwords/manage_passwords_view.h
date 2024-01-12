@@ -20,6 +20,8 @@ class ManagePasswordsDetailsView;
 // specific site. A user can see the details of the passwords, and edit the
 // stored password note.
 class ManagePasswordsView : public PasswordBubbleViewBase {
+  METADATA_HEADER(ManagePasswordsView, PasswordBubbleViewBase)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
 

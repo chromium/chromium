@@ -6,27 +6,13 @@
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
-
-.globl	_sha256_block_data_order
-.private_extern _sha256_block_data_order
+.globl	_sha256_block_data_order_nohw
+.private_extern _sha256_block_data_order_nohw
 
 .p2align	4
-_sha256_block_data_order:
+_sha256_block_data_order_nohw:
 
 _CET_ENDBR
-	leaq	_OPENSSL_ia32cap_P(%rip),%r11
-	movl	0(%r11),%r9d
-	movl	4(%r11),%r10d
-	movl	8(%r11),%r11d
-	testl	$536870912,%r11d
-	jnz	L$shaext_shortcut
-	andl	$1073741824,%r9d
-	andl	$268435968,%r10d
-	orl	%r9d,%r10d
-	cmpl	$1342177792,%r10d
-	je	L$avx_shortcut
-	testl	$512,%r10d
-	jnz	L$ssse3_shortcut
 	movq	%rsp,%rax
 
 	pushq	%rbx
@@ -1778,11 +1764,13 @@ K256:
 .long	0xffffffff,0xffffffff,0x03020100,0x0b0a0908
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .text	
+.globl	_sha256_block_data_order_hw
+.private_extern _sha256_block_data_order_hw
 
 .p2align	6
-sha256_block_data_order_shaext:
+_sha256_block_data_order_hw:
 
-L$shaext_shortcut:
+_CET_ENDBR
 	leaq	K256+128(%rip),%rcx
 	movdqu	(%rdi),%xmm1
 	movdqu	16(%rdi),%xmm2
@@ -1987,11 +1975,13 @@ L$oop_shaext:
 	ret
 
 
+.globl	_sha256_block_data_order_ssse3
+.private_extern _sha256_block_data_order_ssse3
 
 .p2align	6
-sha256_block_data_order_ssse3:
+_sha256_block_data_order_ssse3:
 
-L$ssse3_shortcut:
+_CET_ENDBR
 	movq	%rsp,%rax
 
 	pushq	%rbx
@@ -3100,11 +3090,13 @@ L$epilogue_ssse3:
 	ret
 
 
+.globl	_sha256_block_data_order_avx
+.private_extern _sha256_block_data_order_avx
 
 .p2align	6
-sha256_block_data_order_avx:
+_sha256_block_data_order_avx:
 
-L$avx_shortcut:
+_CET_ENDBR
 	movq	%rsp,%rax
 
 	pushq	%rbx

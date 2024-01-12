@@ -10,7 +10,7 @@ package org.chromium.components.webapps;
  */
 public interface AddToHomescreenViewDelegate {
     /** Called when the user accepts adding the item to home screen with the provided title. */
-    void onAddToHomescreen(String title);
+    void onAddToHomescreen(String title, @AppType int selectedType);
 
     /**
      * Called when the user requests app details.

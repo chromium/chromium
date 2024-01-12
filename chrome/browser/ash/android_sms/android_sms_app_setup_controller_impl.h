@@ -115,10 +115,9 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
 
   void SetPwaDelegateForTesting(std::unique_ptr<PwaDelegate> test_pwa_delegate);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<web_app::ExternallyManagedAppManager, ExperimentalAsh>
-      externally_managed_app_manager_;
-  raw_ptr<HostContentSettingsMap, ExperimentalAsh> host_content_settings_map_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<web_app::ExternallyManagedAppManager> externally_managed_app_manager_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   std::unique_ptr<PwaDelegate> pwa_delegate_;
   base::WeakPtrFactory<AndroidSmsAppSetupControllerImpl> weak_ptr_factory_{

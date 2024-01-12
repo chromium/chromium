@@ -23,6 +23,7 @@
 namespace media {
 
 class AUHALStream;
+class AUAudioInputStream;
 
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
@@ -69,6 +70,10 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
 
+  // Used to track destruction of input and output streams.
+  void ReleaseOutputStream(AudioOutputStream* stream) override;
+  void ReleaseInputStream(AudioInputStream* stream) override;
+
   // Implementation of AudioIOStreamClient.
   void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
                                           AudioDeviceID device_id) override;
@@ -98,12 +103,19 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
   // Returns the current muting state for the microphone.
   bool IsInputMuted(AudioDeviceID device_id) override;
 
+  // Check if delayed start for stream is needed.
+  bool ShouldDeferStreamStart() const override;
+
   // Retrieves the current hardware sample rate associated with a specified
   // device.
   int HardwareSampleRateForDevice(AudioDeviceID device_id) override;
 
-  // Check if delayed start for stream is needed.
-  bool ShouldDeferStreamStart() const override;
+  // If successful, this function returns no error and populates the out
+  // parameter `input_format` with a valid ASBD. Otherwise, an error status code
+  // will be returned.
+  OSStatus GetInputDeviceStreamFormat(
+      AudioUnit audio_unit,
+      AudioStreamBasicDescription* input_format) override;
 
   // Hardware information
   double HardwareIOBufferDuration();
@@ -120,8 +132,9 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
 
  private:
   // Tracks all constructed input and output streams.
-  std::list<AUHALStream*> output_streams_;
   std::list<AudioInputStream*> basic_input_streams_;
+  std::list<AUAudioInputStream*> low_latency_input_streams_;
+  std::list<AUHALStream*> output_streams_;
 };
 
 }  // namespace media

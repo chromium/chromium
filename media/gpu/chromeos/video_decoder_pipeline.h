@@ -360,6 +360,15 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // decoder implementation.
   std::unique_ptr<DecoderBufferTranscryptor> buffer_transcryptor_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  // While |drop_transcrypted_buffers_| is true, we don't pass transcrypted
+  // buffers to the |decoder_|, and instead, we call the corresponding decode
+  // callback with kAborted. This is the case while a reset is ongoing, and it's
+  // needed because the VideoDecoderMixin interface (by virtue of deriving from
+  // VideoDecoder) requires that no VideoDecoder calls are made until the reset
+  // closure has been executed.
+  bool drop_transcrypted_buffers_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_) = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The current video decoder implementation. Valid after initialization is

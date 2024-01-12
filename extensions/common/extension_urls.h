@@ -6,8 +6,8 @@
 #define EXTENSIONS_COMMON_EXTENSION_URLS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
 namespace url {
@@ -49,8 +49,7 @@ GURL GetNewWebstoreLaunchURL();
 
 // Returns a url with a utm_source query param value of `utm_source_value`
 // appended.
-GURL AppendUtmSource(const GURL& url,
-                     const base::StringPiece& utm_source_value);
+GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value);
 
 // Returns the URL to the extensions category on the old and new Web Store
 // depending on extensions_features::kNewWebstoreURL feature flag.
@@ -96,7 +95,7 @@ bool IsBlocklistUpdateUrl(const GURL& url);
 
 // Returns true if the origin points to an URL used for safebrowsing.
 // TODO(devlin): Update other methods to also take an url::Origin?
-bool IsSafeBrowsingUrl(const url::Origin& origin, base::StringPiece path);
+bool IsSafeBrowsingUrl(const url::Origin& origin, std::string_view path);
 
 }  // namespace extension_urls
 

@@ -323,35 +323,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-lacros-version-skew-fyi",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_builder",
-            "reclient",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "default",
-    ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "linux-blink-wpt-reset-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -970,7 +941,7 @@ ci.builder(
     ),
     builderless = False,
     cores = 12,
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "beta",
@@ -2337,7 +2308,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2375,7 +2346,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2411,7 +2382,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2451,7 +2422,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOS16",
@@ -2522,7 +2493,7 @@ fyi_mac_builder(
         ],
     ),
     cores = None,
-    os = os.MAC_13,
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",

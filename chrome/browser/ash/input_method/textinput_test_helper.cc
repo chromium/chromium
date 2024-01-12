@@ -78,14 +78,20 @@ void TextInputTestHelper::OnInputMethodDestroyed(
 
 void TextInputTestHelper::OnFocus() {
   focus_state_ = true;
-  if (waiting_type_ == WAIT_ON_FOCUS)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_type_ == WAIT_ON_FOCUS) {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
 }
 
 void TextInputTestHelper::OnBlur() {
   focus_state_ = false;
-  if (waiting_type_ == WAIT_ON_BLUR)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_type_ == WAIT_ON_BLUR) {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
 }
 
 void TextInputTestHelper::OnCaretBoundsChanged(
@@ -98,16 +104,22 @@ void TextInputTestHelper::OnCaretBoundsChanged(
         !GetTextInputClient()->GetEditableSelectionRange(&selection_range_))
       return;
   }
-  if (waiting_type_ == WAIT_ON_CARET_BOUNDS_CHANGED)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_type_ == WAIT_ON_CARET_BOUNDS_CHANGED) {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
 }
 
 void TextInputTestHelper::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
   latest_text_input_type_ =
       client ? client->GetTextInputType() : ui::TEXT_INPUT_TYPE_NONE;
-  if (waiting_type_ == WAIT_ON_TEXT_INPUT_TYPE_CHANGED)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_type_ == WAIT_ON_TEXT_INPUT_TYPE_CHANGED) {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
 }
 
 void TextInputTestHelper::WaitForTextInputStateChanged(
@@ -115,8 +127,8 @@ void TextInputTestHelper::WaitForTextInputStateChanged(
   CHECK_EQ(NO_WAIT, waiting_type_);
   waiting_type_ = WAIT_ON_TEXT_INPUT_TYPE_CHANGED;
   while (latest_text_input_type_ != expected_type) {
-    base::RunLoop run_loop;
-    run_loop.Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
   waiting_type_ = NO_WAIT;
 }
@@ -125,8 +137,8 @@ void TextInputTestHelper::WaitForFocus() {
   CHECK_EQ(NO_WAIT, waiting_type_);
   waiting_type_ = WAIT_ON_FOCUS;
   while (focus_state_) {
-    base::RunLoop run_loop;
-    run_loop.Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
   waiting_type_ = NO_WAIT;
 }
@@ -135,8 +147,8 @@ void TextInputTestHelper::WaitForBlur() {
   CHECK_EQ(NO_WAIT, waiting_type_);
   waiting_type_ = WAIT_ON_BLUR;
   while (!focus_state_) {
-    base::RunLoop run_loop;
-    run_loop.Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
   waiting_type_ = NO_WAIT;
 }
@@ -147,8 +159,8 @@ void TextInputTestHelper::WaitForCaretBoundsChanged(
   waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
   while (expected_caret_rect != caret_rect_ ||
          expected_composition_head != composition_head_) {
-    base::RunLoop run_loop;
-    run_loop.Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
   waiting_type_ = NO_WAIT;
 }
@@ -157,8 +169,8 @@ void TextInputTestHelper::WaitForSurroundingTextChanged(
     const std::u16string& expected_text) {
   waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
   while (expected_text != surrounding_text_) {
-    base::RunLoop run_loop;
-    run_loop.Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
   waiting_type_ = NO_WAIT;
 }
@@ -169,8 +181,8 @@ void TextInputTestHelper::WaitForSurroundingTextChanged(
   waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
   while (expected_text != surrounding_text_ ||
          expected_selection != selection_range_) {
-    base::RunLoop run_loop;
-    run_loop.Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
   waiting_type_ = NO_WAIT;
 }

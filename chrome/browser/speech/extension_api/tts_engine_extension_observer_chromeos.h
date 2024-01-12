@@ -79,7 +79,7 @@ class TtsEngineExtensionObserverChromeOS
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   std::set<std::string> engine_extension_ids_;
 

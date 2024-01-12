@@ -53,8 +53,7 @@ class NetworkInfoSamplerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<::ash::ShillDeviceClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<::ash::ShillDeviceClient::TestInterface, DanglingUntriaged>
       device_client_;
 
  private:

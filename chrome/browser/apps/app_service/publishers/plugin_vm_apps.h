@@ -89,9 +89,8 @@ class PluginVmApps : public AppPublisher,
   void OnPluginVmAvailabilityChanged(bool is_allowed, bool is_configured);
   void OnPermissionChanged();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<guest_os::GuestOsRegistryService, ExperimentalAsh> registry_ =
-      nullptr;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<guest_os::GuestOsRegistryService> registry_ = nullptr;
 
   // Whether the Plugin VM app is allowed by policy.
   bool is_allowed_ = false;

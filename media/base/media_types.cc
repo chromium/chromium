@@ -24,7 +24,7 @@ VideoType VideoType::FromDecoderConfig(const VideoDecoderConfig& config) {
 
   // Zero is not a valid level for any of the following codecs. It means
   // "unknown" or "no level" (e.g. VP8).
-  int level = 0;
+  VideoCodecLevel level = 0;
 
   switch (config.codec()) {
     // These have no notion of level.

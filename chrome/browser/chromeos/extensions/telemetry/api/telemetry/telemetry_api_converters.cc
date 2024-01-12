@@ -466,6 +466,27 @@ cx_telem::ExternalDisplayInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_telem::ThermalInfo UncheckedConvertPtr(crosapi::ProbeThermalInfoPtr input) {
+  cx_telem::ThermalInfo result;
+
+  result.thermal_sensors =
+      converters::telemetry::ConvertPtrVector<cx_telem::ThermalSensorInfo>(
+          std::move(input->thermal_sensors));
+
+  return result;
+}
+
+cx_telem::ThermalSensorInfo UncheckedConvertPtr(
+    crosapi::ProbeThermalSensorInfoPtr input) {
+  cx_telem::ThermalSensorInfo result;
+
+  result.name = input->name;
+  result.temperature_celsius = input->temperature_celsius;
+  result.source = Convert(input->source);
+
+  return result;
+}
+
 }  // namespace unchecked
 
 cx_telem::CpuArchitectureEnum Convert(crosapi::ProbeCpuArchitectureEnum input) {
@@ -618,6 +639,18 @@ cx_telem::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
       return cx_telem::DisplayInputType::kDigital;
     case crosapi::ProbeDisplayInputType::kAnalog:
       return cx_telem::DisplayInputType::kAnalog;
+  }
+  NOTREACHED_NORETURN();
+}
+
+cx_telem::ThermalSensorSource Convert(crosapi::ProbeThermalSensorSource input) {
+  switch (input) {
+    case crosapi::ProbeThermalSensorSource::kUnmappedEnumField:
+      return cx_telem::ThermalSensorSource::kUnknown;
+    case crosapi::ProbeThermalSensorSource::kEc:
+      return cx_telem::ThermalSensorSource::kEc;
+    case crosapi::ProbeThermalSensorSource::kSysFs:
+      return cx_telem::ThermalSensorSource::kSysFs;
   }
   NOTREACHED_NORETURN();
 }

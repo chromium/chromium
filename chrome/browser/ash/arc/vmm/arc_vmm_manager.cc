@@ -404,7 +404,7 @@ class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
   bool CanHandleAccelerators() const override { return true; }
 
   // The manager responsible for executing vmm commands.
-  const raw_ptr<ArcVmmManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcVmmManager> manager_;
 
   // The accelerator to enable vmm swap for ARCVM.
   const ui::Accelerator vmm_swap_enabled_;

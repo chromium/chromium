@@ -111,8 +111,8 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<user_manager::User> test_user_ = nullptr;
+  raw_ptr<TestingProfile> primary_profile_ = nullptr;
 };
 
 using ash::standalone_browser::LacrosAvailability;

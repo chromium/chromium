@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
+import {type SearchData, SearchLocation, type SearchOptions, SearchRecency, type State} from '../../state/state.js';
 
 /**
  * @fileoverview Search slice of the store.

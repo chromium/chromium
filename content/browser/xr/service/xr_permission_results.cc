@@ -4,9 +4,10 @@
 
 #include "content/browser/xr/service/xr_permission_results.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace {
@@ -72,7 +73,7 @@ bool XrPermissionResults::HasPermissionsFor(
 }
 
 // static
-absl::optional<blink::PermissionType> XrPermissionResults::GetPermissionFor(
+std::optional<blink::PermissionType> XrPermissionResults::GetPermissionFor(
     device::mojom::XRSessionMode mode) {
   switch (mode) {
     case device::mojom::XRSessionMode::kInline:
@@ -85,13 +86,13 @@ absl::optional<blink::PermissionType> XrPermissionResults::GetPermissionFor(
 }
 
 // static
-absl::optional<blink::PermissionType> XrPermissionResults::GetPermissionFor(
+std::optional<blink::PermissionType> XrPermissionResults::GetPermissionFor(
     device::mojom::XRSessionFeature feature) {
   if (feature == device::mojom::XRSessionFeature::CAMERA_ACCESS) {
     return blink::PermissionType::VIDEO_CAPTURE;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace content

@@ -24,7 +24,7 @@ bool IsTrialPersistentToNextResponse(base::StringPiece trial_name) {
       // Production persistent origin trials follow below:
       "WebViewXRequestedWithDeprecation",
       "Tpcd",
-      "Tpcd1p",
+      "TopLevelTpcd",
   };
   return base::Contains(kPersistentTrials, trial_name);
 }

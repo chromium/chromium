@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
         response->headers->SetHeader("access-control-allow-methods", "*");
         client->OnReceiveResponse(std::move(response),
                                   mojo::ScopedDataPipeConsumerHandle(),
-                                  absl::nullopt);
+                                  std::nullopt);
       } else if (resource_request.method == "custom-method") {
         has_received_request_ = true;
         auto response = network::mojom::URLResponseHead::New();
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
                                      "https://www2.example.com");
         client->OnReceiveResponse(std::move(response),
                                   mojo::ScopedDataPipeConsumerHandle(),
-                                  absl::nullopt);
+                                  std::nullopt);
         client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       } else {
         client->OnComplete(

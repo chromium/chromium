@@ -145,8 +145,9 @@ std::unique_ptr<views::View> CreateCrossDeviceFooter(
 // Displays the "edit password" row with custom logic for handling mouse events
 // (background selection and switching to editing state on clicks).
 class EditPasswordRow : public views::FlexLayoutView {
+  METADATA_HEADER(EditPasswordRow, views::FlexLayoutView)
+
  public:
-  METADATA_HEADER(EditPasswordRow);
   explicit EditPasswordRow(
       base::WeakPtr<PasswordGenerationPopupController> controller)
       : controller_(controller) {
@@ -209,7 +210,7 @@ class EditPasswordRow : public views::FlexLayoutView {
   base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
 };
 
-BEGIN_METADATA(EditPasswordRow, views::FlexLayoutView)
+BEGIN_METADATA(EditPasswordRow)
 END_METADATA
 
 // Creates row with Password Manager key icon and title for the
@@ -240,8 +241,9 @@ std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
 // button that dismisses the generation flow and the second one is an accept
 // button that fills the password suggestion and dismisses the popup.
 class NudgePasswordButtons : public views::View {
+  METADATA_HEADER(NudgePasswordButtons, views::View)
+
  public:
-  METADATA_HEADER(NudgePasswordButtons);
   explicit NudgePasswordButtons(
       base::WeakPtr<PasswordGenerationPopupController> controller)
       : controller_(controller) {
@@ -280,7 +282,7 @@ class NudgePasswordButtons : public views::View {
   base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
 };
 
-BEGIN_METADATA(NudgePasswordButtons, views::View)
+BEGIN_METADATA(NudgePasswordButtons)
 END_METADATA
 
 // Creates custom password generation view with key icon, title and two buttons
@@ -316,8 +318,9 @@ std::unique_ptr<views::View> CreateNudgePasswordView(
 // explanatory text).
 class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     : public views::View {
+  METADATA_HEADER(GeneratedPasswordBox, views::View)
+
  public:
-  METADATA_HEADER(GeneratedPasswordBox);
   GeneratedPasswordBox() = default;
   ~GeneratedPasswordBox() override = default;
 
@@ -656,5 +659,5 @@ PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
   return new PasswordGenerationPopupViewViews(controller, observing_widget);
 }
 
-BEGIN_METADATA(PasswordGenerationPopupViewViews, autofill::PopupBaseView)
+BEGIN_METADATA(PasswordGenerationPopupViewViews)
 END_METADATA

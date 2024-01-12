@@ -102,6 +102,7 @@ promise_test(() => {
     echoCancellation: { ideal: false, exact: true },
     autoGainControl: { ideal: false, exact: true },
     noiseSuppression: { ideal: false, exact: true },
+    voiceIsolation: { ideal: false, exact: true },
     latency: 0.22,
     channelCount: 2,
     deviceId: { ideal: ["foo", "fooz"] },
@@ -190,6 +191,11 @@ constraintSyntaxTest('noiseSuppression with simple boolean value', { noiseSuppre
 constraintSyntaxTest('noiseSuppression with ideal boolean value', { noiseSuppression: { ideal: true }});
 constraintSyntaxTestWithChange('noiseSuppression with exact unwrapped boolean value',
     { noiseSuppression: { exact: true } }, { noiseSuppression: true });
+
+constraintSyntaxTest('voiceIsolation with simple boolean value', { voiceIsolation: true });
+constraintSyntaxTest('voiceIsolation with ideal boolean value', { voiceIsolation: { ideal: true }});
+constraintSyntaxTestWithChange('voiceIsolation with exact unwrapped boolean value',
+    { voiceIsolation: { exact: true } }, { voiceIsolation: true });
 
 promise_test(async t => {
   let stream = await navigator.mediaDevices.getUserMedia(

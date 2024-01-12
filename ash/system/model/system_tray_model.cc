@@ -154,4 +154,12 @@ void SystemTrayModel::SetPhoneHubManager(
   phone_hub_manager_ = phone_hub_manager;
 }
 
+bool SystemTrayModel::IsFakeModel() const {
+  return false;
+}
+
+bool SystemTrayModel::IsInUserChildSession() const {
+  return Shell::Get()->session_controller()->IsUserChild();
+}
+
 }  // namespace ash

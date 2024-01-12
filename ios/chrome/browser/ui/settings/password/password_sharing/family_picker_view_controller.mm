@@ -55,7 +55,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 
   UITableView* tableView = self.tableView;
   tableView.allowsMultipleSelection = YES;
-  tableView.accessibilityIdentifier = kFamilyPickerTableViewId;
+  tableView.accessibilityIdentifier = kFamilyPickerTableViewID;
 
   [self loadModel];
 }
@@ -71,11 +71,6 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
     [model addItem:[self recipientItem:recipient]
         toSectionWithIdentifier:SectionIdentifierRecipients];
   }
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-  [self.delegate familyPickerWasDismissed:self];
-  [super viewDidDisappear:animated];
 }
 
 #pragma mark - UITableViewDelegate
@@ -136,9 +131,14 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
                    action:@selector(infoButtonTapped:)
          forControlEvents:UIControlEventTouchUpInside];
     infoButton.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonId,
+        [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonID,
                                    _recipients[indexPath.row].email];
     cell.accessoryView = infoButton;
+
+    // Make the cell a non-accessible element to make the info button accessible
+    // to VoiceOver.
+    cell.isAccessibilityElement = NO;
+    infoButton.isAccessibilityElement = YES;
   }
 
   return cell;
@@ -198,7 +198,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
              target:self
              action:@selector(backButtonTapped)];
   navigationItem.leftBarButtonItem.accessibilityIdentifier =
-      kFamilyPickerBackButtonId;
+      kFamilyPickerBackButtonID;
 }
 
 - (void)setupLeftCancelButton {
@@ -208,7 +208,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
                            target:self
                            action:@selector(cancelButtonTapped)];
   navigationItem.leftBarButtonItem.accessibilityIdentifier =
-      kFamilyPickerCancelButtonId;
+      kFamilyPickerCancelButtonID;
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -321,7 +321,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
              target:self
              action:@selector(shareButtonTapped)];
   shareButton.enabled = NO;
-  shareButton.accessibilityIdentifier = kFamilyPickerShareButtonId;
+  shareButton.accessibilityIdentifier = kFamilyPickerShareButtonID;
   return shareButton;
 }
 

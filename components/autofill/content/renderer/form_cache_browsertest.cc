@@ -599,46 +599,6 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   EXPECT_EQ(0u, test_api(form_cache).initial_checked_state_size());
 }
 
-TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
-  // Load a form.
-  LoadHTML(
-      "<html><form id='myForm'>"
-      "<label>First Name:</label><input id='fname' name='0'><br>"
-      "<label>Middle Name:</label> <input id='mname' name='1'><br>"
-      "<label>Last Name:</label> <input id='lname' name='2'><br>"
-      "</form></html>");
-
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto first_name_element = GetFormControlElementById(doc, "fname");
-  auto middle_name_element = GetFormControlElementById(doc, "mname");
-  auto last_name_element = GetFormControlElementById(doc, "lname");
-
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("myForm")));
-  EXPECT_TRUE(forms.removed_forms.empty());
-
-  const FormData* form_data = GetFormByName(forms.updated_forms, "myForm");
-  EXPECT_EQ(3u, form_data->fields.size());
-
-  // Set the first_name and last_name fields as eligible for manual filling.
-  std::vector<FieldRendererId> fields_eligible_for_manual_filling;
-  fields_eligible_for_manual_filling.push_back(
-      form_data->fields[0].unique_renderer_id);
-  fields_eligible_for_manual_filling.push_back(
-      form_data->fields[2].unique_renderer_id);
-  form_cache.SetFieldsEligibleForManualFilling(
-      fields_eligible_for_manual_filling);
-
-  EXPECT_TRUE(test_api(form_cache)
-                  .IsFormElementEligibleForManualFilling(first_name_element));
-  EXPECT_FALSE(test_api(form_cache)
-                   .IsFormElementEligibleForManualFilling(middle_name_element));
-  EXPECT_TRUE(test_api(form_cache)
-                  .IsFormElementEligibleForManualFilling(last_name_element));
-}
-
 // Test that the FormCache does not contain empty forms.
 TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   LoadHTML(R"(<form></form>)");

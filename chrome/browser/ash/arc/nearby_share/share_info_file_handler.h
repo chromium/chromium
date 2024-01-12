@@ -176,7 +176,7 @@ class ShareInfoFileHandler
   bool file_sharing_started_ = false;
 
   // Unowned pointer to profile.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Runner for tasks that may require disk IO.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

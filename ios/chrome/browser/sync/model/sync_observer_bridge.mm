@@ -22,13 +22,6 @@ void SyncObserverBridge::OnStateChanged(syncer::SyncService* sync) {
   [delegate_ onSyncStateChanged];
 }
 
-void SyncObserverBridge::OnSyncConfigurationCompleted(
-    syncer::SyncService* sync) {
-  if ([delegate_ respondsToSelector:@selector(onSyncConfigurationCompleted)]) {
-    [delegate_ onSyncConfigurationCompleted];
-  }
-}
-
 void SyncObserverBridge::OnSyncShutdown(syncer::SyncService* sync) {
   scoped_observation_.Reset();
 }

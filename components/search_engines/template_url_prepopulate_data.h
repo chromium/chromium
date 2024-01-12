@@ -60,10 +60,12 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     int prepopulated_id);
 
 #if BUILDFLAG(IS_ANDROID)
-// Returns the prepopulated URLs associated with |locale|.  |locale| should be a
-// two-character uppercase ISO 3166-1 country code.
+// Returns the prepopulated URLs associated with `country_code`.
+// `country_code` is a two-character uppercase ISO 3166-1 country code.
+// `prefs` is the main profile's preferences.
 std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
-    const std::string& locale);
+    const std::string& country_code,
+    PrefService& prefs);
 #endif
 
 // Returns all prepopulated engines for all locales. Used only by tests.

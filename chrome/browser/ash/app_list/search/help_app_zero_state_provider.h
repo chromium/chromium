@@ -46,7 +46,7 @@ class HelpAppZeroStateResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 // Provides zero-state results from the Help App.
@@ -78,7 +78,7 @@ class HelpAppZeroStateProvider : public SearchProvider,
   void OnLoadIcon(apps::IconValuePtr icon_value);
   void LoadIcon();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   gfx::ImageSkia icon_;
 

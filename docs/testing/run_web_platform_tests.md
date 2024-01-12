@@ -27,8 +27,10 @@ third_party/blink/tools/run_wpt_tests.py --help
 
 * Linux
 
-It is possible to run tests for Chrome on other platforms, but test expectations
-and baselines are only actively maintained for Linux due to resource constraint.
+Test expectations and baselines are only actively maintained for Linux due to
+resource constraints.
+It's not yet possible to run tests for Chrome on non-Linux platforms; follow
+https://crbug.com/1512219 for status.
 
 ### Initial Setup
 

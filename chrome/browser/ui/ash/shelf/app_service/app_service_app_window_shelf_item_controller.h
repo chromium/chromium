@@ -53,9 +53,8 @@ class AppServiceAppWindowShelfItemController
  private:
   bool IsChromeApp();
 
-  raw_ptr<AppServiceAppWindowShelfController,
-          DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
+  raw_ptr<AppServiceAppWindowShelfController, DanglingUntriaged> controller_ =
+      nullptr;
 
   std::set<int> task_ids_;
   std::set<int> session_ids_;

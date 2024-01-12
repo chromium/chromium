@@ -120,5 +120,5 @@ gfx::Insets OmniboxRowView::GetInsets() const {
   return gfx::Insets::TLBR(0, 0, 0, right_inset);
 }
 
-BEGIN_METADATA(OmniboxRowView, views::View)
+BEGIN_METADATA(OmniboxRowView)
 END_METADATA

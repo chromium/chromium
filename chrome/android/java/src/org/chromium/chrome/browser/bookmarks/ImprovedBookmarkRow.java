@@ -48,6 +48,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     // Optional views that display below the description. Allows embedders to specify custom
     // content without the row being aware of it.
     private ViewGroup mAccessoryViewGroup;
+    // The image showing if this bookmark is only available locally.
+    private ImageView mLocalBookmarkImageView;
     // The end image view which is shows the checkmark.
     private ImageView mCheckImageView;
     // 3-dot menu which displays contextual actions.
@@ -125,6 +127,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         mDescriptionView = findViewById(R.id.description);
         mAccessoryViewGroup = findViewById(R.id.custom_content_container);
 
+        mLocalBookmarkImageView = findViewById(R.id.local_bookmark_image);
         mCheckImageView = findViewById(R.id.check_image);
 
         mMoreButton = findViewById(R.id.more);
@@ -245,6 +248,10 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
     void setEndImageRes(int res) {
         mEndImageView.setImageResource(res);
+    }
+
+    void setIsLocalBookmark(boolean isLocalBookmark) {
+        mLocalBookmarkImageView.setVisibility(isLocalBookmark ? View.VISIBLE : View.GONE);
     }
 
     void updateView() {

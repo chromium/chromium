@@ -55,9 +55,47 @@ void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request) {
       request->id);
 }
 
+void EmitFailedDeviceRequestDuration(const base::TimeDelta& request_duration,
+                                     mojom::DeviceRequestId request_id) {
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"ChromeOS.FirmwareUpdateUi."
+                    "InstallFailedWithDurationAfterRequest.RequestId",
+                    GetRequestIdString(request_id)}),
+      request_duration);
+}
+
+void EmitDeviceRequestSuccessfulWithDuration(
+    const base::TimeDelta& request_duration,
+    mojom::DeviceRequestId request_id) {
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"ChromeOS.FirmwareUpdateUi.RequestSucceededWithDuration.RequestId",
+           GetRequestIdString(request_id)}),
+      request_duration);
+}
+
 std::string GetSourceStr(bool is_startup) {
   return std::string(kHistogramName) +
          std::string(is_startup ? "OnStartup" : "OnRefresh");
+}
+
+std::string GetRequestIdString(mojom::DeviceRequestId request_id) {
+  switch (request_id) {
+    case mojom::DeviceRequestId::kDoNotPowerOff:
+      return "DoNotPowerOff";
+    case mojom::DeviceRequestId::kReplugInstall:
+      return "ReplugInstall";
+    case mojom::DeviceRequestId::kInsertUSBCable:
+      return "InsertUSBCable";
+    case mojom::DeviceRequestId::kRemoveUSBCable:
+      return "RemoveUSBCable";
+    case mojom::DeviceRequestId::kPressUnlock:
+      return "PressUnlock";
+    case mojom::DeviceRequestId::kRemoveReplug:
+      return "RemoveReplug";
+    default:
+      return "Unknown";
+  }
 }
 
 }  // namespace ash::firmware_update::metrics

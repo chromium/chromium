@@ -77,12 +77,11 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
         std::make_unique<unittest_internal::MockGpuMemoryBufferManager>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
-        VideoCaptureBufferType::kSharedMemory, std::move(controller),
-        buffer_pool, base::BindRepeating(&ReturnNullPtrAsJpecDecoder));
+        std::move(controller), buffer_pool,
+        base::BindRepeating(&ReturnNullPtrAsJpecDecoder));
 #else
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
-        VideoCaptureBufferType::kSharedMemory, std::move(controller),
-        buffer_pool,
+        std::move(controller), buffer_pool,
         video_effects_manager_receiver_.BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }

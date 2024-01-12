@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
+import "components/viz/service/debugger/mojom/viz_debugger.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
@@ -34,13 +35,6 @@ struct FrameSinkManagerParams {
   pending_remote<FrameSinkManagerClient> frame_sink_manager_client;
 
   DebugRendererSettings debug_renderer_settings;
-};
-
-// This interface provides mechanism for the Viz Debugger to output data.
-[EnableIf=use_viz_debugger]
-interface VizDebugOutput {
- // Called by the VizDebugger instance at the end of each frame.
- LogFrame(mojo_base.mojom.Value frameData);
 };
 
 // This is the primordial interface used to (re)start the viz services.

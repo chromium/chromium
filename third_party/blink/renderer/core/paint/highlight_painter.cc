@@ -174,7 +174,7 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
     // If the SVG-only fill- and stroke-related properties differ from their
     // values in the originating style. These checks must be skipped outside of
     // SVG content, because the initial ‘fill’ is ‘black’, not ‘currentColor’.
-    if (fragment_item.Type() == FragmentItem::kSvgText) {
+    if (fragment_item.IsSvgText()) {
       // If the ‘fill’ is ‘currentColor’, assume that it differs from the
       // originating style, even if the current color actually happens to
       // match. This simplifies the logic until we know it performs poorly.
@@ -489,11 +489,7 @@ void HighlightPainter::Paint(Phase phase) {
         }
 
         TextPaintStyle text_style;
-        if (fragment_item_->Type() != FragmentItem::kSvgText) {
-          text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
-              document, node_, originating_style_, text_match_marker,
-              paint_info_);
-        } else {
+        if (fragment_item_->IsSvgText()) {
           // DocumentMarkerPainter::ComputeTextPaintStyleFrom() doesn't work
           // well with SVG <text>, which doesn't apply 'color' CSS property.
           const Color platform_matched_color =
@@ -508,6 +504,10 @@ void HighlightPainter::Paint(Phase phase) {
           text_style.current_color = platform_matched_color;
           text_style.stroke_width = originating_style_.TextStrokeWidth();
           text_style.color_scheme = originating_style_.UsedColorScheme();
+        } else {
+          text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
+              document, node_, originating_style_, text_match_marker,
+              paint_info_);
         }
         text_painter_.Paint(
             fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),

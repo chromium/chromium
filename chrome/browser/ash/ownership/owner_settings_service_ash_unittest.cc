@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -28,6 +29,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "crypto/nss_key_util.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -82,8 +85,8 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   void Wait() { loop_.Run(); }
 
  private:
-  raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh> service_;
-  raw_ptr<DeviceSettingsProvider, ExperimentalAsh> provider_;
+  raw_ptr<OwnerSettingsServiceAsh> service_;
+  raw_ptr<DeviceSettingsProvider> provider_;
   base::RunLoop loop_;
 
   using SetRequest = std::pair<std::string, base::Value>;
@@ -165,8 +168,7 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
+  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged> service_ = nullptr;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;
@@ -325,6 +327,62 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
             device_policy_->payload().user_allowlist().user_allowlist(0));
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
+}
+
+// Test that OwnerSettingsServiceAsh can successfully sign a policy and that the
+// signature is correct.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_username("username0");
+
+  base::test::TestFuture<
+      scoped_refptr<ownership::PublicKey>,
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>>
+      result_waiter;
+  EXPECT_TRUE(service_->AssembleAndSignPolicyAsync(
+      base::SequencedTaskRunner::GetCurrentDefault().get(), std::move(policy),
+      result_waiter.GetCallback()));
+
+  scoped_refptr<ownership::PublicKey> pub_key = result_waiter.Get<0>();
+  const std::unique_ptr<enterprise_management::PolicyFetchResponse>&
+      signed_policy = result_waiter.Get<1>();
+  EXPECT_TRUE(signed_policy);
+
+  crypto::SignatureVerifier signature_verifier;
+  EXPECT_TRUE(signature_verifier.VerifyInit(
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
+      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      pub_key->data()));
+}
+
+// Test that OwnerSettingsServiceAsh correctly fails when it cannot sign
+// policies.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicyFailure) {
+  // Generate a new key and set it. 256 bits is not enough to perform SHA-1, so
+  // it will cause a failure.
+  crypto::ScopedSECKEYPublicKey public_key_nss;
+  crypto::ScopedSECKEYPrivateKey private_key_nss;
+  crypto::GenerateRSAKeyPairNSS(PK11_GetInternalSlot(), 256,
+                                /*permanent=*/false, &public_key_nss,
+                                &private_key_nss);
+  scoped_refptr<ownership::PrivateKey> private_key =
+      base::MakeRefCounted<ownership::PrivateKey>(std::move(private_key_nss));
+  service_->SetPrivateKeyForTesting(private_key);
+
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_username("username0");
+
+  base::test::TestFuture<
+      scoped_refptr<ownership::PublicKey>,
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>>
+      result_waiter;
+  EXPECT_TRUE(service_->AssembleAndSignPolicyAsync(
+      base::SequencedTaskRunner::GetCurrentDefault().get(), std::move(policy),
+      result_waiter.GetCallback()));
+
+  const std::unique_ptr<enterprise_management::PolicyFetchResponse>&
+      signed_policy = result_waiter.Get<1>();
+  EXPECT_FALSE(signed_policy);
 }
 
 class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {

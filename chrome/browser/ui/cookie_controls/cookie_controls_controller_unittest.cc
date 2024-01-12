@@ -217,31 +217,29 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness,
 TEST_P(CookieControlsUserBypassTest, CookieBlockingChanged) {
   // Check that the controller correctly keeps track of whether the effective
   // cookie blocking setting for the page has been changed by
-  // OnCookieBlockingEnabledForSite().
+  // `SetUserChangedCookieBlockingForSite`.
   cookie_controls()->Update(web_contents());
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
-  // Setting to the same effective value should not result in a change.
-  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  cookie_controls()->SetUserChangedCookieBlockingForSite(false);
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
-  // While a different one, should.
-  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
-  // Setting it back should clear it.
-  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  // Changing the toggle back should clear it.
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Navigating to the same page should clear it.
-  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Navigating to a different page should also clear it.
-  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
   NavigateAndCommit(GURL("https://thirdparty.com"));
   EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
@@ -1160,6 +1158,7 @@ TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
   NavigateAndCommit(GURL("https://example.com"));
 
   // Loading a different page after making an effective change should not fire.
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1173,6 +1172,7 @@ TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
 
   // Observer should fire when reloaded after change.
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(2);
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1182,19 +1182,20 @@ TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
       ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
 
   NavigateAndCommit(GURL("https://example2.com"));
+  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   NavigateAndCommit(GURL("https://example2.com"));
 }
 
 TEST_P(CookieControlsUserBypassTest,
-       DoesNotAnimateLabelWhenSettingNotChangeableInContext) {
+       DoesNotAnimateLabelWhenSettingNotChangedInContext) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
   cookie_controls()->Update(web_contents());
   NavigateAndCommit(GURL("https://example.com"));
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(1);
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
   hcsm->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("https://example.com"),
@@ -1202,7 +1203,7 @@ TEST_P(CookieControlsUserBypassTest,
   NavigateAndCommit(GURL("https://example.com"));
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(1);
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
   hcsm->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("https://example.com"),

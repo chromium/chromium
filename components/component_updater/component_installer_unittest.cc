@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/component_updater/component_installer.h"
+
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,13 +24,13 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_service_internal.h"
@@ -34,9 +38,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/patcher.h"
-#include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -131,8 +135,10 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
                               const base::FilePath& install_dir,
                               base::Value::Dict manifest)>;
   explicit MockInstallerPolicy(
-      ComponentReadyCallback component_ready_cb = ComponentReadyCallback())
-      : component_ready_cb_(std::move(component_ready_cb)) {}
+      ComponentReadyCallback component_ready_cb = ComponentReadyCallback(),
+      base::RepeatingClosure uninstall_cb = base::DoNothing())
+      : component_ready_cb_(std::move(component_ready_cb)),
+        uninstall_cb_(uninstall_cb) {}
   ~MockInstallerPolicy() override = default;
 
   bool VerifyInstallation(const base::Value::Dict& manifest,
@@ -152,7 +158,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
     return update_client::CrxInstaller::Result(0);
   }
 
-  void OnCustomUninstall() override {}
+  void OnCustomUninstall() override { uninstall_cb_.Run(); }
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
@@ -184,6 +190,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   }
 
   ComponentReadyCallback component_ready_cb_;
+  base::RepeatingClosure uninstall_cb_;
 };
 
 class MockUpdateScheduler : public UpdateScheduler {
@@ -212,15 +219,12 @@ class ComponentInstallerTest : public testing::Test {
  protected:
   void RunThreads();
   void Unpack(const base::FilePath& crx_path);
-  update_client::PuffinComponentUnpacker::Result result() const {
-    return result_;
-  }
+  update_client::Unpacker::Result result() const { return result_; }
 
   base::test::TaskEnvironment task_environment_;
 
  private:
-  void UnpackComplete(
-      const update_client::PuffinComponentUnpacker::Result& result);
+  void UnpackComplete(const update_client::Unpacker::Result& result);
   void Schedule(const base::TimeDelta& initial_delay,
                 const base::TimeDelta& delay,
                 const UpdateScheduler::UserTask& user_task,
@@ -236,7 +240,7 @@ class ComponentInstallerTest : public testing::Test {
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
-  update_client::PuffinComponentUnpacker::Result result_;
+  update_client::Unpacker::Result result_;
   std::unique_ptr<ComponentUpdateService> component_updater_;
   raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
 };
@@ -263,7 +267,7 @@ void ComponentInstallerTest::RunThreads() {
 }
 
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
-  update_client::PuffinComponentUnpacker::Unpack(
+  update_client::Unpacker::Unpack(
       std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
       crx_path, config_->GetUnzipperFactory()->Create(),
       crx_file::VerifierFormat::CRX3,
@@ -273,7 +277,7 @@ void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
 }
 
 void ComponentInstallerTest::UnpackComplete(
-    const update_client::PuffinComponentUnpacker::Result& result) {
+    const update_client::Unpacker::Result& result) {
   result_ = result;
 
   EXPECT_EQ(update_client::UnpackerError::kNone, result_.error);
@@ -300,52 +304,40 @@ absl::optional<base::FilePath> CreateComponentDirectory(
   base::FilePath component_dir =
       base_dir.AppendASCII(name).AppendASCII(version);
 
-  if (!base::CreateDirectory(component_dir))
+  if (!base::CreateDirectory(component_dir)) {
     return absl::nullopt;
+  }
 
-  if (!base::WriteFile(component_dir.AppendASCII("manifest.json"),
-                       base::StringPrintf(R"({
-        "name": "%s",
-        "version": "%s",
-        "min_env_version": "%s"
-    })",
-                                          name.c_str(), version.c_str(),
-                                          min_env_version.c_str())))
-    return absl::nullopt;
-
-  return absl::make_optional(component_dir);
+  static constexpr std::string_view kManifestData = R"({
+    "name": "%s",
+    "version": "%s",
+    "min_env_version": "%s"
+  })";
+  return base::WriteFile(
+             component_dir.AppendASCII("manifest.json"),
+             base::StringPrintf(kManifestData.data(), name.c_str(),
+                                version.c_str(), min_env_version.c_str()))
+             ? absl::make_optional(component_dir)
+             : absl::nullopt;
 }
 
 // Tests that the component metadata is propagated from the component installer
 // and its component policy, through the instance of the CrxComponent, to the
 // component updater service.
 TEST_F(ComponentInstallerTest, RegisterComponent) {
-  class LoopHandler {
-   public:
-    LoopHandler(int max_cnt, base::OnceClosure quit_closure)
-        : max_cnt_(max_cnt), quit_closure_(std::move(quit_closure)) {}
-
-    void OnUpdate(const std::vector<std::string>& ids,
-                  const UpdateClient::CrxDataCallback& crx_data_callback) {
-      static int cnt = 0;
-      ++cnt;
-      if (cnt >= max_cnt_)
-        std::move(quit_closure_).Run();
-    }
-
-   private:
-    const int max_cnt_;
-    base::OnceClosure quit_closure_;
-  };
-
   base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
 
   const std::string id("jebgalgnebhfojomionfpkfelancnnkf");
 
   // Quit after one update check has been fired.
-  LoopHandler loop_handler(1, quit_closure());
+  base::RepeatingClosure barrier_callback =
+      base::BarrierClosure(1, quit_closure());
   EXPECT_CALL(update_client(), DoUpdate(_, _))
-      .WillRepeatedly(Invoke(&loop_handler, &LoopHandler::OnUpdate));
+      .WillRepeatedly(
+          [&](const std::vector<std::string>& ids,
+              const UpdateClient::CrxDataCallback& crx_data_callback) {
+            barrier_callback.Run();
+          });
 
   EXPECT_CALL(update_client(), GetCrxUpdateState(id, _)).Times(1);
   EXPECT_CALL(update_client(), Stop()).Times(1);
@@ -591,6 +583,67 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   ASSERT_TRUE(selected_component &&
               *selected_component == base::Version("7.0.0.0"));
   ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
+}
+
+TEST_F(ComponentInstallerTest, Uninstall) {
+  base::RunLoop run_loop;
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<MockInstallerPolicy>(
+          MockInstallerPolicy::ComponentReadyCallback(),
+          base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));
+
+  Unpack(
+      update_client::GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"));
+
+  const auto unpack_path = result().unpack_path;
+  EXPECT_TRUE(base::DirectoryExists(unpack_path));
+  EXPECT_EQ(update_client::jebg_public_key, result().public_key);
+
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+  base::FilePath base_dir;
+  EXPECT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+  base_dir = base_dir.Append(relative_install_dir);
+  EXPECT_TRUE(base::CreateDirectory(base_dir));
+
+  installer->Register(
+      component_updater(), base::BindLambdaForTesting([&]() {
+        installer->Install(
+            unpack_path, update_client::jebg_public_key, nullptr,
+            base::DoNothing(),
+            base::BindLambdaForTesting(
+                [&](const update_client::CrxInstaller::Result& result) {
+                  EXPECT_EQ(0, result.error);
+                  installer->Uninstall();
+                }));
+      }));
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(base_dir));
+}
+
+TEST_F(ComponentInstallerTest, UninstallWithoutRegister) {
+  base::RunLoop run_loop;
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<MockInstallerPolicy>(
+          MockInstallerPolicy::ComponentReadyCallback(),
+          base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));
+
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+  base::FilePath base_dir;
+  EXPECT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+  base_dir = base_dir.Append(relative_install_dir);
+  EXPECT_TRUE(base::CreateDirectory(base_dir));
+  EXPECT_TRUE(base::CreateDirectory(base_dir.AppendASCII("1.0")));
+  EXPECT_TRUE(base::WriteFile(base_dir.AppendASCII("1.0").AppendASCII("data"),
+                              "This is version 1."));
+  EXPECT_TRUE(base::CreateDirectory(base_dir.AppendASCII("2.0")));
+  EXPECT_TRUE(base::WriteFile(base_dir.AppendASCII("2.0").AppendASCII("data"),
+                              "This is version 2."));
+
+  installer->Uninstall();
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(base_dir));
 }
 
 }  // namespace component_updater

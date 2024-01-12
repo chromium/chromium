@@ -216,22 +216,15 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  if (config.storage_type.value_or(Config::StorageType::kShmem) ==
-      Config::StorageType::kGpuMemoryBuffer) {
-#if !BUILDFLAG(IS_OZONE)
+  native_input_mode_ =
+      config.storage_type.value_or(Config::StorageType::kShmem) ==
+      Config::StorageType::kGpuMemoryBuffer;
+  if (native_input_mode_ && config.input_format != PIXEL_FORMAT_NV12) {
+    // TODO(crbug.com/894381): Support other formats.
     MEDIA_LOG(ERROR, media_log.get())
-        << "Native mode is only available on OZONE platform.";
+        << "Unsupported format for native input mode: "
+        << VideoPixelFormatToString(config.input_format);
     return false;
-#else
-    if (config.input_format != PIXEL_FORMAT_NV12) {
-      // TODO(crbug.com/894381): Support other formats.
-      MEDIA_LOG(ERROR, media_log.get())
-          << "Unsupported format for native input mode: "
-          << VideoPixelFormatToString(config.input_format);
-      return false;
-    }
-    native_input_mode_ = true;
-#endif  // BUILDFLAG(IS_OZONE)
   }
 
   if (config.HasSpatialLayer() && !native_input_mode_) {

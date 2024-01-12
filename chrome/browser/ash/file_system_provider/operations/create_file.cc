@@ -19,8 +19,7 @@ CreateFile::CreateFile(RequestDispatcher* dispatcher,
       file_path_(file_path),
       callback_(std::move(callback)) {}
 
-CreateFile::~CreateFile() {
-}
+CreateFile::~CreateFile() = default;
 
 bool CreateFile::Execute(int request_id) {
   using extensions::api::file_system_provider::CreateFileRequestedOptions;

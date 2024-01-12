@@ -2958,9 +2958,9 @@ be describing additional metrics about the same event.
       components/autofill/core/common/signatures_util.cc for more details.
     </summary>
   </metric>
-  <metric name="OverallType" enum="AutofillServerFieldType">
+  <metric name="OverallType" enum="AutofillFieldType">
     <summary>
-      Field's overall |ServerFieldType|. See: autofill::ServerFieldType
+      Field's overall |FieldType|. See: autofill::FieldType
     </summary>
   </metric>
 </event>
@@ -3068,9 +3068,9 @@ be describing additional metrics about the same event.
     Recorded when Chrome validates field type predictions (on submit, on leaving
     a form, on receiving a form with autocomplete attributes).
   </summary>
-  <metric name="ActualType" enum="AutofillServerFieldType">
+  <metric name="ActualType" enum="AutofillFieldType">
     <summary>
-      The observed type of the field. See: autofill::ServerFieldType
+      The observed type of the field. See: autofill::FieldType
     </summary>
   </metric>
   <metric name="FieldSignature">
@@ -3088,9 +3088,9 @@ be describing additional metrics about the same event.
       Time since form parse.
     </summary>
   </metric>
-  <metric name="PredictedType" enum="AutofillServerFieldType">
+  <metric name="PredictedType" enum="AutofillFieldType">
     <summary>
-      The predicted type of the field. See: autofill::ServerFieldType
+      The predicted type of the field. See: autofill::FieldType
     </summary>
   </metric>
   <metric name="PredictionSource" enum="AutofillPredictionSource">
@@ -3216,7 +3216,7 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="FieldOverallType">
     <summary>
-      Field's overall |ServerFieldType|. See |AutofillField.GetStorableType()|.
+      Field's overall |FieldType|. See |AutofillField.GetStorableType()|.
     </summary>
   </metric>
   <metric name="FieldSignature">
@@ -3240,7 +3240,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HeuristicType">
     <summary>
-      Field's |ServerFieldType| based on heuristics. See
+      Field's |FieldType| based on heuristics. See
       |AutofillField.heuristic_type()|.
     </summary>
   </metric>
@@ -3263,8 +3263,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ServerType">
     <summary>
-      Field's |ServerFieldType| returned by server. See
-      |AutofillField.server_type()|.
+      Field's |FieldType| returned by server. See |AutofillField.server_type()|.
     </summary>
   </metric>
 </event>
@@ -3397,13 +3396,13 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="FieldNewOverallType">
     <summary>
-      Field's overall |ServerFieldType| after rationalization. See
+      Field's overall |FieldType| after rationalization. See
       |AutofillField.GetStorableType()|.
     </summary>
   </metric>
   <metric name="FieldOldOverallType">
     <summary>
-      Field's overall |ServerFieldType| before rationalization. See
+      Field's overall |FieldType| before rationalization. See
       |AutofillField.GetStorableType()|.
     </summary>
   </metric>
@@ -3428,7 +3427,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HeuristicType">
     <summary>
-      Field's |ServerFieldType| based on heuristics. See
+      Field's |FieldType| based on heuristics. See
       |AutofillField.heuristic_type()|.
     </summary>
   </metric>
@@ -3445,8 +3444,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ServerType">
     <summary>
-      Field's |ServerFieldType| returned by server. See
-      |AutofillField.server_type()|.
+      Field's |FieldType| returned by server. See |AutofillField.server_type()|.
     </summary>
   </metric>
 </event>
@@ -3535,7 +3533,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HeuristicType">
     <summary>
-      Field's |ServerFieldType| based on heuristics. See
+      Field's |FieldType| based on heuristics. See
       |AutofillField.heuristic_type()|.
     </summary>
   </metric>
@@ -3551,8 +3549,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ServerType">
     <summary>
-      Field's |ServerFieldType| returned by server. See
-      |AutofillField.server_type()|.
+      Field's |FieldType| returned by server. See |AutofillField.server_type()|.
     </summary>
   </metric>
 </event>
@@ -3580,7 +3577,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="HeuristicType">
     <summary>
-      Field's |ServerFieldType| based on heuristics. See
+      Field's |FieldType| based on heuristics. See
       |AutofillField.heuristic_type()|.
     </summary>
   </metric>
@@ -3612,8 +3609,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ServerType">
     <summary>
-      Field's |ServerFieldType| returned by server. See
-      |AutofillField.server_type()|.
+      Field's |FieldType| returned by server. See |AutofillField.server_type()|.
     </summary>
   </metric>
 </event>
@@ -3719,36 +3715,36 @@ be describing additional metrics about the same event.
       Whether there was a value before autofill in the field.
     </summary>
   </metric>
-  <metric name="HeuristicType" enum="AutofillServerFieldType">
+  <metric name="HeuristicType" enum="AutofillFieldType">
     <summary>
       There are multiple heuristic classification strategies working in
       parallel. This type is predicted from the active pattern source.
     </summary>
   </metric>
-  <metric name="HeuristicTypeDefault" enum="AutofillServerFieldType">
+  <metric name="HeuristicTypeDefault" enum="AutofillFieldType">
     <summary>
       The type of the field predicted from the source of local heuristics on the
       client, which uses patterns applied for most users, the types are from
-      |autofill::ServerFieldType|.
+      |autofill::FieldType|.
     </summary>
   </metric>
-  <metric name="HeuristicTypeExperimental" enum="AutofillServerFieldType">
+  <metric name="HeuristicTypeExperimental" enum="AutofillFieldType">
     <summary>
       The type of the field predicted from the heuristics that uses experimental
-      patterns, the types are from |autofill::ServerFieldType|.
+      patterns, the types are from |autofill::FieldType|.
     </summary>
   </metric>
-  <metric name="HeuristicTypeLegacy" enum="AutofillServerFieldType">
+  <metric name="HeuristicTypeLegacy" enum="AutofillFieldType">
     <summary>
       The type of the field predicted from patterns whose stability is above
-      suspicion, the types are from |autofill::ServerFieldType|.
+      suspicion, the types are from |autofill::FieldType|.
     </summary>
   </metric>
-  <metric name="HeuristicTypeNextGen" enum="AutofillServerFieldType">
+  <metric name="HeuristicTypeNextGen" enum="AutofillFieldType">
     <summary>
       The type of the field predicted from the heuristics that uses patterns
       only for non-user-visible metrics, one step before experimental, the types
-      are from |autofill::ServerFieldType|.
+      are from |autofill::FieldType|.
     </summary>
   </metric>
   <metric name="HtmlFieldMode" enum="AutocompleteHtmlFieldMode">
@@ -3775,11 +3771,11 @@ be describing additional metrics about the same event.
       visibility with false positives.
     </summary>
   </metric>
-  <metric name="OverallType" enum="AutofillServerFieldType">
+  <metric name="OverallType" enum="AutofillFieldType">
     <summary>
-      The final field type from the list of |autofill::ServerFieldType| that we
-      choose after rationalization, which is used to determine the autofill
-      suggestion when the user triggers autofilling.
+      The final field type from the list of |autofill::FieldType| that we choose
+      after rationalization, which is used to determine the autofill suggestion
+      when the user triggers autofilling.
     </summary>
   </metric>
   <metric name="RankInFieldSignatureGroup">
@@ -3811,18 +3807,18 @@ be describing additional metrics about the same event.
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
     </summary>
   </metric>
-  <metric name="ServerType1" enum="AutofillServerFieldType">
+  <metric name="ServerType1" enum="AutofillFieldType">
     <summary>
       The type of the field predicted from the Autofill crowdsourced server from
       majority voting (and some more complex stuff). The types are from
-      |autofill::ServerFieldType|.
+      |autofill::FieldType|.
     </summary>
   </metric>
-  <metric name="ServerType2" enum="AutofillServerFieldType">
+  <metric name="ServerType2" enum="AutofillFieldType">
     <summary>
       The additional type of the field predicted from the Autofill crowdsourced
       server if there is an additional prediction. The types are from
-      |autofill::ServerFieldType|.
+      |autofill::FieldType|.
     </summary>
   </metric>
   <metric name="ServerTypeIsOverride" enum="Boolean">
@@ -3945,28 +3941,28 @@ be describing additional metrics about the same event.
       autofill::mojom::SubmissionSource.
     </summary>
   </metric>
-  <metric name="SubmittedType1" enum="AutofillServerFieldType">
+  <metric name="SubmittedType1" enum="AutofillFieldType">
     <summary>
       The first possible field submitted type is determined by comparing the
       submitted value in the field with the stored user profiles. We will have
       at most three possible field submitted types. The types are from
-      |autofill::ServerFieldType|.
+      |autofill::FieldType|.
     </summary>
   </metric>
-  <metric name="SubmittedType2" enum="AutofillServerFieldType">
+  <metric name="SubmittedType2" enum="AutofillFieldType">
     <summary>
       The second possible field submitted type is determined by comparing the
       submitted value in the field with the stored user profiles. We will have
       at most three possible field submitted types. The types are from
-      |autofill::ServerFieldType|.
+      |autofill::FieldType|.
     </summary>
   </metric>
-  <metric name="SubmittedType3" enum="AutofillServerFieldType">
+  <metric name="SubmittedType3" enum="AutofillFieldType">
     <summary>
       The third possible field submitted type is determined by comparing the
       submitted value in the field with the stored user profiles. We will have
       at most three possible field submitted types. The types are from
-      |autofill::ServerFieldType|.
+      |autofill::FieldType|.
     </summary>
   </metric>
 </event>
@@ -4746,9 +4742,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.FrameLoader">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Timing metrics associated with the frame loader in Blink.
+  </summary>
+  <metric name="CommitDocumentLoaderTime">
+    <summary>
+      Time taken to commit a new document in Blink in microseconds. Collected
+      once per navigation when a frame is loaded. This is rounded down to the
+      nearest exponential bucket.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.HTMLParsing">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Logged once per page load, to capture information about invocation of the
     HTMLDocumentParser for the initial document load. Does not include other
@@ -4762,6 +4775,12 @@ be describing additional metrics about the same event.
       The number of chunks parsed while loading the page. Each chunk represents
       a piece of the HTML content that can be loaded without blocking or
       yielding.
+    </summary>
+  </metric>
+  <metric name="FetchQueuedPreloadsTime">
+    <summary>
+      Time taken to fetch queued subresource preloads for a document in
+      microseconds. This is rounded down to the nearest exponential bucket.
     </summary>
   </metric>
   <metric name="ParsingTimeMax">
@@ -4780,6 +4799,38 @@ be describing additional metrics about the same event.
     <summary>
       The total amount of time spent in the HTMLDocumentParser parsing the page,
       in microseconds.
+    </summary>
+  </metric>
+  <metric name="PreloadTime">
+    <summary>
+      Time spent on preloading subresources for a document, including mojo
+      operations, in microseconds. This is rounded down to the nearest
+      exponential bucket.
+    </summary>
+  </metric>
+  <metric name="PrepareToStopParsingTime">
+    <summary>
+      Time taken to tokenize the HTML document, if necessary, and perform other
+      tasks around parsing completion in microseconds. This is rounded down to
+      the nearest exponential bucket.
+    </summary>
+  </metric>
+  <metric name="PumpTokenizerTime">
+    <summary>
+      Time taken to tokenize an HTML document in Blink in microseconds. This is
+      rounded down to the nearest exponential bucket.
+    </summary>
+  </metric>
+  <metric name="ScanAndPreloadTime">
+    <summary>
+      Time taken to scan and preload subresources for a document in
+      microseconds. This is rounded down to the nearest exponential bucket.
+    </summary>
+  </metric>
+  <metric name="ScanTime">
+    <summary>
+      Time spent on the preload scanning process for an HTML document, in
+      microseconds. This is rounded down to the nearest exponential bucket.
     </summary>
   </metric>
   <metric name="TokensParsedAverage">
@@ -5020,11 +5071,24 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount">
+    <obsolete>
+      Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
+      where page mutation was realized by changing scroll offset.
+    </obsolete>
     <summary>
       The total number times a page (whose main frame is both the outermost main
       frame and is local) is estimated to have attempted a sync- scroll update
       (i.e., synchronizing an effect with scroll) between navigation and First
       Contentful Paint.
+    </summary>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount2">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint. We consider only effects realized by either changing
+      inline style or updating scroll offset.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -6089,6 +6153,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount">
+    <obsolete>
+      Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
+      where page mutation was realized by changing scroll offset.
+    </obsolete>
     <summary>
       The total number times a page (whose main frame is both the outermost main
       frame and is local) is estimated to have attempted a sync- scroll update
@@ -6102,7 +6170,36 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="PossibleSynchronizedScrollCount2">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint. We consider only effects realized by either changing
+      inline style or updating scroll offset.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount2BeginMainFrame">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint. We consider only effects realized by either changing
+      inline style or updating scroll offset.
+    </summary>
+  </metric>
   <metric name="PossibleSynchronizedScrollCountBeginMainFrame">
+    <obsolete>
+      Was succeeded by PossibleSynchronizedScrollCount2BeginMainFrame since this
+      missed a case where page mutation was realized by changing scroll offset.
+    </obsolete>
     <summary>
       The total number times a page (whose main frame is both the outermost main
       frame and is local) is estimated to have attempted a sync- scroll update
@@ -24246,7 +24343,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SoftNavigation" singular="True">
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
   <owner>haoliuk@chromium.org</owner>
   <summary>
     Records soft navigation metrics including LCP, CLS, INP. Soft navigation is

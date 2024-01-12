@@ -74,10 +74,16 @@
 </style>
 
 <div class="tab-organization-container">
-  <div class="tab-organization-header">$i18n{successTitle}</div>
+  <div id="header"
+      class="tab-organization-header"
+      aria-live="polite"
+      aria-relevant="all">
+    [[getTitle_()]]
+  </div>
   <div class="results">
     <div id="scrollable">
       <cr-input id="input" type="text" value="{{name}}"
+          aria-label="[[getInputAriaLabel_(name)]]"
           on-focus="onInputFocus_"
           on-keydown="onInputKeyDown_">
       </cr-input>
@@ -115,7 +121,8 @@
           on-click="onLearnMoreClick_"
           on-keydown="onLearnMoreKeyDown_"
           role="link"
-          tabindex="0">
+          tabindex="0"
+          aria-label="$i18n{learnMoreAriaLabel}">
         $i18n{learnMore}
       </div>
     </div>

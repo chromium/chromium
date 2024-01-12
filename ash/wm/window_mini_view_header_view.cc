@@ -9,6 +9,7 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view.h"
+#include "ash/wm/wm_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,9 +33,6 @@ constexpr int kLabelFontDelta = 2;
 
 // Padding between header items.
 constexpr int kHeaderPaddingDp = 8;
-
-// The corner radius for the top corners for the header.
-constexpr int kHeaderTopCornerRadius = 16;
 
 // The size in dp of the window icon shown on the alt-tab/overview window next
 // to the title.
@@ -127,8 +125,9 @@ void WindowMiniViewHeaderView::ResetRoundedCorners() {
 
 gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
     aura::Window* window) const {
-  return header_view_rounded_corners_.value_or(gfx::RoundedCornersF(
-      kHeaderTopCornerRadius, kHeaderTopCornerRadius, 0, 0));
+  return header_view_rounded_corners_.value_or(
+      gfx::RoundedCornersF(kWindowMiniViewHeaderCornerRadius,
+                           kWindowMiniViewHeaderCornerRadius, 0, 0));
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView, views::View)

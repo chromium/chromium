@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab.state;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -270,6 +271,64 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                                 Assert.assertEquals(
                                         ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
                                         shoppingPersistedTabData.getPreviousPriceMicros());
+                                semaphore.release();
+                            },
+                            true);
+                });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+    }
+
+    @SmallTest
+    @Test
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
+                + "return_empty_price_drops_until_init/true"
+    })
+    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    public void testSkipDelayedInitialization_SkipForNullTab() {
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
+                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
+
+        final Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShoppingPersistedTabData.from(
+                            null,
+                            (shoppingPersistedTabData) -> {
+                                Assert.assertNull(shoppingPersistedTabData);
+                                semaphore.release();
+                            },
+                            true);
+                });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+    }
+
+    @SmallTest
+    @Test
+    @CommandLineFlags.Add({
+        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
+                + "return_empty_price_drops_until_init/true"
+    })
+    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    public void testSkipDelayedInitialization_SkipForDestroyedTab() {
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
+                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
+        final Tab tab = mock(Tab.class);
+        doReturn(true).when(tab).isDestroyed();
+
+        final Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShoppingPersistedTabData.from(
+                            tab,
+                            (shoppingPersistedTabData) -> {
+                                Assert.assertNull(shoppingPersistedTabData);
                                 semaphore.release();
                             },
                             true);

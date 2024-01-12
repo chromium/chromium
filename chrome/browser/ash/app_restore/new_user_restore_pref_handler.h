@@ -55,7 +55,7 @@ class NewUserRestorePrefHandler
   // Callback method for preference changes.
   void OnPreferenceChanged(const std::string& pref_name);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   bool is_restore_pref_changed_ = false;
   bool is_restore_pref_synced_ = false;

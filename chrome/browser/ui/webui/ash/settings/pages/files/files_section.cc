@@ -60,14 +60,27 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts(
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetFilesOfficeSearchConcepts() {
+const std::vector<SearchConcept>& GetFilesMicrosoft365SearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
-      {{IDS_OS_SETTINGS_TAG_FILES_OFFICE,
+      {{IDS_OS_SETTINGS_TAG_FILES_MICROSOFT_365,
         mojom::kOfficeFilesSubpagePath,
         mojom::SearchResultIcon::kFolder,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kOfficeFiles}}});
+        {.subpage = mojom::Subpage::kOfficeFiles},
+        {IDS_OS_SETTINGS_TAG_FILES_MICROSOFT_365_ALT1,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetFilesOneDriveSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_FILES_ONEDRIVE,
+        mojom::kOneDriveSubpagePath,
+        mojom::SearchResultIcon::kOneDrive,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kOneDrive}}});
   return *tags;
 }
 
@@ -113,7 +126,8 @@ FilesSection::FilesSection(Profile* profile,
   updater.AddSearchTags(
       GetDefaultSearchConcepts(GetSection(), GetSectionPath()));
   if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
-    updater.AddSearchTags(GetFilesOfficeSearchConcepts());
+    updater.AddSearchTags(GetFilesMicrosoft365SearchConcepts());
+    updater.AddSearchTags(GetFilesOneDriveSearchConcepts());
   }
 
   if (drive::util::IsDriveFsBulkPinningAvailable(profile)) {
@@ -332,8 +346,8 @@ void FilesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // One Drive
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ONE_DRIVE_LABEL, mojom::Subpage::kOneDrive,
-      mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kOneDriveSubpagePath);
+      mojom::SearchResultIcon::kOneDrive,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kOneDriveSubpagePath);
 }
 
 }  // namespace ash::settings

@@ -132,7 +132,7 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   bool file_selected_;
   bool canceled_;
   base::FilePath path_;
-  raw_ptr<void, ExperimentalAsh> params_;
+  raw_ptr<void> params_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
@@ -800,11 +800,10 @@ class SelectFileDialogExtensionPolicyTest
         .WillByDefault(testing::Return(true));
   }
 
-  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      rules_manager_ = nullptr;
-  std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged> rules_manager_ =
       nullptr;
+  std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
+  raw_ptr<storage::ExternalMountPoints> mount_points_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadAllow) {

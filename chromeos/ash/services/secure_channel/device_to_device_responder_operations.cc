@@ -56,8 +56,7 @@ struct CreateResponderAuthMessageContext {
   std::string session_private_key;
   std::string persistent_private_key;
   std::string persistent_symmetric_key;
-  raw_ptr<multidevice::SecureMessageDelegate, ExperimentalAsh>
-      secure_message_delegate;
+  raw_ptr<multidevice::SecureMessageDelegate> secure_message_delegate;
   std::string hello_public_key;
   std::string middle_message;
 };
@@ -205,8 +204,7 @@ void OnSessionSymmetricKeyDerivedForResponderAuth(
 struct ValidateInitiatorAuthMessageContext {
   std::string persistent_symmetric_key;
   std::string responder_auth_message;
-  raw_ptr<multidevice::SecureMessageDelegate, ExperimentalAsh>
-      secure_message_delegate;
+  raw_ptr<multidevice::SecureMessageDelegate> secure_message_delegate;
 };
 
 // Called after the inner-most layer of [Initiator Auth] is unwrapped.

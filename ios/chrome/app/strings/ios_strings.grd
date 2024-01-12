@@ -294,6 +294,9 @@
       <message name="IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD" desc="The accessible name for the previous field button in the keyboard accessory shown when filling out forms. [Length: unlimited] [iOS only]">
         Previous field
       </message>
+      <message name="IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA" desc="The accessible name for the button in the keyboard accessory used to open the expanded view to see all autofill data, shown when filling out forms. [Length: unlimited] [iOS only]">
+        See all Autofill data
+      </message>
       <message name="IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION" desc="The accessible description of a suggestion shown in the Autofill keyboard acessory. [Length: unlimited] [iOS only]">
         <ph name="VALUE">$1<ex>John Smith</ex></ph>, <ph name="ADDITIONAL_INFO">$2<ex>1234 Main St., Springfield, IL 62711</ex></ph>, <ph name="INDEX">$3<ex>1</ex></ph> of <ph name="NUM_SUGGESTIONS">$4<ex>5</ex></ph>
       </message>
@@ -466,8 +469,8 @@
       </message>
       <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_TITLE" desc="Alert title in the bookmarks page asking the user that all their local bookmarks will be saved to their account. [iOS Only]">
         {count, plural,
-          =1 {Save 1 Bookmark in your Google Account}
-          other {Save {count} Bookmarks in your Google Account}}
+          =1 {Save 1 Bookmark in Your Google Account}
+          other {Save {count} Bookmarks in Your Google Account}}
       </message>
       <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SECTION_DESCRIPTION" desc="This text is shown above the batch upload button section in the bookmarks page to explain to the user how many bookmarks exist only locally and can be uploaded to their Google Account. [iOS Only]">
         {count, plural,
@@ -941,6 +944,12 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPYIMAGE" desc="The name of the Copy Image command in the content area context menu.">
         Copy Image
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
+        Manage
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE" desc="Title for the Chrome content notifications confirmation snackbar.">
+        You'll now receive content notifications
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN" desc="The iOS menu item for opening a link. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open
@@ -3125,10 +3134,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_DESCRIPTION" desc="Alert description in settings &gt; password confirming to the user that they can save all their local passwords to their account. [iOS Only]">
         {COUNT, plural,
-        =1 {You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}}
-        =2 {You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}}
-        =3 {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} other in your Google Account, {EMAIL}}
-        other {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}}}
+        =1 {You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}.}
+        =2 {You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}.}
+        =3 {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} other in your Google Account, {EMAIL}.}
+        other {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}}
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_TITLE" desc="Alert title in settings &gt; password, confirming all local passwords will be saved to the user's account. [iOS Only]">
         {COUNT, plural,
@@ -3252,10 +3261,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         To stop others from using your password, open the <ph name="APP">$1<ex>Netflix</ex></ph> app to change your password
       </message>
       <message name="IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE" desc="Subtitle text on the sharing status view when it succeeds describing that the recipient can now use the shared password. [iOS only]">
-        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="USERNAME">$1<ex>johndoe</ex></ph><ph name="END_BOLD">END_BOLD</ph> can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="WEBSITE">$2<ex>amazon.com</ex></ph><ph name="END_BOLD">END_BOLD</ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="USERNAME">$1<ex>johndoe</ex></ph><ph name="END_BOLD">END_BOLD</ph> can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="WEBSITE">$2<ex>amazon.com</ex></ph><ph name="END_BOLD">END_BOLD</ph>.
       </message>
       <message name="IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE_MULTIPLE_RECIPIENTS" desc="Subtitle text on the sharing status view when it succeeds describing that the recipient can now use the shared password. [iOS only]">
-        Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="WEBSITE">$1<ex>amazon.com</ex></ph><ph name="END_BOLD">END_BOLD</ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+        Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="WEBSITE">$1<ex>amazon.com</ex></ph><ph name="END_BOLD">END_BOLD</ph>.
       </message>
       <message name="IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE" desc="Title text on the sharing status view when it succeeded. [iOS only]">
         Password Shared
@@ -4009,11 +4018,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEARCH_COPIED_TEXT" desc="If a user has some text on their clipboard, this string will appear as an option when the user long-presses on Chrome's address bar. The user can select this option to search the default search engine for the text. This string is a complete sentence. If necessary for your language, you can translate as 'Search for Text That You Copied.' [iOS only]" meaning="Maximum characters: 32">
           Search for Copied Text
       </message>
-      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET" desc="Accessibility action to collapse the search engine description.">
-        Tap to collapse
+      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET" desc="Accessibility action to collapse the search engine description, using the chevron.">
+        Hide search engine details
       </message>
-      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET" desc="Accessibility action to expand the search engine description.">
-        Tap to expand
+      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET" desc="Accessibility action to expand the search engine description, using the chevron.">
+        Show search engine details
+      </message>
+      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_SNIPPET_COLLAPSED" desc="Accessibility feedback after the user collapses the chevron to hide the search engine snippet.">
+        Details hidden
       </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited
@@ -4323,7 +4335,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Username copied
       </message>
       <message name="IDS_IOS_SETTING_IPH_SIGNIN" desc="Message for an IPH shown after users signs-in from the sign-in row in settings page. It informs the users that they can control all their data type synchronization to their account from a single page.">
-        You can now control all your account settings in one place
+        You can always manage what's saved in your Google Account
       </message>
       <message name="IDS_IOS_SETTING_OFF" desc="Generic status label displayed in Settings to show that a setting is currently turned off. [Length: 5em] [iOS only]" meaning="The setting is off.">
         Off
@@ -4910,6 +4922,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_GROUP_CREATION_DATE" desc="Subtitle shown in tab group view to diplay the creation date of the group. [iOS only]">
           Created <ph name="Date"><ex>2023/12/31</ex>$1</ph>
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_CREATION_PLACEHOLDER" desc="Placeholder shown in tab group creation view to indicate to the user the expected action which is to type the name of the group currently created. [iOS only]">
+          Name This Group
       </message>
       <message name="IDS_IOS_TAB_GROUP_TABS_NUMBER" desc="Subtitle shown in tab group view to diplay the current number of tab in the group. [iOS only]">
         {count, plural,

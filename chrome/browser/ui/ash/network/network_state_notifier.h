@@ -129,8 +129,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Shows the carrier account detail page for |network_id|.
   void ShowCarrierAccountDetail(const std::string& network_id);
 
-  raw_ptr<SystemTrayClient, DanglingUntriaged | ExperimentalAsh>
-      system_tray_client_ = nullptr;
+  raw_ptr<SystemTrayClient, DanglingUntriaged> system_tray_client_ = nullptr;
 
   // The details of the connected VPN network if any, otherwise null.
   // Used for displaying the VPN disconnected notification.

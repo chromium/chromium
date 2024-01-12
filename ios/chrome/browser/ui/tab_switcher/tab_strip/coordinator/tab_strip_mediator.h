@@ -7,14 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_mutator.h"
 
 @protocol TabStripConsumer;
-class WebStateList;
+
+class Browser;
 class ChromeBrowserState;
+class WebStateList;
 
 // This mediator used to manage model interaction for its consumer.
-@interface TabStripMediator : NSObject <TabStripMutator>
+@interface TabStripMediator
+    : NSObject <TabCollectionDragDropHandler, TabStripMutator>
 
 // The WebStateList that this mediator listens for any changes on the total
 // number of Webstates.
@@ -22,6 +26,9 @@ class ChromeBrowserState;
 
 // The ChromeBrowserState model for the corresponding browser.
 @property(nonatomic, assign) ChromeBrowserState* browserState;
+
+// The associated browser needed to move tabs across browsers.
+@property(nonatomic, assign) Browser* browser;
 
 // Designated initializer. Initializer with a TabStripConsumer.
 - (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer

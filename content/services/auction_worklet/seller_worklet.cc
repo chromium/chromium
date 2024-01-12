@@ -9,6 +9,7 @@
 #include <cmath>
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -68,7 +68,7 @@ namespace {
 // or v8::Null() if both types of DirectFromSellerSignals are null.
 v8::Local<v8::Value> GetDirectFromSellerSignals(
     const DirectFromSellerSignalsRequester::Result& subresource_bundle_result,
-    const absl::optional<std::string>& header_result,
+    const std::optional<std::string>& header_result,
     AuctionV8Helper& v8_helper,
     v8::Local<v8::Context> context,
     std::vector<std::string>& errors) {
@@ -130,7 +130,7 @@ bool SetTrustedScoringSignalsUrl(v8::Isolate* isolate,
 }
 
 bool CanSetRequestedAdSize(
-    const absl::optional<blink::AdSize>& requested_ad_size) {
+    const std::optional<blink::AdSize>& requested_ad_size) {
   return requested_ad_size.has_value() &&
          blink::IsValidAdSize(requested_ad_size.value());
 }
@@ -324,9 +324,9 @@ bool IsValidBid(double bid) {
 bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
                          v8::Local<v8::Context> context,
                          const url::Origin& seller,
-                         const absl::optional<GURL>& decision_logic_url,
-                         const absl::optional<GURL>& trusted_coding_signals_url,
-                         const absl::optional<uint16_t> experiment_group_id,
+                         const std::optional<GURL>& decision_logic_url,
+                         const std::optional<GURL>& trusted_coding_signals_url,
+                         const std::optional<uint16_t> experiment_group_id,
                          const blink::AuctionConfig::NonSharedParams&
                              auction_ad_config_non_shared_params,
                          v8::LocalVector<v8::Value>* args) {
@@ -530,7 +530,7 @@ bool AddOtherSeller(
 }
 
 // Converts reject reason string to corresponding mojom enum.
-absl::optional<mojom::RejectReason> RejectReasonStringToEnum(
+std::optional<mojom::RejectReason> RejectReasonStringToEnum(
     const std::string& reason) {
   if (reason == "not-available") {
     return mojom::RejectReason::kNotAvailable;
@@ -550,7 +550,7 @@ absl::optional<mojom::RejectReason> RejectReasonStringToEnum(
     return mojom::RejectReason::kCategoryExclusions;
   }
   // Invalid (out of range) reject reason.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Checks `provided_currency` against both `expected_seller_currency` and
@@ -558,9 +558,9 @@ absl::optional<mojom::RejectReason> RejectReasonStringToEnum(
 // `bid_label` identifying the bid being checked.
 // Returns true on success.
 bool VerifySellerCurrency(
-    absl::optional<blink::AdCurrency> provided_currency,
-    absl::optional<blink::AdCurrency> expected_seller_currency,
-    absl::optional<blink::AdCurrency> component_expect_bid_currency,
+    std::optional<blink::AdCurrency> provided_currency,
+    std::optional<blink::AdCurrency> expected_seller_currency,
+    std::optional<blink::AdCurrency> component_expect_bid_currency,
     const GURL& script_url,
     base::StringPiece bid_label,
     std::vector<std::string>& errors_out) {
@@ -586,9 +586,9 @@ bool VerifySellerCurrency(
   return true;
 }
 
-absl::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
+std::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
   if (delta.is_zero()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return delta;
 }
@@ -605,10 +605,10 @@ SellerWorklet::SellerWorklet(
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
     const GURL& decision_logic_url,
-    const absl::optional<GURL>& trusted_scoring_signals_url,
+    const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-    absl::optional<uint16_t> experiment_group_id)
+    std::optional<uint16_t> experiment_group_id)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(std::move(v8_helper)),
       debug_id_(
@@ -660,23 +660,23 @@ int SellerWorklet::context_group_id_for_testing() const {
 void SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    const absl::optional<blink::AdCurrency>& bid_currency,
+    const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
-    const absl::optional<GURL>& direct_from_seller_seller_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_seller_signals,
+    const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
-    const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
+    const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
-    const absl::optional<base::TimeDelta> seller_timeout,
+    const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
         score_ad_client) {
@@ -779,22 +779,22 @@ void SellerWorklet::SendPendingSignalsRequests() {
 void SellerWorklet::ReportResult(
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
-    const absl::optional<GURL>& direct_from_seller_seller_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_seller_signals,
+    const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         browser_signal_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
-    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
+    const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_desirability,
     double browser_signal_highest_scoring_other_bid,
-    const absl::optional<blink::AdCurrency>&
+    const std::optional<blink::AdCurrency>&
         browser_signal_highest_scoring_other_bid_currency,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
@@ -909,10 +909,10 @@ SellerWorklet::V8State::V8State(
     mojo::PendingRemote<mojom::AuctionSharedStorageHost>
         shared_storage_host_remote,
     const GURL& decision_logic_url,
-    const absl::optional<GURL>& trusted_scoring_signals_url,
+    const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-    absl::optional<uint16_t> experiment_group_id,
+    std::optional<uint16_t> experiment_group_id,
     base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
       debug_id_(debug_id),
@@ -938,26 +938,26 @@ void SellerWorklet::V8State::SetWorkletScript(
 void SellerWorklet::V8State::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    const absl::optional<blink::AdCurrency>& bid_currency,
+    const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_seller_signals,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
-    const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
+    const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<std::string>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
-    const absl::optional<base::TimeDelta> seller_timeout,
+    const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_score_ad_task,
     ScoreAdCallbackInternal callback) {
@@ -1002,7 +1002,7 @@ void SellerWorklet::V8State::ScoreAd(
   }
 
   v8::Local<v8::Value> trusted_scoring_signals_value;
-  absl::optional<uint32_t> scoring_signals_data_version;
+  std::optional<uint32_t> scoring_signals_data_version;
   if (trusted_scoring_signals) {
     trusted_scoring_signals_value = trusted_scoring_signals->GetScoringSignals(
         v8_helper_.get(), context, browser_signal_render_url,
@@ -1099,10 +1099,10 @@ void SellerWorklet::V8State::ScoreAd(
         std::move(callback), /*score=*/0,
         /*reject_reason=*/mojom::RejectReason::kNotAvailable,
         /*component_auction_modified_bid_params=*/nullptr,
-        /*bid_in_seller_currency=*/absl::nullopt,
-        /*scoring_signals_data_version=*/absl::nullopt,
-        /*debug_loss_report_url=*/absl::nullopt,
-        /*debug_win_report_url=*/absl::nullopt,
+        /*bid_in_seller_currency=*/std::nullopt,
+        /*scoring_signals_data_version=*/std::nullopt,
+        /*debug_loss_report_url=*/std::nullopt,
+        /*debug_win_report_url=*/std::nullopt,
         /*pa_requests=*/{},
         /*scoring_latency=*/elapsed_timer.Elapsed(), std::move(errors_out));
     return;
@@ -1137,11 +1137,11 @@ void SellerWorklet::V8State::ScoreAd(
         std::move(callback), /*score=*/0,
         /*reject_reason=*/mojom::RejectReason::kNotAvailable,
         /*component_auction_modified_bid_params=*/nullptr,
-        /*bid_in_seller_currency=*/absl::nullopt,
-        /*scoring_signals_data_version=*/absl::nullopt,
+        /*bid_in_seller_currency=*/std::nullopt,
+        /*scoring_signals_data_version=*/std::nullopt,
         /*debug_loss_report_url=*/
         context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
-        /*debug_win_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/std::nullopt,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*scoring_latency=*/elapsed, std::move(errors_out));
@@ -1153,7 +1153,7 @@ void SellerWorklet::V8State::ScoreAd(
   bool allow_component_auction = false;
   mojom::ComponentAuctionModifiedBidParamsPtr
       component_auction_modified_bid_params;
-  absl::optional<double> bid_in_seller_currency;
+  std::optional<double> bid_in_seller_currency;
   // If the bid is already in seller currency, forward it as
   // incomingBidInSellerCurrency.
   if (bid_currency.has_value() &&
@@ -1169,12 +1169,12 @@ void SellerWorklet::V8State::ScoreAd(
   if (!gin::ConvertFromV8(isolate, score_ad_result, &score)) {
     struct ScoreAdOutput {
       double desirability;
-      absl::optional<double> bid;
-      absl::optional<std::string> bid_currency;
-      absl::optional<v8::Local<v8::Value>> ad;
-      absl::optional<double> incoming_bid_in_seller_currency;
-      absl::optional<std::string> reject_reason;
-      absl::optional<bool> allow_component_auction;
+      std::optional<double> bid;
+      std::optional<std::string> bid_currency;
+      std::optional<v8::Local<v8::Value>> ad;
+      std::optional<double> incoming_bid_in_seller_currency;
+      std::optional<std::string> reject_reason;
+      std::optional<bool> allow_component_auction;
     } result_idl;
 
     AuctionV8Helper::TimeLimitScope time_limit_scope(total_timeout.get());
@@ -1332,7 +1332,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0, reject_reason,
         /*component_auction_modified_bid_params=*/nullptr,
-        /*bid_in_seller_currency=*/absl::nullopt, scoring_signals_data_version,
+        /*bid_in_seller_currency=*/std::nullopt, scoring_signals_data_version,
         context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
         context_recycler.for_debugging_only_bindings()->TakeWinReportUrl(),
         context_recycler.private_aggregation_bindings()
@@ -1411,26 +1411,26 @@ void SellerWorklet::V8State::ReportResult(
         auction_ad_config_non_shared_params,
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_seller_signals,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         browser_signal_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
-    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
+    const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_desirability,
     double browser_signal_highest_scoring_other_bid,
-    const absl::optional<blink::AdCurrency>&
+    const std::optional<blink::AdCurrency>&
         browser_signal_highest_scoring_other_bid_currency,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
-    absl::optional<uint32_t> scoring_signals_data_version,
+    std::optional<uint32_t> scoring_signals_data_version,
     uint64_t trace_id,
     ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -1453,8 +1453,8 @@ void SellerWorklet::V8State::ReportResult(
           decision_logic_url_, trusted_scoring_signals_url_,
           experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
-                                         /*signals_for_winner=*/absl::nullopt,
-                                         /*report_url=*/absl::nullopt,
+                                         /*signals_for_winner=*/std::nullopt,
+                                         /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
                                          /*errors=*/std::vector<std::string>());
@@ -1492,8 +1492,8 @@ void SellerWorklet::V8State::ReportResult(
        !browser_signals_dict.Set("dataVersion",
                                  scoring_signals_data_version.value()))) {
     PostReportResultCallbackToUserThread(std::move(callback),
-                                         /*signals_for_winner=*/absl::nullopt,
-                                         /*report_url=*/absl::nullopt,
+                                         /*signals_for_winner=*/std::nullopt,
+                                         /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
                                          /*errors=*/std::vector<std::string>());
@@ -1513,8 +1513,8 @@ void SellerWorklet::V8State::ReportResult(
                  ->modified_bid))) {
       PostReportResultCallbackToUserThread(
           std::move(callback),
-          /*signals_for_winner=*/absl::nullopt,
-          /*report_url=*/absl::nullopt,
+          /*signals_for_winner=*/std::nullopt,
+          /*report_url=*/std::nullopt,
           /*ad_beacon_map=*/{},
           /*pa_requests=*/{}, base::TimeDelta(),
           /*errors=*/std::vector<std::string>());
@@ -1538,8 +1538,8 @@ void SellerWorklet::V8State::ReportResult(
   if (!direct_from_seller_signals_dict.Set("sellerSignals", seller_signals) ||
       !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
     PostReportResultCallbackToUserThread(std::move(callback),
-                                         /*signals_for_winner=*/absl::nullopt,
-                                         /*report_url=*/absl::nullopt,
+                                         /*signals_for_winner=*/std::nullopt,
+                                         /*report_url=*/std::nullopt,
                                          /*ad_beacon_map=*/{},
                                          /*pa_requests=*/{}, base::TimeDelta(),
                                          /*errors=*/errors_out);
@@ -1555,7 +1555,7 @@ void SellerWorklet::V8State::ReportResult(
       worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
-      v8_helper_->CreateTimeLimit(/*script_timeout=*/absl::nullopt);
+      v8_helper_->CreateTimeLimit(/*script_timeout=*/std::nullopt);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                             total_timeout.get(), errors_out);
@@ -1563,8 +1563,8 @@ void SellerWorklet::V8State::ReportResult(
   if (!success) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
     PostReportResultCallbackToUserThread(
-        std::move(callback), /*signals_for_winner=*/absl::nullopt,
-        /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+        std::move(callback), /*signals_for_winner=*/std::nullopt,
+        /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
         /*pa_requests=*/{}, elapsed_timer.Elapsed(), std::move(errors_out));
     return;
   }
@@ -1595,8 +1595,8 @@ void SellerWorklet::V8State::ReportResult(
     // Keep Private Aggregation API requests since `reportReport()` might use
     // it to detect script timeout or failures.
     PostReportResultCallbackToUserThread(
-        std::move(callback), /*signals_for_winner=*/absl::nullopt,
-        /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+        std::move(callback), /*signals_for_winner=*/std::nullopt,
+        /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         elapsed_timer.Elapsed(), std::move(errors_out));
@@ -1665,10 +1665,10 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
       std::move(callback), /*score=*/0,
       /*reject_reason=*/mojom::RejectReason::kNotAvailable,
       /*component_auction_modified_bid_params=*/nullptr,
-      /*bid_in_seller_currency=*/absl::nullopt,
-      /*scoring_signals_data_version=*/absl::nullopt,
-      /*debug_loss_report_url=*/absl::nullopt,
-      /*debug_win_report_url=*/absl::nullopt, std::move(pa_requests),
+      /*bid_in_seller_currency=*/std::nullopt,
+      /*scoring_signals_data_version=*/std::nullopt,
+      /*debug_loss_report_url=*/std::nullopt,
+      /*debug_win_report_url=*/std::nullopt, std::move(pa_requests),
       /*scoring_latency=*/scoring_latency, std::move(errors));
 }
 
@@ -1678,10 +1678,10 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
     mojom::RejectReason reject_reason,
     mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params,
-    absl::optional<double> bid_in_seller_currency,
-    absl::optional<uint32_t> scoring_signals_data_version,
-    absl::optional<GURL> debug_loss_report_url,
-    absl::optional<GURL> debug_win_report_url,
+    std::optional<double> bid_in_seller_currency,
+    std::optional<uint32_t> scoring_signals_data_version,
+    std::optional<GURL> debug_loss_report_url,
+    std::optional<GURL> debug_win_report_url,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta scoring_latency,
     std::vector<std::string> errors) {
@@ -1698,8 +1698,8 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
 
 void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
     ReportResultCallbackInternal callback,
-    absl::optional<std::string> signals_for_winner,
-    absl::optional<GURL> report_url,
+    std::optional<std::string> signals_for_winner,
+    std::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
@@ -1740,7 +1740,7 @@ void SellerWorklet::Start() {
 }
 
 void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
-                                       absl::optional<std::string> error_msg) {
+                                       std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   base::UmaHistogramCounts10M(
       "Ads.InterestGroup.Net.ResponseSizeBytes.ScoringScriptJS",
@@ -1797,7 +1797,7 @@ void SellerWorklet::MaybeRecordCodeWait() {
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     ScoreAdTaskList::iterator task,
     scoped_refptr<TrustedSignals::Result> result,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
@@ -1927,10 +1927,10 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     mojom::RejectReason reject_reason,
     mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params,
-    absl::optional<double> bid_in_seller_currency,
-    absl::optional<uint32_t> scoring_signals_data_version,
-    absl::optional<GURL> debug_loss_report_url,
-    absl::optional<GURL> debug_win_report_url,
+    std::optional<double> bid_in_seller_currency,
+    std::optional<uint32_t> scoring_signals_data_version,
+    std::optional<GURL> debug_loss_report_url,
+    std::optional<GURL> debug_win_report_url,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta scoring_latency,
     std::vector<std::string> errors) {
@@ -2054,8 +2054,8 @@ void SellerWorklet::RunReportResultIfReady(
 
 void SellerWorklet::DeliverReportResultCallbackOnUserThread(
     ReportResultTaskList::iterator task,
-    const absl::optional<std::string> signals_for_winner,
-    const absl::optional<GURL> report_url,
+    const std::optional<std::string> signals_for_winner,
+    const std::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,

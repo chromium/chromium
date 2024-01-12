@@ -10,6 +10,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -29,6 +30,8 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/mouse_button_property.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -134,6 +137,7 @@ int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
     case ui::VKEY_RWIN:
       return ui::EF_COMMAND_DOWN;
     case ui::VKEY_CONTROL:
+    case ui::VKEY_RCONTROL:
       return ui::EF_CONTROL_DOWN;
     case ui::VKEY_SHIFT:
     case ui::VKEY_LSHIFT:
@@ -296,14 +300,19 @@ GetRemappingActionFromMouseSettings(const mojom::Button& button,
       settings.button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (button_remapping_iter != settings.button_remappings.end()) {
+    const mojom::ButtonRemapping& button_remapping = *(*button_remapping_iter);
+    if (!button_remapping.remapping_action) {
+      return std::nullopt;
+    }
+
     auto result = PeripheralCustomizationEventRewriter::RemappingActionResult(
-        *((*button_remapping_iter)->remapping_action),
+        *button_remapping.remapping_action,
         PeripheralCustomizationEventRewriter::
             PeripheralCustomizationMetricsType::kMouse);
-    return std::move(result);
+    return result;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::optional<PeripheralCustomizationEventRewriter::RemappingActionResult>
@@ -314,9 +323,15 @@ GetRemappingActionFromGraphicsTabletSettings(
       settings.pen_button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (pen_button_remapping_iter != settings.pen_button_remappings.end()) {
+    const mojom::ButtonRemapping& button_remapping =
+        *(*pen_button_remapping_iter);
+    if (!button_remapping.remapping_action) {
+      return std::nullopt;
+    }
+
     auto pen_action =
         PeripheralCustomizationEventRewriter::RemappingActionResult(
-            *(*pen_button_remapping_iter)->remapping_action,
+            *button_remapping.remapping_action,
             PeripheralCustomizationEventRewriter::
                 PeripheralCustomizationMetricsType::kGraphicsTabletPen);
     return std::move(pen_action);
@@ -326,15 +341,21 @@ GetRemappingActionFromGraphicsTabletSettings(
       settings.tablet_button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (tablet_button_remapping_iter != settings.tablet_button_remappings.end()) {
+    const mojom::ButtonRemapping& button_remapping =
+        *(*tablet_button_remapping_iter);
+    if (!button_remapping.remapping_action) {
+      return std::nullopt;
+    }
+
     auto tablet_action =
         PeripheralCustomizationEventRewriter::RemappingActionResult(
-            *(*tablet_button_remapping_iter)->remapping_action,
+            *button_remapping.remapping_action,
             PeripheralCustomizationEventRewriter::
                 PeripheralCustomizationMetricsType::kGraphicsTablet);
     return std::move(tablet_action);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int GetRemappedModifiersFromMouseSettings(
@@ -596,7 +617,17 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
 
   if (remapping_action->is_key_event()) {
     const auto& key_event = remapping_action->get_key_event();
-    rewritten_event = RewriteEventToKeyEvent(event, *key_event);
+    auto entry = FindKeyCodeEntry(key_event->vkey);
+    // If no entry can be found, use the stored key_event struct.
+    if (!entry) {
+      rewritten_event = RewriteEventToKeyEvent(event, *key_event);
+    } else {
+      rewritten_event = RewriteEventToKeyEvent(
+          event, mojom::KeyEvent(entry->resulting_key_code,
+                                 static_cast<int>(entry->dom_code),
+                                 static_cast<int>(entry->dom_key),
+                                 key_event->modifiers, ""));
+    }
   }
 
   if (remapping_action->is_static_shortcut_action()) {
@@ -641,6 +672,11 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
   if (!rewritten_event || rewritten_event->type() != ui::ET_MOUSE_RELEASED) {
     updated_button_map = true;
     UpdatePressedButtonMap(std::move(button), key_event, rewritten_event);
+  }
+
+  if (!rewritten_event && key_event.key_code() >= ui::VKEY_BUTTON_0 &&
+      key_event.key_code() <= ui::VKEY_BUTTON_Z) {
+    return DiscardEvent(continuation);
   }
 
   if (!rewritten_event) {
@@ -707,7 +743,7 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
     std::unique_ptr<ui::Event> rewritten_event = CloneEvent(mouse_event);
     const int remappable_flags =
         GetRemappableMouseEventFlags(*device_type_to_observe);
-    rewritten_event->set_flags(rewritten_event->flags() & ~remappable_flags);
+    rewritten_event->SetFlags(rewritten_event->flags() & ~remappable_flags);
     if (rewritten_event->IsMouseEvent()) {
       auto& rewritten_mouse_event = *rewritten_event->AsMouseEvent();
       rewritten_mouse_event.set_changed_button_flags(
@@ -804,7 +840,7 @@ void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(
   // remapped, this will behave incorrectly as it will remove "Ctrl". Instead,
   // this needs to track what keys are being pressed by the device that have
   // modifiers attached to them. For now, this is close enough to being correct.
-  event.set_flags(event.flags() & ~modifier_flags);
+  event.SetFlags(event.flags() & ~modifier_flags);
 }
 
 void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
@@ -813,7 +849,7 @@ void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
   for (const auto& [_, flag] : device_button_to_flags_) {
     flags |= flag;
   }
-  event.set_flags(event.flags() | flags);
+  event.SetFlags(event.flags() | flags);
 }
 
 std::unique_ptr<ui::Event> PeripheralCustomizationEventRewriter::CloneEvent(

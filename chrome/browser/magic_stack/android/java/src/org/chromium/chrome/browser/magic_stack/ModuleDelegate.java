@@ -1,0 +1,93 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.magic_stack;
+
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/** The interface for magic stack which owns a list of modules. */
+public interface ModuleDelegate {
+    /**
+     * Module types that are shown in the magic stack on the home surfaces.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. See tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE, ModuleType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ModuleType {
+        int SINGLE_TAB = 0;
+        int PRICE_CHANGE = 1;
+        int NUM_ENTRIES = 2;
+    }
+
+    /** Returns a string name of a module. */
+    static String getModuleName(@ModuleType int moduleType) {
+        switch (moduleType) {
+            case SINGLE_TAB:
+                return "SingleTabModule";
+            case (PRICE_CHANGE):
+                return "PriceChange";
+            default:
+                assert false : "Module type not supported!";
+                return null;
+        }
+    }
+
+    /**
+     * Called when a module has a PropertyModel ready. This could be called multiple times from the
+     * same module.
+     */
+    void onDataReady(@ModuleType int moduleType, @NonNull PropertyModel propertyModel);
+
+    /** Called when a module has no data to show. */
+    void onDataFetchFailed(@ModuleType int moduleType);
+
+    /** Called when the user wants to hide a module from the magic stack. */
+    void onHideModuleFromContextMenu(@ModuleType int moduleType);
+
+    /** Called when the user wants to open the settings to customize modules. */
+    void customizeSettings();
+
+    /**
+     * Called when the user clicks a module to open a URL.
+     *
+     * @param gurl The URL to open.
+     * @param moduleType The type of the module clicked.
+     */
+    void onUrlClicked(@NonNull GURL gurl, @ModuleType int moduleType);
+
+    /**
+     * Called when the user clicks a module to select a Tab.
+     *
+     * @param tabId The id of the Tab to select.
+     * @param moduleType The type of the module clicked.
+     */
+    void onTabClicked(int tabId, @ModuleType int moduleType);
+
+    /**
+     * Called when the user clicks a module.
+     *
+     * @param moduleType The type of the module clicked.
+     */
+    void onModuleClicked(@ModuleType int moduleType);
+
+    /** Returns the type of the home surface which owns the magic stack. */
+    @HostSurface
+    int getHostSurfaceType();
+
+    /** Gets the instance of the module {@link ModuleProvider} of the given type. */
+    ModuleProvider getModuleProvider(@ModuleType int moduleType);
+}

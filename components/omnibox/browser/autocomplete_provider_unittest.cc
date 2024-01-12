@@ -232,8 +232,9 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
 
   matches_.clear();
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (input.IsZeroSuggest()) {
     return;
+  }
 
   // Generate 4 results synchronously, the rest later.
   AddResults(0, 1);
@@ -425,13 +426,16 @@ class AutocompleteProviderTest : public testing::Test {
   // platform, flags, etc.) be instantiated.
   void ResetControllerWithType(int type);
 
-  AutocompleteResult result_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   TestAutocompleteControllerObserver autocomplete_controller_observer_;
   std::unique_ptr<AutocompleteController> controller_;
   // Owned by |controller_|.
   raw_ptr<MockAutocompleteProviderClient> client_;
+  // `result_` may contain a `raw_ptr` (e.g. `AutocompleteMatch::provider) to
+  // the `controller_`.  This means that (per //docs/dangling_ptr_guide.md) the
+  // `result_` field needs to be declared *after* the `controller_` field.
+  AutocompleteResult result_;
   // Used to ensure that |client_| ownership has been passed to |controller_|
   // exactly once.
   bool client_owned_{};

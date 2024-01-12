@@ -38,7 +38,7 @@ class FakeEulaMixin : public InProcessBrowserTestMixin {
 
  private:
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
-  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> test_server_;
+  raw_ptr<net::EmbeddedTestServer> test_server_;
 
   // The default behaviour for the embedded server is to service the
   // online version properly. Offline tests may change this during construction

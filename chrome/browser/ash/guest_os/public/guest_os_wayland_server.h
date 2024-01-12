@@ -121,7 +121,7 @@ class GuestOsWaylandServer : public ash::ConciergeClient::Observer {
   void ConciergeServiceStarted() override;
   void ConciergeServiceStopped() override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   ServersByType servers_;
 

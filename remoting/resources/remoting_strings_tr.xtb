@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Uyumsuz bir protokol sürümü algılandı. Lütfen her iki bilgisayara da yazılımın en son sürümünü yüklediğinizden emin olun ve tekrar deneyin.</translation>
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="1201402288615127009">İleri</translation>
-<translation id="1296511125400541222">Telif hakkı 2023 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> adlı ana makineye bağlanırken hata oluştu</translation>
 <translation id="1450760146488584666">İstenen nesne mevcut değil.</translation>
 <translation id="1480046233931937785">Katkıda Bulunanlar</translation>
@@ -89,7 +88,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4808503597364150972">Lütfen <ph name="HOSTNAME" /> için PIN'inizi girin.</translation>
 <translation id="4812684235631257312">Ana makine</translation>
 <translation id="4867841927763172006">PrtScn Gönder</translation>
-<translation id="4960795469833295568">Telif hakkı 2023 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> adlı ana makinenin bağlantısı kapandı</translation>
 <translation id="4985296110227979402">İlk olarak bilgisayarınızı uzaktan erişim için ayarlamanız gerekir</translation>
 <translation id="4987330545941822761">Chrome Uzaktan Masaüstü, URL'leri yerel olarak açacak tarayıcıyı belirleyemiyor. Lütfen aşağıdaki listeden seçin.</translation>
@@ -154,6 +152,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="7693372326588366043">Ana makine listesini yenile</translation>
 <translation id="7714222945760997814">Bunu bildir</translation>
 <translation id="7868137160098754906">Lütfen uzak bilgisayara ilişkin PIN'inizi girin.</translation>
+<translation id="7881455334687220899">Telif hakkı 2024 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="7895403300744144251">Uzak bilgisayardaki güvenlik politikaları, hesabınızdan bağlantı yapılmasına izin vermiyor.</translation>
 <translation id="7936528439960309876">Sağa Yerleştir</translation>
 <translation id="7970576581263377361">Kimlik doğrulama başarısız oldu. Lütfen Chromium'da tekrar oturum açın.</translation>
@@ -185,6 +184,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="8747048596626351634">Oturum kilitlendi veya başlatılamadı. Uzak bilgisayarda ~/.chrome-remote-desktop-session mevcutsa masaüstü ortamı veya pencere yöneticisi gibi uzun süre ön planda çalışan bir işlem başlattığından emin olun.</translation>
 <translation id="8804164990146287819">Gizlilik Politikası</translation>
 <translation id="8906511416443321782">Sesi yakalayıp Chrome Uzaktan Masaüstü istemcisine yayınlayabilmek için mikrofon erişimi gerekiyor.</translation>
+<translation id="9042277333359847053">Telif hakkı 2024 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="9111855907838866522">Uzak cihazınıza bağlısınız. Menüyü açmak için lütfen ekrana dört parmağınızla dokunun.</translation>
 <translation id="9126115402994542723">Bu cihazdan bu ana makineye bağlantı kurarken bir daha PIN sorma.</translation>
 <translation id="916856682307586697">Varsayılan XSession'ı başlat</translation>

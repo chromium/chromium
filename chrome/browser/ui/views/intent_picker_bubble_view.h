@@ -55,9 +55,9 @@ class Widget;
 //   +--------------------------------+
 
 class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
- public:
-  METADATA_HEADER(IntentPickerBubbleView);
+  METADATA_HEADER(IntentPickerBubbleView, LocationBarBubbleDelegateView)
 
+ public:
   using AppInfo = apps::IntentPickerAppInfo;
   using BubbleType = apps::IntentPickerBubbleType;
 
@@ -117,6 +117,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // A ScrollView which contains a list of apps. This view manages the selection
   // state for the dialog.
   class IntentPickerAppsView : public views::ScrollView {
+    METADATA_HEADER(IntentPickerAppsView, views::ScrollView)
+
    public:
     virtual void SetSelectedIndex(std::optional<size_t> index) = 0;
     virtual std::optional<size_t> GetSelectedIndex() const = 0;

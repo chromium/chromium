@@ -126,7 +126,7 @@ class MultiWordSuggester : public Suggester {
 
    private:
     // Not owned by this class
-    raw_ptr<MultiWordSuggester, ExperimentalAsh> suggester_;
+    raw_ptr<MultiWordSuggester> suggester_;
 
     // The current state of the suggester (eg is a suggestion shown or not).
     State state_ = State::kNoSuggestionShown;
@@ -156,8 +156,7 @@ class MultiWordSuggester : public Suggester {
   absl::optional<int> focused_context_id_;
 
   // Not owned by this class
-  raw_ptr<SuggestionHandlerInterface, DanglingUntriaged | ExperimentalAsh>
-      suggestion_handler_;
+  raw_ptr<SuggestionHandlerInterface, DanglingUntriaged> suggestion_handler_;
 
   // Current suggestion state
   SuggestionState state_;
@@ -165,7 +164,7 @@ class MultiWordSuggester : public Suggester {
   ui::ime::AssistiveWindowButton suggestion_button_;
 
   // The current user's Chrome user profile.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace input_method

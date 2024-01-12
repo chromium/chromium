@@ -8,9 +8,11 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {
@@ -41,6 +43,8 @@ struct CONTENT_EXPORT IndexedDBPendingConnection {
   mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
       pending_mojo_receiver;
   bool was_cold_open = false;
+  mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+      client_state_checker;
 };
 
 }  // namespace content

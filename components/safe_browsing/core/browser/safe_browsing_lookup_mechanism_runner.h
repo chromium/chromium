@@ -10,7 +10,6 @@
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 
 namespace safe_browsing {
-class SafeBrowsingLookupMechanismExperimenter;
 
 // This class is responsible for handling timeouts for running a specific Safe
 // Browsing mechanism lookup. It keeps a timer while the mechanism runs and
@@ -42,13 +41,6 @@ class SafeBrowsingLookupMechanismRunner {
   // synchronously and was found to be safe. In that case, the callback passed
   // through the constructor will not be called.
   SafeBrowsingLookupMechanism::StartCheckResult Run();
-  // Adds a reference from this object to the lookup mechanism experimenter so
-  // that the experimenter does not get destructed until after this object does.
-  void SetLookupMechanismExperimenter(
-      scoped_refptr<SafeBrowsingLookupMechanismExperimenter> experimenter);
-  // Returns how long the run took. Should not be called until after the run has
-  // completed.
-  base::TimeDelta GetRunDuration();
 
  private:
   // The function that the lookup mechanism calls into when its run completes.
@@ -80,14 +72,6 @@ class SafeBrowsingLookupMechanismRunner {
   // once.
   bool is_check_complete_ = false;
 #endif
-
-  // The time the run began.
-  base::TimeTicks start_lookup_time_;
-  // The time the run ended.
-  base::TimeTicks end_lookup_time_;
-  // Keep reference to experimenter to avoid it becoming destructed before the
-  // mechanism has completed.
-  scoped_refptr<SafeBrowsingLookupMechanismExperimenter> experimenter_;
 
   base::WeakPtrFactory<SafeBrowsingLookupMechanismRunner> weak_factory_{this};
 };

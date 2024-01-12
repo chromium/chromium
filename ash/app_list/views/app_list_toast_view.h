@@ -85,9 +85,8 @@ class ASH_EXPORT AppListToastView : public views::View {
   ~AppListToastView() override;
 
   // views::View:
-  gfx::Size GetMaximumSize() const override;
-  gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
+  void Layout() override;
 
   void SetButton(std::u16string button_text,
                  views::Button::PressedCallback button_callback);
@@ -105,17 +104,13 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Sets whether the icon for the toast should have a background.
   void AddIconBackground();
 
+  // Configures the toast preferred size to fit within the `width` of horizontal
+  // space.
+  void SetAvailableWidth(int width);
+
   views::ImageView* icon() const { return icon_; }
   views::LabelButton* toast_button() const { return toast_button_; }
   views::Button* close_button() const { return close_button_; }
-
-  // TODO(b/274524838): Sets the maximum width of the `title_label_`.
-  // When any of the values in the `GetExpandedTitleLabelWidth()` changes, need
-  // to recalculate the width.
-  // It is possible that this view automatically recalculate the width when
-  // detect any changes. But for simplicity, the caller needs to call this
-  // method after set the button or icon.
-  void SetTitleLabelMaximumWidth();
 
   views::Label* GetTitleLabelForTesting() const { return title_label_; }
 
@@ -142,13 +137,21 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Creates an ImageView for the icon and inserts it in the toast view.
   void CreateIconView();
 
-  // Get the available space for `title_label_` width.
-  int GetExpandedTitleLabelWidth();
+  // Returns the amount of horizontal space available for `label_container_`,
+  // assuming that the toast is `toast_width` wide.
+  int GetLabelWidthForToastWidth(int toast_width) const;
+
+  // Returns the minimum space required to fit title and subtitle labels within
+  // the `available_width` of space.
+  int GetMaxLabelContainerWidth(int available_width) const;
 
   // The icon for the toast.
   std::optional<ui::ImageModel> default_icon_;
 
   std::optional<int> icon_size_;
+
+  // If set, the amount of horizontal space available for the toast layout.
+  std::optional<int> available_width_;
 
   // Whether the toast icon should be styled with a background.
   bool has_icon_background_ = false;

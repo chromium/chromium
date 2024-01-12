@@ -699,14 +699,13 @@ class ArcAppListPrefs : public KeyedService,
   // Updates kArcPackagesIsUpToDate pref.
   void UpdateArcPackagesIsUpToDatePref();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Owned by the BrowserContext.
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  const raw_ptr<PrefService> prefs_;
 
   const raw_ptr<
-      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>,
-      ExperimentalAsh>
+      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>>
       app_connection_holder_for_testing_;
 
   // List of observers.
@@ -753,8 +752,8 @@ class ArcAppListPrefs : public KeyedService,
   // To execute file operations in sequence.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
-  raw_ptr<arc::ArcPackageSyncableService, DanglingUntriaged | ExperimentalAsh>
-      sync_service_ = nullptr;
+  raw_ptr<arc::ArcPackageSyncableService, DanglingUntriaged> sync_service_ =
+      nullptr;
 
   bool default_apps_ready_ = false;
   std::unique_ptr<ArcDefaultAppList> default_apps_;

@@ -50,7 +50,7 @@ struct ValueEquals {
   bool operator()(const base::Value* second) const {
     return *first_ == *second;
   }
-  raw_ptr<const base::Value, ExperimentalAsh> first_;
+  raw_ptr<const base::Value> first_;
 };
 
 bool GetBoolValue(const base::Value::Dict& dict, const char* key) {
@@ -1065,6 +1065,8 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       services->AddService(kCellularServicePath, "cellular1_guid",
                            "cellular1" /* name */, shill::kTypeCellular, state,
                            add_to_visible);
+      services->SetServiceProperty(kCellularServicePath, shill::kIccidProperty,
+                                   base::Value("cellular1"));
       base::Value technology_value(cellular_technology_);
       SetInitialDeviceProperty("/device/cellular1",
                                shill::kTechnologyFamilyProperty,

@@ -87,7 +87,8 @@ void FedCmAccountSelectionView::Show(
     idp_display_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
-        identity_provider.accounts, identity_provider.request_permission);
+        identity_provider.accounts, identity_provider.request_permission,
+        identity_provider.has_login_status_mismatch);
     // TODO(crbug.com/1406014): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider.rp_context;
@@ -129,14 +130,16 @@ void FedCmAccountSelectionView::Show(
     state_ = State::AUTO_REAUTHN;
 
     // When auto re-authn flow is triggered, the parameter
-    // |identity_provider_data_list| would only include the single returning
+    // `idp_display_data_list_` would only include the single returning
     // account and its IDP.
     DCHECK_EQ(idp_display_data_list_.size(), 1u);
     DCHECK_EQ(idp_display_data_list_[0].accounts.size(), 1u);
     ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
                        idp_display_data_list_[0]);
-  } else if (accounts_size == 1u &&
+  } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u &&
              !idp_display_data_list_[0].idp_metadata.supports_add_account) {
+    // When there is a single IDP and a single account to show and the IDP does
+    // not support adding an account, we can use the single account UI.
     state_ = State::PERMISSION;
     GetBubbleView()->ShowSingleAccountConfirmDialog(
         top_frame_for_display_, iframe_for_display_,
@@ -592,8 +595,12 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
 }
 
 void FedCmAccountSelectionView::Close() {
-  if (!bubble_widget_)
+  if (!bubble_widget_) {
+    if (delegate_ && notify_delegate_of_dismiss_) {
+      delegate_->OnDismiss(DismissReason::kOther);
+    }
     return;
+  }
 
   bubble_widget_->Close();
   OnDismiss(DismissReason::kOther);

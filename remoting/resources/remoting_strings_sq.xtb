@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">U zbulua një version i papërputhshëm i protokollit. Sigurohu që të kesh instaluar versionin më të fundit të softuerit në të dy kompjuterët dhe provo përsëri.</translation>
 <translation id="1008557486741366299">Jo tani</translation>
 <translation id="1201402288615127009">Para</translation>
-<translation id="1296511125400541222">Të drejtat e autorit 2023 të "Autorëve të Chromium". Të gjitha të drejtat të rezervuara.</translation>
 <translation id="1297009705180977556">Gabim gjatë lidhjes me <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Objekti i kërkuar nuk ekziston.</translation>
 <translation id="1480046233931937785">Bashkëpunëtorët</translation>
@@ -89,7 +88,6 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="4808503597364150972">Fut kodin PIN për <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Strehuesi</translation>
 <translation id="4867841927763172006">Dërgo PrtScn</translation>
-<translation id="4960795469833295568">Të drejtat e autorit 2023 Google LLC. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="4974476491460646149">Lidhja u mbyll për <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Në fillim duhet të konfigurosh kompjuterin për qasjen në largësi</translation>
 <translation id="4987330545941822761">"Desktopi në distancë i Chrome" nuk mund të përcaktojë shfletuesin për hapjen e URL-ve në nivel lokal. Zgjidhe atë nga lista më poshtë.</translation>
@@ -154,6 +152,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="7693372326588366043">Rifresko listën e strehuesve</translation>
 <translation id="7714222945760997814">Raportoje këtë</translation>
 <translation id="7868137160098754906">Fut kodin PIN për kompjuterin në distancë.</translation>
+<translation id="7881455334687220899">Të drejtat e autorit 2024 të "Autorëve të Chromium". Të gjitha të drejtat të rezervuara.</translation>
 <translation id="7895403300744144251">Politikat e sigurisë në kompjuterin në distancë nuk lejojnë lidhje nga llogaria jote.</translation>
 <translation id="7936528439960309876">Staciono djathtas</translation>
 <translation id="7970576581263377361">Verifikimi dështoi. Identifikohu përsëri në Chromium.</translation>
@@ -185,6 +184,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="8747048596626351634">Seanca u ndërpre aksidentalisht ose nisja e saj dështoi. Nëse ~/.chrome-remote-desktop-session ekziston në kompjuterin në distancë, sigurohu që të nisë një proces të gjatë në plan të parë të tillë si mjedis desktopi ose menaxher dritaresh.</translation>
 <translation id="8804164990146287819">Politika e privatësisë</translation>
 <translation id="8906511416443321782">Nevojitet qasja në mikrofon për të regjistruar audion dhe për ta transmetuar atë te klienti i "Desktopit në distancë të Chrome"</translation>
+<translation id="9042277333359847053">Të drejtat e autorit 2024 Google LLC. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="9111855907838866522">Je lidhur me pajisjen tënde në largësi. Për të hapur menynë, trokit tek ekrani me katër gishta.</translation>
 <translation id="9126115402994542723">Mos kërko më për kod PIN kur lidhesh me këtë strehues nga kjo pajisje.</translation>
 <translation id="916856682307586697">Nis XSession të parazgjedhur</translation>

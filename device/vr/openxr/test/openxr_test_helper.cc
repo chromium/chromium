@@ -1001,6 +1001,7 @@ void OpenXrTestHelper::UpdateInteractionProfile(
       break;
     case device::mojom::OpenXrInteractionProfileType::kInvalid:
     case device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures:
+    case device::mojom::OpenXrInteractionProfileType::kMetaHandAim:
       NOTREACHED() << "Invalid EventData interaction_profile type";
       break;
   }

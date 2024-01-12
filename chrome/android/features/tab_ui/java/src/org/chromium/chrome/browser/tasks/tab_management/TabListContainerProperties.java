@@ -76,4 +76,15 @@ class TabListContainerProperties {
                 MODE,
                 FOCUS_TAB_INDEX_FOR_ACCESSIBILITY
             };
+
+    /** Keys for {@link TabSwitcherPaneCoordinator}. */
+    public static final PropertyKey[] PANE_KEYS =
+            new PropertyKey[] {
+                BLOCK_TOUCH_INPUT,
+                IS_INCOGNITO,
+                BROWSER_CONTROLS_STATE_PROVIDER,
+                INITIAL_SCROLL_INDEX,
+                MODE,
+                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY
+            };
 }

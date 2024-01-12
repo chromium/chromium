@@ -5,6 +5,8 @@
 #ifndef CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_SUBRESOURCE_LOADER_H_
 #define CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_SUBRESOURCE_LOADER_H_
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -26,7 +28,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -106,7 +107,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Called when this loader no longer needs to restart dispatching the fetch
   // event on failure. Null |status| means the event dispatch was not attempted.
   void SettleFetchEventDispatch(
-      absl::optional<blink::ServiceWorkerStatusCode> status);
+      std::optional<blink::ServiceWorkerStatusCode> status);
 
   // blink::mojom::ServiceWorkerFetchResponseCallback overrides:
   void OnResponse(
@@ -117,7 +118,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
   void OnFallback(
-      absl::optional<network::DataElementChunkedDataPipe> request_body,
+      std::optional<network::DataElementChunkedDataPipe> request_body,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
 
   void UpdateResponseTiming(
@@ -131,7 +132,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -139,7 +140,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   int StartBlobReading(mojo::ScopedDataPipeConsumerHandle* body_pipe);
   void OnSideDataReadingComplete(mojo::ScopedDataPipeConsumerHandle data_pipe,
-                                 absl::optional<mojo_base::BigBuffer> metadata);
+                                 std::optional<mojo_base::BigBuffer> metadata);
   void OnBodyReadingComplete(int net_error);
 
   // ServiceWorkerResourceLoader overrides:
@@ -151,7 +152,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void CommitResponseBody(
       const network::mojom::URLResponseHeadPtr& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
@@ -219,7 +220,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
 
-  absl::optional<ServiceWorkerRouterEvaluator::Result>
+  std::optional<ServiceWorkerRouterEvaluator::Result>
   MaybeEvaluateRouterConditions() const;
 
   bool MaybeStartAutoPreload();
@@ -228,7 +229,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
                             blink::mojom::MatchResultPtr result);
 
   network::mojom::URLResponseHeadPtr response_head_;
-  absl::optional<net::RedirectInfo> redirect_info_;
+  std::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
 
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
@@ -283,9 +284,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   scoped_refptr<network::SharedURLLoaderFactory>
       race_network_request_url_loader_factory_;
-  absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
+  std::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       race_network_request_loader_client_;
-  absl::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
+  std::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
       forwarded_race_network_request_url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       remote_forwarded_race_network_request_url_loader_factory_;

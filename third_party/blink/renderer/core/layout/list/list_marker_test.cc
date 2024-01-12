@@ -27,7 +27,7 @@ class ListMarkerTest : public RenderingTest {
 
   String GetMarkerText(TreeScope& scope, const char* list_item_id) {
     return To<LayoutText>(GetMarker(scope, list_item_id)->SlowFirstChild())
-        ->GetText();
+        ->TransformedText();
   }
 
   String GetMarkerText(const char* list_item_id) {

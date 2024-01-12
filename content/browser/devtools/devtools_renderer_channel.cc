@@ -6,11 +6,12 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
-#include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
+#include "content/browser/devtools/worklet_devtools_agent_host.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
@@ -69,8 +70,9 @@ void DevToolsRendererChannel::CleanupConnection() {
 }
 
 void DevToolsRendererChannel::ForceDetachWorkerSessions() {
-  for (WorkerDevToolsAgentHost* host : child_targets_)
+  for (auto* host : child_targets_) {
     host->ForceDetachAllSessions();
+  }
 }
 
 void DevToolsRendererChannel::SetRendererInternal(
@@ -182,7 +184,7 @@ void DevToolsRendererChannel::ChildTargetCreated(
     // browser process when PlzDedicatedWorker is enabled.
     DCHECK(
         content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString()));
-    scoped_refptr<WorkerDevToolsAgentHost> agent_host =
+    scoped_refptr<DedicatedWorkerDevToolsAgentHost> agent_host =
         WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
             devtools_worker_token);
     if (!agent_host) {
@@ -206,17 +208,28 @@ void DevToolsRendererChannel::ChildTargetCreated(
     return;
   }
 
-  CHECK(context_type == blink::mojom::DevToolsExecutionContextType::kWorklet ||
-        !base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   if (content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString())) {
     mojo::ReportBadMessage("Workers should have unique tokens.");
     return;
   }
-  auto agent_host = base::MakeRefCounted<WorkerDevToolsAgentHost>(
-      process_id_, filtered_url, std::move(name), devtools_worker_token,
-      owner_->GetId(),
-      base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,
-                     weak_factory_.GetWeakPtr()));
+  scoped_refptr<WorkerOrWorkletDevToolsAgentHost> agent_host;
+  switch (context_type) {
+    case blink::mojom::DevToolsExecutionContextType::kWorklet:
+      agent_host = base::MakeRefCounted<WorkletDevToolsAgentHost>(
+          process_id_, filtered_url, std::move(name), devtools_worker_token,
+          owner_->GetId(),
+          base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,
+                         weak_factory_.GetWeakPtr()));
+      break;
+    case blink::mojom::DevToolsExecutionContextType::kDedicatedWorker:
+      CHECK(
+          !base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+      agent_host = base::MakeRefCounted<DedicatedWorkerDevToolsAgentHost>(
+          process_id_, filtered_url, std::move(name), devtools_worker_token,
+          owner_->GetId(),
+          base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,
+                         weak_factory_.GetWeakPtr()));
+  }
   agent_host->SetRenderer(process_id_, std::move(worker_devtools_agent),
                           std::move(host_receiver));
   child_targets_.insert(agent_host.get());

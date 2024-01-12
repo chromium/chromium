@@ -138,6 +138,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -868,20 +869,22 @@ Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
   return WarnBeforeClosingResult::kDoNotClose;
 }
 
-bool Browser::ShouldCloseWindow() {
+BrowserClosingStatus Browser::HandleBeforeClose() {
   // If `force_skip_warning_user_` is true, then we should immediately
   // return true.
-  if (force_skip_warning_user_on_close_)
-    return true;
+  if (force_skip_warning_user_on_close_) {
+    return BrowserClosingStatus::kPermitted;
+  }
 
   // If the user needs to see one or more warnings, hold off closing the
   // browser.
   const WarnBeforeClosingResult result = MaybeWarnBeforeClosing(base::BindOnce(
       &Browser::FinishWarnBeforeClosing, weak_factory_.GetWeakPtr()));
-  if (result == WarnBeforeClosingResult::kDoNotClose)
-    return false;
+  if (result == WarnBeforeClosingResult::kDoNotClose) {
+    return BrowserClosingStatus::kDeniedByUser;
+  }
 
-  return unload_controller_.ShouldCloseWindow();
+  return unload_controller_.GetBrowserClosingStatus();
 }
 
 bool Browser::TryToCloseWindow(
@@ -946,8 +949,11 @@ StatusBubble* Browser::GetStatusBubbleForTesting() {
 }
 
 void Browser::OnWindowClosing() {
-  if (!ShouldCloseWindow())
+  if (const auto closing_status = HandleBeforeClose();
+      closing_status != BrowserClosingStatus::kPermitted) {
+    BrowserList::NotifyBrowserCloseCancelled(this, closing_status);
     return;
+  }
 
   // Application should shutdown on last window close if the user is explicitly
   // trying to quit, or if there is nothing keeping the browser alive (such as

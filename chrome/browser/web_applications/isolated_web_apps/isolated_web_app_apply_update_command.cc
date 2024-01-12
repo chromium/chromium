@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
@@ -62,14 +63,18 @@ IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     base::OnceCallback<void(
         base::expected<void, IsolatedWebAppApplyUpdateCommandError>)> callback,
     std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper)
-    : WebAppCommandTemplate<AppLock>("IsolatedWebAppApplyUpdateCommand"),
-      lock_description_(
-          std::make_unique<AppLockDescription>(url_info.app_id())),
+    : WebAppCommand<
+          AppLock,
+          base::expected<void, IsolatedWebAppApplyUpdateCommandError>>(
+          "IsolatedWebAppApplyUpdateCommand",
+          AppLockDescription(url_info.app_id()),
+          std::move(callback), /*args_for_shutdown=*/
+          base::unexpected(IsolatedWebAppApplyUpdateCommandError{
+              .message = std::string("System is shutting down.")})),
       url_info_(std::move(url_info)),
       web_contents_(std::move(web_contents)),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)),
-      callback_(std::move(callback)),
       command_helper_(std::move(command_helper)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -77,24 +82,14 @@ IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
   CHECK(optional_profile_keep_alive_ == nullptr ||
         &profile() == optional_profile_keep_alive_->profile());
 
-  debug_log_ = base::Value::Dict()
-                   .Set("app_id", url_info_.app_id())
-                   .Set("origin", url_info_.origin().Serialize())
-                   .Set("bundle_id", url_info_.web_bundle_id().id())
-                   .Set("bundle_type",
-                        static_cast<int>(url_info_.web_bundle_id().type()));
+  GetMutableDebugValue().Set("app_id", url_info_.app_id());
+  GetMutableDebugValue().Set("origin", url_info_.origin().Serialize());
+  GetMutableDebugValue().Set("bundle_id", url_info_.web_bundle_id().id());
+  GetMutableDebugValue().Set(
+      "bundle_type", static_cast<int>(url_info_.web_bundle_id().type()));
 }
 
 IsolatedWebAppApplyUpdateCommand::~IsolatedWebAppApplyUpdateCommand() = default;
-
-const LockDescription& IsolatedWebAppApplyUpdateCommand::lock_description()
-    const {
-  return *lock_description_;
-}
-
-base::Value IsolatedWebAppApplyUpdateCommand::ToDebugValue() const {
-  return base::Value(debug_log_.Clone());
-}
 
 void IsolatedWebAppApplyUpdateCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
@@ -148,7 +143,7 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
   const WebApp::IsolationData::PendingUpdateInfo& update_info =
       *isolation_data.pending_update_info();
 
-  debug_log_.Set("update_info", update_info.AsDebugValue());
+  GetMutableDebugValue().Set("update_info", update_info.AsDebugValue());
 
   if (isolation_data.version >= update_info.version) {
     ReportFailure(base::StrCat({"Installed app is already on version ",
@@ -227,7 +222,7 @@ void IsolatedWebAppApplyUpdateCommand::RetrieveIconsAndPopulateInstallInfo(
     WebAppInstallInfo install_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  debug_log_.Set("app_title", install_info.title);
+  GetMutableDebugValue().Set("app_title", install_info.title);
 
   command_helper_->RetrieveIconsAndPopulateInstallInfo(
       std::move(install_info), *web_contents_.get(),
@@ -260,30 +255,12 @@ void IsolatedWebAppApplyUpdateCommand::OnFinalized(
   }
 }
 
-void IsolatedWebAppApplyUpdateCommand::OnShutdown() {
-  // Stop any potential ongoing operations by destroying the `command_helper_`.
-  command_helper_.reset();
-
-  // TODO(cmfcmf): Test cancellation of pending update during system
-  // shutdown.
-  ReportFailure("System is shutting down.", /*due_to_shutdown=*/true);
-}
-
-void IsolatedWebAppApplyUpdateCommand::ReportFailure(base::StringPiece message,
-                                                     bool due_to_shutdown) {
+void IsolatedWebAppApplyUpdateCommand::ReportFailure(
+    base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!callback_.is_null());
 
   IsolatedWebAppApplyUpdateCommandError error{.message = std::string(message)};
-  debug_log_.Set("result", "error: " + error.message);
-
-  if (due_to_shutdown) {
-    SignalCompletionAndSelfDestruct(
-        CommandResult::kShutdown,
-        base::BindOnce(std::move(callback_),
-                       base::unexpected(std::move(error))));
-    return;
-  }
+  GetMutableDebugValue().Set("result", "error: " + error.message);
 
   // If this command fails, then it is best to delete the pending update info
   // from the database. A failed pending update is likely caused by a corrupted
@@ -293,13 +270,9 @@ void IsolatedWebAppApplyUpdateCommand::ReportFailure(base::StringPiece message,
   RunChainedCallbacks(
       base::BindOnce(&IsolatedWebAppApplyUpdateCommand::CleanupOnFailure,
                      weak_ptr),
-      base::BindOnce(
-          &IsolatedWebAppApplyUpdateCommand::SignalCompletionAndSelfDestruct,
-          weak_ptr, CommandResult::kFailure,
-          base::BindOnce(std::move(callback_),
-                         base::unexpected(std::move(error))))
-
-  );
+      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::CompleteAndSelfDestruct,
+                     weak_ptr, CommandResult::kFailure,
+                     base::unexpected(std::move(error)), FROM_HERE));
 }
 
 void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
@@ -337,12 +310,9 @@ void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
 
 void IsolatedWebAppApplyUpdateCommand::ReportSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!callback_.is_null());
 
-  debug_log_.Set("result", "success");
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_), base::ok()));
+  GetMutableDebugValue().Set("result", "success");
+  CompleteAndSelfDestruct(CommandResult::kSuccess, base::ok());
 }
 
 Profile& IsolatedWebAppApplyUpdateCommand::profile() {

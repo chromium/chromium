@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_sharing {
@@ -22,7 +23,6 @@ class SharingMessage;
 }  // namespace chrome_browser_sharing
 
 namespace syncer {
-class DeviceInfo;
 class LocalDeviceInfoProvider;
 }  // namespace syncer
 
@@ -47,7 +47,7 @@ class SharingMessageSender {
     virtual ~SendMessageDelegate() = default;
 
     virtual void DoSendMessageToDevice(
-        const syncer::DeviceInfo& device,
+        const SharingTargetDeviceInfo& device,
         base::TimeDelta time_to_live,
         chrome_browser_sharing::SharingMessage message,
         SendMessageCallback callback) = 0;
@@ -66,7 +66,7 @@ class SharingMessageSender {
   virtual ~SharingMessageSender();
 
   virtual base::OnceClosure SendMessageToDevice(
-      const syncer::DeviceInfo& device,
+      const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
       chrome_browser_sharing::SharingMessage message,
       DelegateType delegate_type,

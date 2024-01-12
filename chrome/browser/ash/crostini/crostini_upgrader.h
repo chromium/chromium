@@ -116,7 +116,7 @@ class CrostiniUpgrader : public KeyedService,
   };
   friend class StatusTracker;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   guest_os::GuestId container_id_;
   base::ObserverList<CrostiniUpgraderUIObserver>::Unchecked upgrader_observers_;
 

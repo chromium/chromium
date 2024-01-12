@@ -540,7 +540,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowDownloadButton(),
                 mIntentDataProvider.isIncognito(),
                 isMenuIconAtStart,
-                mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled);
+                mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled,
+                mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier());
     }
 
     @Override

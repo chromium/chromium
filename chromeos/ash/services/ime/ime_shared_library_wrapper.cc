@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -18,33 +17,28 @@ namespace {
 
 const char kCrosImeDecoderLib[] = "libimedecoder.so";
 
-// TODO(b/161491092): Add test image path based on value of
-// "CHROMEOS_RELEASE_TRACK" from `base::SysInfo::GetLsbReleaseValue`.
-// Returns ImeDecoderLib path based on the run time env.
 base::FilePath GetImeDecoderLibPath() {
 #if defined(__x86_64__) || defined(__aarch64__)
   base::FilePath lib_path("/usr/lib64");
 #else
   base::FilePath lib_path("/usr/lib");
 #endif
-  lib_path = lib_path.Append(kCrosImeDecoderLib);
-  return lib_path;
+  return lib_path.Append(kCrosImeDecoderLib);
 }
 
 // Simple bridge between logging in the loaded shared library and logging in
 // Chrome.
 void ImeLoggerBridge(int severity, const char* message) {
   switch (severity) {
-    case logging::LOG_INFO:
-      // TODO(b/162375823): VLOG_IF(INFO, is_debug_version).
+    case logging::LOGGING_INFO:
       break;
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       LOG(WARNING) << message;
       break;
-    case logging::LOG_ERROR:
+    case logging::LOGGING_ERROR:
       LOG(ERROR) << message;
       break;
-    case logging::LOG_FATAL:
+    case logging::LOGGING_FATAL:
       LOG(FATAL) << message;
       break;
     default:

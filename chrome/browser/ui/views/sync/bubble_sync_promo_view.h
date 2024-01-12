@@ -24,8 +24,9 @@ class BubbleSyncPromoSigninButtonView;
 // * If Chrome has at least one account, then the promo button is personalized
 //   with the user full name and avatar icon and allows the user to enable sync.
 class BubbleSyncPromoView : public views::View {
+  METADATA_HEADER(BubbleSyncPromoView, views::View)
+
  public:
-  METADATA_HEADER(BubbleSyncPromoView);
   // Creates a personalized sync promo view.
   // |delegate| is not owned by BubbleSyncPromoView.
   // The promo message is set to |accounts_promo_message_resource_id| when

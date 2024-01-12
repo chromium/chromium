@@ -120,11 +120,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ActiveStatus {
   std::optional<bool> IsFirstActiveInCohort(base::Time active_ts) const;
 
   // Used to read/write the latest active status value.
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // Singleton lives throughout class lifetime.
-  const raw_ptr<system::StatisticsProvider, ExperimentalAsh>
-      statistics_provider_;
+  const raw_ptr<system::StatisticsProvider> statistics_provider_;
 };
 
 }  // namespace report::device_metrics

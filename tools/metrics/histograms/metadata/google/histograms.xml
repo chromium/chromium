@@ -54,16 +54,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GoogleUpdate.StartingUpdateState"
-    enum="BooleanAlreadyUpdating" expires_after="2020-10-15">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Whether or not an update was being tracked as 'in progress'
-    when another update was started.
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
     expires_after="2024-05-26">
   <owner>sorin@chromium.org</owner>

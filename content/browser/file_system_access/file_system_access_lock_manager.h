@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_LOCK_MANAGER_H_
 
 #include <map>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,7 +17,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 class FileSystemURL;
@@ -139,7 +139,7 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     static RootLocator FromFileSystemURL(const storage::FileSystemURL& url);
 
     RootLocator(const EntryPathType& type,
-                const absl::optional<storage::BucketLocator>& bucket_locator);
+                const std::optional<storage::BucketLocator>& bucket_locator);
     RootLocator(const RootLocator&);
     ~RootLocator();
 
@@ -147,7 +147,7 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
 
     const EntryPathType type;
     // Non-null iff `type` is kSandboxed.
-    const absl::optional<storage::BucketLocator> bucket_locator;
+    const std::optional<storage::BucketLocator> bucket_locator;
   };
 
   // Releases the root lock for `root_locator`. Called from the RootLock.

@@ -250,7 +250,7 @@ class DlpAshBlockUITest
 
  protected:
   raw_ptr<policy::MockFilesPolicyNotificationManager,
-          DisableDanglingPtrDetection | ExperimentalAsh>
+          DisableDanglingPtrDetection>
       fpnm_ = nullptr;
 
  private:

@@ -14,7 +14,7 @@ public class JankMetricUMARecorder {
             JankMetrics metric,
             long reportingIntervalStartTime,
             long reportingIntervalDuration,
-            @JankScenario int scenario) {
+            @JankScenario.Type int scenario) {
         if (metric == null) {
             return;
         }

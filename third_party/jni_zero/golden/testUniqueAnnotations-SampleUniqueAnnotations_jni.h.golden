@@ -68,18 +68,18 @@ JNI_BOUNDARY_EXPORT void
     jlong nativePtr) {
   Foo::Bar* native = reinterpret_cast<Foo::Bar*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "CallWithQualifiedObject");
-  return native->CallWithQualifiedObject(env, base::android::JavaParamRef<jobject>(env, jcaller));
+  return native->CallWithQualifiedObject(env, jni_zero::JavaParamRef<jobject>(env, jcaller));
 }
 
 
 static std::atomic<jmethodID> g_org_jni_1zero_samples_SampleUniqueAnnotations_useBar11(nullptr);
-static void Java_SampleUniqueAnnotations_useBar1(JNIEnv* env, const base::android::JavaRef<jobject>&
+static void Java_SampleUniqueAnnotations_useBar1(JNIEnv* env, const jni_zero::JavaRef<jobject>&
     inner) {
   jclass clazz = org_jni_1zero_samples_SampleUniqueAnnotations_clazz(env);
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_samples_SampleUniqueAnnotations_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,

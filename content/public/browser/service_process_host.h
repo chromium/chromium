@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_SERVICE_PROCESS_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
@@ -128,8 +128,8 @@ class CONTENT_EXPORT ServiceProcessHost {
     Options Pass();
 
     std::u16string display_name;
-    absl::optional<GURL> site;
-    absl::optional<int> child_flags;
+    std::optional<GURL> site;
+    std::optional<int> child_flags;
     std::vector<std::string> extra_switches;
     base::OnceCallback<void(const base::Process&)> process_callback;
 #if BUILDFLAG(IS_WIN)

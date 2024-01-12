@@ -562,6 +562,10 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   AttemptToRunDeferredScriptsAndEnd();
 
   base::UmaHistogramTimes("Blink.PrepareToStopParsingTime", timer.Elapsed());
+  if (metrics_reporter_) {
+    metrics_reporter_->AddPrepareToStopParsingTime(
+        timer.Elapsed().InMicroseconds());
+  }
 }
 
 bool HTMLDocumentParser::IsParsingFragment() const {
@@ -802,6 +806,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
 
   base::UmaHistogramTimes("Blink.PumpTokenizerTime",
                           pump_tokenizer_timer.Elapsed());
+  if (metrics_reporter_) {
+    metrics_reporter_->AddPumpTokenizerTime(
+        pump_tokenizer_timer.Elapsed().InMicroseconds());
+  }
 
   if (is_tracing) {
     TRACE_EVENT_END2("blink", "HTMLDocumentParser::PumpTokenizer",
@@ -1395,23 +1403,32 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
   base::ElapsedTimer timer_before_scan;
   std::unique_ptr<PendingPreloadData> preload_data =
       scanner->Scan(GetDocument()->ValidBaseElementURL());
+  const base::TimeDelta scan_time = timer_before_scan.Elapsed();
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat(
           {kHistogramScanAndPreloadTime, ".Scan", GetPreloadHistogramSuffix()}),
-      timer_before_scan.Elapsed());
+      scan_time);
   base::ElapsedTimer timer_after_scan;
   ProcessPreloadData(std::move(preload_data));
+  const base::TimeDelta scan_and_preload_time = timer_before_scan.Elapsed();
+  const base::TimeDelta preload_time = timer_after_scan.Elapsed();
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({kHistogramScanAndPreloadTime, GetPreloadHistogramSuffix()}),
-      timer_before_scan.Elapsed());
+      scan_and_preload_time);
   // Keep old histogram until next expiry date.
   base::UmaHistogramTimes(
       base::StrCat({"Blink.ScanAndPreloadTime", GetPreloadHistogramSuffix()}),
-      timer_before_scan.Elapsed());
+      scan_and_preload_time);
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({kHistogramScanAndPreloadTime, ".Preload",
                     GetPreloadHistogramSuffix()}),
-      timer_after_scan.Elapsed());
+      preload_time);
+  if (metrics_reporter_) {
+    metrics_reporter_->AddScanTime(scan_time.InMicroseconds());
+    metrics_reporter_->AddScanAndPreloadTime(
+        scan_and_preload_time.InMicroseconds());
+    metrics_reporter_->AddPreloadTime(preload_time.InMicroseconds());
+  }
 }
 
 void HTMLDocumentParser::ProcessPreloadData(
@@ -1463,6 +1480,9 @@ void HTMLDocumentParser::ProcessPreloadData(
   task_runner_state_->SetSeenCSPMetaTag(preload_data->has_csp_meta_tag);
   for (auto& request : preload_data->requests) {
     queued_preloads_.push_back(std::move(request));
+    if (metrics_reporter_) {
+      metrics_reporter_->IncrementPreloadRequestCount();
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
@@ -1506,6 +1526,10 @@ void HTMLDocumentParser::FetchQueuedPreloads() {
     base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
                                           GetPreloadHistogramSuffix()}),
                             timer.Elapsed());
+    if (metrics_reporter_) {
+      metrics_reporter_->AddFetchQueuedPreloadsTime(
+          timer.Elapsed().InMicroseconds());
+    }
   }
 }
 

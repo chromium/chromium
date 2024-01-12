@@ -10,6 +10,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -19,6 +21,19 @@ namespace ash {
 class ASH_PUBLIC_EXPORT AcceleratorKeycodeLookupCache
     : public input_method::InputMethodManager::Observer {
  public:
+  struct KeyCodeLookupEntry {
+    // Resulting `DomCode` from the reverse KeyboardCode -> DomCode lookup.
+    ui::DomCode dom_code;
+    // Resulting `DomKey` from looking up the `dom_code` based on the current
+    // keyboard layout.
+    ui::DomKey dom_key;
+    // Resulting `KeyboardCode` when the input `KeyboardCode` is positionally
+    // remapped and looked up in the current layout.
+    ui::KeyboardCode resulting_key_code;
+    // The string to display in UI for the input `KeyboardCode`.
+    std::u16string key_display;
+  };
+
   // Get the singleton instance.
   static AcceleratorKeycodeLookupCache* Get();
 
@@ -35,9 +50,15 @@ class ASH_PUBLIC_EXPORT AcceleratorKeycodeLookupCache
                           Profile* profile,
                           bool show_message) override;
 
-  std::optional<std::u16string> Find(ui::KeyboardCode key_code);
+  std::optional<KeyCodeLookupEntry> Find(ui::KeyboardCode key_code,
+                                         bool remap_positional_key);
 
-  void InsertOrAssign(ui::KeyboardCode key_code, std::u16string description);
+  void InsertOrAssign(ui::KeyboardCode key_code,
+                      bool remap_positional_key,
+                      ui::DomCode dom_code,
+                      ui::DomKey dom_key,
+                      ui::KeyboardCode resulting_key_code,
+                      std::u16string description);
 
   void Clear();
 
@@ -47,7 +68,8 @@ class ASH_PUBLIC_EXPORT AcceleratorKeycodeLookupCache
   // A cache of Keycode to string16 so that we don't have to perform a
   // reverse lookup for the DomKey for every accelerator.
   // On IME changes, this cache resets.
-  std::map<ui::KeyboardCode, std::u16string> key_code_to_string16_cache_;
+  std::map<std::pair<ui::KeyboardCode, bool>, KeyCodeLookupEntry>
+      key_code_to_cache_entry_;
 };
 
 }  // namespace ash

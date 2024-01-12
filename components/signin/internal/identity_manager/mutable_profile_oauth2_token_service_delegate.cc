@@ -237,7 +237,8 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuth2AccessTokenConsumer* consumer) {
+    OAuth2AccessTokenConsumer* consumer,
+    const std::string& token_binding_challenge) {
   ValidateAccountId(account_id);
   // check whether the account has persistent error.
   GoogleServiceAuthError auth_error = GetAuthError(account_id);
@@ -258,6 +259,8 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
+    // TODO(b/263253212): use `token_binding_challenge` to generate binding key
+    // assertion and attach it to the new request.
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
     return std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, refresh_token,

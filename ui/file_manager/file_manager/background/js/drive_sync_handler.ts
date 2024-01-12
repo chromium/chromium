@@ -14,22 +14,21 @@ import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../com
 import {str, strf} from '../../common/js/translations.js';
 import {toFilesAppURL} from '../../common/js/url_constants.js';
 import {visitURL} from '../../common/js/util.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {MetadataModelInterface} from '../../externs/metadata_model.js';
 import type {MetadataKey} from '../../foreground/js/metadata/metadata_item.js';
+import type {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {getStore} from '../../state/store.js';
+
+import type {ProgressCenter} from './progress_center.js';
 
 /**
  * Shorthand for metadata keys.
  */
-const {
-  SYNC_STATUS,
-  PROGRESS,
-  SYNC_COMPLETED_TIME,
-  AVAILABLE_OFFLINE,
-  PINNED,
-  CAN_PIN,
-} = chrome.fileManagerPrivate.EntryPropertyName;
+const SYNC_STATUS = 'syncStatus';
+const PROGRESS = 'progress';
+const SYNC_COMPLETED_TIME = 'syncCompletedTime';
+const AVAILABLE_OFFLINE = 'availableOffline';
+const PINNED = 'pinned';
+const CAN_PIN = 'canPin';
 
 /**
  * Shorthand for sync statuses.
@@ -64,7 +63,7 @@ type FileTransferStatus = chrome.fileManagerPrivate.FileTransferStatus;
 type DriveSyncErrorEvent = chrome.fileManagerPrivate.DriveSyncErrorEvent;
 
 export class DriveSyncHandlerImpl extends EventTarget {
-  private metadataModel_?: MetadataModelInterface;
+  private metadataModel_?: MetadataModel;
 
   private errorIdCounter_ = DriveErrorId.MAX_VALUE + 1;
 
@@ -130,7 +129,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
   /**
    * Sets the MetadataModel on the DriveSyncHandler.
    */
-  set metadataModel(model: MetadataModelInterface) {
+  set metadataModel(model: MetadataModel) {
     this.metadataModel_ = model;
   }
 
@@ -299,9 +298,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
       // If offline, hide any sync progress notifications. When online again,
       // the Drive sync client may retry syncing and trigger
       // onFileTransfersUpdated events, causing it to be shown again.
-      if (state.type ==
+      if (state.type ===
               chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
-          state.reason ==
+          state.reason ===
               chrome.fileManagerPrivate.DriveOfflineReason.NO_NETWORK) {
         this.dispatchEvent(new Event(this.getCompletedEventName()));
       }

@@ -14,11 +14,6 @@ public interface RunLoop extends Closeable {
     /** Start the run loop and stop it as soon as no task is present in the work queue. */
     public void runUntilIdle();
 
-    /*
-     * Quit the currently running run loop.
-     */
-    public void quit();
-
     /**
      * Add a runnable to the queue of tasks.
      * @param runnable Callback to be executed by the run loop.

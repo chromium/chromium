@@ -58,6 +58,7 @@ class CORE_EXPORT CSSParser {
       const CSSParserContext*,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
+      bool is_within_scope,
       StyleSheetContents*,
       const String&,
       HeapVector<CSSSelector>& arena);

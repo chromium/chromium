@@ -16,6 +16,7 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
@@ -220,7 +221,8 @@ gfx::RectF OverviewGroupItem::GetWindowsUnionScreenBounds() const {
 
 gfx::RectF OverviewGroupItem::GetTargetBoundsWithInsets() const {
   gfx::RectF target_bounds_with_insets = target_bounds_;
-  target_bounds_with_insets.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
+  target_bounds_with_insets.Inset(
+      gfx::InsetsF::TLBR(kWindowMiniViewHeaderHeight, 0, 0, 0));
   return target_bounds_with_insets;
 }
 

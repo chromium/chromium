@@ -150,13 +150,13 @@ constexpr char kExcludeCredentialsRangeErrorMessage[] =
 constexpr char kRpIdContentTypeMessage[] =
     "SecurityError: The relying party ID is not a registrable domain suffix "
     "of, nor equal to the current domain. Subsequently, the "
-    ".well-known/passkey-origins resource of the claimed RP ID had the wrong "
+    ".well-known/webauthn-origins resource of the claimed RP ID had the wrong "
     "content-type. (It should be application/json.)";
 
 constexpr char kRpIdNoEntryMessage[] =
     "SecurityError: The relying party ID is not a registrable domain suffix "
     "of, nor equal to the current domain. Subsequently, fetching the "
-    ".well-known/passkey-origins resource of the claimed RP ID was successful, "
+    ".well-known/webauthn-origins resource of the claimed RP ID was successful, "
     "but no listed origin matched the caller.";
 
 // Templates to be used with base::ReplaceStringPlaceholders. Can be

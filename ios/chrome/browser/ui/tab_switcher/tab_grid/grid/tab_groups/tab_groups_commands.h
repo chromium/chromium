@@ -5,15 +5,27 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_COMMANDS_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_COMMANDS_H_
 
+#import <set>
+
+namespace web {
+class WebStateID;
+}  // namespace web
+
 @protocol TabGroupsCommands
 
-// Show tab group UI for group ID `groupID`.
+// Shows tab group UI for group ID `groupID`.
 // TODO(crbug.com/1501837): Add the group ID in parameter when group ID will be
 // available.
 - (void)showTabGroupWithID;
 
 // Hides the currently displayed tab group.
 - (void)hideTabGroup;
+
+// Shows the tab group creation view.
+- (void)showTabGroupCreationForTabs:(std::set<web::WebStateID>&)identifiers;
+
+// Hides the tab group creation view.
+- (void)hideTabGroupCreation;
 
 @end
 

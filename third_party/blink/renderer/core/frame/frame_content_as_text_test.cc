@@ -9,6 +9,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -30,6 +31,9 @@ class FrameContentAsTextTest : public testing::Test {
 
  protected:
   const std::string base_url_ = "http://test.com/";
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(FrameContentAsTextTest, RenderedDocumentsOnly) {

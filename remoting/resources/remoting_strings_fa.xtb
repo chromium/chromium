@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">نسخه ناسازگار پروتکل شناسایی شد. لطفاً مطمئن شوید جدیدترین نسخه نرم‌افزار روی هر دو رایانه نصب شده است و دوباره امتحان کنید.</translation>
 <translation id="1008557486741366299">حالا نه</translation>
 <translation id="1201402288615127009">بعدی</translation>
-<translation id="1296511125400541222">‏حق نشر ۲۰۲۳ Chromium Authors. کلیه حقوق محفوظ است.</translation>
 <translation id="1297009705180977556">خطا در اتصال به <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">شئ درخواست شده وجود ندارد.</translation>
 <translation id="1480046233931937785">دست‌اندرکاران</translation>
@@ -51,7 +50,7 @@
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> می‌خواهد تغییراتی ایجاد کند.</translation>
 <translation id="3339299787263251426">دسترسی ایمن به رایانه‌تان از طریق اینترنت</translation>
 <translation id="3385242214819933234">مالک میزبان نامعتبر است.</translation>
-<translation id="3423542133075182604">فرایند برقراری ارتباط ازراه‌دور کلید امنیتی</translation>
+<translation id="3423542133075182604">فرایند برقراری ارتباط ازراه‌دور کلید ایمنی</translation>
 <translation id="3581045510967524389">اتصال به شبکه انجام نشد. لطفاً بررسی کنید که دستگاه شما به اینترنت وصل باشد.</translation>
 <translation id="3596628256176442606">‏این سرویس اتصالات ورودی از کلاینت‌های کنترل دسک‌تاپ ازراه‌دور Chrome را فعال می‌کند.</translation>
 <translation id="369442766917958684">آفلاین.</translation>
@@ -89,14 +88,13 @@
 <translation id="4808503597364150972">لطفاً پین خود را برای <ph name="HOSTNAME" /> وارد کنید.</translation>
 <translation id="4812684235631257312">میزبان</translation>
 <translation id="4867841927763172006">‏ارسال PrtScn</translation>
-<translation id="4960795469833295568">‏حق نشر ۲۰۲۳ Google LLC. کلیه حقوق محفوظ است.</translation>
 <translation id="4974476491460646149">اتصال به <ph name="HOSTNAME" /> بسته شد</translation>
 <translation id="4985296110227979402">ابتدا باید رایانه‌تان را برای دسترسی ازراه‌دور تنظیم کنید</translation>
 <translation id="4987330545941822761">‏«رایانه ازدور Chrome» نمی‌تواند مرورگر را برای باز کردن محل نشانی‌های وب تعیین کند. لطفاً آن را از فهرست زیر انتخاب کنید.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (آفلاین)</translation>
 <translation id="507204348399810022">مطمئنید می‌خواهید اتصالات راه دور به <ph name="HOSTNAME" /> را غیرفعال کنید؟</translation>
 <translation id="5170982930780719864">شناسه میزبان نامعتبر است.</translation>
-<translation id="5204575267916639804">سؤالات متداول</translation>
+<translation id="5204575267916639804">پرسشگان</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">بازآوری فهرست میزبان‌ها</translation>
 <translation id="7714222945760997814">گزارش این مورد</translation>
 <translation id="7868137160098754906">لطفاً پین خودتان را برای رایانه راه دور وارد کنید.</translation>
+<translation id="7881455334687220899">‏حق نشر ۲۰۲۴ Chromium Authors. کلیه حقوق محفوظ است.</translation>
 <translation id="7895403300744144251">خط‌مشی‌های امنیتی در رایانه راه دور به اتصالات از حساب شما اجازه نمی‌دهد.</translation>
 <translation id="7936528439960309876">متصل کردن در چپ</translation>
 <translation id="7970576581263377361">‏اصالت‌سنجی انجام نشد. لطفاً دوباره وارد سیستم Chromium شوید.</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">‏جلسه خراب شد یا شروع نشد. درصورت وجود ~/.chrome-remote-desktop-session در رایانه راه‌ دور، مطمئن شوید که یک فرآیند پیش‌زمینه طولانی‌مدت مثل محیط دسک‌تاپ یا مدیر پنجره را راه‌اندازی می‌کند.</translation>
 <translation id="8804164990146287819">خط‌مشی رازداری</translation>
 <translation id="8906511416443321782">‏برای ضبط کردن صدا و جاری‌سازی آن در کارخواه «رایانه ازدور Chrome»، دسترسی به میکروفون ضروری است.</translation>
+<translation id="9042277333359847053">‏حق نشر ۲۰۲۴ Google LLC. کلیه حقوق محفوظ است.</translation>
 <translation id="9111855907838866522">به دستگاه راه دورتان وصل شده‌اید. برای باز کردن منو، لطفاً با چهار انگشت روی صفحه ضربه بزنید.</translation>
 <translation id="9126115402994542723">هنگام اتصال به میزبان از این دستگاه، پین دوباره درخواست نشود.</translation>
 <translation id="916856682307586697">‏XSession پیش‌فرض راه‌اندازی شود</translation>

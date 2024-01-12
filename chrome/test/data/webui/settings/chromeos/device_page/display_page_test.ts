@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -186,6 +186,8 @@ suite('<settings-display>', () => {
     }
 
     setup(async () => {
+      loadTimeData.overrideValues({unifiedDesktopAvailable: true});
+
       await initHistogramTest();
       displayHistogram = displaySettingsProvider.getDisplayHistogram();
       externalDisplayHistogram =
@@ -298,7 +300,7 @@ suite('<settings-display>', () => {
               displaySettingsProviderMojom.DisplaySettingsType.kOrientation));
     });
 
-    test('overscan', async () => {
+    test('overscan', () => {
       // Mock user opening overscan dialog.
       const displayOverscan =
           displayPage.shadowRoot!.querySelector<CrLinkRowElement>('#overscan');
@@ -313,7 +315,7 @@ suite('<settings-display>', () => {
               displaySettingsProviderMojom.DisplaySettingsType.kOverscan));
     });
 
-    test('night light', async () => {
+    test('night light', () => {
       // Mock user toggling night light button.
       const displayNightLight = strictQuery(
           'settings-display-night-light', displayPage.shadowRoot, HTMLElement);
@@ -350,7 +352,7 @@ suite('<settings-display>', () => {
                   .kNightLightSchedule));
     });
 
-    test('mirror mode', async () => {
+    test('mirror mode', () => {
       // Mock user toggling mirror mode setting.
       const mirrorDisplayControl =
           displayPage.shadowRoot!.querySelector<HTMLElement>(
@@ -364,6 +366,38 @@ suite('<settings-display>', () => {
           1,
           displayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+    });
+
+    test('unified mode', () => {
+      // Mock user toggling unified mode setting.
+      const displayUnifiedDesktopToggle =
+          displayPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#displayUnifiedDesktopToggle');
+      assertTrue(!!displayUnifiedDesktopToggle);
+      displayUnifiedDesktopToggle.click();
+
+      // Verify histogram count for unified mode setting.
+      assertEquals(
+          1,
+          displayHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsType.kUnifiedMode));
+    });
+
+    test('primary display', () => {
+      // Mock user changing primary display.
+      const primaryDisplaySelect =
+          displayPage.shadowRoot!.querySelector<HTMLSelectElement>(
+              '#primaryDisplaySelect');
+      assertTrue(!!primaryDisplaySelect);
+      primaryDisplaySelect.value = '1';
+      primaryDisplaySelect.dispatchEvent(new CustomEvent('change'));
+      flush();
+
+      // Verify histogram count for changing primary display setting.
+      assertEquals(
+          1,
+          displayHistogram.get(displaySettingsProviderMojom.DisplaySettingsType
+                                   .kPrimaryDisplay));
     });
   });
 

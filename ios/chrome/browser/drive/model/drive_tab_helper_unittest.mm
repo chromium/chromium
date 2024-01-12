@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/drive/model/upload_task.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -22,7 +25,9 @@ class DriveTabHelperTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_->SetBrowserState(browser_state_.get());
     DriveTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
@@ -30,6 +35,8 @@ class DriveTabHelperTest : public PlatformTest {
     helper_ = DriveTabHelper::FromWebState(web_state_.get());
   }
 
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   raw_ptr<DriveTabHelper> helper_;
@@ -41,13 +48,12 @@ class DriveTabHelperTest : public PlatformTest {
 // `DownloadTask` destructor is called, since neglecting to remove itself as
 // observer would lead to a crash.
 TEST_F(DriveTabHelperTest, StopsObservingDestroyedDownloadTask) {
-  EXPECT_EQ(std::nullopt, helper_->GetDownloadTaskSaveToDriveData());
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   helper_->AddDownloadToSaveToDrive(download_task_.get(), identity);
-  DownloadTaskSaveToDriveData expected_save_to_drive_data{
-      .task = download_task_.get(), .identity = identity};
-  EXPECT_EQ(expected_save_to_drive_data,
-            helper_->GetDownloadTaskSaveToDriveData());
+  UploadTask* upload_task =
+      helper_->GetUploadTaskForDownload(download_task_.get());
+  ASSERT_NE(nullptr, upload_task);
+  EXPECT_EQ(identity, upload_task->GetIdentity());
   download_task_.reset();
-  EXPECT_EQ(std::nullopt, helper_->GetDownloadTaskSaveToDriveData());
+  EXPECT_EQ(nullptr, helper_->GetUploadTaskForDownload(download_task_.get()));
 }

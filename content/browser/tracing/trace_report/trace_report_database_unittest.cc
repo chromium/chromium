@@ -4,6 +4,7 @@
 
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/scoped_file.h"
@@ -13,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -84,11 +84,11 @@ TEST_F(TraceReportDatabaseTest, RetrieveTraceContentFromReport) {
   NewTraceReport new_report = MakeNewTraceReport();
   ASSERT_TRUE(trace_report_.AddTrace(new_report));
 
-  absl::optional<std::string> trace_content =
+  std::optional<std::string> trace_content =
       trace_report_.GetTraceContent(new_report.uuid);
   EXPECT_EQ(trace_content, new_report.trace_content);
 
-  absl::optional<std::string> system_profile =
+  std::optional<std::string> system_profile =
       trace_report_.GetSystemProfile(new_report.uuid);
   EXPECT_EQ(system_profile, new_report.system_profile);
 }

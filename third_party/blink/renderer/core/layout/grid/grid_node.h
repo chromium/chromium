@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class GridSizingSubtree;
+
 // Grid specific extensions to BlockNode.
 class CORE_EXPORT GridNode final : public BlockNode {
  public:
@@ -28,12 +30,20 @@ class CORE_EXPORT GridNode final : public BlockNode {
     return CachedPlacementData().line_resolver;
   }
 
+  void InvalidateCachedMinMaxSizes() const {
+    To<LayoutGrid>(box_.Get())->InvalidateCachedMinMaxSizes();
+  }
+
   // If |oof_children| is provided, aggregate any out of flow children.
   GridItems ConstructGridItems(const GridLineResolver& line_resolver,
                                HeapVector<Member<LayoutBox>>* oof_children,
                                bool* has_nested_subgrid = nullptr) const;
 
   void AppendSubgriddedItems(GridItems* grid_items) const;
+
+  MinMaxSizesResult ComputeSubgridMinMaxSizes(
+      const GridSizingSubtree& sizing_subtree,
+      const ConstraintSpace& space) const;
 
  private:
   GridItems ConstructGridItems(

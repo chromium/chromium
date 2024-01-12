@@ -119,7 +119,8 @@ class MODULES_EXPORT StorageNamespace final
   // Called by areas in `cached_areas_` to bind/rebind their StorageArea
   // interface.
   void BindStorageArea(
-      const LocalDOMWindow& local_dom_window,
+      const BlinkStorageKey& storage_key,
+      const LocalFrameToken& local_frame_token,
       mojo::PendingReceiver<mojom::blink::StorageArea> receiver);
 
   // If this StorageNamespace was previously connected to the backend, this

@@ -53,8 +53,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // complete loading campaigns.
   void LoadCampaigns(base::OnceClosure load_callback);
 
-  // Get campaigns by slot. This is used by reactive slots to query campaign
-  // that targets the given `slot`.
+  // Get campaigns by slot and register sythetical trial for current session.
+  // This is used by reactive slots to query campaign that targets the given
+  // `slot`. It a heavy operation which should be called when's necessary.
+  // TODO(b/308684443): Rename this to `GetCampaignBySlotAndRegisterTrial`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
 
   ActionMap& actions_map() { return actions_map_; }
@@ -74,15 +76,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // to query.
   void NotifyCampaignsLoaded();
 
-  raw_ptr<CampaignsManagerClient, ExperimentalAsh> client_ = nullptr;
+  // Register synthetic trial for growth. It will not work if campaign is
+  // incomplete, i.e. missing id.
+  void RegisterTrialForCampaign(const Campaign* campaign) const;
+
+  raw_ptr<CampaignsManagerClient> client_ = nullptr;
 
   // True if campaigns are loaded.
   bool campaigns_loaded_ = false;
 
   // Campaigns store owns all campaigns, including proactive and reactive
   // campaigns.
-  CampaignsStore campaigns_store_;
-  // Campaigns matcher for selecting campaigns based on criterias.
+  CampaignsPerSlot campaigns_;
+  // Campaigns matcher for selecting campaigns based on criteria.
   CampaignsMatcher matcher_;
 
   // Maps action type to the action.

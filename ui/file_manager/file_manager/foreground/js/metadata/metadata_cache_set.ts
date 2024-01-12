@@ -5,7 +5,7 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
 import {MetadataItem, type MetadataKey} from './metadata_item.js';

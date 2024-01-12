@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -21,7 +22,6 @@
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -37,7 +37,7 @@ struct AttributionCookieParams {
   const char* domain;
   bool httponly;
   net::CookieSameSite same_site;
-  absl::optional<net::CookiePartitionKey> partition_key;
+  std::optional<net::CookiePartitionKey> partition_key;
 };
 
 class AttributionCookieCheckerImplTest : public testing::Test {

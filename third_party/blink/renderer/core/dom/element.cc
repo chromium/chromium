@@ -1645,6 +1645,10 @@ void Element::setScrollLeft(double new_left) {
     return;
   }
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
+
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1697,6 +1701,10 @@ void Element::setScrollTop(double new_top) {
   if (!InActiveDocument()) {
     return;
   }
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
@@ -1807,6 +1815,10 @@ void Element::scrollBy(const ScrollToOptions* scroll_to_options) {
     return;
   }
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
+
   // FIXME: This should be removed once scroll updates are processed only after
   // the compositing update. See http://crbug.com/420741.
   GetDocument().UpdateStyleAndLayoutForNode(this,
@@ -1830,6 +1842,10 @@ void Element::scrollTo(const ScrollToOptions* scroll_to_options) {
   if (!InActiveDocument()) {
     return;
   }
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
 
   // FIXME: This should be removed once scroll updates are processed only after
   // the compositing update. See http://crbug.com/420741.
@@ -4740,7 +4756,7 @@ void Element::PseudoStateChanged(
 Element::HighlightRecalc Element::CalculateHighlightRecalc(
     const ComputedStyle* old_style,
     const ComputedStyle& new_style,
-    const ComputedStyle* parent_style) {
+    const ComputedStyle* parent_style) const {
   if (!new_style.HasAnyHighlightPseudoElementStyles()) {
     return HighlightRecalc::kNone;
   }
@@ -4782,13 +4798,13 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
     return HighlightRecalc::kFull;
   }
 
-  // If the parent has any font relative units then we may need
+  // If the parent has any relative units then we may need
   // recalc to capture sizes from the originating element. But note that
   // self will be recalculated regardless if self has its own non-universal
   // pseudo style.
   if (parent_style != nullptr &&
-      parent_style->HighlightPseudoElementStylesDependOnFontMetrics()) {
-    return HighlightRecalc::kFontRelative;
+      parent_style->HighlightPseudoElementStylesDependOnRelativeUnits()) {
+    return HighlightRecalc::kRelativeUnits;
   }
 
   return HighlightRecalc::kNone;
@@ -4797,14 +4813,35 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
 bool Element::ShouldRecalcHighlightPseudoStyle(
     HighlightRecalc highlight_recalc,
     const ComputedStyle* highlight_parent,
-    const ComputedStyle& originating_style) {
+    const ComputedStyle& originating_style,
+    const Element* originating_container) const {
   if (highlight_recalc == HighlightRecalc::kFull) {
     return true;
   }
-  DCHECK(highlight_recalc == HighlightRecalc::kFontRelative);
-  return (highlight_parent && highlight_parent->HasFontRelativeUnits() &&
-          originating_style.SpecifiedFontSize() !=
-              highlight_parent->SpecifiedFontSize());
+  DCHECK(highlight_recalc == HighlightRecalc::kRelativeUnits);
+  if (highlight_parent && highlight_parent->HasFontRelativeUnits() &&
+      originating_style.SpecifiedFontSize() !=
+          highlight_parent->SpecifiedFontSize()) {
+    return true;
+  }
+  // If the originating element is a container for sizes, it means the
+  // container has changed from that of the parent highlight, so we need
+  // to re-evaluate container units.
+  if (highlight_parent && highlight_parent->HasContainerRelativeUnits() &&
+      originating_container == this &&
+      originating_style.CanMatchSizeContainerQueries(*this)) {
+    return true;
+  }
+  // If there are logical direction relative units and the writing mode is
+  // different from that of the parent, we need to re-evaluate the units.
+  if (highlight_parent &&
+      highlight_parent->HasLogicalDirectionRelativeUnits() &&
+      blink::IsHorizontalWritingMode(originating_style.GetWritingMode()) !=
+          blink::IsHorizontalWritingMode(highlight_parent->GetWritingMode())) {
+    return true;
+  }
+
+  return false;
 }
 
 void Element::RecalcCustomHighlightPseudoStyle(
@@ -4825,7 +4862,8 @@ void Element::RecalcCustomHighlightPseudoStyle(
         parent_highlights ? parent_highlights->CustomHighlight(highlight_name)
                           : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
-                                         originating_style)) {
+                                         originating_style,
+                                         style_recalc_context.container)) {
       const ComputedStyle* highlight_style = StyleForHighlightPseudoElement(
           style_recalc_context, highlight_parent, originating_style,
           kPseudoIdHighlight, highlight_name);
@@ -4863,7 +4901,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->Selection() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
-                                         new_style)) {
+                                         new_style,
+                                         style_recalc_context.container)) {
       builder.AccessHighlightData().SetSelection(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdSelection));
@@ -4875,7 +4914,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->TargetText() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
-                                         new_style)) {
+                                         new_style,
+                                         style_recalc_context.container)) {
       builder.AccessHighlightData().SetTargetText(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdTargetText));
@@ -4887,7 +4927,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->SpellingError() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
-                                         new_style)) {
+                                         new_style,
+                                         style_recalc_context.container)) {
       builder.AccessHighlightData().SetSpellingError(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdSpellingError));
@@ -4899,7 +4940,8 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->GrammarError() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
-                                         new_style)) {
+                                         new_style,
+                                         style_recalc_context.container)) {
       builder.AccessHighlightData().SetGrammarError(
           StyleForHighlightPseudoElement(style_recalc_context, highlight_parent,
                                          new_style, kPseudoIdGrammarError));

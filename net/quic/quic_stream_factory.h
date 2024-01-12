@@ -17,6 +17,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -486,7 +487,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                         base::TimeTicks dns_resolution_start_time,
                         base::TimeTicks dns_resolution_end_time,
                         const NetLogWithSource& net_log,
-                        QuicChromiumClientSession** session,
+                        raw_ptr<QuicChromiumClientSession>* session,
                         handles::NetworkHandle* network);
   int CreateSessionAsync(CompletionOnceCallback callback,
                          const QuicSessionAliasKey& key,
@@ -497,7 +498,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                          base::TimeTicks dns_resolution_start_time,
                          base::TimeTicks dns_resolution_end_time,
                          const NetLogWithSource& net_log,
-                         QuicChromiumClientSession** session,
+                         raw_ptr<QuicChromiumClientSession>* session,
                          handles::NetworkHandle* network);
   void FinishCreateSession(CompletionOnceCallback callback,
                            const QuicSessionAliasKey& key,
@@ -508,7 +509,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
                            const NetLogWithSource& net_log,
-                           QuicChromiumClientSession** session,
+                           raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,
                            std::unique_ptr<DatagramClientSocket> socket,
                            int rv);
@@ -520,7 +521,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
                            const NetLogWithSource& net_log,
-                           QuicChromiumClientSession** session,
+                           raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,
                            std::unique_ptr<DatagramClientSocket> socket);
   void ActivateSession(const QuicSessionAliasKey& key,
@@ -625,22 +626,24 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   bool is_quic_known_to_work_on_current_network_ = false;
 
   NetLogWithSource net_log_;
-  raw_ptr<HostResolver> host_resolver_;
-  raw_ptr<ClientSocketFactory> client_socket_factory_;
-  raw_ptr<HttpServerProperties> http_server_properties_;
+  const raw_ptr<HostResolver> host_resolver_;
+  const raw_ptr<ClientSocketFactory> client_socket_factory_;
+  const raw_ptr<HttpServerProperties> http_server_properties_;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
   const raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
-  raw_ptr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory_;
-  raw_ptr<quic::QuicRandom> random_generator_;  // Unowned.
-  raw_ptr<const quic::QuicClock> clock_;        // Unowned.
+  const raw_ptr<QuicCryptoClientStreamFactory>
+      quic_crypto_client_stream_factory_;
+  const raw_ptr<quic::QuicRandom> random_generator_;  // Unowned.
+  const raw_ptr<const quic::QuicClock> clock_;        // Unowned.
   QuicParams params_;
   QuicClockSkewDetector clock_skew_detector_;
 
   // Factory which is used to create socket performance watcher. A new watcher
   // is created for every QUIC connection.
   // |socket_performance_watcher_factory_| may be null.
-  raw_ptr<SocketPerformanceWatcherFactory> socket_performance_watcher_factory_;
+  const raw_ptr<SocketPerformanceWatcherFactory>
+      socket_performance_watcher_factory_;
 
   // The helper used for all connections.
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
@@ -713,7 +716,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_ = nullptr;
 
-  raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
   const raw_ptr<SSLConfigService> ssl_config_service_;
 

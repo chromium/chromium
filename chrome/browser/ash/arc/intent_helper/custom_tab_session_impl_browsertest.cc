@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/intent_helper/custom_tab.h"
 #include "components/exo/shell_surface.h"
@@ -65,28 +66,7 @@ class CustomTabSessionImplTest : public InProcessBrowserTest,
 
  private:
   std::unique_ptr<exo::WMHelper> wm_helper_;
-  raw_ptr<CustomTabSessionImpl, ExperimentalAsh> custom_tab_session_ = nullptr;
-};
-
-// Calls |callback| when |browser| is removed from BrowserList.
-class BrowserRemovalObserver final : public BrowserListObserver {
- public:
-  BrowserRemovalObserver(Browser* browser, base::OnceClosure callback)
-      : browser_(browser), callback_(std::move(callback)) {
-    BrowserList::AddObserver(this);
-  }
-  ~BrowserRemovalObserver() override = default;
-
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_) {
-      BrowserList::RemoveObserver(this);
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_;
-  base::OnceClosure callback_;
+  raw_ptr<CustomTabSessionImpl> custom_tab_session_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CustomTabSessionImplTest,
@@ -109,13 +89,12 @@ IN_PROC_BROWSER_TEST_F(CustomTabSessionImplTest,
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   browser()->tab_strip_model()->ReplaceWebContentsAt(0,
                                                      std::move(web_contents));
-  base::RunLoop webcontents_run_loop, browser_run_loop;
+  base::RunLoop webcontents_run_loop;
   web_contents_destroyed_closure_ = webcontents_run_loop.QuitClosure();
-  BrowserRemovalObserver removed_waiter(browser(),
-                                        browser_run_loop.QuitClosure());
+  TestBrowserClosedWaiter closed_waiter(browser());
   CreateAndDestroyCustomTabSession(std::move(custom_tab), browser());
   webcontents_run_loop.Run();
   EXPECT_FALSE(GetWebContents());
-  browser_run_loop.Run();
+  ASSERT_TRUE(closed_waiter.WaitUntilClosed());
   ASSERT_FALSE(base::Contains(*BrowserList::GetInstance(), browser()));
 }

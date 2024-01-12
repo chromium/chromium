@@ -582,7 +582,7 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
   }
 }
 
-BEGIN_METADATA(PaymentRequestDialogView, views::DialogDelegateView)
+BEGIN_METADATA(PaymentRequestDialogView)
 ADD_READONLY_PROPERTY_METADATA(int, ActualPaymentHandlerDialogHeight)
 ADD_READONLY_PROPERTY_METADATA(int, ActualDialogWidth)
 END_METADATA

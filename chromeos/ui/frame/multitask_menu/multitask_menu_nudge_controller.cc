@@ -329,20 +329,31 @@ void MultitaskMenuNudgeController::OnGetPreferences(
     aura::Window* window,
     views::View* anchor_view,
     bool tablet_mode,
-    int shown_count,
-    base::Time last_shown_time) {
+    std::optional<PrefValues> values) {
+  if (!values) {
+    LOG(WARNING) << "Unable to fetch preferences.";
+    return;
+  }
+
   // Tablet state has changed since we fetched preferences.
   if (tablet_mode != display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
+  // The nudge is already been shown for this window. This can happen in
+  // lacros, where prefs are read and written to async. In ash, the prefs will
+  // be updated before the next read, so this cannot happen.
+  if (window_) {
+    return;
+  }
+
   // Nudge has already been shown three times. No need to educate anymore.
-  if (shown_count >= kNudgeMaxShownCount) {
+  if (values->show_count >= kNudgeMaxShownCount) {
     return;
   }
 
   // Nudge has been shown within the last 24 hours already.
-  if ((GetTime() - last_shown_time) < kNudgeTimeBetweenShown) {
+  if ((GetTime() - values->last_shown_time) < kNudgeTimeBetweenShown) {
     return;
   }
 
@@ -402,7 +413,7 @@ void MultitaskMenuNudgeController::OnGetPreferences(
       .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 
   // Update the preferences.
-  g_delegate_instance->SetNudgePreferences(tablet_mode, shown_count + 1,
+  g_delegate_instance->SetNudgePreferences(tablet_mode, values->show_count + 1,
                                            GetTime());
 
   // No need to update pulse or start timer in tablet mode.

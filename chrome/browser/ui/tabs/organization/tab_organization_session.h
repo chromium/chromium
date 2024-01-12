@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 
@@ -36,7 +37,8 @@ class TabOrganizationSession : public TabOrganization::Observer {
 
   TabOrganizationSession();
   explicit TabOrganizationSession(
-      std::unique_ptr<TabOrganizationRequest> request);
+      std::unique_ptr<TabOrganizationRequest> request,
+      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::NONE);
   ~TabOrganizationSession() override;
 
   const TabOrganizationRequest* request() const { return request_.get(); }
@@ -90,6 +92,9 @@ class TabOrganizationSession : public TabOrganization::Observer {
   TabOrganizations tab_organizations_;
   ID session_id_;
   std::u16string feedback_id_;
+
+  // Entry point used to create the session. Used for logging.
+  TabOrganizationEntryPoint entrypoint_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

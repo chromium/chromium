@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -14,6 +15,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -133,18 +135,6 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
     RequestWifiScan();
   }
 
-  if (network->IsConnectedState()) {
-    // The network has connected, so complete the connection attempt. Because
-    // this is a NetworkStateHandlerObserver callback, complete the attempt in
-    // a new task to ensure that NetworkStateHandler is not modified while it is
-    // notifying observers. See https://crbug.com/800370.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WifiHotspotConnector::CompleteActiveConnectionAttempt,
-                       weak_ptr_factory_.GetWeakPtr(), true /* success */));
-    return;
-  }
-
   // We use "visible" to determine if the network can be connected to, rather
   // than "connectable". In the aftermath of b/302621170, it was discovered
   // "connectable" only refers to the service having a SSID and password set.
@@ -227,7 +217,23 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
   }
 
   // Initiate a connection to the network.
-  network_connect_->ConnectToNetworkId(wifi_network_guid_);
+  const NetworkState* network_state =
+      network_handler_->network_state_handler()->GetNetworkStateFromGuid(
+          wifi_network_guid_);
+
+  if (!network_state) {
+    PA_LOG(ERROR) << "Network state for " << wifi_network_guid_
+                  << " was null. Failing.";
+    CompleteActiveConnectionAttempt(false);
+  }
+
+  network_handler_->network_connection_handler()->ConnectToNetwork(
+      network_state->path(),
+      base::BindOnce(&WifiHotspotConnector::OnWifiConnectionSucceeded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&WifiHotspotConnector::OnWifiConnectionFailed,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*check_error_state=*/false, ConnectCallbackMode::ON_COMPLETED);
 }
 
 void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
@@ -244,11 +250,22 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
   // If the connection attempt has failed (e.g., due to cancellation or
   // timeout) and ConnectToNetworkId() has already been called, the in-progress
   // connection attempt should be stopped; there is no cancellation mechanism,
-  // so DisconnectFromNetworkId() is called here instead. Without this, it would
+  // so DisconnectNetwork() is called here instead. Without this, it would
   // be possible for the connection to complete after the Tether component had
   // already shut down. See crbug.com/761569.
   if (!success && has_initiated_connection_to_current_network_) {
-    network_connect_->DisconnectFromNetworkId(wifi_network_guid_);
+    const NetworkState* network_state =
+        network_handler_->network_state_handler()->GetNetworkStateFromGuid(
+            wifi_network_guid_);
+    if (!network_state) {
+      PA_LOG(ERROR) << "Network state for " << wifi_network_guid_
+                    << " was null. Unable to disconnect.";
+    } else {
+      // TODO(b/313488946): Handle errors during disconnection on failure.
+      network_handler_->network_connection_handler()->DisconnectNetwork(
+          network_state->path(), /*success_callback=*/base::DoNothing(),
+          /*error_callback=*/base::DoNothingAs<void(const std::string&)>());
+    }
   }
 
   ssid_.clear();
@@ -309,6 +326,32 @@ base::Value::Dict WifiHotspotConnector::CreateWifiPropertyDictionary(
 
 void WifiHotspotConnector::OnConnectionTimeout() {
   CompleteActiveConnectionAttempt(false /* success */);
+}
+
+void WifiHotspotConnector::OnWifiConnectionSucceeded() {
+  // The network has connected, so complete the connection attempt. Because
+  // this is a NetworkStateHandlerObserver callback, complete the attempt in
+  // a new task to ensure that NetworkStateHandler is not modified while it is
+  // notifying observers. See https://crbug.com/800370.
+  PA_LOG(INFO) << "Successfully connected to Wifi Network";
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WifiHotspotConnector::CompleteActiveConnectionAttempt,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/true));
+}
+
+void WifiHotspotConnector::OnWifiConnectionFailed(
+    const std::string& error_name) {
+  // The network connect has failed, so complete the connection attempt. Because
+  // this is a NetworkStateHandlerObserver callback, complete the attempt in
+  // a new task to ensure that NetworkStateHandler is not modified while it is
+  // notifying observers. See https://crbug.com/800370.
+  PA_LOG(ERROR) << "Failed to connect to Wifi Network. Error: [" << error_name
+                << "]";
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WifiHotspotConnector::CompleteActiveConnectionAttempt,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
 }
 
 void WifiHotspotConnector::SetTestDoubles(

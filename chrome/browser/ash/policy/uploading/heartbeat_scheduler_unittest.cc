@@ -123,7 +123,7 @@ class MockGCMDriver : public testing::StrictMock<gcm::FakeGCMDriver> {
   }
 
  private:
-  raw_ptr<gcm::GCMConnectionObserver, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<gcm::GCMConnectionObserver> observer_ = nullptr;
 };
 
 class HeartbeatSchedulerTest : public testing::Test {

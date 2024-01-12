@@ -62,10 +62,10 @@ class AccessibilityPanel : public views::WidgetDelegate,
   // Indirectly invoked by the component extension.
   void DidFirstVisuallyNonEmptyPaint();
 
-  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AccessibilityPanelWebContentsObserver> web_contents_observer_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> web_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::View> web_view_ = nullptr;
 };
 
 }  // namespace ash

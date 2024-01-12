@@ -569,6 +569,71 @@ TEST_F(VideoDecoderPipelineTest, TranscryptReset) {
   task_environment_.RunUntilIdle();
 }
 
+// Verifies that any decode calls from
+// VideoDecoderPipeline::OnBufferTranscrypted() received while the underlying
+// VideoDecoderMixin is performing a reset operation are aborted.
+TEST_F(VideoDecoderPipelineTest, TranscryptDecodeDuringReset) {
+  InitializeForTranscrypt();
+
+  // First send in a buffer, which will go to the decryptor and hold on to that
+  // callback.
+  Decryptor::DecryptCB saved_decrypt_cb;
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
+    EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
+        .WillOnce([&saved_decrypt_cb](Decryptor::StreamType stream_type,
+                                      scoped_refptr<DecoderBuffer> encrypted,
+                                      Decryptor::DecryptCB decrypt_cb) {
+          saved_decrypt_cb =
+              base::BindPostTaskToCurrentDefault(std::move(decrypt_cb));
+        });
+  }
+
+  // Reset the underlying decoder but don't invoke the reset callback yet. Save
+  // it for later.
+  base::OnceClosure saved_reset_cb;
+  EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()), Reset(_))
+      .WillOnce([&saved_reset_cb](base::OnceClosure closure) {
+        saved_reset_cb = base::BindPostTaskToCurrentDefault(std::move(closure));
+      });
+
+  decoder_->Decode(encrypted_buffer_,
+                   base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
+                                  base::Unretained(this)));
+  decoder_->Reset(base::BindOnce(&VideoDecoderPipelineTest::OnResetDone,
+                                 base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(
+      reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()));
+  testing::Mock::VerifyAndClearExpectations(&decryptor_);
+
+  ASSERT_TRUE(saved_decrypt_cb);
+  ASSERT_TRUE(saved_reset_cb);
+
+  EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+              Decode(_, _))
+      .Times(0);
+
+  EXPECT_CALL(*this,
+              OnDecodeDone(MatchesStatusCode(DecoderStatus::Codes::kAborted)))
+      .Times(1);
+
+  std::move(saved_decrypt_cb).Run(Decryptor::kSuccess, transcrypted_buffer_);
+  task_environment_.RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(*this, OnResetDone()).Times(1);
+
+  std::move(saved_reset_cb).Run();
+  task_environment_.RunUntilIdle();
+}
+
 // Verifies that if we get notified about a new decrypt key while we are
 // performing a transcrypt that fails w/out a key, we immediately retry again.
 TEST_F(VideoDecoderPipelineTest, TranscryptKeyAddedDuringTranscrypt) {

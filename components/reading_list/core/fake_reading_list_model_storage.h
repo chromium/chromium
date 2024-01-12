@@ -19,9 +19,7 @@
 // Test-only implementation of ReadingListModelStorage that doesn't do any
 // actual I/O but allows populating the initial list of entries. It also
 // allows tests to observe calls to I/O operations via observer.
-class FakeReadingListModelStorage
-    : public ReadingListModelStorage,
-      public base::SupportsWeakPtr<FakeReadingListModelStorage> {
+class FakeReadingListModelStorage final : public ReadingListModelStorage {
  public:
   class Observer {
    public:
@@ -70,9 +68,14 @@ class FakeReadingListModelStorage
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
   void DeleteAllEntriesAndSyncMetadata() override;
 
+  base::WeakPtr<FakeReadingListModelStorage> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   const raw_ptr<Observer> observer_ = nullptr;
   LoadCallback load_callback_;
+  base::WeakPtrFactory<FakeReadingListModelStorage> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_FAKE_READING_LIST_MODEL_STORAGE_H_

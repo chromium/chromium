@@ -368,13 +368,12 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   ~TestLocalDeviceInfoProvider() override = default;
 
   // MutableLocalDeviceInfoProvider implementation.
-  void Initialize(
-      const std::string& cache_guid,
-      const std::string& session_name,
-      const std::string& manufacturer_name,
-      const std::string& model_name,
-      const std::string& full_hardware_class,
-      std::unique_ptr<DeviceInfo> device_info_restored_from_store) override {
+  void Initialize(const std::string& cache_guid,
+                  const std::string& session_name,
+                  const std::string& manufacturer_name,
+                  const std::string& model_name,
+                  const std::string& full_hardware_class,
+                  const DeviceInfo* device_info_restored_from_store) override {
     std::string last_fcm_registration_token;
     ModelTypeSet last_interested_data_types;
     if (device_info_restored_from_store) {
@@ -875,8 +874,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   EXPECT_FALSE(error_on_add);
-  std::unique_ptr<DeviceInfo> info =
-      bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
   EXPECT_EQ(2, change_count());
@@ -912,8 +910,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesStore) {
                                 /*entities=*/IsEmpty())));
   RestartBridge();
 
-  std::unique_ptr<DeviceInfo> info =
-      bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
 }

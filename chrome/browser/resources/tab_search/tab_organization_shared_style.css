@@ -33,7 +33,7 @@
   font-size: 13px;
   font-weight: 400;
   outline-color: var(--color-button-foreground);
-  outline-offset: 2px;
+  outline-offset: 1px;
   text-decoration: underline;
   width: fit-content;
 }
@@ -100,22 +100,22 @@
   }
 }
 
-@keyframes marginOut {
+@keyframes slideOut {
   0% {
-    margin-top: 0px;
+    transform: translateY(0px);
   }
 
   100% {
-    margin-top: -16px;
+    transform: translateY(-16px);
   }
 }
 
-@keyframes paddingIn {
+@keyframes slideIn {
   0% {
-    padding-top: 16px;
+    transform: translateY(16px);
   }
 
   100% {
-    padding-top: 0px;
+    transform: translateY(0px);
   }
 }

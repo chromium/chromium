@@ -151,9 +151,9 @@ class WallpaperControllerClientImpl
   void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 
   // WallpaperController interface in ash.
-  raw_ptr<ash::WallpaperController, ExperimentalAsh> wallpaper_controller_;
+  raw_ptr<ash::WallpaperController> wallpaper_controller_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // The registrar used to watch DeviceWallpaperImageFilePath pref changes.
   PrefChangeRegistrar pref_registrar_;

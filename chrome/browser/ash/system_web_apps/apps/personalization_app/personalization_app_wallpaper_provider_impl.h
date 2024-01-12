@@ -372,10 +372,10 @@ class PersonalizationAppWallpaperProviderImpl
   // user's background.
   std::set<base::FilePath> local_images_;
 
-  const raw_ptr<content::WebUI, ExperimentalAsh> web_ui_ = nullptr;
+  const raw_ptr<content::WebUI> web_ui_ = nullptr;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
-  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
 
   base::ScopedObservation<ash::WallpaperController,
                           ash::WallpaperControllerObserver>

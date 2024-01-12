@@ -41,6 +41,7 @@
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtLeast;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Invoke;
@@ -2058,6 +2059,145 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
   lifetime_verifier.Wait();
   RunUntilIdle();
   rtc_encoder_.reset();
+}
+
+TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  if (!InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA();
+  }
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+  if (InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA();
+  }
+
+  class DropFrameVerifier : public webrtc::EncodedImageCallback {
+   public:
+    DropFrameVerifier() = default;
+    ~DropFrameVerifier() override = default;
+
+    void OnDroppedFrame(DropReason reason) override {
+      EXPECT_EQ(reason, DropReason::kDroppedByEncoder);
+      num_dropped_frames_++;
+      CHECK(event_);
+      event_->Signal();
+    }
+
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      if (codec_specific_info->end_of_picture) {
+        num_encoded_frames_++;
+        CHECK(event_);
+        event_->Signal();
+      }
+      return Result(Result::OK);
+    }
+
+    void Verify(int num_dropped_frames, int num_encoded_frames) {
+      EXPECT_EQ(num_dropped_frames_, num_dropped_frames);
+      EXPECT_EQ(num_encoded_frames_, num_encoded_frames);
+    }
+
+    void SetEvent(base::WaitableEvent* event) { event_ = event; }
+
+    void WaitEvent() { event_->Wait(); }
+
+   private:
+    raw_ptr<base::WaitableEvent> event_;
+    int num_dropped_frames_{0};
+    int num_encoded_frames_{0};
+  };
+
+  DropFrameVerifier dropframe_verifier;
+  rtc_encoder_->RegisterEncodeCompleteCallback(&dropframe_verifier);
+
+  constexpr static size_t kMaxFramesInEncoder = 15u;
+
+  // Start by "loading the encoder" by building up frames sent to the VEA
+  // without receiving any BitStreamBufferReady callbacks. Should lead to zero
+  // dropped frames and zero encoded frames.
+  base::WaitableEvent event;
+  for (size_t i = 0; i < kMaxFramesInEncoder; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+    EXPECT_CALL(*mock_vea_, Encode).WillOnce([&event]() { event.Signal(); });
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_timestamp_rtp(0)
+                                       .set_timestamp_us(i)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    event.Wait();
+    RunUntilIdle();
+  }
+  dropframe_verifier.Verify(0, 0);
+
+  // At this stage the encoder holds `kMaxFramesInEncoder` frames and the next
+  // frame sent to the encoder should not be encoded but dropped instead.
+  // OnDroppedFrame(DropReason::kDroppedByMediaOptimizations) should be called
+  // as a result and this.
+  event.Reset();
+  dropframe_verifier.SetEvent(&event);
+  EXPECT_CALL(*mock_vea_, Encode).Times(0);
+  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+      webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+  FillFrameBuffer(buffer);
+  std::vector<webrtc::VideoFrameType> frame_types;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(buffer)
+                                     .set_timestamp_rtp(0)
+                                     .set_timestamp_us(kMaxFramesInEncoder)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  dropframe_verifier.WaitEvent();
+  RunUntilIdle();
+  dropframe_verifier.Verify(1, 0);
+
+  // Emulate that the first frame is now reported as encoded. This action should
+  // decrement `frames_in_encoder_count_` to `kMaxFramesInEncoder` - 1 and also
+  // result in the first OnEncodedImage callback.
+  event.Reset();
+  encoder_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &media::VideoEncodeAccelerator::Client::BitstreamBufferReady,
+          base::Unretained(client_), 0,
+          media::BitstreamBufferMetadata(0, false, base::Microseconds(0))));
+  dropframe_verifier.WaitEvent();
+  RunUntilIdle();
+  dropframe_verifier.Verify(1, 1);
+
+  // Perform one more successful encode operation leading to a second
+  // OnEncodedImage callback.
+  event.Reset();
+  EXPECT_CALL(*mock_vea_, Encode).WillOnce(Invoke([this] {
+    client_->BitstreamBufferReady(
+        0, media::BitstreamBufferMetadata(0, false, base::Microseconds(1)));
+  }));
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(buffer)
+                                     .set_timestamp_rtp(0)
+                                     .set_timestamp_us(kMaxFramesInEncoder + 1)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  dropframe_verifier.WaitEvent();
+  RunUntilIdle();
+  dropframe_verifier.Verify(1, 2);
 }
 
 const RTCVideoEncoderEncodeTestParam kEncodeTestCases[] = {

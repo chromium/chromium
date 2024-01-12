@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -56,8 +55,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBar() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
@@ -85,8 +82,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarSerpOffset() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         simulateResolveSearch(SEARCH_NODE);
         float plainSearchBarHeight = mPanel.getBarHeight();
         float plainSearchContentY = mPanel.getContentY();
@@ -118,11 +113,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarWithDefaultQuery() throws Exception {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        FeatureList.setTestValues(testValues);
-        mFakeServer.reset();
-
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
@@ -150,13 +140,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "https://crbug.com/1244089")
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        FeatureList.setTestValues(testValues);
-        mFakeServer.reset();
-
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
@@ -185,11 +169,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarWithDefaultQuery_Ellipsize() throws Exception {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        FeatureList.setTestValues(testValues);
-        mFakeServer.reset();
-
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
@@ -220,8 +199,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarForDefinitionCard() throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         // Do a normal search without Related Searches or Definition cards.
         simulateResolveSearch("search");
         float normalHeight = mPanel.getHeight();
@@ -254,8 +231,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Feature({"ContextualSearch"})
     @DisabledTest(message = "https://crbug.com/1255084")
     public void testRelatedSearchesDismissDuringAnimation() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
-        mFakeServer.reset();
         // Use the "intelligence" node to generate Related Searches suggestions.
         simulateResolveSearch("intelligence");
 

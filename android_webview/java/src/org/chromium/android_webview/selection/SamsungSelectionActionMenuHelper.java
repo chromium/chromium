@@ -133,25 +133,32 @@ public class SamsungSelectionActionMenuHelper {
         return additionalItemBuilderList;
     }
 
+    /**
+     * Filters text processing activities. It should only be called if isManageAppsSupported returns
+     * true.
+     *
+     * @param supportedActivities list of text processing activities to be filtered.
+     * @return filtered list of text processing activities.
+     */
     public static List<ResolveInfo> filterTextProcessingActivities(
             List<ResolveInfo> supportedActivities) {
+        assert isManageAppsSupported();
         Context context = ContextUtils.getApplicationContext();
         String textManagerApps;
         try {
+            // textManagerApps contains list of apps enabled in Manage apps fragment.
+            // 1. A return value of null means user has not visited Manage apps fragment yet.
+            // 2. A return value of empty means user has visited Manage apps fragment and has
+            //    disabled all apps
             textManagerApps =
                     Settings.Global.getString(
                             context.getContentResolver(), STR_TEXT_MANAGER_APPS_RESOLVER);
         } catch (SecurityException e) {
             return supportedActivities;
         }
-        if (textManagerApps == null) {
-            // Do not modify list if returned string is null. Query can return null
-            // if there is no value for the key. As per current implementation, value is
-            // inserted initially when preference fragment is launched at least once.
-            return supportedActivities;
-        }
-        if (textManagerApps.isEmpty()) {
-            // Return empty list as no text process menu item is enabled.
+        if (textManagerApps == null || textManagerApps.isEmpty()) {
+            // Return empty list if no text process menu item is enabled or user has never used
+            // Manage apps, Settings#getString query on content resolver returns null in such case.
             return new ArrayList<>();
         }
         List<String> splitTextManagerApps = Arrays.asList(textManagerApps.split("#"));

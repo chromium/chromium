@@ -406,8 +406,10 @@ PasswordsPrivateDelegateImpl::GetUrlCollection(const std::string& url) {
 bool PasswordsPrivateDelegateImpl::IsAccountStoreDefault(
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
-  DCHECK(client);
-  DCHECK(client->GetPasswordFeatureManager()->IsOptedInForAccountStorage());
+  if (!client ||
+      !client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+    return false;
+  }
   return client->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
          password_manager::PasswordForm::Store::kAccountStore;
 }

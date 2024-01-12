@@ -462,10 +462,6 @@ const CGFloat kModuleMinMargin = 16;
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-    // Reduce the zPosition so that the container appears behind the feed
-    // content.
-    _feedContainer.layer.zPosition = -1;
-
     // Add corner radius to the top border.
     _feedContainer.clipsToBounds = YES;
     _feedContainer.layer.cornerRadius = kHomeModuleContainerCornerRadius;
@@ -1459,9 +1455,15 @@ const CGFloat kModuleMinMargin = 16;
     [self cleanUpCollectionViewConstraints];
 
     if (IsFeedContainmentEnabled()) {
-      [self.collectionView.widthAnchor
-          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
-          .active = YES;
+      // When the feed is turned off, do not constrain the width of the empty
+      // collection view, in order to allow vertical scrolling gestures to
+      // happen on the side margins. The width of the feed header is controlled
+      // by the collectionView's contentLayoutGuide.
+      if (self.feedWrapperViewController.feedViewController) {
+        [self.collectionView.widthAnchor
+            constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
+            .active = YES;
+      }
     } else {
       [self.collectionView.widthAnchor
           constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth]
@@ -1475,9 +1477,10 @@ const CGFloat kModuleMinMargin = 16;
 
       // Apply feed header constraints.
       [self.feedHeaderViewController.view.centerXAnchor
-          constraintEqualToAnchor:self.collectionView.centerXAnchor],
+          constraintEqualToAnchor:self.collectionView.frameLayoutGuide
+                                      .centerXAnchor],
       [self.feedHeaderViewController.view.widthAnchor
-          constraintEqualToAnchor:self.collectionView.widthAnchor],
+          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
     ]];
 
     [self setInitialFeedHeaderConstraints];
@@ -1533,7 +1536,7 @@ const CGFloat kModuleMinMargin = 16;
 - (void)setMinimumHeight {
   CGFloat minimumNTPHeight = [self minimumNTPHeight] - [self heightAboveFeed];
   self.collectionView.contentSize =
-      CGSizeMake(self.view.frame.size.width, minimumNTPHeight);
+      CGSizeMake(self.collectionView.frame.size.width, minimumNTPHeight);
 }
 
 // Sets the content offset to the top of the feed.

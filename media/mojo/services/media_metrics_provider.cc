@@ -139,6 +139,12 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
 }
 
 void MediaMetricsProvider::ReportPipelineUMA() {
+  if (uma_info_.start_status_.has_value()) {
+    base::UmaHistogramExactLinear("Media.PipelineStatus.Start",
+                                  uma_info_.start_status_.value(),
+                                  PIPELINE_STATUS_MAX + 1);
+  }
+
   if (uma_info_.has_video && uma_info_.has_audio) {
     base::UmaHistogramExactLinear(GetUMANameForAVStream(uma_info_),
                                   uma_info_.last_pipeline_status,
@@ -243,6 +249,17 @@ void MediaMetricsProvider::Initialize(
       .media_stream_type = media_stream_type,
   });
   DCHECK(IsInitialized());
+}
+
+void MediaMetricsProvider::OnStarted(const PipelineStatus& status) {
+  DCHECK(IsInitialized());
+  if (is_shutting_down_cb_.Run()) {
+    DVLOG(1) << __func__ << ": Start status " << PipelineStatusToString(status)
+             << " ignored since it is reported during shutdown.";
+    return;
+  }
+
+  uma_info_.start_status_ = status.code();
 }
 
 void MediaMetricsProvider::OnError(const PipelineStatus& status) {

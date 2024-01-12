@@ -141,7 +141,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   ChipController* GetChipController() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar()->chip_controller();
+    return browser_view->toolbar()->location_bar()->GetChipController();
   }
 
   ContentSettingImageView& GetContentSettingImageView(
@@ -150,7 +150,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
     return **base::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
-        &ContentSettingImageView::GetTypeForTesting);
+        &ContentSettingImageView::GetType);
   }
 
   test::PermissionRequestManagerTestApi& GetTestApi() { return *test_api_; }

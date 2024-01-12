@@ -164,7 +164,7 @@ class ForegroundEidGenerator {
       const int64_t end_of_period_timestamp_ms,
       const int64_t current_timestamp_ms);
 
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::unique_ptr<RawEidGenerator> raw_eid_generator_;
 

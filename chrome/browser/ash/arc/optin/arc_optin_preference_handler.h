@@ -70,9 +70,9 @@ class ArcOptInPreferenceHandler {
   void SendLocationServicesMode();
 
   // Unowned pointers.
-  const raw_ptr<ArcOptInPreferenceHandlerObserver, ExperimentalAsh> observer_;
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  const raw_ptr<metrics::MetricsService, ExperimentalAsh> metrics_service_;
+  const raw_ptr<ArcOptInPreferenceHandlerObserver> observer_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<metrics::MetricsService> metrics_service_;
 
   base::OnceClosure enable_metrics_callback_;
 

@@ -147,8 +147,9 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
   matches_.clear();
 
   // If the user started typing, do not offer clipboard based match.
-  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (!input.IsZeroSuggest()) {
     return;
+  }
 
   // Image matched was kicked off asynchronously, so proceed when that ends.
   if (!input.omit_asynchronous_matches() && CreateImageMatch(input))

@@ -37,7 +37,7 @@ public class BrowserUiListMenuUtils {
     /** @return The default text appearance style for list menu item text. */
     @StyleRes
     public static int getDefaultTextAppearanceStyle() {
-        return R.style.TextAppearance_ListMenuItem;
+        return R.style.TextAppearance_BrowserUIListMenuItem;
     }
 
     /**

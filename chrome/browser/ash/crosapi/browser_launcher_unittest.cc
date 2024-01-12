@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/startup/startup_switches.h"
 #include "content/public/common/content_switches.h"
@@ -31,12 +32,6 @@ class BrowserLauncherTest : public testing::Test {
   BrowserLauncherTest() = default;
 
  protected:
-  base::CommandLine CreateCommandLine() {
-    // We'll use a process just does nothing for 30 seconds, which is long
-    // enough to stably exercise the test cases we have.
-    return base::CommandLine({"/bin/sleep", "30"});
-  }
-
   BrowserLauncher* browser_launcher() { return &browser_launcher_; }
 
  private:
@@ -45,38 +40,7 @@ class BrowserLauncherTest : public testing::Test {
   BrowserLauncher browser_launcher_;
 };
 
-TEST_F(BrowserLauncherTest, InitializeCommandLine) {
-  // These arguments are just set for unit test and means nothing.
-  const base::FilePath test_path = base::FilePath({"/path/to/chrome"});
-  BrowserLauncher::LaunchParamsFromBackground params;
-  bool launching_at_login_screen = true;
-
-  std::optional<int> startup_fd = 3;
-  std::optional<int> postlogin_data_fd = 4;
-
-  std::string_view channel_flag_value = "3";
-
-  base::CommandLine command_line =
-      browser_launcher()->InitializeParametersForTesting(
-          test_path, params, launching_at_login_screen, startup_fd,
-          postlogin_data_fd, channel_flag_value);
-
-  EXPECT_EQ(command_line.GetProgram(), test_path);
-
-  EXPECT_EQ(command_line.GetSwitchValueASCII(switches::kLoggingLevel), "");
-
-  EXPECT_EQ(
-      command_line.GetSwitchValueASCII(chromeos::switches::kCrosStartupDataFD),
-      base::NumberToString(startup_fd.value()));
-  EXPECT_EQ(command_line.GetSwitchValueASCII(
-                chromeos::switches::kCrosPostLoginDataFD),
-            base::NumberToString(postlogin_data_fd.value()));
-
-  EXPECT_EQ(command_line.GetSwitchValueASCII(kCrosapiMojoPlatformChannelHandle),
-            channel_flag_value);
-}
-
-TEST_F(BrowserLauncherTest, AdditionalParametersForCommandLine) {
+TEST_F(BrowserLauncherTest, AdditionalParametersForLaunchParams) {
   BrowserLauncher::LaunchParamsFromBackground params;
   params.lacros_additional_args.emplace_back("--switch1");
   params.lacros_additional_args.emplace_back("--switch2=value2");
@@ -84,31 +48,43 @@ TEST_F(BrowserLauncherTest, AdditionalParametersForCommandLine) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ash::switches::kLacrosChromeAdditionalArgs, "--foo####--switch3=value3");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kLacrosChromeAdditionalEnv, "foo1=bar2####switch4=value4");
 
-  base::CommandLine command_line = CreateCommandLine();
-  browser_launcher()->SetUpAdditionalParametersForTesting(params, command_line);
+  BrowserLauncher::LaunchParams parameters(
+      base::CommandLine({"/bin/sleep", "30"}), base::LaunchOptionsForTest());
+  browser_launcher()->SetUpAdditionalParametersForTesting(params, parameters);
 
-  EXPECT_TRUE(command_line.HasSwitch("switch1"));
-  EXPECT_TRUE(command_line.HasSwitch("foo"));
-  EXPECT_EQ(command_line.GetSwitchValueASCII("switch2"), "value2");
-  EXPECT_EQ(command_line.GetSwitchValueASCII("switch3"), "value3");
+  EXPECT_TRUE(parameters.command_line.HasSwitch("switch1"));
+  EXPECT_TRUE(parameters.command_line.HasSwitch("foo"));
+  EXPECT_EQ(parameters.command_line.GetSwitchValueASCII("switch2"), "value2");
+  EXPECT_EQ(parameters.command_line.GetSwitchValueASCII("switch3"), "value3");
 
-  EXPECT_EQ(command_line.GetSwitches().size(), 4u);
+  EXPECT_EQ(parameters.options.environment["foo1"], "bar2");
+  EXPECT_EQ(parameters.options.environment["switch4"], "value4");
+
+  EXPECT_EQ(parameters.command_line.GetSwitches().size(), 4u);
+  EXPECT_EQ(parameters.options.environment.size(), 2u);
 }
 
 TEST_F(BrowserLauncherTest, WithoutAdditionalParametersForCommandLine) {
   BrowserLauncher::LaunchParamsFromBackground params;
   base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine command_line = CreateCommandLine();
-  command_line.RemoveSwitch(ash::switches::kLacrosChromeAdditionalArgs);
-  browser_launcher()->SetUpAdditionalParametersForTesting(params, command_line);
-
-  EXPECT_EQ(command_line.GetSwitches().size(), 0u);
+  BrowserLauncher::LaunchParams parameters(
+      base::CommandLine({"/bin/sleep", "30"}), base::LaunchOptionsForTest());
+  parameters.command_line.RemoveSwitch(
+      ash::switches::kLacrosChromeAdditionalArgs);
+  browser_launcher()->SetUpAdditionalParametersForTesting(params, parameters);
+  EXPECT_EQ(parameters.command_line.GetSwitches().size(), 0u);
+  EXPECT_EQ(parameters.options.environment.size(), 0u);
 }
 
 TEST_F(BrowserLauncherTest, LaunchAndTriggerTerminate) {
-  browser_launcher()->LaunchProcessForTesting(CreateCommandLine(),
-                                              base::LaunchOptionsForTest());
+  // We'll use a process just does nothing for 30 seconds, which is long
+  // enough to stably exercise the test cases we have.
+  BrowserLauncher::LaunchParams parameters(
+      base::CommandLine({"/bin/sleep", "30"}), base::LaunchOptionsForTest());
+  browser_launcher()->LaunchProcessForTesting(parameters);
   EXPECT_TRUE(browser_launcher()->IsProcessValid());
   EXPECT_TRUE(browser_launcher()->TriggerTerminate(/*exit_code=*/0));
   int exit_code;
@@ -124,8 +100,11 @@ TEST_F(BrowserLauncherTest, LaunchAndTriggerTerminate) {
 }
 
 TEST_F(BrowserLauncherTest, TerminateOnBackground) {
-  browser_launcher()->LaunchProcessForTesting(CreateCommandLine(),
-                                              base::LaunchOptionsForTest());
+  // We'll use a process just does nothing for 30 seconds, which is long
+  // enough to stably exercise the test cases we have.
+  BrowserLauncher::LaunchParams parameters(
+      base::CommandLine({"/bin/sleep", "30"}), base::LaunchOptionsForTest());
+  browser_launcher()->LaunchProcessForTesting(parameters);
   ASSERT_TRUE(browser_launcher()->IsProcessValid());
   base::test::TestFuture<void> future;
   browser_launcher()->EnsureProcessTerminated(future.GetCallback(),

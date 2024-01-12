@@ -106,7 +106,7 @@ void MockWorkerThreadObserver::OnWorkerThreadMainExit() {
 scoped_refptr<Sequence> CreateSequenceWithTask(
     Task task,
     const TaskTraits& traits,
-    scoped_refptr<TaskRunner> task_runner,
+    scoped_refptr<SequencedTaskRunner> task_runner,
     TaskSourceExecutionMode execution_mode) {
   scoped_refptr<Sequence> sequence =
       MakeRefCounted<Sequence>(traits, task_runner.get(), execution_mode);
@@ -186,12 +186,12 @@ bool MockPooledTaskRunnerDelegate::PostTaskWithSequence(
         std::move(task),
         BindOnce(
             [](scoped_refptr<Sequence> sequence,
-               MockPooledTaskRunnerDelegate* self, Task task) {
+               MockPooledTaskRunnerDelegate* self,
+               scoped_refptr<TaskRunner> task_runner, Task task) {
               self->PostTaskWithSequenceNow(std::move(task),
                                             std::move(sequence));
             },
-            std::move(sequence), Unretained(this)),
-        std::move(task_runner));
+            std::move(sequence), Unretained(this), std::move(task_runner)));
   }
 
   return true;

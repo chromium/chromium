@@ -41,10 +41,41 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationPromptAction">
+  <int value="0" label="Go to Settings tapped"/>
+  <int value="1" label="No Thanks tapped"/>
+</enum>
+
 <enum name="ContentNotificationSetUpListPromoAction">
   <int value="0" label="Accept"/>
   <int value="1" label="Cancel"/>
   <int value="2" label="Remind Me Later"/>
+</enum>
+
+<enum name="ContentNotificationSetUpListPromoEvent">
+  <int value="0" label="Notification promo Sheet shown"/>
+  <int value="1" label="Notification promo Sheet dismissed"/>
+  <int value="2" label="OS Notification permission prompt shown"/>
+</enum>
+
+<enum name="ContentNotificationSnackbarEvent">
+  <int value="0" label="Notification confirmation snackbar shown"/>
+  <int value="1"
+      label="Notification confirmation snackbar action button tapped"/>
+</enum>
+
+<enum name="ContentNotificationTopOfFeedPromoAction">
+  <int value="0" label="Accept OS Prompt"/>
+  <int value="1" label="Declined OS Prompt"/>
+  <int value="2" label="Main button tapped, to show OS prompt"/>
+  <int value="3" label="Dismissed Promo from close button"/>
+  <int value="4" label="Dismissed Promo from secondary button"/>
+</enum>
+
+<enum name="ContentNotificationTopOfFeedPromoEvent">
+  <int value="0" label="OS prompt was shown to user"/>
+  <int value="1" label="Promo shown when OS notifications are active"/>
+  <int value="2" label="Error displaying the OS prompt"/>
 </enum>
 
 <enum name="ContentSettingBubbleAction">

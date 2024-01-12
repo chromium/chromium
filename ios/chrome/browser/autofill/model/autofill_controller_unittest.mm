@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 #import <vector>
-
-#import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
@@ -20,7 +20,7 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#import "components/autofill/core/browser/webdata/autocomplete_entry.h"
+#import "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"

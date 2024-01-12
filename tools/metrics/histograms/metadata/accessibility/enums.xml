@@ -1,0 +1,1438 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AccessibilityAndroidServiceInfoEnum">
+  <summary>
+    Track flags and capabilities of enabled accessibility services on Android.
+  </summary>
+  <int value="0" label="CAPABILITY_CAN_CONTROL_MAGNIFICATION"/>
+  <int value="1" label="CAPABILITY_CAN_PERFORM_GESTURES"/>
+  <int value="2" label="CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY"/>
+  <int value="3" label="CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS"/>
+  <int value="4" label="CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION"/>
+  <int value="5" label="CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT"/>
+  <int value="6" label="EVENT_ANNOUNCEMENT"/>
+  <int value="7" label="EVENT_ASSIST_READING_CONTEXT"/>
+  <int value="8" label="EVENT_GESTURE_DETECTION_END"/>
+  <int value="9" label="EVENT_GESTURE_DETECTION_START"/>
+  <int value="10" label="EVENT_NOTIFICATION_STATE_CHANGED"/>
+  <int value="11" label="EVENT_TOUCH_EXPLORATION_GESTURE_END"/>
+  <int value="12" label="EVENT_TOUCH_EXPLORATION_GESTURE_START"/>
+  <int value="13" label="EVENT_TOUCH_INTERACTION_END"/>
+  <int value="14" label="EVENT_TOUCH_INTERACTION_START"/>
+  <int value="15" label="EVENT_VIEW_ACCESSIBILITY_FOCUSED"/>
+  <int value="16" label="EVENT_VIEW_ACCESSIBILITY_FOCUS_CLEARED"/>
+  <int value="17" label="EVENT_VIEW_CLICKED"/>
+  <int value="18" label="EVENT_VIEW_CONTEXT_CLICKED"/>
+  <int value="19" label="EVENT_VIEW_FOCUSED"/>
+  <int value="20" label="EVENT_VIEW_HOVER_ENTER"/>
+  <int value="21" label="EVENT_VIEW_HOVER_EXIT"/>
+  <int value="22" label="EVENT_VIEW_LONG_CLICKED"/>
+  <int value="23" label="EVENT_VIEW_SCROLLED"/>
+  <int value="24" label="EVENT_VIEW_SELECTED"/>
+  <int value="25" label="EVENT_VIEW_TEXT_CHANGED"/>
+  <int value="26" label="EVENT_VIEW_TEXT_SELECTION_CHANGED"/>
+  <int value="27" label="EVENT_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY"/>
+  <int value="28" label="EVENT_WINDOWS_CHANGED"/>
+  <int value="29" label="EVENT_WINDOW_CONTENT_CHANGED"/>
+  <int value="30" label="EVENT_WINDOW_STATE_CHANGED"/>
+  <int value="31" label="FEEDBACK_AUDIBLE"/>
+  <int value="32" label="FEEDBACK_BRAILLE"/>
+  <int value="33" label="FEEDBACK_GENERIC"/>
+  <int value="34" label="FEEDBACK_HAPTIC"/>
+  <int value="35" label="FEEDBACK_SPOKEN"/>
+  <int value="36" label="FEEDBACK_VISUAL"/>
+  <int value="37" label="FLAG_FORCE_DIRECT_BOOT_AWARE"/>
+  <int value="38" label="FLAG_INCLUDE_NOT_IMPORTANT_VIEWS"/>
+  <int value="39" label="FLAG_REPORT_VIEW_IDS"/>
+  <int value="40" label="FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY"/>
+  <int value="41" label="FLAG_REQUEST_FILTER_KEY_EVENTS"/>
+  <int value="42" label="FLAG_REQUEST_TOUCH_EXPLORATION_MODE"/>
+  <int value="43" label="FLAG_RETRIEVE_INTERACTIVE_WINDOWS"/>
+  <int value="44" label="SERVICE_TYPE_UNKNOWN"/>
+  <int value="45" label="SERVICE_TYPE_PASSWORD_MANAGER"/>
+  <int value="46" label="SERVICE_TYPE_ASSISTIVE_TECH"/>
+  <int value="47" label="CAPABILITY_CAN_REQUEST_FINGERPRINT_GESTURES"/>
+  <int value="48" label="CAPABILITY_CAN_TAKE_SCREENSHOT"/>
+  <int value="49" label="FLAG_ENABLE_ACCESSIBILITY_VOLUME"/>
+  <int value="50" label="FLAG_REQUEST_ACCESSIBILITY_BUTTON"/>
+  <int value="51" label="FLAG_REQUEST_FINGERPRINT_GESTURES"/>
+  <int value="52" label="FLAG_REQUEST_MULTI_FINGER_GESTURES"/>
+  <int value="53" label="FLAG_REQUEST_SHORTCUT_WARNING_DIALOG_SPOKEN_FEEDBACK"/>
+  <int value="54" label="FLAG_SERVICE_HANDLES_DOUBLE_TAP"/>
+  <int value="55" label="SERVICE_TYPE_ASSISTIVE_TECH_WITH_PASSWORD_MANAGER"/>
+  <int value="56" label="SERVICE_TYPE_ASSISTIVE_TECH_WITH_UNKNOWN"/>
+  <int value="57" label="SERVICE_TYPE_PASSWORD_MANAGER_WITH_UNKNOWN"/>
+  <int value="58" label="SERVICE_TYPE_ALL_VARIANTS"/>
+  <int value="59" label="EVENT_SPEECH_STATE_CHANGE"/>
+  <int value="60" label="FEEDBACK_ALL_MASK"/>
+  <int value="61" label="FLAG_REQUEST_2_FINGER_PASSTHROUGH"/>
+  <int value="62" label="FLAG_SEND_MOTION_EVENTS"/>
+  <int value="63" label="FLAG_INPUT_METHOD_EDITOR"/>
+</enum>
+
+<enum name="AccessibilityATKAPIEnum">
+  <summary>
+    Track which ATK APIs are being called by clients on Linux Desktop.
+  </summary>
+  <int value="0" label="kGetName">atk_object_get_name</int>
+  <int value="1" label="kGetDescription">atk_object_get_description</int>
+  <int value="2" label="kGetNChildren">
+    atk_object_get_n_accessible_children
+  </int>
+  <int value="3" label="kRefChild">atk_object_ref_accessible_child</int>
+  <int value="4" label="kGetIndexInParent">atk_object_get_index_in_parent</int>
+  <int value="5" label="kGetParent">atk_object_get_parent</int>
+  <int value="6" label="kRefRelationSet">atk_object_ref_relation_set</int>
+  <int value="7" label="kGetAttributes">atk_object_get_attributes</int>
+  <int value="8" label="kGetRole">atk_object_get_role</int>
+  <int value="9" label="kRefStateSet">atk_object_ref_state_set</int>
+</enum>
+
+<enum name="AccessibilityImageLabelModeAndroid">
+  <summary>
+    Tracks what mode the user has selected for accessibility image labels on
+    Android, either always enabled, always enabled but only on Wi-Fi, just once,
+    just once and don't ask again, or if they cancel.
+  </summary>
+  <int value="0" label="Enabled (always)"/>
+  <int value="1" label="Enabled (Only on WiFi)"/>
+  <int value="2" label="Just once"/>
+  <int value="3" label="Just once (Don't ask again)"/>
+  <int value="4" label="Cancel"/>
+</enum>
+
+<enum name="AccessibilityPageZoomAppMenuEnabledState">
+  <summary>Track enabled state of page zoom option on app menu.</summary>
+<!-- This must be kept in sync with
+PageZoomUma.AccessibilityPageZoomAppMenuEnabledState in
+components/browser_ui/accessibility/android/java/src/org/chromium/
+components/browser_ui/accessibility/PageZoomUma.java -->
+
+  <int value="0" label="Not Enabled"/>
+  <int value="1" label="User Enabled"/>
+  <int value="2" label="OS Enabled"/>
+  <int value="3" label="User Disabled"/>
+</enum>
+
+<enum name="AccessibilityTreeUnserializeError">
+  <summary>
+    Tracks the type of failure that occured when unserializing the accessibility
+    tree.
+  </summary>
+  <int value="0" label="No Root"/>
+  <int value="1" label="Not In Tree"/>
+  <int value="2" label="Creation Pending"/>
+  <int value="3" label="Duplicate Child"/>
+  <int value="4" label="Creation Pending For Child"/>
+  <int value="5" label="Reparent"/>
+  <int value="6" label="Pending Nodes"/>
+  <int value="7" label="Pending Changes"/>
+</enum>
+
+<enum name="AccessibilityWinAPIEnum">
+  <summary>
+    Track which Windows accessibility APIs are being called by clients.
+  </summary>
+  <int value="0" label="UMA_API_ACC_DO_DEFAULT_ACTION">
+    MSAA accDoDefaultAction
+  </int>
+  <int value="1" label="UMA_API_ACC_HIT_TEST">MSAA accHitTest</int>
+  <int value="2" label="UMA_API_ACC_LOCATION">MSAA accLocation</int>
+  <int value="3" label="UMA_API_ACC_NAVIGATE">MSAA accNavigate</int>
+  <int value="4" label="UMA_API_ACC_SELECT">MSAA accSelect</int>
+  <int value="5" label="UMA_API_ADD_SELECTION">IA2 addSelection</int>
+  <int value="6" label="UMA_API_CONVERT_RETURNED_ELEMENT">
+    UIA ConvertReturnedElement
+  </int>
+  <int value="7" label="UMA_API_DO_ACTION">IA2 doAction</int>
+  <int value="8" label="UMA_API_GET_ACCESSIBLE_AT">IA2 get_accessibleAt</int>
+  <int value="9" label="UMA_API_GET_ACC_CHILD">MSAA get_accChild</int>
+  <int value="10" label="UMA_API_GET_ACC_CHILD_COUNT">
+    MSAA get_accChildCount
+  </int>
+  <int value="11" label="UMA_API_GET_ACC_DEFAULT_ACTION">
+    MSAA get_accDefaultAction
+  </int>
+  <int value="12" label="UMA_API_GET_ACC_DESCRIPTION">
+    MSAA get_accDescription
+  </int>
+  <int value="13" label="UMA_API_GET_ACC_FOCUS">MSAA get_accFocus</int>
+  <int value="14" label="UMA_API_GET_ACC_HELP">MSAA get_accHelp</int>
+  <int value="15" label="UMA_API_GET_ACC_HELP_TOPIC">MSAA get_accHelpTopic</int>
+  <int value="16" label="UMA_API_GET_ACC_KEYBOARD_SHORTCUT">
+    MSAA get_accKeyboardShortcut
+  </int>
+  <int value="17" label="UMA_API_GET_ACC_NAME">MSAA get_accName</int>
+  <int value="18" label="UMA_API_GET_ACC_PARENT">MSAA get_accParent</int>
+  <int value="19" label="UMA_API_GET_ACC_ROLE">MSAA get_accRole</int>
+  <int value="20" label="UMA_API_GET_ACC_SELECTION">MSAA get_accSelection</int>
+  <int value="21" label="UMA_API_GET_ACC_STATE">MSAA get_accState</int>
+  <int value="22" label="UMA_API_GET_ACC_VALUE">MSAA get_accValue</int>
+  <int value="23" label="UMA_API_GET_ANCHOR">IA2 get_anchor</int>
+  <int value="24" label="UMA_API_GET_ANCHOR_TARGET">IA2 get_anchorTarget</int>
+  <int value="25" label="UMA_API_GET_APP_NAME">IA2 get_appName</int>
+  <int value="26" label="UMA_API_GET_APP_VERSION">IA2 get_appVersion</int>
+  <int value="27" label="UMA_API_GET_ATTRIBUTES_FOR_NAMES">
+    ISDN get_attributesForNames
+  </int>
+  <int value="28" label="UMA_API_GET_CAPTION">IA2 get_caption</int>
+  <int value="29" label="UMA_API_GET_CARET_OFFSET">IA2 get_caretOffset</int>
+  <int value="30" label="UMA_API_GET_CELL_AT">IA2 get_cellAt</int>
+  <int value="31" label="UMA_API_GET_CHARACTER_EXTENTS">
+    IA2 get_characterExtents
+  </int>
+  <int value="32" label="UMA_API_GET_CHILD_AT">ISDN get_childAt</int>
+  <int value="33" label="UMA_API_GET_CHILD_INDEX">IA2 get_childIndex</int>
+  <int value="34" label="UMA_API_GET_CLIPPED_SUBSTRING_BOUNDS">
+    IA2 get_clippedSubstringBounds
+  </int>
+  <int value="35" label="UMA_API_GET_COLUMN_DESCRIPTION">
+    IA2 get_columnDescription
+  </int>
+  <int value="36" label="UMA_API_GET_COLUMN_EXTENT">IA2 get_columnExtent</int>
+  <int value="37" label="UMA_API_GET_COLUMN_EXTENT_AT">
+    IA2 get_columnExtentAt
+  </int>
+  <int value="38" label="UMA_API_GET_COLUMN_HEADER">IA2 get_columnHeader</int>
+  <int value="39" label="UMA_API_GET_COLUMN_HEADER_CELLS">
+    IA2 get_columnHeaderCells
+  </int>
+  <int value="40" label="UMA_API_GET_COLUMN_INDEX">IA2 get_columnIndex</int>
+  <int value="41" label="UMA_API_GET_COMPUTED_STYLE">
+    ISDN get_computedStyle
+  </int>
+  <int value="42" label="UMA_API_GET_COMPUTED_STYLE_FOR_PROPERTIES">
+    ISDN get_computedStyleForProperties
+  </int>
+  <int value="43" label="UMA_API_GET_CURRENT_VALUE">IA2 get_currentValue</int>
+  <int value="44" label="UMA_API_GET_DESCRIPTION">IA2 get_description</int>
+  <int value="45" label="UMA_API_GET_DOC_TYPE">IA2 get_docType</int>
+  <int value="46" label="UMA_API_GET_DOM_TEXT">IA2 get_domText</int>
+  <int value="47" label="UMA_API_GET_END_INDEX">IA2 get_endIndex</int>
+  <int value="48" label="UMA_API_GET_EXTENDED_ROLE">IA2 get_extendedRole</int>
+  <int value="49" label="UMA_API_GET_EXTENDED_STATES">
+    IA2 get_extendedStates
+  </int>
+  <int value="50" label="UMA_API_GET_FIRST_CHILD">ISDN get_firstChild</int>
+  <int value="51" label="UMA_API_GET_FONT_FAMILY">IA2 get_fontFamily</int>
+  <int value="52" label="UMA_API_GET_GROUP_POSITION">IA2 get_groupPosition</int>
+  <int value="53" label="UMA_API_GET_HOST_RAW_ELEMENT_PROVIDER">
+    UIA get_HostRawElementProvider
+  </int>
+  <int value="54" label="UMA_API_GET_HYPERLINK">IA2 get_hyperlink</int>
+  <int value="55" label="UMA_API_GET_HYPERLINK_INDEX">
+    IA2 get_hyperlinkIndex
+  </int>
+  <int value="56" label="UMA_API_GET_IACCESSIBLE_PAIR">
+    UIA GetIAccessiblePair ALT
+  </int>
+  <int value="57" label="UMA_API_GET_IMAGE_POSITION">IA2 get_imagePosition</int>
+  <int value="58" label="UMA_API_GET_IMAGE_SIZE">IA2 get_imageSize</int>
+  <int value="59" label="UMA_API_GET_INDEX_IN_PARENT">
+    IA2 get_indexInParent
+  </int>
+  <int value="60" label="UMA_API_GET_INNER_HTML">ISDN get_innerHTML</int>
+  <int value="61" label="UMA_API_GET_IS_COLUMN_SELECTED">
+    IA2 get_isColumnSelected
+  </int>
+  <int value="62" label="UMA_API_GET_IS_ROW_SELECTED">
+    IA2 get_isRowSelected
+  </int>
+  <int value="63" label="UMA_API_GET_IS_SELECTED">IA2 get_isSelected</int>
+  <int value="64" label="UMA_API_GET_KEY_BINDING">IA2 get_keyBinding</int>
+  <int value="65" label="UMA_API_GET_LANGUAGE">ISDN get_language</int>
+  <int value="66" label="UMA_API_GET_LAST_CHILD">ISDN get_lastChild</int>
+  <int value="67" label="UMA_API_GET_LOCALE">IA2 get_locale</int>
+  <int value="68" label="UMA_API_GET_LOCALIZED_EXTENDED_ROLE">
+    IA2 get_localizedExtendedRole
+  </int>
+  <int value="69" label="UMA_API_GET_LOCALIZED_EXTENDED_STATES">
+    IA2 get_localizedExtendedStates
+  </int>
+  <int value="70" label="UMA_API_GET_LOCALIZED_NAME">IA2 get_localizedName</int>
+  <int value="71" label="UMA_API_GET_LOCAL_INTERFACE">
+    ISDN get_localInterface
+  </int>
+  <int value="72" label="UMA_API_GET_MAXIMUM_VALUE">IA2 get_maximumValue</int>
+  <int value="73" label="UMA_API_GET_MIME_TYPE">IA2 get_mimeType</int>
+  <int value="74" label="UMA_API_GET_MINIMUM_VALUE">IA2 get_minimumValue</int>
+  <int value="75" label="UMA_API_GET_NAME">IA2 get_name</int>
+  <int value="76" label="UMA_API_GET_NAMESPACE_URI_FOR_ID">
+    IA2 get_nameSpaceURIForID ALT
+  </int>
+  <int value="77" label="UMA_API_GET_NEW_TEXT">IA2 get_newText</int>
+  <int value="78" label="UMA_API_GET_NEXT_SIBLING">ISDN get_nextSibling</int>
+  <int value="79" label="UMA_API_GET_NODE_INFO">ISDN get_nodeInfo</int>
+  <int value="80" label="UMA_API_GET_N_CHARACTERS">IA2 get_nCharacters</int>
+  <int value="81" label="UMA_API_GET_N_COLUMNS">IA2 get_nColumns</int>
+  <int value="82" label="UMA_API_GET_N_EXTENDED_STATES">
+    IA2 get_nExtendedStates
+  </int>
+  <int value="83" label="UMA_API_GET_N_HYPERLINKS">IA2 get_nHyperlinks</int>
+  <int value="84" label="UMA_API_GET_N_RELATIONS">IA2 get_nRelations</int>
+  <int value="85" label="UMA_API_GET_N_ROWS">IA2 get_nRows</int>
+  <int value="86" label="UMA_API_GET_N_SELECTED_CELLS">
+    IA2 get_nSelectedCells
+  </int>
+  <int value="87" label="UMA_API_GET_N_SELECTED_CHILDREN">
+    IA2 get_nSelectedChildren
+  </int>
+  <int value="88" label="UMA_API_GET_N_SELECTED_COLUMNS">
+    IA2 get_nSelectedColumns
+  </int>
+  <int value="89" label="UMA_API_GET_N_SELECTED_ROWS">
+    IA2 get_nSelectedRows
+  </int>
+  <int value="90" label="UMA_API_GET_N_SELECTIONS">IA2 get_nSelections</int>
+  <int value="91" label="UMA_API_GET_OBJECT_FOR_CHILD">
+    UIA GetObjectForChild
+  </int>
+  <int value="92" label="UMA_API_GET_OFFSET_AT_POINT">
+    IA2 get_offsetAtPoint
+  </int>
+  <int value="93" label="UMA_API_GET_OLD_TEXT">IA2 get_oldText</int>
+  <int value="94" label="UMA_API_GET_PARENT_NODE">ISDN get_parentNode</int>
+  <int value="95" label="UMA_API_GET_PATTERN_PROVIDER">
+    UIA GetPatternProvider
+  </int>
+  <int value="96" label="UMA_API_GET_PREVIOUS_SIBLING">
+    ISDN get_previousSibling
+  </int>
+  <int value="97" label="UMA_API_GET_PROPERTY_VALUE">UIA GetPropertyValue</int>
+  <int value="98" label="UMA_API_GET_PROVIDER_OPTIONS">
+    UIA get_ProviderOptions
+  </int>
+  <int value="99" label="UMA_API_GET_RELATION">IA2 get_relation</int>
+  <int value="100" label="UMA_API_GET_RELATIONS">IA2 get_relations</int>
+  <int value="101" label="UMA_API_GET_ROW_COLUMN_EXTENTS">
+    IA2 get_rowColumnExtents
+  </int>
+  <int value="102" label="UMA_API_GET_ROW_COLUMN_EXTENTS_AT_INDEX">
+    IA2 get_rowColumnExtentsAtIndex
+  </int>
+  <int value="103" label="UMA_API_GET_ROW_DESCRIPTION">
+    IA2 get_rowDescription
+  </int>
+  <int value="104" label="UMA_API_GET_ROW_EXTENT">IA2 get_rowExtent</int>
+  <int value="105" label="UMA_API_GET_ROW_EXTENT_AT">IA2 get_rowExtentAt</int>
+  <int value="106" label="UMA_API_GET_ROW_HEADER">IA2 get_rowHeader</int>
+  <int value="107" label="UMA_API_GET_ROW_HEADER_CELLS">
+    IA2 get_rowHeaderCells
+  </int>
+  <int value="108" label="UMA_API_GET_ROW_INDEX">IA2 get_rowIndex</int>
+  <int value="109" label="UMA_API_GET_RUNTIME_ID">UIA GetRuntimeId</int>
+  <int value="110" label="UMA_API_GET_SELECTED_CELLS">
+    IA2 get_selectedCells
+  </int>
+  <int value="111" label="UMA_API_GET_SELECTED_CHILDREN">
+    IA2 get_selectedChildren
+  </int>
+  <int value="112" label="UMA_API_GET_SELECTED_COLUMNS">
+    IA2 get_selectedColumns
+  </int>
+  <int value="113" label="UMA_API_GET_SELECTED_ROWS">IA2 get_selectedRows</int>
+  <int value="114" label="UMA_API_GET_SELECTION">IA2 get_selection</int>
+  <int value="115" label="UMA_API_GET_START_INDEX">IA2 get_startIndex</int>
+  <int value="116" label="UMA_API_GET_STATES">IA2 get_states</int>
+  <int value="117" label="UMA_API_GET_SUMMARY">IA2 get_summary</int>
+  <int value="118" label="UMA_API_GET_TABLE">IA2 get_table</int>
+  <int value="119" label="UMA_API_GET_TEXT">IA2 get_text</int>
+  <int value="120" label="UMA_API_GET_TEXT_AFTER_OFFSET">
+    IA2 get_textAfterOffset
+  </int>
+  <int value="121" label="UMA_API_GET_TEXT_AT_OFFSET">IA2 get_textAtOffset</int>
+  <int value="122" label="UMA_API_GET_TEXT_BEFORE_OFFSET">
+    IA2 get_textBeforeOffset
+  </int>
+  <int value="123" label="UMA_API_GET_TITLE">IA2 get_title</int>
+  <int value="124" label="UMA_API_GET_TOOLKIT_NAME">IA2 get_toolkitName</int>
+  <int value="125" label="UMA_API_GET_TOOLKIT_VERSION">
+    IA2 get_toolkitVersion
+  </int>
+  <int value="126" label="UMA_API_GET_UNCLIPPED_SUBSTRING_BOUNDS">
+    IA2 get_unclippedSubstringBounds
+  </int>
+  <int value="127" label="UMA_API_GET_UNIQUE_ID">IA2 get_uniqueID</int>
+  <int value="128" label="UMA_API_GET_URL">IA2 get_URL</int>
+  <int value="129" label="UMA_API_GET_VALID">IA2 get_valid</int>
+  <int value="130" label="UMA_API_GET_WINDOW_HANDLE">IA2 get_windowHandle</int>
+  <int value="131" label="UMA_API_IA2_GET_ATTRIBUTES">
+    IA2 get_attributes ALT
+  </int>
+  <int value="132" label="UMA_API_IA2_SCROLL_TO">IA2 scrollTo ALT</int>
+  <int value="133" label="UMA_API_IAACTION_GET_DESCRIPTION">
+    IA2 get_description ALT
+  </int>
+  <int value="134" label="UMA_API_IATEXT_GET_ATTRIBUTES">
+    IA2 get_attributes ALT
+  </int>
+  <int value="135" label="UMA_API_ISIMPLEDOMNODE_GET_ATTRIBUTES">
+    ISDN get_attributes ALT
+  </int>
+  <int value="136" label="UMA_API_ISIMPLEDOMNODE_SCROLL_TO">
+    ISDN scrollTo ALT
+  </int>
+  <int value="137" label="UMA_API_N_ACTIONS">IA2 nActions</int>
+  <int value="138" label="UMA_API_PUT_ALTERNATE_VIEW_MEDIA_TYPES">
+    IA2 put_alternateViewMediaTypes
+  </int>
+  <int value="139" label="UMA_API_QUERY_SERVICE">QueryService</int>
+  <int value="140" label="UMA_API_REMOVE_SELECTION">IA2 removeSelection</int>
+  <int value="141" label="UMA_API_ROLE">IA2 role</int>
+  <int value="142" label="UMA_API_SCROLL_SUBSTRING_TO">
+    IA2 scrollSubstringTo
+  </int>
+  <int value="143" label="UMA_API_SCROLL_SUBSTRING_TO_POINT">
+    IA2 scrollSubstringToPoint
+  </int>
+  <int value="144" label="UMA_API_SCROLL_TO_POINT">IA2 scrollToPoint</int>
+  <int value="145" label="UMA_API_SCROLL_TO_SUBSTRING">
+    IA2 scrollToSubstring
+  </int>
+  <int value="146" label="UMA_API_SELECT_COLUMN">IA2 selectColumn</int>
+  <int value="147" label="UMA_API_SELECT_ROW">IA2 selectRow</int>
+  <int value="148" label="UMA_API_SET_CARET_OFFSET">IA2 setCaretOffset</int>
+  <int value="149" label="UMA_API_SET_CURRENT_VALUE">IA2 setCurrentValue</int>
+  <int value="150" label="UMA_API_SET_SELECTION">IA2 setSelection</int>
+  <int value="151" label="UMA_API_TABLE2_GET_SELECTED_COLUMNS">
+    IA2 get_selectedColumns ALT
+  </int>
+  <int value="152" label="UMA_API_TABLE2_GET_SELECTED_ROWS">
+    IA2 get_selectedRows ALT
+  </int>
+  <int value="153" label="UMA_API_TABLECELL_GET_COLUMN_INDEX">
+    IA2 get_columnIndex ALT
+  </int>
+  <int value="154" label="UMA_API_TABLECELL_GET_IS_SELECTED">
+    IA2 get_isSelected ALT
+  </int>
+  <int value="155" label="UMA_API_TABLECELL_GET_ROW_INDEX">
+    IA2 get_rowIndex ALT
+  </int>
+  <int value="156" label="UMA_API_UNSELECT_COLUMN">IA2 unselectColumn</int>
+  <int value="157" label="UMA_API_UNSELECT_ROW">IA2 unselectRow</int>
+  <int value="158" label="UMA_API_GET_BOUNDINGRECTANGLE">
+    UIA get_BoundingRectangle
+  </int>
+  <int value="159" label="UMA_API_GET_FRAGMENTROOT">UIA get_FragmentRoot</int>
+  <int value="160" label="UMA_API_GETEMBEDDEDFRAGMENTROOTS">
+    UIA GetEmbeddedFragmentRoots
+  </int>
+  <int value="161" label="UMA_API_NAVIGATE">UIA Navigate</int>
+  <int value="162" label="UMA_API_SETFOCUS">UIA SetFocus</int>
+  <int value="163" label="UMA_API_SHOWCONTEXTMENU">UIA ShowContextMenu</int>
+  <int value="164" label="UMA_API_EXPANDCOLLAPSE_COLLAPSE">
+    UIA ExpandCollapse.Collapse
+  </int>
+  <int value="165" label="UMA_API_EXPANDCOLLAPSE_EXPAND">
+    UIA ExpandCollapse.Expand
+  </int>
+  <int value="166" label="UMA_API_EXPANDCOLLAPSE_GET_EXPANDCOLLAPSESTATE">
+    UIA ExpandCollapse.get_ExpandCollapseState
+  </int>
+  <int value="167" label="UMA_API_GRIDITEM_GET_COLUMN">
+    UIA GridItem.get_Column
+  </int>
+  <int value="168" label="UMA_API_GRIDITEM_GET_COLUMNSPAN">
+    UIA GridItem.get_ColumnSpan
+  </int>
+  <int value="169" label="UMA_API_GRIDITEM_GET_CONTAININGGRID">
+    UIA GridItem.get_ContainingGrid
+  </int>
+  <int value="170" label="UMA_API_GRIDITEM_GET_ROW">UIA GridItem.get_Row</int>
+  <int value="171" label="UMA_API_GRIDITEM_GET_ROWSPAN">
+    UIA GridItem.get_RowSpan
+  </int>
+  <int value="172" label="UMA_API_GRID_GETITEM">UIA Grid.GetItem</int>
+  <int value="173" label="UMA_API_GRID_GET_ROWCOUNT">UIA Grid.get_RowCount</int>
+  <int value="174" label="UMA_API_GRID_GET_COLUMNCOUNT">
+    UIA Grid.get_ColumnCount
+  </int>
+  <int value="175" label="UMA_API_INVOKE_INVOKE">UIA Invoke.Invoke</int>
+  <int value="176" label="UMA_API_RANGEVALUE_SETVALUE">
+    UIA RangeValue.SetValue
+  </int>
+  <int value="177" label="UMA_API_RANGEVALUE_GET_LARGECHANGE">
+    UIA RangeValue.get_LargeChange
+  </int>
+  <int value="178" label="UMA_API_RANGEVALUE_GET_MAXIMUM">
+    UIA RangeValue.get_Maximum
+  </int>
+  <int value="179" label="UMA_API_RANGEVALUE_GET_MINIMUM">
+    UIA RangeValue.get_Minimum
+  </int>
+  <int value="180" label="UMA_API_RANGEVALUE_GET_SMALLCHANGE">
+    UIA RangeValue.get_SmallChange
+  </int>
+  <int value="181" label="UMA_API_RANGEVALUE_GET_VALUE">
+    UIA RangeValue.get_Value
+  </int>
+  <int value="182" label="UMA_API_SCROLLITEM_SCROLLINTOVIEW">
+    UIA ScrollItem.ScrollIntoView
+  </int>
+  <int value="183" label="UMA_API_SCROLL_SCROLL">UIA Scroll.Scroll</int>
+  <int value="184" label="UMA_API_SCROLL_SETSCROLLPERCENT">
+    UIA Scroll.SetScrollPercent
+  </int>
+  <int value="185" label="UMA_API_SCROLL_GET_HORIZONTALLYSCROLLABLE">
+    UIA Scroll.get_HorizontallyScrollable
+  </int>
+  <int value="186" label="UMA_API_SCROLL_GET_HORIZONTALSCROLLPERCENT">
+    UIA Scroll.get_HorizontalScrollPercent
+  </int>
+  <int value="187" label="UMA_API_SCROLL_GET_HORIZONTALVIEWSIZE">
+    UIA Scroll.get_HorizontalViewSize
+  </int>
+  <int value="188" label="UMA_API_SCROLL_GET_VERTICALLYSCROLLABLE">
+    UIA Scroll.get_VerticallyScrollable
+  </int>
+  <int value="189" label="UMA_API_SCROLL_GET_VERTICALSCROLLPERCENT">
+    UIA Scroll.get_VerticalScrollPercent
+  </int>
+  <int value="190" label="UMA_API_SCROLL_GET_VERTICALVIEWSIZE">
+    UIA Scroll.get_VerticalViewSize
+  </int>
+  <int value="191" label="UMA_API_SELECTIONITEM_ADDTOSELECTION">
+    UIA SelectionItem.AddToSelection
+  </int>
+  <int value="192" label="UMA_API_SELECTIONITEM_REMOVEFROMSELECTION">
+    UIA SelectionItem.RemoveFromSelection
+  </int>
+  <int value="193" label="UMA_API_SELECTIONITEM_SELECT">
+    UIA SelectionItem.Select
+  </int>
+  <int value="194" label="UMA_API_SELECTIONITEM_GET_ISSELECTED">
+    UIA SelectionItem.get_IsSelected
+  </int>
+  <int value="195" label="UMA_API_SELECTIONITEM_GET_SELECTIONCONTAINER">
+    UIA SelectionItem.get_SelectionContainer
+  </int>
+  <int value="196" label="UMA_API_SELECTION_GETSELECTION">
+    UIA Selection.GetSelection
+  </int>
+  <int value="197" label="UMA_API_SELECTION_GET_CANSELECTMULTIPLE">
+    UIA Selection.get_CanSelectMultiple
+  </int>
+  <int value="198" label="UMA_API_SELECTION_GET_ISSELECTIONREQUIRED">
+    UIA Selection.get_IsSelectionRequired
+  </int>
+  <int value="199" label="UMA_API_TABLEITEM_GETCOLUMNHEADERITEMS">
+    UIA TableItem.GetColumnHeaderItems
+  </int>
+  <int value="200" label="UMA_API_TABLEITEM_GETROWHEADERITEMS">
+    UIA TableItem.GetRowHeaderItems
+  </int>
+  <int value="201" label="UMA_API_TABLE_GETCOLUMNHEADERS">
+    UIA Table.GetColumnGeaders
+  </int>
+  <int value="202" label="UMA_API_TABLE_GETROWHEADERS">
+    UIA Table.GetRowHeaders
+  </int>
+  <int value="203" label="UMA_API_TABLE_GET_ROWORCOLUMNMAJOR">
+    UIA Table.get_RowOrColumnMajor
+  </int>
+  <int value="204" label="UMA_API_TEXT_GETSELECTION">UIA Text.GetSelection</int>
+  <int value="205" label="UMA_API_TEXT_GETVISIBLERANGES">
+    UIA Text.GetVisibleRanges
+  </int>
+  <int value="206" label="UMA_API_TEXT_RANGEFROMCHILD">
+    UIA Text.RangeFromChild
+  </int>
+  <int value="207" label="UMA_API_TEXT_RANGEFROMPOINT">
+    UIA Text.RangeFromPoint
+  </int>
+  <int value="208" label="UMA_API_TEXT_GET_DOCUMENTRANGE">
+    UIA Text.get_DocumentRange
+  </int>
+  <int value="209" label="UMA_API_TEXT_GET_SUPPORTEDTEXTSELECTION">
+    UIA Text.get_SupportedTextSelection
+  </int>
+  <int value="210" label="UMA_API_TEXTCHILD_GET_TEXTCONTAINER">
+    UIA TextChild.get_TextContainer
+  </int>
+  <int value="211" label="UMA_API_TEXTCHILD_GET_TEXTRANGE">
+    UIA TextChild.get_TextRange
+  </int>
+  <int value="212" label="UMA_API_TEXTEDIT_GETACTIVECOMPOSITION">
+    UIA TextEdit.GetActiveComposition
+  </int>
+  <int value="213" label="UMA_API_TEXTEDIT_GETCONVERSIONTARGET">
+    UIA TextEdit.GetConversionTarget
+  </int>
+  <int value="214" label="UMA_API_TEXTRANGE_CLONE">UIA TextRange.Clone</int>
+  <int value="215" label="UMA_API_TEXTRANGE_COMPARE">UIA TextRange.Compare</int>
+  <int value="216" label="UMA_API_TEXTRANGE_COMPAREENDPOINTS">
+    UIA TextRange.CompareEndpoints
+  </int>
+  <int value="217" label="UMA_API_TEXTRANGE_EXPANDTOENCLOSINGUNIT">
+    UIA TextRange.ExpandToEnclosingUnit
+  </int>
+  <int value="218" label="UMA_API_TEXTRANGE_FINDATTRIBUTE">
+    UIA TextRange.FindAttribute
+  </int>
+  <int value="219" label="UMA_API_TEXTRANGE_FINDTEXT">
+    UIA TextRange.FindText
+  </int>
+  <int value="220" label="UMA_API_TEXTRANGE_GETATTRIBUTEVALUE">
+    UIA TextChange.GetAttributeValue
+  </int>
+  <int value="221" label="UMA_API_TEXTRANGE_GETBOUNDINGRECTANGLES">
+    UIA TextRange.GetBoundingRectangles
+  </int>
+  <int value="222" label="UMA_API_TEXTRANGE_GETENCLOSINGELEMENT">
+    UIA TextRange.GetEnclosingElement
+  </int>
+  <int value="223" label="UMA_API_TEXTRANGE_GETTEXT">UIA TextRange.GetText</int>
+  <int value="224" label="UMA_API_TEXTRANGE_MOVE">UIA TextRange.Move</int>
+  <int value="225" label="UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT">
+    UIA TextRange.MoveEndpointByUnit
+  </int>
+  <int value="226" label="UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE">
+    UIA TextRange.MoveEndpointByRange
+  </int>
+  <int value="227" label="UMA_API_TEXTRANGE_SELECT">UIA TextRange.Select</int>
+  <int value="228" label="UMA_API_TEXTRANGE_ADDTOSELECTION">
+    UIA TextRange.AddToSelection
+  </int>
+  <int value="229" label="UMA_API_TEXTRANGE_REMOVEFROMSELECTION">
+    UIA TextRange.RemoveFromSelection
+  </int>
+  <int value="230" label="UMA_API_TEXTRANGE_SCROLLINTOVIEW">
+    UIA TextRange.ScrollIntoView
+  </int>
+  <int value="231" label="UMA_API_TEXTRANGE_GETCHILDREN">
+    UIA TextRange.GetChildren
+  </int>
+  <int value="232" label="UMA_API_TOGGLE_TOGGLE">UIA Toggle.Toggle</int>
+  <int value="233" label="UMA_API_TOGGLE_GET_TOGGLESTATE">
+    UIA Toggle.get_ToggleState
+  </int>
+  <int value="234" label="UMA_API_VALUE_SETVALUE">UIA Value.SetValue</int>
+  <int value="235" label="UMA_API_VALUE_GET_ISREADONLY">
+    UIA Value.get_IsReadOnly
+  </int>
+  <int value="236" label="UMA_API_VALUE_GET_VALUE">UIA Value.get_Value</int>
+  <int value="237" label="UMA_API_WINDOW_SETVISUALSTATE">
+    UIA Window.SetVisualState
+  </int>
+  <int value="238" label="UMA_API_WINDOW_CLOSE">UIA Window.Close</int>
+  <int value="239" label="UMA_API_WINDOW_WAITFORINPUTIDLE">
+    UIA Window.WaitForInputIdle
+  </int>
+  <int value="240" label="UMA_API_WINDOW_GET_CANMAXIMIZE">
+    UIA Window.get_CanMaximize
+  </int>
+  <int value="241" label="UMA_API_WINDOW_GET_CANMINIMIZE">
+    UIA Window.get_CanMinimize
+  </int>
+  <int value="242" label="UMA_API_WINDOW_GET_ISMODAL">
+    UIA Window.get_IsModal
+  </int>
+  <int value="243" label="UMA_API_WINDOW_GET_WINDOWVISUALSTATE">
+    UIA Window.get_WindowVisualState
+  </int>
+  <int value="244" label="UMA_API_WINDOW_GET_WINDOWINTERACTIONSTATE">
+    UIA Window.get_WindowInteractionState
+  </int>
+  <int value="245" label="UMA_API_WINDOW_GET_ISTOPMOST">
+    UIA Window.get_IsTopmost
+  </int>
+  <int value="246" label="UMA_API_ELEMENT_PROVIDER_FROM_POINT">
+    UIA FragmentRoot.ElementProviderFromPoint
+  </int>
+  <int value="247" label="UMA_API_GET_FOCUS">UIA FragmentRoot.GetFocus</int>
+  <int value="248" label="UMA_API_ADVISE_EVENT_ADDED">
+    UIA AdviseEvents.AdviseEventAdded
+  </int>
+  <int value="249" label="UMA_API_ADVISE_EVENT_REMOVED">
+    UIA AdviseEvents.AdviseEventRemoved
+  </int>
+</enum>
+
+<enum name="AccessibilityWinAPIGetPropertyValueEnum">
+<!-- Property IDs are defined in UIAutomationClient.h in the Windows SDK.
+Unknown properties are collapsed to zero. -->
+
+  <int value="0" label="UNKNOWN"/>
+  <int value="30000" label="RuntimeId"/>
+  <int value="30001" label="BoundingRectangle"/>
+  <int value="30002" label="ProcessId"/>
+  <int value="30003" label="ControlType"/>
+  <int value="30004" label="LocalizedControlType"/>
+  <int value="30005" label="Name"/>
+  <int value="30006" label="AcceleratorKey"/>
+  <int value="30007" label="AccessKey"/>
+  <int value="30008" label="HasKeyboardFocus"/>
+  <int value="30009" label="IsKeyboardFocusable"/>
+  <int value="30010" label="IsEnabled"/>
+  <int value="30011" label="AutomationId"/>
+  <int value="30012" label="ClassName"/>
+  <int value="30013" label="HelpText"/>
+  <int value="30014" label="ClickablePoint"/>
+  <int value="30015" label="Culture"/>
+  <int value="30016" label="IsControlElement"/>
+  <int value="30017" label="IsContentElement"/>
+  <int value="30018" label="LabeledBy"/>
+  <int value="30019" label="IsPassword"/>
+  <int value="30020" label="NativeWindowHandle"/>
+  <int value="30021" label="ItemType"/>
+  <int value="30022" label="IsOffscreen"/>
+  <int value="30023" label="Orientation"/>
+  <int value="30024" label="FrameworkId"/>
+  <int value="30025" label="IsRequiredForForm"/>
+  <int value="30026" label="ItemStatus"/>
+  <int value="30027" label="IsDockPatternAvailable"/>
+  <int value="30028" label="IsExpandCollapsePatternAvailable"/>
+  <int value="30029" label="IsGridItemPatternAvailable"/>
+  <int value="30030" label="IsGridPatternAvailable"/>
+  <int value="30031" label="IsInvokePatternAvailable"/>
+  <int value="30032" label="IsMultipleViewPatternAvailable"/>
+  <int value="30033" label="IsRangeValuePatternAvailable"/>
+  <int value="30034" label="IsScrollPatternAvailable"/>
+  <int value="30035" label="IsScrollItemPatternAvailable"/>
+  <int value="30036" label="IsSelectionItemPatternAvailable"/>
+  <int value="30037" label="IsSelectionPatternAvailable"/>
+  <int value="30038" label="IsTablePatternAvailable"/>
+  <int value="30039" label="IsTableItemPatternAvailable"/>
+  <int value="30040" label="IsTextPatternAvailable"/>
+  <int value="30041" label="IsTogglePatternAvailable"/>
+  <int value="30042" label="IsTransformPatternAvailable"/>
+  <int value="30043" label="IsValuePatternAvailable"/>
+  <int value="30044" label="IsWindowPatternAvailable"/>
+  <int value="30045" label="ValueValue"/>
+  <int value="30046" label="ValueIsReadOnly"/>
+  <int value="30047" label="RangeValueValue"/>
+  <int value="30048" label="RangeValueIsReadOnly"/>
+  <int value="30049" label="RangeValueMinimum"/>
+  <int value="30050" label="RangeValueMaximum"/>
+  <int value="30051" label="RangeValueLargeChange"/>
+  <int value="30052" label="RangeValueSmallChange"/>
+  <int value="30053" label="ScrollHorizontalScrollPercent"/>
+  <int value="30054" label="ScrollHorizontalViewSize"/>
+  <int value="30055" label="ScrollVerticalScrollPercent"/>
+  <int value="30056" label="ScrollVerticalViewSize"/>
+  <int value="30057" label="ScrollHorizontallyScrollable"/>
+  <int value="30058" label="ScrollVerticallyScrollable"/>
+  <int value="30059" label="SelectionSelection"/>
+  <int value="30060" label="SelectionCanSelectMultiple"/>
+  <int value="30061" label="SelectionIsSelectionRequired"/>
+  <int value="30062" label="GridRowCount"/>
+  <int value="30063" label="GridColumnCount"/>
+  <int value="30064" label="GridItemRow"/>
+  <int value="30065" label="GridItemColumn"/>
+  <int value="30066" label="GridItemRowSpan"/>
+  <int value="30067" label="GridItemColumnSpan"/>
+  <int value="30068" label="GridItemContainingGrid"/>
+  <int value="30069" label="DockDockPosition"/>
+  <int value="30070" label="ExpandCollapseExpandCollapseState"/>
+  <int value="30071" label="MultipleViewCurrentView"/>
+  <int value="30072" label="MultipleViewSupportedViews"/>
+  <int value="30073" label="WindowCanMaximize"/>
+  <int value="30074" label="WindowCanMinimize"/>
+  <int value="30075" label="WindowWindowVisualState"/>
+  <int value="30076" label="WindowWindowInteractionState"/>
+  <int value="30077" label="WindowIsModal"/>
+  <int value="30078" label="WindowIsTopmost"/>
+  <int value="30079" label="SelectionItemIsSelected"/>
+  <int value="30080" label="SelectionItemSelectionContainer"/>
+  <int value="30081" label="TableRowHeaders"/>
+  <int value="30082" label="TableColumnHeaders"/>
+  <int value="30083" label="TableRowOrColumnMajor"/>
+  <int value="30084" label="TableItemRowHeaderItems"/>
+  <int value="30085" label="TableItemColumnHeaderItems"/>
+  <int value="30086" label="ToggleToggleState"/>
+  <int value="30087" label="TransformCanMove"/>
+  <int value="30088" label="TransformCanResize"/>
+  <int value="30089" label="TransformCanRotate"/>
+  <int value="30090" label="IsLegacyIAccessiblePatternAvailable"/>
+  <int value="30091" label="LegacyIAccessibleChildId"/>
+  <int value="30092" label="LegacyIAccessibleName"/>
+  <int value="30093" label="LegacyIAccessibleValue"/>
+  <int value="30094" label="LegacyIAccessibleDescription"/>
+  <int value="30095" label="LegacyIAccessibleRole"/>
+  <int value="30096" label="LegacyIAccessibleState"/>
+  <int value="30097" label="LegacyIAccessibleHelp"/>
+  <int value="30098" label="LegacyIAccessibleKeyboardShortcut"/>
+  <int value="30099" label="LegacyIAccessibleSelection"/>
+  <int value="30100" label="LegacyIAccessibleDefaultAction"/>
+  <int value="30101" label="AriaRole"/>
+  <int value="30102" label="AriaProperties"/>
+  <int value="30103" label="IsDataValidForForm"/>
+  <int value="30104" label="ControllerFor"/>
+  <int value="30105" label="DescribedBy"/>
+  <int value="30106" label="FlowsTo"/>
+  <int value="30107" label="ProviderDescription"/>
+  <int value="30108" label="IsItemContainerPatternAvailable"/>
+  <int value="30109" label="IsVirtualizedItemPatternAvailable"/>
+  <int value="30110" label="IsSynchronizedInputPatternAvailable"/>
+  <int value="30111" label="OptimizeForVisualContent"/>
+  <int value="30112" label="IsObjectModelPatternAvailable"/>
+  <int value="30113" label="AnnotationAnnotationTypeId"/>
+  <int value="30114" label="AnnotationAnnotationTypeName"/>
+  <int value="30115" label="AnnotationAuthor"/>
+  <int value="30116" label="AnnotationDateTime"/>
+  <int value="30117" label="AnnotationTarget"/>
+  <int value="30118" label="IsAnnotationPatternAvailable"/>
+  <int value="30119" label="IsTextPattern2Available"/>
+  <int value="30120" label="StylesStyleId"/>
+  <int value="30121" label="StylesStyleName"/>
+  <int value="30122" label="StylesFillColor"/>
+  <int value="30123" label="StylesFillPatternStyle"/>
+  <int value="30124" label="StylesShape"/>
+  <int value="30125" label="StylesFillPatternColor"/>
+  <int value="30126" label="StylesExtendedProperties"/>
+  <int value="30127" label="IsStylesPatternAvailable"/>
+  <int value="30128" label="IsSpreadsheetPatternAvailable"/>
+  <int value="30129" label="SpreadsheetItemFormula"/>
+  <int value="30130" label="SpreadsheetItemAnnotationObjects"/>
+  <int value="30131" label="SpreadsheetItemAnnotationTypes"/>
+  <int value="30132" label="IsSpreadsheetItemPatternAvailable"/>
+  <int value="30133" label="Transform2CanZoom"/>
+  <int value="30134" label="IsTransformPattern2Available"/>
+  <int value="30135" label="LiveSetting"/>
+  <int value="30136" label="IsTextChildPatternAvailable"/>
+  <int value="30137" label="IsDragPatternAvailable"/>
+  <int value="30138" label="DragIsGrabbed"/>
+  <int value="30139" label="DragDropEffect"/>
+  <int value="30140" label="DragDropEffects"/>
+  <int value="30141" label="IsDropTargetPatternAvailable"/>
+  <int value="30142" label="DropTargetDropTargetEffect"/>
+  <int value="30143" label="DropTargetDropTargetEffects"/>
+  <int value="30144" label="DragGrabbedItems"/>
+  <int value="30145" label="Transform2ZoomLevel"/>
+  <int value="30146" label="Transform2ZoomMinimum"/>
+  <int value="30147" label="Transform2ZoomMaximum"/>
+  <int value="30148" label="FlowsFrom"/>
+  <int value="30149" label="IsTextEditPatternAvailable"/>
+  <int value="30150" label="IsPeripheral"/>
+  <int value="30151" label="IsCustomNavigationPatternAvailable"/>
+  <int value="30152" label="PositionInSet"/>
+  <int value="30153" label="SizeOfSet"/>
+  <int value="30154" label="Level"/>
+  <int value="30155" label="AnnotationTypes"/>
+  <int value="30156" label="AnnotationObjects"/>
+  <int value="30157" label="LandmarkType"/>
+  <int value="30158" label="LocalizedLandmarkType"/>
+  <int value="30159" label="FullDescription"/>
+  <int value="30160" label="FillColor"/>
+  <int value="30161" label="OutlineColor"/>
+  <int value="30162" label="FillType"/>
+  <int value="30163" label="VisualEffects"/>
+  <int value="30164" label="OutlineThickness"/>
+  <int value="30165" label="CenterPoint"/>
+  <int value="30166" label="Rotation"/>
+  <int value="30167" label="Size"/>
+  <int value="30168" label="IsSelectionPattern2Available"/>
+  <int value="30169" label="Selection2FirstSelectedItem"/>
+  <int value="30170" label="Selection2LastSelectedItem"/>
+  <int value="30171" label="Selection2CurrentSelectedItem"/>
+  <int value="30172" label="Selection2ItemCount"/>
+  <int value="30173" label="HeadingLevel"/>
+  <int value="30174" label="IsDialog"/>
+</enum>
+
+<enum name="AutoclickActionType">
+  <int value="0" label="Left click"/>
+  <int value="1" label="Right click"/>
+  <int value="2" label="Drag and drop"/>
+  <int value="3" label="Double click"/>
+  <int value="4" label="Pause"/>
+  <int value="5" label="Scroll"/>
+</enum>
+
+<enum name="AXTreeSnapshotErrorReason">
+  <int value="0" label="Generic Serialization error"/>
+  <int value="1" label="No WebFrame in RenderFrame"/>
+  <int value="2" label="No active Document in WebAXContext"/>
+  <int value="3" label="No existing AXObjectCache in WebAXContext"/>
+  <int value="4" label="Max nodes limit reached"/>
+  <int value="5" label="Timeout limit reached"/>
+  <int value="6" label="Max nodes and timeout limits both reached"/>
+</enum>
+
+<enum name="CaptionBubbleErrorType">
+  <int value="0" label="Generic"/>
+  <int value="1" label="Media foundation renderer unsupported"/>
+</enum>
+
+<enum name="ChromeVoxGestureType">
+  <int value="1" label="click"/>
+  <int value="2" label="swipeDown1"/>
+  <int value="3" label="swipeDown2"/>
+  <int value="4" label="swipeDown3"/>
+  <int value="5" label="swipeDown4"/>
+  <int value="6" label="swipeLeft1"/>
+  <int value="7" label="swipeLeft2"/>
+  <int value="8" label="swipeLeft3"/>
+  <int value="9" label="swipeLeft4"/>
+  <int value="10" label="swipeRight1"/>
+  <int value="11" label="swipeRight2"/>
+  <int value="12" label="swipeRight3"/>
+  <int value="13" label="swipeRight4"/>
+  <int value="14" label="swipeUp1"/>
+  <int value="15" label="swipeUp2"/>
+  <int value="16" label="swipeUp3"/>
+  <int value="17" label="swipeUp4"/>
+  <int value="18" label="tap2"/>
+  <int value="19" label="tap3"/>
+  <int value="20" label="tap4"/>
+  <int value="21" label="touchExplore"/>
+</enum>
+
+<enum name="CrosDictationMacroName">
+  <summary>
+    List of Dictation macro names. This list should be aligned with macro list
+    specified in Dictation JavaScript:
+    https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/macros/macro_names.js
+  </summary>
+  <int value="0" label="UNSPECIFIED"/>
+  <int value="1" label="INPUT_TEXT_VIEW"/>
+  <int value="2" label="DELETE_PREV_CHAR"/>
+  <int value="3" label="NAV_PREV_CHAR"/>
+  <int value="4" label="NAV_NEXT_CHAR"/>
+  <int value="5" label="NAV_PREV_LINE"/>
+  <int value="6" label="NAV_NEXT_LINE"/>
+  <int value="7" label="COPY_SELECTED_TEXT"/>
+  <int value="8" label="PASTE_TEXT"/>
+  <int value="9" label="CUT_SELECTED_TEXT"/>
+  <int value="10" label="UNDO_TEXT_EDIT"/>
+  <int value="11" label="REDO_ACTION"/>
+  <int value="12" label="SELECT_ALL_TEXT"/>
+  <int value="13" label="UNSELECT_TEXT"/>
+  <int value="14" label="LIST_COMMANDS"/>
+  <int value="15" label="NEW_LINE"/>
+  <int value="16" label="STOP_LISTENING"/>
+  <int value="17" label="DELETE_PREV_WORD"/>
+  <int value="18" label="DELETE_PREV_SENT"/>
+  <int value="19" label="NAV_NEXT_WORD"/>
+  <int value="20" label="NAV_PREV_WORD"/>
+  <int value="21" label="SMART_DELETE_PHRASE"/>
+  <int value="22" label="SMART_REPLACE_PHRASE"/>
+  <int value="23" label="SMART_INSERT_BEFORE"/>
+  <int value="24" label="SMART_SELECT_BTWN_INCL"/>
+  <int value="25" label="NAV_NEXT_SENT"/>
+  <int value="26" label="NAV_PREV_SENT"/>
+  <int value="27" label="DELETE_ALL_TEXT"/>
+  <int value="28" label="NAV_START_TEXT"/>
+  <int value="29" label="NAV_END_TEXT"/>
+  <int value="30" label="SELECT_PREV_WORD"/>
+  <int value="31" label="SELECT_NEXT_WORD"/>
+  <int value="32" label="SELECT_NEXT_CHAR"/>
+  <int value="33" label="SELECT_PREV_CHAR"/>
+  <int value="34" label="REPEAT"/>
+</enum>
+
+<enum name="CrosDictationToggleDictationMethod">
+  <int value="0" label="Search+D"/>
+  <int value="1" label="Click onscreen button"/>
+  <int value="2" label="Select the button in the SwitchAccess context menu"/>
+  <int value="3" label="ChromeVox gesture"/>
+  <int value="4" label="AccessibilityCommon extension"/>
+</enum>
+
+<enum name="CrosSelectToSpeakActivationMethod">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Canceled with menu button"/>
+  <int value="2" label="Canceled with keyboard shortcut"/>
+</enum>
+
+<enum name="CrosSelectToSpeakOverrideSpeechRateMultiplier">
+  <int value="50" label="0.5"/>
+  <int value="100" label="1.0"/>
+  <int value="120" label="1.2"/>
+  <int value="150" label="1.5"/>
+  <int value="200" label="2.0"/>
+</enum>
+
+<enum name="CrosSelectToSpeakStartSpeechMethod">
+  <int value="0" label="Hold Search and click or drag"/>
+  <int value="1" label="Search + S to read selection"/>
+  <int value="2" label="Context menu option to read selection"/>
+</enum>
+
+<enum name="CrosSelectToSpeakStateChangeEvent">
+  <int value="0" label="Start selection"/>
+  <int value="1" label="Cancel speech"/>
+  <int value="2" label="Cancel selection"/>
+</enum>
+
+<enum name="CrosSelectToSpeakTtsEngineUsed">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="System default"/>
+  <int value="2" label="eSpeak"/>
+  <int value="3" label="Google local TTS"/>
+  <int value="4" label="Google network TTS"/>
+</enum>
+
+<enum name="CrosSwitchAccessError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Preference type"/>
+  <int value="2" label="Untranslated string"/>
+  <int value="3" label="Invalid color"/>
+  <int value="4" label="Next undefined"/>
+  <int value="5" label="Previous undefined"/>
+  <int value="6" label="Null child"/>
+  <int value="7" label="No children"/>
+  <int value="8" label="Malformed desktop"/>
+  <int value="9" label="Missing location"/>
+  <int value="10" label="Missing keyboard"/>
+  <int value="11" label="Row too short"/>
+  <int value="12" label="Missing base node"/>
+  <int value="13" label="Next invalid"/>
+  <int value="14" label="Previous invalid"/>
+  <int value="15" label="Invalid selection bounds"/>
+</enum>
+
+<enum name="KeyCode">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="KEYCODE_1"/>
+  <int value="2" label="KEYCODE_2"/>
+  <int value="3" label="KEYCODE_3"/>
+  <int value="4" label="KEYCODE_4"/>
+  <int value="5" label="KEYCODE_5"/>
+  <int value="6" label="KEYCODE_6"/>
+  <int value="7" label="KEYCODE_7"/>
+  <int value="8" label="BACKSPACE"/>
+  <int value="9" label="TAB"/>
+  <int value="10" label="KEYCODE_10"/>
+  <int value="11" label="KEYCODE_11"/>
+  <int value="12" label="CLEAR"/>
+  <int value="13" label="RETURN"/>
+  <int value="14" label="KEYCODE_14"/>
+  <int value="15" label="KEYCODE_15"/>
+  <int value="16" label="SHIFT"/>
+  <int value="17" label="CONTROL"/>
+  <int value="18" label="ALT"/>
+  <int value="19" label="PAUSE"/>
+  <int value="20" label="CAPITAL"/>
+  <int value="21" label="KANA"/>
+  <int value="22" label="KEYCODE_22"/>
+  <int value="23" label="JUNJA"/>
+  <int value="24" label="FINAL"/>
+  <int value="25" label="HANJA"/>
+  <int value="26" label="KEYCODE_26"/>
+  <int value="27" label="ESCAPE"/>
+  <int value="28" label="CONVERT"/>
+  <int value="29" label="NONCONVERT"/>
+  <int value="30" label="ACCEPT"/>
+  <int value="31" label="MODECHANGE"/>
+  <int value="32" label="SPACE"/>
+  <int value="33" label="PRIOR"/>
+  <int value="34" label="NEXT"/>
+  <int value="35" label="END"/>
+  <int value="36" label="HOME"/>
+  <int value="37" label="LEFT"/>
+  <int value="38" label="UP"/>
+  <int value="39" label="RIGHT"/>
+  <int value="40" label="DOWN"/>
+  <int value="41" label="SELECT"/>
+  <int value="42" label="PRINT"/>
+  <int value="43" label="EXECUTE"/>
+  <int value="44" label="SNAPSHOT"/>
+  <int value="45" label="INSERT"/>
+  <int value="46" label="KEY_DELETE"/>
+  <int value="47" label="HELP"/>
+  <int value="48" label="NUM_0"/>
+  <int value="49" label="NUM_1"/>
+  <int value="50" label="NUM_2"/>
+  <int value="51" label="NUM_3"/>
+  <int value="52" label="NUM_4"/>
+  <int value="53" label="NUM_5"/>
+  <int value="54" label="NUM_6"/>
+  <int value="55" label="NUM_7"/>
+  <int value="56" label="NUM_8"/>
+  <int value="57" label="NUM_9"/>
+  <int value="58" label="KEYCODE_58"/>
+  <int value="59" label="KEYCODE_59"/>
+  <int value="60" label="KEYCODE_60"/>
+  <int value="61" label="KEYCODE_61"/>
+  <int value="62" label="KEYCODE_62"/>
+  <int value="63" label="KEYCODE_63"/>
+  <int value="64" label="KEYCODE_64"/>
+  <int value="65" label="A"/>
+  <int value="66" label="B"/>
+  <int value="67" label="C"/>
+  <int value="68" label="D"/>
+  <int value="69" label="E"/>
+  <int value="70" label="F"/>
+  <int value="71" label="G"/>
+  <int value="72" label="H"/>
+  <int value="73" label="I"/>
+  <int value="74" label="J"/>
+  <int value="75" label="K"/>
+  <int value="76" label="L"/>
+  <int value="77" label="M"/>
+  <int value="78" label="N"/>
+  <int value="79" label="O"/>
+  <int value="80" label="P"/>
+  <int value="81" label="Q"/>
+  <int value="82" label="R"/>
+  <int value="83" label="S"/>
+  <int value="84" label="T"/>
+  <int value="85" label="U"/>
+  <int value="86" label="V"/>
+  <int value="87" label="W"/>
+  <int value="88" label="X"/>
+  <int value="89" label="Y"/>
+  <int value="90" label="Z"/>
+  <int value="91" label="LWIN"/>
+  <int value="92" label="RWIN"/>
+  <int value="93" label="APPS"/>
+  <int value="94" label="KEYCODE_94"/>
+  <int value="95" label="SLEEP"/>
+  <int value="96" label="NUMPAD0"/>
+  <int value="97" label="NUMPAD1"/>
+  <int value="98" label="NUMPAD2"/>
+  <int value="99" label="NUMPAD3"/>
+  <int value="100" label="NUMPAD4"/>
+  <int value="101" label="NUMPAD5"/>
+  <int value="102" label="NUMPAD6"/>
+  <int value="103" label="NUMPAD7"/>
+  <int value="104" label="NUMPAD8"/>
+  <int value="105" label="NUMPAD9"/>
+  <int value="106" label="MULTIPLY"/>
+  <int value="107" label="ADD"/>
+  <int value="108" label="SEPARATOR"/>
+  <int value="109" label="SUBTRACT"/>
+  <int value="110" label="DECIMAL"/>
+  <int value="111" label="DIVIDE"/>
+  <int value="112" label="F1"/>
+  <int value="113" label="F2"/>
+  <int value="114" label="F3"/>
+  <int value="115" label="F4"/>
+  <int value="116" label="F5"/>
+  <int value="117" label="F6"/>
+  <int value="118" label="F7"/>
+  <int value="119" label="F8"/>
+  <int value="120" label="F9"/>
+  <int value="121" label="F10"/>
+  <int value="122" label="F11"/>
+  <int value="123" label="F12"/>
+  <int value="124" label="F13"/>
+  <int value="125" label="F14"/>
+  <int value="126" label="F15"/>
+  <int value="127" label="F16"/>
+  <int value="128" label="F17"/>
+  <int value="129" label="F18"/>
+  <int value="130" label="F19"/>
+  <int value="131" label="F20"/>
+  <int value="132" label="F21"/>
+  <int value="133" label="F22"/>
+  <int value="134" label="F23"/>
+  <int value="135" label="F24"/>
+  <int value="136" label="KEYCODE_136"/>
+  <int value="137" label="KEYCODE_137"/>
+  <int value="138" label="KEYCODE_138"/>
+  <int value="139" label="KEYCODE_139"/>
+  <int value="140" label="KEYCODE_140"/>
+  <int value="141" label="KEYCODE_141"/>
+  <int value="142" label="KEYCODE_142"/>
+  <int value="143" label="KEYCODE_143"/>
+  <int value="144" label="NUMLOCK"/>
+  <int value="145" label="SCROLL"/>
+  <int value="146" label="KEYCODE_146"/>
+  <int value="147" label="KEYCODE_147"/>
+  <int value="148" label="KEYCODE_148"/>
+  <int value="149" label="KEYCODE_149"/>
+  <int value="150" label="KEYCODE_150"/>
+  <int value="151" label="WLAN"/>
+  <int value="152" label="POWER"/>
+  <int value="153" label="ASSISTANT"/>
+  <int value="154" label="KEYCODE_154"/>
+  <int value="155" label="KEYCODE_155"/>
+  <int value="156" label="KEYCODE_156"/>
+  <int value="157" label="KEYCODE_157"/>
+  <int value="158" label="KEYCODE_158"/>
+  <int value="159" label="KEYCODE_159"/>
+  <int value="160" label="LSHIFT"/>
+  <int value="161" label="RSHIFT"/>
+  <int value="162" label="LCONTROL"/>
+  <int value="163" label="RCONTROL"/>
+  <int value="164" label="LMENU"/>
+  <int value="165" label="RMENU"/>
+  <int value="166" label="BROWSER_BACK"/>
+  <int value="167" label="BROWSER_FORWARD"/>
+  <int value="168" label="BROWSER_REFRESH"/>
+  <int value="169" label="BROWSER_STOP"/>
+  <int value="170" label="BROWSER_SEARCH"/>
+  <int value="171" label="BROWSER_FAVORITES"/>
+  <int value="172" label="BROWSER_HOME"/>
+  <int value="173" label="VOLUME_MUTE"/>
+  <int value="174" label="VOLUME_DOWN"/>
+  <int value="175" label="VOLUME_UP"/>
+  <int value="176" label="MEDIA_NEXT_TRACK"/>
+  <int value="177" label="MEDIA_PREV_TRACK"/>
+  <int value="178" label="MEDIA_STOP"/>
+  <int value="179" label="MEDIA_PLAY_PAUSE"/>
+  <int value="180" label="MEDIA_LAUNCH_MAIL"/>
+  <int value="181" label="MEDIA_LAUNCH_MEDIA_SELECT"/>
+  <int value="182" label="MEDIA_LAUNCH_APP1"/>
+  <int value="183" label="MEDIA_LAUNCH_APP2"/>
+  <int value="184" label="KEYCODE_184"/>
+  <int value="185" label="KEYCODE_185"/>
+  <int value="186" label="OEM_1"/>
+  <int value="187" label="OEM_PLUS"/>
+  <int value="188" label="OEM_COMMA"/>
+  <int value="189" label="OEM_MINUS"/>
+  <int value="190" label="OEM_PERIOD"/>
+  <int value="191" label="OEM_2"/>
+  <int value="192" label="OEM_3"/>
+  <int value="193" label="KEYCODE_193"/>
+  <int value="194" label="KEYCODE_194"/>
+  <int value="195" label="KEYCODE_195"/>
+  <int value="196" label="KEYCODE_196"/>
+  <int value="197" label="KEYCODE_197"/>
+  <int value="198" label="KEYCODE_198"/>
+  <int value="199" label="KEYCODE_199"/>
+  <int value="200" label="KEYCODE_200"/>
+  <int value="201" label="KEYCODE_201"/>
+  <int value="202" label="KEYCODE_202"/>
+  <int value="203" label="KEYCODE_203"/>
+  <int value="204" label="KEYCODE_204"/>
+  <int value="205" label="KEYCODE_205"/>
+  <int value="206" label="KEYCODE_206"/>
+  <int value="207" label="KEYCODE_207"/>
+  <int value="208" label="KEYCODE_208"/>
+  <int value="209" label="KEYCODE_209"/>
+  <int value="210" label="KEYCODE_210"/>
+  <int value="211" label="KEYCODE_211"/>
+  <int value="212" label="KEYCODE_212"/>
+  <int value="213" label="KEYCODE_213"/>
+  <int value="214" label="KEYCODE_214"/>
+  <int value="215" label="KEYCODE_215"/>
+  <int value="216" label="BRIGHTNESS_DOWN"/>
+  <int value="217" label="BRIGHTNESS_UP"/>
+  <int value="218" label="KBD_BRIGHTNESS_DOWN"/>
+  <int value="219" label="OEM_4"/>
+  <int value="220" label="OEM_5"/>
+  <int value="221" label="OEM_6"/>
+  <int value="222" label="OEM_7"/>
+  <int value="223" label="OEM_8"/>
+  <int value="224" label="KEYCODE_224"/>
+  <int value="225" label="ALTGR"/>
+  <int value="226" label="OEM_102"/>
+  <int value="227" label="KEYCODE_227"/>
+  <int value="228" label="KEYCODE_228"/>
+  <int value="229" label="PROCESSKEY"/>
+  <int value="230" label="COMPOSE"/>
+  <int value="231" label="PACKET"/>
+  <int value="232" label="KBD_BRIGHTNESS_UP"/>
+  <int value="233" label="KEYCODE_233"/>
+  <int value="234" label="KEYCODE_234"/>
+  <int value="235" label="KEYCODE_235"/>
+  <int value="236" label="KEYCODE_236"/>
+  <int value="237" label="KEYCODE_237"/>
+  <int value="238" label="KEYCODE_238"/>
+  <int value="239" label="KEYCODE_239"/>
+  <int value="240" label="KEYCODE_240"/>
+  <int value="241" label="KEYCODE_241"/>
+  <int value="242" label="KEYCODE_242"/>
+  <int value="243" label="DBE_SBCSCHAR"/>
+  <int value="244" label="DBE_DBCSCHAR"/>
+  <int value="245" label="KEYCODE_245"/>
+  <int value="246" label="ATTN"/>
+  <int value="247" label="CRSEL"/>
+  <int value="248" label="EXSEL"/>
+  <int value="249" label="EREOF"/>
+  <int value="250" label="PLAY"/>
+  <int value="251" label="ZOOM"/>
+  <int value="252" label="NONAME"/>
+  <int value="253" label="PA1"/>
+  <int value="254" label="OEM_CLEAR"/>
+  <int value="255" label="KEYCODE_255"/>
+  <int value="256" label="NONE"/>
+</enum>
+
+<enum name="LiveCaptionExpandBubbleEvent">
+  <int value="0" label="Bubble collapsed"/>
+  <int value="1" label="Bubble expanded"/>
+</enum>
+
+<enum name="LiveCaptionPinBubbleEvent">
+  <int value="0" label="Bubble unpinned"/>
+  <int value="1" label="Bubble pinned"/>
+</enum>
+
+<enum name="LiveCaptionSessionEvent">
+  <int value="0" label="Stream started"/>
+  <int value="1" label="Stream finished"/>
+  <int value="2" label="User closed bubble"/>
+</enum>
+
+<enum name="LoadSodaResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Binary invalid"/>
+  <int value="3"
+      label="Binary successfully loaded but one or more function pointers are
+             null."/>
+</enum>
+
+<enum name="PdfOcrRequestStatus">
+  <int value="0" label="OCR requested"/>
+  <int value="1" label="OCR performed"/>
+</enum>
+
+<enum name="PdfOcrUserSelection">
+  <int value="0"
+      label="(Obsolete) Turned on once from the context menu. Removed in
+             2023/09."/>
+  <int value="1" label="Turned on always from the context menu"/>
+  <int value="2" label="Turned off from the context menu"/>
+  <int value="3" label="Turned on always from the more actions"/>
+  <int value="4" label="Turned off from the more actions"/>
+  <int value="5" label="Turned on always from the settings"/>
+  <int value="6" label="Turned off from the settings"/>
+</enum>
+
+<enum name="ReadAnythingColor">
+  <int value="0" label="Default"/>
+  <int value="1" label="Light"/>
+  <int value="2" label="Dark"/>
+  <int value="3" label="Yellow"/>
+  <int value="4" label="Blue"/>
+</enum>
+
+<enum name="ReadAnythingEmptyState">
+  <int value="0" label="Empty state shown"/>
+  <int value="1" label="User selection after empty state shown"/>
+</enum>
+
+<enum name="ReadAnythingFontName">
+  <int value="0" label="Poppins"/>
+  <int value="1" label="Sans-serif"/>
+  <int value="2" label="Serif"/>
+  <int value="3" label="Comic Neue"/>
+  <int value="4" label="Lexend Deca"/>
+  <int value="5" label="EB Garamond"/>
+  <int value="6" label="STIX Two Text"/>
+</enum>
+
+<enum name="ReadAnythingLetterSpacing">
+  <int value="0" label="Tight (Deprecated)"/>
+  <int value="1" label="Standard"/>
+  <int value="2" label="Wide"/>
+  <int value="3" label="Very Wide"/>
+</enum>
+
+<enum name="ReadAnythingLineSpacing">
+  <int value="0" label="Tight (Deprecated)"/>
+  <int value="1" label="Standard"/>
+  <int value="2" label="Loose"/>
+  <int value="3" label="Very Loose"/>
+</enum>
+
+<enum name="ReadAnythingScrollEvent">
+  <int value="0" label="Side panel selected"/>
+  <int value="1" label="Main panel selected"/>
+  <int value="2" label="Side panel scrolled"/>
+  <int value="3" label="Main panel scrolled"/>
+</enum>
+
+<enum name="ReadAnythingSettingsChange">
+  <int value="0" label="Font change"/>
+  <int value="1" label="Font size change"/>
+  <int value="2" label="Theme change"/>
+  <int value="3" label="Line height change"/>
+  <int value="4" label="Letter spacing change"/>
+</enum>
+
+<enum name="ReaderModeEntryPoint">
+  <int value="0" label="Omnibox icon"/>
+  <int value="1" label="Menu option"/>
+</enum>
+
+<enum name="ReaderModeMessageDismissalCondition">
+  <int value="0"
+      label="Message was accepted with accessibility setting selected"/>
+  <int value="1"
+      label="Message was accepted with accessibility setting deselected"/>
+  <int value="2"
+      label="Message was ignored or dismissed with accessibility setting
+             selected"/>
+  <int value="3"
+      label="Message was ignored or dismissed with accessibility setting
+             deselected"/>
+</enum>
+
+<enum name="SodaLanguageCode">
+  <int value="0" label="None"/>
+  <int value="1" label="en-US"/>
+  <int value="2" label="ja-JP"/>
+  <int value="3" label="de-DE"/>
+  <int value="4" label="es-ES"/>
+  <int value="5" label="fr-FR"/>
+  <int value="6" label="it-IT"/>
+</enum>
+
+<enum name="TextToSpeechEvent">
+  <int value="0" label="Start"/>
+  <int value="1" label="End"/>
+  <int value="2" label="Word"/>
+  <int value="3" label="Sentence"/>
+  <int value="4" label="Marker"/>
+  <int value="5" label="Interrupted"/>
+  <int value="6" label="Cancelled"/>
+  <int value="7" label="Error"/>
+  <int value="8" label="Pause"/>
+  <int value="9" label="Resume"/>
+</enum>
+
+<enum name="TextToSpeechFromExtensionAPI">
+  <int value="0" label="Web speech API"/>
+  <int value="1" label="Chrome TTS extension API"/>
+</enum>
+
+<enum name="TextToSpeechGetVoiceBytes">
+  <int value="0" label="DLC Success"/>
+  <int value="1" label="DLC Not Found"/>
+  <int value="2" label="DLC No Contents"/>
+  <int value="3" label="XHR Success"/>
+  <int value="4" label="XHR No Contents"/>
+</enum>
+
+<enum name="TextToSpeechHasVoiceName">
+  <int value="0" label="Does Not Have Voice Name"/>
+  <int value="1" label="Has Voice Name"/>
+</enum>
+
+<enum name="TextToSpeechNative">
+  <int value="0" label="Extension Speech"/>
+  <int value="1" label="Native Speech"/>
+</enum>
+
+<enum name="TextToSpeechSource">
+  <int value="0" label="Other"/>
+  <int value="1" label="ChromeVox"/>
+  <int value="2" label="SelectToSpeak"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

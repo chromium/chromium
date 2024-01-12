@@ -61,7 +61,8 @@ class TabletModeMultitaskMenuView : public views::View {
 
  public:
   TabletModeMultitaskMenuView(aura::Window* window,
-                              base::RepeatingClosure callback) {
+                              base::RepeatingClosure close_callback,
+                              base::RepeatingClosure dismiss_callback) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshShieldAndBaseOpaque, kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -77,7 +78,8 @@ class TabletModeMultitaskMenuView : public views::View {
     uint8_t buttons = chromeos::MultitaskMenuView::kFullscreen;
 
     auto* split_view_controller = SplitViewController::Get(window);
-    if (split_view_controller->CanSnapWindow(window)) {
+    if (split_view_controller->CanSnapWindow(window,
+                                             chromeos::kDefaultSnapRatio)) {
       buttons |= chromeos::MultitaskMenuView::kHalfSplit;
     }
 
@@ -98,7 +100,8 @@ class TabletModeMultitaskMenuView : public views::View {
 
     menu_view_base_ =
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
-            window, std::move(callback), buttons, /*anchor_view=*/nullptr));
+            window, std::move(close_callback), std::move(dismiss_callback),
+            buttons, /*anchor_view=*/nullptr));
 
     if (menu_view_base_->partial_button() &&
         !split_view_controller->CanSnapWindow(window,
@@ -179,8 +182,12 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   menu_view_ =
       widget_->SetContentsView(std::make_unique<TabletModeMultitaskMenuView>(
-          window, base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
-                                      weak_factory_.GetWeakPtr())));
+          window,
+          base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
+                              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(&TabletModeMultitaskMenu::Animate,
+                              weak_factory_.GetWeakPtr(),
+                              /*show=*/false)));
 
   // Set the widget on the top center of the window.
   const gfx::Size menu_size(menu_view_->GetPreferredSize());
@@ -260,15 +267,21 @@ void TabletModeMultitaskMenu::Animate(bool show) {
 
 void TabletModeMultitaskMenu::AnimateFadeOut() {
   ui::Layer* view_layer = menu_view_->layer();
-  // If the fade out animation is already underway, no need to start another
-  // one. This can happen for example if buttons are clicked rapidly while fade
-  // out has started.
-  if (view_layer->GetAnimator()->is_animating() &&
-      view_layer->GetTargetOpacity() == 0.0f) {
-    return;
+  ui::LayerAnimator* animator = view_layer->GetAnimator();
+  if (animator->IsAnimatingOnePropertyOf(ui::LayerAnimationElement::OPACITY)) {
+    // If the layer is already fading out, no need to start another one. This
+    // can happen, for example, if buttons are clicked rapidly while fade out
+    // has started.
+    if (view_layer->GetTargetOpacity() == 0.0f) {
+      return;
+    }
+    // Else if we are currently animating to show, abort and start a new fade
+    // out animation.
+    animator->AbortAllAnimations();
   }
 
-  views::AnimationBuilder()
+  views::AnimationBuilder animation_builder;
+  animation_builder
       .OnEnded(base::BindRepeating(&TabletModeMultitaskMenu::Reset,
                                    weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
@@ -276,6 +289,11 @@ void TabletModeMultitaskMenu::AnimateFadeOut() {
       .Once()
       .SetDuration(kOpacityAnimationDurationMs)
       .SetOpacity(view_layer, 0.0f, gfx::Tween::LINEAR);
+
+  ui::Layer* cue_layer = controller_->multitask_cue_controller()->cue_layer();
+  if (cue_layer) {
+    animation_builder.GetCurrentSequence().SetOpacity(cue_layer, 0.0f);
+  }
 }
 
 void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {

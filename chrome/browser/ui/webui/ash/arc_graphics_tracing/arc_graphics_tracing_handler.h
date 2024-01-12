@@ -128,9 +128,9 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
 
   std::unique_ptr<ActiveTrace> active_trace_;
 
-  const raw_ptr<exo::WMHelper, ExperimentalAsh> wm_helper_;
+  const raw_ptr<exo::WMHelper> wm_helper_;
 
-  raw_ptr<aura::Window, ExperimentalAsh> arc_active_window_ = nullptr;
+  raw_ptr<aura::Window> arc_active_window_ = nullptr;
 
   base::WeakPtrFactory<ArcGraphicsTracingHandler> weak_ptr_factory_{this};
 };

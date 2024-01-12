@@ -21,8 +21,8 @@ namespace content {
 struct CONTENT_EXPORT PrerenderMismatchedHeaders {
  public:
   PrerenderMismatchedHeaders(const std::string& header_name,
-                             absl::optional<std::string> initial_value,
-                             absl::optional<std::string> activation_value);
+                             std::optional<std::string> initial_value,
+                             std::optional<std::string> activation_value);
 
   ~PrerenderMismatchedHeaders();
 
@@ -31,8 +31,8 @@ struct CONTENT_EXPORT PrerenderMismatchedHeaders {
   PrerenderMismatchedHeaders& operator=(PrerenderMismatchedHeaders&& other);
 
   std::string header_name;
-  absl::optional<std::string> initial_value;
-  absl::optional<std::string> activation_value;
+  std::optional<std::string> initial_value;
+  std::optional<std::string> activation_value;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -102,7 +102,7 @@ class CONTENT_EXPORT PrerenderCancellationReason {
 
   // Returns disallowed Mojo interface name iff final status is
   // `kMojoBinderPolicy`.
-  absl::optional<std::string> DisallowedMojoInterface() const;
+  std::optional<std::string> DisallowedMojoInterface() const;
 
   // Returns the pointer of the vector of PrerenderMismatchedHeaders iff
   // header mismatch occurred.

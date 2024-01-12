@@ -66,7 +66,7 @@ class AshAttestationServiceImpl : public AshAttestationService {
       AttestationCallback callback,
       const ash::attestation::TpmChallengeKeyResult& result);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<AshAttestationServiceImpl> weak_factory_{this};
 };

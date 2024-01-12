@@ -52,6 +52,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/base/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -221,6 +222,13 @@ bool UsernameOutsideOfFormHasHigherPriority(
               FormDataParser::UsernameDetectionMethod::kServerSidePrediction);
 }
 
+bool ShouldUploadCrowdsourcingVotes(const FormOrDigest& form_or_digest) {
+  if (absl::holds_alternative<FormData>(form_or_digest)) {
+    return !net::IsLocalhost(absl::get<FormData>(form_or_digest).url);
+  }
+  return false;
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool ShouldShowKeychainErrorBubble(
     absl::optional<PasswordStoreBackendError> backend_error) {
@@ -265,7 +273,9 @@ PasswordFormManager::PasswordFormManager(
       delegate->RetrievePasskeys(async_predictions_waiter_.CreateClosure());
     }
   }
-  votes_uploader_.StoreInitialFieldValues(*observed_form());
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->StoreInitialFieldValues(*observed_form());
+  }
 }
 
 PasswordFormManager::PasswordFormManager(
@@ -444,11 +454,15 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
       parsed_submitted_form_->username_element = alternative_username_it->name;
       parsed_submitted_form_->username_element_renderer_id =
           alternative_username_it->field_renderer_id;
-      votes_uploader_.set_username_change_state(
-          VotesUploader::UsernameChangeState::kChangedToKnownValue);
+      if (votes_uploader_.has_value()) {
+        votes_uploader_->set_username_change_state(
+            VotesUploader::UsernameChangeState::kChangedToKnownValue);
+      }
     } else {
-      votes_uploader_.set_username_change_state(
-          VotesUploader::UsernameChangeState::kChangedToUnknownValue);
+      if (votes_uploader_.has_value()) {
+        votes_uploader_->set_username_change_state(
+            VotesUploader::UsernameChangeState::kChangedToUnknownValue);
+      }
     }
   }
 
@@ -489,27 +503,33 @@ void PasswordFormManager::UpdateSubmissionIndicatorEvent(
 }
 
 void PasswordFormManager::OnNopeUpdateClicked() {
-  votes_uploader_.UploadPasswordVote(*parsed_submitted_form_,
-                                     *parsed_submitted_form_,
-                                     autofill::NOT_NEW_PASSWORD, std::string());
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->UploadPasswordVote(
+        *parsed_submitted_form_, *parsed_submitted_form_,
+        autofill::NOT_NEW_PASSWORD, std::string());
+  }
 }
 
 void PasswordFormManager::OnNeverClicked() {
-  // |UNKNOWN_TYPE| is sent in order to record that a generation popup was
-  // shown and ignored.
-  votes_uploader_.UploadPasswordVote(*parsed_submitted_form_,
-                                     *parsed_submitted_form_,
-                                     autofill::UNKNOWN_TYPE, std::string());
+  if (votes_uploader_.has_value()) {
+    // |UNKNOWN_TYPE| is sent in order to record that a generation popup was
+    // shown and ignored.
+    votes_uploader_->UploadPasswordVote(*parsed_submitted_form_,
+                                        *parsed_submitted_form_,
+                                        autofill::UNKNOWN_TYPE, std::string());
+  }
   Blocklist();
 }
 
 void PasswordFormManager::OnNoInteraction(bool is_update) {
-  // |UNKNOWN_TYPE| is sent in order to record that a generation popup was
-  // shown and ignored.
-  votes_uploader_.UploadPasswordVote(
-      *parsed_submitted_form_, *parsed_submitted_form_,
-      is_update ? autofill::PROBABLY_NEW_PASSWORD : autofill::UNKNOWN_TYPE,
-      std::string());
+  if (votes_uploader_.has_value()) {
+    // |UNKNOWN_TYPE| is sent in order to record that a generation popup was
+    // shown and ignored.
+    votes_uploader_->UploadPasswordVote(
+        *parsed_submitted_form_, *parsed_submitted_form_,
+        is_update ? autofill::PROBABLY_NEW_PASSWORD : autofill::UNKNOWN_TYPE,
+        std::string());
+  }
 }
 
 void PasswordFormManager::Blocklist() {
@@ -534,7 +554,9 @@ PasswordFormDigest PasswordFormManager::ConstructObservedFormDigest() const {
 }
 
 void PasswordFormManager::OnPasswordsRevealed() {
-  votes_uploader_.set_has_passwords_revealed_vote(true);
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->set_has_passwords_revealed_vote(true);
+  }
 }
 
 void PasswordFormManager::MoveCredentialsToAccountStore() {
@@ -589,15 +611,20 @@ bool PasswordFormManager::HasGeneratedPassword() const {
 void PasswordFormManager::SetGenerationPopupWasShown(
     PasswordGenerationType type) {
   const bool is_manual_generation = type == PasswordGenerationType::kManual;
-  votes_uploader_.set_generation_popup_was_shown(true);
-  votes_uploader_.set_is_manual_generation(is_manual_generation);
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->set_generation_popup_was_shown(true);
+    votes_uploader_->set_is_manual_generation(is_manual_generation);
+  }
   metrics_recorder_->SetPasswordGenerationPopupShown(true,
                                                      is_manual_generation);
 }
 
 void PasswordFormManager::SetGenerationElement(
     FieldRendererId generation_element) {
-  votes_uploader_.set_generation_element(generation_element);
+  generation_element_ = generation_element;
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->set_generation_element(generation_element);
+  }
 }
 
 bool PasswordFormManager::HasLikelyChangeOrResetFormSubmitted() const {
@@ -640,7 +667,7 @@ void PasswordFormManager::UpdateStateOnUserInput(
   std::u16string generated_password =
       password_save_manager_->GetGeneratedPassword();
   CHECK(!generated_password.empty());
-  if (votes_uploader_.get_generation_element() == field_id) {
+  if (generation_element_ == field_id) {
     generated_password = field_value;
     CHECK(!generated_password.empty());
   }
@@ -673,8 +700,10 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
 #endif  // BUILDFLAG(IS_IOS)
 
 void PasswordFormManager::SaveSuggestedUsernameValueToVotesUploader() {
-  votes_uploader_.set_suggested_username(
-      GetPendingCredentials().username_value);
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->set_suggested_username(
+        GetPendingCredentials().username_value);
+  }
 }
 
 std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() {
@@ -710,9 +739,10 @@ std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() {
         std::make_unique<PasswordForm>(*parsed_submitted_form_);
   }
   result->is_submitted_ = is_submitted_;
-  result->password_save_manager_->Init(result->client_, result->form_fetcher_,
-                                       result->metrics_recorder_,
-                                       &result->votes_uploader_);
+  result->password_save_manager_->Init(
+      result->client_, result->form_fetcher_, result->metrics_recorder_,
+      result->votes_uploader_.has_value() ? &result->votes_uploader_.value()
+                                          : nullptr);
   return result;
 }
 
@@ -907,8 +937,10 @@ bool PasswordFormManager::ProvisionallySave(
   CalculateSubmittedFormFrameMetric();
   CalculateSubmittedFormTypeMetric();
   metrics_recorder_->set_possible_username_used(false);
-  votes_uploader_.clear_single_username_votes_data();
-  votes_uploader_.set_should_send_username_first_flow_votes(false);
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->clear_single_username_votes_data();
+    votes_uploader_->set_should_send_username_first_flow_votes(false);
+  }
 
   if (possible_usernames && !possible_usernames->empty()) {
     HandleUsernameFirstFlow(*possible_usernames,
@@ -1092,16 +1124,19 @@ PasswordFormManager::PasswordFormManager(
       password_save_manager_(std::move(password_save_manager)),
       // TODO(https://crbug.com/831123): set correctly
       // |is_possible_change_password_form| in |votes_uploader_| constructor
-      votes_uploader_(client, false /* is_possible_change_password_form */),
       async_predictions_waiter_(this) {
+  if (ShouldUploadCrowdsourcingVotes(observed_form_or_digest_)) {
+    votes_uploader_.emplace(client, /*is_possible_change_password_form=*/false);
+  }
   form_fetcher_->AddConsumer(this);
   if (!metrics_recorder_) {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
         client_->IsCommittedMainFrameSecure(), client_->GetUkmSourceId(),
         client_->GetPrefs());
   }
-  password_save_manager_->Init(client_, form_fetcher_, metrics_recorder_,
-                               &votes_uploader_);
+  password_save_manager_->Init(
+      client_, form_fetcher_, metrics_recorder_,
+      votes_uploader_.has_value() ? &votes_uploader_.value() : nullptr);
   base::UmaHistogramEnumeration("PasswordManager.FormVisited.PerProfileType",
                                 client_->GetProfileType());
 }
@@ -1320,6 +1355,14 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
 void PasswordFormManager::UpdatePredictionsForObservedForm(
     const std::map<FormSignature, FormPredictions>& predictions) {
   CHECK(observed_form());
+  if (net::IsLocalhost(observed_form()->url)) {
+    // Avoid relying on crowdsourcing on localhost to avoid aggregating multiple
+    // unrelated form together. Set empty predictions instead to avoid delaying
+    // filling.
+    parser_.set_predictions(FormPredictions());
+    return;
+  }
+
   FormSignature observed_form_signature =
       CalculateFormSignature(*observed_form());
   auto it = predictions.find(observed_form_signature);
@@ -1386,38 +1429,45 @@ void PasswordFormManager::HandleUsernameFirstFlow(
   bool should_prefer_username_found_outside_of_form =
       ShouldPreferUsernameFoundOutsideOfForm(best_candidate,
                                              in_form_username_detection_method);
-  votes_uploader_.set_should_send_username_first_flow_votes(
-      should_prefer_username_found_outside_of_form);
+  if (votes_uploader_.has_value()) {
+    votes_uploader_->set_should_send_username_first_flow_votes(
+        should_prefer_username_found_outside_of_form);
+  }
 
   if (!best_candidate.has_value()) {
     // Happens when there is no username field in the password form as well.
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
-    votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData());
+    if (votes_uploader_.has_value()) {
+      votes_uploader_->add_single_username_vote_data(SingleUsernameVoteData());
+    }
     return;
   }
 
   const UsernameFoundOutsideOfForm& picked_username = best_candidate.value();
-  if (base::FeatureList::IsEnabled(
-          features::kUsernameFirstFlowWithIntermediateValuesVoting)) {
-    // Cache voting data for all candidates outside of the password form.
-    // Will send votes only if `should_prefer_username_found_outside_of_form` is
-    // true or there is an `IN_FORM_OVERRULE` vote among any of them.
-    for (const auto& it : possible_usernames) {
-      votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData(
-          it.second.renderer_id, it.second.value,
-          it.second.form_predictions.value_or(FormPredictions()),
+  if (votes_uploader_.has_value()) {
+    if (base::FeatureList::IsEnabled(
+            features::kUsernameFirstFlowWithIntermediateValuesVoting)) {
+      // Cache voting data for all candidates outside of the password form.
+      // Will send votes only if `should_prefer_username_found_outside_of_form`
+      // is true or there is an `IN_FORM_OVERRULE` vote among any of them.
+      for (const auto& it : possible_usernames) {
+        votes_uploader_->add_single_username_vote_data(SingleUsernameVoteData(
+            it.second.renderer_id, it.second.value,
+            it.second.form_predictions.value_or(FormPredictions()),
+            form_fetcher_->GetBestMatches(),
+            FormMatchesUsername(*parsed_submitted_form_.get(),
+                                it.second.value)));
+      }
+    } else {
+      // Cache voting data for the best possible username candidate user
+      // modified field.
+      votes_uploader_->add_single_username_vote_data(SingleUsernameVoteData(
+          picked_username.data.renderer_id, picked_username.data.value,
+          picked_username.data.form_predictions.value_or(FormPredictions()),
           form_fetcher_->GetBestMatches(),
-          FormMatchesUsername(*parsed_submitted_form_.get(), it.second.value)));
+          picked_username.password_form_had_matching_username));
     }
-  } else {
-    // Cache voting data for the best possible username candidate user modified
-    // field.
-    votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData(
-        picked_username.data.renderer_id, picked_username.data.value,
-        picked_username.data.form_predictions.value_or(FormPredictions()),
-        form_fetcher_->GetBestMatches(),
-        picked_username.password_form_had_matching_username));
   }
 
   if (!should_prefer_username_found_outside_of_form) {
@@ -1484,7 +1534,9 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
   if (field_info.empty() &&
       IsPasswordFormWithoutUsername(parsed_submitted_form_.get())) {
     // Set empty vote data for the fallback classifier.
-    votes_uploader_.AddForgotPasswordVoteData(SingleUsernameVoteData());
+    if (votes_uploader_.has_value()) {
+      votes_uploader_->AddForgotPasswordVoteData(SingleUsernameVoteData());
+    }
     return;
   }
 
@@ -1516,11 +1568,13 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
     if (IsPasswordFormWithoutUsername(
             parsed_submitted_form_.get()) ||    // Case 1.
         password_form_had_matching_username) {  // Case 2.
-      votes_uploader_.AddForgotPasswordVoteData(SingleUsernameVoteData(
-          field.field_id, field.value,
-          field.stored_predictions.value_or(FormPredictions()),
-          form_fetcher_->GetBestMatches(),
-          password_form_had_matching_username));
+      if (votes_uploader_.has_value()) {
+        votes_uploader_->AddForgotPasswordVoteData(SingleUsernameVoteData(
+            field.field_id, field.value,
+            field.stored_predictions.value_or(FormPredictions()),
+            form_fetcher_->GetBestMatches(),
+            password_form_had_matching_username));
+      }
 
       if (password_manager_util::IsSingleUsernameType(field.type)) {
         SetUsernameValueFromOutsideOfForm(field.value,

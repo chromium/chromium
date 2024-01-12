@@ -296,9 +296,6 @@ struct WebPreferences {
   bool support_deprecated_target_density_dpi;
 
   [EnableIf=is_android]
-  bool use_legacy_background_size_shorthand_behavior;
-
-  [EnableIf=is_android]
   bool wide_viewport_quirk;
 
   [EnableIf=is_android]

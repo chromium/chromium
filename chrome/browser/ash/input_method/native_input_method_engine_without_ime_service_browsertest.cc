@@ -87,7 +87,7 @@ class KeyProcessingWaiter {
   void Wait() { run_loop_.Run(); }
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // These use the browser test framework but tamper with the environment through
@@ -203,9 +203,9 @@ class NativeInputMethodEngineWithoutImeServiceTest
   }
 
   std::unique_ptr<NativeInputMethodEngine> engine_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
-  raw_ptr<TestObserver, DanglingUntriaged | ExperimentalAsh> observer_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<TestObserver, DanglingUntriaged> observer_;
 
  private:
   InputMethodAsh input_method_;

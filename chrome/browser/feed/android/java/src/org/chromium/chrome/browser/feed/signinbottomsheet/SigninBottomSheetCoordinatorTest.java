@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -62,13 +62,15 @@ public class SigninBottomSheetCoordinatorTest {
 
     private SigninBottomSheetCoordinator mSigninCoordinator;
 
+    private CoreAccountInfo mCoreAccountInfo;
+
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
                 .thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
         mSigninCoordinator =
                 new SigninBottomSheetCoordinator(
                         mWindowAndroidMock,
@@ -93,13 +95,13 @@ public class SigninBottomSheetCoordinatorTest {
                         })
                 .when(mSigninManagerMock)
                 .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(mCoreAccountInfo),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any());
-        mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
+        mSigninCoordinator.signIn(mCoreAccountInfo, error -> {});
         verify(mSigninManagerMock)
                 .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(mCoreAccountInfo),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any(SigninManager.SignInCallback.class));
         histogramWatcher.assertExpected();
@@ -118,12 +120,12 @@ public class SigninBottomSheetCoordinatorTest {
                         })
                 .when(mSigninManagerMock)
                 .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(mCoreAccountInfo),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any());
         mSigninCoordinator.setAccountPickerBottomSheetCoordinator(
                 mAccountPickerBottomSheetCoordinatorMock);
-        mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
+        mSigninCoordinator.signIn(mCoreAccountInfo, error -> {});
         histogramWatcher.assertExpected();
     }
 
@@ -135,9 +137,8 @@ public class SigninBottomSheetCoordinatorTest {
                         SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         mSigninCoordinator.setToastOverrideForTesting();
-        mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
-        verify(mSigninManagerMock, never())
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), anyInt(), any());
+        mSigninCoordinator.signIn(mCoreAccountInfo, error -> {});
+        verify(mSigninManagerMock, never()).signin(eq(mCoreAccountInfo), anyInt(), any());
         watchSigninDisabledToastShownHistogram.assertExpected();
     }
 
@@ -159,11 +160,8 @@ public class SigninBottomSheetCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO),
-                        any());
-        coordinator.signIn(TEST_EMAIL, error -> {});
+                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
+        coordinator.signIn(mCoreAccountInfo, error -> {});
         verify(mOnSigninSuccessCallbackMock, times(1)).run();
     }
 
@@ -185,13 +183,10 @@ public class SigninBottomSheetCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO),
-                        any());
+                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
         coordinator.setAccountPickerBottomSheetCoordinator(
                 mAccountPickerBottomSheetCoordinatorMock);
-        coordinator.signIn(TEST_EMAIL, error -> {});
+        coordinator.signIn(mCoreAccountInfo, error -> {});
         verify(mOnSigninSuccessCallbackMock, times(0)).run();
     }
 }

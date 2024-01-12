@@ -16,6 +16,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
+import("//third_party/libgav1/options.gni")
 import("//v8/gni/v8.gni")
 
 if (is_ios) {
@@ -452,6 +453,8 @@ component("platform") {
     "bindings/exception_state.h",
     "bindings/extensions_registry.cc",
     "bindings/extensions_registry.h",
+    "bindings/frozen_array_base.cc",
+    "bindings/frozen_array_base.h",
     "bindings/idl_member_installer.cc",
     "bindings/idl_member_installer.h",
     "bindings/multi_worlds_v8_reference.cc",
@@ -1310,6 +1313,8 @@ component("platform") {
     "peerconnection/gpu_codec_support_waiter.h",
     "peerconnection/linear_histogram.cc",
     "peerconnection/linear_histogram.h",
+    "peerconnection/resolution_monitor.cc",
+    "peerconnection/resolution_monitor.h",
     "peerconnection/rtc_answer_options_platform.h",
     "peerconnection/rtc_api_name.h",
     "peerconnection/rtc_dtmf_sender_handler.cc",
@@ -1667,6 +1672,8 @@ component("platform") {
     "//third_party/blink/renderer/platform/scheduler",
   ]
 
+  assert(use_libgav1_parser)
+
   public_deps = [
     ":allow_discouraged_type",
     ":blink_platform_public_deps",
@@ -1714,6 +1721,7 @@ component("platform") {
     "//media/capture:capture_switches",
     "//media/capture/mojom:video_capture",
     "//media/mojo/clients:clients",
+    "//media/parsers",
     "//media/webrtc:webrtc",
     "//mojo/public/cpp/bindings:wtf_support",
     "//services/metrics/public/cpp:ukm_builders",
@@ -1732,6 +1740,7 @@ component("platform") {
     "//third_party/ced",
     "//third_party/emoji-segmenter",
     "//third_party/icu",
+    "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
     "//third_party/one_euro_filter",
     "//third_party/snappy:snappy",
@@ -2007,7 +2016,10 @@ test("blink_platform_unittests") {
     ]
   }
   if (is_ios) {
-    bundle_deps = [ ":blink_platform_unittests_bundle_data" ]
+    bundle_deps = [
+      ":blink_platform_unittests_bundle_data",
+      "//media:unit_tests_bundle_data",
+    ]
   }
 }
 
@@ -2174,6 +2186,7 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/linear_histogram_test.cc",
     "peerconnection/low_precision_timer_test.cc",
     "peerconnection/metronome_source_test.cc",
+    "peerconnection/resolution_monitor_unittest.cc",
     "peerconnection/rtc_encoded_audio_stream_transformer_test.cc",
     "peerconnection/rtc_encoded_video_stream_transformer_test.cc",
     "peerconnection/rtc_rtp_source_test.cc",

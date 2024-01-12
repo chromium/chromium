@@ -2683,6 +2683,11 @@ void PaintLayerScrollableArea::ScrollbarManager::DestroyScrollbar(
   ScrollableArea()->GetLayoutBox()->GetDocument().View()->RemoveScrollbar(
       scrollbar);
   scrollbar->DisconnectFromScrollableArea();
+  ScrollableArea()
+      ->GetLayoutBox()
+      ->GetFrame()
+      ->GetEventHandler()
+      .OnScrollbarDestroyed(*scrollbar);
   scrollbar = nullptr;
 }
 

@@ -52,6 +52,11 @@ BASE_FEATURE(kBlinkExtensionDiagnostics,
              "BlinkExtensionDiagnostics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables ChromeOS Kiosk APIs.
+BASE_FEATURE(kBlinkExtensionKiosk,
+             "BlinkExtensionKiosk",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables handling of key press event in background.
 BASE_FEATURE(kCrosAppsBackgroundEventHandling,
              "CrosAppsBackgroundEventHandling",
@@ -149,6 +154,9 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Controls enabling / disabling the mahi feature.
+BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -185,13 +193,13 @@ BASE_FEATURE(kUploadOfficeToCloud,
 // Office files support.
 BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Microsoft OneDrive integration workflow for enterprise users to
 // cloud integration support.
 BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
              "MicrosoftOneDriveIntegrationForEnterprise",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",
@@ -254,6 +262,9 @@ bool IsCrosShortstandEnabled() {
 }
 
 bool IsCrosWebAppShortcutUiUpdateEnabled() {
+  if (IsCrosShortstandEnabled()) {
+    return true;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()
       ->IsCrosWebAppShortcutUiUpdateEnabled();
@@ -278,6 +289,10 @@ bool IsEssentialSearchEnabled() {
   return base::FeatureList::IsEnabled(kEssentialSearch);
 }
 
+bool IsFileSystemProviderContentCacheEnabled() {
+  return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+}
+
 bool IsIWAForTelemetryExtensionAPIEnabled() {
   return base::FeatureList::IsEnabled(kIWAForTelemetryExtensionAPI);
 }
@@ -290,6 +305,10 @@ bool IsJellyrollEnabled() {
   // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
   // this to behave.
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
+}
+
+bool IsMahiEnabled() {
+  return base::FeatureList::IsEnabled(kMahi);
 }
 
 bool IsOrcaEnabled() {

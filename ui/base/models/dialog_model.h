@@ -388,7 +388,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   // Adds a paragraph at the end of the dialog model. A paragraph consists of a
   // label and an optional header.
   void AddParagraph(const DialogModelLabel& label,
-                    std::u16string header,
+                    std::u16string header = std::u16string(),
                     ElementIdentifier id = ElementIdentifier()) {
     contents_.AddParagraph(label, std::move(header), id);
   }

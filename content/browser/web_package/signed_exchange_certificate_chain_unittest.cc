@@ -4,6 +4,8 @@
 
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -16,7 +18,6 @@
 #include "net/test/cert_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -99,8 +100,8 @@ TEST(SignedExchangeCertificateParseTest, OneCert) {
   EXPECT_EQ(cert_der, net::x509_util::CryptoBufferAsStringPiece(
                           parsed->cert()->cert_buffer()));
   ASSERT_EQ(0U, parsed->cert()->intermediate_buffers().size());
-  EXPECT_EQ(parsed->ocsp(), absl::make_optional<std::string>("OCSP"));
-  EXPECT_EQ(parsed->sct(), absl::make_optional<std::string>("SCT"));
+  EXPECT_EQ(parsed->ocsp(), std::make_optional<std::string>("OCSP"));
+  EXPECT_EQ(parsed->sct(), std::make_optional<std::string>("SCT"));
 }
 
 TEST(SignedExchangeCertificateParseTest, MissingOCSPInFirstCert) {
@@ -161,8 +162,8 @@ TEST(SignedExchangeCertificateParseTest, TwoCerts) {
   ASSERT_EQ(1U, parsed->cert()->intermediate_buffers().size());
   EXPECT_EQ(cert2_der, net::x509_util::CryptoBufferAsStringPiece(
                            parsed->cert()->intermediate_buffers()[0].get()));
-  EXPECT_EQ(parsed->ocsp(), absl::make_optional<std::string>("OCSP"));
-  EXPECT_EQ(parsed->sct(), absl::make_optional<std::string>("SCT"));
+  EXPECT_EQ(parsed->ocsp(), std::make_optional<std::string>("OCSP"));
+  EXPECT_EQ(parsed->sct(), std::make_optional<std::string>("SCT"));
 }
 
 TEST(SignedExchangeCertificateParseTest, HavingOCSPInSecondCert) {

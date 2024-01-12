@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/display/display_export.h"
 
@@ -78,9 +78,7 @@ class DISPLAY_EXPORT ScopedOptionalDisplayObserver {
   ~ScopedOptionalDisplayObserver();
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION DisplayObserver* observer_ = nullptr;
+  raw_ptr<DisplayObserver> observer_ = nullptr;
 };
 
 class DISPLAY_EXPORT ScopedDisplayObserver

@@ -4,9 +4,13 @@
 
 #include "services/metrics/public/cpp/ukm_recorder_impl_utils.h"
 
+#include "base/logging.h"
+
 namespace ukm {
 
 void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
+  DVLOG(3) << "RecordDroppedEntry [event_hash=" << event_hash
+           << " reason=" << static_cast<int>(reason) << "]";
   // Truncate the unsigned 64-bit hash to 31 bits, to
   // make it a suitable histogram sample.
   uint32_t value = event_hash & 0x7fffffff;

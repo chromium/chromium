@@ -8,6 +8,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -110,12 +112,12 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // Helper method to return the event with the given |name| (either
   // onDisconnect or onMessage).
   v8::Local<v8::Object> GetEvent(v8::Local<v8::Context> context,
-                                 base::StringPiece event_name);
+                                 std::string_view event_name);
 
   // Helper method to dispatch an event.
   void DispatchEvent(v8::Local<v8::Context> context,
                      v8::LocalVector<v8::Value>* args,
-                     base::StringPiece event_name);
+                     std::string_view event_name);
 
   // Invalidates the port (due to the context being removed). Any further calls
   // to postMessage() or instantiating new events will fail.
@@ -125,7 +127,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   void InvalidateEvents(v8::Local<v8::Context> context);
 
   // Throws the given |error|.
-  void ThrowError(v8::Isolate* isolate, base::StringPiece error);
+  void ThrowError(v8::Isolate* isolate, std::string_view error);
 
   // The current state of the port.
   State state_ = kActive;

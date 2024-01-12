@@ -73,6 +73,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
   // Encodes all sync metadata into a string, representing a state that can be
   // restored via ModelReadyToSync() below.
@@ -160,8 +161,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // The bookmark model we are processing local changes from and forwarding
   // remote changes to. It is set during ModelReadyToSync(), which is called
   // during startup, as part of the bookmark-loading process.
-  raw_ptr<BookmarkModelView, AcrossTasksDanglingUntriaged> bookmark_model_ =
-      nullptr;
+  raw_ptr<BookmarkModelView> bookmark_model_ = nullptr;
 
   // Used to when processing remote updates to apply favicon information. It's
   // not set at start up because it's only avialable after the bookmark model

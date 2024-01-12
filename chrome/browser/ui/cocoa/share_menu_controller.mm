@@ -5,7 +5,10 @@
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,7 +32,7 @@
 
 // Private method, used to identify instantiated services.
 @interface NSSharingService (ExposeName)
-- (id)name;
+@property(readonly) NSString* name;
 @end
 
 namespace {
@@ -144,16 +147,20 @@ bool CanShare() {
 
 // Private methods
 
-// Saves details required by delegate methods for the transition animation.
-- (void)saveTransitionDataFromBrowser:(Browser*)browser {
+// Saves details required by delegate methods for the transition animation, and
+// calls the provided closure when done.
+- (void)saveTransitionDataFromBrowser:(Browser*)browser
+                         whenComplete:(base::OnceClosure)closure {
   _windowForShare = browser->window()->GetNativeWindow().GetNativeNSWindow();
   BrowserView* browserView = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browserView)
+  if (!browserView) {
     return;
+  }
 
   views::View* contentsView = browserView->contents_container();
-  if (!contentsView)
+  if (!contentsView) {
     return;
+  }
 
   gfx::Rect screenRect = contentsView->bounds();
   views::View::ConvertRectToScreen(browserView, &screenRect);
@@ -162,10 +169,17 @@ bool CanShare() {
 
   gfx::Rect rectInWidget =
       browserView->ConvertRectToWidget(contentsView->bounds());
-  gfx::Image image;
-  if (ui::GrabWindowSnapshot(_windowForShare, rectInWidget, &image)) {
-    _snapshotForShare = image.ToNSImage();
-  }
+  ui::GrabWindowSnapshotAsync(
+      _windowForShare, rectInWidget,
+      base::BindOnce(
+          [](ShareMenuController* controller, base::OnceClosure closure,
+             gfx::Image image) {
+            if (!image.IsEmpty()) {
+              controller->_snapshotForShare = image.ToNSImage();
+            }
+            std::move(closure).Run();
+          },
+          self, std::move(closure)));
 }
 
 - (void)clearTransitionData {
@@ -178,33 +192,36 @@ bool CanShare() {
 
 // Performs the share action using the sharing service represented by |sender|.
 - (void)performShare:(NSMenuItem*)sender {
-  DCHECK(CanShare());
+  CHECK(CanShare());
   Browser* browser = chrome::FindLastActive();
-  DCHECK(browser);
-  [self saveTransitionDataFromBrowser:browser];
+  CHECK(browser);
 
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
+  CHECK(contents);
   NSURL* url = net::NSURLWithGURL(contents->GetLastCommittedURL());
   NSString* title = base::SysUTF16ToNSString(contents->GetTitle());
 
   NSSharingService* service =
-      base::apple::ObjCCastStrict<NSSharingService>([sender representedObject]);
+      base::apple::ObjCCastStrict<NSSharingService>(sender.representedObject);
   service.delegate = self;
   service.subject = title;
 
-  NSArray* itemsToShare = @[ url ];
-  if ([[service name] isEqual:kRemindersSharingServiceName]) {
+  if ([service.name isEqual:kRemindersSharingServiceName]) {
     _activity = [[NSUserActivity alloc]
         initWithActivityType:NSUserActivityTypeBrowsingWeb];
     // webpageURL must be http or https or an exception is thrown.
     if ([url.scheme hasPrefix:@"http"]) {
-      [_activity setWebpageURL:url];
+      _activity.webpageURL = url;
     }
-    [_activity setTitle:title];
+    _activity.title = title;
     [_activity becomeCurrent];
   }
-  [service performWithItems:itemsToShare];
+
+  [self saveTransitionDataFromBrowser:browser
+                         whenComplete:base::BindOnce(^{
+                           [service performWithItems:@[ url ]];
+                         })];
 }
 
 // Opens the "Sharing" subpane of the "Extensions" macOS preference pane.

@@ -43,9 +43,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
     LOG(ERROR) << "Cannot serialize the response proto";
     return "";
   }
-  std::string response_string;
-  base::Base64Encode(unencoded_response_string, &response_string);
-  return response_string;
+  return base::Base64Encode(unencoded_response_string);
 }
 
 }  // namespace
@@ -831,7 +829,7 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
       .OnLoadedServerPredictions(
           response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  // Verify that FormStructure::ParseApiQueryResponse was called (here and
+  // Verify that ParseServerPredictionsQueryResponse was called (here and
   // below).
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerQueryResponse"),

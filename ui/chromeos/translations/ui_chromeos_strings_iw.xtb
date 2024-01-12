@@ -76,7 +76,6 @@
 <translation id="162175252992296058">פורטוגזית עם מקלדת בינלאומית של ארה"ב</translation>
 <translation id="1629521517399325891">אישור המשתמש לא זמין לאימות הרשת.</translation>
 <translation id="1641780993263690097">‏סינית Pinyin</translation>
-<translation id="1646019627374511909">המערכת מגדירה <ph name="NUMBER_OF_ITEMS" /> קבצים כזמינים אופליין</translation>
 <translation id="164969095109328410">‏מכשיר Chrome</translation>
 <translation id="1661207570040737402">‏השתמשת בכל נפח האחסון השיתופי שמוקצה לך ב-Google Workspace.</translation>
 <translation id="1661867754829461514">‏חסר PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3486821258960016770">מונגולית</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3511705761158917664">בהכנה לסנכרון של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
@@ -720,7 +718,6 @@
 <translation id="6503285896705205014">בהתאם למדיניות האדמין, העתקה של <ph name="COUNT" /> קבצים חסומה</translation>
 <translation id="6509122719576673235">נורווגית</translation>
 <translation id="6528513914570774834">אישור למשתמשים האחרים במכשיר הזה להשתמש ברשת הזו</translation>
-<translation id="653019979737152879">הסנכרון של <ph name="FILE_NAME" /> מתבצע...</translation>
 <translation id="6549689063733911810">מהזמן האחרון</translation>
 <translation id="6558280019477628686">אירעה שגיאה. ייתכן שפריטים מסוימים לא נמחקו.</translation>
 <translation id="656398493051028875">מחיקת "<ph name="FILENAME" />" מתבצעת...</translation>
@@ -854,7 +851,6 @@
 <translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">אין חיבור לאינטרנט כרגע. סנכרון הקבצים ימשיך כשיהיה חיבור לאינטרנט.</translation>
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
-<translation id="7592775719802218421">בתהליך להפוך את <ph name="FILE_NAME" /> לזמין אופליין</translation>
 <translation id="7600126690270271294">סרבית</translation>
 <translation id="7603724359189955920">רשתות</translation>
 <translation id="7627790789328695202">אופס, <ph name="FILE_NAME" /> כבר קיים. יש לשנות את השם שלו ולנסות שוב.</translation>
@@ -938,6 +934,7 @@
 <translation id="813913629614996137">מתבצע אתחול...</translation>
 <translation id="8147028810663464959">רוחב התווים הוא מלא</translation>
 <translation id="8151638057146502721">הגדרה</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{שגיאה אחת.}one{# שגיאות.}two{# שגיאות.}other{# שגיאות.}}</translation>
 <translation id="8154842056504218462">בחרת את כל הפריטים.</translation>
 <translation id="8157684860301034423">אחזור פרטי האפליקציה נכשל.</translation>
 <translation id="8175731104491895765">צרפתית (בלגיה)</translation>
@@ -971,6 +968,7 @@
 <translation id="83651606385705612">הענקת הרשאה ל-<ph name="VM_NAME" /> לגשת לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">‏מקש WEP גרוע</translation>
 <translation id="8372852072747894550">יוונית</translation>
+<translation id="8377269993083688872">פריסות אימייל</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
 <translation id="8387733224523483503">הקובץ <ph name="FILE_NAME" /> חולץ.</translation>
 <translation id="8395901698320285466">מידות</translation>
@@ -1009,7 +1007,6 @@
 <translation id="8569764466147087991">יש לבחור קובץ לפתיחה</translation>
 <translation id="8577897833047451336">קרואטית</translation>
 <translation id="8578308463707544055">אינדונזית</translation>
-<translation id="8579285237314169903">מתבצע סנכרון ל-<ph name="NUMBER_OF_FILES" /> פריטים...</translation>
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
@@ -1030,6 +1027,7 @@
 <translation id="8787254343425541995">‏אפשר שרתי proxy עבור רשתות משותפות</translation>
 <translation id="8790981080411996443">אדם משקה עציצים</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{אזהרה אחת.}one{# אזהרות.}two{# אזהרות.}other{# אזהרות.}}</translation>
 <translation id="8808686172382650546">חתול</translation>
 <translation id="8810671769985673465">הכיווץ נכשל, הפריט קיים: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ספרדית (ספרד)</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
-<translation id="9083722265619106011">{0,plural, =1{אזהרה אחת.}one{<ph name="COUNT" /> אזהרות.}two{<ph name="COUNT" /> אזהרות.}other{<ph name="COUNT" /> אזהרות.}}</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>

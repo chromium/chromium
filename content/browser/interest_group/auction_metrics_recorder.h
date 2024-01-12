@@ -205,13 +205,13 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       kDirectFromSellerSignals = 2,
       kTrustedBiddingSignals = 3,
     };
-    absl::optional<Dependency> last_resolved_dependency;
+    std::optional<Dependency> last_resolved_dependency;
     base::TimeDelta last_resolved_dependency_latency;
     base::TimeDelta penultimate_resolved_dependency_latency;
   };
   void MaybeRecordGenerateBidDependencyLatency(
       GenerateBidDependencyCriticalPath::Dependency dependency,
-      absl::optional<base::TimeDelta> latency,
+      std::optional<base::TimeDelta> latency,
       LatencyAggregator& aggregator,
       GenerateBidDependencyCriticalPath& critical_path);
   void RecordGenerateBidDependencyLatencyCriticalPath(
@@ -223,13 +223,13 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       kDirectFromSellerSignals = 2,
       kTrustedScoringSignals = 3,
     };
-    absl::optional<Dependency> last_resolved_dependency;
+    std::optional<Dependency> last_resolved_dependency;
     base::TimeDelta last_resolved_dependency_latency;
     base::TimeDelta penultimate_resolved_dependency_latency;
   };
   void MaybeRecordScoreAdDependencyLatency(
       ScoreAdDependencyCriticalPath::Dependency dependency,
-      absl::optional<base::TimeDelta> latency,
+      std::optional<base::TimeDelta> latency,
       LatencyAggregator& aggregator,
       ScoreAdDependencyCriticalPath& critical_path);
   void RecordScoreAdDependencyLatencyCriticalPath(
@@ -245,13 +245,13 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
 
   // Time at which the LoadInterestGroup phase completed and the
   // BiddingAndScoring phase began.
-  absl::optional<base::TimeTicks> bidding_and_scoring_phase_start_time_;
+  std::optional<base::TimeTicks> bidding_and_scoring_phase_start_time_;
 
   // Aggregate number of negative interest groups across all component auctions.
   // This only has a value if the auction (or any of the component auctions in
   // a multi-seller auction) provided a promise as the additionalBids field of
   // the auction config.
-  absl::optional<size_t> num_negative_interest_groups_;
+  std::optional<size_t> num_negative_interest_groups_;
 
   // Set of distinct buyers across all component auctions. Only the size of
   // this set is recorded in UKM; the buyers are not.

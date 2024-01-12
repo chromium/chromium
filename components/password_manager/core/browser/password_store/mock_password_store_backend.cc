@@ -10,4 +10,8 @@ MockPasswordStoreBackend::MockPasswordStoreBackend() = default;
 
 MockPasswordStoreBackend::~MockPasswordStoreBackend() = default;
 
+base::WeakPtr<PasswordStoreBackend> MockPasswordStoreBackend::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace password_manager

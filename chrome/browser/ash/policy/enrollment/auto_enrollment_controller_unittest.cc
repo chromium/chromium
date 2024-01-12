@@ -590,12 +590,14 @@ TEST_F(AutoEnrollmentControllerNetworkTest, RetriesWhenGoesOnline) {
     EXPECT_TRUE(controller.SafeguardTimerForTesting().IsRunning());
   }
 
-  // Stop the client with connection error so the controller can retry.
+  // Stop the client with a response error so the controller can retry.
   {
     mock_auto_enrollment_client_.ReportAutoEnrollmentState(
-        kAutoEnrollmentLegacyConnectionError);
+        base::unexpected(AutoEnrollmentStateRetrievalResponseError{}));
 
-    EXPECT_EQ(controller.state(), kAutoEnrollmentLegacyConnectionError);
+    EXPECT_EQ(controller.state(),
+              AutoEnrollmentState(base::unexpected(
+                  AutoEnrollmentStateRetrievalResponseError{})));
   }
 
   // Flip-flop the network state and check that retry is triggered.

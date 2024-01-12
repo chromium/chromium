@@ -446,7 +446,7 @@ void CaptureMemoryPointedToByThreadState(IOSIntermediateDumpWriter* writer,
   MaybeCaptureMemoryAround(writer, thread_state.__r15);
   MaybeCaptureMemoryAround(writer, thread_state.__rip);
 #elif defined(ARCH_CPU_ARM_FAMILY)
-  MaybeCaptureMemoryAround(writer, thread_state.__pc);
+  MaybeCaptureMemoryAround(writer, arm_thread_state64_get_pc(thread_state));
   for (size_t i = 0; i < std::size(thread_state.__x); ++i) {
     MaybeCaptureMemoryAround(writer, thread_state.__x[i]);
   }
@@ -616,7 +616,8 @@ void InProcessIntermediateDumpHandler::WriteProcessInfo(
 // static
 void InProcessIntermediateDumpHandler::WriteSystemInfo(
     IOSIntermediateDumpWriter* writer,
-    const IOSSystemDataCollector& system_data) {
+    const IOSSystemDataCollector& system_data,
+    uint64_t report_time_nanos) {
   IOSIntermediateDumpWriter::ScopedMap system_map(
       writer, IntermediateDumpKey::kSystemInfo);
 
@@ -702,6 +703,11 @@ void InProcessIntermediateDumpHandler::WriteSystemInfo(
   } else {
     CRASHPAD_RAW_LOG("host_statistics");
   }
+
+  uint64_t crashpad_uptime_nanos =
+      report_time_nanos - system_data.InitializationTime();
+  WriteProperty(
+      writer, IntermediateDumpKey::kCrashpadUptime, &crashpad_uptime_nanos);
 }
 
 // static
@@ -870,7 +876,7 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
 #if defined(ARCH_CPU_X86_64)
     vm_address_t stack_pointer = thread_state.__rsp;
 #elif defined(ARCH_CPU_ARM64)
-    vm_address_t stack_pointer = thread_state.__sp;
+    vm_address_t stack_pointer = arm_thread_state64_get_sp(thread_state);
 #endif
 
     vm_size_t stack_region_size;

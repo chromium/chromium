@@ -43,7 +43,7 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
 
   base::Value::Dict GetDeviceNameMetadata() const;
 
-  raw_ptr<DeviceNameStore, ExperimentalAsh> device_name_store_;
+  raw_ptr<DeviceNameStore> device_name_store_;
 
   base::ScopedObservation<DeviceNameStore, DeviceNameStore::Observer>
       observation_{this};

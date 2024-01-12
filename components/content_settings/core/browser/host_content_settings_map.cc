@@ -376,7 +376,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
       std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
       if (rule->primary_pattern == wildcard &&
           rule->secondary_pattern == wildcard) {
-        return content_settings::ValueToContentSetting(rule->value());
+        return content_settings::ValueToContentSetting(rule->value);
       }
     }
   }
@@ -805,7 +805,9 @@ void HostContentSettingsMap::UpdateLastUsedTime(const GURL& primary_url,
                                                 const base::Time time) {
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {
-    provider->UpdateLastUsedTime(primary_url, secondary_url, type, time);
+    provider->UpdateLastUsedTime(
+        primary_url, secondary_url, type, time,
+        content_settings::PartitionKey::WipGetDefault());
   }
 }
 
@@ -815,7 +817,9 @@ void HostContentSettingsMap::ResetLastVisitedTime(
     ContentSettingsType type) {
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {
-    provider->ResetLastVisitTime(primary_pattern, secondary_pattern, type);
+    provider->ResetLastVisitTime(
+        primary_pattern, secondary_pattern, type,
+        content_settings::PartitionKey::WipGetDefault());
   }
 }
 
@@ -825,7 +829,9 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
     ContentSettingsType type) {
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {
-    provider->UpdateLastVisitTime(primary_pattern, secondary_pattern, type);
+    provider->UpdateLastVisitTime(
+        primary_pattern, secondary_pattern, type,
+        content_settings::PartitionKey::WipGetDefault());
   }
 }
 
@@ -838,8 +844,9 @@ absl::optional<base::TimeDelta> HostContentSettingsMap::RenewContentSetting(
   for (content_settings::UserModifiableProvider* provider :
        user_modifiable_providers_) {
     absl::optional<base::TimeDelta> delta_to_expiration =
-        provider->RenewContentSetting(primary_url, secondary_url, type,
-                                      setting_to_match);
+        provider->RenewContentSetting(
+            primary_url, secondary_url, type, setting_to_match,
+            content_settings::PartitionKey::WipGetDefault());
 
     if (!delta_to_nearest_expiration.has_value()) {
       delta_to_nearest_expiration = delta_to_expiration;
@@ -922,6 +929,7 @@ HostContentSettingsMap::~HostContentSettingsMap() {
 void HostContentSettingsMap::ShutdownOnUIThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
+  expiration_enforcement_timers_.clear();
   prefs_ = nullptr;
   for (const auto& provider_pair : content_settings_providers_)
     provider_pair.second->ShutdownOnUIThread();
@@ -943,7 +951,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
 
   while (rule_iterator->HasNext()) {
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
-    base::Value value = rule->TakeValue();
+    base::Value value = std::move(rule->value);
 
     // We may be adding settings for only specific rule types. If that's the
     // case and this setting isn't a match, don't add it.
@@ -1198,8 +1206,8 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
   if (metadata) {
     *metadata = std::move(rule->metadata);
   }
-  DCHECK(!rule->value().is_none());
-  return rule->TakeValue();
+  DCHECK(!rule->value.is_none());
+  return std::move(rule->value);
 }
 
 void HostContentSettingsMap::
@@ -1352,8 +1360,10 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
     if (is_user_modifiable) {
       static_cast<content_settings::UserModifiableProvider*>(
           content_settings_providers_[provider_type].get())
-          ->ExpireWebsiteSetting(entry.primary_pattern, entry.secondary_pattern,
-                                 content_setting_type);
+          ->ExpireWebsiteSetting(
+              entry.primary_pattern, entry.secondary_pattern,
+              content_setting_type,
+              content_settings::PartitionKey::WipGetDefault());
     } else {
       // For non-modifiable providers there exists no expiry method and
       // SetWebsiteSettingCustomScope cannot work.

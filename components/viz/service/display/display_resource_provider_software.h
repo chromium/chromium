@@ -62,7 +62,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   // These functions are used by ScopedReadLockSkImage to lock and unlock
   // resources.
   const ChildResource* LockForRead(ResourceId id);
-  void UnlockForRead(ResourceId id);
+  void UnlockForRead(ResourceId id, const SkImage* sk_image);
 
   // DisplayResourceProvider overrides:
   std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(

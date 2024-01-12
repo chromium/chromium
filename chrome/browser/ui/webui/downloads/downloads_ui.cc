@@ -192,6 +192,11 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING);
   source->AddLocalizedString("controlDeleteFromHistory",
                              IDS_DOWNLOAD_DELETE_FROM_HISTORY);
+  source->AddLocalizedString(
+      "toastDeletedFromHistoryStillOnDevice",
+      IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE);
+  source->AddLocalizedString("toastDeletedFromHistory",
+                             IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html

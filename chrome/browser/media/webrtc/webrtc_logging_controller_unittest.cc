@@ -40,8 +40,7 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
   WebRtcLoggingControllerTest()
       : browser_context_(nullptr),
         test_shared_url_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+            test_url_loader_factory_.GetSafeWeakWrapper()) {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_shared_url_loader_factory_);
 

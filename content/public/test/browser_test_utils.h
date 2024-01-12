@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
@@ -51,7 +51,6 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -1040,8 +1039,8 @@ ui::AXPlatformNodeDelegate* GetRootAccessibilityNode(WebContents* web_contents);
 struct FindAccessibilityNodeCriteria {
   FindAccessibilityNodeCriteria();
   ~FindAccessibilityNodeCriteria();
-  absl::optional<ax::mojom::Role> role;
-  absl::optional<std::string> name;
+  std::optional<ax::mojom::Role> role;
+  std::optional<std::string> name;
 };
 ui::AXPlatformNodeDelegate* FindAccessibilityNode(
     WebContents* web_contents,
@@ -1078,7 +1077,7 @@ RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
 // all keys will be considered locked.  If |codes| has a value, then at least
 // one key must be specified.
 bool RequestKeyboardLock(WebContents* web_contents,
-                         absl::optional<base::flat_set<ui::DomCode>> codes);
+                         std::optional<base::flat_set<ui::DomCode>> codes);
 void CancelKeyboardLock(WebContents* web_contents);
 
 // Returns the screen orientation provider that's been set via
@@ -1202,9 +1201,9 @@ class RenderProcessHostKillWaiter {
 
   // Waits until the renderer process exits.  Extracts and returns the bad
   // message reason that should be logged in the |uma_name_| histogram.
-  // Returns |absl::nullopt| if the renderer exited normally or didn't log
+  // Returns |std::nullopt| if the renderer exited normally or didn't log
   // the |uma_name_| histogram.
-  [[nodiscard]] absl::optional<int> Wait();
+  [[nodiscard]] std::optional<int> Wait();
 
  private:
   RenderProcessHostWatcher exit_watcher_;
@@ -1232,15 +1231,15 @@ class RenderProcessHostBadMojoMessageWaiter {
 
   // Waits until |render_process_host| from the constructor is terminated
   // because of a bad/invalid mojo message and returns the associated error
-  // string.  Returns absl::nullopt if the process was terminated for an
+  // string.  Returns std::nullopt if the process was terminated for an
   // unrelated reason.
-  [[nodiscard]] absl::optional<std::string> Wait();
+  [[nodiscard]] std::optional<std::string> Wait();
 
  private:
   void OnBadMojoMessage(int render_process_id, const std::string& error);
 
   int monitored_render_process_id_;
-  absl::optional<std::string> observed_mojo_error_;
+  std::optional<std::string> observed_mojo_error_;
   RenderProcessHostKillWaiter kill_waiter_;
 };
 
@@ -1908,7 +1907,7 @@ class WebContentsConsoleObserver : public WebContentsObserver {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
 
   Filter filter_;
   std::string pattern_;
@@ -2069,7 +2068,7 @@ class BlobURLStoreInterceptor
       const GURL& url,
       // TODO(https://crbug.com/1224926): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
-      const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
+      const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
 
  private:
@@ -2343,7 +2342,7 @@ class CreateAndLoadWebContentsObserver {
   // be called multiple times.
   void UnregisterIfNeeded();
 
-  absl::optional<LoadStopObserver> load_stop_observer_;
+  std::optional<LoadStopObserver> load_stop_observer_;
   base::CallbackListSubscription creation_subscription_;
 
   raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;

@@ -75,16 +75,18 @@ class LockScreenReauthDialogTestHelper {
   // Clicks the 'Enter Google Account Info' button on the SAML screen.
   void ClickChangeIdPButtonOnSamlScreen();
 
-  // Waits for a screen with the `saml-container` element to be shown.
-  void WaitForSamlScreen();
+  // Check visibility of native Gaia button on online re-authentication dialog.
+  void ExpectGaiaButtonsVisible();
+  void ExpectGaiaButtonsHidden();
 
-  // Next members allow to check visibility for some screens ('verify account',
-  // ' error screen' and 'saml screen')
+  // Waits for sign-in webview to be shown.
+  void WaitForSigninWebview();
+
   void ExpectVerifyAccountScreenVisible();
   void ExpectVerifyAccountScreenHidden();
   void ExpectErrorScreenVisible();
-  void ExpectSamlScreenVisible();
-  void ExpectSamlScreenHidden();
+  void ExpectSigninWebviewVisible();
+  void ExpectSigninWebviewHidden();
 
   void ExpectGaiaScreenVisible();
 

@@ -64,6 +64,14 @@ BASE_FEATURE(kAppShimNewCloseBehavior,
              "AppShimNewCloseBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, app shims try to launch chrome silently if chrome isn't already
+// running, rather than have chrome launch visibly with a new tab/profile
+// selector.
+// https://crbug.com/1205537
+BASE_FEATURE(kAppShimLaunchChromeSilently,
+             "AppShimLaunchChromeSilently",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, notifications coming from PWAs will be displayed via their app
 // shim processes, rather than directly by chrome.
 // https://crbug.com/938661
@@ -568,6 +576,10 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysExtensionsSafetyHubTime{
         &kHappinessTrackingSurveysExtensionsSafetyHub, "settings-time",
         base::Seconds(10)};
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysExtensionsSafetyHubTriggerId{
+        &kHappinessTrackingSurveysExtensionsSafetyHub,
+        "extension-page-trigger-id", ""};
 
 // Enables or disables the Happiness Tracking System for Desktop Privacy Guide.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
@@ -576,16 +588,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
 const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopPrivacyGuideTime{
         &kHappinessTrackingSurveysForDesktopPrivacyGuide, "settings-time",
-        base::Seconds(20)};
-
-// Enables or disables the Happiness Tracking System for Desktop Privacy
-// Sandbox.
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacySandbox,
-             "HappinessTrackingSurveysForDesktopPrivacySandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopPrivacySandboxTime{
-        &kHappinessTrackingSurveysForDesktopPrivacySandbox, "settings-time",
         base::Seconds(20)};
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
@@ -599,10 +601,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettings,
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettingsPrivacy,
              "HappinessTrackingSurveysForDesktopSettingsPrivacy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool>
-    kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox{
-        &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-sandbox",
-        false};
 const base::FeatureParam<bool>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide{
         &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-guide", false};
@@ -681,6 +679,18 @@ extern const base::FeatureParam<bool>
     kHappinessTrackingSurveysForSecurityPageRequireInteraction{
         &kHappinessTrackingSurveysForSecurityPage,
         "security-page-require-interaction", false};
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Enables or disables the Happiness Tracking System for the Get the most out of
+// Chrome page.
+BASE_FEATURE(kHappinessTrackingSurveysGetMostChrome,
+             "HappinessTrackingSurveysGetMostChrome",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysGetMostChromeTime{
+        &kHappinessTrackingSurveysGetMostChrome, "get-most-chrome-time",
+        base::Seconds(15)};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1614,7 +1624,7 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enables Isolated context APIs (Coralfish/IWA APIs) in web kiosk sessions.
+// Enables Isolated Web App context APIs in web kiosk sessions.
 // When enabled, Web App (PWA) kiosk session passes an isolated context check,
 // which makes blink expose IWA APIs to be used by the web app.
 BASE_FEATURE(kWebKioskEnableIwaApis,

@@ -4,7 +4,8 @@
 
 #include "extensions/shell/common/shell_extensions_api_provider.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "extensions/shell/common/api/shell_api_features.h"
 #include "extensions/shell/grit/app_shell_resources.h"
 
@@ -41,9 +42,9 @@ bool ShellExtensionsAPIProvider::IsAPISchemaGenerated(const std::string& name) {
   return false;
 }
 
-base::StringPiece ShellExtensionsAPIProvider::GetAPISchema(
+std::string_view ShellExtensionsAPIProvider::GetAPISchema(
     const std::string& name) {
-  return base::StringPiece();
+  return std::string_view();
 }
 
 void ShellExtensionsAPIProvider::RegisterPermissions(

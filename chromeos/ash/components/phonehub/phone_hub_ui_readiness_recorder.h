@@ -67,7 +67,7 @@ class PhoneHubUiReadinessRecorder
 
   void OnDisconnected();
 
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
   raw_ptr<secure_channel::ConnectionManager> connection_manager_;
   bool is_cros_state_message_sent_ = false;
   bool is_phone_status_snapshot_processed_ = false;

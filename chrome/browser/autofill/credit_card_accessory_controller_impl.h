@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/autofill/credit_card_accessory_controller.h"
+#include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/autofill/credit_card_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -29,7 +30,7 @@ class CreditCardAccessoryControllerImpl
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
-  absl::optional<AccessorySheetData> GetSheetData() const override;
+  std::optional<AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(FieldGlobalId focused_field_id,
                           const AccessorySheetField& selection) override;
   void OnPasskeySelected(const std::vector<uint8_t>& passkey_id) override;

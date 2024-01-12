@@ -7,8 +7,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -164,6 +167,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
+  if ([self isRunningTest:@selector(testPromoNotShownWhenSyncDataNotRemoved)]) {
+    config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
+  }
+  if ([self isRunningTest:@selector
+            (testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload)]) {
+    config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
+  }
+
   if ([self isRunningTest:@selector
             (testSignInWithSecondaryAccountInPromo_NoSnackbar)]) {
     config.features_enabled.push_back(
@@ -423,6 +434,21 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that the signin promo is shown when last syncing user did not remove
+// data during sign-out but the batch upload promo is visible in the bookamrks
+// manager.
+- (void)testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload {
+  // Add last syncing account to mimic signing out without clearing data.
+  [ChromeEarlGreyAppInterface
+      setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
+         forUserPref:base::SysUTF8ToNSString(
+                         prefs::kGoogleServicesLastSyncingGaiaId)];
+
+  OpenReadingList();
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
 
 // Tests to sign-in in incognito mode with the promo.

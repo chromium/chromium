@@ -58,7 +58,7 @@ class Registry : public RegistryInterface {
                         const Watcher& watcher) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
 };
 
 }  // namespace ash::file_system_provider

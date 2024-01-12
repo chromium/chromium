@@ -5,6 +5,7 @@
 #include <array>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -259,6 +260,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlSwitchToGaia) {
   reauth_dialog_helper->ClickChangeIdPButtonOnSamlScreen();
 
   reauth_dialog_helper->ExpectGaiaScreenVisible();
+  reauth_dialog_helper->ExpectGaiaButtonsVisible();
 }
 
 // Tests the cancel button in Verify Screen.
@@ -427,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedMultiple) {
   signin_frame_js.TapOn("Submit");
 
   reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
-  reauth_dialog_helper->ExpectSamlScreenHidden();
+  reauth_dialog_helper->ExpectSigninWebviewHidden();
   reauth_dialog_helper->ExpectPasswordConfirmInputHidden();
 
   // Entering an unknown password should go back to the confirm password screen.
@@ -467,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedNone) {
   signin_frame_js.TapOn("Submit");
 
   reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
-  reauth_dialog_helper->ExpectSamlScreenHidden();
+  reauth_dialog_helper->ExpectSigninWebviewHidden();
   reauth_dialog_helper->ExpectPasswordConfirmInputVisible();
 
   // Entering passwords that don't match will make us land again in the same
@@ -743,8 +745,11 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_LoadAbort) {
   Login();
 
   // Make gaia landing page unreachable
+  const GaiaUrls& gaia_urls = *GaiaUrls::GetInstance();
   fake_gaia_mixin()->fake_gaia()->SetFixedResponse(
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(),
+      features::IsGaiaReauthEndpointEnabled()
+          ? gaia_urls.embedded_reauth_chromeos_url()
+          : gaia_urls.embedded_setup_chromeos_url(),
       net::HTTP_NOT_FOUND);
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -880,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   reauth_dialog_helper->WaitForVerifyAccountScreen();
   reauth_dialog_helper->ClickVerifyButton();
 
-  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->WaitForSigninWebview();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // Wait for http auth dialog and authenticate.
@@ -929,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   reauth_dialog_helper->WaitForVerifyAccountScreen();
   reauth_dialog_helper->ClickVerifyButton();
 
-  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->WaitForSigninWebview();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // Appearance of http auth dialog means that proxy authentication was

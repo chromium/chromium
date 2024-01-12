@@ -75,9 +75,9 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
   }
 
   void DestroyHintCache() {
+    loaded_hint_ = nullptr;
     hint_cache_.reset();
     optimization_guide_store_.reset();
-    loaded_hint_ = nullptr;
     is_store_initialized_ = false;
     are_component_hints_updated_ = false;
     on_load_hint_callback_called_ = false;
@@ -85,6 +85,8 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
     RunUntilIdle();
   }
+
+  void ResetLoadedHint() { loaded_hint_ = nullptr; }
 
   HintCache* hint_cache() { return hint_cache_.get(); }
 
@@ -174,7 +176,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   std::unique_ptr<OptimizationGuideStore> optimization_guide_store_;
   std::unique_ptr<HintCache> hint_cache_;
-  raw_ptr<const proto::Hint, DanglingUntriaged> loaded_hint_;
+  raw_ptr<const proto::Hint> loaded_hint_;
 
   bool is_store_initialized_;
   bool are_component_hints_updated_;
@@ -836,6 +838,7 @@ TEST_P(HintCacheTest, ClearFetchedHints) {
   EXPECT_TRUE(hint_cache()->GetURLKeyedHint(url));
   EXPECT_TRUE(hint_cache()->GetHostKeyedHintIfLoaded(host));
 
+  ResetLoadedHint();
   hint_cache()->ClearFetchedHints();
   EXPECT_FALSE(hint_cache()->GetURLKeyedHint(url));
   EXPECT_FALSE(hint_cache()->GetHostKeyedHintIfLoaded(host));

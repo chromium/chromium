@@ -90,7 +90,8 @@ class IsolatedWebAppInstallationManager {
       const base::CommandLine& command_line,
       base::OnceCallback<void(MaybeIwaLocation)> callback);
 
-  base::OneShotEvent& on_garbage_collect_storage_partitions_done_for_testing() {
+  const base::OneShotEvent&
+  on_garbage_collect_storage_partitions_done_for_testing() {
     return on_garbage_collect_storage_partitions_done_for_testing_;
   }
 
@@ -155,8 +156,7 @@ class IsolatedWebAppInstallationManager {
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
       on_report_installation_result_ = base::DoNothing();
 
-  // Signals when `GarbageCollectStoragePartitionsCommand` completes
-  // successfully.
+  // Signals when `GarbageCollectStoragePartitionsCommand` completes.
   base::OneShotEvent on_garbage_collect_storage_partitions_done_for_testing_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallationManager> weak_ptr_factory_{

@@ -68,8 +68,12 @@ void RecoveryFactorHsmPubkeyMigration::UpdateRecoveryFactor(
     return;
   }
 
+  // The key rotation is happening in the background, and the user did not
+  // authenticate with the currently present recovery factor. Therefore, we
+  // don't want to rotate the recovery id.
   editor_->RotateRecoveryFactor(
       std::move(context),
+      /*ensure_fresh_recovery_id=*/false,
       base::BindOnce(&RecoveryFactorHsmPubkeyMigration::OnRecoveryUpdated,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

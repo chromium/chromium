@@ -16,46 +16,13 @@
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
-namespace {
-
-// Wait until a browser is removed from BrowserList.
-class BrowserRemovalWaiter : public BrowserListObserver {
- public:
-  explicit BrowserRemovalWaiter(const Browser* browser) : browser_(browser) {
-    BrowserList::AddObserver(this);
-  }
-  BrowserRemovalWaiter(const BrowserRemovalWaiter&) = delete;
-  BrowserRemovalWaiter& operator=(const BrowserRemovalWaiter&) = delete;
-  ~BrowserRemovalWaiter() override = default;
-
-  void WaitForRemoval() {
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
-  }
-
- private:
-  // BrowserListObserver override:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser != browser_)
-      return;
-
-    BrowserList::RemoveObserver(this);
-    if (message_loop_runner_.get() && message_loop_runner_->loop_running())
-      message_loop_runner_->Quit();
-  }
-
-  const raw_ptr<const Browser, AcrossTasksDanglingUntriaged> browser_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-};
-
 using PinnedTabServiceBrowserTest = InProcessBrowserTest;
-
-}  // namespace
 
 // Makes sure pinned tabs are updated when tabstrip is empty.
 // http://crbug.com/71939
@@ -77,12 +44,12 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
   // must update data on this event.
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
-  BrowserRemovalWaiter waiter(browser());
+  TestBrowserClosedWaiter waiter(browser());
   tab_strip_model->SetTabPinned(0, false);
   int previous_tab_count = tab_strip_model->count();
   tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(previous_tab_count - 1, tab_strip_model->count());
-  waiter.WaitForRemoval();
+  ASSERT_TRUE(waiter.WaitUntilClosed());
 
   // Let's see it's cleared out properly.
   result =
@@ -104,9 +71,9 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
 
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
-  BrowserRemovalWaiter waiter(browser());
+  TestBrowserClosedWaiter waiter(browser());
   browser()->window()->Close();
-  waiter.WaitForRemoval();
+  ASSERT_TRUE(waiter.WaitUntilClosed());
 
   std::string result =
       PinnedTabTestUtils::TabsToString(PinnedTabCodec::ReadPinnedTabs(profile));

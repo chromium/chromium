@@ -45,7 +45,7 @@ class ArcSystemStateBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeSystemStateInstance system_state_instance_;
   TestingProfile profile_;
-  raw_ptr<ArcSystemStateBridge, ExperimentalAsh> bridge_ = nullptr;
+  raw_ptr<ArcSystemStateBridge> bridge_ = nullptr;
 };
 
 TEST_F(ArcSystemStateBridgeTest, ConstructDestruct) {

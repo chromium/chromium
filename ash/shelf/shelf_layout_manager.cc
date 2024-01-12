@@ -312,7 +312,7 @@ aura::Window* GetWindowForDragToHomeOrOverview(
   // window should be the dragged window.
   aura::Window* left_window = split_view_controller->primary_window();
   aura::Window* right_window = split_view_controller->secondary_window();
-  const int divider_position = split_view_controller->divider_position();
+  const int divider_position = split_view_controller->GetDividerPosition();
   const bool is_landscape = IsCurrentScreenOrientationLandscape();
   const bool is_primary = IsCurrentScreenOrientationPrimary();
   const gfx::Rect work_area =

@@ -1,0 +1,7 @@
+{
+  "android-official": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

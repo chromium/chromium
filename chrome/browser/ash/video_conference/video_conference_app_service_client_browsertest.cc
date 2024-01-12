@@ -247,14 +247,13 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_proxy_ = nullptr;
-  raw_ptr<apps::InstanceRegistry, DanglingUntriaged | ExperimentalAsh>
-      instance_registry_ = nullptr;
-  raw_ptr<apps::AppCapabilityAccessCache, DanglingUntriaged | ExperimentalAsh>
-      capability_cache_ = nullptr;
-  raw_ptr<VideoConferenceAppServiceClient, DanglingUntriaged | ExperimentalAsh>
-      client_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged> app_service_proxy_ =
+      nullptr;
+  raw_ptr<apps::InstanceRegistry, DanglingUntriaged> instance_registry_ =
+      nullptr;
+  raw_ptr<apps::AppCapabilityAccessCache, DanglingUntriaged> capability_cache_ =
+      nullptr;
+  raw_ptr<VideoConferenceAppServiceClient, DanglingUntriaged> client_ = nullptr;
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -232,11 +232,23 @@
   <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS_MID_SENTENCE" desc="The label used for the zoom levels site settings controls when used mid-sentence.">
     zoom levels
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING" desc="The label used for the web printing site settings controls.">
+    Advanced printer features
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING_MID_SENTENCE" desc="The label used for the web printing site settings controls when used mid-sentence.">
+    advanced printer features
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
     Window management
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
     window management
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PERFORMANCE" desc="The label used for the performance site settings controls.">
+    Performance
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL" desc="The sublabel used for the performance site settings controls to manage the exclusion list.">
+    Manage sites that will always stay active and won't have memory freed up from them
   </message>
   </if>
 </grit-part>

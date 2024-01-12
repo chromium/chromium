@@ -65,7 +65,7 @@ class DataCollector
       mojo::ScopedMessagePipeHandle receiver) override;
 
   // Pointer to the delegate.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
   // The mojo receiver of service provider.
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_receiver_{this};

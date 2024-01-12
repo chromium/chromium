@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="2024-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.decision"
-    enum="SecurityInterstitialDecision" expires_after="2024-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="2024-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2024-01-21">
+    enum="SecurityInterstitialInteraction" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>

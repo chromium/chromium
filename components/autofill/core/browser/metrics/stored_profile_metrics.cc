@@ -32,13 +32,6 @@ void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
   base::UmaHistogramPercentage(
       "Autofill.StoredProfileUsedPercentage." + kSuffix,
       100 * used / counts.total);
-  // `kAccount` profiles are guaranteed to have a country, so this metric is
-  // only tracked for the `kLocalOrSyncable` category. For this reason `kSuffix`
-  // is not applied to the metrics name either.
-  if (category == AutofillProfileSourceCategory::kLocalOrSyncable) {
-    base::UmaHistogramCounts1M("Autofill.StoredProfileWithoutCountryCount",
-                               counts.without_country);
-  }
 }
 
 void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
@@ -63,7 +56,6 @@ void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles) {
       LogStoredProfileDaysSinceLastUse(category, time_since_last_use.InDays());
       counts.total++;
       counts.disused += time_since_last_use > kDisusedDataModelTimeDelta;
-      counts.without_country += profile->HasRawInfo(ADDRESS_HOME_COUNTRY);
     }
     LogStoredProfileCountStatistics(category, counts);
   };

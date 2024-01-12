@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] <a>: Setting <javascript://x/>.username = 'wario'
+  assert_equals: expected "javascript://wario@x/" but got "javascript:/"
+[FAIL] <area>: Setting <javascript://x/>.username = 'wario'
+  assert_equals: expected "javascript://wario@x/" but got "javascript:/"
+[FAIL] <a>: Setting <javascript://x/>.password = 'bowser'
+  assert_equals: expected "javascript://:bowser@x/" but got "javascript:/"
+[FAIL] <area>: Setting <javascript://x/>.password = 'bowser'
+  assert_equals: expected "javascript://:bowser@x/" but got "javascript:/"
+[FAIL] <a>: Setting <javascript://x/>.port = '12'
+  assert_equals: expected "javascript://x:12/" but got "javascript://x/"
+[FAIL] <area>: Setting <javascript://x/>.port = '12'
+  assert_equals: expected "javascript://x:12/" but got "javascript://x/"
+Harness: the test ran to completion.
+

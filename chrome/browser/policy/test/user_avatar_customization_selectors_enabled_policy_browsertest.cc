@@ -47,9 +47,8 @@ class UserAvatarCustomizationSelectorsEnabledPolicyTest : public PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
-  raw_ptr<ash::UserImageManager, DanglingUntriaged | ExperimentalAsh>
-      user_image_manager_;
-  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh> user_;
+  raw_ptr<ash::UserImageManager, DanglingUntriaged> user_image_manager_;
+  raw_ptr<const user_manager::User, DanglingUntriaged> user_;
   base::FilePath test_data_dir_;
 };
 

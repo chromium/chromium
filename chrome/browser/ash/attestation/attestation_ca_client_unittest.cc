@@ -80,8 +80,7 @@ class AttestationCAClientTest : public ::testing::Test {
  public:
   AttestationCAClientTest()
       : test_shared_url_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
+            test_url_loader_factory_.GetSafeWeakWrapper()),
         num_invocations_(0),
         result_(false) {}
 

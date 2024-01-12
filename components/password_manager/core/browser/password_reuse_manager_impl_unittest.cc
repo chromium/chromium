@@ -404,10 +404,8 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
 TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
   // Hash does not exist yet.
   base::HistogramTester histogram_tester;
-  reuse_manager()->ReportMetrics("not_sync_username",
-                                 /*is_under_advanced_protection=*/true);
-  std::string name =
-      "PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser";
+  reuse_manager()->ReportMetrics("not_sync_username");
+  std::string name = "PasswordManager.IsSyncPasswordHashSaved";
   histogram_tester.ExpectBucketCount(
       name, metrics_util::IsSyncPasswordHashSaved::NOT_SAVED, 1);
 
@@ -420,8 +418,7 @@ TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   RunUntilIdle();
 
-  reuse_manager()->ReportMetrics("not_sync_username",
-                                 /*is_under_advanced_protection=*/true);
+  reuse_manager()->ReportMetrics("not_sync_username");
   // Check that the non sync hash password was saved.
   histogram_tester.ExpectBucketCount(
       name, metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF, 1);
@@ -454,8 +451,9 @@ TEST_F(PasswordReuseManagerImplTest,
       CreateForm("https://www.facebook.com", u"username3", u"password",
                  PasswordForm::Store::kAccountStore);
 
-  for (const auto& form : profile_forms)
+  for (const auto& form : profile_forms) {
     profile_store()->AddLogin(form);
+  }
   account_store()->AddLogin(account_form);
 
   RunUntilIdle();
@@ -484,8 +482,9 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
       CreateForm("https://www.google.com", u"username2", u"secretword",
                  PasswordForm::Store::kAccountStore)};
 
-  for (const auto& form : account_forms)
+  for (const auto& form : account_forms) {
     account_store()->AddLogin(form);
+  }
 
   RunUntilIdle();
 

@@ -3,18 +3,28 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
-#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "ui/linux/nav_button_provider.h"
 
 BrowserFrameViewLayoutLinuxNative::BrowserFrameViewLayoutLinuxNative(
     ui::NavButtonProvider* nav_button_provider,
-    ui::WindowFrameProvider* window_frame_provider)
+    FrameProviderGetter frame_provider_getter)
     : nav_button_provider_(nav_button_provider),
-      window_frame_provider_(window_frame_provider) {}
+      frame_provider_getter_(frame_provider_getter) {}
 
 BrowserFrameViewLayoutLinuxNative::~BrowserFrameViewLayoutLinuxNative() =
     default;
+
+ui::WindowFrameProvider* BrowserFrameViewLayoutLinuxNative::GetFrameProvider()
+    const {
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = delegate_->IsTiled();
+#else
+  const bool tiled = false;
+#endif
+  return frame_provider_getter_.Run(tiled);
+}
 
 int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(
     views::FrameButton button_id,
@@ -33,12 +43,9 @@ gfx::Insets BrowserFrameViewLayoutLinuxNative::RestoredFrameBorderInsets()
         OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets());
   }
 
-  const auto insets = window_frame_provider_->GetFrameThicknessDip();
-  const auto tiled_edges = delegate_->GetTiledEdges();
-  return gfx::Insets::TLBR(tiled_edges.top ? 0 : insets.top(),
-                           tiled_edges.left ? 0 : insets.left(),
-                           tiled_edges.bottom ? 0 : insets.bottom(),
-                           tiled_edges.right ? 0 : insets.right());
+  gfx::Insets insets = GetFrameProvider()->GetFrameThicknessDip();
+  insets.SetToMax(GetInputInsets());
+  return insets;
 }
 
 OpaqueBrowserFrameViewLayout::TopAreaPadding
@@ -59,11 +66,13 @@ int BrowserFrameViewLayoutLinuxNative::GetWindowCaptionSpacing(
     bool is_leading_button) const {
   gfx::Insets insets =
       nav_button_provider_->GetNavButtonMargin(GetButtonDisplayType(button_id));
-  if (!leading_spacing)
+  if (!leading_spacing) {
     return insets.right();
+  }
   int spacing = insets.left();
-  if (!is_leading_button)
+  if (!is_leading_button) {
     spacing += nav_button_provider_->GetInterNavButtonSpacing();
+  }
   return spacing;
 }
 

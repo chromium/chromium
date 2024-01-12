@@ -28,7 +28,7 @@ namespace autofill {
 
 class AutofillExperimentsTest : public testing::Test {
  public:
-  AutofillExperimentsTest() {}
+  AutofillExperimentsTest() = default;
 
  protected:
   void SetUp() override {

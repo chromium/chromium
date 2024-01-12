@@ -27,13 +27,13 @@ class IndexedDBBucketContext;
 
 class CONTENT_EXPORT IndexedDBConnection {
  public:
-  IndexedDBConnection(
-      IndexedDBBucketContext& bucket_context,
-      base::WeakPtr<IndexedDBDatabase> database,
-      base::RepeatingClosure on_version_change_ignored,
-      base::OnceCallback<void(IndexedDBConnection*)> on_close,
-      std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
-      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
+  IndexedDBConnection(IndexedDBBucketContext& bucket_context,
+                      base::WeakPtr<IndexedDBDatabase> database,
+                      base::RepeatingClosure on_version_change_ignored,
+                      base::OnceCallback<void(IndexedDBConnection*)> on_close,
+                      std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
+                      mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+                          client_state_checker);
 
   IndexedDBConnection(const IndexedDBConnection&) = delete;
   IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
@@ -130,7 +130,8 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker_;
+  mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+      client_state_checker_;
   mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>
       client_keep_active_remotes_;
 

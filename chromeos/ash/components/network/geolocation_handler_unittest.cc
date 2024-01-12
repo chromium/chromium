@@ -95,9 +95,8 @@ class GeolocationHandlerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<GeolocationHandler> geolocation_handler_;
-  raw_ptr<ShillManagerClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
-      manager_test_ = nullptr;
+  raw_ptr<ShillManagerClient::TestInterface, DanglingUntriaged> manager_test_ =
+      nullptr;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
 };

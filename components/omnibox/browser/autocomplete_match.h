@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/ranges.h"
@@ -640,9 +640,7 @@ struct AutocompleteMatch {
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
   // no provider (or memory of the user's selection).
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION AutocompleteProvider* provider = nullptr;
+  raw_ptr<AutocompleteProvider> provider = nullptr;
 
   // The relevance of this match. See table in autocomplete.h for scores
   // returned by various providers. This is used to rank matches among all
@@ -886,6 +884,8 @@ struct AutocompleteMatch {
   // however, providers pass ALL suggestion candidates to the controller. When
   // this flag is true, this match is an "extra" suggestion that would've
   // originally been culled by the provider.
+  // TODO(yoangela|manukh): Currently unused except in tests. Remove if not
+  //   needed. Might be needed when increasing the max provider limit?
   bool culled_by_provider = false;
 
   // True for shortcut suggestions that were boosted. Used for grouping logic.

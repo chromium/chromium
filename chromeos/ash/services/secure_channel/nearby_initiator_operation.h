@@ -82,7 +82,7 @@ class NearbyInitiatorOperation
       std::unique_ptr<AuthenticatedChannel> authenticated_channel);
   void OnConnectionFailure(NearbyInitiatorFailureType failure_type);
 
-  raw_ptr<NearbyConnectionManager, ExperimentalAsh> nearby_connection_manager_;
+  raw_ptr<NearbyConnectionManager> nearby_connection_manager_;
   base::WeakPtrFactory<NearbyInitiatorOperation> weak_ptr_factory_{this};
 };
 

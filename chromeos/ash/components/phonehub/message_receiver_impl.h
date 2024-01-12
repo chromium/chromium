@@ -26,8 +26,7 @@ class MessageReceiverImpl : public MessageReceiver,
   // secure_channel::ConnectionManager::Observer:
   void OnMessageReceived(const std::string& payload) override;
 
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
 };
 
 }  // namespace phonehub

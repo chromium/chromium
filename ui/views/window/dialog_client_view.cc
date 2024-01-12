@@ -289,7 +289,7 @@ void DialogClientView::UpdateDialogButtons() {
   InvalidateLayout();
 }
 
-void DialogClientView::UpdateDialogButton(MdTextButton** member,
+void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
                                           ui::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
   if (!(delegate->GetDialogButtons() & type)) {
@@ -325,7 +325,6 @@ void DialogClientView::UpdateDialogButton(MdTextButton** member,
               .SetText(title)
               .SetProperty(views::kElementIdentifierKey, GetButtonId(type))
               .SetStyle(style)
-              .SetProminent(is_default)
               .SetIsDefault(is_default)
               .SetEnabled(delegate->IsDialogButtonEnabled(type))
               .SetMinSize(gfx::Size(minimum_width, 0))

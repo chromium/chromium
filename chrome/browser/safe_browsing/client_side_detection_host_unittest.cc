@@ -177,8 +177,12 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     // Note: this will delete the client object in the case of the CsdClient
     // implementation.
-    if (!callback.is_null())
-      callback.Run(false /*proceed*/, true /*showed_interstitial*/);
+    if (!callback.is_null()) {
+      security_interstitials::UnsafeResource::UrlCheckResult result(
+          false /*proceed*/, true /*showed_interstitial*/,
+          false /*has_post_commit_interstitial_skipped*/);
+      callback.Run(result);
+    }
   }
 
  protected:

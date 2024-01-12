@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
@@ -23,6 +24,11 @@ import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.widget.ButtonCompat;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /** Generic dialog view for app modal or tab modal alert dialogs. */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
@@ -39,12 +45,14 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ViewGroup mCustomViewContainer;
     private ViewGroup mCustomButtonBarViewContainer;
     private View mButtonBar;
+    private LinearLayout mButtonGroup;
     private Button mPositiveButton;
     private Button mNegativeButton;
     private Callback<Integer> mOnButtonClickedCallback;
     private boolean mTitleScrollable;
     private boolean mFilterTouchForSecurity;
     private Runnable mOnTouchFilteredCallback;
+    private final Set<View> mTouchFilterableViews = new HashSet<>();
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
     private long mStartProtectingButtonTimestamp = -1;
@@ -73,11 +81,12 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mButtonBar = findViewById(R.id.button_bar);
         mPositiveButton = findViewById(R.id.positive_button);
         mNegativeButton = findViewById(R.id.negative_button);
+        setupClickableView(mPositiveButton, ButtonType.POSITIVE);
+        setupClickableView(mNegativeButton, ButtonType.NEGATIVE);
+
         mFooterContainer = findViewById(R.id.footer);
         mFooterMessageView = findViewById(R.id.footer_message);
-
-        mPositiveButton.setOnClickListener(this);
-        mNegativeButton.setOnClickListener(this);
+        mButtonGroup = findViewById(R.id.button_group);
         mMessageParagraph1.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterMessageView.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterContainer.setBackgroundColor(
@@ -95,18 +104,19 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                 });
     }
 
+    private void setupClickableView(View view, @ButtonType int buttonType) {
+        setFilterTouchForSecurityIfNecessary(view);
+        view.setTag(buttonType);
+        view.setOnClickListener(this);
+    }
+
     // View.OnClickListener implementation.
-
     @Override
-    public void onClick(View view) {
+    public void onClick(View v) {
         if (isWithinButtonTapProtectionPeriod()) return;
-
-        if (view == mPositiveButton) {
-            mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.POSITIVE);
-        } else if (view == mNegativeButton) {
-            mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.NEGATIVE);
-        } else if (view == mTitleIcon) {
-            mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.TITLE_ICON);
+        Object buttonType = v.getTag();
+        if (buttonType instanceof Integer) {
+            mOnButtonClickedCallback.onResult((Integer) buttonType);
         }
     }
 
@@ -165,7 +175,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     public void setTitleIcon(Drawable drawable) {
         mTitleIcon.setImageDrawable(drawable);
         updateContentVisibility();
-        if (drawable != null) mTitleIcon.setOnClickListener(this);
+        if (drawable != null) {
+            setupClickableView(mTitleIcon, ButtonType.TITLE_ICON);
+        }
     }
 
     /** @param titleScrollable Whether the title is scrollable with the message. */
@@ -212,7 +224,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         mFilterTouchForSecurity = filterTouchForSecurity;
         if (filterTouchForSecurity) {
-            setupFilterTouchForSecurity();
+            mTouchFilterableViews.forEach(this::setupFilterTouchForView);
         } else {
             assert false : "Shouldn't remove touch filter after setting it up";
         }
@@ -226,11 +238,18 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mButtonTapProtectionDurationMs = duration;
     }
 
+    private void setFilterTouchForSecurityIfNecessary(View view) {
+        if (mFilterTouchForSecurity) {
+            setupFilterTouchForView(view);
+        } else {
+            mTouchFilterableViews.add(view);
+        }
+    }
+
     /** Setup touch filters to block events when buttons are obscured by another window. */
-    private void setupFilterTouchForSecurity() {
-        Button positiveButton = getButton(ModalDialogProperties.ButtonType.POSITIVE);
-        Button negativeButton = getButton(ModalDialogProperties.ButtonType.NEGATIVE);
-        View.OnTouchListener onTouchListener =
+    private void setupFilterTouchForView(View view) {
+        view.setFilterTouchesWhenObscured(true);
+        view.setOnTouchListener(
                 (View v, MotionEvent ev) -> {
                     boolean shouldBlockTouchEvent = false;
                     if ((ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0) {
@@ -242,13 +261,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                         mOnTouchFilteredCallback.run();
                     }
                     return shouldBlockTouchEvent;
-                };
-
-        positiveButton.setFilterTouchesWhenObscured(true);
-        positiveButton.setOnTouchListener(onTouchListener);
-        negativeButton.setFilterTouchesWhenObscured(true);
-        negativeButton.setOnTouchListener(onTouchListener);
+                });
     }
+
 
     /**
      * @param callback The callback is called when touch event is filtered because of an overlay
@@ -256,6 +271,35 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      */
     void setOnTouchFilteredCallback(Runnable callback) {
         mOnTouchFilteredCallback = callback;
+    }
+
+    void setupButtonGroup(ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList) {
+        mButtonGroup.setVisibility(View.VISIBLE);
+        int numButtons = buttonSpecList.length;
+
+        for (int i = 0; i < buttonSpecList.length; i++) {
+            ModalDialogProperties.ModalDialogButtonSpec spec = buttonSpecList[i];
+            int style = 0;
+            if (numButtons == 1) {
+                style = R.style.FilledButton_Flat_Tonal_SingleButton;
+            } else {
+                if (i == 0) {
+                    style = R.style.FilledButton_Flat_Tonal_TopButton;
+                } else if (i == numButtons - 1) {
+                    style = R.style.FilledButton_Flat_Tonal_BottomButton;
+                } else {
+                    style = R.style.FilledButton_Flat_Tonal_MiddleButton;
+                }
+            }
+
+            Button button = new ButtonCompat(mButtonGroup.getContext(), style);
+            button.setText(spec.getText());
+            button.setContentDescription(spec.getContentDescription());
+
+            setupClickableView(button, spec.getButtonType());
+            setFilterTouchForSecurityIfNecessary(button);
+            mButtonGroup.addView(button);
+        }
     }
 
     /** @param message The message in the dialog content. */
@@ -305,33 +349,30 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateButtonVisibility();
     }
 
-    /** @param buttonType Indicates which button should be returned. */
-    private Button getButton(@ModalDialogProperties.ButtonType int buttonType) {
-        switch (buttonType) {
-            case ModalDialogProperties.ButtonType.POSITIVE:
-                return mPositiveButton;
-            case ModalDialogProperties.ButtonType.NEGATIVE:
-                return mNegativeButton;
-            default:
-                assert false;
-                return null;
-        }
+    /**
+     * @param buttonType Indicates which button should be returned.
+     */
+    private Button getButton(@ButtonType int buttonType) {
+        Button button = findViewWithTag(buttonType);
+        assert button != null : "Tried to retrieve a button that doesn't exist.";
+        return button;
     }
 
     /**
      * Sets button text for the specified button. If {@code buttonText} is empty or null, the
      * specified button will not be visible.
-     * @param buttonType The {@link ModalDialogProperties.ButtonType} of the button.
+     *
+     * @param buttonType The {@link ButtonType} of the button.
      * @param buttonText The text to be set on the specified button.
      */
-    void setButtonText(@ModalDialogProperties.ButtonType int buttonType, String buttonText) {
+    void setButtonText(@ButtonType int buttonType, String buttonText) {
         getButton(buttonType).setText(buttonText);
         updateButtonVisibility();
     }
 
     /** @param drawable The icon drawable on the positive button. */
     void setPositiveButtonIcon(Drawable drawable) {
-        Button button = getButton(ModalDialogProperties.ButtonType.POSITIVE);
+        Button button = getButton(ButtonType.POSITIVE);
         button.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null);
         button.setCompoundDrawablePadding(
                 getResources()
@@ -347,19 +388,19 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
     /**
      * Sets content description for the specified button.
-     * @param buttonType The {@link ModalDialogProperties.ButtonType} of the button.
+     *
+     * @param buttonType The {@link ButtonType} of the button.
      * @param contentDescription The content description to be set for the specified button.
      */
-    void setButtonContentDescription(
-            @ModalDialogProperties.ButtonType int buttonType, String contentDescription) {
+    void setButtonContentDescription(@ButtonType int buttonType, String contentDescription) {
         getButton(buttonType).setContentDescription(contentDescription);
     }
 
     /**
-     * @param buttonType The {@link ModalDialogProperties.ButtonType} of the button.
+     * @param buttonType The {@link ButtonType} of the button.
      * @param enabled Whether the specified button should be enabled.
      */
-    void setButtonEnabled(@ModalDialogProperties.ButtonType int buttonType, boolean enabled) {
+    void setButtonEnabled(@ButtonType int buttonType, boolean enabled) {
         getButton(buttonType).setEnabled(enabled);
     }
 

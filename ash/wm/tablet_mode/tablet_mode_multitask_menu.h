@@ -42,8 +42,7 @@ class ASH_EXPORT TabletModeMultitaskMenu
   // is true, otherwise a slide up animation.
   void Animate(bool show);
 
-  // Performs a fade out animation and closes the menu. Called when tap outside
-  // the menu dismisses it.
+  // Performs a fade out animation and closes the menu.
   void AnimateFadeOut();
 
   // Actions called by the event handler, where `initial_y` and `current_y` are

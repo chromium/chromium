@@ -9,11 +9,13 @@
 
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
+@protocol NotificationsConfirmationPresenter;
 @protocol SetUpListContentNotificationPromoCoordinatorDelegate;
 
-// Enum actions for content notification promo UMA metrics. Entries should not
-// be renumbered and numeric values should never be reused. This should align
-// with the ContentNotificationSetUpListPromoAction enum in enums.xml.
+// Enum actions for content notification promo action UMA metrics. Entries
+// should not be renumbered and numeric values should never be reused. This
+// should align with the ContentNotificationSetUpListPromoAction enum in
+// enums.xml.
 //
 // LINT.IfChange
 enum class ContentNotificationSetUpListPromoAction {
@@ -21,6 +23,31 @@ enum class ContentNotificationSetUpListPromoAction {
   kCancel = 1,
   kRemindMeLater = 2,
   kMaxValue = kRemindMeLater,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
+// Enum for content notification promo events UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationSetUpListPromoEvent enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationSetUpListPromoEvent {
+  kShown = 0,
+  kDismissed = 1,
+  kPromptShown = 2,
+  kMaxValue = kPromptShown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
+// Enum for content notification prompt actions UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationPromptAction enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationPromptAction {
+  kGoToSettingsTapped = 0,
+  kNoThanksTapped = 1,
+  kMaxValue = kNoThanksTapped,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
@@ -44,6 +71,10 @@ enum class ContentNotificationSetUpListPromoAction {
 @property(nonatomic, weak)
     id<SetUpListContentNotificationPromoCoordinatorDelegate>
         delegate;
+
+// The presenter displays the notification confirmation message.
+@property(nonatomic, weak) id<NotificationsConfirmationPresenter>
+    messagePresenter;
 
 @end
 

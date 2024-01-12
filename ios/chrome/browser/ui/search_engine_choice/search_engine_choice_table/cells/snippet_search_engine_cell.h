@@ -32,6 +32,10 @@ typedef void (^ChevronToggledBlock)(SnippetState snippet_state);
 // Called when the chevron is tapped.
 @property(nonatomic, copy) ChevronToggledBlock chevronToggledBlock;
 
+// Reconfigure the accessibility traits according to the current state of the
+// cell.
+- (void)updateAccessibilityTraits;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TABLE_CELLS_SNIPPET_SEARCH_ENGINE_CELL_H_

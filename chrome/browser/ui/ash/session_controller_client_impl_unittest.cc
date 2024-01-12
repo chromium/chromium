@@ -216,8 +216,7 @@ class SessionControllerClientImplTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   // Owned by |user_manager_enabler_|.
-  raw_ptr<TestChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
+  raw_ptr<TestChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
 
   std::unique_ptr<ash::MultiProfileUserController> controller_;
 

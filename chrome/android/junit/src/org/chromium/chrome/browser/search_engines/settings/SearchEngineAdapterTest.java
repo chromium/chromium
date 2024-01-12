@@ -35,7 +35,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -66,8 +65,7 @@ public class SearchEngineAdapterTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
-    public void testSortAndFilterUnnecessaryTemplateUrl_SortsByPrePopId() {
+    public void testSortAndFilterUnnecessaryTemplateUrl_PrepopulatedEnginesSorting() {
         String name = "prepopulated";
         long lastVisitedTime = System.currentTimeMillis();
         TemplateUrl p1 = buildMockTemplateUrl(name, 1, lastVisitedTime);
@@ -75,51 +73,50 @@ public class SearchEngineAdapterTest {
         TemplateUrl p3 = buildMockTemplateUrl(name, 3, lastVisitedTime);
         TemplateUrl p4 = buildMockTemplateUrl(name, 4, lastVisitedTime);
 
-        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p2, p1, p4, p3));
-        checkSortAndFilterOutput(templateUrls, p3, List.of(p1, p2, p3, p4));
-    }
+        List<TemplateUrl> templateUrls = List.of(p2, p1, p4, p3);
+        TemplateUrl[] expectedSortedUrls = new TemplateUrl[] {p1, p2, p3, p4};
+        TemplateUrl[] expectedNonSortedUrls = new TemplateUrl[] {p2, p1, p4, p3};
 
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
-    public void testSortAndFilterUnnecessaryTemplateUrl_SecFeatureDoesNotSortPrePopInEEA() {
-        String name = "prepopulated";
-        long lastVisitedTime = System.currentTimeMillis();
-        TemplateUrl p1 = buildMockTemplateUrl(name, 1, lastVisitedTime);
-        TemplateUrl p2 = buildMockTemplateUrl(name, 2, lastVisitedTime);
-        TemplateUrl p3 = buildMockTemplateUrl(name, 3, lastVisitedTime);
-        TemplateUrl p4 = buildMockTemplateUrl(name, 4, lastVisitedTime);
+        // When computing the list for the new settings in the EEA, don't re-sort prepopulated
+        // engines.
 
-        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p2, p1, p4, p3));
-
-        // Unlike other tests, this one's outcome depends on `isInEeaChoiceCountry`.
         List<TemplateUrl> modifiedList = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList, p3, /* isInEeaChoiceCountry= */ true);
-        assertThat(modifiedList, contains(p2, p1, p4, p3));
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedNonSortedUrls));
+
+        // In all the other cases (old settings or out of EEA), keep sorting by ID.
 
         modifiedList = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList, p3, /* isInEeaChoiceCountry= */ false);
-        assertThat(modifiedList, contains(p1, p2, p3, p4));
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedSortedUrls));
+
+        modifiedList = new ArrayList<>(templateUrls);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedSortedUrls));
+
+        modifiedList = new ArrayList<>(templateUrls);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedSortedUrls));
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
-    public void testSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom_WithSecFeature() {
-        baseTestSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom();
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
-    public void testSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom_WithoutSecFeature() {
-        baseTestSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom();
-    }
-
-    private void baseTestSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom() {
-        // Test outcome does not depend on the SearchEngineChoice feature state, but since
-        // comparisons of prepopulated engines is affected by the flag, it needs to be set to some
-        // value so the test does not crash.
-
+    public void testSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom() {
         long lastVisitedTime = System.currentTimeMillis();
         TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1, lastVisitedTime);
         TemplateUrl p2 = buildMockTemplateUrl("prepopulated2", 2, lastVisitedTime);
@@ -154,12 +151,7 @@ public class SearchEngineAdapterTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
     public void testSortAndFilterUnnecessaryTemplateUrl_equalInstancesNotReordered() {
-        // Test outcome does not depend on the SearchEngineChoice feature state, but since
-        // comparisons of prepopulated engines is affected by the flag, it needs to be set to some
-        // value so the test does not crash.
-
         String name = "prepopulated";
         long lastVisitedTime = System.currentTimeMillis();
         TemplateUrl p1 = buildMockTemplateUrl(name, 0, lastVisitedTime, 42);
@@ -169,10 +161,14 @@ public class SearchEngineAdapterTest {
         List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p2, p1, p3));
         checkSortAndFilterOutput(templateUrls, p3, List.of(p2, p1, p3));
 
+        // Instead of using the test helper, call the method directly and explicitly compare
+        // identity for the output instead of equality here, as all instances are equal.
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                templateUrls, p3, /* isInEeaChoiceCountry= */ false);
+                templateUrls,
+                p3,
+                /* isInEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ true);
 
-        // Explicitly comparing identity instead of equality here, as all instances are equal.
         Assert.assertSame(templateUrls.get(0), p2);
         Assert.assertSame(templateUrls.get(1), p1);
         Assert.assertSame(templateUrls.get(2), p3);
@@ -231,28 +227,48 @@ public class SearchEngineAdapterTest {
             List<TemplateUrl> expectedOutput) {
         List<TemplateUrl> modifiedList = new ArrayList<>(input);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList, defaultSearchEngine, /* isInEeaChoiceCountry= */ true);
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ true);
         assertThat(modifiedList, contains(expectedOutput.toArray()));
 
         modifiedList = new ArrayList<>(input);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList, defaultSearchEngine, /* isInEeaChoiceCountry= */ false);
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedOutput.toArray()));
+
+        modifiedList = new ArrayList<>(input);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedOutput.toArray()));
+
+        modifiedList = new ArrayList<>(input);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ false);
         assertThat(modifiedList, contains(expectedOutput.toArray()));
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
     public void testGetView() {
-        baseTestGetView(/* expectLogos= */ false);
+        baseTestGetView(/* shouldShowUpdatedSettings= */ false, /* expectLogos= */ false);
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)
     public void testGetView_WithSecFeature() {
-        baseTestGetView(/* expectLogos= */ true);
+        baseTestGetView(/* shouldShowUpdatedSettings= */ true, /* expectLogos= */ true);
     }
 
-    private void baseTestGetView(boolean expectLogos) {
+    private void baseTestGetView(boolean shouldShowUpdatedSettings, boolean expectLogos) {
         TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1);
         TemplateUrl p2 = buildMockTemplateUrl("", 2);
         TemplateUrl c1 = buildMockTemplateUrl("custom1", 0);
@@ -261,6 +277,7 @@ public class SearchEngineAdapterTest {
         doReturn(new ArrayList<>(List.of(p1, p2, c1))).when(mTemplateUrlService).getTemplateUrls();
         doReturn(p2).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(false).when(mTemplateUrlService).isEeaChoiceCountry();
+        doReturn(shouldShowUpdatedSettings).when(mTemplateUrlService).shouldShowUpdatedSettings();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
         var adapter =

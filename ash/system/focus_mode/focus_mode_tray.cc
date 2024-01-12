@@ -11,10 +11,14 @@
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
+#include "ash/system/focus_mode/focus_mode_session.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -140,11 +144,9 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
               // the progress indicator.
               return ProgressIndicator::kProgressComplete;
             }
-            const base::TimeDelta session_duration =
-                controller->session_duration();
-            const base::TimeDelta time_elapsed =
-                session_duration - (controller->end_time() - base::Time::Now());
-            return time_elapsed / session_duration;
+            return controller->current_session()
+                ->GetSnapshot(base::Time::Now())
+                .progress;
           },
           base::Unretained(this)));
   progress_indicator_->SetInnerIconVisible(false);
@@ -161,7 +163,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   UpdateProgressRing();
 
   auto* controller = FocusModeController::Get();
-  SetVisiblePreferred(controller->in_focus_session());
+  SetVisiblePreferred(controller->in_focus_session() ||
+                      controller->in_ending_moment());
   controller->AddObserver(this);
 }
 
@@ -190,6 +193,28 @@ std::u16string FocusModeTray::GetAccessibleNameForTray() {
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL);
 }
 
+std::u16string FocusModeTray::GetAccessibleNameForBubble() {
+  auto* focus_mode_controller = FocusModeController::Get();
+
+  if (focus_mode_controller->in_ending_moment()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ENDING_MOMENT_ACCESSIBLE_NAME);
+  }
+
+  const std::u16string time_remaining = focus_mode_util::GetDurationString(
+      focus_mode_controller->GetActualEndTime() - base::Time::Now(),
+      /*digital_format=*/false);
+  const std::u16string task_title =
+      base::UTF8ToUTF16(focus_mode_controller->selected_task_title());
+  return task_title.empty()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+                   time_remaining)
+             : l10n_util::GetStringFUTF16(
+                   IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_TASK_ACCESSIBLE_NAME,
+                   time_remaining, task_title);
+}
+
 void FocusModeTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   if (bubble_->bubble_view() == bubble_view) {
     CloseBubble();
@@ -200,6 +225,10 @@ void FocusModeTray::HideBubble(const TrayBubbleView* bubble_view) {
   if (bubble_->bubble_view() == bubble_view) {
     CloseBubble();
   }
+}
+
+TrayBubbleView* FocusModeTray::GetBubbleView() {
+  return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
 void FocusModeTray::CloseBubble() {
@@ -213,16 +242,29 @@ void FocusModeTray::CloseBubble() {
 
   bubble_.reset();
   countdown_view_ = nullptr;
+  ending_moment_view_ = nullptr;
   task_item_view_ = nullptr;
   bubble_view_container_ = nullptr;
   SetIsActive(false);
   progress_indicator_->layer()->SetOpacity(1);
   UpdateProgressRing();
+
+  if (auto* controller = FocusModeController::Get();
+      !controller->in_focus_session()) {
+    controller->ResetFocusSession();
+  }
 }
 
 void FocusModeTray::ShowBubble() {
   if (bubble_) {
     return;
+  }
+
+  auto* controller = FocusModeController::Get();
+  CHECK(controller->current_session());
+
+  if (controller->in_ending_moment()) {
+    controller->EnablePersistentEnding();
   }
 
   auto bubble_view =
@@ -239,9 +281,12 @@ void FocusModeTray::ShowBubble() {
 
   countdown_view_ = bubble_view_container_->AddChildView(
       std::make_unique<FocusModeCountdownView>(/*include_end_button=*/true));
-  countdown_view_->UpdateUI();
+  ending_moment_view_ = bubble_view_container_->AddChildView(
+      std::make_unique<FocusModeEndingMomentView>());
 
-  auto* controller = FocusModeController::Get();
+  UpdateBubbleViews(
+      controller->current_session()->GetSnapshot(base::Time::Now()));
+
   if (controller->HasSelectedTask()) {
     task_item_view_ =
         bubble_view_container_->AddChildView(std::make_unique<TaskItemView>(
@@ -271,21 +316,27 @@ void FocusModeTray::OnThemeChanged() {
 }
 
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
-  if (in_focus_session) {
-    UpdateProgressRing();
-  } else {
-    CloseBubble();
+  UpdateProgressRing();
+
+  if (!bubble_) {
+    return;
   }
+
+  auto current_session = FocusModeController::Get()->current_session();
+  CHECK(current_session);
+  UpdateBubbleViews(current_session->GetSnapshot(base::Time::Now()));
 }
 
-void FocusModeTray::OnTimerTick() {
+void FocusModeTray::OnTimerTick(
+    const FocusModeSession::Snapshot& session_snapshot) {
   UpdateProgressRing();
-  MaybeUpdateCountdownViewUI();
+  MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
-void FocusModeTray::OnSessionDurationChanged() {
+void FocusModeTray::OnActiveSessionDurationChanged(
+    const FocusModeSession::Snapshot& session_snapshot) {
   UpdateProgressRing();
-  MaybeUpdateCountdownViewUI();
+  MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
 void FocusModeTray::Layout() {
@@ -323,9 +374,32 @@ void FocusModeTray::FocusModeIconActivated(const ui::Event& event) {
   ShowBubble();
 }
 
-void FocusModeTray::MaybeUpdateCountdownViewUI() {
-  if (countdown_view_) {
-    countdown_view_->UpdateUI();
+void FocusModeTray::UpdateBubbleViews(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  const bool is_ending_moment =
+      session_snapshot.state == FocusModeSession::State::kEnding;
+  countdown_view_->SetVisible(!is_ending_moment);
+  ending_moment_view_->SetVisible(is_ending_moment);
+  if (is_ending_moment) {
+    MaybeUpdateEndingMomentViewUI(session_snapshot);
+  } else {
+    MaybeUpdateCountdownViewUI(session_snapshot);
+  }
+}
+
+void FocusModeTray::MaybeUpdateCountdownViewUI(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  if (countdown_view_ && countdown_view_->GetVisible() &&
+      session_snapshot.state == FocusModeSession::State::kOn) {
+    countdown_view_->UpdateUI(session_snapshot);
+  }
+}
+
+void FocusModeTray::MaybeUpdateEndingMomentViewUI(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  if (ending_moment_view_ && ending_moment_view_->GetVisible()) {
+    ending_moment_view_->SetExtendButtonEnabled(
+        FocusModeController::CanExtendSessionDuration(session_snapshot));
   }
 }
 

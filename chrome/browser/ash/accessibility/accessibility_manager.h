@@ -54,9 +54,9 @@ namespace language_packs {
 struct PackResult;
 }  // namespace language_packs
 
+class AccessibilityDlcInstaller;
 class AccessibilityExtensionLoader;
 class Dictation;
-class PumpkinInstaller;
 class SelectToSpeakEventHandlerDelegateImpl;
 enum class SelectToSpeakState;
 enum class SelectToSpeakPanelAction;
@@ -575,7 +575,7 @@ class AccessibilityManager
   void CreateChromeVoxPanel();
 
   // Pumpkin-related methods.
-  void OnPumpkinInstalled(bool success);
+  void OnPumpkinInstalled(bool success, const std::string& root_path);
   void OnPumpkinError(const std::string& error);
   void OnPumpkinDataCreated(
       std::optional<::extensions::api::accessibility_private::PumpkinData>
@@ -584,7 +584,7 @@ class AccessibilityManager
   void OnAppTerminating();
 
   // Profile which has the current a11y context.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ScopedObservation<session_manager::SessionManager,
@@ -620,7 +620,7 @@ class AccessibilityManager
 
   bool braille_ime_current_ = false;
 
-  raw_ptr<ChromeVoxPanel, ExperimentalAsh> chromevox_panel_ = nullptr;
+  raw_ptr<ChromeVoxPanel> chromevox_panel_ = nullptr;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
       chromevox_panel_widget_observer_;
 
@@ -644,7 +644,7 @@ class AccessibilityManager
 
   std::unique_ptr<AccessibilityExtensionLoader> switch_access_loader_;
 
-  std::unique_ptr<PumpkinInstaller> pumpkin_installer_;
+  std::unique_ptr<AccessibilityDlcInstaller> dlc_installer_;
 
   std::map<ax::mojom::AssistiveTechnologyType, std::set<std::string>>
       focus_ring_names_for_at_type_;

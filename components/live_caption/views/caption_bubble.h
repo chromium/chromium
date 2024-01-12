@@ -21,6 +21,7 @@
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -49,6 +50,7 @@ class CaptionBubbleEventObserver;
 namespace captions {
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
+class LanguageLabelButton;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
@@ -106,7 +108,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   views::Label* GetLabelForTesting();
   views::Label* GetDownloadProgressLabelForTesting();
-  views::StyledLabel* GetLanguageLabelForTesting();
+  views::Label* GetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
@@ -211,9 +213,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SetTextSizeAndFontFamily();
   void SetTextColor();
   void SetBackgroundColor();
-  void UpdateLiveTranslateLabelStyle(
-      views::StyledLabel::RangeStyleInfo label_style,
-      views::StyledLabel::RangeStyleInfo languages_style);
   void OnLanguageChanged();
   void UpdateLanguageLabelText();
 
@@ -250,14 +249,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
   raw_ptr<views::Label> download_progress_label_;
-  raw_ptr<views::StyledLabel> language_label_;
+  raw_ptr<LanguageLabelButton> language_label_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
   std::string source_language_code_;
   std::string target_language_code_;
   std::u16string source_language_text_;
   std::u16string target_language_text_;
-  std::vector<size_t> language_label_offsets_;
   raw_ptr<views::ImageView> generic_error_icon_;
   raw_ptr<views::View> generic_error_message_;
   raw_ptr<views::ImageButton> back_to_tab_button_;
@@ -266,7 +264,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::ImageButton> collapse_button_;
   raw_ptr<views::ImageButton> pin_button_;
   raw_ptr<views::ImageButton> unpin_button_;
-  raw_ptr<views::ImageButton> caption_settings_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
 
   // Flag indicating whether the current source language does not match the user

@@ -43,12 +43,12 @@ namespace arc::input_overlay {
 
 namespace {
 
-constexpr float kDeleteButtonCornerRadius = 16.0f;
+constexpr float kDoneButtonCornerRadius = 16.0f;
 
 // Gap from focus ring outer edge to the edge of the view.
-constexpr float kDeleteButtonHaloInset = -5.0f;
+constexpr float kDoneButtonHaloInset = -5.0f;
 // Thickness of focus ring.
-constexpr float kDeleteButtonHaloThickness = 3.0f;
+constexpr float kDoneButtonHaloThickness = 3.0f;
 
 constexpr int kHeaderLeftMarginSpacing = 6;
 
@@ -94,47 +94,48 @@ class ButtonOptionsActionEdit : public ActionEditView {
 BEGIN_METADATA(ButtonOptionsActionEdit)
 END_METADATA
 
-// DeleteButton shows in ButtonOptions and allows the user to delete the action.
+// DoneButton shows in ButtonOptions and allows the user to finish editing the
+// action.
 // ------------------------------
-// ||      Delete button       ||
+// ||        Done button       ||
 // ------------------------------
-class DeleteButton : public views::LabelButton {
-  METADATA_HEADER(DeleteButton, views::LabelButton)
+class DoneButton : public views::LabelButton {
+  METADATA_HEADER(DoneButton, views::LabelButton)
 
  public:
-  explicit DeleteButton(PressedCallback pressed_callback)
+  explicit DoneButton(PressedCallback pressed_callback)
       // TODO(b/274690042): Replace placeholder text with localized strings.
-      : LabelButton(std::move(pressed_callback), u"Delete button") {
+      : LabelButton(std::move(pressed_callback), u"Done button") {
     // TODO(b/279117180): Replace with proper accessible name.
-    SetAccessibleName(u"delete");
+    SetAccessibleName(u"done");
 
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase,
-        /*radius=*/kDeleteButtonCornerRadius));
+        /*radius=*/kDoneButtonCornerRadius));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(14, 0)));
     SetProperty(views::kMarginsKey, gfx::Insets::TLBR(12, 0, 0, 0));
 
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosButton2, *label());
-    SetEnabledTextColorIds(cros_tokens::kCrosSysError);
+    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
     // Set highlight path.
     views::HighlightPathGenerator::Install(
         this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                  gfx::Insets(), /*corner_radius=*/kDeleteButtonCornerRadius));
+                  gfx::Insets(), /*corner_radius=*/kDoneButtonCornerRadius));
   }
 
-  DeleteButton(const DeleteButton&) = delete;
-  DeleteButton& operator=(const DeleteButton&) = delete;
+  DoneButton(const DoneButton&) = delete;
+  DoneButton& operator=(const DoneButton&) = delete;
 
-  ~DeleteButton() override = default;
+  ~DoneButton() override = default;
 
  private:
   void OnThemeChanged() override {
     views::LabelButton::OnThemeChanged();
 
-    // Set up highlight and focus ring for `DeleteButton`.
+    // Set up highlight and focus ring for `DoneButton`.
     ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                           /*highlight_on_hover=*/true,
                                           /*highlight_on_focus=*/false);
@@ -143,12 +144,12 @@ class DeleteButton : public views::LabelButton {
     // needs to set the focus ring size after calling
     // `StyleUtil::SetUpInkDropForButton()`.
     auto* focus_ring = views::FocusRing::Get(this);
-    focus_ring->SetHaloInset(kDeleteButtonHaloInset);
-    focus_ring->SetHaloThickness(kDeleteButtonHaloThickness);
+    focus_ring->SetHaloInset(kDoneButtonHaloInset);
+    focus_ring->SetHaloThickness(kDoneButtonHaloThickness);
   }
 };
 
-BEGIN_METADATA(DeleteButton)
+BEGIN_METADATA(DoneButton)
 END_METADATA
 
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
@@ -185,9 +186,9 @@ void ButtonOptionsMenu::Init() {
       views::BoxLayout::Orientation::kVertical));
   AddHeader();
   AddEditTitle();
-  AddActionEdit();
   AddActionSelection();
-  AddDeleteButton();
+  AddActionEdit();
+  AddDoneButton();
 }
 
 void ButtonOptionsMenu::AddHeader() {
@@ -213,17 +214,17 @@ void ButtonOptionsMenu::AddHeader() {
       // TODO(b/274690042): Replace placeholder text with localized strings.
       ash::TypographyToken::kCrosTitle1, u"", cros_tokens::kCrosSysOnSurface));
 
-  done_button_ = container->AddChildView(std::make_unique<ash::IconButton>(
-      base::BindRepeating(&ButtonOptionsMenu::OnDoneButtonPressed,
+  trash_button_ = container->AddChildView(std::make_unique<ash::IconButton>(
+      base::BindRepeating(&ButtonOptionsMenu::OnTrashButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon,
       // TODO(b/279117180): Replace placeholder names with a11y strings.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 
   action_name_label_->SetMultiLine(true);
   action_name_label_->SetMaximumWidth(
       kButtonOptionsMenuWidth - 2 * kArrowContainerHorizontalBorderInset -
-      kHeaderLeftMarginSpacing - done_button_->GetPreferredSize().width());
+      kHeaderLeftMarginSpacing - trash_button_->GetPreferredSize().width());
 }
 
 void ButtonOptionsMenu::AddEditTitle() {
@@ -245,16 +246,6 @@ void ButtonOptionsMenu::AddEditTitle() {
                      gfx::Insets::TLBR(0, kHeaderLeftMarginSpacing, 16, 0));
 }
 
-void ButtonOptionsMenu::AddActionEdit() {
-  // ------------------------------
-  // ||"Selected key" |key labels||
-  // ||"key"                      |
-  // ------------------------------
-  action_edit_ = AddChildView(
-      std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
-  action_name_label_->SetText(action_edit_->GetActionName());
-}
-
 void ButtonOptionsMenu::AddActionSelection() {
   // ----------------------------------
   // | |"Choose your button type:"  | |
@@ -262,10 +253,10 @@ void ButtonOptionsMenu::AddActionSelection() {
   // ----------------------------------
   auto* container = AddChildView(std::make_unique<views::View>());
   container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/0,
-      /*bottom_radius=*/16, /*for_border_thickness=*/0));
+      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/16.0f,
+      /*bottom_radius=*/0.0f, /*for_border_thickness=*/0.0f));
   container->SetUseDefaultFillLayout(true);
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(2, 0, 0, 0));
+  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets::TLBR(12, 16, 16, 16),
@@ -284,15 +275,25 @@ void ButtonOptionsMenu::AddActionSelection() {
       ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
 }
 
-void ButtonOptionsMenu::AddDeleteButton() {
+void ButtonOptionsMenu::AddActionEdit() {
   // ------------------------------
-  // ||      Delete button       ||
+  // ||"Selected key" |key labels||
+  // ||"key"                      |
   // ------------------------------
-  AddChildView(std::make_unique<DeleteButton>(base::BindRepeating(
-      &ButtonOptionsMenu::OnDeleteButtonPressed, base::Unretained(this))));
+  action_edit_ = AddChildView(
+      std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
+  action_name_label_->SetText(action_edit_->GetActionName());
 }
 
-void ButtonOptionsMenu::OnDeleteButtonPressed() {
+void ButtonOptionsMenu::AddDoneButton() {
+  // ------------------------------
+  // ||        Done button       ||
+  // ------------------------------
+  AddChildView(std::make_unique<DoneButton>(base::BindRepeating(
+      &ButtonOptionsMenu::OnDoneButtonPressed, base::Unretained(this))));
+}
+
+void ButtonOptionsMenu::OnTrashButtonPressed() {
   controller_->RemoveAction(action_);
 }
 

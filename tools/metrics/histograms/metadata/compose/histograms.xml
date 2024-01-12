@@ -88,6 +88,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Request.Reason" enum="ComposeRequestReason"
+    expires_after="2024-07-02">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records the reason a Compose request is started. This includes the first
+    request from the input state, retries, updates and modifications made by the
+    user for a reuqest. Logged each time a Compose request is sent by the user
+    to the Compose service.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Response.Duration.Error" units="ms"
     expires_after="2024-06-02">
   <owner>perrier@chromium.org</owner>
@@ -141,43 +153,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Accepted" summary="the Compose response was inserted"/>
     <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
-</histogram>
-
-<histogram name="Compose.Session.Consent.CloseReason"
-    enum="ComposeConsentSessionCloseReasonType" expires_after="2024-11-01">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Histogram for recording the reason why a Compose dialog that had shown the
-    consent or disclaimer UI closed. Recorded once per session when it is closed
-    or destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Session.Consent.DialogShownCount.{FinalStatus}"
-    units="count" expires_after="2024-06-16">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Count of the number of times the Compose dialog was shown in a consent UI
-    state where {FinalStatus}. Recorded once per session when it is closed,
-    destroyed, or progressed past the consent UI.
-  </summary>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="consent was accepted or acknowledged"/>
-    <variant name="Ignored" summary="consent was rejected or ignored"/>
-  </token>
-</histogram>
-
-<histogram name="Compose.Session.Consent.GivenInSession" enum="Boolean"
-    expires_after="2024-11-01">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Histogram for recording whether consent was given or acknowledged in a
-    session, or if it was already given when the session was created. Recorded
-    once per session when it is closed or destroyed.
-  </summary>
 </histogram>
 
 <histogram name="Compose.Session.DialogShownCount.{FinalStatus}" units="count"

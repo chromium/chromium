@@ -9,6 +9,9 @@
 # * trailing commas are allowed.
 
 [
+  # The following builder groups have been migrated to set their targets in the
+  # builders' declarations in //infra/config/subprojects/ci/<builder-group>.star
+  #   chromium
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -373,133 +376,6 @@
           'gpu_telemetry_tests': 'gpu_fyi_lacros_device_release_telemetry_tests',
         },
         'skip_merge_script': True,
-      },
-    }
-  },
-  {
-    'name': 'chromium',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'android-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'android-arm64-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'android-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'lacros-arm-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos',
-      },
-      'lacros-arm64-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos',
-      },
-      'lacros64-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos',
-      },
-      'linux-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'linux-chromeos-archive-rel': {
-        'additional_compile_targets': [
-          'base_unittests',
-          'browser_tests',
-          'chromeos_unittests',
-          'components_unittests',
-          'compositor_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'crypto_unittests',
-          'dbus_unittests',
-          'device_unittests',
-          'gcm_unit_tests',
-          'google_apis_unittests',
-          'gpu_unittests',
-          'interactive_ui_tests',
-          'ipc_tests',
-          'media_unittests',
-          'message_center_unittests',
-          'nacl_loader_unittests',
-          'net_unittests',
-          'ppapi_unittests',
-          'printing_unittests',
-          'remoting_unittests',
-          'sandbox_linux_unittests',
-          'sql_unittests',
-          'ui_base_unittests',
-          'unit_tests',
-          'url_unittests',
-          'views_unittests',
-        ],
-      },
-      'linux-lacros-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-      },
-      'linux-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'win-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
-      },
-      'win-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'win32-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
-      },
-      'win32-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
       },
     }
   },
@@ -932,8 +808,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          # TODO(b/314092564): Remove cronet_proguard_test once merged with cronet_gtests
-          'gtest_tests': 'cronet_gtests_and_proguarded_smoketest',
+          'gtest_tests': 'cronet_gtests',
         },
       },
       'android-cronet-x64-dbg-13-tests': {
@@ -967,6 +842,7 @@
           'cronet_package',
           'cronet_perf_test_apk',
           'cronet_sample_test_apk',
+          'cronet_smoketests_apk',
           'cronet_smoketests_missing_native_library_instrumentation_apk',
           'cronet_smoketests_platform_only_instrumentation_apk',
           'cronet_test_instrumentation_apk',
@@ -983,6 +859,7 @@
           'cronet_package',
           'cronet_perf_test_apk',
           'cronet_sample_test_apk',
+          'cronet_smoketests_apk',
           'cronet_smoketests_missing_native_library_instrumentation_apk',
           'cronet_smoketests_platform_only_instrumentation_apk',
           'cronet_test_instrumentation_apk',
@@ -1090,6 +967,7 @@
           'cronet_package',
           'cronet_perf_test_apk',
           'cronet_sample_test_apk',
+          'cronet_smoketests_apk',
           'cronet_smoketests_missing_native_library_instrumentation_apk',
           'cronet_smoketests_platform_only_instrumentation_apk',
           'cronet_test_instrumentation_apk',
@@ -1298,6 +1176,19 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'webview_fyi_bot_all_gtests',
+        }
+      },
+      'android-webview-13-x64-dbg-hostside': {
+        'mixins': [
+          '13-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'webview_trichrome_64_cts_hostside_tests',
         }
       },
       'android-webview-13-x64-dbg-tests': {
@@ -1631,18 +1522,6 @@
         },
         'os_type': 'chromeos',
       },
-      'lacros-amd64-generic-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'mixins': [
-            'ci_only',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
-        },
-        'os_type': 'chromeos'
-      },
       'lacros-amd64-generic-rel-non-skylab': {
         'additional_compile_targets': [
           'chrome',
@@ -1650,6 +1529,15 @@
         ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests',
+        },
+        'os_type': 'chromeos'
+      },
+      'lacros-amd64-generic-rel-renamed': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
         },
         'os_type': 'chromeos'
       },
@@ -2344,6 +2232,7 @@
         'mixins': [
           'isolate_profile_data',
           'linux-jammy',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_js_code_coverage_browser_tests'
@@ -3719,17 +3608,6 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
-      'linux-lacros-version-skew-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_lacros_version_skew_tests',
-        },
-      },
       'linux-network-sandbox-rel': {
         'mixins': [
           'linux-jammy',
@@ -4830,18 +4708,6 @@
     'name': 'chromium.linux',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Cast Audio Linux': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'cast_shell',
-          'cast_test_lists',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_cast_audio_gtests',
-        },
-      },
       'Cast Linux': {
         'mixins': [
           'linux-jammy',
@@ -6639,6 +6505,8 @@
         ],
       },
       'win-arm64-rel': {
+        'browser_config': 'release',
+        'os_type': 'win',
         'additional_compile_targets': [
           'chrome',
           'chromedriver_group',
@@ -6650,6 +6518,7 @@
         'test_suites': {
           'gtest_tests': 'chromium_win10_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_common_win_telemetry_tests',
         },
       },
       'win-chrome-reclient': {
@@ -6958,6 +6827,14 @@
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'mac13.arm64-skia-alt-blink-rel': {
+        'mixins': [
+          'mac_13_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_web_tests_graphite_isolated_scripts',
         },
       },
       'win10.20h2-blink-rel': {

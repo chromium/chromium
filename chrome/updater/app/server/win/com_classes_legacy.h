@@ -155,8 +155,8 @@ class IDispatchImpl
     if (HRESULT hr =
             type_lib->GetTypeInfoOfGuid(__uuidof(TDualInterface), &type_info_);
         FAILED(hr)) {
-      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
-                 << ", " << std::hex << hr << ", IID: "
+      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed" << ", "
+                 << std::hex << hr << ", IID: "
                  << base::win::WStringFromGUID(__uuidof(TDualInterface));
       return hr;
     }

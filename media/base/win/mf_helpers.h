@@ -142,9 +142,18 @@ GetDefaultAudioType(const AudioDecoderConfig decoder_config,
 // corresponding IMFMediaType format (by calling GetDefaultAudioType)
 // and populate the aac_extra_data in the decoder_config into the
 // returned IMFMediaType.
-MEDIA_EXPORT HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
+MEDIA_EXPORT HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
                                      IMFMediaType** media_type_out);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+// Given an AudioDecoderConfig which represents AC4 audio, get its
+// corresponding IMFMediaType format (by calling GetDefaultAudioType)
+// and populate the AC4 extra_data in the decoder_config into the
+// returned IMFMediaType.
+MEDIA_EXPORT HRESULT GetAC4AudioType(const AudioDecoderConfig& decoder_config,
+                                     IMFMediaType** media_type_out);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 // A wrapper of SubsampleEntry for MediaFoundation. The data blob associated
 // with MFSampleExtension_Encryption_SubSample_Mapping attribute should contain

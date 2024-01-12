@@ -4,15 +4,18 @@
 
 #include "ash/system/notification_center/views/notification_list_view.h"
 
-#include "ash/system/notification_center/views/ash_notification_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/message_center_constants.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -126,15 +129,17 @@ class TestNotificationListView : public NotificationListView {
 
 // The base test class, has no params so tests with no params can inherit from
 // this.
-class NotificationListViewTest : public AshTestBase,
-                                 public views::ViewObserver {
+class NotificationListViewTest
+    : public AshTestBase,
+      public views::ViewObserver,
+      public testing::WithParamInterface<
+          /*enable_notification_center_controller=*/bool> {
  public:
-  NotificationListViewTest() = default;
-
-  NotificationListViewTest(const NotificationListViewTest&) = delete;
-  NotificationListViewTest& operator=(const NotificationListViewTest&) = delete;
-
-  ~NotificationListViewTest() override = default;
+  NotificationListViewTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kNotificationCenterController,
+        IsNotificationCenterControllerEnabled());
+  }
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -157,6 +162,8 @@ class NotificationListViewTest : public AshTestBase,
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
+
+  bool IsNotificationCenterControllerEnabled() const { return GetParam(); }
 
  protected:
   std::string AddNotification(bool pinned = false, bool expandable = false) {
@@ -195,7 +202,12 @@ class NotificationListViewTest : public AshTestBase,
 
   void CreateMessageListView() {
     notification_list_view_ = std::make_unique<TestNotificationListView>();
-    notification_list_view_->Init();
+    if (IsNotificationCenterControllerEnabled()) {
+      notification_list_view_->Init(
+          message_center_utils::GetSortedNotificationsWithOwnView());
+    } else {
+      notification_list_view_->Init();
+    }
     notification_list_view_->AddObserver(this);
     OnViewPreferredSizeChanged(notification_list_view_.get());
     size_changed_count_ = 0;
@@ -252,12 +264,18 @@ class NotificationListViewTest : public AshTestBase,
   int id_ = 0;
   int size_changed_count_ = 0;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestNotificationListView> notification_list_view_;
 };
 
-TEST_F(NotificationListViewTest, Open) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NotificationListViewTest,
+    /*enable_notification_center_controller=*/testing::Bool());
+
+TEST_P(NotificationListViewTest, Open) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
   auto id2 = AddNotification();
@@ -294,7 +312,7 @@ TEST_F(NotificationListViewTest, Open) {
   EXPECT_LT(0, message_list_view()->GetPreferredSize().height());
 }
 
-TEST_F(NotificationListViewTest, AddNotifications) {
+TEST_P(NotificationListViewTest, AddNotifications) {
   CreateMessageListView();
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 
@@ -332,7 +350,7 @@ TEST_F(NotificationListViewTest, AddNotifications) {
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(1)->bottom_radius());
 }
 
-TEST_F(NotificationListViewTest, RemoveNotification) {
+TEST_P(NotificationListViewTest, RemoveNotification) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
 
@@ -365,7 +383,7 @@ TEST_F(NotificationListViewTest, RemoveNotification) {
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 }
 
-TEST_F(NotificationListViewTest, CollapseOlderNotifications) {
+TEST_P(NotificationListViewTest, CollapseOlderNotifications) {
   AddNotification();
   CreateMessageListView();
   EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
@@ -393,7 +411,7 @@ TEST_F(NotificationListViewTest, CollapseOlderNotifications) {
   EXPECT_FALSE(GetMessageViewAt(3)->IsExpanded());
 }
 
-TEST_F(NotificationListViewTest, RemovingNotificationAnimation) {
+TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   auto id0 = AddNotification(/*pinned=*/false);
   auto id1 = AddNotification();
   auto id2 = AddNotification();
@@ -432,7 +450,7 @@ TEST_F(NotificationListViewTest, RemovingNotificationAnimation) {
 }
 
 // Flaky: https://crbug.com/1292774.
-TEST_F(NotificationListViewTest, DISABLED_ResetAnimation) {
+TEST_P(NotificationListViewTest, DISABLED_ResetAnimation) {
   auto id0 = AddNotification();
   auto id1 = AddNotification();
   CreateMessageListView();
@@ -451,7 +469,7 @@ TEST_F(NotificationListViewTest, DISABLED_ResetAnimation) {
   EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
 }
 
-TEST_F(NotificationListViewTest, KeepManuallyExpanded) {
+TEST_P(NotificationListViewTest, KeepManuallyExpanded) {
   AddNotification();
   AddNotification();
   CreateMessageListView();
@@ -494,7 +512,7 @@ TEST_F(NotificationListViewTest, KeepManuallyExpanded) {
   EXPECT_FALSE(GetMessageViewAt(0)->IsManuallyExpandedOrCollapsed());
 }
 
-TEST_F(NotificationListViewTest, ClearAllWithOnlyVisibleNotifications) {
+TEST_P(NotificationListViewTest, ClearAllWithOnlyVisibleNotifications) {
   AddNotification();
   AddNotification();
   CreateMessageListView();
@@ -536,7 +554,7 @@ TEST_F(NotificationListViewTest, ClearAllWithOnlyVisibleNotifications) {
   EXPECT_FALSE(IsAnimating());
 }
 
-TEST_F(NotificationListViewTest, ClearAllWithStackingNotifications) {
+TEST_P(NotificationListViewTest, ClearAllWithStackingNotifications) {
   AddNotification();
   AddNotification();
   AddNotification();
@@ -583,7 +601,7 @@ TEST_F(NotificationListViewTest, ClearAllWithStackingNotifications) {
   EXPECT_FALSE(IsAnimating());
 }
 
-TEST_F(NotificationListViewTest, ClearAllClosedInTheMiddle) {
+TEST_P(NotificationListViewTest, ClearAllClosedInTheMiddle) {
   AddNotification();
   AddNotification();
   AddNotification();
@@ -596,7 +614,7 @@ TEST_F(NotificationListViewTest, ClearAllClosedInTheMiddle) {
   EXPECT_TRUE(MessageCenter::Get()->GetVisibleNotifications().empty());
 }
 
-TEST_F(NotificationListViewTest, ClearAllInterrupted) {
+TEST_P(NotificationListViewTest, ClearAllInterrupted) {
   AddNotification();
   AddNotification();
   AddNotification();
@@ -610,7 +628,7 @@ TEST_F(NotificationListViewTest, ClearAllInterrupted) {
   EXPECT_TRUE(MessageCenter::Get()->FindVisibleNotificationById(new_id));
 }
 
-TEST_F(NotificationListViewTest, ClearAllWithPinnedNotifications) {
+TEST_P(NotificationListViewTest, ClearAllWithPinnedNotifications) {
   AddNotification(/*pinned=*/true);
   AddNotification();
   AddNotification();
@@ -621,7 +639,7 @@ TEST_F(NotificationListViewTest, ClearAllWithPinnedNotifications) {
   EXPECT_EQ(1u, message_list_view()->children().size());
 }
 
-TEST_F(NotificationListViewTest, ClearAllWithStackingAndPinnedNotifications) {
+TEST_P(NotificationListViewTest, ClearAllWithStackingAndPinnedNotifications) {
   AddNotification(/*pinned=*/true);
   AddNotification(/*pinned=*/true);
   AddNotification();
@@ -637,7 +655,7 @@ TEST_F(NotificationListViewTest, ClearAllWithStackingAndPinnedNotifications) {
 }
 
 // Flaky: https://crbug.com/1292701.
-TEST_F(NotificationListViewTest, DISABLED_UserSwipesAwayNotification) {
+TEST_P(NotificationListViewTest, DISABLED_UserSwipesAwayNotification) {
   // Show message list with two notifications.
   AddNotification();
   auto id1 = AddNotification();
@@ -663,7 +681,7 @@ TEST_F(NotificationListViewTest, DISABLED_UserSwipesAwayNotification) {
   EXPECT_FALSE(message_list_view()->IsAnimating());
 }
 
-TEST_F(NotificationListViewTest, InitInSortedOrder) {
+TEST_P(NotificationListViewTest, InitInSortedOrder) {
   // MessageViews should be ordered, from top down: [ id1, id2, id0 ].
   auto id0 = AddNotification(/*pinned=*/true);
   OffsetNotificationTimestamp(id0, 2000 /* milliseconds */);
@@ -678,7 +696,7 @@ TEST_F(NotificationListViewTest, InitInSortedOrder) {
   EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
 }
 
-TEST_F(NotificationListViewTest, NotificationAddedInSortedOrder) {
+TEST_P(NotificationListViewTest, NotificationAddedInSortedOrder) {
   auto id0 = AddNotification(/*pinned=*/true);
   OffsetNotificationTimestamp(id0, 3000 /* milliseconds */);
   auto id1 = AddNotification();
@@ -704,7 +722,7 @@ TEST_F(NotificationListViewTest, NotificationAddedInSortedOrder) {
   EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
 }
 
-TEST_F(NotificationListViewTest, OnChildNotificationViewUpdated) {
+TEST_P(NotificationListViewTest, OnChildNotificationViewUpdated) {
   const std::string source_url = "http://test-url.com";
 
   std::string id0;
@@ -753,7 +771,7 @@ TEST_F(NotificationListViewTest, OnChildNotificationViewUpdated) {
 }
 
 // Tests that preferred size changes upon toggle of expand/collapse.
-TEST_F(NotificationListViewTest, PreferredSizeChangesOnToggle) {
+TEST_P(NotificationListViewTest, PreferredSizeChangesOnToggle) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -787,7 +805,7 @@ TEST_F(NotificationListViewTest, PreferredSizeChangesOnToggle) {
 
 // Tests that expanding a notification while a different notification is
 // expanding is handled gracefully.
-TEST_F(NotificationListViewTest, TwoExpandsInARow) {
+TEST_P(NotificationListViewTest, TwoExpandsInARow) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -828,7 +846,7 @@ TEST_F(NotificationListViewTest, TwoExpandsInARow) {
 }
 
 // Tests that collapsing/expanding is reversible.
-TEST_F(NotificationListViewTest, ReverseExpand) {
+TEST_P(NotificationListViewTest, ReverseExpand) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -856,7 +874,7 @@ TEST_F(NotificationListViewTest, ReverseExpand) {
 }
 
 // Tests that destroying during a collapse animation does not crash.
-TEST_F(NotificationListViewTest, DestroyMessageListViewDuringCollapse) {
+TEST_P(NotificationListViewTest, DestroyMessageListViewDuringCollapse) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -869,7 +887,7 @@ TEST_F(NotificationListViewTest, DestroyMessageListViewDuringCollapse) {
 
 // Tests that closing a notification while its collapse animation is ongoing
 // works properly.
-TEST_F(NotificationListViewTest, RemoveNotificationDuringCollapse) {
+TEST_P(NotificationListViewTest, RemoveNotificationDuringCollapse) {
   auto id1 = AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
   auto* message_view = GetMessageViewAt(0);
@@ -895,7 +913,7 @@ TEST_F(NotificationListViewTest, RemoveNotificationDuringCollapse) {
 // Tests that expanding a notification at various stages while it is being
 // closed does not result in an animation.
 // TODO(crbug.com/1292775): Test is flaky.
-TEST_F(NotificationListViewTest,
+TEST_P(NotificationListViewTest,
        DISABLED_CollapseDuringCloseResultsInNoCollapseAnimation) {
   auto id1 = AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
@@ -933,7 +951,7 @@ TEST_F(NotificationListViewTest,
 // Tests that collapsing a notification while it is being moved automatically
 // completes both animations.
 // TODO(crbug.com/1292816): Test is flaky.
-TEST_F(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
+TEST_P(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
   auto to_be_removed_notification =
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   auto to_be_collapsed_notification =
@@ -969,7 +987,7 @@ TEST_F(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
 
 // Tests that moving a notification while it is already collapsing completes
 // both animations.
-TEST_F(NotificationListViewTest, MoveDuringCollapseNoAnimation) {
+TEST_P(NotificationListViewTest, MoveDuringCollapseNoAnimation) {
   auto to_be_removed_notification =
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   auto to_be_collapsed_notification =
@@ -999,7 +1017,7 @@ TEST_F(NotificationListViewTest, MoveDuringCollapseNoAnimation) {
       to_be_collapsed_message_view_container->GetPreferredSize().height());
 }
 
-TEST_F(NotificationListViewTest, SlideNotification) {
+TEST_P(NotificationListViewTest, SlideNotification) {
   // Show message list with four notifications.
   auto id0 = AddNotification();
   auto id1 = AddNotification();

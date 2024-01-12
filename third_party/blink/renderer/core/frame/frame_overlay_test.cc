@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
 using testing::ElementsAre;
@@ -79,6 +80,7 @@ class FrameOverlayTest : public testing::Test, public PaintTestConfigurations {
   void RunFrameOverlayTestWithAcceleratedCompositing();
 
  private:
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
 };
 

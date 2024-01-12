@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -11,8 +12,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -51,6 +55,25 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   return suggestions;
 }
 
+std::vector<Suggestion> CreateCreditCardSuggestions() {
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back("Credit card main text", "Credit card minor text",
+                           Suggestion::Icon::kCardUnionPay,
+                           PopupItemId::kCreditCardEntry);
+  suggestions.emplace_back("Credit card main text", "Credit card minor text",
+                           Suggestion::Icon::kCardVisa,
+                           PopupItemId::kCreditCardEntry);
+  suggestions.emplace_back(PopupItemId::kSeparator);
+
+  Suggestion settings(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  settings.popup_item_id = PopupItemId::kAutofillOptions;
+  settings.icon = Suggestion::Icon::kSettings;
+  suggestions.push_back(std::move(settings));
+
+  return suggestions;
+}
+
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
   return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry),
@@ -66,7 +89,22 @@ class PopupViewViewsBrowsertestBase
   PopupViewViewsBrowsertestBase() = default;
   ~PopupViewViewsBrowsertestBase() override = default;
 
+  void TearDownOnMainThread() override {
+    if (popup_has_parent_) {
+      EXPECT_CALL(controller(), ViewDestroyed);
+    }
+
+    popup_has_parent_ = false;
+    popup_parent_.reset();
+    PopupPixelTest::TearDownOnMainThread();
+  }
+
   void PrepareSuggestions(std::vector<Suggestion> suggestions) {
+    ON_CALL(controller(), GetMainFillingProduct())
+        .WillByDefault([&c = controller()] {
+          return GetFillingProductFromPopupItemId(
+              c.GetSuggestionAt(0).popup_item_id);
+        });
     controller().set_suggestions(std::move(suggestions));
   }
 
@@ -81,14 +119,29 @@ class PopupViewViewsBrowsertestBase
     }
   }
 
+  void ShowAndVerifyUi(bool popup_has_parent = false) {
+    popup_has_parent_ = popup_has_parent;
+    PopupPixelTest::ShowAndVerifyUi();
+  }
+
  protected:
   PopupViewViews* CreateView(MockAutofillPopupController& controller) override {
+    if (popup_has_parent_) {
+      popup_parent_ = std::make_unique<PopupViewViews>(controller.GetWeakPtr());
+      return new PopupViewViews(controller.GetWeakPtr(),
+                                test_api(*popup_parent_).GetWeakPtr(),
+                                popup_parent_->GetWidget());
+    }
     return new PopupViewViews(controller.GetWeakPtr());
   }
 
  private:
   // The index of the selected cell. No cell is selected by default.
   std::optional<CellIndex> selected_cell_;
+
+  // Controls whether the view is created as a sub-popup (i.e. having a parent).
+  bool popup_has_parent_ = false;
+  std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
 class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
@@ -108,20 +161,20 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autofill_Profile) {
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillProfile) {
   PrepareSuggestions(CreateAutofillProfileSuggestions());
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Profile) {
+                       InvokeUi_AutofillProfile_Selected_Profile) {
   PrepareSuggestions(CreateAutofillProfileSuggestions());
   PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Content_WithSubpoup) {
+                       InvokeUi_AutofillProfile_Selected_Content_WithSubpoup) {
   std::vector<Suggestion> suggestions = CreateAutofillProfileSuggestions();
   suggestions[0].children = CreateAutofillProfileSuggestions();
 
@@ -131,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Control_WithSubpoup) {
+                       InvokeUi_AutofillProfile_Selected_Control_WithSubpoup) {
   std::vector<Suggestion> suggestions = CreateAutofillProfileSuggestions();
   suggestions[0].children = CreateAutofillProfileSuggestions();
 
@@ -141,14 +194,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Footer) {
+                       InvokeUi_AutofillProfile_Selected_Footer) {
   PrepareSuggestions(CreateAutofillProfileSuggestions());
   PrepareSelectedCell(CellIndex{3, CellType::kContent});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_MultipleLabels) {
+                       InvokeUi_AutofillProfile_MultipleLabels) {
   std::vector<std::vector<Suggestion::Text>> labels = {
       {Suggestion::Text(
            u"Fill full address - Main Second First Third Street 123"),
@@ -156,6 +209,23 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
       {Suggestion::Text(u"Fill full address"), Suggestion::Text(u"Alex Park")}};
   Suggestion suggestion("Google", std::move(labels), Suggestion::Icon::kAccount,
                         PopupItemId::kAddressEntry);
+  PrepareSuggestions({suggestion});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
+  PrepareSuggestions(CreateCreditCardSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_CreditCard_MultipleLabels) {
+  std::vector<std::vector<Suggestion::Text>> labels = {
+      {Suggestion::Text(u"Filling credit card - your card for payments"),
+       Suggestion::Text(u"Alexander Joseph Ricardo Park")},
+      {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}};
+  Suggestion suggestion("Visa", std::move(labels), Suggestion::Icon::kCardVisa,
+                        PopupItemId::kCreditCardEntry);
   PrepareSuggestions({suggestion});
   ShowAndVerifyUi();
 }
@@ -204,6 +274,26 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   warning.popup_item_id = PopupItemId::kInsecureContextPaymentDisabledMessage;
   PrepareSuggestions({std::move(warning)});
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       ScrollingInRootPopupStickyFooter) {
+  // Create many suggestions that don't fit the height and activate scrolling.
+  std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
+  suggestions.push_back(PopupItemId::kSeparator);
+  suggestions.push_back(PopupItemId::kAutofillOptions);
+  controller().set_suggestions(std::move(suggestions));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       ScrollingInNonRootPopupNonStickyFooter) {
+  // Create many suggestions that don't fit the height and activate scrolling.
+  std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
+  suggestions.push_back(PopupItemId::kSeparator);
+  suggestions.push_back(PopupItemId::kAutofillOptions);
+  controller().set_suggestions(std::move(suggestions));
+  ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

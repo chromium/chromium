@@ -77,7 +77,7 @@ class BorealisInstallUrlHandlerTest : public testing::Test {
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   testing::NaggyMock<BorealisAppLauncherMock> app_launcher_;
   std::unique_ptr<BorealisInstallUrlHandler> install_url_handler_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_;
+  raw_ptr<BorealisServiceFake> fake_service_;
   std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
 };
 

@@ -167,8 +167,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->force_enable_zoom = data.force_enable_zoom();
   out->support_deprecated_target_density_dpi =
       data.support_deprecated_target_density_dpi();
-  out->use_legacy_background_size_shorthand_behavior =
-      data.use_legacy_background_size_shorthand_behavior();
   out->wide_viewport_quirk = data.wide_viewport_quirk();
   out->use_wide_viewport = data.use_wide_viewport();
   out->force_zero_layout_height = data.force_zero_layout_height();

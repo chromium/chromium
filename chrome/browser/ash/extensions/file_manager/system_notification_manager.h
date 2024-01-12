@@ -215,12 +215,6 @@ class SystemNotificationManager {
   // Make notification from the DriveFS offline settings event.
   NotificationPtr MakeDriveConfirmDialogNotification(const Event& event);
 
-  // Update/remove Drive sync progress notification.
-  // |event| is the event object delivered from EventRouter and
-  // |event_arguments| contains ListView serialized version of
-  // file_manager_private::FileTransferStatus.
-  NotificationPtr UpdateDriveSyncNotification(const Event& event);
-
   // Click handler for the removable device notification.
   void HandleRemovableNotificationClick(
       const std::string& path,
@@ -278,18 +272,17 @@ class SystemNotificationManager {
   std::map<std::string, SystemNotificationManagerMountStatus> mount_status_;
 
   // User profile.
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Application name (used for notification display source).
   std::u16string const app_name_;
 
   // DriveFS event router: not owned.
-  raw_ptr<DriveFsEventRouter, DanglingUntriaged | ExperimentalAsh>
-      drivefs_event_router_ = nullptr;
+  raw_ptr<DriveFsEventRouter, DanglingUntriaged> drivefs_event_router_ =
+      nullptr;
 
   // IOTaskController is owned by VolumeManager.
-  raw_ptr<file_manager::io_task::IOTaskController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<file_manager::io_task::IOTaskController, DanglingUntriaged>
       io_task_controller_ = nullptr;
 
   // Keep track of the bulk-pinning stage.

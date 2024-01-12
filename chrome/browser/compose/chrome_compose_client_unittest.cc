@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -117,6 +118,9 @@ class MockComposeDialog : public compose::mojom::ComposeDialog {
   MOCK_METHOD(void,
               ResponseReceived,
               (compose::mojom::ComposeResponsePtr response));
+  MOCK_METHOD(void,
+              PartialResponseReceived,
+              (compose::mojom::PartialComposeResponsePtr response));
 };
 
 }  // namespace
@@ -124,13 +128,18 @@ class MockComposeDialog : public compose::mojom::ComposeDialog {
 class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
+    ComposeEnabling::SetEnabledForTesting(true);
     BrowserWithTestWindowTest::SetUp();
 
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
-    SetPrefsForComposeConsentState(compose::mojom::ConsentState::kConsented);
+    // Needed for feature params to reset.
+    compose::ResetConfigForTesting();
+
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                         true);
     SetPrefsForComposeMSBBState(true);
     AddTab(browser(), GetPageUrl());
     client_ = ChromeComposeClient::FromWebContents(web_contents());
@@ -161,19 +170,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
-  void SetPrefsForComposeConsentState(
-      compose::mojom::ConsentState consent_state) {
-    PrefService* prefs = GetProfile()->GetPrefs();
-    prefs->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, false);
-    prefs->SetBoolean(unified_consent::prefs::kPageContentCollectionEnabled,
-                      false);
-    if (consent_state != compose::mojom::ConsentState::kUnset) {
-      prefs->SetBoolean(unified_consent::prefs::kPageContentCollectionEnabled,
-                        true);
-    }
-    if (consent_state == compose::mojom::ConsentState::kConsented) {
-      prefs->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
-    }
+  void TearDown() override {
+    client_ = nullptr;
+    scoped_feature_list_.Reset();
+    // Needed for feature params to reset.
+    compose::ResetConfigForTesting();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void SetPrefsForComposeMSBBState(bool msbb_state) {
@@ -182,6 +184,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         msbb_state);
   }
+
   void EnableAutoCompose() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -191,7 +194,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                    kOptimizationGuideModelExecution,
                                {}}},
         /*disabled_features=*/{});
-    // Needed for feature flags to apply.
+    // Needed for feature params to apply.
     compose::ResetConfigForTesting();
   }
 
@@ -261,12 +264,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   GURL GetPageUrl() { return GURL("http://foo/1"); }
 
-  void TearDown() override {
-    client_ = nullptr;
-    compose::ResetConfigForTesting();
-    BrowserWithTestWindowTest::TearDown();
-  }
-
   void SetSelection(const std::u16string& selection) {
     field_data().selected_text = selection;
   }
@@ -317,6 +314,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   const base::HistogramTester& histograms() const { return histogram_tester_; }
 
+  const base::UserActionTester& user_action_tester() const {
+    return user_action_tester_;
+  }
+
   // This helper function is a shortcut to adding a test future to listen for
   // compose responses.
   void BindComposeFutureToOnResponseReceived(
@@ -340,6 +341,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
@@ -373,7 +375,14 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
 
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
+  EXPECT_FALSE(result->on_device_evaluation_used);
 
+  // Check that a user action for the Compose request was emitted.
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.ComposeRequest.CreateClicked"));
+  histograms().ExpectUniqueSample(compose::kComposeRequestReason,
+                                  compose::ComposeRequestReason::kFirstRequest,
+                                  1);
   // Check that a response result OK metric was emitted.
   histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
                                   compose::mojom::ComposeStatus::kOk, 1);
@@ -391,6 +400,8 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
   const std::string input = "a user typed this";
   optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = ComposePageMetadata();
+  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+      saved_callback;
   EXPECT_CALL(session(), AddContext(EqualsProto(context_request)));
   EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input)), _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -398,20 +409,22 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             // Start with a partial response.
-            callback.Run(
+            auto opt_guide_response =
                 OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
-                                          /*is_complete=*/false),
-                nullptr);
-            // Then send the full response.
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(callback),
-                               OptimizationGuideResponse(
-                                   ComposeResponse(true, "Cucumbers")),
-                               nullptr));
+                                          /*is_complete=*/false);
+            opt_guide_response.provided_by_on_device = true;
+            callback.Run(std::move(opt_guide_response), nullptr);
+            saved_callback = callback;
           })));
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::PartialComposeResponsePtr>
+      partial_future;
+  EXPECT_CALL(compose_dialog(), PartialResponseReceived(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](compose::mojom::PartialComposeResponsePtr response) {
+            partial_future.SetValue(std::move(response));
+          }));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
       .WillRepeatedly(
@@ -421,13 +434,25 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
 
   page_handler()->Compose(input, false);
 
-  compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucu", result->result);
+  compose::mojom::PartialComposeResponsePtr partial_result =
+      partial_future.Take();
+  EXPECT_EQ("Cucu", partial_result->result);
 
-  result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucumbers", result->result);
+  // Request the initial state, and verify there's still a pending request.
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> initial_state_future;
+  page_handler()->RequestInitialState(initial_state_future.GetCallback());
+  compose::mojom::OpenMetadataPtr initial_state = initial_state_future.Take();
+  EXPECT_TRUE(initial_state->compose_state->has_pending_request);
+
+  // Then send the full response.
+  auto full_response =
+      OptimizationGuideResponse(ComposeResponse(true, "Cucumbers"));
+  full_response.provided_by_on_device = true;
+  saved_callback.Run(full_response, nullptr);
+  auto complete_result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, complete_result->status);
+  EXPECT_EQ("Cucumbers", complete_result->result);
+  EXPECT_TRUE(complete_result->on_device_evaluation_used);
 
   // Check that a single response result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
@@ -479,23 +504,29 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
           })));
   ShowDialogAndBindMojo();
 
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  base::test::TestFuture<compose::mojom::PartialComposeResponsePtr>
+      partial_response;
+  EXPECT_CALL(compose_dialog(), PartialResponseReceived(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](compose::mojom::PartialComposeResponsePtr response) {
+            partial_response.SetValue(std::move(response));
+          }));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> complete_response;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
       .WillRepeatedly(
           testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            test_future.SetValue(std::move(response));
+            complete_response.SetValue(std::move(response));
           }));
 
   page_handler()->Compose(input, false);
 
-  compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucu", result->result);
+  EXPECT_EQ("Cucu", partial_response.Get()->result);
 
   page_handler()->Compose(input2, false);
-  result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucumbers", result->result);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk,
+            complete_response.Get()->status);
+  EXPECT_EQ("Cucumbers", complete_response.Get()->result);
 
   // Check that a single response result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
@@ -603,8 +634,9 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(optimization_guide::StreamingResponse(),
-                                    nullptr);
+            std::move(callback).Run(
+                optimization_guide::StreamingResponse{.is_complete = true},
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -839,6 +871,8 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
   EXPECT_EQ("", result->compose_state->webui_state);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.NewSessionWithSelectedText"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kNewSessionWithSelectedText, 1);
@@ -1155,6 +1189,8 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.CloseButtonClicked"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
@@ -1175,14 +1211,8 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
       2,  // Expect that the dialog was shown twice.
       1);
 
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionConsentGivenInSession,
-      0,  // Consent was already given when this session was created.
-      1);
-
-  // No consent related close reasons should have been recorded.
-  histograms().ExpectTotalCount(compose::kComposeConsentSessionCloseReason, 0);
-  histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
+  // No FRE related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
 }
 
 TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
@@ -1201,8 +1231,8 @@ TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
       1);
   histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 1);
 
-  // No consent related close reasons should have been recorded.
-  histograms().ExpectTotalCount(compose::kComposeConsentSessionCloseReason, 0);
+  // No FRE related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -1235,167 +1265,105 @@ TEST_F(ChromeComposeClientTest,
       1);
   histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 1);
 
-  // No consent related close reasons should have been recorded.
-  histograms().ExpectTotalCount(compose::kComposeConsentSessionCloseReason, 0);
+  // No FRE related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
 }
 
-TEST_F(ChromeComposeClientTest, ConsentUICloseDialogHistogramTest) {
-  // Set unset consent state and show the dialog
-  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
+  // Enable FRE and show the dialog.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
   ShowDialogAndBindMojo();
-  client().CloseUI(compose::mojom::CloseReason::kConsentCloseButton);
+  client().CloseUI(compose::mojom::CloseReason::kFirstRunCloseButton);
   histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionCloseReason,
-      compose::ComposeConsentSessionCloseReason::kCloseButtonPressed, 1);
-  // Expect that the dialog was shown once ending without consent given.
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFirstRunSessionCloseReason::kCloseButtonPressed, 1);
+  // Expect that the dialog was shown once ending without FRE completed.
   histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionDialogShownCount + std::string(".Ignored"),
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Ignored"),
       1, 1);
 
-  // Show the consent dialog and close by declining consent
-  ShowDialogAndBindMojo();
-  client().CloseUI(compose::mojom::CloseReason::kPageContentConsentDeclined);
-  histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionCloseReason,
-      compose::ComposeConsentSessionCloseReason::kPageContentConsentDeclined,
-      1);
-  histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionDialogShownCount + std::string(".Ignored"),
-      1,  // Expect that the dialog was shown once.
-      2);
-
-  // Show the consent dialog and end the session by re-opening with selection
+  // Show the FRE dialog and end the session by re-opening with selection
   ShowDialogAndBindMojo();
   field_data().value = u"user selected text";
   SetSelection(u"selected text");
   ShowDialogAndBindMojo();
   histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionCloseReason,
-      compose::ComposeConsentSessionCloseReason::kNewSessionWithSelectedText,
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFirstRunSessionCloseReason::kNewSessionWithSelectedText,
       1);
   histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionDialogShownCount + std::string(".Ignored"),
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Ignored"),
       1,  // Expect that the dialog was shown once.
-      3);
+      2);
 
   // Throughout all sessions no main dialog metrics should have been logged, as
-  // the dialog never moved past the consent UI.
+  // the dialog never moved past the FRE.
   histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
   histograms().ExpectTotalCount(
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
 }
 
-TEST_F(ChromeComposeClientTest, ConsentAcceptedHistogramTest) {
-  // Set unset consent state and show the dialog
-  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+TEST_F(ChromeComposeClientTest, FirstRunCompletedHistogramTest) {
+  // Enable FRE and show the dialog.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
   ShowDialogAndBindMojo();
   // Show the dialog a second time.
   ShowDialogAndBindMojo();
-
-  // Accept consent and close
-  client().ApproveConsent();
+  // Complete FRE and close.
+  client().CompleteFirstRun();
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  histograms().ExpectBucketCount(compose::kComposeConsentSessionCloseReason,
-                                 compose::ComposeConsentSessionCloseReason::
-                                     kPageContentConsentAcceptedWithoutInsert,
-                                 1);
-  // Expect that the dialog was shown twice ending with consent given
   histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionDialogShownCount +
-          std::string(".Accepted"),
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFirstRunSessionCloseReason::
+          kFirstRunDisclaimerAcknowledgedWithoutInsert,
+      1);
+  // Expect that the dialog was shown twice ending with FRE completed.
+  histograms().ExpectBucketCount(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Acknowledged"),
       2, 1);
 
-  // After consent is accepted, a new set of metrics should be collected for the
+  // After FRE is completed, a new set of metrics should be collected for the
   // remainder of the session.
-  histograms().ExpectBucketCount(compose::kComposeSessionConsentGivenInSession,
-                                 1, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
-      1,  // The dialog was only shown once after having proceeded past consent.
-      1);
-}
-
-TEST_F(ChromeComposeClientTest, DisclaimerAcknowledgedHistogramTest) {
-  // Set externally consented state and show the dialog
-  SetPrefsForComposeConsentState(
-      compose::mojom::ConsentState::kExternalConsented);
-  ShowDialogAndBindMojo();
-  // Show the dialog a second time.
-  ShowDialogAndBindMojo();
-
-  // Acknowledge consent and close
-  client().AcknowledgeConsentDisclaimer();
-  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
-
-  histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionCloseReason,
-      compose::ComposeConsentSessionCloseReason::
-          kPageContentDisclaimerAcknowledgedWithoutInsert,
-      1);
-  // Expect that the dialog was shown twice ending with consent acknowledged.
-  histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionDialogShownCount +
-          std::string(".Accepted"),
-      2, 1);
-
-  // After the disclaimer is acknowledged, a new set of metrics should be
-  // collected for the remainder of the session.
-  histograms().ExpectBucketCount(compose::kComposeSessionConsentGivenInSession,
-                                 1, 1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionCloseReason,
-      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
-      1,  // The dialog was only shown once after having proceeded past consent.
+      1,  // The dialog was only shown once after having proceeded past FRE.
       1);
 }
 
 TEST_F(ChromeComposeClientTest,
-       ConsentGivenThenSuggestionAcceptedHistogramTest) {
-  // Set unset consent state and show the dialog
-  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+       FirstRunCompletedThenSuggestionAcceptedHistogramTest) {
+  // Enable FRE and show the dialog.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
   ShowDialogAndBindMojo();
-
-  // Accept consent then close by inserting
-  client().ApproveConsent();
+  // Complete FRE then close by inserting.
+  client().CompleteFirstRun();
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
-  histograms().ExpectBucketCount(compose::kComposeConsentSessionCloseReason,
-                                 compose::ComposeConsentSessionCloseReason::
-                                     kPageContentConsentGivenWithInsert,
+  histograms().ExpectBucketCount(compose::kComposeFirstRunSessionCloseReason,
+                                 compose::ComposeFirstRunSessionCloseReason::
+                                     kFirstRunDisclaimerAcknowledgedWithInsert,
                                  1);
-
-  // Repeat the above test with acknowledging consent disclaimer
-  SetPrefsForComposeConsentState(
-      compose::mojom::ConsentState::kExternalConsented);
-  ShowDialogAndBindMojo();
-  client().AcknowledgeConsentDisclaimer();
-  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
-
-  histograms().ExpectBucketCount(compose::kComposeConsentSessionCloseReason,
-                                 compose::ComposeConsentSessionCloseReason::
-                                     kPageContentConsentGivenWithInsert,
-                                 2);
 }
 
-TEST_F(ChromeComposeClientTest, AllSessionsConsentUpdatedHistogramTest) {
-  // Set unset consent state and show the dialog
-  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
+  // Enable FRE and show the dialog.
+  PrefService* prefs = GetProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kPrefHasCompletedComposeFRE, false);
+
   ShowDialogAndBindMojo();
+  client().CompleteFirstRun();
 
-  // If consent is given in this session, then main session metrics should be
-  // logged.
-  client().UpdateAllSessionsWithConsentApproved();
-  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
-
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionCloseReason,
-      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
 }
 
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
@@ -1426,6 +1394,8 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.InsertButtonClicked"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kAcceptedSuggestion, 1);
@@ -1454,14 +1424,17 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
   GURL next_page("http://example.com/a.html");
   NavigateAndCommit(web_contents(), next_page);
 
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kEndedImplicitly, 1);
 }
 
-TEST_F(ChromeComposeClientTest, LoseFocusConsentHistogramTest) {
-  // Set unset consent state and show the dialog
-  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+TEST_F(ChromeComposeClientTest, LoseFocusFirstRunHistogramTest) {
+  // Enable FRE and show the dialog.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
   ShowDialogAndBindMojo();
 
   // Dismiss dialog by losing focus by navigating.
@@ -1469,8 +1442,68 @@ TEST_F(ChromeComposeClientTest, LoseFocusConsentHistogramTest) {
   NavigateAndCommit(web_contents(), next_page);
 
   histograms().ExpectBucketCount(
-      compose::kComposeConsentSessionCloseReason,
-      compose::ComposeConsentSessionCloseReason::kEndedImplicitly, 1);
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFirstRunSessionCloseReason::kEndedImplicitly, 1);
+}
+
+TEST_F(ChromeComposeClientTest, ComposeDialogStatesSeenUserActionsTest) {
+  // Set both FRE and MSBB dialog states to show and check that appropriate
+  // user actions are logged when moving through all states in a single session.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
+  SetPrefsForComposeMSBBState(false);
+  EXPECT_EQ(0, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  EXPECT_EQ(0, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunMSBB"));
+  EXPECT_EQ(
+      0, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+
+  // Dialog should show at FRE state.
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  // After acknowledging the disclaimer, dialog should show the MSBB state.
+  client().CompleteFirstRun();
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunMSBB"));
+  // After updating the MSBB setting, only the next open of the dialog should
+  // record  a dialog seen action.
+  SetPrefsForComposeMSBBState(true);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(
+      1, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+  // Show dialog again.
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(
+      1, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Check user actions for new session opened at MSBB state.
+  SetPrefsForComposeMSBBState(false);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(2, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunMSBB"));
+  client().CloseUI(compose::mojom::CloseReason::kMSBBCloseButton);
+
+  // Check user actions for new session opened at main dialog state.
+  SetPrefsForComposeMSBBState(true);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(
+      2, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Check user actions for session opened at FRE state and progressing directly
+  // to main dialog state.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(2, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  // After acknowledging the disclaimer, dialog should show the main state.
+  client().CompleteFirstRun();
+  EXPECT_EQ(
+      3, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoCompose) {
@@ -1607,17 +1640,19 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
   EXPECT_EQ(base::UTF16ToUTF8(selection), result->initial_input);
 }
 
-TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithoutConsent) {
+TEST_F(ChromeComposeClientTest, TestNoAutoComposeBeforeFirstRun) {
   EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
-  SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
+  // Enable FRE and show the dialog.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
   // Valid selection for auto compose to use.
   std::u16string selection = u"testing alpha bravo charlie";
   SetSelection(selection);
   ShowDialogAndBindMojo();
 
-  // Without consent auto compose should not execute.
+  // Without FRE completion auto compose should not execute.
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
@@ -1844,6 +1879,10 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
 
   EXPECT_FALSE(result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
                    ->was_generated_via_edit());
+
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kUpdateRequest,
+                                 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestRegenerate) {
@@ -1887,6 +1926,10 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
+
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kRetryRequest,
+                                 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestToneChange) {
@@ -1902,6 +1945,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
           })));
+  // Rewrite with Formal.
   optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_tone(
@@ -1914,6 +1958,20 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
                       callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+  // Rewrite with Casual.
+  request.mutable_rewrite_params()->set_previous_response("Tomatoes");
+  request.mutable_rewrite_params()->set_tone(
+      optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
+  auto rewrite_matcher_informal = EqualsProto(request);
+  EXPECT_CALL(session(), ExecuteModel(rewrite_matcher_informal, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Potatoes")),
                 nullptr);
           })));
 
@@ -1934,6 +1992,16 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kToneFormalRequest, 1);
+
+  page_handler()->Rewrite(
+      compose::mojom::StyleModifiers::NewTone(compose::mojom::Tone::kCasual));
+  result = test_future.Take();
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kToneCasualRequest, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestLengthChange) {
@@ -1949,6 +2017,8 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
           })));
+
+  // Rewrite with Elaborate
   optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_length(
@@ -1961,6 +2031,21 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
                       callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+
+  // Rewrite with Shorten
+  request.mutable_rewrite_params()->set_previous_response("Tomatoes");
+  request.mutable_rewrite_params()->set_length(
+      optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
+  auto rewrite_shorten_matcher = EqualsProto(request);
+  EXPECT_CALL(session(), ExecuteModel(rewrite_shorten_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Potatoes")),
                 nullptr);
           })));
 
@@ -1981,6 +2066,16 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kLengthElaborateRequest, 1);
+
+  page_handler()->Rewrite(compose::mojom::StyleModifiers::NewLength(
+      compose::mojom::Length::kShorter));
+  result = test_future.Take();
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kLengthShortenRequest, 1);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

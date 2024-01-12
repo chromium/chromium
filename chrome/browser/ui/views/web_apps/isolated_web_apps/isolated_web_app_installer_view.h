@@ -37,6 +37,10 @@ class IsolatedWebAppInstallerView : public views::View {
   METADATA_HEADER(IsolatedWebAppInstallerView, views::View)
 
  public:
+  static constexpr char kInstallerWidgetName[] = "IsolatedWebAppInstaller";
+  static constexpr char kNestedDialogWidgetName[] =
+      "IsolatedWebAppInstallerDialog";
+
   class Delegate {
    public:
     virtual void OnSettingsLinkClicked() = 0;

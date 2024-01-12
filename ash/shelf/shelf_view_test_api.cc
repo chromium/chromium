@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_widget.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -24,7 +25,8 @@ namespace {
 // A class used to wait for animations.
 class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
  public:
-  TestAPIAnimationObserver() = default;
+  explicit TestAPIAnimationObserver(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
 
   TestAPIAnimationObserver(const TestAPIAnimationObserver&) = delete;
   TestAPIAnimationObserver& operator=(const TestAPIAnimationObserver&) = delete;
@@ -34,8 +36,11 @@ class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
   // views::BoundsAnimatorObserver overrides:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
+
+ private:
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -87,17 +92,18 @@ void ShelfViewTestAPI::SetAnimationDuration(base::TimeDelta duration) {
 
 void ShelfViewTestAPI::RunMessageLoopUntilAnimationsDone(
     views::BoundsAnimator* bounds_animator) {
+  base::RunLoop loop;
   if (!bounds_animator->IsAnimating())
     return;
 
   std::unique_ptr<TestAPIAnimationObserver> observer(
-      new TestAPIAnimationObserver());
+      new TestAPIAnimationObserver(loop.QuitWhenIdleClosure()));
 
   bounds_animator->AddObserver(observer.get());
 
   // This nested loop will quit when TestAPIAnimationObserver's
   // OnBoundsAnimatorDone is called.
-  base::RunLoop().Run();
+  loop.Run();
 
   bounds_animator->RemoveObserver(observer.get());
 }

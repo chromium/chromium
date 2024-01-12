@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ash/crosapi/browser_launcher.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,34 +22,42 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
-
-#if defined(USE_CRAS)
-#include "base/system/sys_info.h"
-#endif
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_switches.h"
@@ -56,6 +68,8 @@ namespace crosapi {
 namespace {
 
 using LaunchParamsFromBackground = BrowserLauncher::LaunchParamsFromBackground;
+using LaunchParams = BrowserLauncher::LaunchParams;
+using LaunchResults = BrowserLauncher::LaunchResults;
 
 base::FilePath LacrosPostLoginLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -63,6 +77,18 @@ base::FilePath LacrosPostLoginLogPath() {
 
 base::FilePath LacrosCrashDumpDirectory() {
   return BrowserLauncher::LacrosLogDirectory().Append("Crash Reports");
+}
+
+std::string GetXdgRuntimeDir() {
+  // If ash-chrome was given an environment variable, use it.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  std::string xdg_runtime_dir;
+  if (env->GetVar("XDG_RUNTIME_DIR", &xdg_runtime_dir)) {
+    return xdg_runtime_dir;
+  }
+
+  // Otherwise provide the default for Chrome OS devices.
+  return "/run/chrome";
 }
 
 void TerminateProcessBackground(base::Process process,
@@ -82,29 +108,10 @@ void TerminateProcessBackground(base::Process process,
   LOG_IF(ERROR, !success) << "Failed to terminate the lacros-chrome.";
 }
 
-void AppendArguments(const std::vector<std::string>& args,
-                     base::CommandLine& command_line) {
-  // TODO(crbug.com/1513045): When std::vector<std::string> becomes directly
-  // added to `base::CommandeLine` object, this function will be removed.
-  // `AppendArg()` only calls` AppendArgNative()`, and does not separate the
-  // flag into switches and keys. So, we need to separate the flag into switches
-  // and keys before calling `AppendArg()` when each flag is added to
-  // `command_line` with `AppendArg()` in for loop. In the current code,
-  // `AppendArguments()` is responsible for creating the correct command line,
-  // so even if something odd is added, it is likely to be detected here.
-  base::CommandLine command_line_to_append =
-      base::CommandLine(base::CommandLine::NO_PROGRAM);
-  for (const auto& arg : args) {
-    command_line_to_append.AppendArg(arg);
-  }
-  command_line.AppendArguments(command_line_to_append,
-                               /*include_program=*/false);
-}
-
 // NOTE: Do NOT add the command line here unless it is very fundamental. Find
 // the method suited the best from `SetUp*` or create a new one.
 base::CommandLine CreateCommandLine(const base::FilePath& chrome_path) {
-  base::CommandLine command_line = base::CommandLine(chrome_path);
+  base::CommandLine command_line(chrome_path);
 
   command_line.AppendSwitchASCII(switches::kOzonePlatform, "wayland");
 
@@ -124,6 +131,50 @@ base::CommandLine CreateCommandLine(const base::FilePath& chrome_path) {
   }
 #endif
   return command_line;
+}
+
+// NOTE: Do NOT add the options here unless it is very fundamental. Find
+// the method suited the best from `SetUp*` or create a new one.
+base::LaunchOptions CreateLaunchOptions() {
+  base::LaunchOptions options;
+  options.kill_on_parent_death = true;
+  return options;
+}
+
+void SetUpEnvironment(browser_util::LacrosSelection lacros_selection,
+                      base::LaunchOptions& options) {
+  // If Ash is an unknown channel then this is not a production build and we
+  // should be using an unknown channel for Lacros as well. This prevents Lacros
+  // from picking up Finch experiments.
+  version_info::Channel update_channel = version_info::Channel::UNKNOWN;
+  if (chrome::GetChannel() != version_info::Channel::UNKNOWN) {
+    update_channel =
+        browser_util::GetLacrosSelectionUpdateChannel(lacros_selection);
+    // If we don't have channel information, we default to the "dev" channel.
+    if (update_channel == version_info::Channel::UNKNOWN) {
+      update_channel = browser_util::kLacrosDefaultChannel;
+    }
+  }
+
+  options.environment["EGL_PLATFORM"] = "surfaceless";
+  options.environment["XDG_RUNTIME_DIR"] = GetXdgRuntimeDir();
+  options.environment["CHROME_VERSION_EXTRA"] =
+      version_info::GetChannelString(update_channel);
+
+  if (base::FeatureList::IsEnabled(ash::features::kLacrosWaylandLogging)) {
+    options.environment["WAYLAND_DEBUG"] = "1";
+  }
+
+  // LsbRelease and LsbReleaseTime are used by sys_info in Lacros to determine
+  // hardware class.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  std::string lsb_release;
+  std::string lsb_release_time;
+  if (env->GetVar(base::kLsbReleaseKey, &lsb_release) &&
+      env->GetVar(base::kLsbReleaseTimeKey, &lsb_release_time)) {
+    options.environment[base::kLsbReleaseKey] = std::move(lsb_release);
+    options.environment[base::kLsbReleaseTimeKey] = std::move(lsb_release_time);
+  }
 }
 
 void SetUpForDevMode(base::CommandLine& command_line) {
@@ -152,7 +203,22 @@ void SetUpForNacl(base::CommandLine& command_line) {
 #endif
 
 void SetUpLacrosAdditionalParameters(const LaunchParamsFromBackground& params,
-                                     base::CommandLine& command_line) {
+                                     LaunchParams& parameters) {
+  std::string additional_env =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ash::switches::kLacrosChromeAdditionalEnv);
+  base::StringPairs env_pairs;
+  if (base::SplitStringIntoKeyValuePairsUsingSubstr(additional_env, '=', "####",
+                                                    &env_pairs)) {
+    for (const auto& env_pair : env_pairs) {
+      if (!env_pair.first.empty()) {
+        LOG(WARNING) << "Applying lacros env " << env_pair.first << "="
+                     << env_pair.second;
+        parameters.options.environment[env_pair.first] = env_pair.second;
+      }
+    }
+  }
+
   std::string additional_flags =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ash::switches::kLacrosChromeAdditionalArgs);
@@ -166,11 +232,11 @@ void SetUpLacrosAdditionalParameters(const LaunchParamsFromBackground& params,
       additional_flags, "####", base::TRIM_WHITESPACE,
       base::SPLIT_WANT_NONEMPTY);
 
-  // TODO(crbug.com/1513045): When `AppendSwitchesAndArguments` function in
-  // base::CommandLine become public function, these vectors will be appended
-  // `command_line` directly.
-  AppendArguments(delimited_flags, command_line);
-  AppendArguments(params.lacros_additional_args, command_line);
+  parameters.command_line.AppendArguments(
+      base::CommandLine::FromArgvWithoutProgram(delimited_flags), false);
+  parameters.command_line.AppendArguments(
+      base::CommandLine::FromArgvWithoutProgram(params.lacros_additional_args),
+      false);
 }
 
 void SetUpForGpu(base::CommandLine& command_line) {
@@ -182,22 +248,25 @@ void SetUpForGpu(base::CommandLine& command_line) {
   }
 }
 
-// NOTE: Before calling this method, be sure to check `params.logfd` is
-// valid.
 void SetUpLogging(bool launching_at_login_screen,
-                  base::CommandLine& command_line) {
+                  std::optional<int> logfd,
+                  LaunchParams& parameters) {
+  // If logfd is valid, enable logging and redirect stdout/stderr to logfd.
+  if (!logfd) {
+    return;
+  }
   // The next flag will make chrome log only via stderr. See
   // DetermineLoggingDestination in logging_chrome.cc.
-  command_line.AppendSwitchASCII(switches::kEnableLogging, "stderr");
+  parameters.command_line.AppendSwitchASCII(switches::kEnableLogging, "stderr");
 
   auto* current_command_line = base::CommandLine::ForCurrentProcess();
   if (current_command_line->HasSwitch(switches::kLoggingLevel)) {
-    command_line.AppendSwitchASCII(
+    parameters.command_line.AppendSwitchASCII(
         switches::kLoggingLevel,
         current_command_line->GetSwitchValueASCII(switches::kLoggingLevel));
   }
 
-  command_line.AppendSwitchASCII(
+  parameters.command_line.AppendSwitchASCII(
       switches::kVModule,
       // TODO(crbug.com/1371493): Remove after fix.
       "wayland_window_drag_controller=1,wayland_data_source=1,tab_drag_"
@@ -207,38 +276,57 @@ void SetUpLogging(bool launching_at_login_screen,
   if (launching_at_login_screen &&
       !current_command_line->HasSwitch(switches::kDisableLoggingRedirect)) {
     // Redirects logs to cryptohome after login on non-test images.
-    command_line.AppendSwitchASCII(chromeos::switches::kCrosPostLoginLogFile,
-                                   LacrosPostLoginLogPath().value());
+    parameters.command_line.AppendSwitchASCII(
+        chromeos::switches::kCrosPostLoginLogFile,
+        LacrosPostLoginLogPath().value());
   }
+
+  // These options will assign stdout/stderr fds to logfd in the fd table of
+  // the new process.
+  parameters.options.fds_to_remap.push_back(
+      std::make_pair(logfd.value(), STDOUT_FILENO));
+  parameters.options.fds_to_remap.push_back(
+      std::make_pair(logfd.value(), STDERR_FILENO));
 }
 
 // Sets up switches and arguments of command line for startup and post-login
 // data.
-void SetUpForStartupData(std::optional<int> startup_data_fd,
-                         std::optional<int> postlogin_data_fd,
-                         base::CommandLine& command_line) {
-  // TODO(mayukoaiba): This part and the one in BrowserManager depending on
-  // whether `startup_fd` is valid or not need to be consistent.
-  if (startup_data_fd) {
-    command_line.AppendSwitchASCII(
+void SetUpForStartupData(std::optional<int> startup_fd,
+                         std::optional<int> read_pipe_fd,
+                         LaunchParams& parameters) {
+  if (startup_fd) {
+    // Hardcoded to use FD 3 to make the ash-chrome's behavior more predictable.
+    // Lacros-chrome should not depend on the hardcoded value though. Instead
+    // it should take a look at the value passed via the command line flag.
+    constexpr int kStartupDataFD = 3;
+    parameters.command_line.AppendSwitchASCII(
         chromeos::switches::kCrosStartupDataFD,
-        base::NumberToString(startup_data_fd.value()));
+        base::NumberToString(kStartupDataFD));
+    parameters.options.fds_to_remap.emplace_back(startup_fd.value(),
+                                                 kStartupDataFD);
   }
 
-  // TODO(mayukoaiba): This part and the one in BrowserManager depending on
-  // `launching_at_login_screen` need to be consistent.
-  if (postlogin_data_fd) {
-    command_line.AppendSwitchASCII(
+  // If at login screen, open an anonymous pipe to pass post-login parameters to
+  // Lacros later on.
+  if (read_pipe_fd) {
+    // Pass the read side of the pipe to the Lacros process.
+    constexpr int kPostLoginDataFD = 4;
+    parameters.command_line.AppendSwitchASCII(
         chromeos::switches::kCrosPostLoginDataFD,
-        base::NumberToString(postlogin_data_fd.value()));
+        base::NumberToString(kPostLoginDataFD));
+    parameters.options.fds_to_remap.emplace_back(read_pipe_fd.value(),
+                                                 kPostLoginDataFD);
   }
 }
 
-void SetUpForMojo(std::string_view channel_flag_value,
-                  base::CommandLine& command_line) {
+void SetUpForMojo(mojo::PlatformChannel& channel, LaunchParams& parameters) {
+  // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
+  std::string channel_flag_value;
+  channel.PrepareToPassRemoteEndpoint(&parameters.options.fds_to_remap,
+                                      &channel_flag_value);
   CHECK(!channel_flag_value.empty());
-  command_line.AppendSwitchASCII(kCrosapiMojoPlatformChannelHandle,
-                                 channel_flag_value);
+  parameters.command_line.AppendSwitchASCII(kCrosapiMojoPlatformChannelHandle,
+                                            channel_flag_value);
 }
 
 void SetUpForCrashpad(base::CommandLine& command_line) {
@@ -254,26 +342,46 @@ void SetUpForCrashpad(base::CommandLine& command_line) {
 // Sets up switches and arguments of command line for anything shared to
 // Lacros.
 void SetUpFeatures(const LaunchParamsFromBackground& params,
-                   base::CommandLine& command_line) {
+                   LaunchParams& parameters) {
   if (params.enable_resource_file_sharing) {
     // Passes a flag to enable resources file sharing to Lacros.
     // To use resources file sharing feature on Lacros, it's required for ash to
     // run with enabling the feature as well since the feature is based on some
     // ash behavior(clear or move cached shared resource file at lacros launch).
-    command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
+    parameters.command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
   }
 
   if (params.enable_shared_components_dir) {
     // Passes a flag to enable using a location shared across users for browser
     // components.
-    command_line.AppendSwitch(switches::kEnableLacrosSharedComponentsDir);
+    parameters.command_line.AppendSwitch(
+        switches::kEnableLacrosSharedComponentsDir);
+  }
+
+  if (params.enable_fork_zygotes_at_login_screen) {
+    parameters.command_line.AppendSwitch(
+        switches::kEnableLacrosForkZygotesAtLoginScreen);
   }
 }
 
 }  // namespace
 
-BrowserLauncher::BrowserLauncher() = default;
+// To be sure the lacros is running with neutral thread type.
+class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
+ public:
+  void RunAsyncSafe() override {
+    // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
+    // It looks like inside the function, we seem to call async unsafe API.
+    // For the mitigation, disabling this temporarily.
+    // We should revisit here, and see the impact of performance.
+    // SetCurrentThreadType() needs file I/O on /proc and /sys.
+    // base::ScopedAllowBlocking allow_blocking;
+    // base::PlatformThread::SetCurrentThreadType(
+    //     base::ThreadType::kDefault);
+  }
+};
 
+BrowserLauncher::BrowserLauncher() = default;
 BrowserLauncher::~BrowserLauncher() = default;
 
 // static
@@ -304,17 +412,95 @@ LaunchParamsFromBackground& LaunchParamsFromBackground::operator=(
     LaunchParamsFromBackground&&) = default;
 LaunchParamsFromBackground::~LaunchParamsFromBackground() = default;
 
-bool BrowserLauncher::LaunchProcess(const base::FilePath& chrome_path,
-                                    const LaunchParamsFromBackground& params,
-                                    bool launching_at_login_screen,
-                                    std::optional<int> startup_data_fd,
-                                    std::optional<int> postlogin_data_fd,
-                                    std::string_view channel_flag_value,
-                                    const base::LaunchOptions& options) {
-  base::CommandLine command_line(InitializeParameters(
-      chrome_path, params, launching_at_login_screen, startup_data_fd,
-      postlogin_data_fd, channel_flag_value));
-  return LaunchProcessWithParameters(command_line, options);
+LaunchParams::LaunchParams(base::CommandLine command_line,
+                           base::LaunchOptions options)
+    : command_line(std::move(command_line)), options(std::move(options)) {}
+LaunchParams::LaunchParams(LaunchParams&&) = default;
+LaunchParams& LaunchParams::operator=(LaunchParams&&) = default;
+LaunchParams::~LaunchParams() = default;
+
+LaunchResults::LaunchResults() = default;
+LaunchResults::LaunchResults(LaunchResults&&) = default;
+LaunchResults& LaunchResults::operator=(LaunchResults&&) = default;
+LaunchResults::~LaunchResults() = default;
+
+std::optional<LaunchResults> BrowserLauncher::LaunchProcess(
+    const base::FilePath& chrome_path,
+    const LaunchParamsFromBackground& params,
+    bool launching_at_login_screen,
+    browser_util::LacrosSelection lacros_selection,
+    base::OnceClosure mojo_disconnection_cb,
+    bool is_keep_alive_enabled) {
+  LOG(WARNING) << "Starting lacros-chrome launching at "
+               << chrome_path.MaybeAsASCII();
+  // Creates FD for startup.
+  // For backward compatibility, we want to pass all the parameters at
+  // startup if we're not launching at login screen.
+  // Vice versa, if we're launching at login screen, we want to split
+  // the parameters in pre-login and post-login.
+  base::ScopedFD startup_fd = browser_util::CreateStartupData(
+      &environment_provider_,
+      browser_util::InitialBrowserAction(
+          mojom::InitialBrowserAction::kDoNotOpenWindow),
+      !is_keep_alive_enabled, lacros_selection, !launching_at_login_screen);
+
+  LaunchResults launch_results;
+  // Creates a pipe between FDs when Lacros is launching at login screen.
+  base::ScopedFD read_pipe_fd;
+  if (launching_at_login_screen) {
+    CHECK(base::CreatePipe(&read_pipe_fd, &postlogin_pipe_fd_));
+  }
+
+  // Sets up Mojo channel.
+  // Uses new Crosapi mojo connection to detect process termination always.
+  mojo::PlatformChannel channel;
+  launch_results.crosapi_id = CrosapiManager::Get()->SendInvitation(
+      channel.TakeLocalEndpoint(), std::move(mojo_disconnection_cb));
+
+  // Initialize command line and options for launching Lacros.
+  // Do NOT include any codes with side effects because we just set up command
+  // line and options in this function. Do NOT modify LaunchParams outside of
+  // `CreateLaunchParams`.
+  LaunchParams parameters = CreateLaunchParams(
+      chrome_path, params, launching_at_login_screen,
+      startup_fd.is_valid() ? std::optional(startup_fd.get()) : std::nullopt,
+      read_pipe_fd.is_valid() ? std::optional(read_pipe_fd.get())
+                              : std::nullopt,
+      channel, lacros_selection);
+
+  base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
+  launch_results.lacros_launch_time = base::TimeTicks::Now();
+
+  bool success = LaunchProcessWithParameters(parameters);
+  channel.RemoteProcessLaunchAttempted();
+
+  return success ? std::make_optional(std::move(launch_results)) : std::nullopt;
+}
+
+void BrowserLauncher::ResumeLaunch() {
+  CHECK(postlogin_pipe_fd_.is_valid());
+  // Write post-login parameters into the anonymous pipe.
+  bool write_success = browser_util::WritePostLoginData(
+      postlogin_pipe_fd_.get(), &environment_provider_,
+      browser_util::InitialBrowserAction(
+          mojom::InitialBrowserAction::kDoNotOpenWindow));
+  PCHECK(write_success);
+  postlogin_pipe_fd_.reset();
+}
+
+void BrowserLauncher::SetDeviceAccountComponentPolicy(
+    policy::ComponentPolicyMap component_policy) {
+  environment_provider_.SetDeviceAccountComponentPolicy(
+      std::move(component_policy));
+}
+
+void BrowserLauncher::SetLastPolicyFetchAttemptTimestamp(
+    base::Time last_refresh) {
+  environment_provider_.SetLastPolicyFetchAttemptTimestamp(last_refresh);
+}
+
+void BrowserLauncher::SetDeviceAccountPolicy(const std::string& policy_blob) {
+  environment_provider_.SetDeviceAccountPolicy(policy_blob);
 }
 
 bool BrowserLauncher::IsProcessValid() {
@@ -345,86 +531,80 @@ void BrowserLauncher::EnsureProcessTerminated(base::OnceClosure callback,
   CHECK(!process_.IsValid());
 }
 
-base::CommandLine BrowserLauncher::InitializeParametersForTesting(
-    const base::FilePath& chrome_path,
-    const LaunchParamsFromBackground& params,
-    bool launching_at_login_screen,
-    std::optional<int> startup_data_fd,
-    std::optional<int> postlogin_data_fd,
-    std::string_view channel_flag_value) {
-  return InitializeParameters(chrome_path, params, launching_at_login_screen,
-                              startup_data_fd, postlogin_data_fd,
-                              channel_flag_value);
-}
-
 const base::Process& BrowserLauncher::GetProcessForTesting() {
   return process_;
 }
 
-bool BrowserLauncher::LaunchProcessForTesting(
-    const base::CommandLine& command_line,
-    const base::LaunchOptions& options) {
-  return LaunchProcessWithParameters(command_line, options);
+bool BrowserLauncher::LaunchProcessForTesting(const LaunchParams& parameters) {
+  return LaunchProcessWithParameters(parameters);
 }
 
 void BrowserLauncher::SetUpAdditionalParametersForTesting(
     LaunchParamsFromBackground& params,
-    base::CommandLine& command_line) {
-  SetUpLacrosAdditionalParameters(params, command_line);
+    LaunchParams& parameters) {
+  SetUpLacrosAdditionalParameters(params, parameters);
 }
 
-base::CommandLine BrowserLauncher::InitializeParameters(
+LaunchParams BrowserLauncher::CreateLaunchParams(
     const base::FilePath& chrome_path,
     const LaunchParamsFromBackground& params,
     bool launching_at_login_screen,
-    std::optional<int> startup_data_fd,
-    std::optional<int> postlogin_data_fd,
-    std::string_view channel_flag_value) {
+    std::optional<int> startup_fd,
+    std::optional<int> read_pipe_fd,
+    mojo::PlatformChannel& channel,
+    browser_util::LacrosSelection lacros_selection) {
   // Static configuration should be enabled from Lacros rather than Ash. This
   // vector should only be used for dynamic configuration.
   // TODO(https://crbug.com/1145713): Remove existing static configuration.
-  base::CommandLine command_line(CreateCommandLine(chrome_path));
+  LaunchParams parameters(CreateCommandLine(chrome_path),
+                          CreateLaunchOptions());
 
-  SetUpForDevMode(command_line);
+  SetUpEnvironment(lacros_selection, parameters.options);
+  SetUpForDevMode(parameters.command_line);
 #if BUILDFLAG(ENABLE_NACL)
-  SetUpForNacl(command_line);
+  SetUpForNacl(parameters.command_line);
 #endif
-  SetUpLacrosAdditionalParameters(params, command_line);
-  SetUpForGpu(command_line);
-  if (params.logfd.is_valid()) {
-    SetUpLogging(launching_at_login_screen, command_line);
-  }
-  SetUpForStartupData(startup_data_fd, postlogin_data_fd, command_line);
-  SetUpForMojo(channel_flag_value, command_line);
-  SetUpForCrashpad(command_line);
+  SetUpLacrosAdditionalParameters(params, parameters);
+  SetUpForGpu(parameters.command_line);
+  SetUpLogging(launching_at_login_screen,
+               params.logfd.is_valid() ? std::optional(params.logfd.get())
+                                       : std::nullopt,
+               parameters);
+  SetUpForStartupData(startup_fd, read_pipe_fd, parameters);
+  SetUpForMojo(channel, parameters);
+  SetUpForCrashpad(parameters.command_line);
 
   // Ensures that child processes have the same rules about what help features,
   // sharing feature and location share may show as the current process.
   // NOTE: this may add an --enable-features flag to the command line if not
   // already present, or append to the flag if it is.
-  feature_engagement::Tracker::PropagateTestStateToChildProcess(command_line);
+  feature_engagement::Tracker::PropagateTestStateToChildProcess(
+      parameters.command_line);
 
-  SetUpFeatures(params, command_line);
+  SetUpFeatures(params, parameters);
 
-  return command_line;
+  return parameters;
 }
 
 bool BrowserLauncher::LaunchProcessWithParameters(
-    const base::CommandLine& command_line,
-    const base::LaunchOptions& options) {
+    const LaunchParams& parameters) {
   LOG(WARNING) << "Launching lacros with command: "
-               << command_line.GetCommandLineString();
+               << parameters.command_line.GetCommandLineString();
 
+  // Create the lacros-chrome subprocess.
   // Checks whether process_ is valid or not in order not to overwrite
   // process_.
   CHECK(!process_.IsValid());
-  process_ = base::LaunchProcess(command_line, options);
+  // If process_ already exists, because it does not call waitpid(2),
+  // the process will never be collected.
+  process_ = base::LaunchProcess(parameters.command_line, parameters.options);
 
   if (!process_.IsValid()) {
     LOG(ERROR) << "Failed to launch lacros-chrome";
     return false;
   }
   LOG(WARNING) << "Launched lacros-chrome with pid " << process_.Pid();
+
   return true;
 }
 

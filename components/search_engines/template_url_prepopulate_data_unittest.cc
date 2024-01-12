@@ -28,6 +28,7 @@
 #include "components/search_engines/testing_search_terms_data.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -648,3 +649,29 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
       TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::ecosia);
   ExpectSimilar(expected_engine.get(), found_engine.get());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
+  constexpr char sample_country[] = "US";
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall,
+                    sample_country[0] << 8 | sample_country[1]);
+
+  // For a given country, the output from `GetLocalPrepopulatedEngines`
+  // should match the template URLs obtained from `GetPrepopulatedEngines`.
+  auto expected_urls =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_, nullptr);
+  auto actual_urls = TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
+      sample_country, prefs_);
+
+  ASSERT_EQ(actual_urls.size(), expected_urls.size());
+  for (unsigned int i = 0; i < actual_urls.size(); ++i) {
+    EXPECT_EQ(actual_urls[i]->prepopulate_id, expected_urls[i]->prepopulate_id);
+    EXPECT_EQ(actual_urls[i]->keyword(), expected_urls[i]->keyword());
+    EXPECT_EQ(actual_urls[i]->url(), expected_urls[i]->url());
+  }
+
+  EXPECT_THAT(TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
+                  "NOT A COUNTRY", prefs_),
+              testing::IsEmpty());
+}
+#endif  // BUILDFLAG(IS_ANDROID)

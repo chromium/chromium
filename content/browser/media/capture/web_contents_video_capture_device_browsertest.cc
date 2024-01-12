@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -31,7 +32,6 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -74,7 +74,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
   // test to fail in case we encounter something else).
   void WaitForFrameWithColor(
       SkColor color,
-      absl::optional<SkColor> tolerate_color = absl::nullopt) {
+      std::optional<SkColor> tolerate_color = std::nullopt) {
     const std::string color_string =
         base::StringPrintf("red=%d, green=%d, blue=%d", SkColorGetR(color),
                            SkColorGetG(color), SkColorGetB(color));
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
 
   // First frame is supposed to be black, store this as a previous color:
-  absl::optional<SkColor> previous_color = SK_ColorBLACK;
+  std::optional<SkColor> previous_color = SK_ColorBLACK;
 
   for (int visibility_case = 0; visibility_case < 3; ++visibility_case) {
     switch (visibility_case) {

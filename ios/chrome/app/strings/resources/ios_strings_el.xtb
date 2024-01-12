@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Δεν επιτρέπεται</translation>
 <translation id="1281818060020671000">Διαχείριση δεδομένων</translation>
 <translation id="1282311502488501110">Να μην γίνει σύνδεση</translation>
-<translation id="1283039547216852943">Πατήστε για ανάπτυξη</translation>
 <translation id="1283524564873030414">Τελευταίες 24 ώρες</translation>
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1291506870746876680">Οι άδειες για τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Ο συγχρονισμός σταμάτησε να λειτουργεί.</translation>
 <translation id="1377321085342047638">Αρ.κάρτας</translation>
 <translation id="1377508275003315939">Κωδικοί πρόσβασης</translation>
-<translation id="1380914240355562929">Ο χρήστης <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> μπορεί πλέον να χρησιμοποιήσει το δικό σας όνομα χρήστη και κωδικό πρόσβασής όταν χρησιμοποιεί τον Διαχειριστή κωδικών πρόσβασης Google, για να συνδεθεί στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="138618066238211776">Συνέχεια ως <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Τελευταίες 4 εβδομάδες</translation>
@@ -253,6 +251,7 @@
 <translation id="2326302612031521902">Επιλογέας μονάδας</translation>
 <translation id="2348630484974447747">Πακέτο</translation>
 <translation id="2351097562818989364">Έγινε επαναφορά ρυθμίσεων μετάφρασης.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Μπορείτε να αποθηκεύσετε τον κωδικό πρόσβασης για τον τομέα {DOMAIN_ONE} στον Λογαριασμό σας Google, {EMAIL}.}=2{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE} και {DOMAIN_TWO} στον Λογαριασμό σας Google, {EMAIL}.}=3{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομέα στον Λογαριασμό σας Google, {EMAIL}.}other{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομείς στον Λογαριασμό σας Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
 <translation id="2359043044084662842">Μετάφραση</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
@@ -314,6 +313,7 @@
 <translation id="2664621323652615289">Διακοπή</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
+<translation id="2681158575552244226">αποθηκεύεται στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Η κάμερα χρησιμοποιείται</translation>
 <translation id="2691653761409724435">Μη διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="2695507686909505111">Μεταφρασμένη σελίδα</translation>
@@ -336,6 +336,7 @@
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
 <translation id="2749231692441336879">Παρακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Λογαριασμοί σε αυτήν τη συσκευή</translation>
+<translation id="2755595981383829244">Στο εξής θα λαμβάνετε ειδοποιήσεις περιεχομένου</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="2772667768515195373">Μπορείτε να χρησιμοποιήσετε τις αποθηκευμένες διευθύνσεις σε όλα τα προϊόντα Google. Αυτή η διεύθυνση έχει αποθηκευτεί στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Ανώνυμη αναζήτηση</translation>
@@ -526,7 +527,6 @@
 <translation id="3779810277399252432">Δεν υπάρχει σύνδεση στο διαδίκτυο.</translation>
 <translation id="3789294999358192700">Ακολουθήστε τα εξής βήματα:</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
-<translation id="3792713031001122343">{count,plural, =1{Αποθήκευση 1 σελιδοδείκτη στον Λογαριασμό σας Google}other{Αποθήκευση {count} σελιδοδεικτών στον Λογαριασμό σας Google}}</translation>
 <translation id="380329542618494757">Όνομα</translation>
 <translation id="3803696231112616155">Πρόταση για μετάφραση αυτού του ιστοτόπου</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
@@ -690,6 +690,7 @@
 <translation id="4689564913179979534">Διαχείριση τρόπων πληρωμής…</translation>
 <translation id="469300482518076788">Κλείσιμο καρτέλας</translation>
 <translation id="4697071790493980729">Δεν βρέθηκαν αποτελέσματα</translation>
+<translation id="470337593714520080">{count,plural, =1{Αποθήκευση 1 σελιδοδείκτη στον Λογαριασμό σας Google}other{Αποθήκευση {count} σελιδοδεικτών στον Λογαριασμό σας Google}}</translation>
 <translation id="470966556546083668">Να μην ενεργοποιηθεί ο συγχρονισμός</translation>
 <translation id="4711809265250406889">Όταν είναι ενεργή</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} και 1 ακόμη}other{{website_1}, {website_2} και {more_count} ακόμη}}</translation>
@@ -774,7 +775,6 @@
 <translation id="5121618895923301719">Παρακολουθείτε ήδη αυτό το προϊόν. Αυτή η σελίδα έχει αποθηκευτεί στους <ph name="BEGIN_LINK" />Σελιδοδείκτες κινητής συσκευής<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Έχετε αρκετά προβλήματα με τους κωδικούς πρόσβασης.</translation>
 <translation id="5126465625664020024">Σύνδεση και συγχρονισμός</translation>
-<translation id="5131062416352684089">Τα μέλη της οικογένειάς σας μπορούν πλέον να χρησιμοποιήσουν το δικό σας όνομα χρήστη και κωδικό πρόσβασής όταν χρησιμοποιούν τον Διαχειριστή κωδικών πρόσβασης Google, για να συνδεθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ασθενής κωδικός πρόσβασης}other{{COUNT} ασθενείς κωδικοί πρόσβασης}}</translation>
 <translation id="5149188072385105201">Προσθήκη κωδικού πρόσβασης…</translation>
@@ -923,7 +923,6 @@
 <translation id="5955891643922670672">Προβολή έκδοσης εκτός σύνδεσης</translation>
 <translation id="5957613098218939406">Περισσότερες επιλογές</translation>
 <translation id="595769230373966252">Αναζήτηση με <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5963939892571022323">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 σελιδοδείκτης διαγράφηκε}other{{count} σελιδοδείκτες διαγράφηκαν}}</translation>
 <translation id="5979837087407522202">Αναζήτηση κωδικών πρόσβασης</translation>
@@ -990,6 +989,7 @@
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>
 <translation id="6266039999629596120">Απαιτείται ενέργεια</translation>
 <translation id="6277426346321820595">Χωρίς προστασία</translation>
+<translation id="628251768213143684">Μπορείτε να διαχειριστείτε ανά πάσα στιγμή το περιεχόμενο που είναι αποθηκευμένο στον Λογαριασμό σας Google</translation>
 <translation id="6284652193729350524">Πρόταση για μετάφραση <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Καταργήθηκε η παρακολούθηση του καναλιού <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Για να ενεργοποιήσετε την Ασφαλή περιήγηση, ανοίξτε τις <ph name="BEGIN_LINK" />υπηρεσίες Google<ph name="END_LINK" /> και πατήστε Ασφαλής περιήγηση.</translation>
@@ -1092,6 +1092,7 @@
 <translation id="6685259053455152195">Συντομεύσεις για γρήγορη τροποποίηση ρυθμίσεων και χρήση λειτουργιών από τη γραμμή διευθύνσεων.</translation>
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">αποθηκεύτηκε στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας.</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
 <translation id="6732087373923685049">κάμερα</translation>
@@ -1166,6 +1167,7 @@
 <translation id="7102005569666697658">Λήψη… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Απόκρυψη</translation>
 <translation id="7108762695052995889">Επίσκεψη στον ιστότοπο</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Ονοματεπώνυμο</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
 <translation id="7141960840225504692">Οι καρτέλες σας θα κλείσουν και τα δεδομένα περιήγησης θα διαγραφούν</translation>
@@ -1223,7 +1225,6 @@
 <translation id="7488874549363591659">Παραδόθηκε</translation>
 <translation id="7491131399623468277">Μετάβαση στις Ρυθμίσεις…</translation>
 <translation id="749854780843431406">Μπορείτε να ανοίξετε μια νέα καρτέλα χρησιμοποιώντας το κουμπί <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
-<translation id="7500419352370346534">Μπορείτε πλέον να ελέγχετε όλες τις ρυθμίσεις του λογαριασμού σας σε ένα μέρος</translation>
 <translation id="750149195207506638">Οι σελιδοδείκτες είναι κρυφοί</translation>
 <translation id="750228856503700085">Οι ενημερώσεις δεν είναι διαθέσιμες</translation>
 <translation id="750493650310597496">0 στοιχεία επιλεγμένα</translation>
@@ -1370,6 +1371,7 @@
 <translation id="8237382152611443140">Ανοίξτε τις Ρυθμίσεις της Αυτόματης συμπλήρωσης κωδικού πρόσβασης</translation>
 <translation id="8248969482078657578">Οι Ανενεργές καρτέλες σάς βοηθούν να παραμένετε συγκεντρωμένοι</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="8263336784344783289">Ονομάστε αυτή την ομάδα</translation>
 <translation id="8264966119170358612">Ορισμένοι από τους αποθηκευμένους κωδικούς πρόσβασής σας εκτέθηκαν σε μια παραβίαση δεδομένων που έγινε εκτός Google. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Αποσυνδεθήκατε από τον λογαριασμό σας <ph name="USER_NAME" /> στο πλαίσιο της επαναφοράς του iPad. Για να συνδεθείτε ξανά, πατήστε Συνέχεια παρακάτω.</translation>
 <translation id="8271720166617117963">Αποδοχή και σύνδεση</translation>
@@ -1564,7 +1566,6 @@
 <translation id="952704832371081537">Ακύρωση</translation>
 <translation id="959066944189734975">Ακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Εμφάνιση προτάσεων καρτελών από άλλες συσκευές</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Μπορείτε να αποθηκεύσετε τον κωδικό πρόσβασης για τον τομέα {DOMAIN_ONE} στον Λογαριασμό σας Google, {EMAIL}}=2{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE} και {DOMAIN_TWO} στον Λογαριασμό σας Google, {EMAIL}}=3{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομέα στον Λογαριασμό σας Google, {EMAIL}}other{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομείς στον Λογαριασμό σας Google, {EMAIL}}}</translation>
 <translation id="973493300226275298">Παρακολουθήστε την τιμή ενός προϊόντος στα διαδικτυακά καταστήματα. Θα λαμβάνετε ειδοποιήσεις όταν υπάρχει πτώση τιμής.</translation>
 <translation id="981498610235328462">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς. Οι λογαριασμοί που δεν επιτρέπονται δεν εμφανίζονται.</translation>
 <translation id="984509647832111802">Ο συγχρονισμός δεν λειτουργεί.</translation>

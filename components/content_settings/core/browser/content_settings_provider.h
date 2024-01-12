@@ -47,7 +47,7 @@ class ProviderInterface {
   //
   // This method needs to be thread-safe and continue to work after
   // |ShutdownOnUIThread| has been called.
-  virtual std::unique_ptr<OwnedRule> GetRule(
+  virtual std::unique_ptr<Rule> GetRule(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,

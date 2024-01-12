@@ -78,11 +78,11 @@ std::unique_ptr<views::View> CreateButtonContainer(
 class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
  public:
   MenuPreTargetHandler(views::Widget* menu_widget,
-                       base::RepeatingClosure close_callback,
+                       base::RepeatingClosure dismiss_callback,
                        views::View* anchor_view)
       : menu_widget_(menu_widget),
         anchor_view_(anchor_view),
-        close_callback_(std::move(close_callback)) {
+        dismiss_callback_(std::move(dismiss_callback)) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
   }
@@ -133,7 +133,7 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
     const gfx::Point screen_location = event.target()->GetScreenLocation(event);
     // If the event is out of menu bounds, close the menu.
     if (!menu_widget_->GetWindowBoundsInScreen().Contains(screen_location)) {
-      close_callback_.Run();
+      dismiss_callback_.Run();
     }
   }
 
@@ -151,21 +151,20 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
     }
   }
 
-  void OnFadeOutFinished() { close_callback_.Run(); }
+  void OnFadeOutFinished() { dismiss_callback_.Run(); }
 
   // The widget of the multitask menu that is currently shown. Guaranteed to
   // outlive `this`, which will get destroyed when the menu is destructed in
   // `close_callback_`.
-  const raw_ptr<views::Widget, ExperimentalAsh> menu_widget_;
+  const raw_ptr<views::Widget> menu_widget_;
 
   // The anchor of the menu's widget if it exists. Set if there is an anchor and
   // we want the menu to close if the mouse has exited the menu bounds.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> anchor_view_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> anchor_view_ = nullptr;
 
   base::OneShotTimer exit_timer_;
 
-  base::RepeatingClosure close_callback_;
+  base::RepeatingClosure dismiss_callback_;
 
   // Chrome's compiler toolchain enforces that any `WeakPtrFactory`
   // fields are declared last, to avoid destruction ordering issues.
@@ -177,13 +176,16 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
 
 MultitaskMenuView::MultitaskMenuView(aura::Window* window,
                                      base::RepeatingClosure close_callback,
+                                     base::RepeatingClosure dismiss_callback,
                                      uint8_t buttons,
                                      views::View* anchor_view)
     : window_(window),
       anchor_view_(anchor_view),
-      close_callback_(std::move(close_callback)) {
+      close_callback_(std::move(close_callback)),
+      dismiss_callback_(std::move(dismiss_callback)) {
   DCHECK(window);
   DCHECK(close_callback_);
+  DCHECK(dismiss_callback_);
   SetBackground(views::CreateThemedSolidBackground(ui::kColorSysSurface3));
   SetUseDefaultFillLayout(true);
 
@@ -334,7 +336,7 @@ void MultitaskMenuView::AddedToWidget() {
   // When the menu widget is shown, we install `MenuPreTargetHandler` to close
   // the menu on any events outside.
   event_handler_ = std::make_unique<MenuPreTargetHandler>(
-      GetWidget(), close_callback_, anchor_view_);
+      GetWidget(), dismiss_callback_, anchor_view_);
 }
 
 bool MultitaskMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {

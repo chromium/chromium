@@ -37,9 +37,7 @@ const char kLogSourceType[] = "type";
 
 std::string EncodeToBase64(const std::string& to_convert) {
   DCHECK(to_convert.data());
-  std::string base64_result;
-  base::Base64Encode(to_convert, &base64_result);
-  return base64_result;
+  return base::Base64Encode(to_convert);
 }
 
 std::string DecodeFromBase64(const std::string& to_convert) {

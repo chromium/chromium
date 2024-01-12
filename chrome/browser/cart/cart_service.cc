@@ -4,6 +4,8 @@
 
 #include "chrome/browser/cart/cart_service.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
@@ -900,14 +902,10 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
       merchants_to_erase.emplace(kv.second.key());
     }
   }
-  proto_pairs.erase(
-      std::remove_if(proto_pairs.begin(), proto_pairs.end(),
-                     [merchants_to_erase](CartDB::KeyAndValue kv) {
-                       return kv.second.is_hidden() || kv.second.is_removed() ||
-                              merchants_to_erase.find(kv.second.key()) !=
-                                  merchants_to_erase.end();
-                     }),
-      proto_pairs.end());
+  std::erase_if(proto_pairs, [merchants_to_erase](CartDB::KeyAndValue kv) {
+    return kv.second.is_hidden() || kv.second.is_removed() ||
+           merchants_to_erase.contains(kv.second.key());
+  });
   for (auto proto_pair : proto_pairs) {
     if (RE2::FullMatch(proto_pair.first, GetSkipCartExtractionPattern())) {
       proto_pair.second.clear_product_image_urls();

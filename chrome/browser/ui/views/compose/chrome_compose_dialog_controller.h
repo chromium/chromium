@@ -39,6 +39,8 @@ class ChromeComposeDialogController : public compose::ComposeDialogController {
 
   void Close() override;
 
+  bool IsDialogShowing() override;
+
  private:
   friend class ChromeComposeDialogControllerTest;
 

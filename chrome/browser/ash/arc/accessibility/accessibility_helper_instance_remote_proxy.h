@@ -49,7 +49,7 @@ class AccessibilityHelperInstanceRemoteProxy {
       ax::android::mojom::AccessibilityWindowKeyPtr window_key_ptr) const;
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 

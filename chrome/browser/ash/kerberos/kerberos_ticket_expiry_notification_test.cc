@@ -57,7 +57,7 @@ class KerberosTicketExpiryNotificationTest : public testing::Test {
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Counts how many times a notification for a given user was clicked.

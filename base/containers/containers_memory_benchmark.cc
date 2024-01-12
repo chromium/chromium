@@ -58,6 +58,7 @@
 #include <utility>
 
 #include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/notification_data.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/strings/safe_sprintf.h"
@@ -74,24 +75,26 @@ std::atomic<bool> log_allocs_and_frees;
 
 struct AllocationLogger {
  public:
-  void OnAllocation(void* address,
-                    size_t size,
-                    base::allocator::dispatcher::AllocationSubsystem sub_system,
-                    const char* type_name) {
+  void OnAllocation(
+      const base::allocator::dispatcher::AllocationNotificationData&
+          allocation_data) {
     if (log_allocs_and_frees.load(std::memory_order_acquire)) {
       char buffer[128];
       // Assume success; ignore return value.
-      base::strings::SafeSPrintf(buffer, "alloc address %p size %d\n", address,
-                                 size);
+      base::strings::SafeSPrintf(buffer, "alloc address %p size %d\n",
+                                 allocation_data.address(),
+                                 allocation_data.size());
       RAW_LOG(INFO, buffer);
     }
   }
 
-  void OnFree(void* address) {
+  void OnFree(
+      const base::allocator::dispatcher::FreeNotificationData& free_data) {
     if (log_allocs_and_frees.load(std::memory_order_acquire)) {
       char buffer[128];
       // Assume success; ignore return value.
-      base::strings::SafeSPrintf(buffer, "freed address %p\n", address);
+      base::strings::SafeSPrintf(buffer, "freed address %p\n",
+                                 free_data.address());
       RAW_LOG(INFO, buffer);
     }
   }

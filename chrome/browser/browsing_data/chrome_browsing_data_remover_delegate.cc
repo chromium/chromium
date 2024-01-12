@@ -112,6 +112,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
@@ -292,10 +293,11 @@ std::vector<std::string>
 ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     content::StoragePartition* storage_partition,
     uint64_t remove_mask) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return {};
-  }
+#if BUILDFLAG(IS_ANDROID)
+  // On Android the identity model isn't based on Gaia cookies, so they can be
+  // wiped immediately without influencing the wiping of account-scoped data.
+  return {};
+#else
   // The Google/Gaia cookies we care about live in the default StoragePartition.
   if (!storage_partition->GetConfig().is_default() ||
       (remove_mask & constants::DEFERRED_COOKIE_DELETION_DATA_TYPES) == 0) {
@@ -315,6 +317,7 @@ ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     domains.insert(domain);
   }
   return {domains.begin(), domains.end()};
+#endif
 }
 
 void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
@@ -739,6 +742,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetDefaultForBrowserContext(profile_);
     zoom_map->ClearZoomLevels(delete_begin, delete_end_);
+
+    // Discard exceptions weren't stored with timestamps, so they all must be
+    // cleared.
+    performance_manager::user_tuning::prefs::ClearTabDiscardExceptionsList(
+        prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 

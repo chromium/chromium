@@ -6,15 +6,20 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/logging.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_target.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/extensions/pinned_mode_extension.h"
@@ -28,6 +33,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace {
 
@@ -50,6 +56,10 @@ chromeos::WindowStateType ToChromeosWindowStateType(
       return chromeos::WindowStateType::kSecondarySnapped;
     case ui::PlatformWindowState::kFloated:
       return chromeos::WindowStateType::kFloated;
+    case ui::PlatformWindowState::kPinnedFullscreen:
+      return chromeos::WindowStateType::kPinned;
+    case ui::PlatformWindowState::kTrustedPinnedFullscreen:
+      return chromeos::WindowStateType::kTrustedPinned;
   }
 }
 
@@ -141,6 +151,8 @@ void DesktopWindowTreeHostLacros::OnWindowStateChanged(
   GetContentWindow()->SetProperty(
       chromeos::kWindowStateTypeKey,
       ToChromeosWindowStateType(new_window_show_state));
+
+  UpdateWindowHints();
 }
 
 void DesktopWindowTreeHostLacros::OnFullscreenTypeChanged(
@@ -157,6 +169,13 @@ void DesktopWindowTreeHostLacros::OnFullscreenTypeChanged(
 void DesktopWindowTreeHostLacros::OnOverviewModeChanged(bool in_overview) {
   GetContentWindow()->SetProperty(chromeos::kIsShowingInOverviewKey,
                                   in_overview);
+
+  // Window corner radius depends on whether the window is in overview mode or
+  // not. Once the overview property has been updated, the browser window
+  // corners need to be updated.
+  // See `chromeos::GetFrameCornerRadius()` for more details.
+  // TODO(b/301501363): Rename to UpdateWindowHints.
+  UpdateWindowHints();
 }
 
 void DesktopWindowTreeHostLacros::OnTooltipShownOnServer(
@@ -172,6 +191,12 @@ void DesktopWindowTreeHostLacros::OnTooltipHiddenOnServer() {
   if (tooltip_controller()) {
     tooltip_controller()->OnTooltipHiddenOnServer();
   }
+}
+
+void DesktopWindowTreeHostLacros::OnBoundsChanged(const BoundsChange& change) {
+  DesktopWindowTreeHostPlatform::OnBoundsChanged(change);
+
+  UpdateWindowHints();
 }
 
 void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(
@@ -207,6 +232,12 @@ void DesktopWindowTreeHostLacros::OnWindowDestroying(aura::Window* window) {
   content_window_observation_.Reset();
 }
 
+void DesktopWindowTreeHostLacros::OnWidgetInitDone() {
+  DesktopWindowTreeHostPlatform::OnWidgetInitDone();
+
+  UpdateWindowHints();
+}
+
 void DesktopWindowTreeHostLacros::CreateNonClientEventFilter() {
   DCHECK(!non_client_window_event_filter_);
   non_client_window_event_filter_ = std::make_unique<WindowEventFilterLacros>(
@@ -215,6 +246,92 @@ void DesktopWindowTreeHostLacros::CreateNonClientEventFilter() {
 
 void DesktopWindowTreeHostLacros::DestroyNonClientEventFilter() {
   non_client_window_event_filter_.reset();
+}
+
+void DesktopWindowTreeHostLacros::UpdateWindowHints() {
+  if (!GetWidget()->non_client_view()) {
+    return;
+  }
+
+  const float scale = device_scale_factor();
+  const gfx::Size widget_size_px =
+      platform_window()->GetBoundsInPixels().size();
+
+  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+
+  const gfx::RoundedCornersF window_radii =
+      wayland_extension ? wayland_extension->GetWindowCornersRadii()
+                        : gfx::RoundedCornersF();
+
+  std::vector<gfx::Rect> opaque_region;
+
+  const bool should_have_rounded_window =
+      views::ViewsDelegate::GetInstance()->ShouldWindowHaveRoundedCorners(
+          GetWidget()->GetNativeWindow());
+
+  if (should_have_rounded_window) {
+    GetContentWindow()->layer()->SetRoundedCornerRadius(window_radii);
+    GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
+
+    // The opaque region is a list of rectangles that contain only fully
+    // opaque pixels of the window.  We need to convert the clipping
+    // rounded-rect into this format.
+    const NonClientFrameView* frame_view =
+        GetWidget()->non_client_view()->frame_view();
+    gfx::Rect local_bounds = frame_view->GetLocalBounds();
+    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), window_radii);
+    gfx::RectF rect_f = rounded_corners_rect.rect();
+    rect_f.Scale(scale);
+
+    // It is acceptable to omit some pixels that are opaque, but the region
+    // must not include any translucent pixels.  Therefore, we must
+    // conservatively scale to the enclosed rectangle.
+    gfx::Rect rect = gfx::ToEnclosedRect(rect_f);
+
+    // Create the initial region from the clipping rectangle without rounded
+    // corners.
+    cc::Region region(rect);
+
+    // Now subtract out the small rectangles that cover the corners.
+    struct {
+      gfx::RRectF::Corner corner;
+      bool left;
+      bool upper;
+    } kCorners[] = {
+        {gfx::RRectF::Corner::kUpperLeft, true, true},
+        {gfx::RRectF::Corner::kUpperRight, false, true},
+        {gfx::RRectF::Corner::kLowerLeft, true, false},
+        {gfx::RRectF::Corner::kLowerRight, false, false},
+    };
+    for (const auto& corner : kCorners) {
+      auto corner_radii = rounded_corners_rect.GetCornerRadii(corner.corner);
+      auto rx = std::ceil(scale * corner_radii.x());
+      auto ry = std::ceil(scale * corner_radii.y());
+      auto corner_rect =
+          gfx::Rect(corner.left ? rect.x() : rect.right() - rx,
+                    corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
+      region.Subtract(corner_rect);
+    }
+
+    // Convert the region to a list of rectangles.
+    for (gfx::Rect i : region) {
+      opaque_region.push_back(i);
+    }
+  } else {
+    GetContentWindow()->layer()->SetRoundedCornerRadius({});
+    GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
+    opaque_region.push_back({{}, widget_size_px});
+  }
+  // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
+  // corners in dp.
+  platform_window()->SetOpaqueRegion(opaque_region);
+
+  // If the window is rounded, we hint the platform to match the drop shadow's
+  // radii to the window's radii. Otherwise, we allow the platform to
+  // determine the drop shadow's radii.
+  if (should_have_rounded_window && wayland_extension) {
+    wayland_extension->SetShadowCornersRadii(window_radii);
+  }
 }
 
 // static

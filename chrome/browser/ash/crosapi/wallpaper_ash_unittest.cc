@@ -92,7 +92,7 @@ class WallpaperAshTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };

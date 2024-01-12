@@ -53,13 +53,10 @@ class PromiseAppServiceTest : public testing::Test,
     testing::Test::SetUp();
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_.get()));
+        url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
     arc_test_.SetUp(profile_.get());
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_.get());
+    test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
     service_->SetSkipAlmanacForTesting(false);

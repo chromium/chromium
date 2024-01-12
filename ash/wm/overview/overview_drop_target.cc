@@ -7,9 +7,9 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -36,11 +36,11 @@ class OverviewDropTargetView : public views::View {
 
     background_view_ = AddChildView(std::make_unique<views::View>());
     background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase20, kOverviewItemCornerRadius,
+        kColorAshShieldAndBase20, kWindowMiniViewCornerRadius,
         /*for_border_thickness=*/0));
 
     SetBorder(views::CreateThemedRoundedRectBorder(
-        kDropTargetBorderThickness, kOverviewItemCornerRadius,
+        kDropTargetBorderThickness, kWindowMiniViewCornerRadius,
         cros_tokens::kCrosSysSystemBaseElevated));
   }
   OverviewDropTargetView(const OverviewDropTargetView&) = delete;

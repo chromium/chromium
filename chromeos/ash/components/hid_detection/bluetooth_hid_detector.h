@@ -116,7 +116,7 @@ class BluetoothHidDetector {
   void NotifyBluetoothHidDetectionStatusChanged();
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace ash::hid_detection

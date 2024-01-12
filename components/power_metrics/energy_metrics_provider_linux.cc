@@ -9,6 +9,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -61,9 +62,9 @@ bool ReadDoubleFromFile(base::FilePath path, double* output) {
 // value of less than 1. Here, we only consider cpu0. See details in
 // https://man7.org/linux/man-pages/man2/perf_event_open.2.html.
 base::ScopedFD OpenPerfEvent(perf_event_attr* perf_attr) {
-  base::ScopedFD perf_fd{syscall(__NR_perf_event_open, perf_attr, /*pid=*/-1,
+  base::ScopedFD perf_fd(syscall(__NR_perf_event_open, perf_attr, /*pid=*/-1,
                                  /*cpu=*/0, /*group_fd=*/-1,
-                                 PERF_FLAG_FD_CLOEXEC)};
+                                 static_cast<int>(PERF_FLAG_FD_CLOEXEC)));
   return perf_fd;
 }
 
@@ -115,9 +116,9 @@ EnergyMetricsProviderLinux::CaptureMetrics() {
   EnergyMetrics energy_metrics = {0};
   for (const auto& event : events_) {
     uint64_t absolute_energy;
-    if (!base::ReadFromFD(event.fd.get(),
-                          reinterpret_cast<char*>(&absolute_energy),
-                          sizeof(absolute_energy))) {
+    if (!base::ReadFromFD(
+            event.fd.get(),
+            base::as_writable_chars(base::make_span(&absolute_energy, 1u)))) {
       LOG(ERROR) << "Failed to read absolute energy of " << event.metric_type;
       continue;
     }

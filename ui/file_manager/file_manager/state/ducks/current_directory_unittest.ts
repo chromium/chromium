@@ -7,9 +7,9 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMyFilesVolumeId} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
 import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
+import {type CurrentDirectory, type FileTasks, FileTaskType, PropStatus} from '../../state/state.js';
 import {clearCachedEntries} from '../ducks/all_entries.js';
 import {fetchFileTasks} from '../ducks/current_directory.js';
 import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, setUpFileManagerOnWindow, setupStore, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
@@ -364,7 +364,7 @@ export async function testFetchTasks(done: () => void) {
       iconType: '',
       descriptor: {
         appId: 'handler-extension-id1',
-        taskType: 'app',
+        taskType: FileTaskType.APP,
         actionId: 'any',
       },
       isDefault: false,

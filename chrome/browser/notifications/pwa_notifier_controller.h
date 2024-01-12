@@ -46,9 +46,8 @@ class PwaNotifierController : public NotifierController,
       apps::AppRegistryCache* cache) override;
 
   // Needed to load icons for PWAs.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> observed_profile_ =
-      nullptr;
-  const raw_ptr<NotifierController::Observer, ExperimentalAsh> observer_;
+  raw_ptr<Profile, DanglingUntriaged> observed_profile_ = nullptr;
+  const raw_ptr<NotifierController::Observer> observer_;
 
   // Used to keep track of all PWA start URLs to prevent creation of duplicate
   // notifier metadat.

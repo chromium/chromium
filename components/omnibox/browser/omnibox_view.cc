@@ -297,7 +297,7 @@ void OmniboxView::RevertAll() {
 }
 
 void OmniboxView::CloseOmniboxPopup() {
-  model()->StopAutocomplete();
+  controller()->StopAutocomplete(/*clear_result=*/true);
 }
 
 bool OmniboxView::IsImeShowingPopup() const {

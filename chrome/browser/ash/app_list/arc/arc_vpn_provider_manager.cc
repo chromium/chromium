@@ -63,13 +63,13 @@ ArcVpnProviderManager* ArcVpnProviderManager::Get(
 }
 
 // static
-ArcVpnProviderManager* ArcVpnProviderManager::Create(
+std::unique_ptr<ArcVpnProviderManager> ArcVpnProviderManager::Create(
     content::BrowserContext* context) {
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(context);
   if (!arc_app_list_prefs)
     return nullptr;
 
-  return new ArcVpnProviderManager(arc_app_list_prefs);
+  return std::make_unique<ArcVpnProviderManager>(arc_app_list_prefs);
 }
 
 void ArcVpnProviderManager::AddObserver(Observer* observer) {

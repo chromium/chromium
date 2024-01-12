@@ -4,13 +4,13 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import type {ChangeEvent, SpliceEvent} from '../../common/js/array_data_model.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {LruCache} from '../../common/js/lru_cache.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import {Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import type {DirectoryModel} from './directory_model.js';
 import type {FileListModel} from './file_list_model.js';

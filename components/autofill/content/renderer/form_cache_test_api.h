@@ -20,14 +20,6 @@ class FormCacheTestApi {
  public:
   explicit FormCacheTestApi(FormCache* form_cache) : form_cache_(*form_cache) {}
 
-  // For a given |control_element| check whether it is eligible for manual
-  // filling on form interaction.
-  bool IsFormElementEligibleForManualFilling(
-      const blink::WebFormControlElement& control_element) {
-    return base::Contains(form_cache_->fields_eligible_for_manual_filling_,
-                          form_util::GetFieldRendererId(control_element));
-  }
-
   size_t initial_select_values_size() {
     return form_cache_->initial_select_values_.size();
   }

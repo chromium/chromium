@@ -275,6 +275,10 @@ BASE_FEATURE(kTpcdSupportSettings,
              "TpcdSupportSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTopLevelTpcdSupportSettings,
+             "TopLevelTpcdSupportSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTpcdMetadataGrants,
              "TpcdMetadataGrants",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -417,12 +421,16 @@ const base::FeatureParam<std::string> kIpPrivacyProxyBHostnameOverride{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyBHostnameOverride",
     /*default_value=*/""};
 
+const base::FeatureParam<bool> kIpPrivacyAddHeaderToProxiedRequests{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAddHeaderToProxiedRequests",
+    /*default_value=*/false};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
-    base::FEATURE_DISABLED_BY_DEFAULT;
+    base::FEATURE_ENABLED_BY_DEFAULT;
 #else   // !BUILDFLAG(IS_ANDROID)
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
     base::FEATURE_DISABLED_BY_DEFAULT;
@@ -459,6 +467,10 @@ BASE_FEATURE(kTimeLimitedInsecureCookies,
 // Enable third-party cookie blocking from the command line.
 BASE_FEATURE(kForceThirdPartyCookieBlocking,
              "ForceThirdPartyCookieBlockingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kThirdPartyCookieTopLevelSiteCorsException,
+             "ThirdPartyCookieTopLevelSiteCorsException",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableEarlyHintsOnHttp11,

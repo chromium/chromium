@@ -105,7 +105,7 @@ class DeviceEventRouter : public VolumeManagerObserver,
   // Sets device state to the device having |device_path|.
   void SetDeviceState(const std::string& device_path, DeviceState state);
 
-  raw_ptr<SystemNotificationManager, ExperimentalAsh> notification_manager_;
+  raw_ptr<SystemNotificationManager> notification_manager_;
 
   // Whether to use zero time delta for testing or not.
   const base::TimeDelta resume_time_delta_;

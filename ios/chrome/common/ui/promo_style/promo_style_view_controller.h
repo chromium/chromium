@@ -83,6 +83,19 @@ enum class BannerImageSizeType {
 // value has to be set before the view is loaded. Default to NO.
 @property(nonatomic, assign) BOOL headerViewForceStyleLight;
 
+// The top margin percentage of the header view when there is no background.
+// Must be set before the view is loaded. Defaults to
+// `kNoBackgroundHeaderImageTopMarginPercentage`.
+@property(nonatomic, assign) CGFloat noBackgroundHeaderImageTopMarginPercentage;
+
+// The bottom margin of the header image, when the image is not of type kAvatar.
+// Must be set before the view is loaded. Defaults to `kDefaultMargin`.
+@property(nonatomic, assign) CGFloat headerImageBottomMargin;
+
+// The inset of the header image shadow. Must be set before the view is loaded.
+// Defaults to `kHeaderImageShadowShadowInset`.
+@property(nonatomic, assign) CGFloat headerImageShadowInset;
+
 // The label of the headline below the image. Must be set before the view is
 // loaded. This is declared public so the accessibility can be enabled.
 @property(nonatomic, strong) UILabel* titleLabel;

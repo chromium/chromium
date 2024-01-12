@@ -564,13 +564,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     void launch() {
-        cancelAutoTrigger();
-        mSheetContent.showLoadingIndicator();
-        mSheetController.requestShowContent(mSheetContent, true);
         if (mTabObservable.get() == null) {
             Log.e(TAG, "Can't launch Page Insights because Tab is null.");
             return;
         }
+        cancelAutoTrigger();
+        mSheetContent.showLoadingIndicator();
+        mSheetController.requestShowContent(mSheetContent, true);
         PageInsightsConfig config = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),

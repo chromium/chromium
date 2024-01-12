@@ -96,7 +96,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock TabGridDialogMediator.DialogController mDialogController;
     @Mock TabCreatorManager mTabCreatorManager;
     @Mock TabCreator mTabCreator;
-    @Mock TabSwitcherMediator.ResetHandler mTabSwitcherResetHandler;
+    @Mock TabSwitcherResetHandler mTabSwitcherResetHandler;
     @Mock TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock TabModel mTabModel;

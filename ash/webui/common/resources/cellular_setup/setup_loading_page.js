@@ -12,42 +12,57 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './setup_loading_page.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'setup-loading-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SetupLoadingPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class SetupLoadingPageElement extends SetupLoadingPageElementBase {
+  static get is() {
+    return 'setup-loading-page';
+  }
 
-  properties: {
-    /**
-     * Message displayed with spinner when in LOADING state.
-     */
-    loadingMessage: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Title for page if needed.
-     * @type {?string}
-     */
-    loadingTitle: {
-      type: Object,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * Message displayed with spinner when in LOADING state.
+       */
+      loadingMessage: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Displays a sim detect error graphic if true.
-     */
-    isSimDetectError: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Title for page if needed.
+       * @type {?string}
+       */
+      loadingTitle: {
+        type: Object,
+        value: '',
+      },
 
-  },
-});
+      /**
+       * Displays a sim detect error graphic if true.
+       */
+      isSimDetectError: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+}
+
+customElements.define(SetupLoadingPageElement.is, SetupLoadingPageElement);

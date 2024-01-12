@@ -194,5 +194,5 @@ void ExternalProtocolDialog::SetRememberSelectionCheckboxCheckedForTesting(
   message_box_view_->SetCheckBoxSelected(checked);
 }
 
-BEGIN_METADATA(ExternalProtocolDialog, views::DialogDelegateView)
+BEGIN_METADATA(ExternalProtocolDialog)
 END_METADATA

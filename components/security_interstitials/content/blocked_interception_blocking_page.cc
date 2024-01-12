@@ -4,10 +4,8 @@
 
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 
-#include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
-#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -35,7 +33,6 @@ BlockedInterceptionBlockingPage::BlockedInterceptionBlockingPage(
     content::WebContents* web_contents,
     int cert_error,
     const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,
     std::unique_ptr<
@@ -43,10 +40,8 @@ BlockedInterceptionBlockingPage::BlockedInterceptionBlockingPage(
         controller_client)
     : SSLBlockingPageBase(
           web_contents,
-          CertificateErrorReport::INTERSTITIAL_BLOCKED_INTERCEPTION,
           ssl_info,
           request_url,
-          std::move(ssl_cert_reporter),
           true /* overridable */,
           base::Time::Now(),
           can_show_enhanced_protection_message,
@@ -68,8 +63,8 @@ BlockedInterceptionBlockingPage::GetTypeForTesting() {
 void BlockedInterceptionBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
   blocked_interception_ui_->PopulateStringsForHTML(load_time_data);
-  cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
-  cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
+
+  PopulateEnhancedProtectionMessage(load_time_data);
 }
 
 // This handles the commands sent from the interstitial JavaScript.
@@ -85,12 +80,6 @@ void BlockedInterceptionBlockingPage::CommandReceived(
   bool retval = base::StringToInt(command, &cmd);
   DCHECK(retval);
 
-  // Let the CertReportHelper handle commands first, This allows it to get set
-  // up to send reports, so that the report is populated properly if
-  // BlockedInterceptionUI's command handling triggers a report to be sent.
-  cert_report_helper()->HandleReportingCommands(
-      static_cast<security_interstitials::SecurityInterstitialCommand>(cmd),
-      controller()->GetPrefService());
   blocked_interception_ui_->HandleCommand(
       static_cast<security_interstitials::SecurityInterstitialCommand>(cmd));
 }

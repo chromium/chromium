@@ -60,18 +60,15 @@ OnHostResolutionCallbackResult OnHostResolution(
 }  // namespace
 
 ClientSocketPool::SocketParams::SocketParams(
-    std::unique_ptr<SSLConfig> ssl_config_for_origin,
-    std::unique_ptr<SSLConfig> base_ssl_config_for_proxies)
-    : ssl_config_for_origin_(std::move(ssl_config_for_origin)),
-      base_ssl_config_for_proxies_(std::move(base_ssl_config_for_proxies)) {}
+    std::unique_ptr<SSLConfig> ssl_config_for_origin)
+    : ssl_config_for_origin_(std::move(ssl_config_for_origin)) {}
 
 ClientSocketPool::SocketParams::~SocketParams() = default;
 
 scoped_refptr<ClientSocketPool::SocketParams>
 ClientSocketPool::SocketParams::CreateForHttpForTesting() {
   return base::MakeRefCounted<SocketParams>(
-      /*ssl_config_for_origin=*/nullptr,
-      /*base_ssl_config_for_proxies=*/nullptr);
+      /*ssl_config_for_origin=*/nullptr);
 }
 
 ClientSocketPool::GroupId::GroupId()
@@ -164,9 +161,7 @@ void ClientSocketPool::NetLogTcpClientSocketPoolRequestedSocket(
 
 base::Value::Dict ClientSocketPool::NetLogGroupIdParams(
     const GroupId& group_id) {
-  base::Value::Dict event_params;
-  event_params.Set("group_id", group_id.ToString());
-  return event_params;
+  return base::Value::Dict().Set("group_id", group_id.ToString());
 }
 
 std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
@@ -198,10 +193,23 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   // Force a CONNECT tunnel for websockets. If this is false, the connect job
   // may still use a tunnel for other reasons.
   bool force_tunnel = is_for_websockets_;
+
+  // Only offer HTTP/1.1 for WebSockets. Although RFC 8441 defines WebSockets
+  // over HTTP/2, a single WSS/HTTPS origin may support HTTP over HTTP/2
+  // without supporting WebSockets over HTTP/2. Offering HTTP/2 for a fresh
+  // connection would break such origins.
+  //
+  // However, still offer HTTP/1.1 rather than skipping ALPN entirely. While
+  // this will not change the application protocol (HTTP/1.1 is default), it
+  // provides hardening against cross-protocol attacks and allows for the False
+  // Start (RFC 7918) optimization.
+  ConnectJobFactory::AlpnMode alpn_mode =
+      is_for_websockets_ ? ConnectJobFactory::AlpnMode::kHttp11Only
+                         : ConnectJobFactory::AlpnMode::kHttpAll;
+
   return connect_job_factory_->CreateConnectJob(
       group_id.destination(), proxy_chain, proxy_annotation_tag,
-      socket_params->ssl_config_for_origin(),
-      socket_params->base_ssl_config_for_proxies(), force_tunnel,
+      socket_params->ssl_config_for_origin(), alpn_mode, force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), common_connect_job_params_, delegate);

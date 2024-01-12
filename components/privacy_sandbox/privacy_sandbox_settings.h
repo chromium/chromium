@@ -278,13 +278,6 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin) const = 0;
 
-  // Returns whether the profile has the Privacy Sandbox enabled. This consults
-  // the main preference, as well as the delegate to check whether the sandbox
-  // is restricted. It does not consider any cookie settings. A return value of
-  // false means that no Privacy Sandbox operations can occur. A return value of
-  // true must be followed up with the appropriate IsXAllowed() call.
-  virtual bool IsPrivacySandboxEnabled() const = 0;
-
   // Allows all Privacy Sandbox prefs for testing. This should be used if tests
   // don't depend on specific access control and just would like to have Privacy
   // Sandbox allowed. Doesn't affect other non-default settings which might
@@ -293,14 +286,6 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Blocks Topics pref for testing.
   virtual void SetTopicsBlockedForTesting() = 0;
-
-  // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
-  // is true, more granular checks will still be performed, and the delegate
-  // consulted, to determine if specific APIs are available in specific
-  // contexts.
-  // DEPRECATED: Use `SetAllPrivacySandboxAllowedForTesting()` to allow all
-  // Privacy Sandbox prefs or per-API block-for-testing functions.
-  virtual void SetPrivacySandboxEnabled(bool enabled) = 0;
 
   // Returns whether the Privacy Sandbox is being restricted by the associated
   // delegate. Forwards directly to the corresponding delegate function.

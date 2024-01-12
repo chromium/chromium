@@ -180,10 +180,10 @@ void WriteImpl(OperationResult* result,
     *result = OperationResult::kInvalidKey;
     return;
   }
-  base::Base64Encode(encrypted, &encrypted);
 
-  ValueStore::WriteResult write = store->Set(ValueStore::DEFAULTS, item_id,
-                                             base::Value(std::move(encrypted)));
+  ValueStore::WriteResult write =
+      store->Set(ValueStore::DEFAULTS, item_id,
+                 base::Value(base::Base64Encode(encrypted)));
 
   *result = write.status().ok() ? OperationResult::kSuccess
                                 : OperationResult::kFailed;

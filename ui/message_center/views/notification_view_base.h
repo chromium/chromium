@@ -238,7 +238,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* content_row() { return content_row_; }
   const views::View* content_row() const { return content_row_; }
 
-  views::View* left_content() { return left_content_; }
+  views::BoxLayoutView* left_content() { return left_content_; }
   views::View* right_content() { return right_content_; }
 
   views::Label* message_label() { return message_label_; }
@@ -246,11 +246,15 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   ProportionalImageView* icon_view() const { return icon_view_; }
 
-  views::View* inline_settings_row() { return settings_row_; }
-  const views::View* inline_settings_row() const { return settings_row_; }
+  views::BoxLayoutView* inline_settings_row() { return settings_row_; }
+  const views::BoxLayoutView* inline_settings_row() const {
+    return settings_row_;
+  }
 
-  views::View* snooze_settings_row() { return snooze_row_; }
-  const views::View* snooze_settings_row() const { return snooze_row_; }
+  views::BoxLayoutView* snooze_settings_row() { return snooze_row_; }
+  const views::BoxLayoutView* snooze_settings_row() const {
+    return snooze_row_;
+  }
 
   views::View* image_container_view() { return image_container_view_; }
   const views::View* image_container_view() const {
@@ -383,11 +387,11 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   raw_ptr<NotificationHeaderView> header_row_ = nullptr;
   raw_ptr<views::View> content_row_ = nullptr;
   raw_ptr<views::View> actions_row_ = nullptr;
-  raw_ptr<views::View> settings_row_ = nullptr;
-  raw_ptr<views::View> snooze_row_ = nullptr;
+  raw_ptr<views::BoxLayoutView> settings_row_ = nullptr;
+  raw_ptr<views::BoxLayoutView> snooze_row_ = nullptr;
 
   // Containers for left and right side on |content_row_|
-  raw_ptr<views::View> left_content_ = nullptr;
+  raw_ptr<views::BoxLayoutView> left_content_ = nullptr;
   raw_ptr<views::View> right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.

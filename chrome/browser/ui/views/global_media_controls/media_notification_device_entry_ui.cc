@@ -248,12 +248,12 @@ DeviceEntryUIType CastDeviceEntryViewAsh::GetType() const {
   return DeviceEntryUIType::kCast;
 }
 
-BEGIN_METADATA(AudioDeviceEntryView, HoverButton)
+BEGIN_METADATA(AudioDeviceEntryView)
 ADD_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA
 
-BEGIN_METADATA(CastDeviceEntryView, HoverButton)
+BEGIN_METADATA(CastDeviceEntryView)
 END_METADATA
 
-BEGIN_METADATA(CastDeviceEntryViewAsh, HoverButton)
+BEGIN_METADATA(CastDeviceEntryViewAsh)
 END_METADATA

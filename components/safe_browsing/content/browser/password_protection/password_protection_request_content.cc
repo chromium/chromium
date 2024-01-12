@@ -113,8 +113,8 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
                                 pps,
                                 request_timeout_in_ms),
       web_contents_(web_contents) {
-  request_canceler_ =
-      RequestCanceler::CreateRequestCanceler(AsWeakPtr(), web_contents);
+  request_canceler_ = RequestCanceler::CreateRequestCanceler(
+      weak_factory_.GetWeakPtr(), web_contents);
 }
 
 PasswordProtectionRequestContent::~PasswordProtectionRequestContent() = default;
@@ -141,6 +141,11 @@ void PasswordProtectionRequestContent::ResumeDeferredNavigations() {
   }
 
   deferred_navigations_.clear();
+}
+
+base::WeakPtr<PasswordProtectionRequest>
+PasswordProtectionRequestContent::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
@@ -212,14 +217,14 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
   phishing_detector_->StartPhishingDetection(
       main_frame_url(),
       base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
-                          base::AsWeakPtr(this)));
+                          weak_factory_.GetWeakPtr()));
 
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
-              base::AsWeakPtr(this)),
+              weak_factory_.GetWeakPtr()),
           base::Milliseconds(kDomFeatureTimeoutMs));
 }
 
@@ -364,7 +369,7 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
   view->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(&PasswordProtectionRequestContent::OnScreenshotTaken,
-                     base::AsWeakPtr(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
@@ -372,7 +377,7 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
   // Do the feature extraction on a worker thread, to avoid blocking the UI.
   auto ui_thread_callback = base::BindOnce(
       &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
-      base::AsWeakPtr(this));
+      weak_factory_.GetWeakPtr());
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,

@@ -59,16 +59,8 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_extensions/api/hid/hid_impl.h"
-#include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context.h"
-#include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
-#include "chrome/browser/ash/system_extensions/system_extension.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "third_party/blink/public/mojom/chromeos/system_extensions/hid/cros_hid.mojom.h"
-#include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
@@ -227,82 +219,6 @@ void BindBadgeServiceForServiceWorker(
       render_process_host, info, std::move(receiver));
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Helper method to perform some checks before binding a System Extension
-// interface.
-template <typename Interface>
-base::RepeatingCallback<void(const content::ServiceWorkerVersionBaseInfo&,
-                             mojo::PendingReceiver<Interface>)>
-SystemExtensionServiceWorkerBinder(
-    void (*method)(Profile*,
-                   const content::ServiceWorkerVersionBaseInfo&,
-                   mojo::PendingReceiver<Interface>)) {
-  return base::BindRepeating(
-      [](void (*method)(Profile*, const content::ServiceWorkerVersionBaseInfo&,
-                        mojo::PendingReceiver<Interface>),
-         const content::ServiceWorkerVersionBaseInfo& info,
-         mojo::PendingReceiver<Interface> receiver) {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-        const auto& origin = info.storage_key.origin();
-        CHECK(ash::SystemExtension::IsSystemExtensionOrigin(origin));
-
-        content::RenderProcessHost* render_process_host =
-            content::RenderProcessHost::FromID(info.process_id);
-        if (!render_process_host)
-          return;
-
-        CHECK(content::ChildProcessSecurityPolicy::GetInstance()
-                  ->CanAccessDataForOrigin(info.process_id,
-                                           info.storage_key.origin()));
-
-        auto* profile = Profile::FromBrowserContext(
-            render_process_host->GetBrowserContext());
-        if (!profile)
-          return;
-
-        (*method)(profile, info, std::move(receiver));
-      },
-      method);
-}
-
-void RegisterSystemExtensionServiceWorkerBinders(
-    Profile* profile,
-    const content::ServiceWorkerVersionBaseInfo& version_info,
-    mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
-        map) {
-  if (!ash::IsSystemExtensionsEnabled(profile))
-    return;
-
-  if (!ash::SystemExtension::IsSystemExtensionOrigin(
-          version_info.storage_key.origin())) {
-    return;
-  }
-
-  auto& registry = ash::SystemExtensionsProvider::Get(profile).registry();
-  auto* system_extension = registry.GetByUrl(version_info.scope);
-  if (!system_extension)
-    return;
-
-  // Only register interfaces corresponding to the System Extension type.
-  switch (system_extension->type) {
-    case ash::SystemExtensionType::kWindowManagement:
-      map->Add<blink::mojom::CrosWindowManagementFactory>(
-          SystemExtensionServiceWorkerBinder(
-              &ash::CrosWindowManagementContext::BindFactory));
-      return;
-    case ash::SystemExtensionType::kPeripheralPrototype:
-      map->Add<blink::mojom::CrosHID>(
-          SystemExtensionServiceWorkerBinder(&ash::HIDImpl::Bind));
-      return;
-    case ash::SystemExtensionType::kManagedDeviceHealthServices:
-      // Don't register interfaces for the kManagedDeviceHealthServices
-      // extension type for now.
-      return;
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -472,12 +388,6 @@ void ChromeContentBrowserClient::
   map->Add<blink::mojom::BadgeService>(
       base::BindRepeating(&BindBadgeServiceForServiceWorker));
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* profile = Profile::FromBrowserContext(browser_context);
-  RegisterSystemExtensionServiceWorkerBinders(profile,
-                                              service_worker_version_info, map);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeContentBrowserClient::

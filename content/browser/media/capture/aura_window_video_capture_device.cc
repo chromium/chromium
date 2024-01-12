@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
-#include "base/memory/raw_ptr.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,7 +22,6 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -172,12 +172,12 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
   raw_ptr<aura::Window> target_window_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
-  absl::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
+  std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_visible_;
 #endif
 
   aura::ScopedWindowCaptureRequest capture_request_;
-  absl::optional<viz::VideoCaptureTarget> target_;
+  std::optional<viz::VideoCaptureTarget> target_;
 
   std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;
 };

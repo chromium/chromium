@@ -4,6 +4,8 @@
 
 #include "content/browser/child_process_launcher_helper.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,7 +26,6 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/core/configuration.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/launcher_thread.h"
@@ -144,7 +145,7 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   bool is_synchronous_launch = true;
   int launch_result = LAUNCH_RESULT_FAILURE;
-  absl::optional<base::LaunchOptions> options;
+  std::optional<base::LaunchOptions> options;
   base::LaunchOptions* options_ptr = nullptr;
   if (IsUsingLaunchOptions()) {
     options.emplace();

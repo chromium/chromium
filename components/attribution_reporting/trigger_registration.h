@@ -38,17 +38,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   TriggerRegistration();
 
-  TriggerRegistration(
-      FilterPair,
-      absl::optional<uint64_t> debug_key,
-      std::vector<AggregatableDedupKey> aggregatable_dedup_keys,
-      std::vector<EventTriggerData> event_triggers,
-      std::vector<AggregatableTriggerData> aggregatable_trigger_data,
-      AggregatableValues aggregatable_values,
-      bool debug_reporting,
-      absl::optional<SuitableOrigin> aggregation_coordinator_origin,
-      AggregatableTriggerConfig aggregatable_trigger_config);
-
   ~TriggerRegistration();
 
   TriggerRegistration(const TriggerRegistration&);

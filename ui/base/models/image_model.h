@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -69,14 +69,10 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
                   int icon_size,
                   const gfx::VectorIcon* badge_icon);
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> vector_icon_ = nullptr;
   int icon_size_ = 0;
   absl::variant<ColorId, SkColor> color_ = gfx::kPlaceholderColor;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* badge_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> badge_icon_ = nullptr;
 };
 
 // ImageModel encapsulates one of several image representations. See FromXXXX

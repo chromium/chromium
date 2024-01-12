@@ -82,8 +82,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
         chromeos::platform_keys::Status permissions_update_status);
 
     const Mode mode_;
-    const raw_ptr<KeyPermissionsManagerImpl, ExperimentalAsh>
-        key_permissions_manager_;
+    const raw_ptr<KeyPermissionsManagerImpl> key_permissions_manager_;
     base::queue<std::vector<uint8_t>> public_key_spki_der_queue_;
     bool update_started_ = false;
     UpdateCallback callback_;
@@ -198,10 +197,8 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
       key_permissions_in_chaps_updater_;
   // The ARC usage manager delegate for |token_id_|.
   std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate_;
-  raw_ptr<PlatformKeysService, ExperimentalAsh> platform_keys_service_ =
-      nullptr;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_ =
-      nullptr;
+  raw_ptr<PlatformKeysService> platform_keys_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
   base::ScopedObservation<ArcKpmDelegate, ArcKpmDelegate::Observer>
       arc_usage_manager_delegate_observation_{this};
   base::WeakPtrFactory<KeyPermissionsManagerImpl> weak_ptr_factory_{this};

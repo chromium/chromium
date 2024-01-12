@@ -244,7 +244,7 @@ void CachedStorageArea::BindStorageArea(
     remote_area_.Bind(std::move(new_area), task_runner);
   } else if (storage_namespace_) {
     storage_namespace_->BindStorageArea(
-        *local_dom_window,
+        storage_key_, local_dom_window->GetLocalFrameToken(),
         remote_area_.BindNewPipeAndPassReceiver(task_runner));
   } else {
     return;

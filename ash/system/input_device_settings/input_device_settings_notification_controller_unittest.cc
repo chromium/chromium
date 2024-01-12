@@ -31,6 +31,7 @@ const mojom::Mouse kMouse1 = mojom::Mouse(
     /*device_key=*/"fake-device-key1",
     /*customization_restriction=*/
     mojom::CustomizationRestriction::kAllowCustomizations,
+    /*mouse_button_config=*/mojom::MouseButtonConfig::kNoConfig,
     mojom::MouseSettings::New());
 
 const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(

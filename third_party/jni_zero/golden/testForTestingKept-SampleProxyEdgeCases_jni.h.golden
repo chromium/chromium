@@ -39,9 +39,9 @@ inline jclass org_jni_1zero_samples_SampleProxyEdgeCases_clazz(JNIEnv* env) {
 
 
 // Step 3: Method stubs.
-static jint JNI_SampleProxyEdgeCases_AddStructB(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& caller,
-    const base::android::JavaParamRef<jobject>& b);
+static jint JNI_SampleProxyEdgeCases_AddStructB(JNIEnv* env, const jni_zero::JavaParamRef<jobject>&
+    caller,
+    const jni_zero::JavaParamRef<jobject>& b);
 
 JNI_BOUNDARY_EXPORT jint
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1addStructB(
@@ -49,13 +49,13 @@ JNI_BOUNDARY_EXPORT jint
     jclass jcaller,
     jobject caller,
     jobject b) {
-  return JNI_SampleProxyEdgeCases_AddStructB(env, base::android::JavaParamRef<jobject>(env, caller),
-      base::android::JavaParamRef<jobject>(env, b));
+  return JNI_SampleProxyEdgeCases_AddStructB(env, jni_zero::JavaParamRef<jobject>(env, caller),
+      jni_zero::JavaParamRef<jobject>(env, b));
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(JNIEnv*
-    env, const base::android::JavaParamRef<jintArray>& a,
-    const base::android::JavaParamRef<jobjectArray>& b);
+static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(JNIEnv* env,
+    const jni_zero::JavaParamRef<jintArray>& a,
+    const jni_zero::JavaParamRef<jobjectArray>& b);
 
 JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1arrayTypes1(
@@ -63,13 +63,13 @@ JNI_BOUNDARY_EXPORT jobjectArray
     jclass jcaller,
     jintArray a,
     jobjectArray b) {
-  return JNI_SampleProxyEdgeCases_ArrayTypes1(env, base::android::JavaParamRef<jintArray>(env, a),
-      base::android::JavaParamRef<jobjectArray>(env, b)).Release();
+  return JNI_SampleProxyEdgeCases_ArrayTypes1(env, jni_zero::JavaParamRef<jintArray>(env, a),
+      jni_zero::JavaParamRef<jobjectArray>(env, b)).Release();
 }
 
-static base::android::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(JNIEnv*
-    env, const base::android::JavaParamRef<jintArray>& a,
-    const base::android::JavaParamRef<jobjectArray>& b);
+static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(JNIEnv* env,
+    const jni_zero::JavaParamRef<jintArray>& a,
+    const jni_zero::JavaParamRef<jobjectArray>& b);
 
 JNI_BOUNDARY_EXPORT jintArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1arrayTypes2(
@@ -77,8 +77,8 @@ JNI_BOUNDARY_EXPORT jintArray
     jclass jcaller,
     jintArray a,
     jobjectArray b) {
-  return JNI_SampleProxyEdgeCases_ArrayTypes2(env, base::android::JavaParamRef<jintArray>(env, a),
-      base::android::JavaParamRef<jobjectArray>(env, b)).Release();
+  return JNI_SampleProxyEdgeCases_ArrayTypes2(env, jni_zero::JavaParamRef<jintArray>(env, a),
+      jni_zero::JavaParamRef<jobjectArray>(env, b)).Release();
 }
 
 static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
@@ -117,9 +117,9 @@ JNI_BOUNDARY_EXPORT void
   return JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(env);
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
     JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(JNIEnv* env, const
-    base::android::JavaParamRef<jobjectArray>& arg);
+    jni_zero::JavaParamRef<jobjectArray>& arg);
 
 JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
@@ -127,12 +127,11 @@ JNI_BOUNDARY_EXPORT jobjectArray
     jclass jcaller,
     jobjectArray arg) {
   return JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(env,
-      base::android::JavaParamRef<jobjectArray>(env, arg)).Release();
+      jni_zero::JavaParamRef<jobjectArray>(env, arg)).Release();
 }
 
-static void JNI_SampleProxyEdgeCases_SetBool(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& b,
-    const base::android::JavaParamRef<jobject>& i);
+static void JNI_SampleProxyEdgeCases_SetBool(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& b,
+    const jni_zero::JavaParamRef<jobject>& i);
 
 JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1setBool(
@@ -140,20 +139,19 @@ JNI_BOUNDARY_EXPORT void
     jclass jcaller,
     jobject b,
     jobject i) {
-  return JNI_SampleProxyEdgeCases_SetBool(env, base::android::JavaParamRef<jobject>(env, b),
-      base::android::JavaParamRef<jobject>(env, i));
+  return JNI_SampleProxyEdgeCases_SetBool(env, jni_zero::JavaParamRef<jobject>(env, b),
+      jni_zero::JavaParamRef<jobject>(env, i));
 }
 
 static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& sb);
+    jni_zero::JavaParamRef<jobject>& sb);
 
 JNI_BOUNDARY_EXPORT jboolean
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
     jclass jcaller,
     jobject sb) {
-  return JNI_SampleProxyEdgeCases_SetStringBuilder(env, base::android::JavaParamRef<jobject>(env,
-      sb));
+  return JNI_SampleProxyEdgeCases_SetStringBuilder(env, jni_zero::JavaParamRef<jobject>(env, sb));
 }
 
 static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
@@ -172,7 +170,7 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeI
     jlong nativeInstance) {
   Instance* native = reinterpret_cast<Instance*>(nativeInstance);
   CHECK_NATIVE_PTR(env, jcaller, native, "InstanceMethod");
-  return native->InstanceMethod(env, base::android::JavaParamRef<jobject>(env, jcaller));
+  return native->InstanceMethod(env, jni_zero::JavaParamRef<jobject>(env, jcaller));
 }
 
 static void JNI_SampleProxyEdgeCases_StaticMethod(JNIEnv* env);

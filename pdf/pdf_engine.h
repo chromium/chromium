@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "v8/include/v8-forward.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -228,6 +229,9 @@ class PDFEngine {
 
     // Creates and returns new URL loader for partial document requests.
     virtual std::unique_ptr<UrlLoader> CreateUrlLoader() = 0;
+
+    // Returns the current V8 isolate, if any.
+    virtual v8::Isolate* GetIsolate() = 0;
 
     // Searches the given string for "term" and returns the results.  Unicode-
     // aware.

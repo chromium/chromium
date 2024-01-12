@@ -571,7 +571,7 @@ TEST(VideoFrame, WrapExternalDmabufs) {
     EXPECT_EQ(frame->layout().planes()[i].size, sizes[i]);
   }
   EXPECT_TRUE(frame->HasDmaBufs());
-  EXPECT_EQ(frame->DmabufFds().size(), 3u);
+  EXPECT_EQ(frame->NumDmabufFds(), 3u);
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);

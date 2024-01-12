@@ -1261,14 +1261,18 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
 
   mojom::ButtonPtr pen_button =
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward);
+  mojom::ButtonPtr pen_middle_button =
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
   mojom::ButtonPtr tablet_button = mojom::Button::NewVkey(ui::VKEY_A);
   controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id,
                                              *pen_button);
   controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id,
+                                             *pen_middle_button);
+  controller_->OnGraphicsTabletButtonPressed(kSampleGraphicsTablet.id,
                                              *tablet_button);
-  EXPECT_EQ(2u, observer_->num_graphics_tablets_settings_updated());
+  EXPECT_EQ(3u, observer_->num_graphics_tablets_settings_updated());
   EXPECT_EQ(1u, observer_->num_tablet_buttons_pressed());
-  EXPECT_EQ(1u, observer_->num_pen_buttons_pressed());
+  EXPECT_EQ(2u, observer_->num_pen_buttons_pressed());
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Registered."
       "Vkey",
@@ -1276,16 +1280,20 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Registered."
       "CustomizableButton",
-      /*expected_count=*/1u);
+      /*expected_count=*/2u);
 
   auto* settings =
       controller_->GetGraphicsTabletSettings(kSampleGraphicsTablet.id);
   ASSERT_TRUE(settings);
-  ASSERT_EQ(1u, settings->pen_button_remappings.size());
+  ASSERT_EQ(2u, settings->pen_button_remappings.size());
   EXPECT_EQ(*pen_button, *settings->pen_button_remappings[0]->button);
   EXPECT_EQ("Other Button 1", settings->pen_button_remappings[0]->name);
   EXPECT_EQ(nullptr,
             settings->pen_button_remappings[0]->remapping_action.get());
+  EXPECT_EQ(*pen_middle_button, *settings->pen_button_remappings[1]->button);
+  EXPECT_EQ("Other Button 2", settings->pen_button_remappings[1]->name);
+  EXPECT_EQ(nullptr,
+            settings->pen_button_remappings[1]->remapping_action.get());
 
   ASSERT_EQ(1u, settings->tablet_button_remappings.size());
   EXPECT_EQ(*tablet_button, *settings->tablet_button_remappings[0]->button);

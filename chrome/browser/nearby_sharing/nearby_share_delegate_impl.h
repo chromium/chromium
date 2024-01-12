@@ -82,10 +82,8 @@ class NearbyShareDelegateImpl
   void AddNearbyShareServiceObservers();
   void RemoveNearbyShareServiceObservers();
 
-  const raw_ptr<ash::NearbyShareController, ExperimentalAsh>
-      nearby_share_controller_;
-  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_share_service_ =
-      nullptr;
+  const raw_ptr<ash::NearbyShareController> nearby_share_controller_;
+  raw_ptr<NearbySharingService> nearby_share_service_ = nullptr;
   std::unique_ptr<SettingsOpener> settings_opener_;
 
   // Track if there is an outstanding request to enable high visibility. Reset

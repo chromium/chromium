@@ -327,8 +327,6 @@ public class TabListMediatorUnitTest {
         // Mock that tab restoring stage is over.
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         doReturn(true).when(mIncognitoTabGroupModelFilter).isTabModelRestored();
-        Profile.setLastUsedProfileForTesting(mProfile);
-        ProfileManager.onProfileAdded(mProfile);
         doReturn(mProfile).when(mTabModel).getProfile();
 
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
@@ -1051,7 +1049,7 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         UiType.CLOSABLE);
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
 
         // mTabModelObserverCaptor captures on every initWithNative call.
         verify(mTabGroupModelFilter, times(4)).addObserver(mTabModelObserverCaptor.capture());
@@ -2358,7 +2356,6 @@ public class TabListMediatorUnitTest {
                             signedInAndSyncEnabled);
                     PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                             PriceTrackingUtilities.TRACK_PRICES_ON_TABS, priceTrackingEnabled);
-                    Profile.setLastUsedProfileForTesting(mProfile);
                     Map<GURL, Any> responses = new HashMap<>();
                     responses.put(TAB1_URL, ANY_BUYABLE_PRODUCT_INITIAL);
                     responses.put(TAB2_URL, ANY_EMPTY);
@@ -2549,7 +2546,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
 
         PropertyModel model = mock(PropertyModel.class);
@@ -2581,7 +2578,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
         initWithThreeTabs();
 
         PropertyModel model = mock(PropertyModel.class);
@@ -2611,9 +2608,7 @@ public class TabListMediatorUnitTest {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
         assertThat(
-                PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
-                        Profile.getLastUsedRegularProfile()),
-                equalTo(false));
+                PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile), equalTo(false));
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
@@ -2907,7 +2902,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.UiType.SELECTABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
         when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(false);
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -2950,7 +2945,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.UiType.SELECTABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(false);
@@ -2993,7 +2988,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.UiType.SELECTABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         Tab tab4 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -3229,7 +3224,7 @@ public class TabListMediatorUnitTest {
         int tabGroupModelFilterObserverCount =
                 mTabGroupModelFilterObserverCaptor.getAllValues().size();
         int tabModelObserverCount = mTabModelObserverCaptor.getAllValues().size();
-        mMediator.initWithNative();
+        mMediator.initWithNative(mProfile);
 
         assertThat(
                 mTabModelObserverCaptor.getAllValues().size(), equalTo(tabModelObserverCount + 2));

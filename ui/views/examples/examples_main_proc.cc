@@ -156,13 +156,18 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ExamplesViewsDelegateChromeOS views_delegate;
-#else
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
     views::DesktopTestViewsDelegate views_delegate;
+#if BUILDFLAG(IS_MAC)
+    views_delegate.set_context_factory(context_factories->GetContextFactory());
+#endif
 #if defined(USE_AURA)
     wm::WMState wm_state;
 #endif
-#endif
-#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC)
+    display::ScopedNativeScreen desktop_screen;
+#elif BUILDFLAG(ENABLE_DESKTOP_AURA)
     std::unique_ptr<display::Screen> desktop_screen =
         views::CreateDesktopScreen();
 #endif

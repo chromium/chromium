@@ -102,8 +102,9 @@ size_t SyncSocket::Receive(void* buffer, size_t length) {
   DCHECK_LE(length, kMaxMessageLength);
   DCHECK(IsValid());
   char* charbuffer = static_cast<char*>(buffer);
-  if (ReadFromFD(handle(), charbuffer, length))
+  if (ReadFromFD(handle(), make_span(charbuffer, length))) {
     return length;
+  }
   return 0;
 }
 

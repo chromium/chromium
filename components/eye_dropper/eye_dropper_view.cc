@@ -272,7 +272,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   const gfx::Size padding((size().width() - diameter) / 2,
                           (size().height() - diameter) / 2);
 
-  if (GetWidget()->IsTranslucentWindowOpacitySupported()) {
+  if (views::Widget::IsWindowCompositingSupported()) {
     // Clip circle for magnified projection only when the widget
     // supports translucency.
     SkPath clip_path;
@@ -355,7 +355,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   flags.setStrokeWidth(2);
   flags.setColor(color_provider->GetColor(color::kColorEyedropperBoundary));
   flags.setAntiAlias(true);
-  if (GetWidget()->IsTranslucentWindowOpacitySupported()) {
+  if (views::Widget::IsWindowCompositingSupported()) {
     view_canvas->DrawCircle(
         gfx::PointF(size().width() / 2, size().height() / 2), diameter / 2,
         flags);

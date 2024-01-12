@@ -129,7 +129,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   EmbeddedTestServerSetupMixin embedded_test_server_setup_;
   FakeGaiaMixin fake_gaia_;
 
-  raw_ptr<InProcessBrowserTest, ExperimentalAsh> test_base_;
+  raw_ptr<InProcessBrowserTest> test_base_;
 };
 
 }  // namespace ash

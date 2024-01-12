@@ -18,9 +18,7 @@ struct VectorIcon;
 
 namespace ash {
 
-class BottomStatusIndicator
-    : public views::LabelButton,
-      public base::SupportsWeakPtr<BottomStatusIndicator> {
+class BottomStatusIndicator final : public views::LabelButton {
   METADATA_HEADER(BottomStatusIndicator, views::LabelButton)
 
  public:
@@ -40,8 +38,13 @@ class BottomStatusIndicator
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  base::WeakPtr<BottomStatusIndicator> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   ax::mojom::Role role_ = ax::mojom::Role::kStaticText;
+  base::WeakPtrFactory<BottomStatusIndicator> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

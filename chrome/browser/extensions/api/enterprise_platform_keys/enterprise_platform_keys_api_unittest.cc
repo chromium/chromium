@@ -172,13 +172,12 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> extension_;
   ash::StubInstallAttributes stub_install_attributes_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
+      nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   ash::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_ = nullptr;
-  raw_ptr<ash::attestation::MockTpmChallengeKey,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
+  raw_ptr<ash::attestation::MockTpmChallengeKey, DanglingUntriaged>
       mock_tpm_challenge_key_ = nullptr;
 };
 

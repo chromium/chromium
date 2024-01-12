@@ -23,7 +23,7 @@ MainDelegate::MainDelegate() = default;
 
 MainDelegate::~MainDelegate() = default;
 
-absl::optional<int> MainDelegate::BasicStartupComplete() {
+std::optional<int> MainDelegate::BasicStartupComplete() {
   logging::LoggingSettings settings;
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
@@ -31,7 +31,7 @@ absl::optional<int> MainDelegate::BasicStartupComplete() {
 
   content_client_ = std::make_unique<ContentClient>();
   content::SetContentClient(content_client_.get());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MainDelegate::PreSandboxStartup() {
@@ -47,7 +47,7 @@ content::ContentBrowserClient* MainDelegate::CreateContentBrowserClient() {
   return content_browser_client_.get();
 }
 
-absl::optional<int> MainDelegate::PreBrowserMain() {
+std::optional<int> MainDelegate::PreBrowserMain() {
 #if BUILDFLAG(IS_MAC)
   MacPreBrowserMain();
 #endif

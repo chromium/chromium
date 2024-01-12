@@ -18,7 +18,7 @@ TestCreditCardSaveManager::TestCreditCardSaveManager(
                             "en-US",
                             personal_data_manager) {}
 
-TestCreditCardSaveManager::~TestCreditCardSaveManager() {}
+TestCreditCardSaveManager::~TestCreditCardSaveManager() = default;
 
 bool TestCreditCardSaveManager::IsCreditCardUploadEnabled() {
   return credit_card_upload_enabled_;

@@ -68,7 +68,7 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
       base::OnceClosure done_closure,
       const gfx::ImageSkia& favicon);
 
-  const raw_ptr<favicon::HistoryUiFaviconRequestHandler, ExperimentalAsh>
+  const raw_ptr<favicon::HistoryUiFaviconRequestHandler>
       favicon_request_handler_;
   std::vector<BrowserTabsModel::BrowserTabMetadata> results_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;

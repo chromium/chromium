@@ -1064,17 +1064,6 @@ void X11Window::SizeConstraintsChanged() {
   X11Window::UpdateMinAndMaxSize();
 }
 
-bool X11Window::IsTranslucentWindowOpacitySupported() const {
-  // If this function may be called before InitX11Window() (which
-  // initializes |visual_has_alpha_|), return whether it is possible
-  // to create windows with ARGB visuals.
-  if (xwindow_ == x11::Window::None) {
-    connection_->GetOrCreateVisualManager().ArgbVisualAvailable();
-  }
-
-  return visual_has_alpha_;
-}
-
 void X11Window::SetOpacity(float opacity) {
   // X server opacity is in terms of 32 bit unsigned int space, and counts from
   // the opposite direction.
@@ -1505,6 +1494,14 @@ void X11Window::OnXWindowStateChanged() {
     auto old_state = state_;
     state_ = new_state;
     platform_window_delegate_->OnWindowStateChanged(old_state, state_);
+  }
+
+  WindowTiledEdges tiled_state = GetTiledState();
+  if (tiled_state != tiled_state_) {
+    tiled_state_ = tiled_state;
+#if BUILDFLAG(IS_LINUX)
+    platform_window_delegate_->OnWindowTiledStateChanged(tiled_state);
+#endif
   }
 }
 
@@ -2508,6 +2505,14 @@ void X11Window::OnWMStateUpdated() {
     UpdateWindowProperties(
         base::flat_set<x11::Atom>(std::begin(atom_list), std::end(atom_list)));
   }
+}
+
+WindowTiledEdges X11Window::GetTiledState() const {
+  const bool vert = HasWMSpecProperty(
+      window_properties_, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"));
+  const bool horz = HasWMSpecProperty(
+      window_properties_, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
+  return WindowTiledEdges{vert, vert, horz, horz};
 }
 
 void X11Window::UpdateWindowProperties(

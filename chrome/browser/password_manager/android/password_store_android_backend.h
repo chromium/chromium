@@ -210,13 +210,15 @@ class PasswordStoreAndroidBackend
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Internal method used for implementing the GetAutofillableLoginsAsync method
   // from the PasswordStoreBackend interface. |operation| is the
   // PasswordStoreOperation that invoked this method and |delay| is the amount
   // of time by which the call to this method was delayed. Calls
   // GetAutofillableLogins from the PasswordStoreAndroidBackendDispatcherBridge.
-  void GetAutofillableLoginsInternal(LoginsOrErrorReply callback,
+  void GetAutofillableLoginsInternal(std::string account,
+                                     LoginsOrErrorReply callback,
                                      PasswordStoreOperation operation,
                                      base::TimeDelta delay);
 
@@ -231,13 +233,15 @@ class PasswordStoreAndroidBackend
                                       base::TimeDelta delay);
 
   // Gets logins matching |form|.
-  void GetLoginsInternal(const PasswordFormDigest& form,
+  void GetLoginsInternal(std::string account,
+                         const PasswordFormDigest& form,
                          bool include_psl,
                          LoginsOrErrorReply callback,
                          PasswordStoreOperation operation);
 
   // Updates the form in storage with |form|.
-  void UpdateLoginInternal(const PasswordForm& form,
+  void UpdateLoginInternal(std::string account,
+                           const PasswordForm& form,
                            PasswordChangesOrErrorReply callback);
 
   // Removes |form|.
@@ -245,7 +249,6 @@ class PasswordStoreAndroidBackend
   // |delay| is the amount of time by which the call to this method was delayed.
   void RemoveLoginInternal(std::string account,
                            const PasswordForm& form,
-
                            PasswordChangesOrErrorReply callback,
                            PasswordStoreOperation operation,
                            base::TimeDelta delay);
@@ -285,6 +288,7 @@ class PasswordStoreAndroidBackend
   // |operation| is the PasswordStoreOperation  that invoked this method and
   // |delay| is the amount of time by which the call to this method was delayed.
   void FilterAndRemoveLogins(
+      std::string account,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
@@ -296,6 +300,7 @@ class PasswordStoreAndroidBackend
   // Filters logins that match |origin_filer| and asynchronously disables
   // autosignin by updating stored logins.
   void FilterAndDisableAutoSignIn(
+      std::string account,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       PasswordChangesOrErrorReply completion,
       LoginsResultOrError result);

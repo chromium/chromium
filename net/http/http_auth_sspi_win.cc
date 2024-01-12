@@ -434,8 +434,7 @@ int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,
 
   // Base64 encode data in output buffer and prepend the scheme.
   std::string encode_input(static_cast<char*>(out_buf), out_buf_len);
-  std::string encode_output;
-  base::Base64Encode(encode_input, &encode_output);
+  std::string encode_output = base::Base64Encode(encode_input);
   // OK, we are done with |out_buf|
   free(out_buf);
   if (scheme_ == HttpAuth::AUTH_SCHEME_NEGOTIATE) {

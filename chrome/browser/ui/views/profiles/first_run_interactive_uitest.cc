@@ -12,7 +12,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -48,7 +48,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 
@@ -263,16 +263,14 @@ class FirstRunParameterizedInteractiveUiTest
 
     if (WithSearchEngineChoiceStep()) {
       scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
-          SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
-              /*force_chrome_build=*/true));
+          SearchEngineChoiceDialogServiceFactory::
+              ScopedChromeBuildOverrideForTesting(
+                  /*force_chrome_build=*/true));
 
       enabled_features_and_params.push_back(
           {switches::kSearchEngineChoiceFre, {}});
       enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoice, {
-             { switches::kWithForcedScrollEnabled.name,
-               "true" }
-           }});
+          {switches::kSearchEngineChoice, {}});
     } else {
       disabled_features.push_back(switches::kSearchEngineChoice);
       disabled_features.push_back(switches::kSearchEngineChoiceFre);
@@ -322,7 +320,7 @@ class FirstRunParameterizedInteractiveUiTest
     }
 
     if (WithSearchEngineChoiceStep()) {
-      SearchEngineChoiceService::SetDialogDisabledForTests(
+      SearchEngineChoiceDialogService::SetDialogDisabledForTests(
           /*dialog_disabled=*/false);
     }
   }
@@ -675,9 +673,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage));
 
   if (WithSearchEngineChoiceStep()) {
-    SearchEngineChoiceService* search_engine_choice_service =
-        SearchEngineChoiceServiceFactory::GetForProfile(profile());
-    EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+        SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+    EXPECT_FALSE(
+        search_engine_choice_dialog_service->IsShowingDialog(browser()));
   }
 
   EXPECT_TRUE(proceed_future.Get());

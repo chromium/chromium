@@ -136,13 +136,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void CallShillScanAndConnectToBestServices();
 
   // Local references to the associated handler instances.
-  raw_ptr<ClientCertResolver, ExperimentalAsh> client_cert_resolver_;
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<ClientCertResolver> client_cert_resolver_;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
-      managed_configuration_handler_;
+  raw_ptr<ManagedNetworkConfigurationHandler> managed_configuration_handler_;
 
   // Whether a request to connect to the best network is pending. If true, once
   // all requirements are met (like policy loaded, certificate patterns being

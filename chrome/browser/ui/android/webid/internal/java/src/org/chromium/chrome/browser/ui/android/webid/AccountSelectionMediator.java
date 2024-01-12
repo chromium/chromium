@@ -173,13 +173,12 @@ class AccountSelectionMediator {
                         View continueButton =
                                 contentView.findViewById(R.id.account_selection_continue_btn);
 
-                        // TODO(crbug.com/1430240): Update SheetType and focus views for
-                        // accessibility according to SheetType instead of number of accounts.
                         boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
                         View focusView =
                                 continueButton != null
                                                 && continueButton.isShown()
                                                 && !isSingleAccountChooser
+                                                && getSheetType() == SheetType.ACCOUNT_SELECTION
                                         ? continueButton
                                         : contentView.findViewById(R.id.header);
 

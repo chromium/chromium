@@ -13,9 +13,7 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
-#include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 namespace safe_browsing {
 
@@ -50,24 +48,12 @@ HashRealTimeServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  auto url_loader_factory =
-      std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-              profile));
   return std::make_unique<HashRealTimeService>(
-      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       base::BindRepeating(&HashRealTimeServiceFactory::GetNetworkContext,
                           profile),
       VerdictCacheManagerFactory::GetForProfile(profile),
       OhttpKeyServiceFactory::GetForProfile(profile),
-      base::BindRepeating(
-          &HashRealTimeServiceFactory::IsEnhancedProtectionEnabled, profile),
       WebUIInfoSingleton::GetInstance());
-}
-
-// static
-bool HashRealTimeServiceFactory::IsEnhancedProtectionEnabled(Profile* profile) {
-  return safe_browsing::IsEnhancedProtectionEnabled(*(profile->GetPrefs()));
 }
 
 // static

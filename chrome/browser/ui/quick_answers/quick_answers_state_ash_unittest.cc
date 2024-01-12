@@ -99,8 +99,7 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
   TestQuickAnswersStateObserver* observer() { return observer_.get(); }
 
  private:
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> prefs_ = nullptr;
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
 };
 

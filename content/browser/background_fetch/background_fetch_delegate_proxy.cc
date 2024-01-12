@@ -77,7 +77,7 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
         ->GetDelegate()
         ->CheckDownloadAllowed(
             std::move(web_contents_getter), origin.GetURL(), "GET",
-            absl::nullopt, false /* from_download_cross_origin_redirect */,
+            std::nullopt, false /* from_download_cross_origin_redirect */,
             true /* content_initiated */,
             base::BindOnce(&BackgroundFetchDelegateProxy::
                                DidGetPermissionFromDownloadRequestLimiter,
@@ -201,8 +201,8 @@ void BackgroundFetchDelegateProxy::StartRequest(
 
 void BackgroundFetchDelegateProxy::UpdateUI(
     const std::string& job_unique_id,
-    const absl::optional<std::string>& title,
-    const absl::optional<SkBitmap>& icon,
+    const std::optional<std::string>& title,
+    const std::optional<SkBitmap>& icon,
     blink::mojom::BackgroundFetchRegistrationService::UpdateUICallback
         update_ui_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

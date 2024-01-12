@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "url/origin.h"
@@ -253,13 +253,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Gets a single interest group.
   void GetInterestGroup(
       const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
+          callback);
 
   // Gets a single interest group.
   void GetInterestGroup(
       const url::Origin& owner,
       const std::string& name,
-      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
+          callback);
 
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
@@ -379,13 +381,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
       base::flat_set<url::Origin> origins,
-      base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+      base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
           callback);
 
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
       const std::string& key,
-      base::OnceCallback<void(absl::optional<base::Time>)> callback);
+      base::OnceCallback<void(std::optional<base::Time>)> callback);
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& key);
 
@@ -398,7 +400,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // remain valid until the `callback` is called or destroyed.
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
-      absl::optional<url::Origin> coordinator,
+      std::optional<url::Origin> coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
 
@@ -451,6 +453,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     AdAuctionDataLoaderState(AdAuctionDataLoaderState&& state);
     BiddingAndAuctionSerializer serializer;
     base::OnceCallback<void(BiddingAndAuctionData)> callback;
+    base::TimeTicks start_time;
   };
 
   // Callbacks for CheckPermissionsAndJoinInterestGroup(),

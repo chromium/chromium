@@ -120,11 +120,11 @@ void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
 
 void SoftNavigationHeuristics::ResetHeuristic() {
   // Reset previously seen indicators and task IDs.
-  potential_soft_navigation_task_ids_.clear();
+  has_potential_soft_navigation_task_ = false;
+  potential_soft_navigation_tasks_.clear();
   interaction_task_id_to_interaction_data_.clear();
   last_interaction_task_id_ = 0;
   last_soft_navigation_ancestor_task_ = absl::nullopt;
-  disposed_soft_navigation_tasks_ = 0;
   soft_navigation_descendant_cache_.clear();
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
   did_reset_paints_ = false;
@@ -191,7 +191,7 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
     ScriptState* script_state) {
   using IterationStatus = scheduler::TaskAttributionTracker::IterationStatus;
 
-  if (potential_soft_navigation_task_ids_.empty()) {
+  if (potential_soft_navigation_tasks_.empty()) {
     return absl::nullopt;
   }
   ThreadScheduler* scheduler = ThreadScheduler::Current();
@@ -208,12 +208,11 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
       return cached_result->value;
     }
     absl::optional<scheduler::TaskAttributionId> ancestor_task_id;
-    // Check if any of `potential_soft_navigation_task_ids_` is an ancestor of
+    // Check if any of `potential_soft_navigation_tasks_` is an ancestor of
     // `task`.
     tracker->ForEachAncestor(
         *task, [&](const scheduler::TaskAttributionInfo& ancestor) {
-          if (potential_soft_navigation_task_ids_.Contains(
-                  ancestor.Id().value())) {
+          if (potential_soft_navigation_tasks_.Contains(&ancestor)) {
             ancestor_task_id = ancestor.Id();
             return IterationStatus::kStop;
           }
@@ -498,6 +497,13 @@ void SoftNavigationHeuristics::CommitPreviousPaints(LocalFrame* frame) {
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(potential_soft_navigation_tasks_);
+  // Register a custom weak callback, which runs after processing weakness for
+  // the container. This allows us to observe the collection becoming empty
+  // without needing to observe individual element disposal.
+  visitor->RegisterWeakCallbackMethod<
+      SoftNavigationHeuristics,
+      &SoftNavigationHeuristics::ProcessCustomWeakness>(this);
 }
 
 void SoftNavigationHeuristics::OnCreateTaskScope(
@@ -510,12 +516,12 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   if (!tracker) {
     return;
   }
-  tracker->SetObserverForTaskDisposal(task.Id(), this);
   // We're inside a click event handler, so need to add this task to the set of
   // potential soft navigation root tasks.
   TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",
                "task_id", task.Id().value());
-  potential_soft_navigation_task_ids_.insert(task.Id().value());
+  potential_soft_navigation_tasks_.insert(&task);
+  has_potential_soft_navigation_task_ = true;
   if (!pending_interaction_timestamp_.is_null()) {
     PerInteractionData data;
     data.user_interaction_timestamp = pending_interaction_timestamp_;
@@ -529,22 +535,23 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   InteractionCallbackCalled(script_state, current_event_parameters_->type,
                             current_event_parameters_->is_new_interaction);
   if (current_event_parameters_->type ==
-      SoftNavigationHeuristics::EventScopeType::Navigate) {
+      SoftNavigationHeuristics::EventScopeType::kNavigate) {
     SameDocumentNavigationStarted(script_state);
   }
 }
 
-void SoftNavigationHeuristics::OnTaskDisposal(
-    const scheduler::TaskAttributionInfo& task) {
-  if (potential_soft_navigation_task_ids_.Contains(task.Id().value())) {
-    if (++disposed_soft_navigation_tasks_ >=
-        potential_soft_navigation_task_ids_.size()) {
-      // When all the soft navigation tasks were garbage collected, that means
-      // that all their descendant tasks are done, and there's no need to
-      // continue searching for soft navigation signals, at least not until the
-      // next user interaction.
-      ResetHeuristic();
-    }
+void SoftNavigationHeuristics::ProcessCustomWeakness(
+    const LivenessBroker& info) {
+  // When all the soft navigation tasks were garbage collected, that means that
+  // all their descendant tasks are done, and there's no need to continue
+  // searching for soft navigation signals, at least not until the next user
+  // interaction.
+  //
+  // Note: This is not allowed to do Oilpan allocations. If that's needed, this
+  // can schedule a task or microtask to reset the heuristic.
+  if (has_potential_soft_navigation_task_ &&
+      potential_soft_navigation_tasks_.empty()) {
+    ResetHeuristic();
   }
 }
 

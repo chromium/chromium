@@ -35,7 +35,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       const GURL& last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter);
@@ -82,25 +81,19 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
                         bool is_cached_response,
                         std::unique_ptr<RTLookupResponse> response);
 
-  // Perform the hash based check for the url. |real_time_request_failed|
-  // specifies whether this was triggered due to the real-time request having
-  // failed (e.g. due to backoff, network errors, other service unavailability).
-  void PerformHashBasedCheck(const GURL& url, bool real_time_request_failed);
+  // Perform the hash based check for the url.
+  void PerformHashBasedCheck(const GURL& url);
 
   // The real-time URL check can sometimes default back to the hash-based check.
   // In these cases, this function is called once the check has completed, so
   // that the real-time URL check can report back the final results to the
   // caller.
-  // |real_time_request_failed| specifies whether the real-time request failed
-  // (e.g. due to backoff, network errors, other service unavailability).
   void OnHashDatabaseCompleteCheckResult(
-      bool real_time_request_failed,
       std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
   void OnHashDatabaseCompleteCheckResultInternal(
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      absl::optional<ThreatSource> threat_source,
-      bool real_time_request_failed);
+      absl::optional<ThreatSource> threat_source);
 
   void MaybePerformSuspiciousSiteDetection(
       RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type);
@@ -119,11 +112,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // Whether the high confidence allowlist can be checked. It is set to
   // false when enterprise real time URL lookup is enabled.
   bool can_check_high_confidence_allowlist_;
-
-  // Stores the response of
-  // SafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist iff it was
-  // called.
-  bool did_match_allowlist_ = false;
 
   // URL Lookup service suffix for logging metrics.
   std::string url_lookup_service_metric_suffix_;

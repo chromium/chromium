@@ -22,35 +22,19 @@
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
-
-InstallFromInfoCommand::InstallFromInfoCommand(
-    Profile* profile,
-    std::unique_ptr<WebAppInstallInfo> install_info,
-    bool overwrite_existing_manifest_fields,
-    webapps::WebappInstallSource install_surface,
-    OnceInstallCallback install_callback)
-    : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
-      profile_(*profile),
-      manifest_id_(
-          install_info->manifest_id.is_empty()
-              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
-              : install_info->manifest_id),
-      app_id_(
-          GenerateAppIdFromManifestId(manifest_id_,
-                                      install_info->parent_app_manifest_id)),
-      install_callback_(base::BindOnce(
-          [](OnceInstallCallback install_callback,
-             const webapps::AppId& app_id,
-             webapps::InstallResultCode code,
-             bool _) { std::move(install_callback).Run(app_id, code); },
-          std::move(install_callback))),
-      lock_description_(std::make_unique<AppLockDescription>(app_id_)) {
-  install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
-      profile, std::move(install_info), overwrite_existing_manifest_fields,
-      install_surface, /*install_params=*/absl::nullopt,
-      base::BindOnce(&InstallFromInfoCommand::OnInstallFromInfoJobCompleted,
-                     weak_factory_.GetWeakPtr()));
+namespace {
+webapps::ManifestId GetManifestIdWithBackup(
+    const WebAppInstallInfo& install_info) {
+  return install_info.manifest_id.is_empty()
+             ? GenerateManifestIdFromStartUrlOnly(install_info.start_url)
+             : install_info.manifest_id;
 }
+
+webapps::AppId GetAppIdWithBackup(const WebAppInstallInfo& install_info) {
+  return GenerateAppIdFromManifestId(GetManifestIdWithBackup(install_info),
+                                     install_info.parent_app_manifest_id);
+}
+}  // namespace
 
 InstallFromInfoCommand::InstallFromInfoCommand(
     Profile* profile,
@@ -58,60 +42,34 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
-    const WebAppInstallParams& install_params)
-    : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
+    absl::optional<WebAppInstallParams> install_params)
+    : WebAppCommand<AppLock, const webapps::AppId&, webapps::InstallResultCode>(
+          "InstallFromInfoCommand",
+          AppLockDescription(GetAppIdWithBackup(*install_info)),
+          std::move(install_callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(/*app_id=*/
+                          GetAppIdWithBackup(*install_info),
+                          webapps::InstallResultCode::
+                              kCancelledOnWebAppProviderShuttingDown)),
       profile_(*profile),
-      manifest_id_(
-          install_info->manifest_id.is_empty()
-              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
-              : install_info->manifest_id),
-      app_id_(
-          GenerateAppIdFromManifestId(manifest_id_,
-                                      install_info->parent_app_manifest_id)),
-      install_callback_(base::BindOnce(
-          [](OnceInstallCallback install_callback,
-             const webapps::AppId& app_id,
-             webapps::InstallResultCode code,
-             bool _) { std::move(install_callback).Run(app_id, code); },
-          std::move(install_callback))),
-      lock_description_(std::make_unique<AppLockDescription>(app_id_)) {
+      manifest_id_(GetManifestIdWithBackup(*install_info)),
+      app_id_(GetAppIdWithBackup(*install_info)) {
+  GetMutableDebugValue().Set("manifest_id", manifest_id_.spec());
+  GetMutableDebugValue().Set("app_id", app_id_);
   install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
-      profile, std::move(install_info), overwrite_existing_manifest_fields,
+      profile, *GetMutableDebugValue().EnsureDict("install_from_info_job"),
+      std::move(install_info), overwrite_existing_manifest_fields,
       install_surface, install_params,
       base::BindOnce(&InstallFromInfoCommand::OnInstallFromInfoJobCompleted,
                      weak_factory_.GetWeakPtr()));
 }
 
-InstallFromInfoCommand::InstallFromInfoCommand(
-    Profile* profile,
-    std::unique_ptr<WebAppInstallInfo> install_info,
-    bool overwrite_existing_manifest_fields,
-    webapps::WebappInstallSource install_surface,
-    InstallAndReplaceCallback install_callback,
-    const WebAppInstallParams& install_params,
-    const std::vector<webapps::AppId>& apps_or_extensions_to_uninstall)
-    : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
-      profile_(*profile),
-      manifest_id_(
-          install_info->manifest_id.is_empty()
-              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
-              : install_info->manifest_id),
-      app_id_(
-          GenerateAppIdFromManifestId(manifest_id_,
-                                      install_info->parent_app_manifest_id)),
-      install_callback_(std::move(install_callback)),
-      apps_or_extensions_to_uninstall_(apps_or_extensions_to_uninstall),
-      lock_description_(std::make_unique<AppLockDescription>(app_id_)) {
-  install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
-      profile, std::move(install_info), overwrite_existing_manifest_fields,
-      install_surface, install_params,
-      base::BindOnce(&InstallFromInfoCommand::OnInstallFromInfoJobCompleted,
-                     weak_factory_.GetWeakPtr()));
-}
 InstallFromInfoCommand::~InstallFromInfoCommand() = default;
 
-const LockDescription& InstallFromInfoCommand::lock_description() const {
-  return *lock_description_;
+void InstallFromInfoCommand::OnShutdown(
+    base::PassKey<WebAppCommandManager>) const {
+  webapps::InstallableMetrics::TrackInstallResult(false);
 }
 
 void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
@@ -119,70 +77,18 @@ void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   install_from_info_job_->Start(lock_.get());
 }
 
-void InstallFromInfoCommand::OnShutdown() {
-  Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-  return;
-}
-
-base::Value InstallFromInfoCommand::ToDebugValue() const {
-  base::Value::Dict dict;
-  dict.Set("install_from_info_job", install_from_info_job_
-                                        ? install_from_info_job_->ToDebugValue()
-                                        : base::Value());
-  dict.Set("uninstall_and_replace_job",
-           uninstall_and_replace_job_
-               ? uninstall_and_replace_job_->ToDebugValue()
-               : base::Value());
-  return base::Value(std::move(dict));
-}
-
 void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
-    const webapps::AppId& app_id,
+    webapps::AppId app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hook_errors) {
   bool was_install_success = webapps::IsSuccess(code);
   if (!was_install_success) {
-    Abort(code);
+    CompleteAndSelfDestruct(CommandResult::kFailure, app_id_, code);
     return;
   }
 
   webapps::InstallableMetrics::TrackInstallResult(was_install_success);
-
-  uninstall_and_replace_job_.emplace(
-      &profile_.get(), *lock_, std::move(apps_or_extensions_to_uninstall_),
-      app_id,
-      base::BindOnce(&InstallFromInfoCommand::OnUninstallAndReplaced,
-                     weak_factory_.GetWeakPtr(), std::move(code)));
-  uninstall_and_replace_job_->Start();
-}
-
-void InstallFromInfoCommand::OnUninstallAndReplaced(
-    webapps::InstallResultCode code,
-    bool did_uninstall_and_replace) {
-  if (!install_callback_) {
-    return;
-  }
-
-  SignalCompletionAndSelfDestruct(
-      webapps::IsSuccess(code) ? CommandResult::kSuccess
-                               : CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), std::move(app_id_), code,
-                     did_uninstall_and_replace));
-}
-
-void InstallFromInfoCommand::Abort(webapps::InstallResultCode code) {
-  webapps::InstallableMetrics::TrackInstallResult(false);
-  if (!install_callback_) {
-    return;
-  }
-
-  SignalCompletionAndSelfDestruct(
-      (code ==
-       webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown)
-          ? CommandResult::kShutdown
-          : CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), std::move(app_id_), code,
-                     /*did_uninstall_and_replace=*/false));
+  CompleteAndSelfDestruct(CommandResult::kSuccess, app_id_, code);
 }
 
 }  // namespace web_app

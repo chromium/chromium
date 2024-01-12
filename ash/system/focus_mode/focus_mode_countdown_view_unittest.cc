@@ -53,24 +53,24 @@ class FocusModeCountdownViewTest : public AshTestBase {
 // bubble goes away when the tray is deactivated or focus mode ends.
 TEST_F(FocusModeCountdownViewTest, ToggleVisibility) {
   ASSERT_TRUE(focus_mode_tray_);
-  EXPECT_FALSE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_FALSE(focus_mode_tray_->GetBubbleView());
 
   // Start the focus session and activate the tray.
   FocusModeController* controller = FocusModeController::Get();
   controller->ToggleFocusMode();
-  EXPECT_FALSE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_FALSE(focus_mode_tray_->GetBubbleView());
   LeftClickOn(focus_mode_tray_);
-  EXPECT_TRUE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
 
   // Click the tray again to toggle the bubble.
   LeftClickOn(focus_mode_tray_);
-  EXPECT_FALSE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_FALSE(focus_mode_tray_->GetBubbleView());
 
   // Bring the bubble back, then end focus mode to toggle the bubble.
   LeftClickOn(focus_mode_tray_);
-  EXPECT_TRUE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
   controller->ToggleFocusMode();
-  EXPECT_FALSE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_FALSE(focus_mode_tray_->GetBubbleView());
 }
 
 // Tests that in an active focus session, the user clicks the `+10 min` button
@@ -79,12 +79,12 @@ TEST_F(FocusModeCountdownViewTest, ToggleVisibility) {
 // progress bar should be equal to the maximum session duration.
 TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
   FocusModeController* controller = FocusModeController::Get();
-  controller->SetSessionDuration(focus_mode_util::kMaximumDuration -
-                                 base::Minutes(1));
+  controller->SetInactiveSessionDuration(focus_mode_util::kMaximumDuration -
+                                         base::Minutes(1));
   controller->ToggleFocusMode();
 
   LeftClickOn(focus_mode_tray_);
-  EXPECT_TRUE(focus_mode_tray_->tray_bubble_wrapper_for_testing());
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
 
   auto* button = GetExtendTimeButton();
   EXPECT_TRUE(button->GetEnabled());
@@ -97,7 +97,8 @@ TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
 
   EXPECT_FALSE(button->GetEnabled());
   EXPECT_EQ(u"5:00:00", label->GetText());
-  EXPECT_EQ(focus_mode_util::kMaximumDuration, controller->session_duration());
+  EXPECT_EQ(focus_mode_util::kMaximumDuration,
+            controller->GetSessionDuration());
 }
 
 }  // namespace ash

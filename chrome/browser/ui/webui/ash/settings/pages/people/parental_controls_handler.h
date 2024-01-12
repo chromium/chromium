@@ -35,7 +35,7 @@ class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
   void HandleShowAddSupervisionDialog(const base::Value::List& args);
   void HandleLaunchFamilyLinkSettings(const base::Value::List& args);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash::settings

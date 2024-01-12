@@ -312,5 +312,5 @@ void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   NotifyMenuItemClicked(this);
 }
 
-BEGIN_METADATA(SiteDataRowView, views::View)
+BEGIN_METADATA(SiteDataRowView)
 END_METADATA

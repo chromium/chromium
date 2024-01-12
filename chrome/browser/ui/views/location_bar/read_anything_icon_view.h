@@ -14,8 +14,9 @@ class CommandUpdater;
 // The location bar icon to open read anything.
 class ReadAnythingIconView : public PageActionIconView,
                              public ReadAnythingCoordinator::Observer {
+  METADATA_HEADER(ReadAnythingIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(ReadAnythingIconView);
   ReadAnythingIconView(
       CommandUpdater* command_updater,
       Browser* browser,

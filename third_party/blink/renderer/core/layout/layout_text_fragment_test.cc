@@ -377,7 +377,8 @@ TEST_F(LayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(To<LayoutTextFragment>(letter_x.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_EQ("a", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
+  EXPECT_EQ(
+      "a", letter_x.GetLayoutObject()->GetFirstLetterPart()->TransformedText());
 
   // Make <div>"" "a"</div>
   Text& letter_a = *letter_x.splitText(0, ASSERT_NO_EXCEPTION);
@@ -389,7 +390,8 @@ TEST_F(LayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_EQ("a", letter_a.GetLayoutObject()->GetFirstLetterPart()->GetText());
+  EXPECT_EQ(
+      "a", letter_a.GetLayoutObject()->GetFirstLetterPart()->TransformedText());
   EXPECT_FALSE(letter_x.GetLayoutObject())
       << "We don't have layout text for empty Text node.";
 
@@ -411,7 +413,8 @@ TEST_F(LayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(To<LayoutTextFragment>(letter_x.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_EQ("x", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
+  EXPECT_EQ(
+      "x", letter_x.GetLayoutObject()->GetFirstLetterPart()->TransformedText());
 }
 
 // For http://crbug.com/984389

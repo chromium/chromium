@@ -46,7 +46,7 @@ class UploadDataSource {
 
 class BytesUploadDataSource : public UploadDataSource {
  public:
-  BytesUploadDataSource(const std::string_view& bytes) : bytes_(bytes) {}
+  BytesUploadDataSource(std::string_view bytes) : bytes_(bytes) {}
 
   BytesUploadDataSource(const BytesUploadDataSource&) = delete;
   BytesUploadDataSource& operator=(const BytesUploadDataSource&) = delete;

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 
 namespace ash {
 namespace phonehub {
@@ -125,6 +126,11 @@ void FakePhoneHubManager::SetSystemInfoProvider(
 
 eche_app::SystemInfoProvider* FakePhoneHubManager::GetSystemInfoProvider() {
   return system_info_provider_;
+}
+
+PhoneHubStructuredMetricsLogger*
+FakePhoneHubManager::GetPhoneHubStructuredMetricsLogger() {
+  return phone_hub_structured_metrics_logger_;
 }
 
 }  // namespace phonehub

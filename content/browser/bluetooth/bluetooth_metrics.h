@@ -5,7 +5,8 @@
 #ifndef CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_METRICS_H_
 #define CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_METRICS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace device {
@@ -72,7 +73,7 @@ void RecordConnectGATTOutcome(CacheQueryOutcome outcome);
 // Records the UUID of the service used when calling getPrimaryService.
 void RecordGetPrimaryServicesServices(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const absl::optional<device::BluetoothUUID>& service);
+    const std::optional<device::BluetoothUUID>& service);
 
 // getCharacteristic() and getCharacteristics() Metrics
 
@@ -122,7 +123,7 @@ void RecordGetCharacteristicsOutcome(
 // Records the UUID of the characteristic used when calling getCharacteristic.
 void RecordGetCharacteristicsCharacteristic(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const absl::optional<device::BluetoothUUID>& characteristic);
+    const std::optional<device::BluetoothUUID>& characteristic);
 
 // Records the outcome of the cache query for getDescriptors. Should only be
 // called if QueryCacheForService fails.

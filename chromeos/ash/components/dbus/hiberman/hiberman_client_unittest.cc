@@ -71,7 +71,7 @@ class HibermanClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> dbus_service_proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<HibermanClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<HibermanClient> client_ = nullptr;
 
  private:
   // Handles calls to |proxy_|'s `CallMethod()`.

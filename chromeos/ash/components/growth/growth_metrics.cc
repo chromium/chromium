@@ -14,6 +14,9 @@ namespace {
 inline constexpr char kCampaignsManagerErrorHistogramName[] =
     "Ash.Growth.CampaignsManager.Error";
 
+inline constexpr char kGetCampaignBySlotHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot";
+
 inline constexpr char kCampaignsComponentDownloadDurationHistogram[] =
     "Ash.Growth.CampaignsComponent.DownloadDuration";
 
@@ -27,6 +30,10 @@ inline constexpr char kCampaignMatchDurationHistogram[] =
 
 void RecordCampaignsManagerError(CampaignsManagerError error) {
   base::UmaHistogramEnumeration(kCampaignsManagerErrorHistogramName, error);
+}
+
+void RecordGetCampaignBySlot(Slot slot) {
+  base::UmaHistogramEnumeration(kGetCampaignBySlotHistogramName, slot);
 }
 
 void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration) {

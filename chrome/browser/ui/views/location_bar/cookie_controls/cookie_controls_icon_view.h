@@ -21,8 +21,9 @@
 // the cookie controls (https://crbug.com/1446230).
 class CookieControlsIconView : public PageActionIconView,
                                public content_settings::CookieControlsObserver {
+  METADATA_HEADER(CookieControlsIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(CookieControlsIconView);
   CookieControlsIconView(
       Browser* browser,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

@@ -11,7 +11,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
@@ -111,8 +110,6 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
   )");
 
 bool IsEnabled(PrefService* pref_service) {
-  safe_browsing::SafeBrowsingState state =
-      safe_browsing::GetSafeBrowsingState(*pref_service);
   // If this class has been created, it is already known that the session is not
   // off-the-record and that the user's location is eligible, so
   // |is_off_the_record| is passed through as false and
@@ -120,14 +117,8 @@ bool IsEnabled(PrefService* pref_service) {
   return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
              /*is_off_the_record=*/false, pref_service,
              /*stored_permanent_country=*/absl::nullopt) ==
-             safe_browsing::hash_realtime_utils::HashRealTimeSelection::
-                 kHashRealTimeService ||
-         // The service is enabled when enhanced protection and
-         // kHashRealTimeOverOhttp are both enabled, because when this is true,
-         // Chrome needs to send HPRT requests over OHTTP when conducting the
-         // lookup mechanism experiment.
-         (state == safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION &&
-          base::FeatureList::IsEnabled(safe_browsing::kHashRealTimeOverOhttp));
+         safe_browsing::hash_realtime_utils::HashRealTimeSelection::
+             kHashRealTimeService;
 }
 
 GURL GetKeyFetchingUrl() {

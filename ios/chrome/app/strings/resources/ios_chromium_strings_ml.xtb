@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Chromium നുറുങ്ങുകൾ</translation>
 <translation id="2168108852149185974">ചില ആഡ് ഓണുകൾ Chromium ക്രാഷാകാനിടയാക്കും. ഇനിപ്പറയുന്നവ അൺഇൻസ്‌റ്റാൾ ചെയ്യുക:</translation>
 <translation id="2178608107313874732">Chromium-ത്തിന്‌ ഇപ്പോൾ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനാവില്ല</translation>
-<translation id="219374086636266276">Google Account-ൽ നിങ്ങൾക്ക്, <ph name="BEGIN_LINK" />ഏതൊക്കെ Chromium ഡാറ്റയാണ് സംരക്ഷിച്ചിരിക്കുന്നത് എന്നത് മാനേജ് ചെയ്യാം<ph name="END_LINK" />.
-നിങ്ങളുടെ Chromium അനുഭവം മെച്ചപ്പെടുത്താനായി ഡാറ്റ ഉപയോഗിക്കുന്ന കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />Google സേവനങ്ങളിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="2195025571279539885">അടുത്ത തവണ ഈ സൈറ്റിൽ നിന്ന് <ph name="LANGUAGE_NAME" /> പേജുകൾ വിവർത്തനം ചെയ്യാൻ Chromium ഓഫർ ചെയ്യുന്നതിൽ നിങ്ങൾക്ക് താൽപ്പര്യമുണ്ടോ?</translation>
 <translation id="2218146227246548550">Chromium ഉപയോഗിക്കുന്നതിന് സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">ഈ വിലാസം നിലവിൽ Chromium-ൽ സംരക്ഷിച്ചിരിക്കുന്നു. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
@@ -65,6 +63,9 @@
 <translation id="2730884209570016437">നിങ്ങളുടെ ക്യാമറ നിലവിൽ മറ്റൊരു ആപ്പ് ഉപയോഗിക്കുന്നതിനാൽ Chromium-ത്തിന് അത് ഉപയോഗിക്കാനാവില്ല</translation>
 <translation id="2784449251446768092">Chromium ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="2798503587425057129">Chromium-ലെ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് തുറക്കുന്നു.</translation>
+<translation id="28276745681323897">Google Account-ൽ നിങ്ങൾക്ക്, <ph name="BEGIN_LINK" />ഏതൊക്കെ Chromium ഡാറ്റയാണ് സംരക്ഷിച്ചിരിക്കുന്നത് എന്നത് മാനേജ് ചെയ്യാം<ph name="END_LINK" />.
+
+നിങ്ങളുടെ Chromium അനുഭവം മെച്ചപ്പെടുത്താനായി ഡാറ്റ ഉപയോഗിക്കുന്ന കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />Google സേവനങ്ങളിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="2843571538056574338">സ്വയമേവ പൂരിപ്പിക്കാൻ Chromium ഉപയോഗിക്കുക</translation>
 <translation id="2918709798697875261">Chromium-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്ത നിലയിൽ തുടരാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="2942241131342758843">ലിങ്കുകൾ തുറക്കാനും വിജറ്റുകളിൽ നിന്ന് തിരയാനും മറ്റ് ആപ്പുകളിൽ പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാനും ഡിഫോൾട്ടായി Chromium ഉപയോഗിക്കുക</translation>

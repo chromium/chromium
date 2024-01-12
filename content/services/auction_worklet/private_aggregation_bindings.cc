@@ -9,6 +9,7 @@
 #include <cmath>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
@@ -48,8 +48,8 @@ namespace {
 // };
 struct PASignalValue {
   std::string base_value;
-  absl::optional<double> scale;
-  absl::optional<absl::variant<int32_t, v8::Local<v8::BigInt>>> offset;
+  std::optional<double> scale;
+  std::optional<absl::variant<int32_t, v8::Local<v8::BigInt>>> offset;
 };
 
 bool ConvertToPASignalValue(AuctionV8Helper* v8_helper,
@@ -97,7 +97,7 @@ bool ConvertToPASignalValueOr(AuctionV8Helper* v8_helper,
 }
 
 // Converts base value string to corresponding mojom enum.
-absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
+std::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
     const std::string& base_value) {
   if (base_value == "winning-bid") {
     return auction_worklet::mojom::BaseValue::kWinningBid;
@@ -111,16 +111,16 @@ absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
     return auction_worklet::mojom::BaseValue::kBidRejectReason;
   }
   // Invalid (out of range) base_value.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-// If returns `absl::nullopt`, will output an error to `error`.
-absl::optional<absl::uint128> ConvertBigIntToUint128(
+// If returns `std::nullopt`, will output an error to `error`.
+std::optional<absl::uint128> ConvertBigIntToUint128(
     v8::Local<v8::BigInt> bigint,
     std::string* error) {
   if (bigint->WordCount() > 2) {
     *error = "BigInt is too large";
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Signals the size of the `words` array to `ToWordsArray()`. The number of
   // elements actually used is then written here by the function.
@@ -130,19 +130,19 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
   bigint->ToWordsArray(&sign_bit, &word_count, words);
   if (sign_bit) {
     *error = "BigInt must be non-negative";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return absl::MakeUint128(words[1], words[0]);
 }
 
-// If returns `absl::nullopt`, will output an error to `error`.
+// If returns `std::nullopt`, will output an error to `error`.
 // Modified from `ConvertBigIntToUint128()`.
-absl::optional<auction_worklet::mojom::BucketOffsetPtr>
+std::optional<auction_worklet::mojom::BucketOffsetPtr>
 ConvertBigIntToBucketOffset(v8::Local<v8::BigInt> bigint, std::string* error) {
   if (bigint->WordCount() > 2) {
     *error = "Bucket BigInt is too large";
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Signals the size of the `words` array to `ToWordsArray()`. The number of
   // elements actually used is then written here by the function.
@@ -157,15 +157,15 @@ ConvertBigIntToBucketOffset(v8::Local<v8::BigInt> bigint, std::string* error) {
       /*is_negative=*/sign_bit);
 }
 
-absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
+std::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
     v8::Isolate* isolate,
     const PASignalValue& input,
     std::string* error) {
-  absl::optional<auction_worklet::mojom::BaseValue> base_value_opt =
+  std::optional<auction_worklet::mojom::BaseValue> base_value_opt =
       BaseValueStringToEnum(input.base_value);
   if (!base_value_opt.has_value()) {
     *error = "Bucket's 'baseValue' is invalid";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   double scale = input.scale.value_or(1.0);
@@ -180,10 +180,10 @@ absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
       absl::get_if<v8::Local<v8::BigInt>>(&input.offset.value());
   if (!maybe_bigint) {
     *error = "Bucket's 'offset' must be BigInt";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<auction_worklet::mojom::BucketOffsetPtr> offset_opt =
+  std::optional<auction_worklet::mojom::BucketOffsetPtr> offset_opt =
       ConvertBigIntToBucketOffset(*maybe_bigint, error);
   if (!offset_opt.has_value()) {
     return nullptr;
@@ -192,15 +192,15 @@ absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
                                                    std::move(*offset_opt));
 }
 
-absl::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
+std::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
     v8::Isolate* isolate,
     const PASignalValue& input,
     std::string* error) {
-  absl::optional<auction_worklet::mojom::BaseValue> base_value_opt =
+  std::optional<auction_worklet::mojom::BaseValue> base_value_opt =
       BaseValueStringToEnum(input.base_value);
   if (!base_value_opt.has_value()) {
     *error = "Value's 'baseValue' is invalid";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   double scale = input.scale.value_or(1.0);
@@ -214,7 +214,7 @@ absl::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
   const int32_t* maybe_long = absl::get_if<int32_t>(&input.offset.value());
   if (!maybe_long) {
     *error = "Value's 'offset' must be a 32-bit signed integer";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return auction_worklet::mojom::SignalValue::New(*base_value_opt, scale,
                                                   *maybe_long);
@@ -229,7 +229,7 @@ auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
   const v8::Local<v8::BigInt>* big_int =
       absl::get_if<v8::Local<v8::BigInt>>(&idl_bucket);
   if (big_int) {
-    absl::optional<absl::uint128> maybe_bucket =
+    std::optional<absl::uint128> maybe_bucket =
         ConvertBigIntToUint128(*big_int, error);
     if (!maybe_bucket.has_value()) {
       CHECK(base::IsStringUTF8(*error));
@@ -238,7 +238,7 @@ auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
     return auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(
         *maybe_bucket);
   } else {
-    absl::optional<auction_worklet::mojom::SignalBucketPtr>
+    std::optional<auction_worklet::mojom::SignalBucketPtr>
         maybe_signal_bucket_ptr = GetSignalBucket(
             isolate, absl::get<PASignalValue>(idl_bucket), error);
     if (!maybe_signal_bucket_ptr.has_value()) {
@@ -264,7 +264,7 @@ auction_worklet::mojom::ForEventSignalValuePtr GetValue(
     }
     return auction_worklet::mojom::ForEventSignalValue::NewIntValue(*int_value);
   } else {
-    absl::optional<auction_worklet::mojom::SignalValuePtr>
+    std::optional<auction_worklet::mojom::SignalValuePtr>
         maybe_signal_value_ptr =
             GetSignalValue(isolate, absl::get<PASignalValue>(idl_value), error);
     if (!maybe_signal_value_ptr.has_value()) {
@@ -298,18 +298,18 @@ ParseForEventContribution(
       std::move(bucket), std::move(value), std::move(event_type));
 }
 
-// In case of failure, will return `absl::nullopt` and output an error to
+// In case of failure, will return `std::nullopt` and output an error to
 // `error`.
-absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::BigInt> js_debug_key,
-                                       std::string* error) {
-  absl::optional<absl::uint128> maybe_debug_key =
+std::optional<uint64_t> ParseDebugKey(v8::Local<v8::BigInt> js_debug_key,
+                                      std::string* error) {
+  std::optional<absl::uint128> maybe_debug_key =
       ConvertBigIntToUint128(js_debug_key.As<v8::BigInt>(), error);
   if (!maybe_debug_key.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (absl::Uint128High64(maybe_debug_key.value()) != 0) {
     *error = "BigInt is too large";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return absl::Uint128Low64(maybe_debug_key.value());
 }
@@ -459,7 +459,7 @@ void PrivateAggregationBindings::ContributeToHistogram(
   }
 
   std::string error;
-  absl::optional<absl::uint128> maybe_bucket =
+  std::optional<absl::uint128> maybe_bucket =
       ConvertBigIntToUint128(idl_bucket, &error);
   if (!maybe_bucket.has_value()) {
     DCHECK(base::IsStringUTF8(error));
@@ -601,7 +601,7 @@ void PrivateAggregationBindings::EnableDebugMode(
 
   if (!js_debug_key.IsEmpty()) {
     std::string error;
-    absl::optional<uint64_t> maybe_debug_key =
+    std::optional<uint64_t> maybe_debug_key =
         ParseDebugKey(js_debug_key, &error);
     if (!maybe_debug_key.has_value()) {
       DCHECK(base::IsStringUTF8(error));

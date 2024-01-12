@@ -120,13 +120,13 @@ namespace blink {
 namespace {
 
 BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
-    const ResourceRequestHead& request,
+    const network::ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   if (options.synchronous_policy == kRequestSynchronously) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedSyncRequest;
   }
   // Currently, BackgroundURLLoader only supports GET requests.
-  if (request.HttpMethod() != http_names::kGET) {
+  if (request.method != net::HttpRequestHeaders::kGetMethod) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonGetRequest;
   }
 
@@ -135,13 +135,13 @@ BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
   //   "chrome-extension://" urls. But ChildURLLoaderFactoryBundle::Clone()
   //   can't clone `subresource_overrides_`. So BackgroundURLLoader can't handle
   //   requests from the PDF plugin.
-  if (!request.Url().ProtocolIsInHTTPFamily()) {
+  if (!request.url.SchemeIsHTTPOrHTTPS()) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest;
   }
 
   // Don't support keepalive request which must be handled aligning with the
   // page lifecycle states. It is difficult to handle in the background thread.
-  if (request.GetKeepalive()) {
+  if (request.keepalive) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedKeepAliveRequest;
   }
 
@@ -157,7 +157,6 @@ class BackgroundURLLoader::Context
   Context(scoped_refptr<WebBackgroundResourceFetchAssets>
               background_resource_fetch_context,
           const Vector<String>& cors_exempt_header_list,
-          scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
           scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
           BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
           Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -165,7 +164,6 @@ class BackgroundURLLoader::Context
       : background_resource_fetch_context_(
             std::move(background_resource_fetch_context)),
         cors_exempt_header_list_(cors_exempt_header_list),
-        freezable_task_runner_(std::move(freezable_task_runner)),
         unfreezable_task_runner_(std::move(unfreezable_task_runner)),
         background_task_runner_(
             background_resource_fetch_context_->GetTaskRunner()),
@@ -211,7 +209,7 @@ class BackgroundURLLoader::Context
                                             scoped_refptr(this), mode));
 
     if (freeze_mode_ == LoaderFreezeMode::kNone) {
-      PostCrossThreadTask(*freezable_task_runner_, FROM_HERE,
+      PostCrossThreadTask(*unfreezable_task_runner_, FROM_HERE,
                           CrossThreadBindOnce(&Context::RunTasksOnMainThread,
                                               scoped_refptr(this)));
     }
@@ -385,7 +383,7 @@ class BackgroundURLLoader::Context
       base::AutoLock locker(tasks_lock_);
       tasks_.push_back(CrossThreadBindOnce(std::move(task), request_id_));
     }
-    PostCrossThreadTask(*freezable_task_runner_, FROM_HERE,
+    PostCrossThreadTask(*unfreezable_task_runner_, FROM_HERE,
                         CrossThreadBindOnce(&Context::RunTasksOnMainThread,
                                             scoped_refptr(this)));
   }
@@ -562,7 +560,7 @@ class BackgroundURLLoader::Context
 
 // static
 bool BackgroundURLLoader::CanHandleRequest(
-    const ResourceRequestHead& request,
+    const network::ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   CHECK(IsMainThread());
   auto result = CanHandleRequestInternal(request, options);
@@ -575,7 +573,6 @@ BackgroundURLLoader::BackgroundURLLoader(
     scoped_refptr<WebBackgroundResourceFetchAssets>
         background_resource_fetch_context,
     const Vector<String>& cors_exempt_header_list,
-    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
     Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -583,7 +580,6 @@ BackgroundURLLoader::BackgroundURLLoader(
     : context_(base::MakeRefCounted<Context>(
           std::move(background_resource_fetch_context),
           cors_exempt_header_list,
-          std::move(freezable_task_runner),
           std::move(unfreezable_task_runner),
           back_forward_cache_loader_helper,
           std::move(throttles),

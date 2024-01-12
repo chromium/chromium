@@ -47,7 +47,7 @@ DesktopStreamsRegistryImpl::~DesktopStreamsRegistryImpl() {}
 
 std::string DesktopStreamsRegistryImpl::RegisterStream(
     int render_process_id,
-    absl::optional<int> restrict_to_render_frame_id,
+    std::optional<int> restrict_to_render_frame_id,
     const url::Origin& origin,
     const DesktopMediaID& source,
     const DesktopStreamRegistryType type) {

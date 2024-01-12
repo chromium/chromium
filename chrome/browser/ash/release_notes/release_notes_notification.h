@@ -46,7 +46,7 @@ class ReleaseNotesNotification {
 
   void HandleClickShowNotification();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
   std::unique_ptr<message_center::Notification>
       release_notes_available_notification_;

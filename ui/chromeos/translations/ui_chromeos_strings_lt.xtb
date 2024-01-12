@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugalų k. su JAV tarptautine klaviatūra</translation>
 <translation id="1629521517399325891">Naudotojo sertifikatas nepasiekiamas tinklo autentifikavimui.</translation>
 <translation id="1641780993263690097">Kinų k. „Pinyin“</translation>
-<translation id="1646019627374511909">Nustatoma, kad failai (<ph name="NUMBER_OF_ITEMS" />) būtų pasiekiami neprisijungus</translation>
 <translation id="164969095109328410">„Chrome“ įrenginys</translation>
 <translation id="1661207570040737402">Išnaudojote visą bendro disko „Google Workspace“ saugyklą.</translation>
 <translation id="1661867754829461514">Trūksta PIN kodo</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">„Google“ skaičiuoklė</translation>
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
-<translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="3511705761158917664">Ruošiamasi sinchronizuoti <ph name="NUMBER_OF_ITEMS" /> elem...</translation>
 <translation id="3522708245912499433">Portugalų</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Pagal administratoriaus politiką neleidžiama kopijuoti tiek failų: <ph name="COUNT" /></translation>
 <translation id="6509122719576673235">Norvegų</translation>
 <translation id="6528513914570774834">Leisti kitiems šio įrenginio naudotojams naudoti šį tinklą</translation>
-<translation id="653019979737152879">Sinchronizuojamas failas „<ph name="FILE_NAME" />“...</translation>
 <translation id="6549689063733911810">Naujausi</translation>
 <translation id="6558280019477628686">Įvyko klaida. Kai kurie elementai galėjo nebūti ištrinti.</translation>
 <translation id="656398493051028875">Ištrinamas failas „<ph name="FILENAME" />“...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Suteikite „Linux“ programoms leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Šiuo metu esate neprisijungę. Sinchronizavimas bus atnaujintas, kai būsite prisijungę prie interneto</translation>
 <translation id="7589661784326793847">Luktelėkite sekundėlę</translation>
-<translation id="7592775719802218421">Nustatoma, kad failas „<ph name="FILE_NAME" />“ būtų pasiekiamas neprisijungus</translation>
 <translation id="7600126690270271294">Serbų k.</translation>
 <translation id="7603724359189955920">Tinkleliai</translation>
 <translation id="7627790789328695202">Oi, „<ph name="FILE_NAME" />“ jau yra. Pervardykite jį ir bandykite dar kartą.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8147028810663464959">Simbolio plotis yra viso dydžio</translation>
 <translation id="8151638057146502721">Konfigūruoti</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{Viena klaida.}one{# klaida.}few{# klaidos.}many{# klaidos.}other{# klaidų.}}</translation>
 <translation id="8154842056504218462">Pasirinkti visi įrašai.</translation>
 <translation id="8157684860301034423">Nepavyko nuskaityti programos informacijos.</translation>
 <translation id="8175731104491895765">Prancūzų k. (Belgija)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Suteikti „<ph name="VM_NAME" />“ leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="8372369524088641025">Netinkamas WEP raktas</translation>
 <translation id="8372852072747894550">Graikų k.</translation>
+<translation id="8377269993083688872">El. pašto išdėstymai</translation>
 <translation id="8386903983509584791">Nuskaitymas baigtas</translation>
 <translation id="8387733224523483503">Failas „<ph name="FILE_NAME" />“ išskirtas.</translation>
 <translation id="8395901698320285466">Aspektai</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Pasirinkite norimą atidaryti failą</translation>
 <translation id="8577897833047451336">Kroatų k.</translation>
 <translation id="8578308463707544055">Indoneziečių k.</translation>
-<translation id="8579285237314169903">Sinchronizuojama elementų: <ph name="NUMBER_OF_FILES" />…</translation>
 <translation id="8600173386174225982">Failų sąrašas pakeistas į miniatiūrų rodinį.</translation>
 <translation id="8601932370724196034">„Crostini“ vaizdo failas</translation>
 <translation id="8609695766746872526">Islandų k.</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Leisti tarpinius serverius bendrai naudojamuose tinkluose</translation>
 <translation id="8790981080411996443">Augalus laistantis žmogus</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{Vienas perspėjimas.}one{# perspėjimas.}few{# perspėjimai.}many{# perspėjimo.}other{# perspėjimų.}}</translation>
 <translation id="8808686172382650546">Katė</translation>
 <translation id="8810671769985673465">Nepavyko suglaudinti, yra elementas: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Ispanų k. (Ispanija)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
-<translation id="9083722265619106011">{0,plural, =1{Vienas perspėjimas.}one{<ph name="COUNT" /> perspėjimas.}few{<ph name="COUNT" /> perspėjimai.}many{<ph name="COUNT" /> perspėjimo.}other{<ph name="COUNT" /> perspėjimų.}}</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>

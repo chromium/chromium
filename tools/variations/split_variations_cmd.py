@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""A script to split Chrome variations into two sets.
+r"""A script to split Chrome variations into two sets.
 
 Chrome runs with many experiments and variations (field trials) that are
 randomly selected based on a configuration from a server. They lead to

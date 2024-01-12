@@ -22,6 +22,7 @@ dictionary MediaTrackConstraintSet {
     ConstrainBoolean echoCancellation;
     ConstrainBoolean autoGainControl;
     ConstrainBoolean noiseSuppression;
+    [RuntimeEnabled=MediaCaptureVoiceIsolation] ConstrainBoolean voiceIsolation;
     ConstrainDouble latency;
     ConstrainLong channelCount;
     ConstrainDOMString deviceId;

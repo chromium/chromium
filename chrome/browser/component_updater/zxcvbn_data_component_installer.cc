@@ -4,7 +4,6 @@
 
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 
-
 #include <array>
 #include <bit>
 #include <cstdint>

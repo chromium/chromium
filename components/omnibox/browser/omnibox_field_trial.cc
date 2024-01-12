@@ -1089,20 +1089,6 @@ bool IsUrlScoringModelEnabled() {
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
-// Two-column realbox ->
-
-const base::FeatureParam<int> kRealboxMaxPreviousSearchRelatedSuggestions(
-    &omnibox::kRealboxSecondaryZeroSuggest,
-    "RealboxMaxPreviousSearchRelatedSuggestions",
-    3);
-
-const base::FeatureParam<bool> kRealboxSecondaryZeroSuggestCounterfactual(
-    &omnibox::kRealboxSecondaryZeroSuggest,
-    "RealboxSecondaryZeroSuggestCounterfactual",
-    false);
-
-// <- Two-column realbox
-// ---------------------------------------------------------
 // Android UI Revamp ->
 const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(
     &omnibox::kOmniboxModernizeVisualUpdate,

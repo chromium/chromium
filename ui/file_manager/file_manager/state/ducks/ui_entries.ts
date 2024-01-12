@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import {isSameEntry, isVolumeEntry} from '../../common/js/entry_utils.js';
-import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-import {FileKey, State} from '../../externs/ts/state.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
+import type {FileKey, State} from '../../state/state.js';
 import {cacheEntries, getMyFiles, readSubDirectories} from '../ducks/all_entries.js';
 import {getEntry, getStore} from '../store.js';
 

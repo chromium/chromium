@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_INTEGRITY) MisconfiguredUserCleaner {
 
   void OnStartDeviceWipe(bool result);
 
-  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   // We expect `SessionController` to always outlive this class as it is owned
   // by `ash::Shell` and destroyed in

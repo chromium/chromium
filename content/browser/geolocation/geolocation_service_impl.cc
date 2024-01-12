@@ -64,24 +64,19 @@ GeolocationServiceImpl::GeolocationServiceImpl(
   DCHECK(render_frame_host);
 }
 
-GeolocationServiceImpl::~GeolocationServiceImpl() {
-  if (device::GeolocationManager* geolocation_manager =
-          device::GeolocationManager::GetInstance();
-      geolocation_manager) {
-    // One call here is enough as the calls are grouped by app name
-    geolocation_manager->TrackGeolocationRelinquished();
-  }
-}
+GeolocationServiceImpl::~GeolocationServiceImpl() = default;
 
 void GeolocationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::GeolocationService> receiver) {
   receiver_set_.Add(this, std::move(receiver),
                     std::make_unique<GeolocationServiceImplContext>());
+#if BUILDFLAG(IS_IOS)
   if (device::GeolocationManager* geolocation_manager =
           device::GeolocationManager::GetInstance();
       geolocation_manager) {
-    geolocation_manager->TrackGeolocationAttempted();
+    geolocation_manager->RequestSystemPermission();
   }
+#endif
 }
 
 void GeolocationServiceImpl::CreateGeolocation(

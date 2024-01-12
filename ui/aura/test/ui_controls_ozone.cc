@@ -266,16 +266,26 @@ bool UIControlsOzone::SendTouchEventsNotifyWhenDone(int action,
 void UIControlsOzone::SendEventToSink(ui::Event* event,
                                       int64_t display_id,
                                       base::OnceClosure closure,
-                                      WindowTreeHost* optional_host) {
-  // Post the task before processing the event. This is necessary in case
-  // processing the event results in a nested message loop.
-  if (closure) {
+                                      WindowTreeHost* optional_host,
+                                      bool post_task_after_dispatch) {
+  // Post the task before processing the event. This is usually necessary in
+  // case processing the event results in a nested message loop.
+  if (closure && !post_task_after_dispatch) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(closure));
   }
+
   WindowTreeHost* host = optional_host ? optional_host : host_.get();
   ui::EventSourceTestApi event_source_test(host->GetEventSource());
   std::ignore = event_source_test.SendEventToSink(event);
+
+  // It is sometimes necessary to post the task after processing the event.
+  // This should only occur if it is known that the event does not enter any
+  // nested message loops.
+  if (closure && post_task_after_dispatch) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
+  }
 }
 
 void UIControlsOzone::PostKeyEvent(ui::EventType type,
@@ -335,7 +345,16 @@ void UIControlsOzone::PostMouseEventTask(ui::EventType type,
   // This hack is necessary to set the repeat count for clicks.
   ui::MouseEvent mouse_event2(&mouse_event);
 
-  SendEventToSink(&mouse_event2, display_id, std::move(closure));
+  // For drag-ending left-mouse-button release events, the closure must be
+  // posted after the event is processed to ensure zcr_ui_controls::
+  // request_processed is sent after wl_data_source::dnd_finished.
+  // TODO(https://crbug.com/1516999): Desired synchronization semantics should
+  // be declared explicitly, not decided by test framework heuristics.
+  bool post_task_after_dispatch =
+      changed_button_flags == ui::EF_LEFT_MOUSE_BUTTON &&
+      type == ui::EventType::ET_MOUSE_RELEASED;
+  SendEventToSink(&mouse_event2, display_id, std::move(closure), nullptr,
+                  post_task_after_dispatch);
 }
 
 void UIControlsOzone::PostTouchEvent(ui::EventType type,

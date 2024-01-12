@@ -489,6 +489,11 @@ size_t GetIndexOfElement(const FormData& form_data,
   return form_data.fields.size();
 }
 
+bool HasTextInputs(const FormData& form_data) {
+  return base::ranges::any_of(form_data.fields,
+                              &FormFieldData::IsTextInputElement);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Returns a prediction whether the form that contains |username_element| and
 // |password_element| will be ready for submission after filling these two
@@ -1535,9 +1540,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     // This is limited to the keyboard accessory, as otherwise it would result
     // in a flickering of the popup, due to showing the keyboard at the same
     // time.
-    if (IsKeyboardAccessoryEnabled()) {
-      ShowSuggestions(focused_input_element, ShowAll(false));
-    }
+    ShowSuggestions(focused_input_element, ShowAll(false));
   }
 }
 
@@ -1869,13 +1872,13 @@ void PasswordAutofillAgent::LogPrefilledUsernameFillOutcome(
 void PasswordAutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form,
     const WebFormControlElement& element,
-    ElementChangeSource source) {
-  // ElementChangeSource::TEXTFIELD_CHANGED is handled in
+    SaveFormReason source) {
+  // SaveFormReason::kTextFieldChanged is handled in
   // AutofillAgent::OnTextFieldDidChange(). For the sake of code clarity, please
-  // don't add handling for ElementChangeSource::TEXTFIELD_CHANGED here if
+  // don't add handling for SaveFormReason::kTextFieldChanged here if
   // possible.
 
-  if (source == ElementChangeSource::WILL_SEND_SUBMIT_EVENT) {
+  if (source == SaveFormReason::kWillSendSubmitEvent) {
     WebInputElement input_element = element.DynamicTo<WebInputElement>();
     InformBrowserAboutUserInput(form, input_element);
   }
@@ -1896,8 +1899,9 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
 
   std::unique_ptr<FormData> submitted_form_data = GetFormDataFromWebForm(form);
 
-  if (!submitted_form_data)
+  if (!submitted_form_data || !HasTextInputs(*submitted_form_data)) {
     return;
+  }
 
   submitted_form_data->submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;

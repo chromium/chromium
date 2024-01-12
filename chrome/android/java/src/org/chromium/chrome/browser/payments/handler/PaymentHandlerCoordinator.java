@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments.handler;
 
 import android.app.Activity;
 
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -21,7 +22,6 @@ import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;

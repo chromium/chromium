@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/process/kill.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -118,7 +119,7 @@ class RenderViewHostDelegate {
   // Called on `blink::WebView` creation to get the initial base background
   // color for this `blink::WebView`. Nullopt means a color is not set, and the
   // blink default color should be used.
-  virtual absl::optional<SkColor> GetBaseBackgroundColor();
+  virtual std::optional<SkColor> GetBaseBackgroundColor();
 
   virtual const base::Location& GetCreatorLocation() = 0;
 

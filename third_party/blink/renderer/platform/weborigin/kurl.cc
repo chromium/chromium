@@ -45,6 +45,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 #ifndef NDEBUG
 #include <stdio.h>
@@ -928,7 +929,14 @@ void KURL::Init(const KURL& base,
   InitProtocolMetadata();
   InitInnerURL();
   AssertStringSpecIsASCII();
-  DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
+
+  if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    // This assertion implicitly assumes that "javascript:" scheme URL is always
+    // valid, but that is no longer true when
+    // kStandardCompliantNonSpecialSchemeURLParsing feature is enabled. e.g.
+    // "javascript://^", which is an invalid URL.
+    DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
+  }
 
   // Check for deviation characters in the string. See
   // https://unicode.org/reports/tr46/#Table_Deviation_Characters

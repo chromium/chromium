@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Havaittiin yhteensopimaton protokollaversio. Varmista, että molemmissa tietokoneissa on ohjelman uusimmat versiot, ja yritä uudelleen.</translation>
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="1201402288615127009">Seuraava</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="1297009705180977556">Virhe yhdistettäessä isäntään <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Pyydettyä kohdetta ei ole olemassa.</translation>
 <translation id="1480046233931937785">Tekijät</translation>
@@ -89,7 +88,6 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="4808503597364150972">Anna kohteen <ph name="HOSTNAME" /> PIN-koodi.</translation>
 <translation id="4812684235631257312">Isäntä</translation>
 <translation id="4867841927763172006">Lähetä PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="4974476491460646149">Yhteys suljettu isäntään <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Määritä ensin tietokone, johon haluat muodostaa etäyhteyden.</translation>
 <translation id="4987330545941822761">Chrome-etäkäyttö ei tunnista URL-osoitteiden paikalliseen avaamiseen käytettävää selainta. Valitse se listalta.</translation>
@@ -154,6 +152,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="7693372326588366043">Päivitä isäntäluettelo</translation>
 <translation id="7714222945760997814">Tee ilmoitus</translation>
 <translation id="7868137160098754906">Anna etätietokoneen PIN-koodi.</translation>
+<translation id="7881455334687220899">Tekijänoikeudet 2024: The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="7895403300744144251">Etätietokoneen suojauskäytännöt eivät salli tililtäsi saapuvia yhteyksiä.</translation>
 <translation id="7936528439960309876">Kiinnitä oikealle</translation>
 <translation id="7970576581263377361">Todennus epäonnistui. Kirjaudu Chromiumiin uudelleen.</translation>
@@ -185,6 +184,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittu, poista valinta ja valitse s
 <translation id="8747048596626351634">Istunto kaatui tai sen käynnistäminen epäonnistui. Jos ~/.chrome-remote-desktop-session on olemassa etätietokoneella, varmista, että se käynnistää pitkäkestoisen etualaprosessin, esim. työpöytäympäristön tai ikkunanhallinnan.</translation>
 <translation id="8804164990146287819">Tietosuojakäytäntö</translation>
 <translation id="8906511416443321782">Audion tallennus ja sen striimaus Chrome-etäkäyttösovellukseen edellyttävät mikrofonin käyttöoikeuksia.</translation>
+<translation id="9042277333359847053">Tekijänoikeudet 2024: Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="9111855907838866522">Olet yhteydessä etälaitteeseesi. Avaa valikko koskettamalla näyttöä neljällä sormella.</translation>
 <translation id="9126115402994542723">Älä kysy PIN-koodia uudelleen yhdistettäessä tähän isäntään tältä laitteelta.</translation>
 <translation id="916856682307586697">Käynnistä XSession-oletuskäyttökerta</translation>

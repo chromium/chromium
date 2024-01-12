@@ -119,6 +119,11 @@ class ClientMixin : public ClientInterface {
   }
 
  protected:
+  void DetachMixin() {
+    error_observer_ = nullptr;
+    net_log_ = nullptr;
+  }
+
   // TODO(eroman): This doesn't track being blocked in myIpAddress(Ex) handler.
   bool dns_request_in_progress() {
     return host_resolver_.request_in_progress();
@@ -132,9 +137,8 @@ class ClientMixin : public ClientInterface {
   std::unique_ptr<MyIpAddressImpl> my_ip_address_impl_;
   std::unique_ptr<MyIpAddressImpl> my_ip_address_impl_ex_;
 
-  const raw_ptr<net::ProxyResolverErrorObserver, DanglingUntriaged>
-      error_observer_;
-  const raw_ptr<net::NetLog> net_log_;
+  raw_ptr<net::ProxyResolverErrorObserver> error_observer_;
+  raw_ptr<net::NetLog> net_log_;
   const net::NetLogWithSource net_log_with_source_;
 
   base::WeakPtrFactory<ClientMixin> weak_ptr_factory_{this};
@@ -268,6 +272,9 @@ void ProxyResolverMojo::Job::CompleteRequest(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   net::CompletionOnceCallback callback = std::move(callback_);
   receiver_.reset();
+  // Clear raw pointers from the mojo mixin --- the callback may clean up stuff,
+  // and it can't be invoked without `receiver_` connected anyway.
+  DetachMixin();
   std::move(callback).Run(result);
 }
 
@@ -362,6 +369,11 @@ class ProxyResolverFactoryMojo::Job
                        base::Unretained(this)));
   }
 
+  ~Job() override {
+    // Clear pointer to `error_observer_` our base class stores.
+    DetachMixin();
+  }
+
   void OnMojoDisconnect() { ReportResult(net::ERR_PAC_SCRIPT_TERMINATED); }
 
  private:
@@ -369,6 +381,10 @@ class ProxyResolverFactoryMojo::Job
     // Prevent any other messages arriving unexpectedly, in the case |this|
     // isn't destroyed immediately.
     receiver_.reset();
+
+    // Clear raw pointers from the mojo mixin --- the callback may clean up
+    // stuff, and it can't be invoked without `receiver_` connected anyway.
+    DetachMixin();
 
     if (error == net::OK) {
       *resolver_ = std::make_unique<ProxyResolverMojo>(

@@ -37,7 +37,7 @@
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm ]
+#         qualcomm qualcomm-0x41333430 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -446,9 +446,11 @@ crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/buffers/element-ar
 crbug.com/1489477 [ fuchsia ] conformance/state/gl-object-get-calls.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-nelson ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-size-limit.html [ Failure ]
-crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
+crbug.com/1489477 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1489477 [ fuchsia ] conformance/textures/svg_image/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 
@@ -524,11 +526,14 @@ crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url
 
 crbug.com/1435021 [ amd-0x67ef angle-metal mac no-clang-coverage release graphite-disabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ Failure ]
 
+## SkiaGraphite ##
+
 crbug.com/1513193 [ mac amd angle-metal graphite-enabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
-crbug.com/1513193 [ mac amd angle-metal graphite-enabled ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
+crbug.com/1513193 [ amd angle-metal graphite-enabled mac release ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
+crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
+crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
 
 ## Mac Intel ##
-
 
 ## Mac Retina NVidia failures / flakes ##
 
@@ -589,8 +594,6 @@ crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/renderi
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 # Timing out on this device for unknown reasons.
 crbug.com/1122644 [ android android-nexus-5x angle-opengles passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-# Flakily returning RGBA(0,0,0,0) for pixels in video related tests
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
 # Fails on android oreo
 crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
@@ -600,6 +603,8 @@ crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/text
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
 crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1516836 [ android android-shield-android-tv no-passthrough renderer-skia-gl ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+crbug.com/1516836 [ android android-shield-android-tv no-passthrough renderer-skia-gl ] conformance/extensions/oes-texture-half-float-with-video.html [ RetryOnFailure ]
 
 ## Pixel 4 ##
 
@@ -722,11 +727,6 @@ crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExt
 
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-###########################
-# SkiaGraphite failures #
-###########################
-crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
-
 ###############################
 # New failures in WebGL rolls #
 ###############################
@@ -737,6 +737,13 @@ crbug.com/1448573 [ android-pie android-shield-android-tv angle-disabled no-clan
 crbug.com/1448573 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1448743 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+
+#################################################################
+# Temporary suppressions for introduction of drawingBufferStorage
+#################################################################
+crbug.com/1230619 conformance/context/constants-and-properties.html [ Failure ]
+crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
+crbug.com/1230619 conformance/offscreencanvas/methods.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

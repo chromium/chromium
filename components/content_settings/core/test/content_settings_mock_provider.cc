@@ -21,6 +21,16 @@ std::unique_ptr<RuleIterator> MockProvider::GetRuleIterator(
   return value_map_.GetRuleIterator(content_type);
 }
 
+std::unique_ptr<Rule> MockProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
+  base::AutoLock auto_lock(value_map_.GetLock());
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
+}
+
 bool MockProvider::SetWebsiteSetting(
     const ContentSettingsPattern& requesting_url_pattern,
     const ContentSettingsPattern& embedding_url_pattern,

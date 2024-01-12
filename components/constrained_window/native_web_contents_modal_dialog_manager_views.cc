@@ -177,6 +177,14 @@ void NativeWebContentsModalDialogManagerViews::OnWidgetDestroying(
   WidgetClosing(widget);
 }
 
+void NativeWebContentsModalDialogManagerViews::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  if (active) {
+    native_delegate_->OnDialogActivated();
+  }
+}
+
 void NativeWebContentsModalDialogManagerViews::HostChanged(
     WebContentsModalDialogHost* new_host) {
   if (host_)

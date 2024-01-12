@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -32,7 +33,7 @@ namespace password_manager {
 
 // There is one ContentPasswordManagerDriver per RenderFrameHost.
 // The lifetime is managed by the ContentPasswordManagerDriverFactory.
-class ContentPasswordManagerDriver
+class ContentPasswordManagerDriver final
     : public PasswordManagerDriver,
       public autofill::mojom::PasswordManagerDriver {
  public:
@@ -94,6 +95,11 @@ class ContentPasswordManagerDriver
   const GURL& GetLastCommittedURL() const override;
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override;
+  base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
+
+  base::WeakPtr<ContentPasswordManagerDriver> AsWeakPtrImpl() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Notify the renderer that the user wants to trigger password generation.
   void GeneratePassword(autofill::mojom::PasswordGenerationAgent::

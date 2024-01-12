@@ -36,9 +36,8 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
 
   // DeviceInfoTracker
   bool IsSyncing() const override;
-  std::unique_ptr<DeviceInfo> GetDeviceInfo(
-      const std::string& client_id) const override;
-  std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override;
+  const DeviceInfo* GetDeviceInfo(const std::string& client_id) const override;
+  std::vector<const DeviceInfo*> GetAllDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
@@ -51,6 +50,9 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
 
   // Adds a vector of new DeviceInfo entries to |devices_|.
   void Add(const std::vector<const DeviceInfo*>& devices);
+
+  // Overload that allows passing ownership.
+  void Add(std::unique_ptr<DeviceInfo> device);
 
   // Removes a DeviceInfo entry from the device list.
   // FakeDeviceInfoTracker keeps raw pointers to previously added devices, so
@@ -71,7 +73,9 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   void SetLocalCacheGuid(const std::string& cache_guid);
 
  private:
-  // DeviceInfo stored here are not owned.
+  // Owned DeviceInfo instances (subset of all devices).
+  std::vector<std::unique_ptr<DeviceInfo>> owned_devices_;
+  // DeviceInfo stored here are not necessarily owned.
   std::vector<raw_ptr<const DeviceInfo, VectorExperimental>> devices_;
   std::string local_device_cache_guid_;
   absl::optional<std::map<DeviceInfo::FormFactor, int>>

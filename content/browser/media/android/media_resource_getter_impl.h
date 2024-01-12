@@ -50,7 +50,7 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
   // Called when GetAuthCredentials() finishes.
   void GetAuthCredentialsCallback(
       GetAuthCredentialsCB callback,
-      const absl::optional<net::AuthCredentials>& credentials);
+      const std::optional<net::AuthCredentials>& credentials);
 
   // BrowserContext to retrieve URLRequestContext and ResourceContext.
   raw_ptr<BrowserContext> browser_context_;

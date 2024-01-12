@@ -13,6 +13,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,6 +172,30 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   controller->OnConfirmed();
   EXPECT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get(), kFakeEmailAddressForCallback);
+}
+
+// Ensure that closing the web contents with the plus_address creation UI open
+// doesn't cause issues, and doesn't incorrectly invoke the autofill callback.
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
+                       CloseWebContents) {
+  content::WebContents* active_web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      active_web_contents);
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(
+          active_web_contents);
+  base::test::TestFuture<const std::string&> future;
+  // First, offer creation.
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.com")),
+      future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+  // Next, close the web contents. The view and controller will be destroyed.
+  active_web_contents->Close();
+  // Expect no autofill callback.
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  //  namespace plus_addresses

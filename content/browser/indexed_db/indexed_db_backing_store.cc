@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 
 #include <algorithm>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -60,7 +61,6 @@
 #include "storage/browser/file_system/local_file_stream_writer.h"
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_mount_option.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -409,7 +409,7 @@ bool DecodeExternalObjects(const std::string& data,
 }
 
 bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  absl::optional<int> limit =
+  std::optional<int> limit =
       base::GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
@@ -4392,11 +4392,11 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           // Android doesn't seem to consistently be able to set file
           // modification times. The timestamp is not checked during reading
           // on Android either. https://crbug.com/1045488
-          absl::optional<base::Time> last_modified;
+          std::optional<base::Time> last_modified;
 #if !BUILDFLAG(IS_ANDROID)
           last_modified = entry.last_modified().is_null()
-                              ? absl::nullopt
-                              : absl::make_optional(entry.last_modified());
+                              ? std::nullopt
+                              : std::make_optional(entry.last_modified());
 #endif
           backing_store_->bucket_context_->blob_storage_context()
               ->WriteBlobToFile(

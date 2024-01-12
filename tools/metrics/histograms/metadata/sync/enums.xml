@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Public key not initialized"/>
   <int value="2" label="Public key version invalid"/>
   <int value="3" label="Corrupted public-private key pair"/>
+  <int value="4" label="Pending keys are non-empty"/>
 </enum>
 
 <enum name="FaviconAvailabilityStatus">
@@ -83,6 +84,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Invalid parent GUID"/>
   <int value="7" label="Invalid unique position"/>
   <int value="8" label="Banned GUID"/>
+</enum>
+
+<enum name="OutgoingPasswordSharingInvitationCommitError">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Public Key verions mismatch"/>
+  <int value="2" label="Not a family member"/>
 </enum>
 
 <enum name="PendingInvalidationStatus">
@@ -347,7 +354,7 @@ chromium-metrics-reviews@google.com.
   <int value="100148" label="DefaultTasksBySuffix"/>
   <int value="100149" label="DevToolsSyncPreferences"/>
   <int value="100150" label="DevToolsSyncedPreferencesSyncEnabled"/>
-  <int value="100151" label="DownloadBubbleIphSuppression"/>
+  <int value="100151" label="(obsolete) DownloadBubbleIphSuppression"/>
   <int value="100152" label="EnableDoNotTrack"/>
   <int value="100153" label="ExtensionCommands"/>
   <int value="100154" label="ExtensionsUIDeveloperMode"/>

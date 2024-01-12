@@ -13,6 +13,7 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -31,7 +32,8 @@ namespace {
 bool g_suppress_for_testing = false;
 
 base::flat_map<GURL, base::flat_set<webapps::AppId>> BuildInstallUrlToAppIdsMap(
-    const WebAppRegistrar& registrar) {
+    const WebAppRegistrar& registrar,
+    base::Value::Dict& debug_value) {
   base::flat_map<GURL, base::flat_set<webapps::AppId>> result;
 
   for (const WebApp& app : registrar.GetApps()) {
@@ -39,6 +41,7 @@ base::flat_map<GURL, base::flat_set<webapps::AppId>> BuildInstallUrlToAppIdsMap(
          app.management_to_external_config_map()) {
       for (const GURL& install_url : config.install_urls) {
         result[install_url].insert(app.app_id());
+        debug_value.EnsureList(install_url.spec())->Append(app.app_id());
       }
     }
   }
@@ -80,6 +83,7 @@ const webapps::AppId& SelectWebAppToDedupeInto(
 std::vector<std::unique_ptr<RemoveInstallUrlJob>>
 BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
     Profile& profile,
+    base::Value::Dict& jobs_debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
     const GURL& install_url,
@@ -116,6 +120,7 @@ BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
       // Create job to remove deduped install URL from existing app.
       result.push_back(std::make_unique<RemoveInstallUrlJob>(
           webapps::WebappUninstallSource::kInstallUrlDeduping, profile,
+          *jobs_debug_value.EnsureDict(id_to_dedupe_out_of),
           id_to_dedupe_out_of, install_source, install_url));
     }
   }
@@ -130,6 +135,7 @@ struct DedupeOperations {
 
 DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     Profile& profile,
+    base::Value::Dict& debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
     base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps) {
@@ -143,11 +149,14 @@ DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     const webapps::AppId& id_to_dedupe_into =
         SelectWebAppToDedupeInto(registrar, app_ids);
     result.dedupe_choices[install_url] = id_to_dedupe_into;
+    debug_value.EnsureDict("dedupe_choices")
+        ->Set(install_url.spec(), id_to_dedupe_into);
 
-    base::Extend(result.remove_install_url_jobs,
-                 BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
-                     profile, registrar, update, install_url, app_ids,
-                     id_to_dedupe_into));
+    base::Extend(
+        result.remove_install_url_jobs,
+        BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
+            profile, *debug_value.EnsureDict("removal_jobs"), registrar, update,
+            install_url, app_ids, id_to_dedupe_into));
   }
 
   return result;
@@ -162,29 +171,32 @@ base::AutoReset<bool> DedupeInstallUrlsCommand::ScopedSuppressForTesting() {
 DedupeInstallUrlsCommand::DedupeInstallUrlsCommand(
     Profile& profile,
     base::OnceClosure completed_callback)
-    : WebAppCommandTemplate("DedupeInstallUrlsCommand"),
-      profile_(profile),
-      completed_callback_(std::move(completed_callback)) {}
+    : WebAppCommand("DedupeInstallUrlsCommand",
+                    AllAppsLockDescription(),
+                    std::move(completed_callback)),
+      profile_(profile) {}
 
 DedupeInstallUrlsCommand::~DedupeInstallUrlsCommand() = default;
 
 void DedupeInstallUrlsCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   if (g_suppress_for_testing) {
-    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                    std::move(completed_callback_));
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 
   lock_ = std::move(lock);
 
-  install_url_to_apps_ = BuildInstallUrlToAppIdsMap(lock_->registrar());
+  install_url_to_apps_ = BuildInstallUrlToAppIdsMap(
+      lock_->registrar(),
+      *GetMutableDebugValue().EnsureDict("duplicate_install_urls"));
 
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     DedupeOperations pending_dedupe_operations =
         BuildOperationsToHaveOneAppPerInstallUrl(
-            profile_.get(), lock_->registrar(), update, install_url_to_apps_);
+            profile_.get(), GetMutableDebugValue(), lock_->registrar(), update,
+            install_url_to_apps_);
 
     dedupe_choices_ = std::move(pending_dedupe_operations.dedupe_choices);
     pending_jobs_ =
@@ -192,45 +204,6 @@ void DedupeInstallUrlsCommand::StartWithLock(
   }
 
   ProcessPendingJobsOrComplete();
-}
-
-void DedupeInstallUrlsCommand::OnShutdown() {
-  SignalCompletionAndSelfDestruct(CommandResult::kShutdown,
-                                  std::move(completed_callback_));
-}
-
-const LockDescription& DedupeInstallUrlsCommand::lock_description() const {
-  return lock_description_;
-}
-
-base::Value DedupeInstallUrlsCommand::ToDebugValue() const {
-  base::Value::Dict dict;
-
-  base::Value::Dict* duplicates_dict =
-      dict.EnsureDict("duplicate_install_urls");
-  for (const auto& [install_url, app_ids] : install_url_to_apps_) {
-    base::Value::List* list = duplicates_dict->EnsureList(install_url.spec());
-    for (const webapps::AppId& app_id : app_ids) {
-      list->Append(app_id);
-    }
-  }
-
-  base::Value::Dict* choices_dict = dict.EnsureDict("dedupe_choices");
-  for (const auto& [install_url, app_id] : dedupe_choices_) {
-    choices_dict->Set(install_url.spec(), app_id);
-  }
-
-  base::Value::List* pending_jobs = dict.EnsureList("pending_jobs");
-  for (const std::unique_ptr<RemoveInstallUrlJob>& job : pending_jobs_) {
-    pending_jobs->Append(job->ToDebugValue());
-  }
-
-  dict.Set("active_job",
-           active_job_ ? active_job_->ToDebugValue() : base::Value());
-
-  dict.Set("completed_jobs", completed_job_debug_values_.Clone());
-
-  return base::Value(std::move(dict));
 }
 
 void DedupeInstallUrlsCommand::ProcessPendingJobsOrComplete() {
@@ -246,9 +219,8 @@ void DedupeInstallUrlsCommand::ProcessPendingJobsOrComplete() {
   }
 
   RecordMetrics();
-  SignalCompletionAndSelfDestruct(
-      any_errors_ ? CommandResult::kFailure : CommandResult::kSuccess,
-      std::move(completed_callback_));
+  CompleteAndSelfDestruct(any_errors_ ? CommandResult::kFailure
+                                      : CommandResult::kSuccess);
 }
 
 void DedupeInstallUrlsCommand::JobComplete(webapps::UninstallResultCode code) {
@@ -258,7 +230,6 @@ void DedupeInstallUrlsCommand::JobComplete(webapps::UninstallResultCode code) {
     any_errors_ = true;
   }
 
-  completed_job_debug_values_.Append(active_job_->ToDebugValue());
   active_job_.reset();
 
   ProcessPendingJobsOrComplete();

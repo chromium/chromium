@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -95,7 +94,7 @@ void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
   source_observer_ = std::move(observer);
 }
 
-absl::optional<autofill::AccessorySheetData>
+std::optional<autofill::AccessorySheetData>
 AddressAccessoryControllerImpl::GetSheetData() const {
   if (!personal_data_manager_) {
     return absl::nullopt;
@@ -168,7 +167,7 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
   } else {
     // TODO(crbug.com/1169167): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.
-    absl::optional<AccessorySheetData> data = GetSheetData();
+    std::optional<AccessorySheetData> data = GetSheetData();
     DCHECK(data.has_value());
     GetManualFillingController()->RefreshSuggestions(std::move(data).value());
   }

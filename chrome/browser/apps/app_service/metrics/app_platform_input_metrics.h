@@ -122,7 +122,7 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // Returns true if recording is allowed for this app.
   bool ShouldRecordUkmForApp(const std::string& app_id);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   const raw_ref<const AppRegistryCache> app_registry_cache_;
 

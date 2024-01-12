@@ -137,6 +137,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getThermalInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getThermalInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.' +
+            'getThermalInfo. %s'
+        );
+        chrome.test.succeed();
+      },
       async function getTpmInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getTpmInfo(),

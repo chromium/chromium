@@ -8,6 +8,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -25,7 +26,6 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -37,9 +37,9 @@ namespace {
 
 // Returns error string on failure.
 template <size_t N>
-absl::optional<std::string> DecodeBase64Fixed(std::string_view field,
-                                              const std::string& in,
-                                              std::array<uint8_t, N>& out) {
+std::optional<std::string> DecodeBase64Fixed(std::string_view field,
+                                             const std::string& in,
+                                             std::array<uint8_t, N>& out) {
   std::string decoded;
   if (!base::Base64Decode(in, &decoded, base::Base64DecodePolicy::kForgiving)) {
     return base::StrCat({"Field '", field, "' is not valid base64."});
@@ -49,7 +49,7 @@ absl::optional<std::string> DecodeBase64Fixed(std::string_view field,
   }
   std::copy(decoded.begin(), decoded.end(), out.data());
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AdditionalBidKeyHasMatchingValidSignature(
@@ -205,9 +205,9 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   // Create ad vector and its first entry.
   synth_interest_group.interest_group.ads.emplace();
   synth_interest_group.interest_group.ads->emplace_back(
-      render_url, /*metadata=*/absl::nullopt);
+      render_url, /*metadata=*/std::nullopt);
 
-  absl::optional<double> bid_val = bid_dict->FindDouble("bid");
+  std::optional<double> bid_val = bid_dict->FindDouble("bid");
   if (!bid_val || bid_val.value() <= 0) {
     return base::unexpected(base::StrCat(
         {"Additional bid on auction with seller '", seller.Serialize(),
@@ -217,14 +217,14 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   std::string ad_metadata = "null";
   const base::Value* ad_metadata_val = bid_dict->Find("ad");
   if (ad_metadata_val) {
-    absl::optional<std::string> serialized_metadata =
+    std::optional<std::string> serialized_metadata =
         base::WriteJson(*ad_metadata_val);
     if (serialized_metadata) {
       ad_metadata = std::move(serialized_metadata).value();
     }
   }
 
-  absl::optional<blink::AdCurrency> bid_currency;
+  std::optional<blink::AdCurrency> bid_currency;
   const base::Value* bid_currency_val = bid_dict->Find("bidCurrency");
   if (bid_currency_val) {
     const std::string* bid_currency_str = bid_currency_val->GetIfString();
@@ -237,7 +237,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     }
   }
 
-  absl::optional<double> ad_cost;
+  std::optional<double> ad_cost;
   const base::Value* ad_cost_val = bid_dict->Find("adCost");
   if (ad_cost_val) {
     ad_cost = ad_cost_val->GetIfDouble();
@@ -250,10 +250,10 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   // modelingSignals in generateBid() ignores out-of-range values, so this
   // matches the behavior.
-  absl::optional<double> modeling_signals;
+  std::optional<double> modeling_signals;
   const base::Value* modeling_signals_val = bid_dict->Find("modelingSignals");
   if (modeling_signals_val) {
-    absl::optional<double> modeling_signals_in =
+    std::optional<double> modeling_signals_in =
         modeling_signals_val->GetIfDouble();
     if (!modeling_signals_in.has_value()) {
       return base::unexpected(base::StrCat(
@@ -296,7 +296,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       ad_components.emplace_back(ad_component_url);
       // TODO(http://crbug.com/1464874): What's the story with dimensions?
       synth_interest_group.interest_group.ad_components->emplace_back(
-          std::move(ad_component_url), /*metadata=*/absl::nullopt);
+          std::move(ad_component_url), /*metadata=*/std::nullopt);
     }
   }
 
@@ -384,9 +384,9 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       /*ad_descriptor=*/blink::AdDescriptor(GURL(bid_ad->render_url())),
       /*ad_component_descriptors=*/std::move(ad_components),
       /*modeling_signals=*/
-      static_cast<absl::optional<uint16_t>>(modeling_signals),
+      static_cast<std::optional<uint16_t>>(modeling_signals),
       /*bid_duration=*/base::TimeDelta(),
-      /*bidding_signals_data_version=*/absl::nullopt, bid_ad,
+      /*bidding_signals_data_version=*/std::nullopt, bid_ad,
       result.bid_state.get(), auction);
 
   // TODO(http://crbug.com/1464874): Do we need to fill in any k-anon info?
@@ -451,7 +451,7 @@ base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
           "string.");
     }
 
-    absl::optional<std::string> maybe_key_error =
+    std::optional<std::string> maybe_key_error =
         DecodeBase64Fixed("key", *key, decoded_signature.key);
     if (maybe_key_error.has_value()) {
       return base::unexpected(maybe_key_error.value());
@@ -464,7 +464,7 @@ base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
           "string.");
     }
 
-    absl::optional<std::string> maybe_signature_error =
+    std::optional<std::string> maybe_signature_error =
         DecodeBase64Fixed("signature", *signature, decoded_signature.signature);
     if (maybe_signature_error.has_value()) {
       return base::unexpected(maybe_signature_error.value());
@@ -497,7 +497,7 @@ size_t AdAuctionNegativeTargeter::GetNumNegativeInterestGroups() {
 
 bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     const url::Origin& buyer,
-    const absl::optional<url::Origin>& negative_target_joining_origin,
+    const std::optional<url::Origin>& negative_target_joining_origin,
     const std::vector<std::string>& negative_target_interest_group_names,
     const std::vector<SignedAdditionalBidSignature>& signatures,
     const std::vector<size_t>& valid_signatures,

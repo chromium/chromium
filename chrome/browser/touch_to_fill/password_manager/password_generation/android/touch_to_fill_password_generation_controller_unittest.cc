@@ -45,7 +45,7 @@ class TouchToFillPasswordGenerationControllerTest
 
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   password_mananger_driver() {
-    return base::AsWeakPtr(password_manager_driver_.get());
+    return password_manager_driver_->AsWeakPtrImpl();
   }
 
   TestingPrefServiceSimple* pref_service() { return &test_pref_service_; }

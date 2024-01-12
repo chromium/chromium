@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
       HermesResponseStatus status);
 
   // Initialized to null and set once SetDevicePrefs() is called.
-  raw_ptr<PrefService, ExperimentalAsh> device_prefs_ = nullptr;
+  raw_ptr<PrefService> device_prefs_ = nullptr;
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

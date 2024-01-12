@@ -164,7 +164,7 @@ void OpenXrDevice::OnCreateInstanceResult(
 
     if (overlay_receiver_) {
       render_loop_->task_runner()->PostTask(
-          FROM_HERE, base::BindOnce(&XRCompositorCommon::RequestOverlay,
+          FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestOverlay,
                                     base::Unretained(render_loop_.get()),
                                     std::move(overlay_receiver_)));
     }
@@ -177,7 +177,7 @@ void OpenXrDevice::OnCreateInstanceResult(
       &OpenXrDevice::OnVisibilityStateChanged, weak_ptr_factory_.GetWeakPtr());
 
   render_loop_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&XRCompositorCommon::RequestSession,
+      FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestSession,
                                 base::Unretained(render_loop_.get()),
                                 std::move(on_visibility_state_changed),
                                 std::move(options), std::move(my_callback)));
@@ -217,7 +217,7 @@ void OpenXrDevice::ForceEndSession(ExitXrPresentReason reason) {
   if (render_loop_) {
     render_loop_->task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(&XRCompositorCommon::ExitPresent,
+        base::BindOnce(&OpenXrRenderLoop::ExitPresent,
                        base::Unretained(render_loop_.get()), reason));
     render_loop_.reset();
   }
@@ -251,7 +251,7 @@ void OpenXrDevice::CreateImmersiveOverlay(
   // This should only be triggered if we have a session
   if (render_loop_) {
     render_loop_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&XRCompositorCommon::RequestOverlay,
+        FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestOverlay,
                                   base::Unretained(render_loop_.get()),
                                   std::move(overlay_receiver)));
   } else {

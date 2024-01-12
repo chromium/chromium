@@ -89,7 +89,7 @@ class CONTENT_EXPORT MediaStreamUIProxy {
       const DesktopMediaID& new_media_id);
 
   virtual void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect);
+      const std::optional<gfx::Rect>& region_capture_rect);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured display surface represented by |media_id|

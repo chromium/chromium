@@ -5,7 +5,7 @@
 [
   {
     "namespace":"management",
-    "description": "The <code>chrome.management</code> API provides ways to manage the list of extensions/apps that are installed and running. It is particularly useful for extensions that <a href='override'>override</a> the built-in New Tab page.",
+    "description": "The <code>chrome.management</code> API provides ways to manage the list of extensions/apps that are installed and running. It is particularly useful for extensions that <a href='develop/ui/override-chrome-pages'>override</a> the built-in New Tab page.",
     "types": [
       {
         "id": "IconInfo",
@@ -62,11 +62,11 @@
             "type": "string"
           },
           "version": {
-            "description": "The <a href='manifest/version'>version</a> of this extension, app, or theme.",
+            "description": "The <a href='reference/manifest/version'>version</a> of this extension, app, or theme.",
             "type": "string"
           },
           "versionName": {
-            "description": "The <a href='manifest/version#version_name'>version name</a> of this extension, app, or theme if the manifest specified one.",
+            "description": "The <a href='reference/manifest/version#version_name'>version name</a> of this extension, app, or theme if the manifest specified one.",
             "type": "string",
             "optional": true
           },
@@ -121,7 +121,7 @@
             "type": "string"
           },
           "icons": {
-            "description": "A list of icon information. Note that this just reflects what was declared in the manifest, and the actual image at that url may be larger or smaller than what was declared, so you might consider using explicit width and height attributes on img tags referencing these images. See the <a href='manifest/icons'>manifest documentation on icons</a> for more details.",
+            "description": "A list of icon information. Note that this just reflects what was declared in the manifest, and the actual image at that url may be larger or smaller than what was declared, so you might consider using explicit width and height attributes on img tags referencing these images. See the <a href='reference/manifest/icons'>manifest documentation on icons</a> for more details.",
             "type": "array",
             "optional": true,
             "items": {
@@ -231,7 +231,7 @@
       },
       {
         "name": "getPermissionWarningsById",
-        "description": "Returns a list of <a href='permission_warnings'>permission warnings</a> for the given extension id.",
+        "description": "Returns a list of <a href='develop/concepts/permission-warnings'>permission warnings</a> for the given extension id.",
         "parameters": [
           { "name": "id",
             "type": "string",
@@ -252,7 +252,7 @@
       },
       {
         "name": "getPermissionWarningsByManifest",
-        "description": "Returns a list of <a href='permission_warnings'>permission warnings</a> for the given extension manifest string. Note: This function can be used without requesting the 'management' permission in the manifest.",
+        "description": "Returns a list of <a href='develop/concepts/permission-warnings'>permission warnings</a> for the given extension manifest string. Note: This function can be used without requesting the 'management' permission in the manifest.",
         "parameters": [
           {
             "name": "manifestStr",

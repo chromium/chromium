@@ -70,6 +70,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void OnTooltipShownOnServer(const std::u16string& text,
                               const gfx::Rect& bounds) override;
   void OnTooltipHiddenOnServer() override;
+  void OnBoundsChanged(const BoundsChange& change) override;
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(
@@ -86,12 +87,18 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  // DesktopWindowTreeHost:
+  void OnWidgetInitDone() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,
                            HitTest);
 
   void CreateNonClientEventFilter();
   void DestroyNonClientEventFilter();
+
+  // Sets hints for the WM/compositor that reflect the rounded corners.
+  void UpdateWindowHints();
 
   // A handler for events intended for non client area.
   // A posthandler for events intended for non client area. Handles events if no

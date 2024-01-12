@@ -88,7 +88,7 @@ class BleV2MediumTest : public testing::Test {
     return device_info;
   }
 
-  raw_ptr<bluetooth::FakeAdapter, ExperimentalAsh> fake_adapter_;
+  raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleV2Medium> ble_v2_medium_;
 

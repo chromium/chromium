@@ -270,7 +270,7 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
   HoldingSpaceWallpaperNudgeControllerTestBase(
       std::optional<bool> counterfactual_enabled,
       std::optional<bool> drop_to_pin_enabled,
-      bool rate_limiting_enabled,
+      bool force_eligibility_enabled,
       base::test::TaskEnvironment::TimeSource time_source)
       : UserEducationAshTestBase(time_source) {
     // NOTE: The `HoldingSpaceWallpaperNudgeController` exists only when the
@@ -292,13 +292,13 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
 
     enabled.emplace_back(features::kHoldingSpaceWallpaperNudge, params);
 
-    if (rate_limiting_enabled) {
-      disabled.emplace_back(
-          features::kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
-    } else {
+    if (force_eligibility_enabled) {
       enabled.emplace_back(
-          features::kHoldingSpaceWallpaperNudgeIgnoreRateLimiting,
+          features::kHoldingSpaceWallpaperNudgeForceEligibility,
           base::FieldTrialParams());
+    } else {
+      disabled.emplace_back(
+          features::kHoldingSpaceWallpaperNudgeForceEligibility);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
@@ -437,7 +437,7 @@ class HoldingSpaceWallpaperNudgeControllerTest
       : HoldingSpaceWallpaperNudgeControllerTestBase(
             /*counterfactual_enabled=*/false,
             /*drop_to_pin_enabled=*/false,
-            /*rate_limiting_enabled=*/true,
+            /*force_eligibility_enabled=*/false,
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 };
 
@@ -551,7 +551,7 @@ class HoldingSpaceWallpaperNudgeControllerDragAndDropTest
       : HoldingSpaceWallpaperNudgeControllerTestBase(
             /*counterfactual_enabled=*/false,
             drop_to_pin_enabled(),
-            /*rate_limiting_enabled=*/false,
+            /*force_eligibility_enabled=*/true,
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 
   // Whether the drop-to-pin feature param is enabled.
@@ -830,7 +830,7 @@ class HoldingSpaceWallpaperNudgeControllerRateLimitingTest
       : HoldingSpaceWallpaperNudgeControllerTestBase(
             /*counterfactual_enabled=*/false,
             drop_to_pin_enabled(),
-            /*rate_limiting_enabled=*/true,
+            /*force_eligibility_enabled=*/false,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // Whether the drop-to-pin feature param is enabled.
@@ -1052,7 +1052,7 @@ class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
       : HoldingSpaceWallpaperNudgeControllerTestBase(
             counterfactual_enabled(),
             drop_to_pin_enabled(),
-            /*rate_limiting_enabled=*/false,
+            /*force_eligibility_enabled=*/true,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // Whether the is-counterfactual feature parameter is enabled.

@@ -301,10 +301,8 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   std::unique_ptr<base::ScopedMockTimeMessageLoopTaskRunner>
       scoped_main_task_runner_;
 
-  raw_ptr<base::TestSimpleTaskRunner, ExperimentalAsh> log_task_runner_ =
-      nullptr;
-  raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> main_task_runner_ =
-      nullptr;
+  raw_ptr<base::TestSimpleTaskRunner> log_task_runner_ = nullptr;
+  raw_ptr<base::TestMockTimeTaskRunner> main_task_runner_ = nullptr;
 
   const base::FilePath log_file_path_;
   const std::set<std::string> packages_;

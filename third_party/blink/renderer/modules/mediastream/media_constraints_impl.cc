@@ -567,6 +567,11 @@ bool ValidateAndCopyConstraintSet(
                           constraint_buffer.goog_noise_suppression);
   }
 
+  if (constraints_in->hasVoiceIsolation()) {
+    CopyBooleanConstraint(constraints_in->voiceIsolation(), naked_treatment,
+                          constraint_buffer.voice_isolation);
+  }
+
   if (constraints_in->hasLatency()) {
     CopyDoubleConstraint(constraints_in->latency(), naked_treatment,
                          constraint_buffer.latency);
@@ -828,6 +833,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   if (!input.goog_noise_suppression.IsUnconstrained()) {
     output->setNoiseSuppression(
         ConvertBoolean(input.goog_noise_suppression, naked_treatment));
+  }
+  if (!input.voice_isolation.IsUnconstrained()) {
+    output->setVoiceIsolation(
+        ConvertBoolean(input.voice_isolation, naked_treatment));
   }
   if (!input.latency.IsUnconstrained())
     output->setLatency(ConvertDouble(input.latency, naked_treatment));

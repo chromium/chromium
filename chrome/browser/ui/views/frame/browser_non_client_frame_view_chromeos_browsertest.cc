@@ -70,11 +70,11 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/ash/window_pin_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -177,7 +177,7 @@ class BrowserNonClientFrameViewChromeOSTestApi {
   }
 
  private:
-  const raw_ptr<BrowserNonClientFrameViewChromeOS, ExperimentalAsh> frame_view_;
+  const raw_ptr<BrowserNonClientFrameViewChromeOS> frame_view_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -764,19 +764,17 @@ class WebAppNonClientFrameViewAshTest
 
   static SkColor GetThemeColor() { return SK_ColorBLUE; }
 
-  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> app_browser_ = nullptr;
-  raw_ptr<BrowserView, DanglingUntriaged | ExperimentalAsh> browser_view_ =
+  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<chromeos::DefaultFrameHeader, DanglingUntriaged> frame_header_ =
       nullptr;
-  raw_ptr<chromeos::DefaultFrameHeader, DanglingUntriaged | ExperimentalAsh>
-      frame_header_ = nullptr;
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged | ExperimentalAsh>
-      web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+      nullptr;
   raw_ptr<
       const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>,
-      DanglingUntriaged | ExperimentalAsh>
+      DanglingUntriaged>
       content_setting_views_ = nullptr;
-  raw_ptr<AppMenuButton, DanglingUntriaged | ExperimentalAsh>
-      web_app_menu_button_ = nullptr;
+  raw_ptr<AppMenuButton, DanglingUntriaged> web_app_menu_button_ = nullptr;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpCommandLine(command_line);
@@ -864,7 +862,7 @@ class WebAppNonClientFrameViewAshTest
 
     return *base::ranges::find(*content_setting_views_,
                                ContentSettingImageModel::ImageType::GEOLOCATION,
-                               &ContentSettingImageView::GetTypeForTesting);
+                               &ContentSettingImageView::GetType);
   }
 
   void SimulateClickOnView(views::View* view) {

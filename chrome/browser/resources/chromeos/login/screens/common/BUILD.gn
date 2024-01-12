@@ -26,16 +26,12 @@ js_type_check("closure_compile_local") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    ":app_downloading",
-    ":app_launch_splash",
-
     #":assistant_optin",
     ":consolidated_consent",
     ":device_disabled",
     ":error_message",
     ":gaia_signin",
     ":guest_tos",
-    ":managed_terms_of_service",
     ":offline_ad_login",
     ":os_install",
     ":quick_start",
@@ -59,33 +55,11 @@ js_type_check("closure_compile_multidevice_setup") {
 ###############################
 # Closure compiler libraries below
 
-js_library("app_downloading") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_downloading.js" ]
-  deps = [
-    "../../components:oobe_cr_lottie",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("app_launch_splash") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_launch_splash.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("assistant_optin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/assistant_optin.js" ]
   deps = []
   extra_deps = [ ":web_components" ]
 }
-
 
 js_library("consolidated_consent") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
@@ -163,25 +137,6 @@ js_library("guest_tos") {
     "$externs_path/webview_tag.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-}
-
-js_library("managed_terms_of_service") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/managed_terms_of_service.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("multidevice_setup") {

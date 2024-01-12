@@ -40,7 +40,7 @@ class LoginScreenExtensionsStorageCleaner {
       std::vector<std::string> keys,
       std::optional<std::string> error);
 
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

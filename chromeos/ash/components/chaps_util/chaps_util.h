@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_H_
 
 #include <pk11pub.h>
+#include <stdint.h>
 
 #include <memory>
 #include <vector>

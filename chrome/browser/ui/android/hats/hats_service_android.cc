@@ -153,8 +153,9 @@ void HatsServiceAndroid::LaunchSurveyForWebContents(
   // lifecycle management duties for native clank survey triggers.
   LaunchDelayedSurveyForWebContents(
       trigger, web_contents, 0, product_specific_bits_data,
-      product_specific_string_data, false, std::move(success_callback),
-      std::move(failure_callback), supplied_trigger_id);
+      product_specific_string_data, HatsService::NavigationBehaviour::ALLOW_ANY,
+      std::move(success_callback), std::move(failure_callback),
+      supplied_trigger_id);
 }
 
 bool HatsServiceAndroid::LaunchDelayedSurvey(
@@ -172,12 +173,14 @@ bool HatsServiceAndroid::LaunchDelayedSurveyForWebContents(
     int timeout_ms,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    bool require_same_origin,
+    NavigationBehaviour navigation_behaviour,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const absl::optional<std::string_view>& supplied_trigger_id) {
   CHECK(web_contents);
-  CHECK(!require_same_origin);  // Currently not supported on Android
+  CHECK(navigation_behaviour ==
+        NavigationBehaviour::ALLOW_ANY);  // Currently only ALLOW_ANY is
+                                          // supported on Android
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (survey_configs_by_triggers_.find(trigger) ==
       survey_configs_by_triggers_.end()) {

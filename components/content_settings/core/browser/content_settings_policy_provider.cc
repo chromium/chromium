@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -25,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -323,14 +325,15 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   ReadManagedDefaultSettings();
   ReadManagedContentSettings(false);
 
-  pref_change_registrar_.Init(prefs_);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &PolicyProvider::OnPreferenceChanged, base::Unretained(this));
   for (const char* pref : kManagedPrefs)
-    pref_change_registrar_.Add(pref, callback);
+    pref_change_registrar_->Add(pref, callback);
 
   for (const char* pref : kManagedDefaultPrefs)
-    pref_change_registrar_.Add(pref, callback);
+    pref_change_registrar_->Add(pref, callback);
 
   ReportCookiesAllowedForUrlsUsage(value_map_);
 }
@@ -344,6 +347,16 @@ std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
     bool incognito,
     const PartitionKey& partition_key) const {
   return value_map_.GetRuleIterator(content_type);
+}
+
+std::unique_ptr<content_settings::Rule> PolicyProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const content_settings::PartitionKey& partition_key) const {
+  base::AutoLock auto_lock(value_map_.GetLock());
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 
 void PolicyProvider::GetContentSettingsFromPreferences() {
@@ -571,7 +584,7 @@ void PolicyProvider::ShutdownOnUIThread() {
   RemoveAllObservers();
   if (!prefs_)
     return;
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.reset();
   prefs_ = nullptr;
 }
 

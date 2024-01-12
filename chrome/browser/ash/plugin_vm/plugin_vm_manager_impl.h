@@ -148,7 +148,7 @@ class PluginVmManagerImpl : public PluginVmManager,
   // policy changes.
   void OnAvailabilityChanged(bool is_allowed, bool is_configured);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string owner_id_;
   uint64_t seneschal_server_handle_ = 0;
 

@@ -95,6 +95,10 @@
 #include "base/allocator/partition_alloc_support.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
+#if GTEST_HAS_DEATH_TEST
+#include "base/gtest_prod_util.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -535,7 +539,7 @@ void TestSuite::Initialize() {
   // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
   // are fixed to be invoked in the child process as expected.
   if (command_line->HasSwitch("gtest_internal_run_death_test"))
-    logging::LOGGING_DCHECK = logging::LOG_FATAL;
+    logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -608,6 +612,10 @@ void TestSuite::Initialize() {
 }
 
 void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
+#if GTEST_HAS_DEATH_TEST
+  internal::SetInDeathTestChildFn(&::testing::internal::InDeathTestChild);
+#endif
+
   // CommandLine::Init() is called earlier from PreInitialize().
   testing::InitGoogleTest(argc, argv);
   testing::InitGoogleMock(argc, argv);

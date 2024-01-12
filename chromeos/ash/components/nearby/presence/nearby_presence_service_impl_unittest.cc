@@ -14,6 +14,7 @@
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/push_notification/fake_push_notification_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,6 +32,8 @@ const char kDeviceProfileUrl[] = "some_url";
 const char kEndpointId[] = "00000001";
 const char kStableDeviceId[] = "00000002";
 const char kUserName[] = "Pepper";
+const char kMalformedTypeId[] = "not_nearby_presence";
+const char kMalformedClientId[] = "not_nearby";
 const std::vector<uint8_t> kMacAddress = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
 const mojom::ActionType kAction1 = mojom::ActionType::kInstantTetheringAction;
 const mojom::ActionType kAction2 = mojom::ActionType::kActiveUnlockAction;
@@ -93,7 +96,6 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
         .WillRepeatedly([&](ash::nearby::NearbyProcessManager::
                                 NearbyProcessStoppedCallback) {
@@ -106,12 +108,22 @@ class NearbyPresenceServiceImplTest : public testing::Test {
                   testing::ReturnRef(fake_nearby_presence_.shared_remote()));
           return std::move(nearby_process_reference_);
         });
+    push_notification_service_ =
+        std::make_unique<push_notification::FakePushNotificationService>();
 
     nearby_presence_service_ = std::make_unique<NearbyPresenceServiceImpl>(
         pref_service_.get(), &nearby_process_manager_,
         identity_test_env_.identity_manager(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+            &test_url_loader_factory_),
+        push_notification_service_.get());
+
+    auto fake_credential_manager =
+        std::make_unique<FakeNearbyPresenceCredentialManager>();
+    fake_credential_manager_ptr_ = fake_credential_manager.get();
+    NearbyPresenceCredentialManagerImpl::Creator::
+        SetCredentialManagerForTesting(std::move(fake_credential_manager));
+    EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
   }
 
   void TestStartScan(ash::nearby::presence::NearbyPresenceService::IdentityType
@@ -181,9 +193,12 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<push_notification::FakePushNotificationService>
+      push_notification_service_;
   std::unique_ptr<NearbyPresenceService> nearby_presence_service_;
   std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
       scan_session_;
+  raw_ptr<FakeNearbyPresenceCredentialManager> fake_credential_manager_ptr_;
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
 };
 
@@ -352,30 +367,56 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
 }
 
 TEST_F(NearbyPresenceServiceImplTest, Initialize) {
-  auto credential_manager =
-      std::make_unique<FakeNearbyPresenceCredentialManager>();
-  auto* fake_credential_manager = credential_manager.get();
-  NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
-      std::move(credential_manager));
-
   base::MockCallback<base::OnceClosure> mock_on_initialized_callback;
   EXPECT_CALL(mock_on_initialized_callback, Run);
   nearby_presence_service_->Initialize(mock_on_initialized_callback.Get());
 
   nearby_presence_service_->UpdateCredentials();
-  EXPECT_TRUE(fake_credential_manager->WasUpdateCredentialsCalled());
+  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, UpdateCredentials) {
-  auto credential_manager =
-      std::make_unique<FakeNearbyPresenceCredentialManager>();
-  auto* fake_credential_manager = credential_manager.get();
-  NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
-      std::move(credential_manager));
-
-  EXPECT_FALSE(fake_credential_manager->WasUpdateCredentialsCalled());
   nearby_presence_service_->UpdateCredentials();
-  EXPECT_TRUE(fake_credential_manager->WasUpdateCredentialsCalled());
+  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, ValidPushNotificationMessageReceived) {
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(push_notification::kNotificationClientIdKey,
+                                kNearbyPresencePushNotificationClientId);
+  message.data.insert_or_assign(push_notification::kNotificationTypeIdKey,
+                                kNearbyPresencePushNotificationTypeId);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
+
+  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, InvalidPushNotificationTypeId) {
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(push_notification::kNotificationClientIdKey,
+                                kNearbyPresencePushNotificationClientId);
+  message.data.insert_or_assign(push_notification::kNotificationTypeIdKey,
+                                kMalformedTypeId);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
+
+  EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, InvalidPushNotificationClientId) {
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(push_notification::kNotificationClientIdKey,
+                                kMalformedClientId);
+  message.data.insert_or_assign(push_notification::kNotificationTypeIdKey,
+                                kNearbyPresencePushNotificationTypeId);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
+
+  EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {

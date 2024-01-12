@@ -34,6 +34,7 @@
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/window_event_manager.h"
+#include "ui/gfx/x/wm_sync.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
@@ -335,9 +336,7 @@ bool Connection::WmSupportsHint(Atom atom) const {
 }
 
 Connection::Request::Request(ResponseCallback callback)
-    : callback(std::move(callback)) {
-  CHECK(this->callback);
-}
+    : callback(std::move(callback)) {}
 
 Connection::Request::Request(Request&& other) = default;
 
@@ -734,10 +733,18 @@ std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
   }
 
   SequenceType next_request_id = first_request_id_ + requests_.size();
-  CHECK_EQ(CompareSequenceIds(next_request_id, sequence), 0);
-
-  // If we ever reach 2^32 outstanding requests, then bail because sequence IDs
-  // would no longer be unique.
+  // XCB inserts requests every 2^32 requests (or every 2^16 requests if
+  // all outstanding requests don't generate a reply).  Because it's difficult
+  // to track these, increment the sequence counter until ours matches XCB's.
+  CHECK_LT(CompareSequenceIds(sequence, next_request_id), 10);
+  while (CompareSequenceIds(sequence, next_request_id) > 0) {
+    requests_.emplace_back(ResponseCallback());
+    requests_.back().have_response = true;
+    next_request_id++;
+    // If we ever reach 2^32 outstanding requests, then bail because sequence
+    // IDs would no longer be unique.
+    CHECK_NE(next_request_id, first_request_id_);
+  }
   next_request_id++;
   CHECK_NE(next_request_id, first_request_id_);
 
@@ -906,6 +913,10 @@ void Connection::OnRootPropertyChanged(Atom property,
                                        const GetPropertyResponse& value) {
   Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
   if (property == check_atom) {
+    // We've detected a new window manager, which may have different behavior
+    // when attempting to use WmSync.  Attempt to sync with the window manager
+    // so we know which behavior WmSync should use.
+    AttemptSyncWithWm();
     wm_props_.reset();
     Window wm_window = GetWindowPropertyAsWindow(value);
     if (wm_window != Window::None) {
@@ -927,6 +938,17 @@ bool Connection::WmSupportsEwmh() const {
     return *wm_check == wm_window;
   }
   return false;
+}
+
+void Connection::AttemptSyncWithWm() {
+  synced_with_wm_ = false;
+  wm_sync_ = std::make_unique<WmSync>(
+      this, base::BindOnce(&Connection::OnWmSynced, base::Unretained(this)),
+      true);
+}
+
+void Connection::OnWmSynced() {
+  synced_with_wm_ = true;
 }
 
 }  // namespace x11

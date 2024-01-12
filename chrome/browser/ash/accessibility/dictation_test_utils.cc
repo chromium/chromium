@@ -57,8 +57,7 @@ constexpr char kTextAreaUrl[] = R"(
         class='editableForDictation' autofocus></textarea>
 )";
 constexpr char kPumpkinTestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/dictation/parse/"
-    "pumpkin";
+    "resources/chromeos/accessibility/accessibility_common/third_party/pumpkin";
 constexpr char kTestSupportPath[] =
     "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
     "dictation/dictation_test_support.js";

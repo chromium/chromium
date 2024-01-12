@@ -8,6 +8,8 @@
 {%- set qualified_class_name = ("::" ~ namespace_as_string_with_variant if namespace_as_string_with_variant) ~ "::" ~ class_name %}
 
 {%- macro alloc_params(struct, params, message, method_number, is_response) %}
+  {# Allow people to search for deserialization error strings #}
+  // Validation for {{class_name}}.{{method_number}}
   bool success = true;
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
 {%-     if param|is_nullable_value_kind_packed_field %}
@@ -584,7 +586,7 @@ bool {{class_name}}StubDispatch::Accept(
           indent(4)}}
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
-      impl->{{method.name}}({{pass_params(method.parameters)}});
+      impl->{{method.name}}({{pass_params(method.parameters)|indent(8, True)}});
       return true;
 {%-     else %}
       break;
@@ -642,7 +644,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->{{method.name}}(
-{%- if method.parameters -%}{{pass_params(method.parameters)}}, {% endif -%}std::move(callback));
+{%- if method.parameters -%}{{pass_params(method.parameters)|indent(8,True)}}, {% endif -%}std::move(callback));
       return true;
 {%-     else %}
       break;

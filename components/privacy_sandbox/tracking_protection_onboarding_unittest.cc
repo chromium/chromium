@@ -488,6 +488,166 @@ TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
       1, user_action_tester.GetActionCount("TrackingProtection.Notice.Closed"));
 }
 
+TEST_F(TrackingProtectionOnboardingTest,
+       NoticeRequestSetsFirstTimePrefsCorrectly) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkEligible();
+
+  // Action
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+
+  // Expectations
+  EXPECT_EQ(prefs()->GetTime(
+                prefs::kTrackingProtectionOnboardingNoticeFirstRequested),
+            base::Time::Now());
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kTrackingProtectionOnboardingNoticeLastRequested),
+      base::Time::Now());
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       NoticeRequestSetsSubsequentTimePrefsCorrectly) {
+  // Setup
+  base::Time initial_time = base::Time::Now();
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+
+  auto delay = base::Seconds(15);
+  task_env_.FastForwardBy(delay);
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeRequested."
+      "SinceFirstRequested",
+      delay, 1);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeRequested."
+      "SinceLastRequested",
+      delay, 1);
+
+  // Action
+  task_env_.FastForwardBy(delay);
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+
+  // Expectations
+  // First Time pref unchanged.
+  EXPECT_EQ(prefs()->GetTime(
+                prefs::kTrackingProtectionOnboardingNoticeFirstRequested),
+            initial_time);
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kTrackingProtectionOnboardingNoticeLastRequested),
+      initial_time + 2 * delay);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeRequested."
+      "SinceFirstRequested",
+      2 * delay, 1);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeRequested."
+      "SinceLastRequested",
+      delay, 2);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       NoticeShownEmitsCorrectHistogramsAfterNoticeRequest) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+
+  // Action
+  auto long_delay = base::Seconds(15);
+  task_env_.FastForwardBy(long_delay);
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+  auto short_delay = base::Seconds(2);
+  task_env_.FastForwardBy(short_delay);
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
+            TrackingProtectionOnboarding::OnboardingStatus::kOnboarded);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "NoticeFirstRequestedToOnboardedDuration",
+      short_delay + long_delay, 1);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding."
+      "NoticeLastRequestedToOnboardedDuration",
+      short_delay, 1);
+}
+
+struct NoticeRequestStatusTransitionParams {
+  typedef void (TrackingProtectionOnboarding::*setup_function)(void);
+  std::vector<setup_function> setup_function_vector;
+  TrackingProtectionOnboarding::OnboardingStatus expected_onboarding_status;
+  TrackingProtectionOnboardingStatus expected_histogram_status;
+};
+
+class TrackingProtectionNoticeRequestStatusTransitions
+    : public TrackingProtectionOnboardingTest,
+      public testing::WithParamInterface<NoticeRequestStatusTransitionParams> {
+};
+
+TEST_P(TrackingProtectionNoticeRequestStatusTransitions,
+       UpdatesOnboardingStatusAndEmitsHistogram) {
+  // Setup
+  for (void (TrackingProtectionOnboarding::*setup_function)(void) :
+       GetParam().setup_function_vector) {
+    (tracking_protection_onboarding()->*setup_function)();
+  }
+
+  // Action
+  tracking_protection_onboarding()->NoticeRequested(NoticeType::kOnboarding);
+
+  // Expectations
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
+            GetParam().expected_onboarding_status);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeRequestedForStatus",
+      GetParam().expected_histogram_status, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionNoticeRequestStatusTransitions,
+    TrackingProtectionNoticeRequestStatusTransitions,
+    testing::Values(
+        NoticeRequestStatusTransitionParams{
+            // Ineligible Profile, Notice Requested.
+            .setup_function_vector =
+                {&TrackingProtectionOnboarding::MaybeMarkIneligible},
+            .expected_onboarding_status =
+                TrackingProtectionOnboarding::OnboardingStatus::kIneligible,
+            .expected_histogram_status =
+                TrackingProtectionOnboardingStatus::kIneligible},
+        // Onboarded Profile, Notice Requested
+        NoticeRequestStatusTransitionParams{
+            .setup_function_vector =
+                {&TrackingProtectionOnboarding::MaybeMarkEligible,
+                 &TrackingProtectionOnboarding::OnboardingNoticeShown},
+            .expected_onboarding_status =
+                TrackingProtectionOnboarding::OnboardingStatus::kOnboarded,
+            .expected_histogram_status =
+                TrackingProtectionOnboardingStatus::kOnboarded},
+        // Eligible Profile, Notice Requested
+        NoticeRequestStatusTransitionParams{
+            .setup_function_vector =
+                {&TrackingProtectionOnboarding::MaybeMarkEligible},
+            .expected_onboarding_status = TrackingProtectionOnboarding::
+                OnboardingStatus::kOnboardingRequested,
+            .expected_histogram_status =
+                TrackingProtectionOnboardingStatus::kEligible},
+        // OnboardingRequested Profile, Notice Requested again.
+        NoticeRequestStatusTransitionParams{
+            .setup_function_vector =
+                {&TrackingProtectionOnboarding::MaybeMarkEligible,
+                 &TrackingProtectionOnboarding::OnboardingNoticeRequested},
+            .expected_onboarding_status = TrackingProtectionOnboarding::
+                OnboardingStatus::kOnboardingRequested,
+            .expected_histogram_status =
+                TrackingProtectionOnboardingStatus::kRequested}));
+
 class TrackingProtectionOnboardingAccessorTest
     : public TrackingProtectionOnboardingTest,
       public testing::WithParamInterface<
@@ -510,6 +670,9 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboarding::OnboardingStatus::kIneligible),
         std::pair(TrackingProtectionOnboardingStatus::kEligible,
                   TrackingProtectionOnboarding::OnboardingStatus::kEligible),
+        std::pair(TrackingProtectionOnboardingStatus::kRequested,
+                  TrackingProtectionOnboarding::OnboardingStatus::
+                      kOnboardingRequested),
         std::pair(TrackingProtectionOnboardingStatus::kOnboarded,
                   TrackingProtectionOnboarding::OnboardingStatus::kOnboarded)));
 
@@ -815,6 +978,65 @@ TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
           kControlImmediate,
       1);
 }
+class TrackingProtectionOnboardingStartupSentimentSurvey
+    : public TrackingProtectionOnboardingTest,
+      public testing::WithParamInterface<std::pair<
+          TrackingProtectionOnboarding::SentimentSurveyGroup,
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics>> {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_P(TrackingProtectionOnboardingStartupSentimentSurvey,
+       OnboardingStartupSentimentSurveyHistograms) {
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "SentimentSurveyGroup",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::kNotSet, 1);
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  TrackingProtectionOnboarding::SentimentSurveyGroup register_group =
+      std::get<0>(GetParam());
+  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics metric_group =
+      std::get<1>(GetParam());
+
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      register_group);
+
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "SentimentSurveyGroup",
+      metric_group, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionOnboardingStartupSentimentSurvey,
+    TrackingProtectionOnboardingStartupSentimentSurvey,
+    testing::Values(
+        std::pair(
+            TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed,
+            TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                kControlDelayed),
+        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
+                      kControlImmediate,
+                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                      kControlImmediate),
+        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
+                      kTreatmentDelayed,
+                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                      kTreatmentDelayed),
+        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
+                      kTreatmentImmediate,
+                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                      kTreatmentImmediate)));
 
 class TrackingProtectionOffboardingTest
     : public TrackingProtectionOnboardingTest {
@@ -1816,6 +2038,29 @@ TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
       "PrivacySandbox.TrackingProtection.SilentOnboardingStartup."
       "EligibleToOnboardedDuration",
       eligible_to_onboarded_duration, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingStartupStateTest,
+       OnboardingStartupAckedSinceHistogram) {
+  // Setup
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+  tracking_protection_onboarding_service_->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+  auto delay = base::Seconds(15);
+  task_env_.FastForwardBy(delay);
+
+  // Action
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  // Verification
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "AckedSince",
+      delay, 1);
 }
 
 }  // namespace

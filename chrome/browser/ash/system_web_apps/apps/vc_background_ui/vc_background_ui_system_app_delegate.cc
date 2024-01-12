@@ -50,7 +50,7 @@ bool VcBackgroundUISystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool VcBackgroundUISystemAppDelegate::ShouldShowInSearch() const {
+bool VcBackgroundUISystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

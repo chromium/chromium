@@ -67,6 +67,7 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   std::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
  protected:
   friend class base::RefCountedThreadSafe<AwComponentUpdaterConfigurator>;

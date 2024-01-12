@@ -35,15 +35,6 @@ std::u16string InputMethodDelegateImpl::GetLocalizedString(
   return l10n_util::GetStringUTF16(resource_id);
 }
 
-std::u16string InputMethodDelegateImpl::GetDisplayLanguageName(
-    const std::string& language_code) const {
-  DCHECK(g_browser_process);
-  return l10n_util::GetDisplayNameForLocale(
-      language_code,
-      g_browser_process->GetApplicationLocale(),
-      true);
-}
-
 void InputMethodDelegateImpl::SetHardwareKeyboardLayoutForTesting(
     const std::string& layout) {
   NOTREACHED() << "Use FakeInputMethodDelegate for hardware keyboard layout "

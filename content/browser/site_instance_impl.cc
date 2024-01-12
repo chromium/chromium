@@ -128,7 +128,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::Create(
       browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
-      /*coop_related_group=*/nullptr, /*common_coop_origin=*/absl::nullopt)));
+      /*coop_related_group=*/nullptr, /*common_coop_origin=*/std::nullopt)));
 }
 
 // static
@@ -222,7 +222,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
           /*is_fenced=*/false,
           /*is_fixed_storage_partition=*/true,
           /*coop_related_group=*/nullptr,
-          /*common_coop_origin=*/absl::nullopt)));
+          /*common_coop_origin=*/std::nullopt)));
 
   site_instance->SetSiteInfoInternal(guest_site_info);
   return site_instance;
@@ -258,7 +258,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
           /*is_fenced=*/should_isolate_fenced_frames,
           embedder_site_instance->IsFixedStoragePartition(),
           /*coop_related_group=*/nullptr,
-          /*common_coop_origin=*/absl::nullopt)));
+          /*common_coop_origin=*/std::nullopt)));
 
   // Give the new fenced frame SiteInstance the same site url as its embedder's
   // SiteInstance to allow it to reuse its embedder's process. We avoid doing
@@ -303,7 +303,7 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt));
+      /*common_coop_origin=*/std::nullopt));
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
@@ -416,7 +416,7 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
-  // Create a new SiteInstanceGroup and RenderProcessHost is there isn't one.
+  // Create a new SiteInstanceGroup and RenderProcessHost if there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
   // AgentSchedulingGroupHost. A group must have a process. If the process gets
   // destructed, `site_instance_group_` will get cleared, and another one with a
@@ -488,7 +488,15 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   TRACE_EVENT2("navigation", "SiteInstanceImpl::SetProcessInternal", "site id",
                id_.value(), "process id",
                site_instance_group_->process()->GetID());
-  GetContentClient()->browser()->SiteInstanceGotProcess(this);
+
+  // Inform the embedder if the SiteInstance now has both the process and the
+  // site assigned. Note that this can be called either here or when setting
+  // the site in SetSiteInfoInternal() below. This could be called multiple
+  // times if the SiteInstance's RenderProcessHost goes away and a new one
+  // replaces it later.
+  if (has_site_) {
+    GetContentClient()->browser()->SiteInstanceGotProcessAndSite(this);
+  }
 
   // Notify SiteInstanceGroupManager that the process was set on this
   // SiteInstance. This must be called after LockProcessIfNeeded() because
@@ -613,6 +621,11 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
 
   if (has_group()) {
     LockProcessIfNeeded();
+
+    // Inform the embedder if the SiteInstance now has both the process and the
+    // site assigned. Note that this can be called either here or when setting
+    // the process in SetProcessInternal() above.
+    GetContentClient()->browser()->SiteInstanceGotProcessAndSite(this);
 
     // Ensure the process is registered for this site if necessary.
     if (should_use_process_per_site) {
@@ -1442,7 +1455,7 @@ bool SiteInstanceImpl::IsCrossOriginIsolated() const {
   return GetWebExposedIsolationInfo().is_isolated();
 }
 
-const absl::optional<url::Origin>& SiteInstanceImpl::GetCommonCoopOrigin()
+const std::optional<url::Origin>& SiteInstanceImpl::GetCommonCoopOrigin()
     const {
   return browsing_instance_->common_coop_origin();
 }

@@ -303,15 +303,13 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<disks::MockDiskMountManager, DanglingUntriaged>
       mock_disk_mount_manager_;
   disks::DiskMountManager::Disks disks_;
 
-  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
-      fake_cicerone_client_;
-  raw_ptr<FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
-      fake_concierge_client_;
-  raw_ptr<FakeVmPluginDispatcherClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
+  raw_ptr<FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
+  raw_ptr<FakeVmPluginDispatcherClient, DanglingUntriaged>
       fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;

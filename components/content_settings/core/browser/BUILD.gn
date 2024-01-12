@@ -18,6 +18,8 @@ static_library("browser") {
     "content_settings_observer.h",
     "content_settings_origin_identifier_value_map.cc",
     "content_settings_origin_identifier_value_map.h",
+    "content_settings_partitioned_origin_identifier_value_map.cc",
+    "content_settings_partitioned_origin_identifier_value_map.h",
     "content_settings_policy_provider.cc",
     "content_settings_policy_provider.h",
     "content_settings_pref.cc",
@@ -83,7 +85,6 @@ static_library("browser") {
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
-      "//third_party/blink/public/common:headers",
     ]
   }
 
@@ -93,6 +94,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_settings_partitioned_origin_identifier_value_map_unittest.cc",
     "content_settings_pref_unittest.cc",
     "content_settings_registry_unittest.cc",
     "content_settings_rule_unittest.cc",
@@ -138,7 +140,6 @@ source_set("unit_tests") {
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser:test_support",
-      "//third_party/blink/public/common:headers",
     ]
   }
 }

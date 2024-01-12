@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/buildflag.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
@@ -103,9 +104,8 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
             loop.Quit();
@@ -140,10 +140,9 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveInstallSourceJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-              WebAppManagement::kDefault),
+      WebAppUninstallCommand::CreateForRemoveInstallSource(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
+          WebAppManagement::kDefault,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
             loop.Quit();
@@ -178,9 +177,8 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kError, code);
             loop.Quit();
@@ -216,9 +214,8 @@ TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kError, code);
             loop.Quit();
@@ -247,9 +244,8 @@ TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kNoAppToUninstall, code);
             loop.Quit();
@@ -282,11 +278,10 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
       .Times(0);
 
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kError, code);
+            EXPECT_EQ(webapps::UninstallResultCode::kShutdown, code);
           })));
 
   provider()->command_manager().Shutdown();
@@ -323,9 +318,8 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
             loop.Quit();
@@ -362,9 +356,8 @@ TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(
-              webapps::WebappUninstallSource::kAppMenu, *profile(), app_id),
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
             loop.Quit();
@@ -426,10 +419,9 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
       .Times(0);
 
   base::RunLoop run_loop;
-  auto command = std::make_unique<WebAppUninstallCommand>(
-      std::make_unique<RemoveInstallSourceJob>(
-          webapps::WebappUninstallSource::kExternalPolicy, *profile(), app_id,
-          WebAppManagement::kPolicy),
+  auto command = WebAppUninstallCommand::CreateForRemoveInstallSource(
+      webapps::WebappUninstallSource::kExternalPolicy, *profile(), app_id,
+      WebAppManagement::kPolicy,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
         run_loop.Quit();
@@ -448,6 +440,35 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
 
   provider()->command_manager().ScheduleCommand(std::move(command));
   run_loop.Run();
+}
+
+TEST_F(WebAppUninstallCommandTest, Shutdown) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kSync);
+  webapps::AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
+    update->CreateApp(std::move(web_app));
+  }
+
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider()->scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  provider()->Shutdown();
+  ASSERT_TRUE(future.Wait());
+  // Shutdown occurs before the install can finish, so the app should not be
+  // removed.
+  EXPECT_EQ(future.Get(), webapps::UninstallResultCode::kShutdown);
+  EXPECT_NE(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+
+  // Test post-shutdown behavior.
+  base::test::TestFuture<webapps::UninstallResultCode> future2;
+  provider()->scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future2.GetCallback());
+  provider()->Shutdown();
+  ASSERT_TRUE(future2.Wait());
+  EXPECT_EQ(future2.Get(), webapps::UninstallResultCode::kShutdown);
 }
 
 struct UninstallSources {
@@ -487,17 +508,12 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .WillOnce(testing::Return(true));
 
-  base::RunLoop loop;
+  base::test::TestFuture<webapps::UninstallResultCode> result_future;
   provider()->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(
-          std::make_unique<RemoveWebAppJob>(GetParam().source, *profile(),
-                                            app_id),
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+      WebAppUninstallCommand::CreateForRemoveWebApp(
+          GetParam().source, *profile(), app_id, result_future.GetCallback()));
+  ASSERT_TRUE(result_future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kSuccess, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 

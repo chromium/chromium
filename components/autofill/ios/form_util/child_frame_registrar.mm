@@ -24,6 +24,12 @@ void ChildFrameRegistrar::RegisterMapping(RemoteFrameToken remote,
                                           LocalFrameToken local) {
   // TODO(crbug.com/1440471): Handle double registration
   lookup_map_[remote] = local;
+
+  // Check if we're waiting for this token and run the pending callback, if any.
+  auto pending = pending_callbacks_.extract(remote);
+  if (pending) {
+    std::move(pending.mapped()).Run(local);
+  }
 }
 
 void ChildFrameRegistrar::ProcessRegistrationMessage(base::Value* message) {
@@ -48,6 +54,22 @@ void ChildFrameRegistrar::ProcessRegistrationMessage(base::Value* message) {
   }
 
   RegisterMapping(RemoteFrameToken(*remote), LocalFrameToken(*local));
+}
+
+void ChildFrameRegistrar::DeclareNewRemoteToken(
+    RemoteFrameToken remote,
+    base::OnceCallback<void(LocalFrameToken)> callback) {
+  std::optional<LocalFrameToken> child_token = LookupChildFrame(remote);
+
+  // If the child frame has already registered itself, we can set the parent
+  // directly.
+  if (child_token) {
+    std::move(callback).Run(*child_token);
+    return;
+  }
+
+  // Otherwise, store the relationship for later.
+  pending_callbacks_[remote] = std::move(callback);
 }
 
 ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(

@@ -31,11 +31,13 @@ FileSuggestData::FileSuggestData(
     FileSuggestionType new_type,
     const base::FilePath& new_file_path,
     const std::optional<std::u16string>& new_prediction_reason,
+    const std::optional<base::Time>& timestamp,
     std::optional<float> new_score)
     : type(new_type),
       file_path(new_file_path),
       id(CalculateSuggestionId(type, file_path)),
       prediction_reason(new_prediction_reason),
+      timestamp(timestamp),
       score(new_score) {}
 
 FileSuggestData::FileSuggestData(FileSuggestData&&) = default;

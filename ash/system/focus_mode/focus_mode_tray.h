@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -16,7 +18,6 @@ class ImageButton;
 
 namespace ash {
 
-class FocusModeCountdownView;
 class ProgressIndicator;
 class TrayBubbleWrapper;
 
@@ -37,9 +38,11 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
   std::u16string GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForBubble() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+  TrayBubbleView* GetBubbleView() override;
   void CloseBubble() override;
   void ShowBubble() override;
   void UpdateTrayItemColor(bool is_active) override;
@@ -47,15 +50,18 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
 
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
-  void OnTimerTick() override;
-  void OnSessionDurationChanged() override;
+  void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
+  void OnActiveSessionDurationChanged(
+      const FocusModeSession::Snapshot& session_snapshot) override;
 
   // views::View:
   void Layout() override;
 
-  TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;
+  }
+  FocusModeEndingMomentView* ending_moment_view_for_testing() {
+    return ending_moment_view_;
   }
   const views::ImageButton* GetRadioButtonForTesting() const;
   const views::Label* GetTaskTitleForTesting() const;
@@ -72,8 +78,15 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // Button click handler for shelf icon.
   void FocusModeIconActivated(const ui::Event& event);
 
-  // Calls `UpdateUI` on `countdown_view_` if it exists.
-  void MaybeUpdateCountdownViewUI();
+  void UpdateBubbleViews(const FocusModeSession::Snapshot& session_snapshot);
+
+  // Calls `UpdateUI` on `countdown_view_` if it exists and is visible.
+  void MaybeUpdateCountdownViewUI(
+      const FocusModeSession::Snapshot& session_snapshot);
+
+  // Calls `UpdateUI` on `ending_moment_view_` if it exists and is visible.
+  void MaybeUpdateEndingMomentViewUI(
+      const FocusModeSession::Snapshot& session_snapshot);
 
   // Called when the user clicks the radio button to mark a selected task as
   // completed.
@@ -93,7 +106,8 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   const raw_ptr<views::ImageView> image_view_;
 
   // The main content view of the bubble.
-  raw_ptr<FocusModeCountdownView, DanglingUntriaged> countdown_view_ = nullptr;
+  raw_ptr<FocusModeCountdownView> countdown_view_ = nullptr;
+  raw_ptr<FocusModeEndingMomentView> ending_moment_view_ = nullptr;
 
   // A box layout view which has a radio/check icon and a label for a selected
   // task.

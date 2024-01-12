@@ -37,7 +37,7 @@ static struct {
 } kVideoAudioInputTypes[] = {{true, false}, {false, true}, {true, true}};
 
 struct Env {
-  Env() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Env() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 
   base::SingleThreadTaskExecutor task_executor;
 };

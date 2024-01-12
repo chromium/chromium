@@ -43,7 +43,7 @@ import {getTemplate} from './consolidated_consent.html.js';
 const ConsolidatedConsentScreenState = {
   LOADING: 'loading',
   LOADED: 'loaded',
-  ERROR: 'error',
+  PLAY_LOAD_ERROR: 'play-load-error',
   GOOGLE_EULA: 'google-eula',
   CROS_EULA: 'cros-eula',
   ARC: 'arc',
@@ -215,13 +215,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.crosEulaUrl_ = '';
     this.arcTosUrl_ = '';
     this.privacyPolicyUrl_ = '';
-
-    // When Google EULA and/or ARC ToS need to be shown to the user,
-    // it must be loaded before the loaded step is shown.
-    this.googleEulaLoading_ = false;
-    this.crosEulaLoading_ = false;
-    this.arcTosLoading_ = false;
-    this.privacyPolicyLoading_ = false;
   }
 
   /** Overridden from LoginScreenBehavior. */
@@ -237,6 +230,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   /** @override */
   defaultUIStep() {
+    // The initial step of the screen is `LOADING` until `setUsageOptinHidden()`
+    // method is called. `setUsageOptinHidden()` is called after ownership
+    // status is retrieved asynchronously.
     return ConsolidatedConsentScreenState.LOADING;
   }
 
@@ -285,7 +281,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.crosEulaUrl_ = data['crosEulaUrl'];
     this.arcTosUrl_ = data['arcTosUrl'];
     this.privacyPolicyUrl_ = data['privacyPolicyUrl'];
-    this.maybeLoadWebviews_(this.isTosHidden_, this.isArcEnabled_);
 
     if (this.isArcOptInsHidden_(this.isArcEnabled_, this.isDemo_)) {
       this.$.loadedContent.classList.remove('landscape-vertical-centered');
@@ -343,25 +338,12 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.preventNewWindows_(this.$.consolidatedConsentPrivacyPolicyWebview);
   }
 
-  maybeLoadWebviews_(isTosHidden, isArcEnabled) {
-    if (!isTosHidden) {
-      this.initializeTosWebivews_();
-      this.googleEulaLoading_ = true;
-      this.crosEulaLoading_ = true;
-      this.loadEulaWebview_(
-          this.$.consolidatedConsentGoogleEulaWebview, this.googleEulaUrl_,
-          false /* clear_anchors */);
-      this.loadEulaWebview_(
-          this.$.consolidatedConsentCrosEulaWebview, this.crosEulaUrl_,
-          true /* clear_anchors */);
-    }
-
-    if (this.shouldShowArcTos_(isTosHidden, isArcEnabled)) {
-      this.arcTosLoading_ = true;
-      this.privacyPolicyLoading_ = true;
-      this.loadArcTosWebview_(this.arcTosUrl_);
-      this.loadPrivacyPolicyWebview_(this.privacyPolicyUrl_);
-    }
+  showGoogleEula_() {
+    this.initializeTosWebivews_();
+    this.setUIStep(ConsolidatedConsentScreenState.LOADING);
+    this.loadEulaWebview_(
+        this.$.consolidatedConsentGoogleEulaWebview, this.googleEulaUrl_,
+        false /* clear_anchors */);
   }
 
   loadEulaWebview_(webview, online_tos_url, clear_anchors) {
@@ -376,17 +358,65 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     tosLoader.setUrl(online_tos_url);
   }
 
+  onGoogleEulaContentLoad_() {
+    this.setUIStep(ConsolidatedConsentScreenState.GOOGLE_EULA);
+  }
+
+  showCrosEula_() {
+    this.initializeTosWebivews_();
+    this.setUIStep(ConsolidatedConsentScreenState.LOADING);
+    this.loadEulaWebview_(
+        this.$.consolidatedConsentCrosEulaWebview, this.crosEulaUrl_,
+        true /* clear_anchors */);
+  }
+
+  onCrosEulaContentLoad_() {
+    this.setUIStep(ConsolidatedConsentScreenState.CROS_EULA);
+  }
+
+  showArcTos_() {
+    this.initializeTosWebivews_();
+    this.setUIStep(ConsolidatedConsentScreenState.LOADING);
+    this.loadArcTosWebview_(this.arcTosUrl_);
+  }
+
   loadArcTosWebview_(online_tos_url) {
     const webview = this.$.consolidatedConsentArcTosWebview;
 
     const loadFailureCallback = () => {
-      this.setUIStep(ConsolidatedConsentScreenState.ERROR);
+      this.setUIStep(ConsolidatedConsentScreenState.PLAY_LOAD_ERROR);
     };
 
     const tosLoader = new WebViewLoader(
         webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
         loadFailureCallback, false /* clear_anchors */, false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
+  }
+
+  onArcTosContentLoad_() {
+    const webview = this.$.consolidatedConsentArcTosWebview;
+    // In demo mode, consents are not recorded, so no need to store the ToS
+    // Content.
+    if (!this.isDemo_) {
+      webview.executeScript({code: 'document.body.innerHTML;'}, (results) => {
+        if (chrome.runtime.lastError) {
+          console.warn(
+              'Failed to get consent contents: ' +
+              chrome.runtime.lastError.message);
+        }
+        if (results && results.length === 1 && typeof results[0] === 'string') {
+          this.arcTosContent_ = results[0];
+        }
+      });
+    }
+
+    this.setUIStep(ConsolidatedConsentScreenState.ARC);
+  }
+
+  showPrivacyPolicy_() {
+    this.initializeTosWebivews_();
+    this.setUIStep(ConsolidatedConsentScreenState.LOADING);
+    this.loadPrivacyPolicyWebview_(this.privacyPolicyUrl_);
   }
 
   loadPrivacyPolicyWebview_(online_tos_url) {
@@ -405,48 +435,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     tosLoader.setUrl(online_tos_url);
   }
 
-  onGoogleEulaContentLoad_() {
-    this.googleEulaLoading_ = false;
-    this.maybeSetLoadedStep_();
-  }
-
-  onCrosEulaContentLoad_() {
-    this.crosEulaLoading_ = false;
-  }
-
-  maybeSetLoadedStep_() {
-    if (!this.googleEulaLoading_ && !this.arcTosLoading_ &&
-        !this.usageOptinHiddenLoading_ &&
-        this.uiStep == ConsolidatedConsentScreenState.LOADING) {
-      this.setUIStep(ConsolidatedConsentScreenState.LOADED);
-      this.$.acceptButton.focus();
-    }
-  }
-
-  onArcTosContentLoad_() {
-    const webview = this.$.consolidatedConsentArcTosWebview;
-    // In demo mode, consents are not recorded, so no need to store the ToS
-    // Content.
-    if (!this.isDemo_) {
-      webview.executeScript({code: 'document.body.innerHTML;'}, (results) => {
-        if (chrome.runtime.lastError) {
-          console.warn(
-              'Failed to get consent contents: ' +
-              chrome.runtime.lastError.message);
-        }
-        if (!results || results.length != 1 || typeof results[0] !== 'string') {
-          return;
-        }
-        this.arcTosContent_ = results[0];
-      });
-    }
-
-    this.arcTosLoading_ = false;
-    this.maybeSetLoadedStep_();
-  }
-
   onPrivacyPolicyContentLoad_() {
-    this.privacyPolicyLoading_ = false;
+    this.setUIStep(ConsolidatedConsentScreenState.PRIVACY);
   }
 
   updateLocalizedContent() {
@@ -579,7 +569,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   setUsageOptinHidden(hidden) {
     this.usageOptinHidden_ = hidden;
     this.usageOptinHiddenLoading_ = false;
-    this.maybeSetLoadedStep_();
+    this.setUIStep(ConsolidatedConsentScreenState.LOADED);
   }
 
   /**
@@ -602,40 +592,35 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.locationManaged_ = managed;
   }
 
-  /**
-   * Opens external URL in popup overlay.
-   * @param {string} targetUrl to show in overlay webview.
-   */
-  showArcTosOverlay(targetUrl) {
-    this.$.arcTosOverlayWebview.src = targetUrl;
-    this.$.arcTosOverlay.showDialog();
-  }
-
   onGoogleEulaLinkClick_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.GOOGLE_EULA_LINK);
-    this.setUIStep(ConsolidatedConsentScreenState.GOOGLE_EULA);
+    this.showGoogleEula_();
   }
 
   onCrosEulaLinkClick_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.CROS_EULA_LINK);
-    this.setUIStep(ConsolidatedConsentScreenState.CROS_EULA);
+    this.showCrosEula_();
   }
 
   onArcTosLinkClick_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.ARC_TOS_LINK);
-    this.setUIStep(ConsolidatedConsentScreenState.ARC);
+    this.showArcTos_();
   }
 
   onPrivacyPolicyLinkClick_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.PRIVACY_POLICY_LINK);
-    this.setUIStep(ConsolidatedConsentScreenState.PRIVACY);
+    this.showPrivacyPolicy_();
   }
 
   onTermsStepOkClick_() {
+    this.setUIStep(ConsolidatedConsentScreenState.LOADED);
+  }
+
+  onErrorDoneClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.LOADED);
   }
 
@@ -685,9 +670,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   onRetryClick_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.ERROR_STEP_RETRY_BUTTON);
-    this.setUIStep(ConsolidatedConsentScreenState.LOADING);
-    this.$.retryButton.focus();
-    this.maybeLoadWebviews_(this.isTosHidden_, this.isArcEnabled_);
+    this.showArcTos_();
   }
 
   /**

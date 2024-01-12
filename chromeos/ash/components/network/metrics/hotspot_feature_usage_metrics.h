@@ -48,10 +48,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotFeatureUsageMetrics
   void RecordHotspotEnableAttempt(bool was_enabled_successfully);
 
  private:
-  raw_ptr<EnterpriseManagedMetadataStore, ExperimentalAsh>
-      enterprise_managed_metadata_store_ = nullptr;
-  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
-      hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<EnterpriseManagedMetadataStore> enterprise_managed_metadata_store_ =
+      nullptr;
+  raw_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_ = nullptr;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
 

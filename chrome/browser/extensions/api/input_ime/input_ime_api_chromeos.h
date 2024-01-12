@@ -192,7 +192,7 @@ class InputImeEventRouter {
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

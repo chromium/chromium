@@ -56,10 +56,10 @@ void ToSimpleLayoutTree(std::ostream& ostream,
     ostream << "(anonymous)";
   if (auto* layout_text_fragment =
           DynamicTo<LayoutTextFragment>(layout_object)) {
-    ostream << " (" << layout_text_fragment->GetText() << ")";
+    ostream << " (" << layout_text_fragment->TransformedText() << ")";
   } else if (auto* layout_text = DynamicTo<LayoutText>(layout_object)) {
     if (!layout_object.GetNode())
-      ostream << " " << layout_text->GetText();
+      ostream << " " << layout_text->TransformedText();
   }
   ostream << std::endl;
   for (auto* child = layout_object.SlowFirstChild(); child;

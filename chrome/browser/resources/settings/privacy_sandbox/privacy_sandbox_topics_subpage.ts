@@ -15,10 +15,15 @@ import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_to
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_topics_subpage.html.js';
@@ -27,11 +32,12 @@ export interface SettingsPrivacySandboxTopicsSubpageElement {
   $: {
     topicsToggle: SettingsToggleButtonElement,
     footer: HTMLElement,
+    footerPTB: HTMLElement,
   };
 }
 
 const SettingsPrivacySandboxTopicsSubpageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPrivacySandboxTopicsSubpageElement extends
     SettingsPrivacySandboxTopicsSubpageElementBase {
@@ -89,13 +95,25 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         value: false,
         observer: 'onBlockedTopicsExpanded_',
       },
+
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+      isProactiveTopicsBlockingEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+      },
     };
   }
 
+  private focusConfig: FocusConfig;
   private topicsList_: PrivacySandboxInterest[];
   private blockedTopicsList_: PrivacySandboxInterest[];
   private isTopicsListLoaded_: boolean;
   private isLearnMoreDialogOpen_: boolean;
+  private isProactiveTopicsBlockingEnabled_: boolean;
   private blockedTopicsExpanded_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
@@ -111,9 +129,16 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.$.footer.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+    this.$.footerPTB.querySelectorAll('a').forEach(
+        link =>
+            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+  }
 
-    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-        TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
+  override currentRouteChanged(newRoute: Route) {
+    if (newRoute === routes.PRIVACY_SANDBOX_TOPICS) {
+      HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+          TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
+    }
   }
 
   private isTopicsPrefManaged_(): boolean {
@@ -231,6 +256,62 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacySandbox.Topics.BlockedTopicsOpened');
     }
+  }
+
+  private onPrivacySandboxManageTopicsClick_() {
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+  }
+
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
+    // TODO: focusConfig does not work for manage topics subpage
+    assert(!oldConfig);
+    if (routes.PRIVACY_SANDBOX_MANAGE_TOPICS) {
+      this.focusConfig.set(routes.PRIVACY_SANDBOX_MANAGE_TOPICS.path, () => {
+        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+            '#privacySandboxManageTopicsLinkRow');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
+      });
+    }
+  }
+
+  private computeTopicsPageToggleSubLabel_(): string {
+    return this.i18n(
+        this.isProactiveTopicsBlockingEnabled_ ? 'topicsPageToggleSubLabelPTB' :
+                                                 'topicsPageToggleSubLabel');
+  }
+
+  private computeTopicsPageCurrentTopicsHeading_(): string {
+    return this.i18n(
+        this.isProactiveTopicsBlockingEnabled_ ?
+            'topicsPageCurrentTopicsHeadingPTB' :
+            'topicsPageCurrentTopicsHeading');
+  }
+
+  private computeTopicsPageCurrentTopicsDescription_(): string {
+    return this.i18n(
+        this.isProactiveTopicsBlockingEnabled_ ?
+            'topicsPageCurrentTopicsDescriptionPTB' :
+            'topicsPageCurrentTopicsDescription');
+  }
+
+  private computeTopicsPageCurrentTopicsDescriptionEmpty_(): string {
+    return this.i18n(
+        this.isProactiveTopicsBlockingEnabled_ ?
+            'topicsPageCurrentTopicsDescriptionEmptyPTB' :
+            'topicsPageCurrentTopicsDescriptionEmpty');
+  }
+
+  private computeTopicsPageBlockedTopicsHeading_(): string {
+    return this.i18n(
+        this.isProactiveTopicsBlockingEnabled_ ?
+            'topicsPageBlockedTopicsHeadingPTB' :
+            'topicsPageBlockedTopicsHeading');
+  }
+
+  private shouldShowManageTopics_(): boolean {
+    return this.isProactiveTopicsBlockingEnabled_ &&
+        !loadTimeData.getBoolean('isPrivacySandboxRestricted');
   }
 }
 

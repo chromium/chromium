@@ -55,23 +55,25 @@ found in the LICENSE file.
 </oobe-loading-dialog>
 
 <!-- ERROR DIALOG -->
-<oobe-adaptive-dialog id="errorDialog" for-step="error" role="dialog"
+<oobe-adaptive-dialog id="errorDialog" for-step="play-load-error" role="dialog"
     aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
   <h1 slot="title">
-    [[i18nDynamic(locale, 'consolidatedConsentErrorTitle')]]
+    [[i18nDynamic(locale, 'consolidatedConsentPlayErrorTitle')]]
   </h1>
   <p slot="subtitle">
-    [[i18nDynamic(locale, 'consolidatedConsentErrorMessage')]]
+    [[i18nDynamic(locale, 'consolidatedConsentPlayErrorMessage')]]
   </p>
   <div slot="content" class="flex layout vertical center center-justified">
     <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="retryButton"
-        class="focus-on-show" inverse on-click="onRetryClick_"
+    <oobe-text-button id="retryButton" on-click="onRetryClick_"
         text-key="consolidatedConsentRetry"></oobe-text-button>
+    <oobe-text-button id="doneButton" class="focus-on-show"
+        on-click="onErrorDoneClick_" text-key="consolidatedConsentDone">
+    </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
 

@@ -349,6 +349,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Always allow, with any card
     </message>
   </if>
+  <if expr="is_chromeos">
+    <message name="IDS_WEB_PRINTING_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use the Web Printing API. Follows a prompt: 'This site would like to:'">
+      Have direct access to your printers
+    </message>
+  </if>
 
   <!-- Quota messages -->
   <if expr="is_android">

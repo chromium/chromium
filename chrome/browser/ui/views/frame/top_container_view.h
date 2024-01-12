@@ -15,12 +15,15 @@ class BrowserView;
 // bar. In Chrome OS immersive fullscreen it stacks on top of other views in
 // order to slide in and out over the web contents.
 class TopContainerView : public views::View {
+  METADATA_HEADER(TopContainerView, views::View)
+
  public:
-  METADATA_HEADER(TopContainerView);
   explicit TopContainerView(BrowserView* browser_view);
   TopContainerView(const TopContainerView&) = delete;
   TopContainerView& operator=(const TopContainerView&) = delete;
   ~TopContainerView() override;
+
+  void OnImmersiveRevealUpdated();
 
   // views::View overrides:
   void PaintChildren(const views::PaintInfo& paint_info) override;

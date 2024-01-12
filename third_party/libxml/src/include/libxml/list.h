@@ -119,10 +119,10 @@ XMLPUBFUN void
 		xmlListMerge		(xmlListPtr l1,
 					 xmlListPtr l2);
 XMLPUBFUN xmlListPtr
-		xmlListDup		(const xmlListPtr old);
+		xmlListDup		(xmlListPtr old);
 XMLPUBFUN int
 		xmlListCopy		(xmlListPtr cur,
-					 const xmlListPtr old);
+					 xmlListPtr old);
 /* Link operators */
 XMLPUBFUN void *
 		xmlLinkGetData          (xmlLinkPtr lk);

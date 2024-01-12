@@ -61,8 +61,14 @@ public interface SigninManager {
 
     /** Callbacks for the sign-in flow. */
     interface SignInCallback {
-        /** Invoked after sign-in is completed successfully. */
+        /**
+         * Invoked after sign-in is completed successfully. Sign-in preferences may not be committed
+         * yet.
+         */
         void onSignInComplete();
+
+        /** Invoked after sign-in preferences are committed. */
+        default void onPrefsCommitted() {}
 
         /** Invoked if the sign-in processes does not complete for any reason. */
         void onSignInAborted();

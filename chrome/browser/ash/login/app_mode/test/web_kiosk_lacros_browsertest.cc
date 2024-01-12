@@ -6,12 +6,12 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/new_aura_window_watcher.h"
-#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_lacros_base_test.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -46,7 +46,7 @@ bool DidSessionCloseNewWindow() {
 void CloseBrowserAndWaitUntilHandled(Browser* browser) {
   TestBrowserClosedWaiter waiter{browser};
   browser->window()->Close();
-  waiter.WaitUntilClosed();
+  ASSERT_TRUE(waiter.WaitUntilClosed());
 }
 
 }  // namespace

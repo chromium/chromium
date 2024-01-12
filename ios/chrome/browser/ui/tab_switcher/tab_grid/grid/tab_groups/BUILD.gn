@@ -4,6 +4,10 @@
 
 source_set("tab_groups") {
   sources = [
+    "create_tab_group_coordinator.h",
+    "create_tab_group_coordinator.mm",
+    "create_tab_group_mediator.h",
+    "create_tab_group_mediator.mm",
     "tab_group_coordinator.h",
     "tab_group_coordinator.mm",
     "tab_group_mediator.h",
@@ -30,6 +34,8 @@ source_set("tab_groups") {
 
 source_set("tab_groups_ui") {
   sources = [
+    "create_tab_group_view_controller.h",
+    "create_tab_group_view_controller.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
     "tab_groups_commands.h",
@@ -37,8 +43,10 @@ source_set("tab_groups_ui") {
   deps = [
     ":tab_group_consumer",
     ":tab_group_mutator",
+    ":tab_groups_constant",
     "//base",
     "//base:i18n",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -53,6 +61,13 @@ source_set("tab_groups_ui") {
 
 source_set("tab_group_consumer") {
   sources = [ "tab_group_consumer.h" ]
+}
+
+source_set("tab_groups_constant") {
+  sources = [
+    "tab_groups_constants.h",
+    "tab_groups_constants.mm",
+  ]
 }
 
 source_set("tab_group_mutator") {
@@ -74,4 +89,21 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_groups_egtest.mm" ]
+  deps = [
+    ":tab_groups_constant",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

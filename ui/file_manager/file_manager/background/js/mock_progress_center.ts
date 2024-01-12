@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
+
+import {ProgressCenter} from './progress_center.js';
 
 /**
- * Mock implementation of {ProgressCenter} for tests.
- * @final
+ * Mock implementation of ProgressCenter for tests.
  */
-export class MockProgressCenter implements ProgressCenter {
+export class MockProgressCenter extends ProgressCenter {
   /**
    * Items stored in the progress center.
    */
@@ -19,7 +19,7 @@ export class MockProgressCenter implements ProgressCenter {
    * Stores an item to the progress center.
    * @param item Progress center item to be stored.
    */
-  updateItem(item: ProgressCenterItem) {
+  override updateItem(item: ProgressCenterItem) {
     this.items[item.id] = item;
   }
 
@@ -27,14 +27,14 @@ export class MockProgressCenter implements ProgressCenter {
    * Obtains an item stored in the progress center.
    * @param id ID spcifying the progress item.
    */
-  getItemById(id: string): ProgressCenterItem|undefined {
+  override getItemById(id: string): ProgressCenterItem|undefined {
     return this.items[id];
   }
 
-  requestCancel() {}
-  addPanel() {}
-  removePanel() {}
-  neverNotifyCompleted() {}
+  override requestCancel() {}
+  override addPanel() {}
+  override removePanel() {}
+  override neverNotifyCompleted() {}
 
   /**
    * Returns the number of unique keys in |this.items|.
@@ -49,6 +49,6 @@ export class MockProgressCenter implements ProgressCenter {
    * @param state State to filter by.
    */
   getItemsByState(state: ProgressItemState): ProgressCenterItem[] {
-    return Object.values(this.items).filter(item => item.state == state);
+    return Object.values(this.items).filter(item => item.state === state);
   }
 }

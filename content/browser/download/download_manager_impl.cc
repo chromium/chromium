@@ -158,7 +158,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
       const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const absl::optional<url::Origin>& request_initiator,
+      const std::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -240,7 +240,7 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         rfh->GetSiteInstance()->GetBrowserContext(), rfh,
         rfh->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDownload, url::Origin(),
-        absl::nullopt /* navigation_id */, ukm::kInvalidSourceIdObj,
+        std::nullopt /* navigation_id */, ukm::kInvalidSourceIdObj,
         &maybe_proxy_factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
         nullptr /* factory_override */,
@@ -946,7 +946,7 @@ void DownloadManagerImpl::InterceptNavigation(
 
   const GURL& url = resource_request->url;
   const std::string& method = resource_request->method;
-  absl::optional<url::Origin> request_initiator =
+  std::optional<url::Origin> request_initiator =
       resource_request->request_initiator;
 
   WebContents::Getter web_contents_getter =
@@ -1038,7 +1038,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     const StoragePartitionConfig& storage_partition_config,
     const GURL& tab_url,
     const GURL& tab_refererr_url,
-    const absl::optional<url::Origin>& request_initiator,
+    const std::optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,
@@ -1481,7 +1481,7 @@ void DownloadManagerImpl::BeginDownloadInternal(
           WebContents::FromFrameTreeNodeId, rfh->GetFrameTreeNodeId());
       const GURL& url = params->url();
       const std::string& method = params->method();
-      absl::optional<url::Origin> initiator = params->initiator();
+      std::optional<url::Origin> initiator = params->initiator();
       base::OnceCallback<void(bool /* download allowed */)>
           on_can_download_checks_done = base::BindOnce(
               &DownloadManagerImpl::BeginResourceDownloadOnChecksComplete,

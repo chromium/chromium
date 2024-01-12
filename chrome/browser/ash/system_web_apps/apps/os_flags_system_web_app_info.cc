@@ -60,6 +60,6 @@ bool OsFlagsSystemWebAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool OsFlagsSystemWebAppDelegate::ShouldShowInSearch() const {
+bool OsFlagsSystemWebAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }

@@ -112,5 +112,5 @@ ReadAnythingContainerView::~ReadAnythingContainerView() {
   }
 }
 
-BEGIN_METADATA(ReadAnythingContainerView, views::View)
+BEGIN_METADATA(ReadAnythingContainerView)
 END_METADATA

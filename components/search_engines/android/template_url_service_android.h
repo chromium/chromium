@@ -28,7 +28,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   void SetUserSelectedDefaultSearchProvider(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jkeyword);
+      const base::android::JavaParamRef<jstring>& jkeyword,
+      jint choice_made_location);
   jboolean IsLoaded(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj) const;
   jboolean IsDefaultSearchManaged(
@@ -136,6 +137,11 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // SearchEngineChoiceCountry. It might be different than what LocaleUtils
   // returns.
   jboolean IsEeaChoiceCountry(JNIEnv* env);
+
+  // Returns whether the version of the search engines settings screen showing
+  // additional search engine info should be shown.
+  // TODO(b/318824817): To be removed post-launch.
+  jboolean ShouldShowUpdatedSettings(JNIEnv* env);
 
  private:
   bool IsDefaultSearchEngineGoogle();

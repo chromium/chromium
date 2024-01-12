@@ -1,0 +1,5 @@
+Tests that DOM.describeNode returns a nodeId iff one is currently assigned.
+NodeId before DOM agent enabled: 0
+NodeId after DOM.getDocument: 0
+NodeId after node requested: present
+

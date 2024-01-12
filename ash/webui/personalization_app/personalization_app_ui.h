@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "base/memory/weak_ptr.h"

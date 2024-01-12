@@ -131,6 +131,11 @@ MATCHER_P(EncryptedDataEq, expected, "") {
          given.blob() == expected.blob();
 }
 
+MATCHER(IsEmptyMetadataBatch, "") {
+  const NigoriMetadataBatch& given = arg;
+  return given.entity_metadata == absl::nullopt;
+}
+
 MATCHER_P2(IsDummyNigoriMetadataBatchWithTokenAndSequenceNumber,
            expected_token,
            expected_sequence_number,
@@ -153,7 +158,7 @@ CrossUserSharingKeys CreateNewCrossUserSharingKeys() {
   const uint32_t kKeyVersion = 0;
   CrossUserSharingKeys cross_user_sharing_keys =
       CrossUserSharingKeys::CreateEmpty();
-  cross_user_sharing_keys.AddKeyPair(
+  cross_user_sharing_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), kKeyVersion);
   return cross_user_sharing_keys;
 }
@@ -198,6 +203,46 @@ class MockNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
   MOCK_METHOD(bool, IsTrackingMetadata, (), (override));
 };
 
+// This class is a helper to keep ownership of a mocked processor by providing
+// ownership to the forwarding processor.
+class ForwardingNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
+ public:
+  explicit ForwardingNigoriLocalChangeProcessor(
+      NigoriLocalChangeProcessor* processor)
+      : processor_(processor) {}
+  ~ForwardingNigoriLocalChangeProcessor() override = default;
+
+  void ModelReadyToSync(NigoriSyncBridge* bridge,
+                        NigoriMetadataBatch metadata_batch) override {
+    processor_->ModelReadyToSync(bridge, std::move(metadata_batch));
+  }
+
+  void Put(std::unique_ptr<EntityData> entity_data) override {
+    processor_->Put(std::move(entity_data));
+  }
+
+  bool IsEntityUnsynced() override { return processor_->IsEntityUnsynced(); }
+
+  NigoriMetadataBatch GetMetadata() override {
+    return processor_->GetMetadata();
+  }
+
+  void ReportError(const ModelError& error) override {
+    processor_->ReportError(error);
+  }
+
+  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override {
+    return processor_->GetControllerDelegate();
+  }
+
+  bool IsTrackingMetadata() override {
+    return processor_->IsTrackingMetadata();
+  }
+
+ private:
+  raw_ptr<NigoriLocalChangeProcessor> processor_;
+};
+
 class MockObserver : public SyncEncryptionHandler::Observer {
  public:
   MockObserver() = default;
@@ -235,15 +280,8 @@ class MockNigoriStorage : public NigoriStorage {
 class NigoriSyncBridgeImplTest : public testing::Test {
  protected:
   NigoriSyncBridgeImplTest() {
-    auto processor =
-        std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
-    ON_CALL(*processor, IsTrackingMetadata()).WillByDefault(Return(true));
-    processor_ = processor.get();
-    auto storage = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
-    storage_ = storage.get();
-    bridge_ = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor),
-                                                     std::move(storage));
-    bridge_->AddObserver(&observer_);
+    ON_CALL(processor_, IsTrackingMetadata).WillByDefault(Return(true));
+    InitializeBridge();
   }
 
   ~NigoriSyncBridgeImplTest() override { bridge_->RemoveObserver(&observer_); }
@@ -251,20 +289,83 @@ class NigoriSyncBridgeImplTest : public testing::Test {
   void SetUp() override { OSCryptMocker::SetUp(); }
   void TearDown() override { OSCryptMocker::TearDown(); }
 
+  // Mimics the initial sync for Nigori. After the initial sync
+  // `nigori_local_data_` persists Nigori local state.
+  // TODO(crbug.com/1515267): use this helper in other tests.
+  bool PerformInitialSyncWithSimpleKeystoreNigori() {
+    const KeyParamsForTesting kKeystoreKeyParams =
+        KeystoreKeyParamsForTesting(kRawKeystoreKey);
+
+    EntityData entity_data;
+    *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
+        /*keybag_keys_params=*/{kKeystoreKeyParams},
+        /*keystore_decryptor_params=*/kKeystoreKeyParams,
+        /*keystore_key_params=*/kKeystoreKeyParams,
+        /*cross_user_sharing_keys=*/CreateNewCrossUserSharingKeys());
+
+    // Perform initial sync with simple keystore Nigori.
+    if (!bridge_->SetKeystoreKeys({kRawKeystoreKey})) {
+      LOG(ERROR) << "SetKeystoreKeys failed";
+      return false;
+    }
+    absl::optional<syncer::ModelError> error =
+        bridge_->MergeFullSyncData(std::move(entity_data));
+    if (error) {
+      LOG(ERROR) << "Model type error during the initial sync: "
+                 << error->ToString();
+      return false;
+    }
+    return true;
+  }
+
+  // Replaces Nigori local data and re-initializes the bridge. This simulates
+  // browser restart with a custom NigoriLocalData.
+  void MimicRestartWithLocalData(
+      const sync_pb::NigoriLocalData& nigori_local_data) {
+    nigori_local_data_ = nigori_local_data;
+    InitializeBridge();
+  }
+
+  // Initializes `bridge_` simulating browser startup. Note that this method
+  // does not perform the initial sync.
+  void InitializeBridge() {
+    auto storage = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
+    storage_ = storage.get();
+    ON_CALL(*storage, StoreData)
+        .WillByDefault(testing::SaveArg<0>(&nigori_local_data_));
+    if (nigori_local_data_.ByteSize() != 0) {
+      // Return local data only if it's populated and non-empty. Otherwise,
+      // return default nullopt.
+      ON_CALL(*storage, RestoreData).WillByDefault(Return(nigori_local_data_));
+    }
+    if (bridge_) {
+      bridge_->RemoveObserver(&observer_);
+    }
+    bridge_ = std::make_unique<NigoriSyncBridgeImpl>(
+        std::make_unique<ForwardingNigoriLocalChangeProcessor>(processor()),
+        std::move(storage));
+    bridge_->AddObserver(&observer_);
+  }
+
   NigoriSyncBridgeImpl* bridge() { return bridge_.get(); }
-  MockNigoriLocalChangeProcessor* processor() { return processor_; }
+  MockNigoriLocalChangeProcessor* processor() { return &processor_; }
   MockObserver* observer() { return &observer_; }
   MockNigoriStorage* storage() { return storage_; }
   Cryptographer* cryptographer() { return bridge_->GetCryptographer(); }
+  const sync_pb::NigoriLocalData& nigori_local_data() const {
+    return nigori_local_data_;
+  }
 
   const std::vector<uint8_t> kRawKeystoreKey = {0, 1, 2, 3, 4};
   const std::vector<uint8_t> kTrustedVaultKey = {2, 3, 4, 5, 6};
 
  private:
+  // Nigori local data used by the storage to simulate loading and storing data
+  // to the disk.
+  sync_pb::NigoriLocalData nigori_local_data_;
+  testing::NiceMock<MockNigoriLocalChangeProcessor> processor_;
   std::unique_ptr<NigoriSyncBridgeImpl> bridge_;
   // Ownership transferred to |bridge_|.
-  raw_ptr<testing::NiceMock<MockNigoriLocalChangeProcessor>> processor_ =
-      nullptr;
   raw_ptr<testing::NiceMock<MockNigoriStorage>> storage_ = nullptr;
   testing::NiceMock<MockObserver> observer_;
 };
@@ -390,7 +491,7 @@ TEST_F(
   const auto raw_private_key = key_pair.GetRawPrivateKey();
   const auto raw_public_key = key_pair.GetRawPublicKey();
   const uint32_t kKeyVersion = 0;
-  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyVersion);
+  cross_user_sharing_keys.SetKeyPair(std::move(key_pair), kKeyVersion);
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
       BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
@@ -950,7 +1051,7 @@ TEST_F(NigoriSyncBridgeImplTest,
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
   const auto raw_public_key = key_pair.GetRawPublicKey();
   const uint32_t kKeyVersion = 0;
-  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyVersion);
+  cross_user_sharing_keys.SetKeyPair(std::move(key_pair), kKeyVersion);
 
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
@@ -2160,6 +2261,50 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(bridge2->GetData(), Not(HasPublicKeyVersion(0)));
   histogram_tester.ExpectUniqueSample(
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
+}
+
+TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {
+  ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+
+  sync_pb::NigoriLocalData local_data = nigori_local_data();
+
+  // Mimic corrupted key pair, replace the public key with a new value.
+  CrossUserSharingPublicPrivateKeyPair new_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  auto raw_public_key = new_key_pair.GetRawPublicKey();
+  local_data.mutable_nigori_model()
+      ->mutable_cross_user_sharing_public_key()
+      ->set_x25519_public_key(
+          std::string(raw_public_key.begin(), raw_public_key.end()));
+
+  std::string new_public_key;
+  EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)))
+      .WillOnce([&new_public_key](auto committed_entity_data) {
+        new_public_key = committed_entity_data->specifics.nigori()
+                             .cross_user_sharing_public_key()
+                             .x25519_public_key();
+      });
+  base::HistogramTester histogram_tester;
+  MimicRestartWithLocalData(local_data);
+
+  // Verify that local state wasn't dropped.
+  ASSERT_THAT(bridge()->GetData(), HasKeystoreNigori());
+
+  // Verify that the key pair is corrupted.
+  histogram_tester.ExpectUniqueSample("Sync.CrossUserSharingKeyPairState",
+                                      /*kCorruptedKeyPair*/ 3,
+                                      /*expected_bucket_count=*/1);
+
+  // Mimic commit completion.
+  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(absl::nullopt),
+              Eq(absl::nullopt));
+
+  // Key version and material should be consistent across the processor and the
+  // bridge.
+  EXPECT_THAT(bridge()->GetData(),
+              HasPublicKeyVersionAndValue(0, new_public_key));
+  EXPECT_NE(new_public_key,
+            std::string(raw_public_key.begin(), raw_public_key.end()));
 }
 
 }  // namespace

@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chromecast/browser/cast_session_id_map.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -36,6 +38,8 @@ class ApplicationMediaInfoManagerTest
   void SetUp() override {
     initializer_ = std::make_unique<content::TestContentClientInitializer>();
     content::RenderViewHostTestHarness::SetUp();
+    shell::CastSessionIdMap::GetInstance(
+        base::SequencedTaskRunner::GetCurrentDefault().get());
     application_media_info_manager_ =
         &ApplicationMediaInfoManager::CreateForTesting(
             *main_rfh(), kSessionId, kMixedAudioEnabled,

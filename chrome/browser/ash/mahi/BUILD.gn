@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("mahi") {
+  sources = [
+    "mahi_manager_ash.cc",
+    "mahi_manager_ash.h",
+  ]
+  deps = [
+    "//ash",
+    "//base",
+    "//chromeos/components/mahi/public/cpp",
+  ]
+}

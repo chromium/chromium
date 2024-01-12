@@ -272,7 +272,8 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       content::CreateContentBrowserURLLoaderThrottles(
           *resource_request, profile, std::move(wc_getter),
           /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId);
+          content::RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_id=*/absl::nullopt);
 
   bool should_defer = false;
   {

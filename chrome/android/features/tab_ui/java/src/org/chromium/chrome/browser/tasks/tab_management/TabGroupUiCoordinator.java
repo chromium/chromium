@@ -180,7 +180,9 @@ public class TabGroupUiCoordinator
                             COMPONENT_NAME,
                             mRootView,
                             onModelTokenChange);
-            mTabStripCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
+            mTabStripCoordinator.initWithNative(
+                    mTabModelSelector.getModel(false).getProfile(),
+                    mDynamicResourceLoaderSupplier.get());
 
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(

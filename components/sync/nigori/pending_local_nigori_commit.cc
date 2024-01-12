@@ -26,21 +26,28 @@ namespace {
 
 using sync_pb::NigoriSpecifics;
 
-void InitKeyPair(
+// Populates a new key pair with a version 0 to `state`, or replaces the
+// existing key pair with the current key version. This method does not affect
+// key pairs with other versions.
+void InitNewOrFixCorruptedKeyPair(
     const CrossUserSharingPublicPrivateKeyPair& cross_user_sharing_key_pair,
     NigoriState* state) {
-  CHECK(!state->cross_user_sharing_public_key.has_value());
+  CHECK(state->NeedsGenerateCrossUserSharingKeyPair());
+
+  // Keep the existing version in case if the key pair is corrupted.
+  const uint32_t version =
+      state->cross_user_sharing_key_pair_version.value_or(0);
 
   state->cross_user_sharing_public_key =
       CrossUserSharingPublicKey::CreateByImport(
           cross_user_sharing_key_pair.GetRawPublicKey());
-  state->cross_user_sharing_key_pair_version = 0;
+  state->cross_user_sharing_key_pair_version = version;
   absl::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           cross_user_sharing_key_pair.GetRawPrivateKey());
   CHECK(key_pair.has_value());
-  state->cryptographer->EmplaceKeyPair(std::move(key_pair.value()), 0);
-  state->cryptographer->SelectDefaultCrossUserSharingKey(0);
+  state->cryptographer->SetKeyPair(std::move(key_pair.value()), version);
+  state->cryptographer->SelectDefaultCrossUserSharingKey(version);
 }
 
 void LogCrossUserSharingPublicPrivateKeyInit(bool is_succesful) {
@@ -151,7 +158,8 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
     state->keystore_migration_time = base::Time::Now();
 
     if (cross_user_sharing_public_private_key_pair_.has_value()) {
-      InitKeyPair(cross_user_sharing_public_private_key_pair_.value(), state);
+      InitNewOrFixCorruptedKeyPair(
+          cross_user_sharing_public_private_key_pair_.value(), state);
     }
     return true;
   }
@@ -223,13 +231,12 @@ class CrossUserSharingPublicPrivateKeyInitializer
   ~CrossUserSharingPublicPrivateKeyInitializer() override = default;
 
   bool TryApply(NigoriState* state) const override {
-    // It is not safe to commit while we have pending keys.
-    // Also, there is no work to do if a public-key already exists.
-    if (state->pending_keys.has_value() ||
-        state->cross_user_sharing_public_key.has_value()) {
+    if (!state->NeedsGenerateCrossUserSharingKeyPair()) {
       return false;
     }
-    InitKeyPair(cross_user_sharing_public_private_key_pair_, state);
+
+    InitNewOrFixCorruptedKeyPair(cross_user_sharing_public_private_key_pair_,
+                                 state);
     return true;
   }
 

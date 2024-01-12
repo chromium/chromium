@@ -25,7 +25,7 @@ TEST_F(PickerContentsViewTest, DefaultHasNoChildren) {
 
   auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>());
 
-  EXPECT_THAT(view->children(), IsEmpty());
+  EXPECT_THAT(view->page_container_for_testing()->children(), IsEmpty());
 }
 
 TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
@@ -36,7 +36,7 @@ TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
   auto* page2 = view->AddPage(std::make_unique<views::View>());
 
   EXPECT_THAT(
-      view->children(),
+      view->page_container_for_testing()->children(),
       ElementsAre(
           AllOf(page1, Pointee(Property(&views::View::GetVisible, false))),
           AllOf(page2, Pointee(Property(&views::View::GetVisible, false)))));
@@ -51,7 +51,7 @@ TEST_F(PickerContentsViewTest, SetActivePageChangesVisibility) {
   view->SetActivePage(page1);
 
   EXPECT_THAT(
-      view->children(),
+      view->page_container_for_testing()->children(),
       ElementsAre(
           AllOf(page1, Pointee(Property(&views::View::GetVisible, true))),
           AllOf(page2, Pointee(Property(&views::View::GetVisible, false)))));
@@ -59,7 +59,7 @@ TEST_F(PickerContentsViewTest, SetActivePageChangesVisibility) {
   view->SetActivePage(page2);
 
   EXPECT_THAT(
-      view->children(),
+      view->page_container_for_testing()->children(),
       ElementsAre(
           AllOf(page1, Pointee(Property(&views::View::GetVisible, false))),
           AllOf(page2, Pointee(Property(&views::View::GetVisible, true)))));

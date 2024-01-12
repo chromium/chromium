@@ -157,7 +157,9 @@ TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
         static_cast<mojom::DisplaySettingsType>(typeInt);
     // Settings applied to both internal and external displays.
     if (type == mojom::DisplaySettingsType::kDisplayPage ||
-        type == mojom::DisplaySettingsType::kMirrorMode) {
+        type == mojom::DisplaySettingsType::kMirrorMode ||
+        type == mojom::DisplaySettingsType::kUnifiedMode ||
+        type == mojom::DisplaySettingsType::kPrimaryDisplay) {
       auto value = mojom::DisplaySettingsValue::New();
       provider_->RecordChangingDisplaySettings(type, std::move(value));
       histogram_tester_.ExpectBucketCount(

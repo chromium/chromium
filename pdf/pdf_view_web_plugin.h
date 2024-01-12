@@ -123,7 +123,10 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
     // Returns the plugin container set by `SetPluginContainer()`.
     virtual blink::WebPluginContainer* PluginContainer() = 0;
 
-    // Returrns the document's site for cookies.
+    // Returns the current V8 isolate, if any.
+    virtual v8::Isolate* GetIsolate() = 0;
+
+    // Returns the document's site for cookies.
     virtual net::SiteForCookies SiteForCookies() const = 0;
 
     // Resolves `partial_url` relative to the document's base URL.
@@ -331,6 +334,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                   const void* data,
                   int length) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
+  v8::Isolate* GetIsolate() override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;

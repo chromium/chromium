@@ -104,7 +104,7 @@ class ArcWallpaperService::DecodeRequest : public ImageDecoder::ImageRequest {
 
  private:
   // ArcWallpaperService owns DecodeRequest, so it will outlive this.
-  const raw_ptr<ArcWallpaperService, ExperimentalAsh> service_;
+  const raw_ptr<ArcWallpaperService> service_;
   const int32_t android_id_;
 };
 

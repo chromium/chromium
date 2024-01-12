@@ -118,7 +118,7 @@ export class CrDialogElement extends CrDialogElementBase {
     };
   }
 
-  closeText: string;
+  closeText?: string;
   consumeKeydownEvent: boolean;
   ignoreEnterKey: boolean;
   ignorePopstate: boolean;

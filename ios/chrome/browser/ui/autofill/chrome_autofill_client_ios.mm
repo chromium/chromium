@@ -62,9 +62,9 @@
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
+#import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -107,7 +107,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
               browser_state_->IsOffTheRecord())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
-          payments_network_interface_.get(),
           personal_data_manager_,
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
@@ -272,7 +271,8 @@ GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
           : std::string());
 }
 
-void ChromeAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
+void ChromeAutofillClientIOS::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
   NOTREACHED();
 }
 
@@ -491,7 +491,7 @@ AutofillClient::PopupOpenArgs ChromeAutofillClientIOS::GetReopenPopupArgs(
 
 void ChromeAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }
@@ -548,15 +548,14 @@ std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClientIOS::GetDeviceAuthenticator() {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
-  id<ReauthenticationProtocol> reauthModule =
-      [[ReauthenticationModule alloc] init];
-  return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
-}
+  id<ReauthenticationProtocol> reauthModule;
+  if (ScopedAutofillPaymentReauthModuleOverride::instance) {
+    reauthModule = ScopedAutofillPaymentReauthModuleOverride::instance->module;
+  } else {
+    reauthModule = [[ReauthenticationModule alloc] init];
+  }
 
-void ChromeAutofillClientIOS::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(
-      base::SysNSStringToUTF8(ios::provider::GetRiskData()));
+  return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
 }
 
 std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {

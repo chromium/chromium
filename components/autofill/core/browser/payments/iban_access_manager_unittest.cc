@@ -10,11 +10,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,7 +60,7 @@ class IbanAccessManagerTest : public testing::Test {
                     UnmaskIbanRequestDetails&,
                 base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                                         const std::u16string&)> callback) {
-              test_clock_.Advance(base::Milliseconds(latency_ms));
+              task_environment_.FastForwardBy(base::Milliseconds(latency_ms));
               std::move(callback).Run(
                   is_successful
                       ? AutofillClient::PaymentsRpcResult::kSuccess
@@ -82,11 +80,11 @@ class IbanAccessManagerTest : public testing::Test {
         autofill_client_.GetPaymentsNetworkInterface());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
-  TestAutofillTickClock test_clock_;
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
 };
 
@@ -212,7 +210,6 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
 // Verify that the duration of successful `UnmaskIban` call is logged correctly.
 TEST_F(IbanAccessManagerTest, UnmaskServerIban_Success_Metric) {
   base::HistogramTester histogram_tester;
-  test_clock_.SetNowTicks(AutofillTickClock::NowTicks());
   SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue,
                       /*latency_ms=*/kDefaultUnmaskIbanLatencyMs);
 
@@ -235,7 +232,6 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Success_Metric) {
 // Verify that duration of failed `UnmaskIban` call is logged correctly.
 TEST_F(IbanAccessManagerTest, UnmaskServerIban_Failure_Metric) {
   base::HistogramTester histogram_tester;
-  test_clock_.SetNowTicks(AutofillTickClock::NowTicks());
   SetUpUnmaskIbanCall(/*is_successful=*/false, /*value=*/kFullIbanValue,
                       /*latency_ms=*/kDefaultUnmaskIbanLatencyMs);
 
@@ -252,6 +248,40 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Failure_Metric) {
       1);
   histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanDuration",
                                       kDefaultUnmaskIbanLatencyMs, 1);
+}
+
+// Verify that UnmaskIbanResult records true for a successful call.
+TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Success) {
+  base::HistogramTester histogram_tester;
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", true,
+                                      1);
+}
+
+// Verify that UnmaskIbanResult records false for a failed call.
+TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Failure) {
+  base::HistogramTester histogram_tester;
+  SetUpUnmaskIbanCall(/*is_successful=*/false, /*value=*/u"");
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", false,
+                                      1);
 }
 
 }  // namespace autofill

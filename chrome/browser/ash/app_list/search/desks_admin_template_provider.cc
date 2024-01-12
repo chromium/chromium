@@ -77,8 +77,7 @@ void DesksAdminTemplateProvider::StartZeroState() {
       ash::kDesksTemplatesIcon, color_id, kSystemIconDimension);
 
   for (const auto& metadata : controller->GetAdminTemplateMetadata()) {
-    // With productivity launcher enabled, release notes are shown in continue
-    // section.
+    // Release notes are shown in the Continue section.
     search_results.emplace_back(std::make_unique<DesksAdminTemplateResult>(
         profile_, list_controller_, metadata.uuid, metadata.name, icon));
   }

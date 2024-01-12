@@ -168,11 +168,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     return split_view_metrics_controller_.get();
   }
   aura::Window* to_be_activated_window() { return to_be_activated_window_; }
-  int divider_position() const;
-  // TODO(michelefan|sophiewen): Revisit and see if this setter can be removed.
-  void set_divider_position(int divider_position) {
-    divider_position_ = divider_position;
-  }
+
+  // Returns the divider position of the split view divider.
+  int GetDividerPosition() const;
 
   // Returns true if the divider is resizing (not animating) in tablet mode
   // split view, or between two windows in Snap Groups.
@@ -193,8 +191,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   //    default divider position. (If the work area length is odd, then the
   //    right or bottom will be one pixel larger.)
   // See also the `DCHECK`s in `SnapWindow()`.
-  bool CanSnapWindow(aura::Window* window) const;
   bool CanSnapWindow(aura::Window* window, float snap_ratio) const;
+
+  // Returns true if `window` can keep snapped with the current snap ratio.
+  bool CanKeepCurrentSnapRatio(aura::Window* window) const;
 
   // Returns true if, after a window is snapped, it will get put into split
   // overview eventually.
@@ -458,16 +458,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // resizing.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
-  // Updates `divider_position_` and notifies observers that the divider
-  // position has changed.
-  void UpdateDividerPositionOnWindowResize(aura::Window* window,
-                                           const gfx::Rect& new_bounds);
-
   // Ends overview if the divider position is outside the fixed positions.
   void MaybeEndOverviewOnWindowResize(aura::Window* window);
 
-  // Returns the closest fixed location for `divider_position_`.
-  int GetClosestFixedDividerPosition();
+  // Returns the closest fixed location to `divider_position`.
+  int GetClosestFixedDividerPosition(int divider_position);
 
   // `StopSnapAnimation()` and notifies the `observers_` about the divider
   // position change.
@@ -603,6 +598,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // `SnapPosition::kPrimary` and `SnapPosition::kSecondary`. The bounds of the
   // window(s) will also be updated.
   void SwapWindowsAndUpdateBounds();
+
+  // Sets the position of the split view divider.
+  void SetDividerPosition(int divider_position);
 
   // Root window the split view is in.
   raw_ptr<aura::Window, DanglingUntriaged> root_window_;

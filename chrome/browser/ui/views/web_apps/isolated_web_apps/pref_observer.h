@@ -19,12 +19,17 @@ class IsolatedWebAppsEnabledPrefObserver {
  public:
   using PrefChangedCallback = base::RepeatingCallback<void(bool)>;
 
-  static std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
-  CreateIsolatedWebAppsEnabledPrefObserver(
-      Profile* profile,
-      IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback);
+  static std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> Create(
+      Profile* profile);
 
   virtual ~IsolatedWebAppsEnabledPrefObserver() = default;
+
+  virtual void Start(
+      IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback) = 0;
+
+  // Stops current observations, clears state, the observer should be ready to
+  // call Start() again.
+  virtual void Reset() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_PREF_OBSERVER_H_

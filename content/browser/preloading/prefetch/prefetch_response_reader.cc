@@ -54,7 +54,7 @@ bool PrefetchResponseReader::Servable(
   }
 
   // If the response hasn't been completed yet (meaning response_complete_time_
-  // is absl::nullopt), we can still serve the prefetch (depending on |head_|).
+  // is std::nullopt), we can still serve the prefetch (depending on |head_|).
   return servable && (!response_complete_time_.has_value() ||
                       base::TimeTicks::Now() <
                           response_complete_time_.value() + cacheable_duration);
@@ -402,7 +402,7 @@ void PrefetchResponseReader::HandleRedirect(
 }
 
 void PrefetchResponseReader::OnReceiveResponse(
-    absl::optional<PrefetchErrorOnResponseReceived> error,
+    std::optional<PrefetchErrorOnResponseReceived> error,
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
   CHECK_EQ(load_state_, LoadState::kStarted);
@@ -480,7 +480,7 @@ void PrefetchResponseReader::ForwardResponse(
   if (network::mojom::URLLoaderClient* client =
           serving_url_loader_clients_.Get(client_id)) {
     client->OnReceiveResponse(head_->Clone(), std::move(forward_body_),
-                              absl::nullopt);
+                              std::nullopt);
   }
 }
 
@@ -488,7 +488,7 @@ void PrefetchResponseReader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   // If a URL loader provided to |NavigationURLLoaderImpl| to intercept triggers
   // a redirect, then it will be interrupted before |FollowRedirect| is called,
   // and instead interceptors are given a chance to intercept the navigation to

@@ -217,8 +217,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Called after host deletion.
   std::vector<base::OnceClosure> completion_callbacks_;
-  raw_ptr<OobeUIDialogDelegate, ExperimentalAsh> dialog_ =
-      nullptr;  // Not owned.
+  raw_ptr<OobeUIDialogDelegate> dialog_ = nullptr;  // Not owned.
   std::unique_ptr<WizardController> wizard_controller_;
 
   // Whether or not there are users that are visible in the views login screen.

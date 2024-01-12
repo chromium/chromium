@@ -229,7 +229,9 @@ std::optional<size_t> TemplateURLTableModel::IndexOfTemplateURL(
   return std::nullopt;
 }
 
-void TemplateURLTableModel::MakeDefaultTemplateURL(size_t index) {
+void TemplateURLTableModel::MakeDefaultTemplateURL(
+    size_t index,
+    search_engines::ChoiceMadeLocation choice_location) {
   DCHECK_LT(index, RowCount());
 
   TemplateURL* keyword = GetTemplateURL(index);
@@ -238,7 +240,8 @@ void TemplateURLTableModel::MakeDefaultTemplateURL(size_t index) {
   if (current_default == keyword)
     return;
 
-  template_url_service_->SetUserSelectedDefaultSearchProvider(keyword);
+  template_url_service_->SetUserSelectedDefaultSearchProvider(keyword,
+                                                              choice_location);
 }
 
 void TemplateURLTableModel::SetIsActiveTemplateURL(size_t index,

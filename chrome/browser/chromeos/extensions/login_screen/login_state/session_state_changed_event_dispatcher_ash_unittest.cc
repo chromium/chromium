@@ -130,7 +130,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<SessionStateChangedEventDispatcher> dispatcher_;

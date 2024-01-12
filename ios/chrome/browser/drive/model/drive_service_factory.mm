@@ -5,17 +5,20 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_configuration.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/public/provider/chrome/browser/drive/drive_api.h"
 
 namespace drive {
 
 // static
 DriveService* DriveServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    web::BrowserState* browser_state) {
   return static_cast<DriveService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -29,13 +32,28 @@ DriveServiceFactory* DriveServiceFactory::GetInstance() {
 DriveServiceFactory::DriveServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DriveService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
+}
 
 DriveServiceFactory::~DriveServiceFactory() = default;
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  std::unique_ptr<DriveService> overridden_drive_service =
+      tests_hook::GetOverriddenDriveService();
+  if (overridden_drive_service) {
+    return overridden_drive_service;
+  }
+
+  ApplicationContext* application_context = GetApplicationContext();
   drive::DriveServiceConfiguration configuration{};
+  configuration.sso_service = application_context->GetSSOService();
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  configuration.account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          chrome_browser_state);
   return ios::provider::CreateDriveService(configuration);
 }
 

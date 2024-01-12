@@ -73,7 +73,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool WasActionedOn() const override;
   void SetActionedOn(bool actioned_on) override;
   bool WasUIWarningShown() const override;
-  void SetWasUIWarningShown(bool should_notify) override;
+  void SetWasUIWarningShown(bool was_ui_warning_shown) override;
   absl::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
   void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time) override;
   bool ShouldPreferOpeningInBrowser() override;
@@ -121,8 +121,9 @@ class DownloadItemModel : public DownloadUIModel,
                         DownloadCommands::Command command) const override;
   void ExecuteCommand(DownloadCommands* download_commands,
                       DownloadCommands::Command command) override;
-  BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const override;
-  bool ShouldShowTailoredWarning() const override;
+  BubbleUIInfo GetBubbleUIInfoForTailoredWarning(
+      TailoredWarningType tailored_warning_type) const override;
+  TailoredWarningType GetTailoredWarningType() const override;
   bool ShouldShowInBubble() const override;
   bool IsEphemeralWarning() const override;
 #endif

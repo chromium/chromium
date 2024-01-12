@@ -25,15 +25,20 @@ class IsolatedWebAppInstallerViewController;
 class IsolatedWebAppInstallerCoordinator {
  public:
   IsolatedWebAppInstallerCoordinator(Profile* profile,
-                                     const base::FilePath& bundle_path);
+                                     const base::FilePath& bundle_path,
+                                     base::OnceClosure on_closed_callback);
 
   ~IsolatedWebAppInstallerCoordinator();
 
   void Show(base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
 
+  void FocusWindow();
+
  private:
   void OnDialogClosed(
       base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
+
+  base::OnceClosure on_closed_callback_;
 
   std::unique_ptr<IsolatedWebAppInstallerModel> model_;
   std::unique_ptr<IsolatedWebAppInstallerViewController> controller_;

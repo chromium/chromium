@@ -52,7 +52,7 @@ class PersistentHostScanCacheImpl : public PersistentHostScanCache {
   void StoreCacheEntriesToPrefs(
       const std::unordered_map<std::string, HostScanCacheEntry>& entries);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace tether

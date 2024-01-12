@@ -24,7 +24,10 @@ bool DisableContentSuggestions() {
 bool DisableDiscoverFeed() {
   return true;
 }
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
+  return true;
+}
+bool DisableDefaultSearchEngineChoice() {
   return true;
 }
 bool DisableGeolocation() {
@@ -77,6 +80,10 @@ void RunTestsIfPresent() {}
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No artificial delays for tests.
   return base::Seconds(0);
+}
+
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return nullptr;
 }
 
 }  // namespace tests_hook

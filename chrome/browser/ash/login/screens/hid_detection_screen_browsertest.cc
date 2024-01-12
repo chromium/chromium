@@ -324,12 +324,10 @@ class HIDDetectionScreenChromeboxTest
   device::BluetoothDevice::ConnectCallback connect_callback_;
 
  private:
-  raw_ptr<HIDDetectionScreen, DanglingUntriaged | ExperimentalAsh>
-      hid_detection_screen_;
+  raw_ptr<HIDDetectionScreen, DanglingUntriaged> hid_detection_screen_;
 
   test::HIDControllerMixin hid_controller_{&mixin_host_};
-  raw_ptr<hid_detection::FakeHidDetectionManager,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<hid_detection::FakeHidDetectionManager, DanglingUntriaged>
       fake_hid_detection_manager_;
 
   // HID detection screen only appears for Chromebases, Chromebits, and
@@ -905,8 +903,7 @@ class HIDDetectionScreenChromebaseTest
 
  private:
   test::HIDControllerMixin hid_controller_{&mixin_host_};
-  raw_ptr<hid_detection::FakeHidDetectionManager,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<hid_detection::FakeHidDetectionManager, DanglingUntriaged>
       fake_hid_detection_manager_;
 
   // Set device type to a Chromebase with a touch screen.

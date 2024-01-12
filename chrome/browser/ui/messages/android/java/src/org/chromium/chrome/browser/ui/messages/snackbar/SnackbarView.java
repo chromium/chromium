@@ -62,9 +62,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     protected Snackbar mSnackbar;
     private View mRootContentView;
 
-    // Variables used to calculate the virtual keyboard's height.
-    private int mKeyboardInset;
-
     // Variables used to adjust view position and size when visible frame is changed.
     private Rect mCurrentVisibleRect = new Rect();
     private Rect mPreviousVisibleRect = new Rect();
@@ -215,11 +212,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             mPreviousVisibleRect.set(mCurrentVisibleRect);
             FrameLayout.LayoutParams lp = getLayoutParams();
 
-            int prevBottomMargin = lp.bottomMargin;
             int prevWidth = lp.width;
             int prevGravity = lp.gravity;
 
-            lp.bottomMargin = getBottomMarginForLayout();
             if (mIsTablet) {
                 int margin =
                         mParent.getResources()
@@ -229,25 +224,14 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                 lp.width = Math.min(width, mParent.getWidth() - 2 * margin);
                 lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
             }
-            if (prevBottomMargin != lp.bottomMargin
-                    || prevWidth != lp.width
-                    || prevGravity != lp.gravity) {
+            if (prevWidth != lp.width || prevGravity != lp.gravity) {
                 mContainerView.setLayoutParams(lp);
             }
         }
     }
 
-    void updateKeyboardInset(int inset) {
-        mKeyboardInset = inset;
-        adjustViewPosition();
-    }
-
     protected int getYPositionForMoveAnimation() {
         return mContainerView.getHeight() + getLayoutParams().bottomMargin;
-    }
-
-    protected int getBottomMarginForLayout() {
-        return mKeyboardInset;
     }
 
     /**

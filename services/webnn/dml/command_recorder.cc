@@ -362,21 +362,24 @@ HRESULT CommandRecorder::ExecuteOperator(
     command_resources_.push_back(persistent_resource);
   }
 
-  // Bind the input resources.
-  binding_table->BindInputs(base::checked_cast<uint32_t>(input_bindings.size()),
-                            input_bindings.data());
+  // Bind the input resources if needed.
+  if (input_bindings.size() > 0) {
+    binding_table->BindInputs(
+        base::checked_cast<uint32_t>(input_bindings.size()),
+        input_bindings.data());
 
-  // The input resources should be kept alive until the operator has been
-  // executed on the GPU.
-  for (size_t i = 0; i < input_bindings.size(); ++i) {
-    // Skip binding type `DML_BINDING_TYPE_NONE` for graph constant which is
-    // already bound during operator initialization.
-    if (input_bindings[i].Type == DML_BINDING_TYPE_BUFFER) {
-      ID3D12Resource* input_resource =
-          static_cast<const DML_BUFFER_BINDING*>(input_bindings[i].Desc)
-              ->Buffer;
-      CHECK_NE(input_resource, nullptr);
-      command_resources_.push_back(input_resource);
+    // The input resources should be kept alive until the operator has been
+    // executed on the GPU.
+    for (size_t i = 0; i < input_bindings.size(); ++i) {
+      // Skip binding type `DML_BINDING_TYPE_NONE` for graph constant which is
+      // already bound during operator initialization.
+      if (input_bindings[i].Type == DML_BINDING_TYPE_BUFFER) {
+        ID3D12Resource* input_resource =
+            static_cast<const DML_BUFFER_BINDING*>(input_bindings[i].Desc)
+                ->Buffer;
+        CHECK_NE(input_resource, nullptr);
+        command_resources_.push_back(input_resource);
+      }
     }
   }
 

@@ -4,6 +4,8 @@
 
 #include "components/eye_dropper/eye_dropper_view.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
@@ -15,6 +17,14 @@
 #include "ui/views/native_window_tracker.h"
 
 namespace eye_dropper {
+namespace {
+gfx::Point ClampToDisplay(const gfx::Point& point) {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(point).bounds();
+  return gfx::Point(std::clamp(point.x(), bounds.x(), bounds.right() - 1),
+                    std::clamp(point.y(), bounds.y(), bounds.bottom() - 1));
+}
+}  // namespace
 
 class EyeDropperView::PreEventDispatchHandler::KeyboardHandler
     : public ui::EventHandler {
@@ -52,12 +62,45 @@ EyeDropperView::PreEventDispatchHandler::KeyboardHandler::~KeyboardHandler() {
 
 void EyeDropperView::PreEventDispatchHandler::KeyboardHandler::OnKeyEvent(
     ui::KeyEvent* event) {
-  if (event->type() == ui::ET_KEY_PRESSED &&
-      event->key_code() == ui::VKEY_ESCAPE) {
-    // Ensure that the color selection is canceled when ESC key is pressed.
-    view_->OnColorSelectionCanceled();
-    event->StopPropagation();
+  if (event->type() != ui::ET_KEY_PRESSED) {
+    return;
   }
+
+  // Move when arrow keys are pressed, move faster if shift is down.
+  const auto move_by = [&](int x, int y) {
+    if (event->IsShiftDown()) {
+      x *= 10;
+      y *= 10;
+    }
+    const auto center =
+        view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
+    view_->UpdatePosition(ClampToDisplay(center + gfx::Vector2d(x, y)));
+  };
+
+  switch (event->key_code()) {
+    case ui::VKEY_ESCAPE:
+      view_->OnColorSelectionCanceled();
+      break;
+    case ui::VKEY_RETURN:
+    case ui::VKEY_SPACE:
+      view_->OnColorSelected();
+      break;
+    case ui::VKEY_UP:
+      move_by(0, -1);
+      break;
+    case ui::VKEY_DOWN:
+      move_by(0, 1);
+      break;
+    case ui::VKEY_LEFT:
+      move_by(-1, 0);
+      break;
+    case ui::VKEY_RIGHT:
+      move_by(1, 0);
+      break;
+    default:
+      return;
+  }
+  event->StopPropagation();
 }
 
 class EyeDropperView::PreEventDispatchHandler::FocusObserver
@@ -134,18 +177,14 @@ void EyeDropperView::PreEventDispatchHandler::OnTouchEvent(
                     view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
   }
   if (event->type() == ui::ET_TOUCH_MOVED) {
-    // Keep EyeDropper always inside a display, but adjust offset if it is
-    // pushing up against the bounds.
+    // Keep EyeDropper always inside a display, but adjust offset when position
+    // is clamped.
     gfx::Point position = event->root_location() - touch_offset_;
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestPoint(position);
-    if (display.bounds().Contains(position)) {
-      view_->UpdatePosition(std::move(position));
-    } else {
-      touch_offset_ =
-          event->root_location() -
-          view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
+    gfx::Point clamped = ClampToDisplay(position);
+    if (clamped != position) {
+      touch_offset_ = event->root_location() - clamped;
     }
+    view_->UpdatePosition(std::move(clamped));
   }
 }
 

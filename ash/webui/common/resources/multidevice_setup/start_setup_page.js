@@ -24,27 +24,11 @@ import {getTemplate} from './start_setup_page.html.js';
 import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
 
 /**
- * The multidevice setup animation for light mode.
- * TODO(b/279667779): Remove when Jelly is fully launched.
- * @type {string}
- */
-const MULTIDEVICE_ANIMATION_DARK_URL =
-    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_dark.json';
-
-/**
- * The multidevice setup animation for dark mode.
- * TODO(b/279667779): Remove when Jelly is fully launched.
- * @type {string}
- */
-const MULTIDEVICE_ANIMATION_LIGHT_URL =
-    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_light.json';
-
-/**
  * The multidevice setup animation for dynamic colors.
  * @type {string}
  */
 const MULTIDEVICE_ANIMATION_JELLY_URL =
-    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_jelly.json';
+    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_animation.json';
 
 Polymer({
   _template: getTemplate(),
@@ -118,33 +102,11 @@ Polymer({
     },
 
     /** @private */
-    phoneHubCameraRollEnabled_: {
+    phoneHubEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.valueExists('phoneHubCameraRollEnabled') &&
-            loadTimeData.getBoolean('phoneHubCameraRollEnabled');
-      },
-    },
-
-    /**
-     * Whether the multidevice setup page is being rendered in dark mode.
-     * TODO(b/279667779): Remove when Jelly is fully launched.
-     * @private {boolean}
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether the multidevice setup page is being rendered with dynamic colors.
-     * @private {boolean}
-     */
-    isJellyEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isJellyEnabled') &&
-            loadTimeData.getBoolean('isJellyEnabled');
+        return loadTimeData.valueExists('phoneHubEnabled') &&
+            loadTimeData.getBoolean('phoneHubEnabled');
       },
     },
 
@@ -176,8 +138,6 @@ Polymer({
     this.addWebUIListener(
         'multidevice_setup.initializeSetupFlow',
         () => this.initializeSetupFlow_());
-
-    this.addAccessibilityLabel_();
   },
 
   /**
@@ -193,23 +153,11 @@ Polymer({
   },
 
   /**
-   * Since web links cannot be opened in OOBE as there is no web browser, this
-   * attaches a listener to open a webview modal in OOBE when "Learn More" links
-   * are clicked.
+   * If the user used Quick Start, this method retrieves and sets the ID of the
+   * phone a user used to complete the flow earlier in OOBE.
    * @private
    */
   initializeSetupFlow_() {
-    // The "Learn More" links are inside a grdp string, so we cannot actually
-    // add an onclick handler directly to the html. Instead, grab the two and
-    // manaully add onclick handlers.
-    const helpArticleLinks = [
-      this.$$('#multidevice-summary-message a'),
-    ];
-    for (let i = 0; i < helpArticleLinks.length; i++) {
-      helpArticleLinks[i].onclick = this.fire.bind(
-          this, 'open-learn-more-webview-requested', helpArticleLinks[i].href);
-    }
-
     this.mojoInterfaceProvider_.getMojoServiceRemote()
         .getQuickStartPhoneInstanceID()
         .then(({qsPhoneInstanceId}) => {
@@ -222,23 +170,6 @@ Polymer({
         .catch((error) => {
           console.warn('Mojo service failure: ' + error);
         });
-  },
-
-  /**
-   * Adds ARIA description to "Learn More" links since the link tag is embedded
-   * in the grdp string without additional attributes.
-   * @private
-   */
-  addAccessibilityLabel_() {
-    // Since the "Learn More" links are inside a grdp string, we add the
-    // attribute here.
-    const helpArticleLinks = [
-      this.$$('#multidevice-summary-message a'),
-    ];
-    for (let i = 0; i < helpArticleLinks.length; i++) {
-      helpArticleLinks[i].setAttribute(
-          'aria-describedby', 'multidevice-summary-message');
-    }
   },
 
   /**
@@ -399,12 +330,6 @@ Polymer({
    * @private
    */
   getAnimationUrl_() {
-    if (this.isJellyEnabled_) {
-      return MULTIDEVICE_ANIMATION_JELLY_URL;
-    }
-
-    // TODO(b/279667779): Remove when Jelly is fully launched.
-    return this.isDarkModeActive_ ? MULTIDEVICE_ANIMATION_DARK_URL :
-                                    MULTIDEVICE_ANIMATION_LIGHT_URL;
+    return MULTIDEVICE_ANIMATION_JELLY_URL;
   },
 });

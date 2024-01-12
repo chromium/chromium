@@ -2,62 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/version_info/use_unofficial_version_number.gni")
 import("//build/config/chrome_build.gni")
-import("//build/util/lastchange.gni")
-import("//build/util/process_version.gni")
 
-declare_args() {
-  use_unofficial_version_number = !is_chrome_branded
-}
-
-static_library("version_info") {
+# Facade for "//base/version_info"
+source_set("version_info") {
   sources = [
-    "version_info.cc",
     "version_info.h",
+    "version_info_values.h",
   ]
-
-  deps = [
-    "//base:sanitizer_buildflags",
-    "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
-  ]
-
   public_deps = [
     ":channel",
     ":generate_version_info",
     "//base",
+    "//base/version_info",
   ]
 }
 
-# Isolate the //ui/base dependency in this target.
-static_library("version_string") {
-  sources = [
-    "version_string.cc",
-    "version_string.h",
-  ]
-
-  deps = [
-    ":version_info",
-    "//components/strings",
-  ]
-
-  if (use_unofficial_version_number) {
-    defines = [ "USE_UNOFFICIAL_VERSION_NUMBER" ]
-    deps += [ "//ui/base" ]
-  }
+# Facade for "//base/version_info:version_string"
+source_set("version_string") {
+  sources = [ "version_string.h" ]
+  public_deps = [ "//base/version_info:version_string" ]
 }
 
+# Facade for "//base/version_info:channel"
 source_set("channel") {
   sources = [ "channel.h" ]
-  public_deps = [ "//base" ]
+  public_deps = [ "//base/version_info:channel" ]
 }
 
-process_version("generate_version_info") {
-  template_file = "version_info_values.h.version"
-  sources = [
-    "//chrome/VERSION",
-    branding_file_path,
-    lastchange_file,
-  ]
-  output = "$target_gen_dir/version_info_values.h"
+# Facade for "//base/version_info:generate_version_info"
+group("generate_version_info") {
+  public_deps = [ "//base/version_info:generate_version_info" ]
 }

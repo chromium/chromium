@@ -201,7 +201,7 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-  absl::optional<storage::BucketInfo> bucket;
+  std::optional<storage::BucketInfo> bucket;
   if (bucket_info.has_value()) {
     bucket = bucket_info.value();
   }
@@ -386,6 +386,11 @@ void IndexedDBContextImpl::OnBucketInfoReady(
                     std::vector<storage::mojom::IdbBucketMetadataPtr>>>
       bucket_map;
 
+  if (!indexeddb_factory_) {
+    std::move(callback).Run(is_incognito(), {});
+    return;
+  }
+
   for (const auto& quota_error_or_bucket_info : bucket_infos) {
     if (!quota_error_or_bucket_info.has_value()) {
       continue;
@@ -455,7 +460,6 @@ void IndexedDBContextImpl::OnBucketInfoReady(
   }
 
   std::sort(origins.begin(), origins.end());
-
   std::move(callback).Run(is_incognito(), std::move(origins));
 }
 
@@ -686,13 +690,13 @@ std::vector<storage::BucketLocator> IndexedDBContextImpl::GetAllBuckets() {
                                              bucket_set_.end());
 }
 
-absl::optional<storage::BucketLocator> IndexedDBContextImpl::LookUpBucket(
+std::optional<storage::BucketLocator> IndexedDBContextImpl::LookUpBucket(
     storage::BucketId bucket_id) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   auto bucket_locator =
       base::ranges::find(bucket_set_, bucket_id, &storage::BucketLocator::id);
   if (bucket_locator == bucket_set_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return *bucket_locator;
 }
@@ -956,7 +960,7 @@ void IndexedDBContextImpl::NotifyOfBucketModification(
   bucket_size_map_.erase(bucket_locator);
   quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kIndexedDatabase, bucket_locator,
-      /*delta=*/absl::nullopt, base::Time::Now(),
+      /*delta=*/std::nullopt, base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   NotifyIndexedDBListChanged(bucket_locator);
 }
@@ -986,13 +990,13 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
   }
 
   using Barrier =
-      base::RepeatingCallback<void(absl::optional<storage::BucketLocator>)>;
+      base::RepeatingCallback<void(std::optional<storage::BucketLocator>)>;
   Barrier barrier =
-      base::BarrierCallback<absl::optional<storage::BucketLocator>>(
+      base::BarrierCallback<std::optional<storage::BucketLocator>>(
           storage_key_to_file_path.size() + bucket_id_to_file_path.size(),
           base::BindOnce(
               [](base::WeakPtr<IndexedDBContextImpl> context,
-                 const std::vector<absl::optional<storage::BucketLocator>>&
+                 const std::vector<std::optional<storage::BucketLocator>>&
                      bucket_locators) {
                 DCHECK(context);
                 for (auto& locator : bucket_locators) {
@@ -1015,8 +1019,8 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
       [](Barrier barrier,
          storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
         barrier.Run(bucket_info.has_value()
-                        ? absl::make_optional(bucket_info->ToBucketLocator())
-                        : absl::nullopt);
+                        ? std::make_optional(bucket_info->ToBucketLocator())
+                        : std::nullopt);
       },
       barrier);
 

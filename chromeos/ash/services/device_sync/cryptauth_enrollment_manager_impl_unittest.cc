@@ -140,7 +140,7 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
  private:
   // Ownership is passed to |CryptAuthEnrollmentManager| super class when
   // |CreateSyncScheduler()| is called.
-  raw_ptr<NiceMock<MockSyncScheduler>, ExperimentalAsh> scoped_sync_scheduler_;
+  raw_ptr<NiceMock<MockSyncScheduler>> scoped_sync_scheduler_;
 
   // Stores the pointer of |scoped_sync_scheduler_| after ownership is passed to
   // the super class.
@@ -255,12 +255,10 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
   base::SimpleTestClock clock_;
 
   // Owned by |enrollment_manager_|.
-  raw_ptr<MockCryptAuthEnrollerFactory, DanglingUntriaged | ExperimentalAsh>
-      enroller_factory_;
+  raw_ptr<MockCryptAuthEnrollerFactory, DanglingUntriaged> enroller_factory_;
 
   // Ownered by |enrollment_manager_|.
-  raw_ptr<multidevice::FakeSecureMessageDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<multidevice::FakeSecureMessageDelegate, DanglingUntriaged>
       secure_message_delegate_;
 
   cryptauth::GcmDeviceInfo device_info_;

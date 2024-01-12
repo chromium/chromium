@@ -164,7 +164,8 @@ bool AXMenuListOption::ComputeAccessibilityIsIgnored(
     return true;
   }
 
-  return ParentObject()->ComputeAccessibilityIsIgnored(ignored_reasons);
+  return !ParentObject() ||
+         ParentObject()->ComputeAccessibilityIsIgnored(ignored_reasons);
 }
 
 void AXMenuListOption::GetRelativeBounds(

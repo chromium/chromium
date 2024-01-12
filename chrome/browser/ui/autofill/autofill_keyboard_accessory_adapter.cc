@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -222,7 +224,7 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
 
   view_->ConfirmDeletion(
       title, body,
-      base::BindOnce(&AutofillKeyboardAccessoryAdapter::OnDeletionConfirmed,
+      base::BindOnce(&AutofillKeyboardAccessoryAdapter::OnDeletionDialogClosed,
                      weak_ptr_factory_.GetWeakPtr(), index));
   return true;
 }
@@ -297,11 +299,21 @@ AutofillKeyboardAccessoryAdapter::GetPopupScreenLocation() const {
   return std::nullopt;
 }
 
-void AutofillKeyboardAccessoryAdapter::OnDeletionConfirmed(int index) {
-  if (controller_)
-    controller_->RemoveSuggestion(
-        OffsetIndexFor(index),
-        AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+void AutofillKeyboardAccessoryAdapter::OnDeletionDialogClosed(int index,
+                                                              bool confirmed) {
+  if (confirmed) {
+    if (controller_) {
+      controller_->RemoveSuggestion(
+          OffsetIndexFor(index),
+          AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+    }
+    return;
+  }
+  if (GetFillingProductFromPopupItemId(GetSuggestionAt(index).popup_item_id) ==
+      FillingProduct::kAddress) {
+    autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
+        /*user_accepted_delete=*/false);
+  }
 }
 
 int AutofillKeyboardAccessoryAdapter::OffsetIndexFor(int element_index) const {

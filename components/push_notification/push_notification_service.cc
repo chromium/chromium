@@ -6,7 +6,14 @@
 
 namespace push_notification {
 
-PushNotificationService::PushNotificationService() = default;
+PushNotificationService::PushNotificationService()
+    : client_manager_(std::make_unique<PushNotificationClientManager>()) {}
+
 PushNotificationService::~PushNotificationService() = default;
+
+PushNotificationClientManager*
+PushNotificationService::GetPushNotificationClientManager() {
+  return client_manager_.get();
+}
 
 }  // namespace push_notification

@@ -143,6 +143,7 @@
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -695,6 +696,7 @@ std::string RenderThreadImpl::GetLocale() {
   return lang;
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 IPC::SyncMessageFilter* RenderThreadImpl::GetSyncMessageFilter() {
   return sync_message_filter();
 }
@@ -714,6 +716,16 @@ void RenderThreadImpl::RemoveRoute(int32_t routing_id) {
   GetChannel()->RemoveListenerTaskRunner(routing_id);
 }
 
+void RenderThreadImpl::AddFilter(IPC::MessageFilter* filter) {
+  channel()->AddFilter(filter);
+}
+
+void RenderThreadImpl::RemoveFilter(IPC::MessageFilter* filter) {
+  channel()->RemoveFilter(filter);
+}
+
+#endif
+
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {
   if (!renderer_host_) {
     DCHECK(GetChannel());
@@ -729,14 +741,6 @@ bool RenderThreadImpl::GenerateFrameRoutingID(
     blink::DocumentToken& document_token) {
   return render_message_filter()->GenerateFrameRoutingID(
       &routing_id, &frame_token, &devtools_frame_token, &document_token);
-}
-
-void RenderThreadImpl::AddFilter(IPC::MessageFilter* filter) {
-  channel()->AddFilter(filter);
-}
-
-void RenderThreadImpl::RemoveFilter(IPC::MessageFilter* filter) {
-  channel()->RemoveFilter(filter);
 }
 
 void RenderThreadImpl::AddObserver(RenderThreadObserver* observer) {
@@ -1270,6 +1274,7 @@ void RenderThreadImpl::OnProcessFinalRelease() {
   NOTREACHED();
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   for (auto& observer : observers_) {
     if (observer.OnControlMessageReceived(msg))
@@ -1278,6 +1283,7 @@ bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
 
   return false;
 }
+#endif
 
 void RenderThreadImpl::SetProcessState(
     mojom::RenderProcessBackgroundState background_state,
@@ -1318,12 +1324,7 @@ void RenderThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {
     base::MessagePump::ResetAlignWakeUpsState();
   }
 
-  if (!blink::MainThreadIsolate()) {
-    return;
-  }
-
-  blink::MainThreadIsolate()->SetBatterySaverMode(battery_saver_mode_enabled);
-  blink::SetBatterySaverModeForWorkerThreadIsolates(battery_saver_mode_enabled);
+  blink::SetBatterySaverModeForAllIsolates(battery_saver_mode_enabled);
 }
 
 void RenderThreadImpl::SetIsLockedToSite() {
@@ -1393,8 +1394,10 @@ RenderThreadImpl::GetAssociatedInterfaceRegistry() {
 }
 
 mojom::RenderMessageFilter* RenderThreadImpl::render_message_filter() {
-  if (!render_message_filter_)
-    GetChannel()->GetRemoteAssociatedInterface(&render_message_filter_);
+  if (!render_message_filter_) {
+    blink::Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        render_message_filter_.BindNewPipeAndPassReceiver());
+  }
   return render_message_filter_.get();
 }
 
@@ -1456,11 +1459,11 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 #if BUILDFLAG(IS_MAC)
   blink::WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
       params->has_initial_button_delay
-          ? absl::make_optional(params->initial_button_delay)
-          : absl::nullopt,
+          ? std::make_optional(params->initial_button_delay)
+          : std::nullopt,
       params->has_autoscroll_button_delay
-          ? absl::make_optional(params->autoscroll_button_delay)
-          : absl::nullopt,
+          ? std::make_optional(params->autoscroll_button_delay)
+          : std::nullopt,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
 #endif  // BUILDFLAG(IS_MAC)

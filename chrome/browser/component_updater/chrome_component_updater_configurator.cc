@@ -8,11 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -49,7 +52,6 @@
 #endif
 
 namespace component_updater {
-
 namespace {
 
 class ChromeConfigurator : public update_client::Configurator {
@@ -88,12 +90,14 @@ class ChromeConfigurator : public update_client::Configurator {
   absl::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   absl::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
   absl::optional<base::FilePath> GetBackgroundDownloaderCache() const;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   ConfiguratorImpl configurator_impl_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<update_client::PersistedData> persisted_data_;
@@ -111,64 +115,77 @@ class ChromeConfigurator : public update_client::Configurator {
 ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
                                        PrefService* pref_service)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
-                         false),
+                         /*require_encryption=*/false),
       pref_service_(pref_service),
       persisted_data_(
           update_client::CreatePersistedData(pref_service, nullptr)) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_);
 }
 
 base::TimeDelta ChromeConfigurator::InitialDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.InitialDelay();
 }
 
 base::TimeDelta ChromeConfigurator::NextCheckDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.NextCheckDelay();
 }
 
 base::TimeDelta ChromeConfigurator::OnDemandDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.OnDemandDelay();
 }
 
 base::TimeDelta ChromeConfigurator::UpdateDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.UpdateDelay();
 }
 
 std::vector<GURL> ChromeConfigurator::UpdateUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.UpdateUrl();
 }
 
 std::vector<GURL> ChromeConfigurator::PingUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.PingUrl();
 }
 
 std::string ChromeConfigurator::GetProdId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return update_client::UpdateQueryParams::GetProdIdString(
       update_client::UpdateQueryParams::ProdId::CHROME);
 }
 
 base::Version ChromeConfigurator::GetBrowserVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.GetBrowserVersion();
 }
 
 std::string ChromeConfigurator::GetChannel() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
 std::string ChromeConfigurator::GetLang() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ChromeUpdateQueryParamsDelegate::GetLang();
 }
 
 std::string ChromeConfigurator::GetOSLongName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.GetOSLongName();
 }
 
 base::flat_map<std::string, std::string>
 ChromeConfigurator::ExtraRequestParams() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.ExtraRequestParams();
 }
 
 std::string ChromeConfigurator::GetDownloadPreference() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_WIN)
   // This group policy is supported only on Windows and only for enterprises.
   return base::IsEnterpriseDevice()
@@ -177,11 +194,12 @@ std::string ChromeConfigurator::GetDownloadPreference() const {
              : std::string();
 #else
   return std::string();
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 scoped_refptr<update_client::NetworkFetcherFactory>
 ChromeConfigurator::GetNetworkFetcherFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ =
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
@@ -195,6 +213,7 @@ ChromeConfigurator::GetNetworkFetcherFactory() {
 
 scoped_refptr<update_client::CrxDownloaderFactory>
 ChromeConfigurator::GetCrxDownloaderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!crx_downloader_factory_) {
     crx_downloader_factory_ = update_client::MakeCrxDownloaderFactory(
         GetNetworkFetcherFactory(), GetBackgroundDownloaderCache());
@@ -204,6 +223,7 @@ ChromeConfigurator::GetCrxDownloaderFactory() {
 
 scoped_refptr<update_client::UnzipperFactory>
 ChromeConfigurator::GetUnzipperFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!unzip_factory_) {
     unzip_factory_ = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
@@ -214,6 +234,7 @@ ChromeConfigurator::GetUnzipperFactory() {
 
 scoped_refptr<update_client::PatcherFactory>
 ChromeConfigurator::GetPatcherFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!patch_factory_) {
     patch_factory_ = base::MakeRefCounted<update_client::PatchChromiumFactory>(
@@ -223,48 +244,58 @@ ChromeConfigurator::GetPatcherFactory() {
 }
 
 bool ChromeConfigurator::EnabledDeltas() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.EnabledDeltas();
 }
 
 bool ChromeConfigurator::EnabledBackgroundDownloader() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.EnabledBackgroundDownloader();
 }
 
 bool ChromeConfigurator::EnabledCupSigning() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.EnabledCupSigning();
 }
 
 PrefService* ChromeConfigurator::GetPrefService() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_;
 }
 
 update_client::PersistedData* ChromeConfigurator::GetPersistedData() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return persisted_data_.get();
 }
 
 bool ChromeConfigurator::IsPerUserInstall() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::IsPerUserInstall();
 }
 
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 ChromeConfigurator::GetProtocolHandlerFactory() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
 absl::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.IsMachineExternallyManaged();
 }
 
 update_client::UpdaterStateProvider
 ChromeConfigurator::GetUpdaterStateProvider() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return base::BindRepeating(&UpdaterState::GetState);
 #else
   return configurator_impl_.GetUpdaterStateProvider();
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 absl::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath path;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
   return result ? absl::optional<base::FilePath>(
@@ -275,11 +306,17 @@ absl::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
 // TODO(crbug/1496582): Consolidate the cache path getters.
 absl::optional<base::FilePath>
 ChromeConfigurator::GetBackgroundDownloaderCache() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath path;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
   return result ? absl::optional<base::FilePath>(
                       path.AppendASCII("download_cache"))
                 : absl::nullopt;
+}
+
+bool ChromeConfigurator::IsConnectionMetered() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return configurator_impl_.IsConnectionMetered();
 }
 
 }  // namespace

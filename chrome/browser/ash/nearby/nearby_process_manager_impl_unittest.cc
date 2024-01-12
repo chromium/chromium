@@ -261,7 +261,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
 
   std::unique_ptr<NearbyProcessManager> nearby_process_manager_;
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer> mock_timer_ = nullptr;
 };
 
 TEST_F(NearbyProcessManagerImplTest, StartAndStop) {

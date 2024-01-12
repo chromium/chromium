@@ -567,20 +567,44 @@ def find_redundant_locations(paths: List[SearchPath],
         * Virtual 'linux' is removed on the next iteration because it now has
           nonvirtual 'linux' as a successor.
     """
-    redundant_locations, digests, converged = set(), dict(digests), False
-    removal_order = list(_visit_in_removal_order(_predecessors(paths)))
+    predecessors = _predecessors(paths)
+    # The deletion order is significant because, on each deletion, the deleted
+    # baseline's predecessors may become "critical" (i.e., should no longer be
+    # deleted), and the number of those predecessors can vary based on past
+    # deletions.
+    #
+    # Try two orders: DFS post- and pre-order deletions from the all-pass node.
+    # In the event both orders remove the same number of files, favor
+    # postorder, which generally favors deleting older OS or virtual baselines
+    # first. See crbug.com/1512264 for an example where preorder deletion would
+    # be better.
+    return max(
+        _find_redundant_locations_with_order(
+            paths, digests, list(_visit_postorder(predecessors))),
+        _find_redundant_locations_with_order(
+            paths, digests, list(_visit_preorder(predecessors))),
+        key=len,
+    )
+
+
+def _find_redundant_locations_with_order(
+    paths: List[SearchPath],
+    digests: DigestMap,
+    removal_order: List[BaselineLocation],
+) -> Set[BaselineLocation]:
+    redundant_locations, digests = set(), dict(digests)
     # Because `_find_new_redundant_location(...)` returns a member of `digests`,
     # and that member is removed from `digests` to simulate file removal,
     # `digests` can only shrink in each iteration. At some point, the map will
     # stop shrinking, possibly becoming empty, which guarantees termination.
-    while not converged:
+    while digests:
         new_redundant_location = _find_new_redundant_location(
             paths, digests, removal_order)
         if new_redundant_location:
             digests.pop(new_redundant_location)
             redundant_locations.add(new_redundant_location)
         else:
-            converged = True
+            break
     return redundant_locations
 
 
@@ -634,7 +658,21 @@ def _find_new_redundant_location(
     return None
 
 
-def _visit_in_removal_order(
+def _visit_preorder(
+    predecessors: PredecessorMap,
+    current: BaselineLocation = BaselineLocation.ALL_PASS,
+    visited: Optional[Set[BaselineLocation]] = None,
+) -> Iterator[BaselineLocation]:
+    visited = visited or set()
+    if current in visited:
+        return
+    visited.add(current)
+    yield current
+    for predecessor in predecessors[current]:
+        yield from _visit_preorder(predecessors, predecessor, visited)
+
+
+def _visit_postorder(
     predecessors: PredecessorMap,
     current: BaselineLocation = BaselineLocation.ALL_PASS,
     visited: Optional[Set[BaselineLocation]] = None,
@@ -644,7 +682,7 @@ def _visit_in_removal_order(
         return
     visited.add(current)
     for predecessor in predecessors[current]:
-        yield from _visit_in_removal_order(predecessors, predecessor, visited)
+        yield from _visit_postorder(predecessors, predecessor, visited)
     yield current
 
 

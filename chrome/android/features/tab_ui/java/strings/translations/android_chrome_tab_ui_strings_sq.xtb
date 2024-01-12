@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Dëshiron t'i mbyllësh skedat e vjetra?</translation>
 <translation id="1215127405478249895">Rishiko skedat</translation>
 <translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
+<translation id="1326271443836399892">Rishiko cilësimet aktuale për heqjen e të panevojshmeve.</translation>
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Hiq nga grupi</translation>
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Ke <ph name="TABS_COUNT_ONE" /> skedë të arkivuar}other{Ke <ph name="TABS_COUNT_MANY" /> skeda të arkivuara}}</translation>
 <translation id="3194464645767632461">vlerësimi</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informacioni për këtë dyqan është mbyllur</translation>
 <translation id="9150694013019234766">Kalo mes skedave në grupin e skedave pranë fundit të ekranit</translation>
 <translation id="9169594135889675189">Shto skedë të re te grupi</translation>
+<translation id="955558140275419384">Rishiko të gjitha skedat e arkivuara për të hequr të panevojshmet duke hyrë në këtë modifikues.</translation>
 <translation id="959682366969460160">Organizohu</translation>
 </translationbundle>

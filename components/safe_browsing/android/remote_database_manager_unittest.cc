@@ -161,7 +161,6 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashDatabase) {
                     /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
 
   db_->CheckBrowseUrl(url, {SB_THREAT_TYPE_URL_PHISHING}, &client,
-                      MechanismExperimentHashDatabaseCache::kNoExperiment,
                       CheckBrowseUrlType::kHashDatabase);
 
   task_environment_.RunUntilIdle();
@@ -185,7 +184,6 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
                     /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
 
   db_->CheckBrowseUrl(url, {SB_THREAT_TYPE_URL_PHISHING}, &client,
-                      MechanismExperimentHashDatabaseCache::kNoExperiment,
                       CheckBrowseUrlType::kHashRealTime);
 
   task_environment_.RunUntilIdle();

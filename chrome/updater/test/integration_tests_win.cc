@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/test/integration_tests_win.h"
+
+#include <regstr.h>
 #include <shlobj.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
-
-#include <regstr.h>
 
 #include <functional>
 #include <iostream>
@@ -181,35 +182,15 @@ HRESULT CreateLocalServer(GUID clsid,
 void ExpectUpdateRegKeyClean(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
-  if (!RegKeyExists(root, UPDATER_KEY)) {
-    return;
-  }
-
-  for (base::win::RegistryValueIterator updater_value_iter(root, UPDATER_KEY,
-                                                           KEY_WOW64_32KEY);
-       updater_value_iter.Valid(); ++updater_value_iter) {
-    EXPECT_TRUE(
-        base::Contains(kRegValuesLastInstaller, updater_value_iter.Name()))
-        << updater_value_iter.Name();
-  }
-
-  base::win::RegistryKeyIterator updater_key_iter(root, UPDATER_KEY,
-                                                  KEY_WOW64_32KEY);
   if (IsSystemInstall(scope)) {
-    // App activity bits are written to HKCU only.
-    EXPECT_EQ(updater_key_iter.SubkeyCount(), 0u);
+    EXPECT_EQ(RegKeyExists(root, CLIENT_STATE_KEY), false);
     return;
   }
 
-  if (updater_key_iter.SubkeyCount() == 0) {
+  // `ClientState` may exist with lastrun values for user installs.
+  if (!RegKeyExists(root, CLIENT_STATE_KEY)) {
     return;
   }
-
-  // `ClientState` is the only allowed sub-key of `UPDATER_KEY` for user
-  // installs.
-  EXPECT_EQ(updater_key_iter.SubkeyCount(), 1u);
-  EXPECT_STREQ(updater_key_iter.Name(), L"ClientState");
-
   EXPECT_THAT(base::win::RegKey(root, CLIENT_STATE_KEY, Wow6432(KEY_READ))
                   .GetValueCount(),
               base::test::ValueIs(0u));
@@ -297,7 +278,7 @@ void CheckInstallation(UpdaterScope scope,
           EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
         }
       }
-      EXPECT_FALSE(RegKeyExists(root, CLIENTS_KEY));
+      EXPECT_FALSE(RegKeyExists(root, CLIENT_STATE_KEY));
       ExpectUpdateRegKeyClean(scope);
 
       if (!IsSystemInstall(scope)) {
@@ -637,11 +618,14 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   const base::FilePath batch_script_path(
       offline_app_scripts_dir.AppendASCII("AppSetup.bat"));
 
-  // Create a unique name for a shared event to be waited for in this process
-  // and signaled in the offline installer process to confirm the installer
-  // was run.
-  test::EventHolder event_holder(test::CreateWaitableEventForTest());
-
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process. If the test is running elevated with UAC on, the test will
+  // also confirm that the test process is launched at medium integrity, by
+  // creating an event with a security descriptor that allows the medium
+  // integrity process to signal it.
+  test::EventHolder event_holder(IsElevatedWithUACOn()
+                                     ? CreateEveryoneWaitableEventForTest()
+                                     : test::CreateWaitableEventForTest());
   EXPECT_TRUE(base::WriteFile(
       batch_script_path,
       [](UpdaterScope scope, const std::string& app_client_state_key,
@@ -650,7 +634,10 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
 
         base::CommandLine post_install_cmd(
             GetTestProcessCommandLine(scope, GetTestName()));
-        post_install_cmd.AppendSwitchNative(kTestEventToSignal, event_name);
+        post_install_cmd.AppendSwitchNative(
+            IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
+                                  : kTestEventToSignal,
+            event_name);
         std::vector<std::string> commands;
         const struct {
           const char* value_name;
@@ -666,9 +653,12 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
         };
         for (const auto& reg_item : reg_items) {
           commands.push_back(base::StringPrintf(
-              "REG.exe ADD \"%s\\%s\" /v %s /t %s /d \"%s\" /f /reg:32",
+              "REG.exe ADD \"%s\\%s\" /v %s /t %s /d %s /f /reg:32",
               reg_hive.c_str(), app_client_state_key.c_str(),
-              reg_item.value_name, reg_item.type, reg_item.value.c_str()));
+              reg_item.value_name, reg_item.type,
+              base::WideToASCII(base::CommandLine::QuoteForCommandLineToArgvW(
+                                    base::ASCIIToWide(reg_item.value)))
+                  .c_str()));
         }
         return base::JoinString(commands, "\n");
       }(scope, base::WideToASCII(app_client_state_key), event_holder.name)));
@@ -749,8 +739,9 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
 
 base::FilePath GetSetupExecutablePath() {
   base::FilePath out_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &out_dir))
+  if (!base::PathService::Get(base::DIR_EXE, &out_dir)) {
     return base::FilePath();
+  }
   return out_dir.AppendASCII("UpdaterSetup_test.exe");
 }
 
@@ -775,8 +766,9 @@ void Clean(UpdaterScope scope) {
   for (const CLSID& clsid :
        JoinVectors(GetSideBySideServers(scope), GetActiveServers(scope))) {
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerClsidRegistryPath(clsid)));
-    if (IsSystemInstall(scope))
+    if (IsSystemInstall(scope)) {
       EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerAppidRegistryPath(clsid)));
+    }
 
     const std::wstring progid(GetProgIdForClsid(clsid));
     if (!progid.empty()) {
@@ -832,8 +824,9 @@ void Clean(UpdaterScope scope) {
 
   const std::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
-  if (target_path)
+  if (target_path) {
     base::DeleteFile(*target_path);
+  }
 
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
   ASSERT_TRUE(path);
@@ -935,8 +928,9 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
   if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                Wow6432(KEY_READ)) == ERROR_SUCCESS) {
     std::wstring value;
-    if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS)
+    if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS) {
       EXPECT_EQ(value, L"0");
+    }
   }
 }
 
@@ -1402,8 +1396,9 @@ HRESULT ProcessLaunchCmdElevated(
   ULONG_PTR proc_handle = 0;
   HRESULT hr = process_launcher->LaunchCmdElevated(
       appid.c_str(), commandid.c_str(), ::GetCurrentProcessId(), &proc_handle);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   EXPECT_NE(static_cast<ULONG_PTR>(0), proc_handle);
 
@@ -1418,8 +1413,9 @@ HRESULT ProcessLaunchCmdElevated(
 
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   // ProcessLauncher is only implemented for kSystem at the moment.
-  if (!IsSystemInstall(scope))
+  if (!IsSystemInstall(scope)) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
   ASSERT_HRESULT_SUCCEEDED(
@@ -1499,8 +1495,9 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                             return base::win::ScopedVariant(
                                 base::UTF8ToWide(param.GetString()).c_str());
                           });
-  for (size_t i = parameters.size(); i < kMaxParameters; ++i)
+  for (size_t i = parameters.size(); i < kMaxParameters; ++i) {
     variant_params.emplace_back(base::win::ScopedVariant::kEmptyVariant);
+  }
 
   ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
       variant_params[0], variant_params[1], variant_params[2],

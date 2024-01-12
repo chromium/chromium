@@ -268,6 +268,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   // When the page request a texture it means we'll need to present it on the
   // next animation frame.
   layer_->SetNeedsDisplay();
+  layer_->SetContentsOpaque(alpha_mode == kOpaque_SkAlphaType);
+  layer_->SetBlendBackgroundColor(alpha_mode != kOpaque_SkAlphaType);
 
   return current_swap_buffer_->mailbox_texture;
 }

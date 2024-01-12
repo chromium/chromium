@@ -6,7 +6,8 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, SeaPenTemplateId, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -420,7 +421,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      'Sea Pen',
+      breadcrumbElement.i18n('seaPenLabel'),
     ]);
   });
 
@@ -433,9 +434,11 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(
-        breadcrumbContainer,
-        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Airbrushed']);
+    assertBreadcrumbs(breadcrumbContainer, [
+      breadcrumbElement.i18n('wallpaperLabel'),
+      breadcrumbElement.i18n('seaPenLabel'),
+      'Airbrush',
+    ]);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
@@ -503,7 +506,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const selectedElement =
         dropdownMenu.querySelectorAll('button[aria-selected=\'true\']');
     assertEquals(1, selectedElement.length);
-    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
+    assertEquals('Airbrush', (selectedElement[0] as HTMLElement)!.innerText);
   });
 
   test('navigates with SeaPen dropdown', async () => {

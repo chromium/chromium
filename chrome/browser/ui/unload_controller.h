@@ -14,6 +14,8 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
+enum class BrowserClosingStatus;
+
 class Browser;
 class TabStripModel;
 
@@ -57,9 +59,10 @@ class UnloadController : public WebContentsCollection::Observer,
     return is_attempting_to_close_browser_;
   }
 
-  // Called in response to a request to close |browser_|'s window. Returns true
-  // when there are no remaining beforeunload handlers to be run.
-  bool ShouldCloseWindow();
+  // Called in response to a request to close |browser_|'s window. Returns
+  // `BrowserClosingStatus::kPermitted` if the window can be closed (or other
+  // enum values if closure is not permitted for a given reason).
+  BrowserClosingStatus GetBrowserClosingStatus();
 
   // Begins the process of confirming whether the associated browser can be
   // closed. Beforeunload events won't be fired if |skip_beforeunload|

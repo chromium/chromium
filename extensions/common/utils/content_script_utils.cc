@@ -8,10 +8,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/common/url_constants.h"
@@ -107,8 +107,8 @@ bool IsScriptValid(const base::FilePath& path,
 
 // Returns a string error when dynamic script with `script_id` or static script
 // at `definition_index` has an empty field error.
-std::u16string GetEmptyFieldError(base::StringPiece static_error,
-                                  base::StringPiece dynamic_error,
+std::u16string GetEmptyFieldError(std::string_view static_error,
+                                  std::string_view dynamic_error,
                                   const std::string& script_id,
                                   std::optional<int> definition_index) {
   // Static scripts use a manifest error with `definition_index` since the
@@ -125,8 +125,8 @@ std::u16string GetEmptyFieldError(base::StringPiece static_error,
 // Returns a string error when dynamic script with `dynamic_error` and
 // `script_id`, or static script with `static_error` at `definition_index` has
 // an invalid exclude matches error.
-std::u16string GetInvalidMatchError(base::StringPiece static_error,
-                                    base::StringPiece dynamic_error,
+std::u16string GetInvalidMatchError(std::string_view static_error,
+                                    std::string_view dynamic_error,
                                     const std::string& script_id,
                                     std::optional<int> definition_index,
                                     URLPattern::ParseResult parse_result,

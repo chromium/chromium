@@ -48,8 +48,7 @@ class OnDeviceModelComponentTest : public testing::Test {
         base::Time::Now());
 
     feature_list_.InitWithFeatures({features::kOptimizationGuideModelExecution,
-                                    features::kOptimizationGuideOnDeviceModel,
-                                    features::kLogOnDeviceMetricsOnStartup},
+                                    features::kOptimizationGuideOnDeviceModel},
                                    {});
   }
 
@@ -153,8 +152,7 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
   // It should not install if any of these features are disabled.
   for (const base::Feature* feature :
        {&features::kOptimizationGuideModelExecution,
-        &features::kOptimizationGuideOnDeviceModel,
-        &features::kLogOnDeviceMetricsOnStartup}) {
+        &features::kOptimizationGuideOnDeviceModel}) {
     SCOPED_TRACE(feature->name);
     base::HistogramTester histograms;
     on_device_component_state_manager_.Reset();
@@ -172,8 +170,9 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
+  // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(
-      kMinDiskSpaceBeforeInstall - 1);
+      20ll * 1024 * 1024 * 1024 - 1);
 
   manager()->OnStartup();
   WaitForStartup();
@@ -266,8 +265,10 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
   local_state_.SetTime(
       prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
       base::Time::Now());
+
+  // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(
-      kMinDiskSpaceBeforeUninstall - 1);
+      10ll * 1024 * 1024 * 1024 - 1);
 
   // Should uninstall right away. Unlike most install requirements, the disk
   // space requirement is not subject to `GetOnDeviceModelRetentionTime()`.
@@ -354,6 +355,9 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
   // This sequence would happen on first run.
   local_state_.ClearPref(prefs::localstate::kOnDevicePerformanceClass);
+
+  StubObserver observer;
+  manager()->AddObserver(&observer);
   manager()->OnStartup();
   WaitForStartup();
 
@@ -370,6 +374,41 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
                       base::Value::Dict());
 
   EXPECT_TRUE(manager()->GetState());
+  EXPECT_TRUE(observer.GetState());
+}
+
+TEST_F(OnDeviceModelComponentTest, PerformanceClassChangesAfterInstall) {
+  // Start 1: registers the component as device is eligible.
+  StubObserver observer;
+  manager()->AddObserver(&observer);
+  manager()->OnStartup();
+  WaitForStartup();
+  ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+
+  // Start 2: device is no longer eligible, but component is registered because
+  // it's already installed.
+  on_device_component_state_manager_.Reset();
+  manager()->AddObserver(&observer);
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kServiceCrash);
+  manager()->OnStartup();
+  WaitForStartup();
+  ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  // State is not available, because device is not eligible.
+  EXPECT_FALSE(manager()->GetState());
+  EXPECT_FALSE(observer.GetState());
+
+  // Device is now eligible
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kHigh);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(manager()->GetState());
+  EXPECT_TRUE(observer.GetState());
 }
 
 TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {

@@ -357,27 +357,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   UserToPoliciesMap policies_by_user_;
 
   // Local references to the associated handler instances.
-  raw_ptr<CellularPolicyHandler, DanglingUntriaged | ExperimentalAsh>
-      cellular_policy_handler_ = nullptr;
-  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
-      managed_cellular_pref_handler_ = nullptr;
-  raw_ptr<NetworkStateHandler, DanglingUntriaged | ExperimentalAsh>
-      network_state_handler_ = nullptr;
-  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
+  raw_ptr<CellularPolicyHandler, DanglingUntriaged> cellular_policy_handler_ =
       nullptr;
-  raw_ptr<NetworkConfigurationHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, DanglingUntriaged> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkProfileHandler> network_profile_handler_ = nullptr;
+  raw_ptr<NetworkConfigurationHandler, DanglingUntriaged>
       network_configuration_handler_ = nullptr;
-  raw_ptr<NetworkDeviceHandler, DanglingUntriaged | ExperimentalAsh>
-      network_device_handler_ = nullptr;
-  raw_ptr<ProhibitedTechnologiesHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkDeviceHandler, DanglingUntriaged> network_device_handler_ =
+      nullptr;
+  raw_ptr<ProhibitedTechnologiesHandler, DanglingUntriaged>
       prohibited_technologies_handler_ = nullptr;
-  raw_ptr<UIProxyConfigService, DanglingUntriaged | ExperimentalAsh>
-      ui_proxy_config_service_ = nullptr;
-  raw_ptr<HotspotController, DanglingUntriaged | ExperimentalAsh>
-      hotspot_controller_ = nullptr;
+  raw_ptr<UIProxyConfigService, DanglingUntriaged> ui_proxy_config_service_ =
+      nullptr;
+  raw_ptr<HotspotController, DanglingUntriaged> hotspot_controller_ = nullptr;
 
   // Initialized to null and set once SetUserPrefs() is called.
-  raw_ptr<PrefService, ExperimentalAsh> user_prefs_ = nullptr;
+  raw_ptr<PrefService> user_prefs_ = nullptr;
 
   UserToPolicyApplicationInfo policy_application_info_map_;
 

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <iterator>
+#include <memory>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -107,7 +108,8 @@ void CookieSettings::set_content_settings(
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
     host_indexed_content_settings_[type] =
-        content_settings::ToHostIndexedMap(settings);
+        std::make_unique<content_settings::HostIndexedContentSettings>(
+            settings);
   }
   content_settings_[type] = settings;
   if (type == ContentSettingsType::COOKIES) {
@@ -118,12 +120,14 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard()) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kHostIndexedMetadataGrants)) {
-        host_indexed_content_settings_[type][content_settings::kAnyHost]
-            .emplace_back(ContentSettingsPattern::Wildcard(),
-                          ContentSettingsPattern::Wildcard(),
-                          base::Value(CONTENT_SETTING_ALLOW),
-                          /*source=*/std::string(),
-                          /*incognito=*/false);
+        host_indexed_content_settings_[type]->Add(
+            ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                        ContentSettingsPattern::Wildcard(),
+                                        base::Value(CONTENT_SETTING_ALLOW),
+                                        /*source=*/std::string(),
+                                        /*incognito=*/false));
+        // TODO(b/314800700): clear content_settings_ since we only need one
+        // copy of these content settings.
       }
       content_settings_[type].emplace_back(ContentSettingsPattern::Wildcard(),
                                            ContentSettingsPattern::Wildcard(),
@@ -340,10 +344,10 @@ const ContentSettingsForOneType& CookieSettings::GetContentSettings(
   return content_settings_.at(type);
 }
 
-const HostIndexedContentSettings& CookieSettings::GetHostIndexedContentSettings(
-    ContentSettingsType type) const {
+const content_settings::HostIndexedContentSettings&
+CookieSettings::GetHostIndexedContentSettings(ContentSettingsType type) const {
   CHECK(IsValidType(type)) << static_cast<int>(type);
-  return host_indexed_content_settings_.at(type);
+  return *host_indexed_content_settings_.at(type);
 }
 
 ContentSetting CookieSettings::GetContentSetting(
@@ -356,14 +360,15 @@ ContentSetting CookieSettings::GetContentSetting(
   const ContentSettingPatternSource* result;
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
-    DCHECK(content_settings::SettingsLookupsAreConsistent(
-        primary_url, secondary_url, GetContentSettings(content_type),
-        GetHostIndexedContentSettings(content_type)))
+#if DCHECK_IS_ON()
+    DCHECK(GetHostIndexedContentSettings(content_type)
+               .IsSameResultAsLinearLookup(primary_url, secondary_url,
+                                           GetContentSettings(content_type)))
         << "Different result in index lookup: " << primary_url.spec() << " "
         << secondary_url.spec();
-    result = content_settings::FindInHostIndexedContentSettings(
-        primary_url, secondary_url,
-        GetHostIndexedContentSettings(content_type));
+#endif
+    result = GetHostIndexedContentSettings(content_type)
+                 .Find(primary_url, secondary_url);
   } else {
     result = content_settings::FindContentSetting(
         primary_url, secondary_url, GetContentSettings(content_type));

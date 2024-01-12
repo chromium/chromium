@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>-webkit-user-modify not included in 'all'</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #initial { all: initial; }
+  #revert { all: revert; }
+  #unset { all: unset; }
+</style>
+<div id="initial" contenteditable>Edit me</div>
+<div id="revert" contenteditable>Edit me</div>
+<div id="unset" contenteditable>Edit me</div>
+<script>
+
+  for (let subtest of ["initial", "revert", "unset"]) {
+    test(() => {
+      let selection = getSelection();
+      let range = document.createRange();
+      let element = document.getElementById(subtest);
+      range.selectNode(element.firstChild);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand("delete");
+      assert_equals(element.firstChild, null, "Text node deleted");
+    }, "all:" + subtest + " does not turn off contenteditable");
+  }
+</script>

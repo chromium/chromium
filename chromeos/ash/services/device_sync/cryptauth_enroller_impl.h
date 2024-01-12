@@ -72,7 +72,7 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
   void OnOuterSecureMessageCreated(const std::string& outer_message);
 
   // Creates the CryptAuthClient instances to make API requests.
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_;
+  raw_ptr<CryptAuthClientFactory> client_factory_;
 
   // Handles SecureMessage operations.
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;

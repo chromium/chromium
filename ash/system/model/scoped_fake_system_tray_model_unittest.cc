@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/system_tray.h"
 #include "ash/shell.h"
+#include "ash/system/model/fake_system_tray_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 

@@ -55,7 +55,7 @@ class LoggingObserver : public SyncedPrintersManager::Observer {
   base::ScopedObservation<SyncedPrintersManager,
                           SyncedPrintersManager::Observer>
       observation_{this};
-  raw_ptr<SyncedPrintersManager, ExperimentalAsh> manager_;
+  raw_ptr<SyncedPrintersManager> manager_;
 };
 
 class SyncedPrintersManagerTest : public testing::Test {

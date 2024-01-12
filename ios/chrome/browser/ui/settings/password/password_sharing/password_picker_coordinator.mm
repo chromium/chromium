@@ -7,7 +7,6 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_mediator.h"
@@ -15,13 +14,10 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller_presentation_delegate.h"
 
 @interface PasswordPickerCoordinator () <
-    PasswordPickerViewControllerPresentationDelegate> {
+    PasswordPickerViewControllerPresentationDelegate,
+    UIAdaptivePresentationControllerDelegate> {
   std::vector<password_manager::CredentialUIEntry> _credentials;
 }
-
-// The navigation controller displaying the view controller.
-@property(nonatomic, strong)
-    TableViewNavigationController* navigationController;
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordPickerViewController* viewController;
@@ -63,21 +59,9 @@
                               self.browser->GetBrowserState())];
   self.viewController.imageDataSource = self.mediator;
   self.mediator.consumer = self.viewController;
-  self.navigationController =
-      [[TableViewNavigationController alloc] initWithTable:self.viewController];
-  [self.navigationController
-      setModalPresentationStyle:UIModalPresentationFormSheet];
-  self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  UISheetPresentationController* sheetPresentationController =
-      self.navigationController.sheetPresentationController;
-  if (sheetPresentationController) {
-    sheetPresentationController.detents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent]
-    ];
-  }
-
+  CHECK(self.baseNavigationController);
+  self.baseNavigationController.presentationController.delegate = self;
   // Disable animation so that it looks as if the loaded password data replaces
   // the spinner view displayed from the parent coordinator.
   [self.baseNavigationController pushViewController:self.viewController
@@ -85,7 +69,6 @@
 }
 
 - (void)stop {
-  self.navigationController = nil;
   self.viewController = nil;
   self.mediator = nil;
 }
@@ -101,6 +84,13 @@
       withSelectedCredential:
           (const password_manager::CredentialUIEntry&)credential {
   [self.delegate passwordPickerCoordinator:self didSelectCredential:credential];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate passwordPickerCoordinatorWasDismissed:self];
 }
 
 @end

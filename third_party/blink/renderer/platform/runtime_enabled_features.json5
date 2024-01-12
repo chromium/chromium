@@ -201,10 +201,6 @@
 
   data: [
     {
-      name: "AbortSignalAny",
-      status: "stable",
-    },
-    {
       name: "Accelerated2dCanvas",
       settable_from_internals: true,
       status: "stable",
@@ -327,9 +323,17 @@
       base_feature: "none",
     },
     {
+      name: "AppTitle",
+      status: "experimental",
+    },
+    {
       // crbug.com/484651
       name: "ArrowKeysInVerticalWritingModes",
       status: "stable",
+    },
+    {
+      name: "AsyncClipboardImplicitPermission",
+      status: "experimental",
     },
     {
       name: "AttributionReporting",
@@ -407,7 +411,7 @@
     },
     {
       name: "BackdropInheritOriginating",
-      status: "experimental",
+      status: "stable",
     },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
@@ -459,6 +463,12 @@
       base_feature: "none",
     },
     {
+      // Shipping in M122.  Flag should be removed after M122 has been
+      // shipping to stable for a few weeks.
+      name: "BdiElementDirInheritance",
+      status: "stable",
+    },
+    {
       // There are two different code changes guarded by this feature. Both
       // are about triggering a beforeunload cancel dialog and need adoption
       // from developers.
@@ -478,18 +488,9 @@
       base_feature: "none",
     },
     {
-      name: "BlinkExtensionChromeOSHID",
+      name: "BlinkExtensionChromeOSKiosk",
       depends_on: ["BlinkExtensionChromeOS"],
-      base_feature: "none",
-    },
-    {
-      name: "BlinkExtensionChromeOSTelemetry",
-      depends_on: ["BlinkExtensionChromeOS"],
-      base_feature: "none",
-    },
-    {
-      name: "BlinkExtensionChromeOSWindowManagement",
-      depends_on: ["BlinkExtensionChromeOS"],
+      browser_process_read_write_access: true,
       base_feature: "none",
     },
     {
@@ -679,7 +680,7 @@
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#close-requests-and-close-watchers
       name: "CloseWatcher",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "CoepReflection",
@@ -1158,6 +1159,11 @@
       status: "test",
     },
     {
+      // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
+      name: "CSSTextSpacing",
+      depends_on: ["CSSTextAutoSpace", "CSSTextSpacingTrim"],
+    },
+    {
       // crbug.com/1463891: CSS `text-spacing-trim` property
       name: "CSSTextSpacingTrim",
     },
@@ -1244,6 +1250,11 @@
       origin_trial_feature_name: "WebSQL",
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
+    },
+    {
+      // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata
+      name: "DataTransferClearStringItems",
+      status: "stable",
     },
     {
       name: "DateInputInlineBlock",
@@ -1523,7 +1534,7 @@
     },
      {
       name: "ExcludeBrokenImageIconFromBeingLcpEligible",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
@@ -1828,11 +1839,6 @@
       origin_trial_feature_name: "Focusgroup",
     },
     {
-      name: "FocuslessSpatialNavigation",
-      base_feature: "none",
-      settable_from_internals: true,
-    },
-    {
       name: "FocusStyleInvalidationOnPageActivation",
       status: "stable",
     },
@@ -1845,7 +1851,7 @@
     },
     {
       name: "FontMatchingCTMigration",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FontPaletteAnimation",
@@ -1856,10 +1862,6 @@
       base_feature: "none",
       // No status, as the web platform runtime enabled feature is controlled by
       // a Chromium level feature.
-    },
-    {
-      name: "FontVariantPosition",
-      status: "stable",
     },
     {
       // TODO(crbug.com/1231644): This flag is being kept (even though the
@@ -2129,11 +2131,6 @@
       status: "stable",
     },
     {
-      // If enabled, setting innerHTML will use a special fast-path parser.
-      name: "InnerHTMLParserFastpath",
-      status: "stable",
-    },
-    {
       // If enabled, and the inner html parser is unable to successfully
       // parse, it will log histograms of why it failed. The logging is
       // non-trivial.
@@ -2319,6 +2316,12 @@
       status: "stable",
     },
     {
+      // crbug.com/486880
+      name: "MaskingGraphemeClusters",
+      status: "test",
+      depends_on: ["OffsetMappingUnitVariable"],
+    },
+    {
       name:"MeasureMemory",
       status:"stable",
       base_feature: "none",
@@ -2360,6 +2363,10 @@
       status: "experimental",
       implied_by: ["MediaCaptureBackgroundBlur"],
       base_feature: "none",
+    },
+    {
+      name: "MediaCaptureVoiceIsolation",
+      status: "experimental",
     },
     // Set to reflect the MediaCastOverlayButton feature.
     {
@@ -2416,7 +2423,7 @@
     {
       name: "MediaSessionEnterPictureInPicture",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaSessionSlides",
@@ -2484,7 +2491,7 @@
     // cancellation when the pointer is dragged out of an iframe.
     {
       name: "MouseDragFromIframeOnCancelledMouseDown",
-      status: "experimental",
+      status: "stable",
     },
     // crbug.com/346473: Allow mouse-drag text selection even when mousemove
     // event is cancelled.
@@ -2808,6 +2815,11 @@
       name: "PageFreezeOptOut",
       base_feature: "none",
       origin_trial_feature_name: "PageFreezeOptOut",
+    },
+    // Support for page margin boxes.
+    // https://www.w3.org/TR/css-page-3/#margin-boxes
+    {
+      name: "PageMarginBoxes",
     },
     {
       name: "PagePopup",
@@ -3552,18 +3564,23 @@
       status: "stable",
     },
     {
+      // Used to enable the code for detecting soft navigations through task
+      // attribution. Set to stable as this generates an enabled-by-default
+      // base::Feature for a field-trial remote shutoff. Needs to be a runtime
+      // feature so that the Soft Navigation Heuristics Origin Trial can depend
+      // on it.
+      name: "SoftNavigationDetection",
+      status: "stable",
+    },
+    {
       name: "SoftNavigationHeuristics",
       status: "experimental",
-      depends_on: ["NavigationId"],
+      depends_on: ["NavigationId","SoftNavigationDetection"],
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "SoftNavigationHeuristics",
     },
     {
       name: "SoftNavigationHeuristicsExposeFPAndFCP",
-    },
-    {
-      name: "SolidColorLayers",
-      status: "stable",
     },
     {
       name: "SparseObjectPaintProperties",
@@ -3598,6 +3615,10 @@
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
       status: "stable",
+    },
+    {
+      name: "SpeculationRulesImplicitSource",
+      status: "experimental",
     },
     {
       name: "SpeculationRulesNoVarySearchHint",
@@ -3665,8 +3686,7 @@
     },
     {
       name: "StorageBuckets",
-      status: "experimental",
-      origin_trial_feature_name: "StorageBuckets",
+      status: "stable",
     },
     {
       // Gates the `durability()` method on a storage bucket and the property in
@@ -3797,6 +3817,13 @@
       origin_trial_allows_third_party: true,
       public: true,
     },
+    {
+      name: "TopLevelTpcd",
+      origin_trial_feature_name: "TopLevelTpcd",
+      origin_trial_type: "deprecation",
+      status: "experimental",
+      base_feature: "none",
+    },
     // This feature allows touch dragging and a context menu to occur
     // simultaneously, with the assumption that the menu is non-modal.  Without
     // this feature, a long-press touch gesture can start either a drag or a
@@ -3836,13 +3863,6 @@
       name: "Tpcd",
       origin_trial_feature_name: "Tpcd",
       origin_trial_allows_third_party: true,
-      origin_trial_type: "deprecation",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
-      name: "Tpcd1p",
-      origin_trial_feature_name: "Tpcd1p",
       origin_trial_type: "deprecation",
       status: "experimental",
       base_feature: "none",
@@ -4253,7 +4273,7 @@
     },
     {
       name: "WebGLDrawingBufferStorage",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {

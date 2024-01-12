@@ -271,50 +271,6 @@ void AppServiceProxyAsh::RegisterCrosApiSubScriber(
 void AppServiceProxyAsh::RegisterPublisher(AppType app_type,
                                            AppPublisher* publisher) {
   AppServiceProxyBase::RegisterPublisher(app_type, publisher);
-
-  for (auto it = launch_requests_.begin(); it != launch_requests_.end();) {
-    const std::string& app_id = it->first;
-    if (app_registry_cache_.GetAppType(app_id) != app_type) {
-      ++it;
-      continue;
-    }
-
-    // Close the spinner for the app icon.
-    auto* chrome_controller = ChromeShelfController::instance();
-    if (chrome_controller) {
-      chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
-    }
-
-    // Check the saved launch requests for `app_type`, and launch the app.
-    for (auto& launch_request : it->second) {
-      if (launch_request->params_.has_value()) {
-        LaunchAppWithParams(std::move(launch_request->params_.value()),
-                            std::move(launch_request->call_back_));
-        continue;
-      }
-
-      if (launch_request->intent_) {
-        LaunchAppWithIntent(app_id, launch_request->event_flags_,
-                            std::move(launch_request->intent_),
-                            launch_request->launch_source_,
-                            std::move(launch_request->window_info_),
-                            std::move(launch_request->call_back_));
-        continue;
-      }
-
-      if (!launch_request->file_paths_.empty()) {
-        LaunchAppWithFiles(app_id, launch_request->event_flags_,
-                           launch_request->launch_source_,
-                           std::move(launch_request->file_paths_));
-        continue;
-      }
-
-      Launch(app_id, launch_request->event_flags_,
-             launch_request->launch_source_,
-             std::move(launch_request->window_info_));
-    }
-    it = launch_requests_.erase(it);
-  }
 }
 
 void AppServiceProxyAsh::SetPublisherUnavailable(AppType app_type) {
@@ -408,6 +364,10 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
 
   AppServiceProxyBase::OnApps(std::move(deltas), app_type,
                               should_notify_initialized);
+
+  if (should_notify_initialized) {
+    LaunchFromPendingRequests(app_type);
+  }
 }
 
 void AppServiceProxyAsh::PauseApps(
@@ -948,17 +908,15 @@ void AppServiceProxyAsh::OnPublisherNotReadyForLaunch(
     return;
   }
 
-  auto* chrome_controller = ChromeShelfController::instance();
-  if (!chrome_controller) {
-    return;
-  }
-
-  // Add spinner to the app icon.
-  chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
-      app_id, std::make_unique<ShelfSpinnerItemController>(app_id));
-
   // Save the launch request to launch the app later.
   launch_requests_[app_id].push_back(std::move(launch_request));
+
+  auto* chrome_controller = ChromeShelfController::instance();
+  if (chrome_controller) {
+    // Add spinner to the app icon.
+    chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
+        app_id, std::make_unique<ShelfSpinnerItemController>(app_id));
+  }
 }
 
 bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
@@ -1227,6 +1185,52 @@ void AppServiceProxyAsh::LaunchAppWithIntentIfAllowed(
   AppServiceProxyBase::LaunchAppWithIntent(
       app_id, event_flags, std::move(intent), std::move(launch_source),
       std::move(window_info), std::move(callback));
+}
+
+void AppServiceProxyAsh::LaunchFromPendingRequests(AppType app_type) {
+  for (auto it = launch_requests_.begin(); it != launch_requests_.end();) {
+    const std::string& app_id = it->first;
+    if (app_registry_cache_.GetAppType(app_id) != app_type) {
+      ++it;
+      continue;
+    }
+
+    // Close the spinner for the app icon.
+    auto* chrome_controller = ChromeShelfController::instance();
+    if (chrome_controller) {
+      chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
+    }
+
+    // Check the saved launch requests for `app_type`, and launch the app.
+    for (auto& launch_request : it->second) {
+      if (launch_request->params_.has_value()) {
+        LaunchAppWithParams(std::move(launch_request->params_.value()),
+                            std::move(launch_request->call_back_));
+        continue;
+      }
+
+      if (launch_request->intent_) {
+        LaunchAppWithIntent(app_id, launch_request->event_flags_,
+                            std::move(launch_request->intent_),
+                            launch_request->launch_source_,
+                            std::move(launch_request->window_info_),
+                            std::move(launch_request->call_back_));
+        continue;
+      }
+
+      if (!launch_request->file_paths_.empty()) {
+        LaunchAppWithFiles(app_id, launch_request->event_flags_,
+                           launch_request->launch_source_,
+                           std::move(launch_request->file_paths_));
+        continue;
+      }
+
+      Launch(app_id, launch_request->event_flags_,
+             launch_request->launch_source_,
+             std::move(launch_request->window_info_));
+    }
+    it = launch_requests_.erase(it);
+  }
 }
 
 bool AppServiceProxyAsh::ShouldReadIcons(AppType app_type) {

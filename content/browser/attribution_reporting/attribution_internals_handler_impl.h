@@ -63,7 +63,7 @@ class AttributionInternalsHandlerImpl
   void OnSourceHandled(
       const StorableSource& source,
       base::Time source_time,
-      absl::optional<uint64_t> cleared_debug_key,
+      std::optional<uint64_t> cleared_debug_key,
       attribution_reporting::mojom::StoreSourceResult) override;
   void OnReportSent(const AttributionReport& report,
                     bool is_debug_report,
@@ -72,7 +72,7 @@ class AttributionInternalsHandlerImpl
                          int status,
                          base::Time) override;
   void OnTriggerHandled(const AttributionTrigger& trigger,
-                        absl::optional<uint64_t> cleared_debug_key,
+                        std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override;
   void OnOsRegistration(
       base::Time time,

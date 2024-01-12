@@ -70,6 +70,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::DISPLAY_CAPTURE:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:
+    case PermissionType::WEB_PRINTING:
       return false;
   }
 

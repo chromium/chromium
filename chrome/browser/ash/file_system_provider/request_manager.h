@@ -65,7 +65,7 @@ class RequestManager {
   // this interface.
   class HandlerInterface {
    public:
-    virtual ~HandlerInterface() {}
+    virtual ~HandlerInterface() = default;
 
     // Called when the request is created. Executes the request implementation.
     // Returns false in case of a execution failure.
@@ -93,7 +93,7 @@ class RequestManager {
   // Observes activities in the request manager.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when the request is created.
     virtual void OnRequestCreated(int request_id, RequestType type) = 0;

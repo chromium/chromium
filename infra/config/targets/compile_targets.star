@@ -5,6 +5,10 @@
 load("//lib/targets.star", "targets")
 
 targets.compile_target(
+    name = "all",
+)
+
+targets.compile_target(
     name = "android_lint",
     label = "//chrome/android:android_lint",
 )
@@ -371,11 +375,6 @@ targets.compile_target(
 targets.compile_target(
     name = "v4l2_unittest",
     label = "//media/gpu/v4l2:v4l2_unittest",
-)
-
-targets.compile_target(
-    name = "video_decode_accelerator_tests",
-    label = "//media/gpu/test:video_decode_accelerator_tests",
 )
 
 targets.compile_target(

@@ -179,7 +179,7 @@ class EnhancedNetworkTtsImplTest : public testing::Test {
 
   TestAudioDataObserverImpl* GetTestingObserverPtr() { return &observer_; }
 
-  raw_ptr<EnhancedNetworkTtsImpl, ExperimentalAsh> enhanced_network_tts_impl_;
+  raw_ptr<EnhancedNetworkTtsImpl> enhanced_network_tts_impl_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
   base::test::TaskEnvironment test_task_env_;

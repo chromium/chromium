@@ -1527,8 +1527,7 @@ message ClientSafeBrowsingReportRequest {
     APK_DOWNLOAD = 17;
     BLOCKED_AD_REDIRECT = 19;
     BLOCKED_AD_POPUP = 20;
-    // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
-    HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
+    HASH_PREFIX_REAL_TIME_EXPERIMENT = 21 [deprecated = true];
     PHISHY_SITE_INTERACTIONS = 22;
     WARNING_SHOWN = 23;
   }
@@ -1712,18 +1711,24 @@ message ClientSafeBrowsingReportRequest {
       // TODO(chlily): Remove CLOSE option once ImprovedDownloadPageWarnings
       // launches.
       DOWNLOAD_PROMPT = 4;
+      // Applicable actions: OPEN_SUBPAGE
+      // Note: This only covers ChromeOS Lacros v2 notifications. CLOSE should
+      // also be logged, but is currently not.
+      DOWNLOAD_NOTIFICATION = 5;
     }
     optional Surface surface = 1;
 
     enum Action {
       ACTION_UNSPECIFIED = 0;
       // The user clicks proceed, which means the user decides to bypass the
-      // warning.
+      // warning. This is a terminal action.
       PROCEED = 1;
       // The user clicks discard, which means the user decides to obey the
       // warning and the dangerous download is deleted from disk.
       DISCARD = 2;
-      // The user has clicked the keep button on the surface.
+      // The user has clicked the keep button on the surface, which causes
+      // another surface (e.g. download prompt) to be displayed. This is not a
+      // terminal action.
       KEEP = 3;
       // The user has clicked the close button on the surface.
       CLOSE = 4;
@@ -1735,7 +1740,7 @@ message ClientSafeBrowsingReportRequest {
       // The user has clicked the back button on the bubble subpage to go back
       // to the bubble main page.
       BACK = 7;
-      // The user has opened the subpage from the main page.
+      // The user has opened the download bubble subpage.
       OPEN_SUBPAGE = 8;
       // The user bypassed a deep scanning prompt
       PROCEED_DEEP_SCAN = 9;
@@ -1758,6 +1763,8 @@ message ClientSafeBrowsingReportRequest {
   repeated DownloadWarningAction download_warning_actions = 27;
 
   message HashRealTimeExperimentDetails {
+    option deprecated = true;
+
     enum ExperimentThreatType {
       SAFE_OR_OTHER = 0;  // This differs from the SafeBrowsing ThreatType.
       MALWARE = 1;
@@ -1787,8 +1794,8 @@ message ClientSafeBrowsingReportRequest {
   }
 
   // Only populated for type = HASH_PREFIX_REAL_TIME_EXPERIMENT.
-  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
-  optional HashRealTimeExperimentDetails hash_real_time_experiment_details = 28;
+  optional HashRealTimeExperimentDetails hash_real_time_experiment_details = 28
+      [deprecated = true];
 
   // The request destination of the |url| fetched. Added to better understand
   // the protection of cross-site warnings (i.e. warnings triggered when url and

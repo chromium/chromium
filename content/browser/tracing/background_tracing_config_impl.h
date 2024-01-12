@@ -68,10 +68,10 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   }
   bool requires_anonymized_data() const { return requires_anonymized_data_; }
 
-  absl::optional<size_t> upload_limit_network_kb() const {
+  std::optional<size_t> upload_limit_network_kb() const {
     return upload_limit_network_kb_;
   }
-  absl::optional<size_t> upload_limit_kb() const { return upload_limit_kb_; }
+  std::optional<size_t> upload_limit_kb() const { return upload_limit_kb_; }
 
   static std::unique_ptr<BackgroundTracingConfigImpl> PreemptiveFromDict(
       const base::Value::Dict& dict);
@@ -127,8 +127,8 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   int mobile_network_buffer_size_kb_ = 300;
   int max_buffer_size_kb_ = kMaxBufferSizeKb;
 
-  absl::optional<size_t> upload_limit_network_kb_;
-  absl::optional<size_t> upload_limit_kb_;
+  std::optional<size_t> upload_limit_network_kb_;
+  std::optional<size_t> upload_limit_kb_;
   int interning_reset_interval_ms_ = 5000;
 };
 

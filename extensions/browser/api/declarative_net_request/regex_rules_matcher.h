@@ -12,8 +12,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 #include "third_party/re2/src/re2/filtered_re2.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 // Structure to hold a RegexRule together with its corresponding compiled
 // re2::Re2 object.
@@ -33,7 +32,7 @@ struct RegexRuleInfo {
 // Initialization:
 // 1. During initialization, we add each regex to the FilteredRE2 class.
 // 2. We compile the FilteredRE2 object which returns us a set of substrings.
-//    These are added to |substring_matcher_| for use in #3 below.
+//    These are added to `substring_matcher_` for use in #3 below.
 //
 // Matching
 // 3. Given a request url, we find the set of strings from #2. that are
@@ -65,12 +64,16 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
       std::optional<uint64_t> min_priority) const override;
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;
+  size_t GetBeforeRequestRulesCount() const override;
+  size_t GetHeadersReceivedRulesCount() const override;
 
  private:
   // RulesetMatcherBase override:
   std::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params) const override;
   std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
+      const RequestParams& params) const override;
+  std::optional<RequestAction> GetHeadersReceivedActionIgnoringAncestors(
       const RequestParams& params) const override;
 
   // Helper to build the necessary data structures for matching.
@@ -80,8 +83,8 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   bool IsEmpty() const;
 
   // Returns the potentially matching rules for the given request. A potentially
-  // matching rule is one whose metadata matches the given request |params| and
-  // which is not ruled out as a potential match by the |filtered_re2_| object.
+  // matching rule is one whose metadata matches the given request `params` and
+  // which is not ruled out as a potential match by the `filtered_re2_` object.
   // Note: The returned vector is sorted in descending order of rule priority.
   const std::vector<RegexRuleInfo>& GetPotentialMatches(
       const RequestParams& params) const;
@@ -105,8 +108,8 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   // expressions that are actually matched against a request.
   re2::FilteredRE2 filtered_re2_;
 
-  // Map from re2 ID (as used by |filtered_re2_|) to the flat::RegexRule in
-  // |regex_list_|.
+  // Map from re2 ID (as used by `filtered_re2_`) to the flat::RegexRule in
+  // `regex_list_`.
   std::map<int, const flat::RegexRule*> re2_id_to_rules_map_;
 
   // Structure for fast substring matching. Given a string S and a set of
@@ -116,7 +119,6 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   std::unique_ptr<base::SubstringSetMatcher> substring_matcher_;
 };
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REGEX_RULES_MATCHER_H_

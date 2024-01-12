@@ -64,9 +64,9 @@ class PictureInPictureBrowserFrameView
       public ContentSettingImageView::Delegate,
       public views::WidgetObserver,
       public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(PictureInPictureBrowserFrameView);
+  METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 
+ public:
   PictureInPictureBrowserFrameView(BrowserFrame* frame,
                                    BrowserView* browser_view);
   PictureInPictureBrowserFrameView(const PictureInPictureBrowserFrameView&) =
@@ -228,6 +228,10 @@ class PictureInPictureBrowserFrameView
 
   void set_close_reason(CloseReason close_reason) {
     close_reason_ = close_reason;
+  }
+
+  AutoPipSettingOverlayView* get_auto_pip_setting_overlay_view_for_testing() {
+    return auto_pip_setting_overlay_;
   }
 
  private:

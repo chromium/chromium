@@ -8,14 +8,14 @@
 #import "base/ios/block_types.h"
 
 enum class ContentSuggestionsModuleType;
-@class ContentSuggestionsMostVisitedActionItem;
-@class ContentSuggestionsMostVisitedItem;
+@class MostVisitedTilesConfig;
 @class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
 @class QuerySuggestionConfig;
 @class SafetyCheckState;
 enum class SetUpListItemType;
 @class SetUpListItemViewData;
+@class ShortcutsConfig;
 @class TabResumptionItem;
 @class ParcelTrackingItem;
 
@@ -54,17 +54,11 @@ struct MagicStackOrderChange {
 - (void)hideReturnToRecentTabTile;
 
 // Indicates to the consumer the current Most Visited tiles to show with
-// `configs`.
-- (void)setMostVisitedTilesWithConfigs:
-    (NSArray<ContentSuggestionsMostVisitedItem*>*)configs;
+// `config`.
+- (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config;
 
-// Indicates to the consumer the current Shortcuts tiles to show with `configs`.
-- (void)setShortcutTilesWithConfigs:
-    (NSArray<ContentSuggestionsMostVisitedActionItem*>*)configs;
-
-// Indicates to the consumer that the given `config` has updated data.
-- (void)updateShortcutTileConfig:
-    (ContentSuggestionsMostVisitedActionItem*)config;
+// Indicates to the consumer the current Shortcuts tiles `config`.
+- (void)setShortcutTilesConfig:(ShortcutsConfig*)configs;
 
 // Indicates to the consumer to set the Magic Stack module order as listed in
 // `order`.

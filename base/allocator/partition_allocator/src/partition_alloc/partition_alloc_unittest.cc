@@ -590,7 +590,9 @@ class PartitionAllocTest
     PA_LOG(FATAL) << "Passed DoReturnNullTest";
   }
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
+#endif
 
   PA_NOINLINE PA_MALLOC_FN void* Alloc(size_t size) {
     return allocator.root()->Alloc(size);
@@ -978,15 +980,7 @@ TEST_P(PartitionAllocTest, PreferSlotSpansWithProvisionedEntries) {
 
 // Test some corner cases relating to slot span transitions in the internal
 // free slot span list metadata bucket.
-// TODO(crbug.com/1512944): Test flaky on iPhone device.
-#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_FreeSlotSpanListSlotSpanTransitions \
-  DISABLED_FreeSlotSpanListSlotSpanTransitions
-#else
-#define MAYBE_FreeSlotSpanListSlotSpanTransitions \
-  FreeSlotSpanListSlotSpanTransitions
-#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_P(PartitionAllocTest, MAYBE_FreeSlotSpanListSlotSpanTransitions) {
+TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
   PartitionRoot::Bucket* bucket =
       &allocator.root()->buckets[test_bucket_index_];
 
@@ -1293,8 +1287,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   if (UseBRPPool()) {
     uintptr_t address = UntagPtr(ptr);
     for (size_t offset = 0; offset < requested_size; ++offset) {
-      EXPECT_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
     }
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1316,8 +1311,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   if (UseBRPPool()) {
     uintptr_t address = UntagPtr(ptr);
     for (size_t offset = 0; offset < requested_size; offset += 877) {
-      EXPECT_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
     }
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1345,8 +1341,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   if (UseBRPPool()) {
     uintptr_t address = UntagPtr(ptr);
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
-      EXPECT_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
     }
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1367,8 +1364,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   if (UseBRPPool()) {
     uintptr_t address = UntagPtr(ptr);
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
-      EXPECT_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
     }
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1396,8 +1394,9 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
     if (UseBRPPool()) {
       uintptr_t address = UntagPtr(ptr);
       for (size_t offset = 0; offset < requested_size; offset += 16111) {
-        EXPECT_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                  slot_start);
+        EXPECT_EQ(
+            PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+            slot_start);
       }
     }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1647,8 +1646,9 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
     EXPECT_EQ(allocator.root()->AllocationCapacityFromSlotStart(slot_start),
               requested_size);
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
     }
     allocator.root()->Free(ptr);
   }
@@ -2514,7 +2514,7 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 // These tests don't work deterministically when BRP is enabled on certain
 // architectures. On Free(), BRP's ref-count gets overwritten by an encoded
 // freelist pointer. On little-endian 64-bit architectures, this happens to be
-// always an even number, which will triggers BRP's own CHECK (sic!). On other
+// always an even number, which will trigger BRP's own CHECK (sic!). On other
 // architectures, it's likely to be an odd number >1, which will fool BRP into
 // thinking the memory isn't freed and still referenced, thus making it
 // quarantine it and return early, before PA_CHECK(slot_start != freelist_head)
@@ -3782,7 +3782,6 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
     EXPECT_EQ(UntagPtr(ptr2) % fundamental_alignment, 0u);
     EXPECT_EQ(UntagPtr(ptr3) % fundamental_alignment, 0u);
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
     // The capacity(C) is slot size - ExtraAllocSize(allocator).
     // Since slot size is multiples of kAlignment,
@@ -3796,7 +3795,6 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
               UseBRPPool()
                   ? (-ExtraAllocSize(allocator) % fundamental_alignment)
                   : 0);
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
     allocator.root()->Free(ptr);
     allocator.root()->Free(ptr2);
@@ -4174,8 +4172,7 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
 
   *ptr1 = kCookie;
 
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr1));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr1);
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   ref_count->Acquire();
@@ -4217,7 +4214,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   EXPECT_TRUE(ptr1);
 
   auto* ref_count1 =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr1));
+      allocator.root()->RefCountPointerFromObjectForTesting(ptr1);
   EXPECT_TRUE(ref_count1->IsAliveWithNoKnownRefs());
 
   ref_count1->AcquireFromUnprotectedPtr();
@@ -4232,7 +4229,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
 
   // Re-query ref-count. It may have moved if Realloc changed the slot.
   auto* ref_count2 =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr2));
+      allocator.root()->RefCountPointerFromObjectForTesting(ptr2);
 
   if (UntagPtr(ptr1) == UntagPtr(ptr2)) {
     // If the slot didn't change, ref-count should stay the same.
@@ -4261,7 +4258,7 @@ TEST_P(PartitionAllocTest, RefCountRealloc) {
     return;
   }
 
-  size_t raw_sizes[] = {500, 5000, 50000, 400000};
+  size_t raw_sizes[] = {500, 5000, 50000, 400000, 5000000};
 
   for (size_t raw_size : raw_sizes) {
     size_t alloc_size = raw_size - ExtraAllocSize(allocator);
@@ -4269,6 +4266,8 @@ TEST_P(PartitionAllocTest, RefCountRealloc) {
     RunRefCountReallocSubtest(alloc_size, alloc_size + 9);
     RunRefCountReallocSubtest(alloc_size, alloc_size * 2);
     RunRefCountReallocSubtest(alloc_size, alloc_size / 2);
+    RunRefCountReallocSubtest(alloc_size, alloc_size / 10 * 11);
+    RunRefCountReallocSubtest(alloc_size, alloc_size / 10 * 9);
   }
 }
 
@@ -4313,8 +4312,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrNoReport) {
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   ref_count->Acquire();
   EXPECT_TRUE(ref_count->IsAlive());
   // Allocation is still live, so calling ReportIfDangling() should not result
@@ -4332,8 +4330,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   ref_count->AcquireFromUnprotectedPtr();
   EXPECT_TRUE(ref_count->IsAlive());
   allocator.root()->Free(ptr);
@@ -4388,8 +4385,8 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   // Allocate memory, and reference it from 3 raw_ptr.
   uint64_t* ptr = static_cast<uint64_t*>(
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name));
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+
   ref_count->Acquire();
   ref_count->Acquire();
   ref_count->Acquire();
@@ -4450,8 +4447,7 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
   // Allocate memory, and reference it from 3 raw_ptr.
   uint64_t* ptr = static_cast<uint64_t*>(
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name));
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   ref_count->AcquireFromUnprotectedPtr();
   ref_count->AcquireFromUnprotectedPtr();
   ref_count->AcquireFromUnprotectedPtr();
@@ -4494,8 +4490,7 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
 
   uint64_t* ptr = static_cast<uint64_t*>(
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name));
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
   ref_count->AcquireFromUnprotectedPtr();
   ref_count->Acquire();
@@ -4550,8 +4545,7 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
   ref_count->AcquireFromUnprotectedPtr();
   ref_count->Acquire();
@@ -4605,8 +4599,7 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection>.
   ref_count->AcquireFromUnprotectedPtr();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
@@ -4646,8 +4639,7 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection>.
   ref_count->AcquireFromUnprotectedPtr();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
@@ -4688,8 +4680,7 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
   ref_count->Acquire();
   ref_count->AcquireFromUnprotectedPtr();
@@ -4727,8 +4718,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   ref_count->Acquire();
   EXPECT_FALSE(ref_count->Release());
   EXPECT_DCHECK_DEATH(ref_count->Release());
@@ -4743,8 +4733,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
+  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
   ref_count->AcquireFromUnprotectedPtr();
   EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
   EXPECT_DCHECK_DEATH(ref_count->ReleaseFromUnprotectedPtr());

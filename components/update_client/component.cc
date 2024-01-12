@@ -36,9 +36,9 @@
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
-#include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/puffin_patcher.h"
 #include "components/update_client/task_traits.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -249,7 +249,7 @@ void PuffinUnpackCompleteOnBlockingTaskRunner(
     absl::optional<scoped_refptr<update_client::CrxCache>> optional_crx_cache,
     CrxInstaller::ProgressCallback progress_callback,
     InstallOnBlockingTaskRunnerCompleteCallback callback,
-    const PuffinComponentUnpacker::Result& result) {
+    const Unpacker::Result& result) {
   if (result.error != UnpackerError::kNone) {
     update_client::DeleteFileAndEmptyParentDirectory(crx_path);
     DVLOG(2) << "Unpack failed: " << static_cast<int>(result.error);
@@ -303,7 +303,7 @@ void StartPuffinInstallOnBlockingTaskRunner(
     crx_file::VerifierFormat crx_format,
     CrxInstaller::ProgressCallback progress_callback,
     InstallOnBlockingTaskRunnerCompleteCallback callback) {
-  PuffinComponentUnpacker::Unpack(
+  Unpacker::Unpack(
       pk_hash, crx_path, std::move(unzipper_), crx_format,
       base::BindOnce(&PuffinUnpackCompleteOnBlockingTaskRunner,
                      main_task_runner, crx_path, id, fingerprint,
@@ -921,7 +921,9 @@ void Component::StateCanUpdate::DoHandle() {
   component.is_update_available_ = true;
   component.NotifyObservers(Events::COMPONENT_UPDATE_FOUND);
 
-  if (!component.crx_component()->updates_enabled) {
+  if (!component.crx_component()->updates_enabled ||
+      (!component.crx_component()->allow_updates_on_metered_connection &&
+       component.config()->IsConnectionMetered())) {
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;

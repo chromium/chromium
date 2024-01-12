@@ -17,7 +17,6 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
 RelaunchChromeView::RelaunchChromeView(content::WebContents* web_contents,
@@ -32,6 +31,9 @@ RelaunchChromeView::RelaunchChromeView(content::WebContents* web_contents,
   SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_.GetContinueButtonText());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_.GetNoThanksButtonText());
+
+  SetShowIcon(true);
+  SetTitle(controller_.GetTitle());
 
   auto label = std::make_unique<views::Label>();
   label->SetText(controller_.GetBody());
@@ -57,9 +59,7 @@ const RelaunchChromeBubbleController* RelaunchChromeView::GetController()
   return &controller_;
 }
 
-void RelaunchChromeView::AddedToWidget() {
-  // Since PasswordBubbleViewBase creates the bubble using
-  // BubbleDialogDelegateView::CreateBubble() *after* the construction of the
-  // RelaunchChromeView, the title view cannot be set in the constructor.
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(controller_.GetTitle()));
+ui::ImageModel RelaunchChromeView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon);
 }

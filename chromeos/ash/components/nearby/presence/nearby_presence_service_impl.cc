@@ -14,6 +14,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
+#include "components/push_notification/push_notification_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -109,18 +110,28 @@ NearbyPresenceServiceImpl::NearbyPresenceServiceImpl(
     PrefService* pref_service,
     ash::nearby::NearbyProcessManager* process_manager,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : pref_service_(pref_service),
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    push_notification::PushNotificationService* push_notification_service)
+    : PushNotificationClient(push_notification::ClientId::kNearbyPresence),
+      pref_service_(pref_service),
+      process_manager_(process_manager),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      process_manager_(process_manager) {
+      push_notification_service_(push_notification_service) {
   CHECK(pref_service_);
   CHECK(process_manager_);
   CHECK(identity_manager_);
   CHECK(url_loader_factory_);
+
+  CHECK(push_notification_service_);
+  push_notification_service_->GetPushNotificationClientManager()
+      ->AddPushNotificationClient(this);
 }
 
-NearbyPresenceServiceImpl::~NearbyPresenceServiceImpl() = default;
+NearbyPresenceServiceImpl::~NearbyPresenceServiceImpl() {
+  push_notification_service_->GetPushNotificationClientManager()
+      ->RemovePushNotificationClient(GetClientId());
+}
 
 void NearbyPresenceServiceImpl::StartScan(
     ScanFilter scan_filter,
@@ -198,6 +209,67 @@ void NearbyPresenceServiceImpl::UpdateCredentials() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void NearbyPresenceServiceImpl::Shutdown() {
+  process_reference_.reset();
+  scan_delegate_set_.clear();
+}
+
+void NearbyPresenceServiceImpl::OnDeviceFound(mojom::PresenceDevicePtr device) {
+  auto build_device = BuildPresenceDevice(std::move(device));
+  for (auto* delegate : scan_delegate_set_) {
+    delegate->OnPresenceDeviceFound(build_device);
+  }
+}
+
+void NearbyPresenceServiceImpl::OnDeviceChanged(
+    mojom::PresenceDevicePtr device) {
+  auto build_device = BuildPresenceDevice(std::move(device));
+  for (auto* delegate : scan_delegate_set_) {
+    delegate->OnPresenceDeviceChanged(build_device);
+  }
+}
+
+void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
+  auto build_device = BuildPresenceDevice(std::move(device));
+  for (auto* delegate : scan_delegate_set_) {
+    delegate->OnPresenceDeviceLost(build_device);
+  }
+}
+
+void NearbyPresenceServiceImpl::OnMessageReceived(
+    base::flat_map<std::string, std::string> message) {
+  CD_LOG(VERBOSE, Feature::NP)
+      << __func__ << ": Push notification message recieved.";
+  if ((message.at(push_notification::kNotificationClientIdKey) ==
+       kNearbyPresencePushNotificationClientId) &&
+      (message.at(push_notification::kNotificationTypeIdKey) ==
+       kNearbyPresencePushNotificationTypeId)) {
+    // TODO(b/319286048): Check for action specific information.
+    CD_LOG(ERROR, Feature::NP) << __func__
+                               << ": Push notification message is correctly "
+                                  "formatted. Updating credentials now.";
+    UpdateCredentials();
+  } else {
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__
+        << ": Push notification message is malformed. Discarding message.";
+  }
+}
+
+bool NearbyPresenceServiceImpl::SetProcessReference() {
+  if (!process_reference_) {
+    process_reference_ = process_manager_->GetNearbyProcessReference(
+        base::BindOnce(&NearbyPresenceServiceImpl::OnNearbyProcessStopped,
+                       weak_ptr_factory_.GetWeakPtr()));
+
+    if (!process_reference_) {
+      // TODO(b/277819923): add log here.
+      return false;
+    }
+  }
+  return true;
+}
+
 void NearbyPresenceServiceImpl::OnScanStarted(
     ScanDelegate* scan_delegate,
     base::OnceCallback<void(std::unique_ptr<ScanSession>,
@@ -230,53 +302,12 @@ void NearbyPresenceServiceImpl::OnScanSessionDisconnect(
   }
 }
 
-bool NearbyPresenceServiceImpl::SetProcessReference() {
-  if (!process_reference_) {
-    process_reference_ = process_manager_->GetNearbyProcessReference(
-        base::BindOnce(&NearbyPresenceServiceImpl::OnNearbyProcessStopped,
-                       weak_ptr_factory_.GetWeakPtr()));
-
-    if (!process_reference_) {
-      // TODO(b/277819923): add log here.
-      return false;
-    }
-  }
-  return true;
-}
-
 void NearbyPresenceServiceImpl::OnNearbyProcessStopped(
     ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   // TODO(b/277819923): Add metric to record shutdown reason for Nearby
   // Presence process.
   LOG(WARNING) << __func__ << ": Nearby process stopped.";
   Shutdown();
-}
-
-void NearbyPresenceServiceImpl::Shutdown() {
-  process_reference_.reset();
-  scan_delegate_set_.clear();
-}
-
-void NearbyPresenceServiceImpl::OnDeviceFound(mojom::PresenceDevicePtr device) {
-  auto build_device = BuildPresenceDevice(std::move(device));
-  for (auto* delegate : scan_delegate_set_) {
-    delegate->OnPresenceDeviceFound(build_device);
-  }
-}
-
-void NearbyPresenceServiceImpl::OnDeviceChanged(
-    mojom::PresenceDevicePtr device) {
-  auto build_device = BuildPresenceDevice(std::move(device));
-  for (auto* delegate : scan_delegate_set_) {
-    delegate->OnPresenceDeviceChanged(build_device);
-  }
-}
-
-void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
-  auto build_device = BuildPresenceDevice(std::move(device));
-  for (auto* delegate : scan_delegate_set_) {
-    delegate->OnPresenceDeviceLost(build_device);
-  }
 }
 
 void NearbyPresenceServiceImpl::OnCredentialManagerInitialized(

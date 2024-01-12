@@ -103,7 +103,6 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
-      media::VideoCaptureBufferType::kSharedMemory,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
       std::move(buffer_pool), base::BindRepeating([]() {
@@ -111,7 +110,6 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       }));
 #else
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
-      params.buffer_type,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
       std::move(buffer_pool),

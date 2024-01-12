@@ -38,7 +38,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/mac/dock.h"
-#import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/relauncher.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -374,15 +373,6 @@ bool InstallFromDiskImage(base::mac::ScopedAuthorizationRef authorization,
   if (exit_status != 0) {
     LOG(ERROR) << "install.sh: exit status " << exit_status;
     return false;
-  }
-
-  if (authorization) {
-    // As long as an AuthorizationRef is available, promote the Keystone
-    // ticket.  Inform KeystoneGlue of the new path to use.
-    KeystoneGlue* keystone_glue = [KeystoneGlue defaultKeystoneGlue];
-    [keystone_glue setAppPath:target_path];
-    [keystone_glue promoteTicketWithAuthorization:std::move(authorization)
-                                      synchronous:YES];
   }
 
   return true;

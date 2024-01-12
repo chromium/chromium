@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 
@@ -14,6 +15,9 @@ class Browser;
 // origin when the user has not previously made a decision.
 class EmbeddedPermissionPromptAskView
     : public EmbeddedPermissionPromptBaseView {
+  METADATA_HEADER(EmbeddedPermissionPromptAskView,
+                  EmbeddedPermissionPromptBaseView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowId);
 

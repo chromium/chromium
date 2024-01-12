@@ -753,6 +753,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         return view ->
                 SignOutDialogCoordinator.show(
                         requireContext(),
+                        mProfile,
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         this,
                         ActionType.CLEAR_PRIMARY_ACCOUNT,

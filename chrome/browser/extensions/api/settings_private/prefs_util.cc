@@ -311,12 +311,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Privacy Sandbox page
-  (*s_allowlist)[::prefs::kPrivacySandboxApisEnabledV2] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kPrivacySandboxManuallyControlledV2] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kPrivacySandboxM1TopicsEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kPrivacySandboxM1FledgeEnabled] =

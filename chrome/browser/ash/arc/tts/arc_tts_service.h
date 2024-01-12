@@ -54,11 +54,10 @@ class ArcTtsService : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  raw_ptr<content::TtsController, DanglingUntriaged | ExperimentalAsh>
-      tts_controller_;
+  raw_ptr<content::TtsController, DanglingUntriaged> tts_controller_;
 };
 
 }  // namespace arc

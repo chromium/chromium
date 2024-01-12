@@ -207,6 +207,7 @@ chromium-metrics-reviews@google.com.
   <int value="153" label="DevAddRemoveDisplay"/>
   <int value="154" label="DevToggleAppList"/>
   <int value="155" label="DevToggleUnifiedDesktop"/>
+  <int value="156" label="DebugToggleFocusModeState"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">
@@ -831,8 +832,8 @@ chromium-metrics-reviews@google.com.
 <enum name="ExtendedFkeysModifier">
   <int value="0" label="Disabled"/>
   <int value="1" label="Alt"/>
-  <int value="3" label="Shift"/>
-  <int value="4" label="CtrlShift"/>
+  <int value="2" label="Shift"/>
+  <int value="3" label="CtrlShift"/>
 </enum>
 
 <enum name="FeatureUsageEvent">

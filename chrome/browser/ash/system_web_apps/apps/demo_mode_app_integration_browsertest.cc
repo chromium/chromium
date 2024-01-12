@@ -125,7 +125,7 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
       run_loop_.Quit();
     }
   }
-  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  const raw_ptr<views::Widget> widget_;
   bool is_fullscreen_;
   base::RunLoop run_loop_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>

@@ -284,7 +284,7 @@ void ScopedAppGLStateRestoreImpl::SaveHWUIState(bool save_restore) {
     glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_STRIDE,
                         &vertex_attrib_[i].stride);
     glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER,
-                              &vertex_attrib_[i].pointer);
+                              &vertex_attrib_[i].pointer.AsEphemeralRawAddr());
     glGetVertexAttribfv(i, GL_CURRENT_VERTEX_ATTRIB,
                         vertex_attrib_[i].current_vertex_attrib);
   }

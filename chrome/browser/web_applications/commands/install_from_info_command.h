@@ -7,13 +7,13 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -24,11 +24,8 @@ class Profile;
 
 namespace web_app {
 
-class AppLock;
-class AppLockDescription;
 class InstallFromInfoJob;
-class LockDescription;
-class WebAppUninstallAndReplaceJob;
+struct WebAppInstallParams;
 
 // Starts a web app installation process using prefilled
 // |install_info| which holds all the data needed for installation.
@@ -43,67 +40,43 @@ class WebAppUninstallAndReplaceJob;
 // then the existing web app manifest fields will be overwritten.
 // If `install_info` contains data freshly fetched from the web app's
 // site then `overwrite_existing_manifest_fields` should be true.
-class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
+class InstallFromInfoCommand
+    : public WebAppCommand<AppLock,
+                           const webapps::AppId&,
+                           webapps::InstallResultCode> {
  public:
-  using InstallAndReplaceCallback =
-      base::OnceCallback<void(const webapps::AppId& app_id,
-                              webapps::InstallResultCode code,
-                              bool did_uninstall_and_replace)>;
-
-  // This doesn't install OS hooks.
-  InstallFromInfoCommand(Profile* profile,
-                         std::unique_ptr<WebAppInstallInfo> install_info,
-                         bool overwrite_existing_manifest_fields,
-                         webapps::WebappInstallSource install_surface,
-                         OnceInstallCallback install_callback);
-
-  // The `install_params` controls whether and how OS hooks get installed.
+  // The `install_params` controls whether and how OS hooks get installed. By
+  // default, no params means no os hooks.
   InstallFromInfoCommand(Profile* profile,
                          std::unique_ptr<WebAppInstallInfo> install_info,
                          bool overwrite_existing_manifest_fields,
                          webapps::WebappInstallSource install_surface,
                          OnceInstallCallback install_callback,
-                         const WebAppInstallParams& install_params);
-
-  // The `install_params` controls whether and how OS hooks get installed.
-  InstallFromInfoCommand(
-      Profile* profile,
-      std::unique_ptr<WebAppInstallInfo> install_info,
-      bool overwrite_existing_manifest_fields,
-      webapps::WebappInstallSource install_surface,
-      InstallAndReplaceCallback install_callback,
-      const WebAppInstallParams& install_params,
-      const std::vector<webapps::AppId>& apps_or_extensions_to_uninstall);
+                         absl::optional<WebAppInstallParams> install_params);
 
   ~InstallFromInfoCommand() override;
 
-  // WebAppCommandTemplate<AppLock>:
-  const LockDescription& lock_description() const override;
-  void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnShutdown() override;
-  base::Value ToDebugValue() const override;
+  // WebAppCommand:
+  void OnShutdown(base::PassKey<WebAppCommandManager>) const override;
 
-  void OnInstallFromInfoJobCompleted(const webapps::AppId& app_id,
-                                     webapps::InstallResultCode code,
-                                     OsHooksErrors os_hook_errors);
-  void OnUninstallAndReplaced(webapps::InstallResultCode code,
-                              bool did_uninstall_and_replace);
+ protected:
+  // WebAppCommand:
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
-  void Abort(webapps::InstallResultCode code);
+  void OnInstallFromInfoJobCompleted(webapps::AppId app_id,
+                                     webapps::InstallResultCode code,
+                                     OsHooksErrors os_hook_errors);
 
   raw_ref<Profile> profile_;
 
   webapps::ManifestId manifest_id_;
   webapps::AppId app_id_;
-  InstallAndReplaceCallback install_callback_;
   std::vector<webapps::AppId> apps_or_extensions_to_uninstall_;
 
-  std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
   std::unique_ptr<InstallFromInfoJob> install_from_info_job_;
-  absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 
   base::WeakPtrFactory<InstallFromInfoCommand> weak_factory_{this};
 };

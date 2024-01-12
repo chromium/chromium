@@ -114,6 +114,17 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
               loadTimeData.getBoolean('isHotspotEnabled');
         },
       },
+
+      /**
+       * Return true if instant hotspot rebrand feature flag is enabled
+       */
+      isInstantHotspotRebrandEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
+        },
+      },
     };
   }
 
@@ -126,6 +137,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
   private crosHotspotConfigObserverReceiver_: CrosHotspotConfigObserverReceiver;
   private globalPolicy_: GlobalPolicy|undefined;
   private isHotspotFeatureEnabled_: boolean;
+  private isInstantHotspotRebrandEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private networkStateLists_:
       Record<NetworkType, OncMojo.NetworkStateProperties[]>;
@@ -319,7 +331,8 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
       // lists and do not add an active network for 'Tether' so that there is
       // only one 'Mobile data' section / subpage.
       if (type === NetworkType.kTether &&
-          newDeviceStates[NetworkType.kCellular]) {
+          newDeviceStates[NetworkType.kCellular] &&
+          !this.isInstantHotspotRebrandEnabled_) {
         newNetworkStateLists[NetworkType.kCellular] =
             newNetworkStateLists[NetworkType.kCellular].concat(
                 newNetworkStateLists[NetworkType.kTether]);
@@ -357,7 +370,8 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
       activeStatesByType: Map<NetworkType, OncMojo.NetworkStateProperties>,
       type: NetworkType): OncMojo.NetworkStateProperties|undefined {
     let activeState = activeStatesByType.get(type);
-    if (!activeState && type === NetworkType.kCellular) {
+    if (!activeState && type === NetworkType.kCellular &&
+        !this.isInstantHotspotRebrandEnabled_) {
       activeState = activeStatesByType.get(NetworkType.kTether);
     }
     return activeState || OncMojo.getDefaultNetworkState(type);

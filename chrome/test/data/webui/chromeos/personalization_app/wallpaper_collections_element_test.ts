@@ -330,7 +330,11 @@ suite('WallpaperCollectionsElementTest', function() {
 
   for (const isTimeOfDayWallpaperEnabled of [false, true]) {
     test(`tile order time of day ${isTimeOfDayWallpaperEnabled}`, async () => {
-      loadTimeData.overrideValues({isTimeOfDayWallpaperEnabled});
+      loadTimeData.overrideValues({
+        isTimeOfDayWallpaperEnabled: isTimeOfDayWallpaperEnabled,
+        // SeaPen tile is tested seperately in later tests
+        isSeaPenEnabled: false,
+      });
       const timeOfDayCollectionId =
           loadTimeData.getString('timeOfDayWallpaperCollectionId');
 

@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup2"
-    enum="BooleanEnabled" expires_after="2024-04-28">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.ClearBrowsingData.OpenMyActivity"
-    enum="ClearBrowsingDataMyActivityNavigation" expires_after="2024-04-28">
+    enum="ClearBrowsingDataMyActivityNavigation" expires_after="2024-06-30">
   <owner>andzaytsev@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.DefaultBrowserFromSource"
-    enum="IOSDefaultBrowserPromoSource" expires_after="2024-04-28">
+    enum="IOSDefaultBrowserPromoSource" expires_after="2024-06-30">
   <owner>djean@google.com</owner>
   <owner>olivierrobin@google.com</owner>
   <summary>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.GivenShowHomeButton_HomePageIsNewTabPage2"
-    enum="Boolean" expires_after="2024-04-30">
+    enum="Boolean" expires_after="2024-06-30">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.OverscrollHistoryNavigation.Enabled"
-    enum="BooleanEnabled" expires_after="2024-04-28">
+    enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>charlesmeng@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <summary>
@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
     expires_after="2024-06-02">
   <owner>rainhard@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The number of settings steps that can be shown in the Privacy Guide flow.
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
     expires_after="2024-06-02">
   <owner>rainhard@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records which steps were set to be eligible to be shown when user clicks
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.DialogDisplayHost"
     enum="SettingsPrivacySandboxDialogDisplayHostHash"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>sauski@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.DialogLoadTime" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PromptHelperEvent"
-    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2024-04-28">
+    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2024-06-30">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
@@ -431,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PromptStartupState"
-    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2024-04-28">
+    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2024-06-30">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.StartupState"
-    enum="SettingsPrivacySandboxStartupStates" expires_after="2024-04-28">
+    enum="SettingsPrivacySandboxStartupStates" expires_after="2024-06-30">
   <owner>sauski@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Topics.Enabled" enum="BooleanEnabled"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.Interactions"
-    enum="SettingsSafetyCheckInteractions" expires_after="2024-04-28">
+    enum="SettingsSafetyCheckInteractions" expires_after="2024-06-30">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>anaudrey@chromium.org</owner>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.NotificationsListCount"
-    units="suggestions" expires_after="2024-04-28">
+    units="suggestions" expires_after="2024-06-30">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -504,7 +504,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyCheck.NotificationsModuleInteractions"
     enum="SafetyCheckNotificationsModuleInteractions"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays"
-    units="days" expires_after="2024-04-28">
+    units="days" expires_after="2024-06-30">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsListCount"
-    units="suggestions" expires_after="2024-04-28">
+    units="suggestions" expires_after="2024-06-30">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -560,7 +560,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown"
-    enum="BooleanVisible" expires_after="2024-04-28">
+    enum="BooleanVisible" expires_after="2024-06-30">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -574,7 +574,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -720,7 +720,7 @@ chromium-metrics-reviews@google.com.
     enum="SafetyCheckNotificationsModuleInteractions"
     expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The user actions taken on the notification permissions module in Safety
@@ -732,7 +732,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.NotificationPermissionsModule.ListCount"
     units="suggestions" expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The number of notification permissions suggested to be removed. Recorded
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Passwords Card is located on Safety Check page in settings and can be in one
@@ -754,7 +754,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Safe Browsing Card is located on Safety Check page in settings and can be in
@@ -767,7 +767,7 @@ chromium-metrics-reviews@google.com.
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
     expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The user actions taken on the unused site permissions module in Safety Check
@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.ListCount"
     units="suggestions" expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The number of unused site permissions suggested to be removed. Recorded when
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Version Card is located on Safety Check page in settings and can be in one
@@ -799,7 +799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SearchEngines.Interactions"
-    enum="SettingsSearchEnginesInteractions" expires_after="2024-04-28">
+    enum="SettingsSearchEnginesInteractions" expires_after="2024-06-30">
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -808,60 +808,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SearchLength" units="units" expires_after="M85">
-  <owner>dschuyler@chromium.org</owner>
-  <summary>
-    The number of characters typed in the chrome://settings page search box.
-    Intended to determine if we are making the user type too much to find what
-    they are looking for (the search is incremental).
-  </summary>
-</histogram>
-
-<histogram name="Settings.SearchLengthNoMatch" units="units"
-    expires_after="M85">
-  <owner>dschuyler@chromium.org</owner>
-  <summary>
-    If no matches are found when searching within the chrome://settings page,
-    record the length of the search text.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SearchPageMatchCount" units="units"
-    expires_after="M85">
-  <owner>dschuyler@chromium.org</owner>
-  <summary>
-    The number of search page hits within the chrome://settings page. This is
-    especially important when the count is zero (i.e. we returned no hits for a
-    given search in settings). A search is considered complete via timeout since
-    there is no concrete way to define the end of a search (the search is
-    incremental).
-  </summary>
-</histogram>
-
-<histogram name="Settings.SearchSections" enum="SettingsSections"
-    expires_after="M85">
-  <owner>dschuyler@chromium.org</owner>
-  <summary>
-    If there is no further activity in the search box for 1 second, this records
-    one tick each time a settings section is shown as a result of searching
-    withing the chrome://settings page. If multiple matches are found within the
-    same section, the section match is only recorded once.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SearchSubpageMatchCount" units="units"
-    expires_after="M85">
-  <owner>dschuyler@chromium.org</owner>
-  <summary>
-    The number of search subpage hits within the chrome://settings page. This is
-    different from Settings.SearchPageMatchCount in that it is tracking hits in
-    subpages rather than top level pages. See also
-    Settings.SearchPageMatchCount.
-  </summary>
-</histogram>
-
 <histogram name="Settings.ShowHomeButton2" enum="BooleanEnabled"
-    expires_after="2024-04-30">
+    expires_after="2024-06-30">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -875,7 +823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.StartSetAsDefault" enum="BooleanHit"
-    expires_after="2024-04-28">
+    expires_after="2024-06-30">
   <owner>pmonette@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -885,7 +833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.StartupPageEngineTypes2"
-    enum="OmniboxSearchEngineType" expires_after="2024-04-30">
+    enum="OmniboxSearchEngineType" expires_after="2024-06-30">
   <owner>mpearson@chromium.org</owner>
   <owner>csharp@chromium.org</owner>
   <summary>
@@ -902,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings2" enum="SessionStartupPref"
-    expires_after="2024-04-30">
+    expires_after="2024-06-30">
   <owner>mpearson@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1000,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
-    expires_after="2024-01-21">
+    expires_after="2024-05-19">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
@@ -1048,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2024-01-28">
+    enum="TrackedPreference" expires_after="2024-05-19">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

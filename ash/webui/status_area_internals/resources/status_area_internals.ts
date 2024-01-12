@@ -84,6 +84,13 @@ export class StatusAreaInternalsElement extends PolymerElement {
     const toggled = e.detail;
     pageHandler.setActiveDirectoryManaged(toggled);
   }
+
+  onChildUserToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.setIsInUserChildSession(toggled);
+  }
 }
 
 customElements.define(

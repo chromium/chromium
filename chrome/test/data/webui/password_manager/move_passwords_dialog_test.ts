@@ -5,6 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {PasswordManagerImpl, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -72,6 +73,39 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(password.password, passwordItem.$.password.value);
   });
 
+  test('single password content correctly displayed', async function() {
+    const password =
+        createPasswordEntry({id: 0, username: 'user1', password: 'sTr0nGp@@s'});
+    password.affiliatedDomains = [
+      createAffiliatedDomain('test.com'),
+      createAffiliatedDomain('m.test.com'),
+    ];
+    passwordManager.setRequestCredentialsDetailsResponse([password]);
+
+    syncProxy.accountInfo = {
+      email: 'test@gmail.com',
+      avatarImage: 'chrome://image-url/',
+    };
+
+    const dialog = document.createElement('move-single-password-dialog');
+    dialog.password = password;
+    document.body.appendChild(dialog);
+    await flushTasks();
+    assertTrue(dialog.$.dialog.open);
+    assertEquals(
+        syncProxy.accountInfo.email, dialog.$.accountEmail.textContent!.trim());
+    assertEquals(syncProxy.accountInfo.avatarImage, dialog.$.avatar.src);
+    assertEquals(
+        loadTimeData.getString('moveSinglePasswordTitle'),
+        dialog.$.title.textContent!.trim());
+    assertEquals(
+        loadTimeData.getString('moveSinglePasswordDescription'),
+        dialog.$.description.textContent!.trim());
+    assertEquals(
+        loadTimeData.getString('moveSinglePasswordButton'),
+        dialog.$.move.textContent!.trim());
+  });
+
   test('Move passwords', async function() {
     const passwords = [
       createPasswordEntry({id: 0, username: 'user1', password: 'sTr0nGp@@s'}),
@@ -101,6 +135,37 @@ suite('AddPasswordDialogTest', function() {
 
     const ids = await passwordManager.whenCalled('movePasswordsToAccount');
     assertArrayEquals([0, 1, 2], ids);
+  });
+
+  test('Move single password', async function() {
+    const password = createPasswordEntry({
+      id: 1234,
+      username: 'user1',
+      password: 'sTr0nGp@@s',
+      affiliatedDomains: [createAffiliatedDomain('test.com')],
+    });
+
+    passwordManager.setRequestCredentialsDetailsResponse([password]);
+    passwordManager.data.isOptedInAccountStorage = true;
+
+    syncProxy.accountInfo = {
+      email: 'test@gmail.com',
+      avatarImage: 'chrome://image-url/',
+    };
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const dialog = document.createElement('move-single-password-dialog');
+    dialog.password = password;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    dialog.$.move.click();
+
+    const ids = await passwordManager.whenCalled('movePasswordsToAccount');
+    assertArrayEquals([1234], ids);
   });
 
   test('Move only selected passwords', async function() {

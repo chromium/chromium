@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/structured_metrics_key_events_observer.h"
+
 #include "base/logging.h"
 #include "components/metrics/structured/structured_events.h"
 

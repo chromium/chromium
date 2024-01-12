@@ -586,6 +586,29 @@ TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
   EXPECT_FALSE(
       chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
   EXPECT_FALSE(multitask_menu_view->partial_button());
+  GetMultitaskMenu()->Reset();
+
+  // Snap `window` to 1/3 to set its snap ratio to 1/3.
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY,
+                                    chromeos::kOneThirdSnapRatio);
+  WindowState::Get(window.get())->OnWMEvent(&snap_left);
+  const WMEvent restore(WM_EVENT_RESTORE);
+  WindowState::Get(window.get())->OnWMEvent(&restore);
+
+  // Set minimum size to make `window` snappable in 1/2 ratio but not in 1/3
+  // ratio.
+  delegate.set_minimum_size(gfx::Size(work_area_bounds.width() * 0.4, 0));
+
+  // Half button should be visible according to snappability with the default
+  // snap ratio instead of the window's current snap ratio.
+  ShowMultitaskMenu(*window);
+  multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
+  EXPECT_TRUE(
+      chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
+  EXPECT_TRUE(multitask_menu_view->partial_button()->GetEnabled());
+  ASSERT_FALSE(multitask_menu_view->partial_button()
+                   ->GetRightBottomButton()
+                   ->GetEnabled());
 }
 
 // Tests that if a window cannot be snapped or floated, the buttons will not

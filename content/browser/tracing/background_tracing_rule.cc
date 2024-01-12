@@ -27,7 +27,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_histogram_sample.pbzero.h"
 
 namespace {
@@ -290,7 +289,7 @@ class HistogramRule : public BackgroundTracingRule,
     if (!histogram_name)
       return nullptr;
 
-    absl::optional<int> histogram_lower_value =
+    std::optional<int> histogram_lower_value =
         dict.FindInt(kConfigRuleHistogramValue1Key);
     if (!histogram_lower_value) {
       // Check for the old naming.
@@ -434,7 +433,7 @@ class HistogramRule : public BackgroundTracingRule,
   std::string histogram_name_;
   int histogram_lower_value_;
   int histogram_upper_value_;
-  absl::optional<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+  std::optional<base::StatisticsRecorder::ScopedHistogramSampleObserver>
       histogram_sample_callback_;
 };
 

@@ -46,9 +46,6 @@ void RunPendingTasks();
 // Waits for delayed task to complete or timers to fire for |delay|.
 void RunDelayedTasks(base::TimeDelta delay);
 
-void EnterRunLoop();
-void ExitRunLoop();
-
 void YieldCurrentThread();
 
 // Returns Blink top directory as an absolute path, e.g.

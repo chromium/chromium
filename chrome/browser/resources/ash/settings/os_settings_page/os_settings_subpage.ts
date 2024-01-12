@@ -8,24 +8,26 @@
  * contains the subpage title, a search field and a back icon.
  */
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
+import './settings_card.js';
 
-import {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import {FindShortcutMixin, FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
-import {I18nMixin, I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
-import {assert} from '//resources/js/assert.js';
-import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {listenOnce} from '//resources/js/util.js';
-import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
+import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Constructor} from '../common/types.js';
@@ -35,7 +37,7 @@ import {getTemplate} from './os_settings_subpage.html.js';
 
 export interface OsSettingsSubpageElement {
   $: {
-    closeButton: HTMLElement,
+    backButton: HTMLButtonElement,
   };
 }
 
@@ -48,7 +50,7 @@ const OsSettingsSubpageElementBase =
 
 export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   static get is() {
-    return 'os-settings-subpage';
+    return 'os-settings-subpage' as const;
   }
 
   static get template() {
@@ -89,9 +91,10 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
       },
 
       /**
-       * Whether we should hide the "close" button to get to the previous page.
+       * Whether the back button, which goes to the previous page, should be
+       * hidden.
        */
-      hideCloseButton: {
+      hideBackButton: {
         type: Boolean,
         value: false,
       },
@@ -119,6 +122,14 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
         value: false,
         observer: 'onActiveChanged_',
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -129,12 +140,13 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   searchTerm: string;
   showSpinner: boolean;
   spinnerTitle: string;
-  hideCloseButton: boolean;
+  hideBackButton: boolean;
   associatedControl: HTMLElement|null;
   preserveSearchTerm: boolean;
   private active_: boolean;
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;
+  private readonly isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();
@@ -199,10 +211,10 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
 
   /** Focuses the back button when page is loaded. */
   focusBackButton(): void {
-    if (this.hideCloseButton) {
+    if (this.hideBackButton) {
       return;
     }
-    afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
+    afterNextRender(this, () => focusWithoutInk(this.$.backButton));
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
@@ -303,7 +315,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-subpage': OsSettingsSubpageElement;
+    [OsSettingsSubpageElement.is]: OsSettingsSubpageElement;
   }
 }
 

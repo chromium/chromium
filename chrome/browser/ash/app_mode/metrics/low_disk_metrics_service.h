@@ -54,7 +54,7 @@ class LowDiskMetricsService : public UserDataAuthClient::Observer {
   // Report a highest severity of the previous session.
   void ReportPreviousSessionLowDiskSeverity();
 
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
   // The highest low disk notification severity during the session.
   KioskLowDiskSeverity low_disk_severity_{KioskLowDiskSeverity::kNone};
 };

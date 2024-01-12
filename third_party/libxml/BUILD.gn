@@ -235,17 +235,7 @@ static_library("libxml") {
     "src/threads.c",
     "src/timsort.h",
     "src/tree.c",
-    "src/triodef.h",
-    "src/trionan.h",
 
-    #"src/trio.c",
-    #"src/trio.h",
-    #"src/triodef.h",
-    # Note: xpath.c #includes trionan.c
-    #"src/trionan.c",
-    #"src/triop.h",
-    #"src/triostr.c",
-    #"src/triostr.h",
     "src/uri.c",
     "src/valid.c",
 

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">포르투갈어(미국 국제 키보드)</translation>
 <translation id="1629521517399325891">사용자 인증서를 네트워크 인증에 사용할 수 없습니다.</translation>
 <translation id="1641780993263690097">중국어(병음)</translation>
-<translation id="1646019627374511909">파일 <ph name="NUMBER_OF_ITEMS" />개를 오프라인에서 사용하도록 설정 중</translation>
 <translation id="164969095109328410">Chrome 기기</translation>
 <translation id="1661207570040737402">공유 드라이브의 Google Workspace 스토리지를 모두 사용했습니다.</translation>
 <translation id="1661867754829461514">PIN이 없습니다.</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google Sheets</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3486821258960016770">몽골어</translation>
-<translation id="3495304270784461826">오류가 <ph name="COUNT" />개 있습니다.</translation>
 <translation id="3509680540198371098">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3511705761158917664">항목 <ph name="NUMBER_OF_ITEMS" />개 동기화 준비 중...</translation>
 <translation id="3522708245912499433">포르투갈어</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">관리자 정책에 의해 파일 <ph name="COUNT" />개의 복사가 차단되었습니다.</translation>
 <translation id="6509122719576673235">노르웨이어</translation>
 <translation id="6528513914570774834">이 기기의 다른 사용자가 이 네트워크를 사용하도록 허용</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" />을(를) 동기화하는 중...</translation>
 <translation id="6549689063733911810">최근 문서함</translation>
 <translation id="6558280019477628686">오류가 발생했습니다. 일부 항목이 삭제되지 않았을 수 있습니다.</translation>
 <translation id="656398493051028875">'<ph name="FILENAME" />' 삭제 중...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Linux 앱이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="7555339735447658365">현재 오프라인 상태입니다. 인터넷에 연결되면 파일 동기화가 재개됩니다.</translation>
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정 중</translation>
 <translation id="7600126690270271294">세르비아어</translation>
 <translation id="7603724359189955920">격자</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" />이(가) 이미 있습니다. 이름을 변경한 후 다시 시도해 주세요.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8147028810663464959">문자 폭을 최대로 설정</translation>
 <translation id="8151638057146502721">구성</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{오류 1개}other{오류 #개}}</translation>
 <translation id="8154842056504218462">모든 항목이 선택되었습니다.</translation>
 <translation id="8157684860301034423">앱 정보를 가져오지 못했습니다.</translation>
 <translation id="8175731104491895765">프랑스어(벨기에)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" />에서 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 권한을 부여합니다.</translation>
 <translation id="8372369524088641025">잘못된 WEP 키</translation>
 <translation id="8372852072747894550">그리스어</translation>
+<translation id="8377269993083688872">이메일 레이아웃</translation>
 <translation id="8386903983509584791">검색 완료</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> 파일이 추출되었습니다.</translation>
 <translation id="8395901698320285466">크기</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">열려는 파일 선택</translation>
 <translation id="8577897833047451336">크로아티아어</translation>
 <translation id="8578308463707544055">인도네시아어</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />개 항목 동기화 중...</translation>
 <translation id="8600173386174225982">파일 목록을 썸네일 이미지 보기로 변경했습니다.</translation>
 <translation id="8601932370724196034">Crostini 이미지 파일</translation>
 <translation id="8609695766746872526">아이슬란드어</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">공유 네트워크에서 프록시 허용</translation>
 <translation id="8790981080411996443">식물에 물을 주는 사람</translation>
 <translation id="8798099450830957504">기본값</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{경고 1개}other{경고 #개}}</translation>
 <translation id="8808686172382650546">고양이</translation>
 <translation id="8810671769985673465">압축에 실패했습니다. 남은 항목: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">스페인어(스페인)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="9046895021617826162">연결 실패</translation>
 <translation id="9065512565307033593">확인하지 못하면 네트워크 액세스가 사용 중지됩니다.</translation>
-<translation id="9083722265619106011">{0,plural, =1{경고가 1개입니다.}other{경고 <ph name="COUNT" />개입니다.}}</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9099674669267916096">페이지 수</translation>

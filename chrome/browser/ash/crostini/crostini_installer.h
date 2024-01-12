@@ -134,7 +134,7 @@ class CrostiniInstaller : public KeyedService,
   void OnCrostiniRemovedAfterConfigurationFailed(
       crostini::CrostiniResult result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   State state_ = State::IDLE;
   crostini::mojom::InstallerState installing_state_;

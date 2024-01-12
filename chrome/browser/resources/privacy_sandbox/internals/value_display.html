@@ -1,0 +1,36 @@
+<style>
+#type {
+  color: dimgray;
+  font-size: 0.6rem;
+}
+
+#logical-value.defined {
+  color: dimgray;
+  margin-left: 1rem;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#logical-value.defined::before {
+  content: "("
+}
+
+#logical-value.defined::after {
+  content: ")"
+}
+
+span.bool-true {
+  color: green;
+}
+
+span.bool-false {
+  color: red;
+}
+
+span.none {
+  color: orange;
+}
+</style>
+<span id="type"></span>
+<span id="value"></span>
+<span id="logical-value"></span>

@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -482,6 +483,9 @@ void PrivacySandboxAttestations::OnAttestationsParsed(
   }
 
   attestations_parse_progress_ = Progress::kFinished;
+
+  VLOG(1) << "Parsed Privacy Sandbox Attestation list version: "
+          << file_version_;
 
   NotifyObserversOnAttestationsLoaded();
 

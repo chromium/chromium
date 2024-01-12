@@ -107,7 +107,7 @@ class FakeURLLoader final : public URLLoader {
 class FakeURLLoaderFactory final : public URLLoaderFactory {
  public:
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const WebURLRequest&,
+      const network::ResourceRequest&,
       scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle>,
@@ -134,7 +134,7 @@ class FakeWebServiceWorkerFetchContext final
   }
   void WillSendRequest(WebURLRequest&) override {}
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
-      const WebURLRequest& request) override {
+      const network::ResourceRequest& request) override {
     return {};
   }
 

@@ -54,13 +54,6 @@ typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
 // operation completes.
 - (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion;
 
-// Prefetches the snapshot. Once the asynchronous fetch has returned, the next
-// call to `fetchSnapshot:` can be synchronous.
-- (void)prefetchSnapshot;
-
-// Clears the potential prefetched snapshot.
-- (void)clearPrefetchedSnapshot;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_SWITCHER_ITEM_H_

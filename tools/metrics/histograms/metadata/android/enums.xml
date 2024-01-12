@@ -1077,16 +1077,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Stylus"/>
 </enum>
 
-<enum name="IntentUriNavigationResult">
-  <int value="0" label="Intent with an unused fallback URL was launched"/>
-  <int value="1" label="Intent fallback URL was used"/>
-  <int value="2" label="Intent with an unused fallback URL was blocked"/>
-  <int value="3" label="Intent with a fallback URL prompted the user"/>
-  <int value="4" label="Intent without a fallback URL was launched"/>
-  <int value="5" label="Intent without a fallback URL was blocked"/>
-  <int value="6" label="Intent without a fallback URL prompted the user"/>
-</enum>
-
 <enum name="LightTheme">
   <int value="0" label="undefined"/>
   <int value="1" label="no"/>

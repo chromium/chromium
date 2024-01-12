@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -25,10 +24,6 @@
 #include "ui/base/page_transition_types.h"
 
 class GURL;
-
-namespace base {
-class TaskRunner;
-}
 
 // Callback type for additional url validations.
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
@@ -148,9 +143,6 @@ class SupervisedUserURLFilter {
 
   static FilteringBehavior BehaviorFromInt(int behavior_value);
 
-  static bool ReasonIsAutomatic(
-      supervised_user::FilteringBehaviorReason reason);
-
   // Returns true if the |host| matches the pattern. A pattern is a hostname
   // with one or both of the following modifications:
   // - If the pattern starts with "*.", it matches the host or any subdomain
@@ -207,18 +199,10 @@ class SupervisedUserURLFilter {
       const GURL& main_frame_url,
       FilteringBehaviorCallback callback);
 
-  // Gets all the allowlists that the url is part of. Returns id->name of each
-  // allowlist.
-  std::map<std::string, std::u16string> GetMatchingAllowlistTitles(
-      const GURL& url) const;
-
   // Sets the filtering behavior for pages not on a list (default is ALLOW).
   void SetDefaultFilteringBehavior(FilteringBehavior behavior);
 
   FilteringBehavior GetDefaultFilteringBehavior() const;
-
-  // Set the list of matched patterns to the passed in list, for testing.
-  void SetFromPatternsForTesting(const std::vector<std::string>& patterns);
 
   // Sets the set of manually allowed or blocked hosts.
   void SetManualHosts(std::map<std::string, bool> host_map);
@@ -244,18 +228,19 @@ class SupervisedUserURLFilter {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Sets a different task runner for testing.
-  void SetBlockingTaskRunnerForTesting(
-      const scoped_refptr<base::TaskRunner>& task_runner);
-
   WebFilterType GetWebFilterType() const;
 
-  // Reports FamilyUser.WebFilterType metrics when `is_filter_initialized_` is
-  // true.
+  // Emits URL filter metrics based on the parent web filter configuration
+  // applied to the supervised user. Returns true if one or more metrics were
+  // emitted.
+  bool EmitURLFilterMetrics() const;
+
+  // Reports FamilyUser.WebFilterType metrics based on parent web filter type
+  // configuration.
   void ReportWebFilterTypeMetrics() const;
 
-  // Reports FamilyUser.ManagedSiteList metrics when `is_filter_initialized_` is
-  // true.
+  // Reports FamilyUser.ManagedSiteList metrics based on parent web filter allow
+  // and blocklist configuration.
   void ReportManagedSiteListMetrics() const;
 
   // Set value for `is_filter_initialized_`.
@@ -311,8 +296,6 @@ class SupervisedUserURLFilter {
   std::unique_ptr<Delegate> service_delegate_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
-
-  scoped_refptr<base::TaskRunner> blocking_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

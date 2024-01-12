@@ -45,7 +45,7 @@ class SmbFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
       const storage::FileSystemURL& url,
       ReadDirectoryCallback callback);
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::WeakPtrFactory<SmbFsAsyncFileUtil> weak_factory_{this};
 };

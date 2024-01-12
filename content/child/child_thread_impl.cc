@@ -398,7 +398,7 @@ class ChildThreadImpl::IOThreadState
 #if BUILDFLAG(IS_POSIX)
     // Take the file descriptor so that |file| does not close it.
     base::ScopedFD fd(file.TakePlatformFile());
-#if BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PGO) || BUILDFLAG(USE_CLANG_COVERAGE)
     FILE* f = fdopen(fd.release(), "r+b");
     __llvm_profile_set_file_object(f, 1);
 #else
@@ -528,6 +528,7 @@ ChildThreadImpl::Options ChildThreadImpl::Options::Builder::Build() {
   return options_;
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 ChildThreadImpl::ChildThreadMessageRouter::ChildThreadMessageRouter(
     IPC::Sender* sender)
     : sender_(sender) {}
@@ -548,6 +549,7 @@ bool ChildThreadImpl::ChildThreadMessageRouter::RouteMessage(
 #endif
   return handled;
 }
+#endif
 
 ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure)
     : ChildThreadImpl(std::move(quit_closure), Options::Builder().Build()) {}
@@ -555,7 +557,9 @@ ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure)
 ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure,
                                  const Options& options)
     : resetter_(&child_thread_impl, this),
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
       router_(this),
+#endif
       quit_closure_(std::move(quit_closure)),
       browser_process_io_runner_(options.browser_process_io_runner),
       channel_connected_factory_(
@@ -612,7 +616,7 @@ void ChildThreadImpl::Init(const Options& options) {
     if (options.urgent_message_observer) {
       channel_->SetUrgentMessageObserver(options.urgent_message_observer);
     }
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED) && BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
     if (!IsInBrowserProcess())
       IPC::Logging::GetInstance()->SetIPCSender(this);
 #endif
@@ -771,7 +775,7 @@ void ChildThreadImpl::Init(const Options& options) {
 }
 
 ChildThreadImpl::~ChildThreadImpl() {
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED) && BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   IPC::Logging::GetInstance()->SetIPCSender(NULL);
 #endif
 
@@ -823,6 +827,7 @@ void ChildThreadImpl::OnChannelError() {
     quit_closure_.Run();
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool ChildThreadImpl::Send(IPC::Message* msg) {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   if (!channel_) {
@@ -832,6 +837,7 @@ bool ChildThreadImpl::Send(IPC::Message* msg) {
 
   return channel_->Send(msg);
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 void ChildThreadImpl::PreCacheFont(const LOGFONT& log_font) {
@@ -862,16 +868,22 @@ void ChildThreadImpl::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
     child_process_host_->BindHostReceiver(std::move(receiver));
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 IPC::MessageRouter* ChildThreadImpl::GetRouter() {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   return &router_;
 }
+#endif
 
 bool ChildThreadImpl::OnMessageReceived(const IPC::Message& msg) {
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   if (msg.routing_id() == MSG_ROUTING_CONTROL)
     return OnControlMessageReceived(msg);
 
   return router_.OnMessageReceived(msg);
+#else
+  return false;
+#endif
 }
 
 void ChildThreadImpl::OnAssociatedInterfaceRequest(
@@ -895,9 +907,11 @@ void ChildThreadImpl::ExposeInterfacesToBrowser(mojo::BinderMap binders) {
                                 io_thread_state_, std::move(binders)));
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool ChildThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   return false;
 }
+#endif
 
 void ChildThreadImpl::GetBackgroundTracingAgentProvider(
     mojo::PendingReceiver<tracing::mojom::BackgroundTracingAgentProvider>

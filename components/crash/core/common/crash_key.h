@@ -250,7 +250,7 @@ using CrashKeyString = CrashKeyStringBreakpad<MaxLength>;
 //
 //      DoSomethignImpl(data);
 //    }
-class ScopedCrashKeyString {
+class [[nodiscard]] ScopedCrashKeyString {
  public:
 #if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
   using CrashKeyType = crashpad::Annotation;

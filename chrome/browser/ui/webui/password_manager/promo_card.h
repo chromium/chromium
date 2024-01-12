@@ -28,7 +28,9 @@ enum class PromoCardType {
   kAccessOnAnyDevice = 3,
   // Relaunch Chrome to fix the keychain issue.
   kRelauchChrome = 4,
-  kMaxValue = kRelauchChrome,
+  // Move passwords stored only on this device to the account.
+  kMovePasswords = 5,
+  kMaxValue = kMovePasswords,
 };
 
 // This is the base class for all password manager promo cards. It has a basic

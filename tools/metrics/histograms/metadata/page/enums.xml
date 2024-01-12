@@ -305,6 +305,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Allow by 3PCD heuristics"/>
   <int value="6" label="Allow by Storage access API"/>
   <int value="7" label="Allow by top-level Storage access API"/>
+  <int value="8" label="Allow by opting into CORS protections"/>
 </enum>
 
 </enums>

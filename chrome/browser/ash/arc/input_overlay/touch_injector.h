@@ -80,8 +80,9 @@ class TouchInjector : public ui::EventRewriter {
   //   ]
   // }
   void ParseActions(const base::Value::Dict& root);
-  // Update the flags after loading data finished.
-  void UpdateFlags();
+  // Update the flags after loading data finished. `is_o4c` is true if the game
+  // is optimized for ChromeOS.
+  void UpdateFlags(bool is_o4c);
   // Notify the EventRewriter whether the text input is focused or not.
   void NotifyTextInputState(bool active);
   // Register the EventRewriter.

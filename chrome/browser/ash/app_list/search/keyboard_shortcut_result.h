@@ -114,7 +114,7 @@ class KeyboardShortcutResult : public ChromeSearchResult {
   std::string accelerator_action_;
   std::string accelerator_category_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   friend class test::KeyboardShortcutResultTest;
 };
 

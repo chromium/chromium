@@ -57,7 +57,7 @@ class ExtensionAssetsManagerHelper {
   struct PendingInstallInfo {
     base::FilePath unpacked_extension_root;
     base::FilePath local_install_dir;
-    raw_ptr<Profile, ExperimentalAsh> profile;
+    raw_ptr<Profile> profile;
     ExtensionAssetsManager::InstallExtensionCallback callback;
   };
   using PendingInstallList = std::vector<PendingInstallInfo>;

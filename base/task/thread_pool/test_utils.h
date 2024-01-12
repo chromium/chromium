@@ -122,7 +122,7 @@ class MockJobTask : public base::RefCountedThreadSafe<MockJobTask> {
 scoped_refptr<Sequence> CreateSequenceWithTask(
     Task task,
     const TaskTraits& traits,
-    scoped_refptr<TaskRunner> task_runner = nullptr,
+    scoped_refptr<SequencedTaskRunner> task_runner = nullptr,
     TaskSourceExecutionMode execution_mode =
         TaskSourceExecutionMode::kParallel);
 

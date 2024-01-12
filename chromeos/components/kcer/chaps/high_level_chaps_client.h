@@ -1,0 +1,197 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_COMPONENTS_KCER_CHAPS_HIGH_LEVEL_CHAPS_CLIENT_H_
+#define CHROMEOS_COMPONENTS_KCER_CHAPS_HIGH_LEVEL_CHAPS_CLIENT_H_
+
+#include <stdint.h>
+
+#include <vector>
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
+#include "chromeos/components/kcer/attributes.pb.h"
+#include "chromeos/components/kcer/chaps/session_chaps_client.h"
+#include "chromeos/constants/pkcs11_definitions.h"
+
+namespace kcer {
+
+// The main class to communicate with Chaps. Further simplifies the D-Bus
+// protocol (on top of SessionChapsClient):
+// * Uses more friendly types for arguments.
+// * Tries to guess attribute sizes for GetAttributeValue and handles the
+// retrieval of the actual sizes when needed.
+// * Adds additional convenience methods.
+// If any of the methods fail with a session error (see
+// SessionChapsClient::IsSessionError), all ObjectHandle-s become obsolete and
+// should be immediately discarded (Chaps could still accept them, but they
+// might start referring to different objects).
+class HighLevelChapsClient {
+ public:
+  using GetAttributeValueCallback =
+      base::OnceCallback<void(chaps::AttributeList attributes,
+                              uint32_t result_code)>;
+
+  // A list of all attributes supported by the GetAttributeValue,
+  // SetAttributeValue methods, can be expanded as needed. It's allowed to cast
+  // from AttributeId to uint32_t.
+  enum class AttributeId {
+    kModulus = chromeos::PKCS11_CKA_MODULUS,
+    kPublicExponent = chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
+  };
+
+  HighLevelChapsClient() = default;
+  virtual ~HighLevelChapsClient() = default;
+
+  // Similar to PKCS #11 v2.20 section 11.7 page 128.
+  virtual void CreateObject(
+      SessionChapsClient::SlotId slot_id,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::CreateObjectCallback callback) = 0;
+  // Similar to PKCS #11 v2.20 section 11.7 page 131.
+  virtual void DestroyObject(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      SessionChapsClient::DestroyObjectCallback callback) = 0;
+  // Similar to DestroyObject, but handles multiple objects at once and retries
+  // the deletion on failure.
+  virtual void DestroyObjectsWithRetries(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      SessionChapsClient::DestroyObjectCallback callback) = 0;
+  // Similar to PKCS #11 v2.20 section 11.7 page 133.
+  virtual void GetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      std::vector<AttributeId> attribute_ids,
+      HighLevelChapsClient::GetAttributeValueCallback callback) = 0;
+  // Similar to PKCS #11 v2.20 section 11.7 page 135.
+  virtual void SetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::SetAttributeValueCallback callback) = 0;
+  // Same as SetAttributeValue above, but sets attributes on multiple objects at
+  // once.
+  virtual void SetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::SetAttributeValueCallback callback) = 0;
+  // Combines FindObjects* methods, PKCS #11 v2.20 section 11.7 page 136-138.
+  virtual void FindObjects(
+      SessionChapsClient::SlotId slot_id,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::FindObjectsCallback callback) = 0;
+  // Similar to PKCS #11 v2.20 section 11.7 page 135.
+  virtual void GenerateKeyPair(
+      SessionChapsClient::SlotId slot_id,
+      uint64_t mechanism_type,
+      const std::vector<uint8_t>& mechanism_parameter,
+      const chaps::AttributeList& public_key_attributes,
+      const chaps::AttributeList& private_key_attributes,
+      SessionChapsClient::GenerateKeyPairCallback callback) = 0;
+};
+
+// Exported for unit tests and KcerFactory only.
+class COMPONENT_EXPORT(KCER) HighLevelChapsClientImpl
+    : public HighLevelChapsClient {
+ public:
+  explicit HighLevelChapsClientImpl(SessionChapsClient* session_chaps_client);
+  ~HighLevelChapsClientImpl() override;
+
+  // Implements HighLevelChapsClient.
+  void CreateObject(SessionChapsClient::SlotId slot_id,
+                    const chaps::AttributeList& attributes,
+                    SessionChapsClient::CreateObjectCallback callback) override;
+  void DestroyObject(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      SessionChapsClient::DestroyObjectCallback callback) override;
+  void DestroyObjectsWithRetries(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      SessionChapsClient::DestroyObjectCallback callback) override;
+  void GetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      std::vector<AttributeId> attribute_ids,
+      HighLevelChapsClient::GetAttributeValueCallback callback) override;
+  void SetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::SetAttributeValueCallback callback) override;
+  void SetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::SetAttributeValueCallback callback) override;
+  void FindObjects(SessionChapsClient::SlotId slot_id,
+                   const chaps::AttributeList& attributes,
+                   SessionChapsClient::FindObjectsCallback callback) override;
+  void GenerateKeyPair(
+      SessionChapsClient::SlotId slot_id,
+      uint64_t mechanism_type,
+      const std::vector<uint8_t>& mechanism_parameter,
+      const chaps::AttributeList& public_key_attributes,
+      const chaps::AttributeList& private_key_attributes,
+      SessionChapsClient::GenerateKeyPairCallback callback) override;
+
+  void SetSessionChapsClientForTesting(
+      SessionChapsClient* session_chaps_client);
+
+ private:
+  void DestroyObjectsWithRetriesImpl(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      std::vector<SessionChapsClient::ObjectHandle> failed_handles,
+      uint32_t last_error,
+      int retries_left,
+      SessionChapsClient::DestroyObjectCallback callback);
+  void DestroyObjectsWithRetriesHandleOneResult(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      std::vector<SessionChapsClient::ObjectHandle> failed_handles,
+      uint32_t last_error,
+      int retries_left,
+      SessionChapsClient::DestroyObjectCallback callback,
+      uint32_t result_code);
+  void DidGetAttributeValue(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      HighLevelChapsClient::GetAttributeValueCallback callback,
+      std::vector<uint8_t> attributes,
+      uint32_t result_code);
+  void DidGetAttributeLength(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      HighLevelChapsClient::GetAttributeValueCallback callback,
+      std::vector<uint8_t> attributes,
+      uint32_t result_code);
+  void DidGetAttributeValueWithLength(
+      SessionChapsClient::SlotId slot_id,
+      SessionChapsClient::ObjectHandle object_handle,
+      HighLevelChapsClient::GetAttributeValueCallback callback,
+      std::vector<uint8_t> attributes,
+      uint32_t result_code);
+
+  void SetAttributeValueImpl(
+      SessionChapsClient::SlotId slot_id,
+      std::vector<SessionChapsClient::ObjectHandle> object_handles,
+      const chaps::AttributeList& attributes,
+      SessionChapsClient::SetAttributeValueCallback callback,
+      uint32_t last_error,
+      uint32_t new_result_code);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  const raw_ptr<SessionChapsClient> session_chaps_client_;
+  base::WeakPtrFactory<HighLevelChapsClientImpl> weak_factory_{this};
+};
+
+}  // namespace kcer
+
+#endif  // CHROMEOS_COMPONENTS_KCER_CHAPS_HIGH_LEVEL_CHAPS_CLIENT_H_

@@ -1352,7 +1352,7 @@ public class StripLayoutHelperTest {
         setTabDragSourceMock();
         onLongPress_OnTab();
         // Verify drag invoked
-        verify(mTabDragSource).startTabDragAction(any(), any(), any());
+        verify(mTabDragSource).startTabDragAction(any(), any(), any(), anyFloat());
     }
 
     private void onLongPress_OnTab() {
@@ -2604,7 +2604,7 @@ public class StripLayoutHelperTest {
     }
 
     private void setTabDragSourceMock() {
-        when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
+        when(mTabDragSource.startTabDragAction(any(), any(), any(), anyFloat())).thenReturn(true);
         MultiWindowTestUtils.enableMultiInstance();
     }
 
@@ -2631,7 +2631,7 @@ public class StripLayoutHelperTest {
         // Act and verify.
         mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab, DRAG_START_POINT);
 
-        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any());
+        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any(), anyFloat());
         assertTrue(
                 "Tab being dragged should exist during drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() != null);
@@ -2664,17 +2664,16 @@ public class StripLayoutHelperTest {
     public void testDrag_DragActiveClickedTabOntoStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, false, 1, 5);
-        mStripLayoutHelper.setDraggedTabOffStripForTesting(true);
 
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
         mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
-        mStripLayoutHelper.dragActiveClickedTabOntoStrip(TIMESTAMP, 0f);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true);
 
         // Verify we continue reorder mode with the correct x-offset.
         assertFalse(
-                "Should mark tab is not on strip.",
-                mStripLayoutHelper.isDraggedTabOffStripForTesting());
+                "Should mark the tab is not off the strip.",
+                mStripLayoutHelper.getInteractingTabForTesting().isDraggedOffStrip());
         assertEquals(
                 "Should restore x-offset.",
                 expectedOffsetX,
@@ -2694,10 +2693,10 @@ public class StripLayoutHelperTest {
 
         // Drag tab out of strip.
         float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.dragActiveClickedTabOntoStrip(TIMESTAMP, 0.f);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.dragActiveClickedTabOutOfStrip(TIMESTAMP);
+        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true);
 
         // Finish animations.
         assertNotNull(
@@ -2710,9 +2709,7 @@ public class StripLayoutHelperTest {
                 expectedOffsetX,
                 mStripLayoutHelper.getLastOffsetXForTesting(),
                 EPSILON);
-        assertTrue(
-                "Should mark the tab is off the strip.",
-                mStripLayoutHelper.isDraggedTabOffStripForTesting());
+        assertTrue("Should mark the tab is off the strip.", draggedTab.isDraggedOffStrip());
         assertFalse(
                 "Should not be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
         assertEquals(
@@ -2720,6 +2717,173 @@ public class StripLayoutHelperTest {
                 SCREEN_HEIGHT,
                 draggedTab.getOffsetY(),
                 EPSILON);
+    }
+
+    @Test
+    public void testGetTabIndexForTabDrop_FirstHalfOfTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, true, 1, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 1;
+        float dropX = 300.f;
+        assertEquals(
+                "Should prepare to drop at index 1.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+    }
+
+    @Test
+    public void testGetTabIndexForTabDrop_SecondHalfOfTab() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, true, 1, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // First half of second tab:
+        // tabWidth(265) - overlapWidth(28) + inset(16) to +halfTabWidth(132.5) = 253 to 385.5
+        int expectedIndex = 2;
+        float dropX = 400.f;
+        assertEquals(
+                "Should prepare to drop at index 2.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+    }
+
+    @Test
+    public void testGetTabIndexForTabDrop_OnStartGap() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, true, 1, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Prepare for tab drop.
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+        // Start gap will be tabWidth(265) / 2 = 132.5
+        mStripLayoutHelper.setScrollOffsetForTesting(-132);
+
+        // Last tab ends at:
+        // 3 * (tabWidth(265) - overlapWidth(28)) = 711
+        int expectedIndex = 0;
+        float dropX = 50;
+        assertEquals(
+                "Should prepare to drop at index 0.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+    }
+
+    @Test
+    public void testGetTabIndexForTabDrop_OnEndGap() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, true, 1, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Last tab ends at:
+        // 3 * (tabWidth(265) - overlapWidth(28)) = 711
+        int expectedIndex = 3;
+        float dropX = 750;
+        assertEquals(
+                "Should prepare to drop at index 3.",
+                expectedIndex,
+                mStripLayoutHelper.getTabIndexForTabDrop(dropX));
+    }
+
+    @Test
+    public void testPrepareForTabDrop() {
+        // Setup with 5 tabs.
+        initializeTest(false, false, true, 1, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        // Group 2nd and 3rd tab.
+        groupTabs(1, 3);
+
+        // Prepare for tab drop.
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+
+        // Verify.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertTrue("Should be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
+        assertNotEquals("Should be tab margin after tab 0.", 0, tabs[0].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 3.", 0, tabs[3].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 4.", 0, tabs[4].getTrailingMargin());
+    }
+
+    @Test
+    public void testUpdateReorderPositionForTabDrop() {
+        // Setup with 4 tabs.
+        initializeTest(false, false, true, 1, 4);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Prepare for tab drop.
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+
+        // Hover between 2nd and 3rd tab:
+        // 2 * (tabWidth(265) - overlapWidth(28)) = 474
+        mStripLayoutHelper.updateReorderPositionForTabDrop(474.f);
+
+        // Verify.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertEquals(
+                "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 1.", 0, tabs[1].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin());
+
+        // Now hover between 1st and 2nd tab:
+        // tabWidth(265) - overlapWidth(28) = 237
+        mStripLayoutHelper.updateReorderPositionForTabDrop(237.f);
+
+        // Verify.
+        assertNotEquals("Should be tab margin after tab 0.", 0, tabs[0].getTrailingMargin());
+        assertEquals(
+                "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
+        assertEquals(
+                "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 3.", 0, tabs[3].getTrailingMargin());
+    }
+
+    @Test
+    public void testUpdateReorderPositionForTabDrop_StartAndEndGap() {
+        // Setup with 3 tabs.
+        initializeTest(false, false, true, 1, 3);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH_LANDSCAPE, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Prepare for tab drop.
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0.f, 0.f, false);
+        // Start gap will be tabWidth(265) / 2 = 132.5
+        mStripLayoutHelper.setScrollOffsetForTesting(-132);
+
+        // Hover in start gap:
+        mStripLayoutHelper.updateReorderPositionForTabDrop(50);
+
+        // Verify.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertEquals(
+                "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
+        assertEquals(
+                "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
+
+        // Hover in end gap:
+        mStripLayoutHelper.updateReorderPositionForTabDrop(1100);
+
+        // Verify.
+        assertEquals(
+                "Should not be tab margin after tab 0.", 0, tabs[0].getTrailingMargin(), EPSILON);
+        assertEquals(
+                "Should not be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
+        assertNotEquals("Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin());
     }
 
     @Test

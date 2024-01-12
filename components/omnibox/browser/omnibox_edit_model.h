@@ -178,15 +178,6 @@ class OmniboxEditModel {
   void StartAutocomplete(bool has_selected_text,
                          bool prevent_inline_autocomplete);
 
-  // Starts an autocomplete prefetch request so that zero-prefix providers can
-  // optionally start a prefetch request to warm up the their underlying
-  // service(s) and/or optionally cache their otherwise async response.
-  // Virtual for testing.
-  virtual void StartPrefetch();
-
-  // Closes the popup and cancels any pending asynchronous queries.
-  void StopAutocomplete();
-
   // Determines whether the user can "paste and go", given the specified text.
   bool CanPasteAndGo(const std::u16string& text) const;
 
@@ -497,6 +488,8 @@ class OmniboxEditModel {
                        // for another action such as focusing the location bar
                        // with ctrl-l or copying the selected text with ctrl-c.
   };
+
+  AutocompleteController* autocomplete_controller() const;
 
   // If no query is in progress, starts working on an autocomplete query.
   // Returns true if started; false otherwise.

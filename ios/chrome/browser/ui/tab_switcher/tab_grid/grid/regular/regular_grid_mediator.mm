@@ -30,6 +30,8 @@
   // TabsClosed used to implement the "close all tabs" operation with support
   // for undoing the operation.
   std::unique_ptr<TabsCloser> _tabsCloser;
+  // Whether the current grid is selected.
+  BOOL _selected;
 }
 
 #pragma mark - GridCommands
@@ -71,6 +73,8 @@
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
+  _selected = selected;
+
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRegularPanel"));
@@ -147,24 +151,37 @@
 }
 
 - (void)configureToolbarsButtons {
+  if (!_selected) {
+    return;
+  }
   // Start to configure the delegate, so configured buttons will depend on the
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
   if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
-    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
-                                                      disabledConfiguration]];
+    [self.toolbarsMutator
+        setToolbarConfiguration:
+            [TabGridToolbarsConfiguration
+                disabledConfigurationForPage:TabGridPageRegularTabs]];
     return;
   }
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];
-  toolbarsConfiguration.doneButton = !self.webStateList->empty();
-  toolbarsConfiguration.newTabButton = YES;
-  toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.selectTabsButton = [self hasRegularTabs];
-  toolbarsConfiguration.undoButton = [self canUndoCloseRegularOrInactiveTabs];
+      [[TabGridToolbarsConfiguration alloc]
+          initWithPage:TabGridPageRegularTabs];
+  toolbarsConfiguration.mode = self.currentMode;
+
+  if (self.currentMode == TabGridModeSelection) {
+    [self configureButtonsInSelectionMode:toolbarsConfiguration];
+  } else {
+    toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];
+    toolbarsConfiguration.doneButton = !self.webStateList->empty();
+    toolbarsConfiguration.newTabButton = YES;
+    toolbarsConfiguration.searchButton = YES;
+    toolbarsConfiguration.selectTabsButton = [self hasRegularTabs];
+    toolbarsConfiguration.undoButton = [self canUndoCloseRegularOrInactiveTabs];
+  }
+
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 

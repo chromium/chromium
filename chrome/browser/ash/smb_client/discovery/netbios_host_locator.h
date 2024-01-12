@@ -28,8 +28,7 @@ net::IPAddress CalculateBroadcastAddress(
 bool ShouldUseInterface(const net::NetworkInterface& interface);
 
 // HostLocator implementation that uses NetBIOS to locate hosts.
-class NetBiosHostLocator : public HostLocator,
-                           public base::SupportsWeakPtr<NetBiosHostLocator> {
+class NetBiosHostLocator final : public HostLocator {
  public:
   using GetInterfacesFunction =
       base::RepeatingCallback<net::NetworkInterfaceList()>;
@@ -104,7 +103,7 @@ class NetBiosHostLocator : public HostLocator,
   int32_t outstanding_parse_requests_ = 0;
   GetInterfacesFunction get_interfaces_;
   NetBiosClientFactory client_factory_;
-  raw_ptr<SmbProviderClient, ExperimentalAsh> smb_provider_client_;
+  raw_ptr<SmbProviderClient> smb_provider_client_;
   FindHostsCallback callback_;
   HostMap results_;
   // |netbios_clients_| is a container for storing NetBios clients that are
@@ -112,6 +111,7 @@ class NetBiosHostLocator : public HostLocator,
   // scope. One NetBiosClient exists for each network interface on the device.
   std::list<std::unique_ptr<NetBiosClientInterface>> netbios_clients_;
   std::unique_ptr<base::OneShotTimer> timer_;
+  base::WeakPtrFactory<NetBiosHostLocator> weak_ptr_factory_{this};
 };
 
 }  // namespace smb_client

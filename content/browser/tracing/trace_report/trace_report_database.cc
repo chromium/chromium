@@ -4,6 +4,7 @@
 
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -253,11 +253,11 @@ bool TraceReportDatabase::UploadSkipped(const base::Token& uuid,
   return update_local_trace.Run();
 }
 
-absl::optional<std::string> TraceReportDatabase::GetTraceContent(
+std::optional<std::string> TraceReportDatabase::GetTraceContent(
     const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   sql::Statement get_local_trace_content(database_.GetCachedStatement(
@@ -270,22 +270,22 @@ absl::optional<std::string> TraceReportDatabase::GetTraceContent(
   get_local_trace_content.BindString(0, uuid.ToString());
 
   if (!get_local_trace_content.Step()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string received_value = get_local_trace_content.ColumnString(0);
 
   if (received_value.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return received_value;
 }
 
-absl::optional<std::string> TraceReportDatabase::GetSystemProfile(
+std::optional<std::string> TraceReportDatabase::GetSystemProfile(
     const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   sql::Statement get_system_profile(database_.GetCachedStatement(
@@ -297,13 +297,13 @@ absl::optional<std::string> TraceReportDatabase::GetSystemProfile(
   get_system_profile.BindString(0, uuid.ToString());
 
   if (!get_system_profile.Step()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string received_value = get_system_profile.ColumnString(0);
 
   if (received_value.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return received_value;
 }
@@ -453,11 +453,11 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
   return all_reports;
 }
 
-absl::optional<ClientTraceReport>
+std::optional<ClientTraceReport>
 TraceReportDatabase::GetNextReportPendingUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
@@ -471,14 +471,14 @@ TraceReportDatabase::GetNextReportPendingUpload() {
   while (statement.Step()) {
     return GetReportFromStatement(statement);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<size_t> TraceReportDatabase::UploadCountSince(
+std::optional<size_t> TraceReportDatabase::UploadCountSince(
     std::string scenario_name,
     base::Time since) {
   if (!is_initialized()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
@@ -494,7 +494,7 @@ absl::optional<size_t> TraceReportDatabase::UploadCountSince(
   while (statement.Step()) {
     return static_cast<uint64_t>(statement.ColumnInt64(0));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {

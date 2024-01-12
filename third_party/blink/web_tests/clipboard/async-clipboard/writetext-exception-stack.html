@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+
+test(() => {
+  navigator.clipboard.writeText("")
+    .then(() => assert_unreached("unexpected success result"))
+    .catch((err) => assert_true(!!err.stack, "should have a stack"));
+});
+
+</script>

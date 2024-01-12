@@ -13,12 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_badge_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -72,9 +72,8 @@ EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
                                const PresetTextQueries& preset_text_queries,
                                const gfx::Rect& anchor_view_bounds,
                                EditorMenuViewDelegate* delegate)
-    : editor_menu_mode_(editor_menu_mode),
-      pre_target_handler_(
-          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)),
+    : PreTargetHandlerView(CardType::kEditorMenu),
+      editor_menu_mode_(editor_menu_mode),
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout(preset_text_queries);
@@ -108,7 +107,7 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
 }
 
 void EditorMenuView::AddedToWidget() {
-  widget_observation_.Observe(GetWidget());
+  PreTargetHandlerView::AddedToWidget();
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
@@ -129,26 +128,6 @@ bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
   GetWidget()->Close();
   return true;
-}
-
-void EditorMenuView::OnWidgetDestroying(views::Widget* widget) {
-  widget_observation_.Reset();
-}
-
-void EditorMenuView::OnWidgetActivationChanged(views::Widget* widget,
-                                               bool active) {
-  // When the widget is active, will use default focus behavior.
-  if (active) {
-    // Reset `pre_target_handler_` immediately causes problems if the events are
-    // not all precessed. Reset it asynchronously.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&EditorMenuView::ResetPreTargetHandler,
-                                  weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  // Close widget When it is deactivated.
-  GetWidget()->Close();
 }
 
 void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -318,11 +297,7 @@ void EditorMenuView::OnChipButtonPressed(const std::string& text_query_id) {
   delegate_->OnChipButtonPressed(text_query_id);
 }
 
-void EditorMenuView::ResetPreTargetHandler() {
-  pre_target_handler_.reset();
-}
-
-BEGIN_METADATA(EditorMenuView, views::View)
+BEGIN_METADATA(EditorMenuView)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

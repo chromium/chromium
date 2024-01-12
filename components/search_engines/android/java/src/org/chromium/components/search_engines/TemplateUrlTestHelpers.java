@@ -40,6 +40,7 @@ public class TemplateUrlTestHelpers {
             String keyword, int prepopulatedId, long lastVisitTime, long nativePtr) {
         var templateUrl = mock(TemplateUrl.class);
         lenient().doReturn(keyword).when(templateUrl).getKeyword();
+        lenient().doReturn("shortNameFor: " + keyword).when(templateUrl).getShortName();
         lenient().doReturn(prepopulatedId).when(templateUrl).getPrepopulatedId();
         lenient().doReturn(lastVisitTime).when(templateUrl).getLastVisitedTime();
         lenient().doReturn(prepopulatedId != 0).when(templateUrl).getIsPrepopulated();

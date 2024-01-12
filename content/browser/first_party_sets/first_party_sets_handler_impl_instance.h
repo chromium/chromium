@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_INSTANCE_H_
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_INSTANCE_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class FirstPartySetEntry;
@@ -63,14 +63,14 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // FirstPartySetsHandlerImpl:
   void Init(const base::FilePath& user_data_dir,
             const net::LocalSetDeclaration& local_set) override;
-  [[nodiscard]] absl::optional<net::GlobalFirstPartySets> GetSets(
+  [[nodiscard]] std::optional<net::GlobalFirstPartySets> GetSets(
       base::OnceCallback<void(net::GlobalFirstPartySets)> callback) override;
 
   // FirstPartySetsHandler:
   bool IsEnabled() const override;
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
-  absl::optional<net::FirstPartySetEntry> FindEntry(
+  std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
   void GetContextConfigForPolicy(
@@ -96,12 +96,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   void GetPersistedSetsForTesting(
       const std::string& browser_context_id,
       base::OnceCallback<
-          void(absl::optional<std::pair<net::GlobalFirstPartySets,
-                                        net::FirstPartySetsContextConfig>>)>
+          void(std::optional<std::pair<net::GlobalFirstPartySets,
+                                       net::FirstPartySetsContextConfig>>)>
           callback);
   void HasBrowserContextClearedForTesting(
       const std::string& browser_context_id,
-      base::OnceCallback<void(absl::optional<bool>)> callback);
+      base::OnceCallback<void(std::optional<bool>)> callback);
 
   void SynchronouslyResetDBHelperForTesting() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -146,7 +146,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // callback. Must not be called before `global_sets_` has been set.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
+      const std::optional<net::SchemefulSite>& top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       const base::ElapsedTimer& timer,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
@@ -155,7 +155,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // needed to apply `policy` to `global_sets_`.
   net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
       const base::Value::Dict& policy,
-      const absl::optional<base::ElapsedTimer>& timer) const;
+      const std::optional<base::ElapsedTimer>& timer) const;
 
   void OnGetSitesToClear(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
@@ -183,7 +183,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // The global First-Party Sets, after parsing and validation.
   //
   // This is nullopt until all of the required inputs have been received.
-  absl::optional<net::GlobalFirstPartySets> global_sets_
+  std::optional<net::GlobalFirstPartySets> global_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Whether the First-Party Sets feature should behave as "enabled" or not,
@@ -206,7 +206,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
 
   // Timer starting when the first async task was enqueued, if any. Used for
   // metrics.
-  absl::optional<base::ElapsedTimer> first_async_task_timer_
+  std::optional<base::ElapsedTimer> first_async_task_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Access the underlying DB on a database sequence to make sure none of DB

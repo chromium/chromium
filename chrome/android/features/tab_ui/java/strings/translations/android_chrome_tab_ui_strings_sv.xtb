@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Vill du stänga gamla flikar?</translation>
 <translation id="1215127405478249895">Granska flikar</translation>
 <translation id="125153950246128346">Tryck för att visa en annan flik</translation>
+<translation id="1326271443836399892">Granska de nuvarande inställningarna för rensning.</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1657719826150349398">Flytta fliken nedåt</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
 <translation id="3008554597174452548">Sluta spåra produkten</translation>
 <translation id="3052964831964880138">Priset på <ph name="PRODUCT_NAME" /> sänkt med <ph name="PRICE_DROP" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> arkiverad flik}other{Du har <ph name="TABS_COUNT_MANY" /> arkiverade flikar}}</translation>
 <translation id="3194464645767632461">betyg</translation>
 <translation id="3291470810748040983">Du får en avisering när det finns ett lägre pris på en öppen flik</translation>
 <translation id="3328308545011660196">Förslag: <ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informationen om den här butiken stängdes</translation>
 <translation id="9150694013019234766">Byt mellan flikarna i flikgruppen nära sidans nederkant</translation>
 <translation id="9169594135889675189">Lägg till ny flik i gruppen</translation>
+<translation id="955558140275419384">Granska alla arkiverade flikar för att ta bort de som du inte behöver längre genom att öppna den här redigeraren.</translation>
 <translation id="959682366969460160">Håll ordning</translation>
 </translationbundle>

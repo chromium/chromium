@@ -101,8 +101,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
 
   // Global NSSCertDatabase which sees the system token. Owned by
   // SystemTokenCertDbInitializer.
-  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> system_token_cert_database_ =
-      nullptr;
+  raw_ptr<net::NSSCertDatabase> system_token_cert_database_ = nullptr;
 
   bool system_token_cert_db_retrieval_failed_ = false;
 

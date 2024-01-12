@@ -28,6 +28,7 @@ class WebAppLockManager;
 class SharedWebContentsLockDescription : public LockDescription {
  public:
   SharedWebContentsLockDescription();
+  SharedWebContentsLockDescription(SharedWebContentsLockDescription&&);
   ~SharedWebContentsLockDescription();
 };
 

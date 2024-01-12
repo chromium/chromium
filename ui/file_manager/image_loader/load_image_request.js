@@ -40,7 +40,7 @@ export class LoadImageResponse {
       return;
     }
 
-    // Response result defined only when status == SUCCESS.
+    // Response result defined only when status === SUCCESS.
     assert(opt_result);
 
     /** @type {number|undefined} */
@@ -78,7 +78,7 @@ export class LoadImageResponse {
       return null;
     }
 
-    // Response result defined only when status == SUCCESS.
+    // Response result defined only when status === SUCCESS.
     assert(response.width);
     assert(response.height);
     assert(response.data);

@@ -70,7 +70,7 @@ class EnterExitHandler : public ui::EventHandler {
 };
 
 constexpr int kExpandChildSuggestionsViewWidth = 24;
-constexpr int kExpandChildSuggestionsIconWidth = 6;
+constexpr int kExpandChildSuggestionsIconWidth = 16;
 constexpr int kExpandChildSuggestionsViewHorizontalPadding =
     (kExpandChildSuggestionsViewWidth - kExpandChildSuggestionsIconWidth) / 2;
 
@@ -131,7 +131,8 @@ PopupRowView::ExpandChildSuggestionsView::ExpandChildSuggestionsView() {
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
   AddChildView(popup_cell_utils::ImageViewFromVectorIcon(
-      vector_icons::kSubmenuArrowIcon, kExpandChildSuggestionsIconWidth));
+      vector_icons::kSubmenuArrowChromeRefreshIcon,
+      kExpandChildSuggestionsIconWidth));
 }
 
 void PopupRowView::ExpandChildSuggestionsView::GetAccessibleNodeData(

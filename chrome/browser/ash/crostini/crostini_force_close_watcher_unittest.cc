@@ -34,7 +34,7 @@ class MockDelegate : public ForceCloseWatcher::Delegate {
       *delete_flag = true;
     }
   }
-  raw_ptr<bool, ExperimentalAsh> delete_flag = nullptr;
+  raw_ptr<bool> delete_flag = nullptr;
 };
 
 TEST_F(CrostiniForceCloseWatcherTest, CallsHideWhenWidgetIsDestroyed) {

@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
  * An item in the model. Represents a single providing extension.

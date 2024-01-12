@@ -90,9 +90,6 @@ RUNNING TEST: extension_testAPI
             removeListener : <function>
         }
     }
-    timeline : {
-        addTraceProvider : <function>
-    }
 }
 All tests done.
 

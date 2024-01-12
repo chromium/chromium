@@ -1505,9 +1505,10 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       common.shared_quad_state, common.rect, common.visible_rect,
       common.needs_blending, resource_id, t_resource_size_in_pixels,
       premultiplied_alpha.value(), t_uv_top_left, t_uv_bottom_right,
-      t_background_color, t_vertex_opacity, y_flipped.value(),
-      nearest_neighbor.value(), secure_output_only.value(),
+      t_background_color, y_flipped.value(), nearest_neighbor.value(),
+      secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
+  draw_quad->set_vertex_opacity(t_vertex_opacity);
 
   draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 

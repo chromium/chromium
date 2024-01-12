@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -123,9 +123,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceReceiver
   // The Service instance to which all incoming events from the Service Manager
   // should be directed. Typically this is the object which owns this
   // ServiceReceiver.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION service_manager::Service* const service_;
+  const raw_ptr<service_manager::Service> service_;
 
   // A pending Connector request which will eventually be passed to the Service
   // Manager. Created preemptively by every unbound ServiceReceiver so that

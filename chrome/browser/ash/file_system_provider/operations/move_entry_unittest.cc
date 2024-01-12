@@ -35,8 +35,8 @@ const base::FilePath::CharType kTargetPath[] =
 
 class FileSystemProviderOperationsMoveEntryTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsMoveEntryTest() {}
-  ~FileSystemProviderOperationsMoveEntryTest() override {}
+  FileSystemProviderOperationsMoveEntryTest() = default;
+  ~FileSystemProviderOperationsMoveEntryTest() override = default;
 
   void SetUp() override {
     MountOptions mount_options(kFileSystemId, "" /* display_name */);

@@ -9,10 +9,13 @@
     Powered by Google
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Progress saved
+    Resume writing
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Re-open to continue
+    Open to continue
+  </message>
+  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW" desc="The message read out by a screen reader whtn the Compose nudge is shown.">
+    Resume Help me write. Tab and press enter to open
   </message>
 
   <!-- FRE dialog -->
@@ -25,64 +28,57 @@
   <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog." translateable="false">
     Your text and the content and url of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
   </message>
-  <message name="IDS_COMPOSE_FRE_MAIN_BOTTOM" desc="The bottom main text of the Help me write disclaimer dialog." translateable="false">
-    This is an experimental AI writing aid and won't always get it right.
-    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
     Let's go
   </message>
 
-  <!-- Consent dialog -->
-  <message name="IDS_COMPOSE_CONSENT_TITLE" desc="The title of the consent dialog." translateable="false">
-    Get contextual writing suggestions for reviews, posts and more
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_MAIN_TOP" desc="The top main text of the consent dialog." translateable="false">
-    Sends open pages, related recent pages, their URLs, and your interactions with those features to Google. This data may be read, processed, and annotated by human reviewers to improve and develop Google products. You can change this anytime in
-    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>settings<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_MAIN_BOTTOM" desc="The bottom main text of the consent dialog." translateable="false">
-    This is an experimental AI writing aid and won't always get it right.
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_NO_BUTTON" desc="The first option for the consent dialog." translateable="false">
-    No thanks
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_YES_BUTTON" desc="The first option for the consent dialog." translateable="false">
-    Yes I'm in
-  </message>
-
   <!-- MSBB consent dialog -->
-  <message name="IDS_COMPOSE_FRE_MSBB_TITLE" desc="The title of the MSBB consent dialog." translateable="false">
-   Turn on the make searches and browsing better setting to use this feature
+  <message name="IDS_COMPOSE_FRE_MSBB_TITLE" desc="The title of the MSBB consent dialog." >
+    To use this feature, turn on Make Searches and Browsing Better
   </message>
   <if expr="is_macosx">
-    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." translateable="false">
-        After you turn on the setting, come back to this tab to continue where you left off.
+    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." >
+      After you turn on this setting, come back to this tab to start writing.
     </message>
   </if> <!-- is_macosx -->
   <if expr="not is_macosx">
-    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." translateable="false">
-        After you turn on the setting, come back to this tab to continue where you left off
+    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." >
+       After you turn on this setting, come back to this tab to start writing
     </message>
   </if> <!-- not is_macosx -->
-  <message name="IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON" desc="Open the settings page from the MSBB consent dialog." translateable="false">
+  <message name="IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON" desc="Open the settings page from the MSBB consent dialog." >
     Go to Settings
   </message>
 
-  <!-- Disclaimer dialog -->
-  <message name="IDS_COMPOSE_DISCLAIMER_BUTTON" desc="The button to acknowledge the disclaimer message." translateable="false">
-    Let's go
+  <!-- In product help bubble dialog for MSBB Settings -->
+  <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog">
+    Turn on this setting to use Help me write
+  </message>
+  <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER" desc="The a11y text for the In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog">
+    Turn on the Make Searches and Browsing Better setting to use Help me write
+  </message>
+  <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT" desc="The accessibility label associated with the MSBB Bubble's close button" >
+    Close tip
   </message>
 
   <!-- Input dialog -->
   <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title.">
     Help me write
   </message>
-  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">
-    You can enter things like:\n &#8226; 3 or more words that sum up your thoughts\n &#8226; a first draft\n &#8226; requests like "write a 5-star review for this restaurant"
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_TITLE" desc="Title for placeholder text in the input field. Below the title are three bullet points with examples.">
+    You can enter things like:
   </message>
-  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog." translateable="false">
-    Page content and your text are sent to Google, and may be used to improve or develop products.
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1" desc="First bullet point example for the placeholder text in the input field.">
+    3 or more words that sum up your thoughts
+  </message>
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_2" desc="Second bullet point example for the placeholder text in the input field.">
+    a first draft
+  </message>
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3" desc="Third bullet point example for the placeholder text in the input field.">
+    requests like "write a 5-star review for this restaurant"
+  </message>
+  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog.">
+    Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
@@ -94,7 +90,7 @@
 
   <!-- Result dialog -->
   <message name="IDS_COMPOSE_EDIT" desc="Label shown on hover and read by screen-readers for button that allows user to edit their input.">
-  Edit input
+  Edit your input
   </message>
   <message name="IDS_COMPOSE_MENU_LENGTH_TITLE" desc="Title for options to select the length of returned text.">
     Length
@@ -127,35 +123,32 @@
   Replace
   </message>
   <message name="IDS_COMPOSE_THUMBS_DOWN" desc="Accessibility label for thumbs down button that opens a feedback form when pressed.">
-    Thumbs down opens a form for submitting detailed feedback on why you dislike the generated text.
+    Thumbs down opens a form for submitting detailed feedback on why you dislike these results
   </message>
   <message name="IDS_COMPOSE_THUMBS_UP" desc="Accessibility label for thumbs up button that submits positive feedback for the generated text.">
-    Thumbs up submits feedback that you like the generated text.
+    Thumbs up submits feedback that you like these results
   </message>
 
   <!-- Errors -->
-  <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
-    Configuration error. Try again later.
-  </message>
-  <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short.">
     This is too short. Write at least 3 words.
   </message>
-  <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long.">
     This is too long. Shorten and try again.
   </message>
-  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again.">
     Something went wrong. Try again.
   </message>
-  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later.">
     Something went wrong. Try again later.
   </message>
-  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled.">
     Your request wasn't understood. Try a different request.
   </message>
-  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission.">
     Something went wrong. Are you signed in?
   </message>
-  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details.">
     Something went wrong.
   </message>
 
@@ -166,9 +159,16 @@
     or fill out our
     <ph name="BEGIN_SURVEY_LINK">&lt;a href="#" id="surveyLink" role="button"&gt;</ph>survey<ph name="END_SURVEY_LINK">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER" desc="A disclaimer footer text for help me write, that this is experimental and not always right.">
+    This is an experimental AI writing aid and won't always get it right.
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED" desc="A footer indicating that on-device evaluation was used." translateable="false">
+    On-device evaluation used.
+  </message>
 
   <!-- Miscellaneous -->
-  <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for feedback text field" translateable="false">
+  <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Help me write feedback form">
     Send feedback for Help me write.
   </message>
 </grit-part>

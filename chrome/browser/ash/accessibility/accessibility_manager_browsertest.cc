@@ -992,8 +992,8 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
     AccessibilityManager::Get()->OnPumpkinError("Error");
   }
 
-  void OnPumpkinInstalled(bool success) {
-    AccessibilityManager::Get()->OnPumpkinInstalled(success);
+  void OnPumpkinInstalled(bool success, const std::string& root_path) {
+    AccessibilityManager::Get()->OnPumpkinInstalled(success, root_path);
   }
 
   void OnPumpkinDataCreated(
@@ -1487,7 +1487,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   SetDictationLocale("en-US");
   SetDictationEnabled(true);
   InstallPumpkinAndWait();
-  OnPumpkinInstalled(true);
+  OnPumpkinInstalled(true, "fake/pumpkin/root/path");
 }
 
 // Ensures that AccessibilityManager can handle when OnPumpkinDataCreated is

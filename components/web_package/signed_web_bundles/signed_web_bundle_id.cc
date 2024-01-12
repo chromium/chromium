@@ -85,9 +85,9 @@ SignedWebBundleId SignedWebBundleId::CreateForDevelopment(
 
 // static
 SignedWebBundleId SignedWebBundleId::CreateRandomForDevelopment(
-    base::RepeatingCallback<void(void*, size_t)> random_generator) {
+    base::RepeatingCallback<void(base::span<uint8_t>)> random_generator) {
   std::array<uint8_t, kDecodedIdLength - kTypeSuffixLength> random_bytes;
-  random_generator.Run(random_bytes.data(), random_bytes.size());
+  random_generator.Run(random_bytes);
   return CreateForDevelopment(random_bytes);
 }
 
@@ -104,9 +104,12 @@ SignedWebBundleId::SignedWebBundleId(const SignedWebBundleId& other) = default;
 SignedWebBundleId::~SignedWebBundleId() = default;
 
 // static
-base::RepeatingCallback<void(void*, size_t)>
+base::RepeatingCallback<void(base::span<uint8_t>)>
 SignedWebBundleId::GetDefaultRandomGenerator() {
-  return base::BindRepeating(&base::RandBytes);
+  // TODO(crbug.com/1490484): Remove the static_cast once all callers of
+  // base::RandBytes are migrated to the span variant.
+  return base::BindRepeating(
+      static_cast<void (*)(base::span<uint8_t>)>(&base::RandBytes));
 }
 
 }  // namespace web_package

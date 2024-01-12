@@ -107,7 +107,7 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
                                      const std::string& str) {                 \
       EXPECT_FALSE(got_log_message);                                           \
       got_log_message = true;                                                  \
-      EXPECT_EQ(severity, logging::LOG_ERROR);                                 \
+      EXPECT_EQ(severity, logging::LOGGING_ERROR);                             \
       EXPECT_EQ(str.substr(message_start), (msg));                             \
       if (base::StringPiece(expected_file) != "") {                            \
         EXPECT_STREQ(expected_file, file);                                     \
@@ -403,7 +403,7 @@ TEST(CheckDeathTest, ConfigurableDCheck) {
   DCHECK(false);
 
   // Verify that DCHECK* aren't hard-wired to crash on failure.
-  logging::LOGGING_DCHECK = logging::LOG_ERROR;
+  logging::LOGGING_DCHECK = logging::LOGGING_ERROR;
   DCHECK(false);
   DCHECK_EQ(1, 2);
 

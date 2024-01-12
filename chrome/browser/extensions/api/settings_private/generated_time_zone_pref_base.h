@@ -38,7 +38,7 @@ class GeneratedTimeZonePrefBase
 
   const std::string pref_name_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace settings_private

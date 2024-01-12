@@ -123,7 +123,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
       test_certificate_provider_extension_mixin_{
           &mixin_host_, &extension_force_install_mixin_};
   int pin_dialog_shown_count_ = 0;
-  raw_ptr<base::RunLoop, ExperimentalAsh> pin_dialog_shown_run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> pin_dialog_shown_run_loop_ = nullptr;
   base::WeakPtrFactory<SecurityTokenSamlTest> weak_factory_{this};
 };
 

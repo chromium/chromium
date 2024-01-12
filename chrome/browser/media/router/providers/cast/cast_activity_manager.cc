@@ -442,15 +442,16 @@ void CastActivityManager::TerminateSession(
       MakeResultCallbackForRoute(route_id, std::move(callback)));
 }
 
-bool CastActivityManager::CreateMediaController(
+bool CastActivityManager::BindMediaController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   auto activity_it = activities_.find(route_id);
-  if (activity_it == activities_.end())
+  if (activity_it == activities_.end()) {
     return false;
-  activity_it->second->CreateMediaController(std::move(media_controller),
-                                             std::move(observer));
+  }
+  activity_it->second->BindMediaController(std::move(media_controller),
+                                           std::move(observer));
   return true;
 }
 

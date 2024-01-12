@@ -1,7 +1,10 @@
 ---
 Checks: '-*,
          bugprone-argument-comment,
+         bugprone-bool-pointer-implicit-conversion,
+         bugprone-unique-ptr-array-mismatch,
          google-build-namespaces,
+         google-default-arguments,
          google-readability-namespace-comments,
          modernize-avoid-bind,
          modernize-concat-nested-namespaces,

@@ -38,11 +38,12 @@ class FadeLabelView;
 
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(TabHoverCardBubbleView, views::BubbleDialogDelegateView)
+
  public:
   static constexpr base::TimeDelta kHoverCardSlideDuration =
       base::Milliseconds(200);
 
-  METADATA_HEADER(TabHoverCardBubbleView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardBubbleElementId);
   explicit TabHoverCardBubbleView(Tab* tab);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;

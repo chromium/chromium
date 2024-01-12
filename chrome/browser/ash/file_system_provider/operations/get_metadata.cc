@@ -171,8 +171,7 @@ GetMetadata::GetMetadata(
   DCHECK_NE(0, fields_);
 }
 
-GetMetadata::~GetMetadata() {
-}
+GetMetadata::~GetMetadata() = default;
 
 bool GetMetadata::Execute(int request_id) {
   using extensions::api::file_system_provider::GetMetadataRequestedOptions;

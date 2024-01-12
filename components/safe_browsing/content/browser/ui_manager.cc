@@ -146,7 +146,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   if (!web_contents) {
     // Tab is gone.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              false /*showed_interstitial*/);
+                              false /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -156,7 +157,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
     // Tab is being prerendered.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              false /*showed_interstitial*/);
+                              false /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -182,7 +184,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     CHECK(is_inactive);
 
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              false /*showed_interstitial*/);
+                              false /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -204,7 +207,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     // is controlling the error code, perhaps this should be renamed to better
     // indicate its purpose.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              true /*showed_interstitial*/);
+                              true /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -213,7 +217,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // cancelled instead.
   if (delegate_->IsHostingExtension(web_contents)) {
     resource.DispatchCallback(FROM_HERE, false /* proceed */,
-                              false /* showed_interstitial */);
+                              false /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -233,45 +238,6 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     }
   }
   DisplayBlockingPage(resource);
-}
-
-void SafeBrowsingUIManager::CheckLookupMechanismExperimentEligibility(
-    security_interstitials::UnsafeResource resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  content::WebContents* web_contents =
-      unsafe_resource_util::GetWebContentsForResource(resource);
-  auto determine_if_is_prerender = [resource, web_contents]() {
-    content::RenderFrameHost* rfh = nullptr;
-    if (resource.render_frame_token) {
-      rfh = content::RenderFrameHost::FromFrameToken(
-          content::GlobalRenderFrameHostToken(
-              resource.render_process_id,
-              blink::LocalFrameToken(resource.render_frame_token.value())));
-    }
-    return web_contents->IsPrerenderedFrame(resource.frame_tree_node_id) ||
-           (rfh && rfh->GetLifecycleState() ==
-                       content::RenderFrameHost::LifecycleState::kPrerendering);
-  };
-  // These checks parallel the ones performed by StartDisplayingBlockingPage to
-  // determine if a blocking page would be shown for a mainframe URL. The
-  // experiment is only eligible if the blocking page would be shown.
-  bool is_ineligible =
-      !web_contents ||
-      delegate_->GetNoStatePrefetchContentsIfExists(web_contents) ||
-      determine_if_is_prerender() ||
-      delegate_->IsHostingExtension(web_contents) || IsAllowlisted(resource);
-  callback_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), !is_ineligible));
-}
-
-void SafeBrowsingUIManager::CheckExperimentEligibilityAndStartBlockingPage(
-    security_interstitials::UnsafeResource resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  CheckLookupMechanismExperimentEligibility(resource, std::move(callback),
-                                            callback_task_runner);
-  StartDisplayingBlockingPage(resource);
 }
 
 bool SafeBrowsingUIManager::ShouldSendHitReport(HitReport* hit_report,

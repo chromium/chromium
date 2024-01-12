@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Pair;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
@@ -21,10 +23,12 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -157,4 +161,41 @@ public interface TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager);
+
+    /**
+     * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
+     *
+     * @param activity The {@link Activity} that hosts the pane.
+     * @param lifecycleDispatcher The lifecycle dispatcher for the activity.
+     * @param profileProviderSupplier The supplier for profiles.
+     * @param tabModelSelector For access to {@link TabModel}.
+     * @param tabContentManager For management of thumbnails.
+     * @param tabCreatorManager For creating new tabs.
+     * @param browserControlsStateProvider For determining thumbnail size.
+     * @param multiWindowModeStateDispatcher For managing behavior in multi-window.
+     * @param rootUiScrimCoordinator The root UI coordinator's scrim coordinator. On LFF this is
+     *     unused as the root UI's scrim coordinator is used for the show/hide animation.
+     * @param snackbarManager The activity level snackbar manager.
+     * @param modalDialogManager The modal dialog manager for the activity.
+     * @param incognitoReauthControllerSupplier The incognito reauth controller supplier.
+     * @param newTabButtonOnClickListener The listener for clicking the new tab button.
+     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
+     * @param isIncognito Whether this is an incognito pane.
+     */
+    Pair<TabSwitcher, Pane> createTabSwitcherPane(
+            @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @NonNull OnClickListener newTabButtonOnClickListener,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            boolean isIncognito);
 }

@@ -54,7 +54,7 @@ class UserActionRecorderImpl : public UserActionRecorder {
 
   void HandleUserAction(UserAction action);
 
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
 };
 
 }  // namespace phonehub

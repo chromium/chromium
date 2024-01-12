@@ -76,12 +76,11 @@ class DeviceNetworkConfigurationUpdaterAsh
   void OnDataRoamingSettingChanged();
 
   // Pointer to the global singleton or a test instance.
-  const raw_ptr<ash::ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  const raw_ptr<ash::ManagedNetworkConfigurationHandler>
       network_config_handler_;
 
-  const raw_ptr<ash::NetworkDeviceHandler, ExperimentalAsh>
-      network_device_handler_;
-  const raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
+  const raw_ptr<ash::NetworkDeviceHandler> network_device_handler_;
+  const raw_ptr<ash::CrosSettings> cros_settings_;
   base::CallbackListSubscription data_roaming_setting_subscription_;
 
   // Returns the device's administrator-set asset id.

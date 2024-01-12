@@ -217,4 +217,13 @@ public interface BottomSheetContent {
      *         typically the name of your feature followed by 'closed'.
      */
     int getSheetClosedAccessibilityStringId();
+
+    /**
+     * @return True if this content should hide when higher-priority content is requested to be
+     *     shown, even if the sheet is expanded. Otherwise the new content will only be shown after
+     *     the sheet is dismissed. If returning true here, this content's priority should be LOW.
+     */
+    default boolean canSuppressInAnyState() {
+        return false;
+    }
 }

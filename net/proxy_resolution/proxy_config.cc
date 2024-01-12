@@ -34,8 +34,8 @@ void AddProxyURIListToProxyList(std::string uri_list,
                                 ProxyServer::Scheme default_scheme) {
   base::StringTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
-    proxy_list->AddProxyServer(
-        ProxyUriToProxyServer(proxy_uri_list.token(), default_scheme));
+    proxy_list->AddProxyChain(
+        ProxyUriToProxyChain(proxy_uri_list.token(), default_scheme));
   }
 }
 
@@ -53,10 +53,7 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
     return;
   }
 
-  // If restricted to Network Service's proxy list, the URL has already been
-  // matched by this point.
-  if (bypass_rules.Matches(url, reverse_bypass) &&
-      !restrict_to_network_service_proxy_allow_list) {
+  if (bypass_rules.Matches(url, reverse_bypass)) {
     result->UseDirectWithBypassedProxy();
     return;
   }
@@ -163,8 +160,6 @@ bool ProxyConfig::ProxyRules::Equals(const ProxyRules& other) const {
          proxies_for_ftp.Equals(other.proxies_for_ftp) &&
          fallback_proxies.Equals(other.fallback_proxies) &&
          bypass_rules == other.bypass_rules &&
-         restrict_to_network_service_proxy_allow_list ==
-             other.restrict_to_network_service_proxy_allow_list &&
          reverse_bypass == other.reverse_bypass;
 }
 
@@ -283,10 +278,6 @@ base::Value ProxyConfig::ToValue() const {
 
       dict.Set("bypass_list", std::move(list));
     }
-  }
-
-  if (proxy_rules_.restrict_to_network_service_proxy_allow_list) {
-    dict.Set("restrict_to_network_service_proxy_allow_list", true);
   }
 
   return base::Value(std::move(dict));

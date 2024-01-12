@@ -39,8 +39,8 @@ class HotspotUsageDurationTracker : public ActiveHost::Observer {
   void HandleUnexpectedCurrentSession(
       const ActiveHost::ActiveHostStatus& active_host_status);
 
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<base::Clock> clock_;
 
   base::Time last_connection_start_;
 };

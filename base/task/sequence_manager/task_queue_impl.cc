@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_token.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
@@ -53,6 +54,14 @@ std::atomic<base::TimeDelta> g_max_precise_delay{kDefaultMaxPreciseDelay};
 // tasks are posted cross-thread, which can race with its initialization.
 std::atomic_bool g_explicit_high_resolution_timer_win{true};
 #endif  // BUILDFLAG(IS_WIN)
+
+void RunTaskSynchronously(const AssociatedThreadId* associated_thread,
+                          OnceClosure closure) {
+  base::internal::TaskScope sequence_scope(
+      associated_thread->GetBoundSequenceToken(),
+      /* is_thread_bound=*/false);
+  std::move(closure).Run();
+}
 
 }  // namespace
 
@@ -104,7 +113,8 @@ bool TaskQueueImpl::GuardedTaskPoster::RunOrPostTask(PostedTask task) {
   // The queue may be disabled immediately after checking
   // `IsQueueEnabledFromAnyThread()`. That won't prevent the task from running.
   if (sync_work_auth.IsValid() && outer_->IsQueueEnabledFromAnyThread()) {
-    std::move(task.callback).Run();
+    RunTaskSynchronously(outer_->associated_thread_.get(),
+                         std::move(task.callback));
     return true;
   }
 

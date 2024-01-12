@@ -84,6 +84,7 @@ void WebGPUTest::SetUp() {
 void WebGPUTest::TearDown() {
   adapter_ = nullptr;
   instance_ = nullptr;
+  cmd_helper_ = nullptr;
   context_ = nullptr;
 }
 

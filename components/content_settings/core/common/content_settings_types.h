@@ -345,27 +345,33 @@ enum class ContentSettingsType : int32_t {
   // Stores per origin metadata for cookie controls.
   COOKIE_CONTROLS_METADATA,
 
-  // Content Setting for 3PC accesses granted via 3PC deprecation trial.
-  TPCD_SUPPORT,
-
-  // Content setting used to indicate whether entering picture-in-picture
-  // automatically should be enabled.
-  AUTO_PICTURE_IN_PICTURE,
+  // Content Setting for temporary 3PC accesses granted by user behavior
+  // heuristics.
+  TPCD_HEURISTICS_GRANTS,
 
   // Content Setting for 3PC accesses granted by metadata delivered via the
   // component updater service. This type will only be used when
   // `net::features::kTpcdMetadataGrants` is enabled.
   TPCD_METADATA_GRANTS,
 
+  // Content Setting for 3PC accesses granted via 3PC deprecation trial.
+  TPCD_SUPPORT,
+
+  // Content Setting for 3PC accesses granted via top-level 3PC deprecation
+  // trial. Similar to TPCD_SUPPORT, but applicable at the page-level for the
+  // lifetime of the page that served the token, rather than being specific to a
+  // requesting-origin/top-level-site combination and persistent.
+  TOP_LEVEL_TPCD_SUPPORT,
+
+  // Content setting used to indicate whether entering picture-in-picture
+  // automatically should be enabled.
+  AUTO_PICTURE_IN_PICTURE,
+
   // Whether user has opted into keeping file/directory permissions persistent
   // between visits for a given origin. When enabled, permission metadata stored
   // under |FILE_SYSTEM_ACCESS_CHOOSER_DATA| can auto-grant incoming permission
   // request.
   FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
-
-  // Content Setting for temporary 3PC accesses granted by user behavior
-  // heuristics.
-  TPCD_HEURISTICS_GRANTS,
 
   // Whether the FSA Persistent Permissions restore prompt is eligible to be
   // shown to the user, for a given origin.
@@ -380,6 +386,9 @@ enum class ContentSettingsType : int32_t {
   // Smart Card API.
   SMART_CARD_GUARD,
   SMART_CARD_DATA,
+
+  // Content settings for access to printers for the Web Printing API.
+  WEB_PRINTING,
 
   NUM_TYPES,
 };

@@ -32,7 +32,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/language/core/browser/language_usage_metrics.h"
@@ -833,6 +832,13 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
   if (options.has_same_last_four_as_server_card_but_different_expiration_date) {
     base::UmaHistogramEnumeration("Autofill.CreditCardInfoBar" + destination +
                                       ".WithSameLastFourButDifferentExpiration",
+                                  metric, NUM_INFO_BAR_METRICS);
+  }
+
+  if (options.card_save_type ==
+      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    base::UmaHistogramEnumeration(base::StrCat({"Autofill.CreditCardInfoBar",
+                                                destination, ".SavingWithCvc"}),
                                   metric, NUM_INFO_BAR_METRICS);
   }
 }
@@ -2315,7 +2321,10 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   OptionalBoolean suggestion_was_shown = OptionalBoolean::kUndefined;
   OptionalBoolean suggestion_was_accepted = OptionalBoolean::kUndefined;
 
-  OptionalBoolean was_autofilled = OptionalBoolean::kUndefined;
+  // Records whether this field was autofilled before checking the iframe
+  // security policy.
+  OptionalBoolean was_autofilled_before_security_policy =
+      OptionalBoolean::kUndefined;
   OptionalBoolean had_value_before_filling = OptionalBoolean::kUndefined;
   DenseSet<FieldFillingSkipReason> autofill_skipped_status;
   size_t autofill_count = 0;
@@ -2326,6 +2335,15 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       OptionalBoolean::kUndefined;
   OptionalBoolean had_value_after_filling = OptionalBoolean::kUndefined;
   OptionalBoolean has_value_after_typing = OptionalBoolean::kUndefined;
+
+  // Records whether filling was ever prevented because of the cross iframe
+  // autofill security policy that applies to credit cards.
+  OptionalBoolean filling_prevented_by_iframe_security_policy =
+      OptionalBoolean::kUndefined;
+  // Records whether this field was actually safely autofilled after checking
+  // the iframe security policy.
+  OptionalBoolean was_autofilled_after_security_policy =
+      OptionalBoolean::kUndefined;
 
   // TODO(crbug.com/1325851): Add a metric in |FieldInfo| UKM event to indicate
   // whether the user had any data available for the respective field type.
@@ -2420,22 +2438,30 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     }
 
     if (auto* event = absl::get_if<FillFieldLogEvent>(&log_event)) {
-      was_autofilled |= event->was_autofilled;
+      was_autofilled_before_security_policy |=
+          event->was_autofilled_before_security_policy;
       had_value_before_filling |= event->had_value_before_filling;
       autofill_skipped_status.insert(event->autofill_skipped_status);
       had_value_after_filling = event->had_value_after_filling;
-      if (was_autofilled == OptionalBoolean::kTrue &&
+      if (was_autofilled_before_security_policy == OptionalBoolean::kTrue &&
           filled_value_was_modified == OptionalBoolean::kUndefined) {
         // Initialize filled_value_was_modified to a defined value when the
         // field is filled for the first time.
         filled_value_was_modified = OptionalBoolean::kFalse;
       }
+
+      filling_prevented_by_iframe_security_policy |=
+          OptionalBoolean(event->filling_prevented_by_iframe_security_policy ==
+                          OptionalBoolean::kTrue);
+      was_autofilled_after_security_policy |=
+          OptionalBoolean(event->filling_prevented_by_iframe_security_policy ==
+                          OptionalBoolean::kFalse);
       ++autofill_count;
     }
 
     if (auto* event = absl::get_if<TypingFieldLogEvent>(&log_event)) {
       user_typed_into_field = OptionalBoolean::kTrue;
-      if (was_autofilled == OptionalBoolean::kTrue) {
+      if (was_autofilled_after_security_policy == OptionalBoolean::kTrue) {
         filled_value_was_modified = OptionalBoolean::kTrue;
       }
       has_value_after_typing = event->has_value_after_typing;
@@ -2525,6 +2551,13 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   SetStatusVector(AutofillStatus::kIsInSubFrame,
                   form.ToFormData().host_frame != field.host_frame);
 
+  if (filling_prevented_by_iframe_security_policy !=
+      OptionalBoolean::kUndefined) {
+    SetStatusVector(
+        AutofillStatus::kFillingPreventedByIframeSecurityPolicy,
+        OptionalBooleanToBool(filling_prevented_by_iframe_security_policy));
+  }
+
   if (was_focused == OptionalBoolean::kTrue) {
     SetStatusVector(AutofillStatus::kSuggestionWasAvailable,
                     OptionalBooleanToBool(suggestion_was_available));
@@ -2539,11 +2572,17 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
   SetStatusVector(AutofillStatus::kWasAutofillTriggered, autofill_count > 0);
   if (autofill_count > 0) {
-    SetStatusVector(AutofillStatus::kWasAutofilled,
-                    OptionalBooleanToBool(was_autofilled));
+    SetStatusVector(
+        AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+        OptionalBooleanToBool(was_autofilled_before_security_policy));
     SetStatusVector(AutofillStatus::kHadValueBeforeFilling,
                     OptionalBooleanToBool(had_value_before_filling));
     SetStatusVector(AutofillStatus::kWasRefill, autofill_count > 1);
+    if (was_autofilled_after_security_policy != OptionalBoolean::kUndefined) {
+      SetStatusVector(
+          AutofillStatus::kWasAutofilledAfterSecurityPolicy,
+          OptionalBooleanToBool(was_autofilled_after_security_policy));
+    }
 
     static_assert(autofill_skipped_status.data().size() == 1);
     builder.SetAutofillSkippedStatus(autofill_skipped_status.data()[0]);
@@ -2866,9 +2905,8 @@ int64_t AutofillMetrics::FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
     const base::TimeTicks& form_parsed_timestamp) const {
   DCHECK(!form_parsed_timestamp.is_null());
   // Use the pinned timestamp as the current time if it's set.
-  base::TimeTicks now = pinned_timestamp_.is_null()
-                            ? AutofillTickClock::NowTicks()
-                            : pinned_timestamp_;
+  base::TimeTicks now =
+      pinned_timestamp_.is_null() ? base::TimeTicks::Now() : pinned_timestamp_;
 
   return ukm::GetExponentialBucketMin(
       (now - form_parsed_timestamp).InMilliseconds(),
@@ -2880,7 +2918,7 @@ AutofillMetrics::UkmTimestampPin::UkmTimestampPin(
     : logger_(logger) {
   DCHECK(logger_);
   DCHECK(!logger_->has_pinned_timestamp());
-  logger_->set_pinned_timestamp(AutofillTickClock::NowTicks());
+  logger_->set_pinned_timestamp(base::TimeTicks::Now());
 }
 
 AutofillMetrics::UkmTimestampPin::~UkmTimestampPin() {
@@ -3018,14 +3056,6 @@ void AutofillMetrics::LogImageFetchResult(bool succeeded) {
 void AutofillMetrics::LogImageFetcherRequestLatency(
     const base::TimeDelta& duration) {
   base::UmaHistogramLongTimes("Autofill.ImageFetcher.RequestLatency", duration);
-}
-
-// static
-void AutofillMetrics::
-    LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(bool is_same) {
-  base::UmaHistogramBoolean(
-      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2",
-      is_same);
 }
 
 // static
@@ -3185,7 +3215,19 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
 
 // static
 void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
+  // Only the "confirmed" bucket can be recorded, as the user cannot cancel this
+  // type of deletion.
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Popup",
+                            /*delete_confirmed=*/true);
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
+                            /*delete_confirmed=*/true);
+}
+
+// static
+void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory() {
+  // Only the "confirmed" bucket is recorded here, as the cancelation can only
+  // be recorded from Java.
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.KeyboardAccessory",
                             /*delete_confirmed=*/true);
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
                             /*delete_confirmed=*/true);

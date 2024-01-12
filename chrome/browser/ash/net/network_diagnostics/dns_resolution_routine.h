@@ -57,10 +57,9 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   void AttemptResolution();
 
   // Unowned
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   // Unowned
-  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
-      nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   static constexpr int kTotalNumRetries = 1;
   int num_retries_ = kTotalNumRetries;
   bool resolved_address_received_ = false;

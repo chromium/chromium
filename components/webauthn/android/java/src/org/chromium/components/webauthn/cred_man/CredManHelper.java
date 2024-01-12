@@ -26,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
-import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.webauthn.Barrier;
@@ -34,7 +33,8 @@ import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiStat
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialResponseCallback;
-import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
@@ -74,17 +74,14 @@ public class CredManHelper {
     private Runnable mNoCredentialsFallback;
 
     public interface BridgeProvider {
-        WebAuthnBrowserBridge getBridge();
+        WebauthnBrowserBridge getBridge();
     }
 
-    public CredManHelper(
-            BridgeProvider bridgeProvider,
-            boolean playServicesAvailable,
-            CredManRequestDecorator credManRequestDecorator) {
+    public CredManHelper(BridgeProvider bridgeProvider, boolean playServicesAvailable) {
         mMetricsHelper = new CredManMetricsHelper();
         mBridgeProvider = bridgeProvider;
         mPlayServicesAvailable = playServicesAvailable;
-        mCredManRequestDecorator = credManRequestDecorator;
+        mCredManRequestDecorator = WebauthnModeProvider.getInstance().getCredManRequestDecorator();
     }
 
     /** Create a credential using the Android 14 CredMan API. */
@@ -109,7 +106,6 @@ public class CredManHelper {
                                 originString,
                                 options.challenge,
                                 /* isCrossOrigin= */ false,
-                                /* paymentOptions= */ null,
                                 options.relyingParty.id,
                                 /* topOrigin= */ null);
         if (clientDataHash == null) {
@@ -222,8 +218,6 @@ public class CredManHelper {
         mIsCrossOrigin = isCrossOrigin;
         mBarrier = barrier;
 
-        // The Android 14 APIs have to be called via reflection until Chromium
-        // builds with the Android 14 SDK by default.
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
                 new OutcomeReceiver<>() {
                     @Override
@@ -376,6 +370,8 @@ public class CredManHelper {
                             assert mConditionalUiState == ConditionalUiState.NONE;
                             assert !options.isConditional;
 
+                            mMetricsHelper.reportGetCredentialMetrics(
+                                    CredManGetRequestEnum.NO_CREDENTIAL_FOUND, mConditionalUiState);
                             if (mNoCredentialsFallback != null) {
                                 mNoCredentialsFallback.run();
                             } else if (mConditionalUiState == ConditionalUiState.NONE) {
@@ -541,7 +537,6 @@ public class CredManHelper {
             String callerOrigin,
             byte[] challenge,
             boolean isCrossOrigin,
-            PaymentOptions paymentOptions,
             String relyingPartyId,
             Origin topOrigin) {
         String clientDataJson =
@@ -550,7 +545,7 @@ public class CredManHelper {
                         callerOrigin,
                         challenge,
                         isCrossOrigin,
-                        paymentOptions,
+                        /* paymentOptions= */ null,
                         relyingPartyId,
                         topOrigin);
         if (clientDataJson == null) {
@@ -602,7 +597,6 @@ public class CredManHelper {
                                 originString,
                                 options.challenge,
                                 mIsCrossOrigin,
-                                /* paymentOptions= */ null,
                                 options.relyingPartyId,
                                 /* topOrigin= */ null);
         if (clientDataHash == null) {

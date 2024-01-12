@@ -165,12 +165,12 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
 // Enables the renderer on Android to use a separate seccomp policy.
 BASE_FEATURE(kUseRendererProcessPolicy,
              "UseRendererProcessPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, this features restricts a set of syscalls in
 // BaselinePolicyAndroid that are used by RendererProcessPolicy.
 BASE_FEATURE(kRestrictRendererPoliciesInBaseline,
              "RestrictRendererPoliciesInBaseline",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, restrict clone to just flags used by fork and pthread_create on
 // android.
 BASE_FEATURE(kRestrictCloneParameters,

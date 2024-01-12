@@ -98,8 +98,7 @@ class ServiceRequestPerformer {
   bool request_performed_ = false;
 
   // Not owned.
-  const raw_ptr<WilcoDtcSupportdWebRequestService, ExperimentalAsh>
-      web_request_service_;
+  const raw_ptr<WilcoDtcSupportdWebRequestService> web_request_service_;
 
   // Results of the request:
   chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus
@@ -149,8 +148,7 @@ class ContextRequestPerformer {
  private:
   bool request_performed_ = false;
 
-  const raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
-      url_loader_factory_;
+  const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   content::SimpleURLLoaderTestHelper url_loader_test_helper_;
 };
@@ -206,8 +204,8 @@ class WilcoDtcSupportdNetworkContextTest : public InProcessBrowserTest {
   net::EmbeddedTestServer embedded_test_server_;
 
   // Owned by |web_request_service_|.
-  raw_ptr<WilcoDtcSupportdNetworkContextImpl, ExperimentalAsh>
-      network_context_impl_ptr_ = nullptr;
+  raw_ptr<WilcoDtcSupportdNetworkContextImpl> network_context_impl_ptr_ =
+      nullptr;
 
   std::unique_ptr<WilcoDtcSupportdWebRequestService> web_request_service_;
 };

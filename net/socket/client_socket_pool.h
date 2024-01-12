@@ -162,10 +162,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   class NET_EXPORT_PRIVATE SocketParams
       : public base::RefCounted<SocketParams> {
    public:
-    // For non-SSL requests / non-HTTPS proxies, the corresponding SSLConfig
-    // argument may be nullptr.
-    SocketParams(std::unique_ptr<SSLConfig> ssl_config_for_origin,
-                 std::unique_ptr<SSLConfig> base_ssl_config_for_proxies);
+    // For non-SSL requests, `ssl_config_for_origin` argument may be nullptr.
+    explicit SocketParams(std::unique_ptr<SSLConfig> ssl_config_for_origin);
 
     SocketParams(const SocketParams&) = delete;
     SocketParams& operator=(const SocketParams&) = delete;
@@ -178,16 +176,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       return ssl_config_for_origin_.get();
     }
 
-    const SSLConfig* base_ssl_config_for_proxies() const {
-      return base_ssl_config_for_proxies_.get();
-    }
-
    private:
     friend class base::RefCounted<SocketParams>;
     ~SocketParams();
 
     std::unique_ptr<SSLConfig> ssl_config_for_origin_;
-    std::unique_ptr<SSLConfig> base_ssl_config_for_proxies_;
   };
 
   ClientSocketPool(const ClientSocketPool&) = delete;

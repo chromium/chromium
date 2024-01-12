@@ -46,7 +46,6 @@ class SSLErrorAssistantComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
-
 };
 
 void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus);

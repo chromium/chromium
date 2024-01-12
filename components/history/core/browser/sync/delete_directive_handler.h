@@ -32,7 +32,7 @@ class HistoryDBTask;
 // DeleteDirectiveHandler sends delete directives created locally to sync
 // engine to propagate to other clients. It also expires local history entries
 // according to given delete directives from server.
-class DeleteDirectiveHandler : public syncer::SyncableService {
+class DeleteDirectiveHandler final : public syncer::SyncableService {
  public:
   // This allows injecting HistoryService::ScheduleDBTask().
   using BackendTaskScheduler =
@@ -77,6 +77,7 @@ class DeleteDirectiveHandler : public syncer::SyncableService {
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
  private:
   class DeleteDirectiveTask;

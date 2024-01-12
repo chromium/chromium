@@ -131,6 +131,7 @@ class StructuredLogAdapter(logging.Handler):
 
 class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
+        'android_webview': 'webview',
         'chrome': 'chrome',
     }
 
@@ -613,12 +614,17 @@ class WPTAdapter:
             reset_results=self.options.reset_results)
         with processor.stream_results() as events:
             runner_options.log.add_handler(events.put)
-            yield
+            try:
+                yield
+            finally:
+                # Always copy `results.html` into `layout-test-results/` so that
+                # the partial results can be viewed, and the directory is
+                # archived next run. See crbug.com/1475556.
+                processor.copy_results_viewer()
+                processor.process_results_json(
+                    self.port.get_option('json_test_results'))
         if runner_options.log_wptreport:
             processor.process_wpt_report(runner_options.log_wptreport[0].name)
-        processor.process_results_json(
-            self.port.get_option('json_test_results'))
-        processor.copy_results_viewer()
         if (self.port.get_option('show_results')
                 and processor.num_initial_failures > 0):
             self.port.show_results_html_file(
@@ -747,10 +753,16 @@ def main(argv) -> int:
     # This early declaration allow graceful exit when Chromium swarming kill process before wpt starts
     handle_interrupt_signals()
 
+    host = Host()
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
-        host = Host()
         adapter = WPTAdapter.from_args(host, argv)
+        if adapter.product.name == 'chrome' and not host.platform.is_linux():
+            logger.error(
+                '`run_wpt_tests.py --product=chrome` does not yet support '
+                'non-Linux platforms; follow https://crbug.com/1512219 for '
+                'status.')
+            return exit_code
         if adapter.options.use_upstream_wpt:
             exit_code = _run_with_upstream_wpt(host, argv)
         else:

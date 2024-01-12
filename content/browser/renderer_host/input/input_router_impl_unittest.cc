@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/input_router_impl.h"
+#include "content/common/input/input_router_impl.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
-#include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
@@ -133,8 +132,8 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override {}
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) override {}
 
   void OnImeCancelComposition() override {}
 
@@ -580,8 +579,8 @@ class InputRouterImplTestBase : public testing::Test {
   void OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource source,
       blink::mojom::InputEventResultState ack_state,
-      absl::optional<cc::TouchAction> expected_touch_action,
-      absl::optional<cc::TouchAction> expected_allowed_touch_action) {
+      std::optional<cc::TouchAction> expected_touch_action,
+      std::optional<cc::TouchAction> expected_allowed_touch_action) {
     auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
         HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
     input_router_->OnHasTouchEventConsumers(std::move(touch_event_consumers));
@@ -619,7 +618,7 @@ class InputRouterImplTest : public InputRouterImplTestBase {
  public:
   InputRouterImplTest() = default;
 
-  absl::optional<cc::TouchAction> AllowedTouchAction() {
+  std::optional<cc::TouchAction> AllowedTouchAction() {
     return input_router_->touch_action_filter_.allowed_touch_action_;
   }
 
@@ -819,7 +818,7 @@ TEST_F(InputRouterImplTest, TouchActionSetFromMainNotOverridden) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateConsumed) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kConsumed, expected_touch_action,
@@ -827,7 +826,7 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateConsumed) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNotConsumed) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kNotConsumed, expected_touch_action,
@@ -835,7 +834,7 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNotConsumed) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateConsumedShouldBubble) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kNotConsumed, expected_touch_action,
@@ -843,7 +842,7 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateConsumedShouldBubble) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNoConsumerExists) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kNoConsumerExists,
@@ -851,7 +850,7 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNoConsumerExists) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateIgnored) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kIgnored, expected_touch_action,
@@ -859,7 +858,7 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateIgnored) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNonBlocking) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kSetNonBlocking,
@@ -867,7 +866,7 @@ TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNonBlocking) {
 }
 
 TEST_F(InputRouterImplTest, TouchActionAutoWithAckStateNonBlockingDueToFling) {
-  absl::optional<cc::TouchAction> expected_touch_action;
+  std::optional<cc::TouchAction> expected_touch_action;
   OnTouchEventAckWithAckState(
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kSetNonBlockingDueToFling,
@@ -2285,13 +2284,13 @@ TEST_F(InputRouterImplTest, TouchActionInCallback) {
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
   ASSERT_EQ(1U, dispatched_messages.size());
   ASSERT_TRUE(dispatched_messages[0]->ToEvent());
-  absl::optional<cc::TouchAction> expected_touch_action = cc::TouchAction::kPan;
+  std::optional<cc::TouchAction> expected_touch_action = cc::TouchAction::kPan;
   dispatched_messages[0]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultSource::kCompositorThread,
       ui::LatencyInfo(), blink::mojom::InputEventResultState::kConsumed,
       nullptr, blink::mojom::TouchActionOptional::New(cc::TouchAction::kPan));
   ASSERT_EQ(1U, disposition_handler_->GetAndResetAckCount());
-  absl::optional<cc::TouchAction> allowed_touch_action = AllowedTouchAction();
+  std::optional<cc::TouchAction> allowed_touch_action = AllowedTouchAction();
   cc::TouchAction compositor_allowed_touch_action =
       CompositorAllowedTouchAction();
   EXPECT_FALSE(allowed_touch_action.has_value());
@@ -2473,13 +2472,13 @@ TEST_F(InputRouterImplStylusWritingTest,
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
   ASSERT_EQ(1U, dispatched_messages.size());
   ASSERT_TRUE(dispatched_messages[0]->ToEvent());
-  absl::optional<cc::TouchAction> expected_touch_action = cc::TouchAction::kPan;
+  std::optional<cc::TouchAction> expected_touch_action = cc::TouchAction::kPan;
   dispatched_messages[0]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultSource::kCompositorThread,
       ui::LatencyInfo(), blink::mojom::InputEventResultState::kNotConsumed,
       nullptr, blink::mojom::TouchActionOptional::New(cc::TouchAction::kPan));
   ASSERT_EQ(1U, disposition_handler_->GetAndResetAckCount());
-  absl::optional<cc::TouchAction> allowed_touch_action = AllowedTouchAction();
+  std::optional<cc::TouchAction> allowed_touch_action = AllowedTouchAction();
   cc::TouchAction compositor_allowed_touch_action =
       CompositorAllowedTouchAction();
   EXPECT_FALSE(allowed_touch_action.has_value());
@@ -2730,7 +2729,7 @@ class InputRouterImplScaleGestureEventTest
   InputRouterImplScaleGestureEventTest& operator=(
       const InputRouterImplScaleGestureEventTest&) = delete;
 
-  absl::optional<gfx::SizeF> GetContactSize(const WebGestureEvent& event) {
+  std::optional<gfx::SizeF> GetContactSize(const WebGestureEvent& event) {
     switch (event.GetType()) {
       case WebInputEvent::Type::kGestureTapDown:
         return gfx::SizeF(event.data.tap_down.width,
@@ -2750,7 +2749,7 @@ class InputRouterImplScaleGestureEventTest
         return gfx::SizeF(event.data.two_finger_tap.first_finger_width,
                           event.data.two_finger_tap.first_finger_height);
       default:
-        return absl::nullopt;
+        return std::nullopt;
     }
   }
 
@@ -2834,13 +2833,13 @@ class InputRouterImplScaleGestureEventTest
       const WebGestureEvent* sent_event,
       const gfx::PointF& orig,
       const gfx::PointF& scaled,
-      const absl::optional<gfx::SizeF>& contact_size_scaled) {
+      const std::optional<gfx::SizeF>& contact_size_scaled) {
     EXPECT_FLOAT_EQ(scaled.x(), sent_event->PositionInWidget().x());
     EXPECT_FLOAT_EQ(scaled.y(), sent_event->PositionInWidget().y());
     EXPECT_FLOAT_EQ(orig.x(), sent_event->PositionInScreen().x());
     EXPECT_FLOAT_EQ(orig.y(), sent_event->PositionInScreen().y());
 
-    absl::optional<gfx::SizeF> event_contact_size = GetContactSize(*sent_event);
+    std::optional<gfx::SizeF> event_contact_size = GetContactSize(*sent_event);
     if (event_contact_size && contact_size_scaled) {
       EXPECT_FLOAT_EQ(contact_size_scaled->width(),
                       event_contact_size->width());
@@ -2852,13 +2851,13 @@ class InputRouterImplScaleGestureEventTest
   void TestLocationInFilterEvent(
       const WebGestureEvent* filter_event,
       const gfx::PointF& orig,
-      const absl::optional<gfx::SizeF>& contact_size) {
+      const std::optional<gfx::SizeF>& contact_size) {
     EXPECT_FLOAT_EQ(orig.x(), filter_event->PositionInWidget().x());
     EXPECT_FLOAT_EQ(orig.y(), filter_event->PositionInWidget().y());
     EXPECT_FLOAT_EQ(orig.x(), filter_event->PositionInScreen().x());
     EXPECT_FLOAT_EQ(orig.y(), filter_event->PositionInScreen().y());
 
-    absl::optional<gfx::SizeF> event_contact_size =
+    std::optional<gfx::SizeF> event_contact_size =
         GetContactSize(*filter_event);
     if (event_contact_size && contact_size) {
       EXPECT_FLOAT_EQ(contact_size->width(), event_contact_size->width());
@@ -2936,12 +2935,12 @@ TEST_F(InputRouterImplScaleGestureEventTest, GesturePinch) {
 
   FlushGestureEvents({WebInputEvent::Type::kGesturePinchUpdate});
   const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-  TestLocationInSentEvent(sent_event, anchor, anchor_scaled, absl::nullopt);
+  TestLocationInSentEvent(sent_event, anchor, anchor_scaled, std::nullopt);
   EXPECT_FLOAT_EQ(scale_change, sent_event->data.pinch_update.scale);
 
   const WebGestureEvent* filter_event =
       GetFilterWebInputEvent<WebGestureEvent>();
-  TestLocationInFilterEvent(filter_event, anchor, absl::nullopt);
+  TestLocationInFilterEvent(filter_event, anchor, std::nullopt);
   EXPECT_FLOAT_EQ(scale_change, filter_event->data.pinch_update.scale);
 
   SendGestureSequence({WebInputEvent::Type::kGesturePinchEnd,

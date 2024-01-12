@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
@@ -161,8 +161,8 @@ ConvertOwnerJoinerPairsToDataKeys(
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
 InterestGroupManagerImpl::ReportRequest::~ReportRequest() = default;
 
-InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState() =
-    default;
+InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState()
+    : start_time(base::TimeTicks::Now()) {}
 InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState(
     AdAuctionDataLoaderState&& state) = default;
 InterestGroupManagerImpl::AdAuctionDataLoaderState::
@@ -374,12 +374,14 @@ void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
 void InterestGroupManagerImpl::GetInterestGroup(
     const url::Origin& owner,
     const std::string& name,
-    base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback) {
+    base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
+        callback) {
   GetInterestGroup(blink::InterestGroupKey(owner, name), std::move(callback));
 }
 void InterestGroupManagerImpl::GetInterestGroup(
     const blink::InterestGroupKey& group_key,
-    base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback) {
+    base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
+        callback) {
   caching_storage_.GetInterestGroup(group_key, std::move(callback));
 }
 
@@ -497,7 +499,7 @@ void InterestGroupManagerImpl::UpdateKAnonymity(
 
 void InterestGroupManagerImpl::GetLastKAnonymityReported(
     const std::string& key,
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   caching_storage_.GetLastKAnonymityReported(key, std::move(callback));
 }
 
@@ -548,12 +550,16 @@ void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
 
 void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state) {
-  std::move(state.callback).Run(state.serializer.Build());
+  BiddingAndAuctionData data = state.serializer.Build();
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime",
+      base::TimeTicks::Now() - state.start_time);
+  std::move(state.callback).Run(std::move(data));
 }
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
     network::mojom::URLLoaderFactory* loader,
-    absl::optional<url::Origin> coordinator,
+    std::optional<url::Origin> coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
   ba_key_fetcher_.GetOrFetchKey(loader, std::move(coordinator),
@@ -658,7 +664,7 @@ void InterestGroupManagerImpl::GetKAnonymityDataForUpdate(
 
 void InterestGroupManagerImpl::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins,
-    base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+    base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
         callback) {
   caching_storage_.GetDebugReportLockoutAndCooldowns(std::move(origins),
                                                      std::move(callback));

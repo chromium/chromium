@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
@@ -30,7 +31,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.url.GURL;
 
 /** Handles business decision policy for the {@code ContextualSearchManager}. */
@@ -534,14 +534,6 @@ class ContextualSearchPolicy {
      */
     String getRelatedSearchesStamp(String basePageLanguage) {
         return mRelatedSearchesStamp.getRelatedSearchesStamp(basePageLanguage);
-    }
-
-    /**
-     * @return whether the given parameter is currently enabled in the Related Searches Variation
-     *         configuration.
-     */
-    boolean isRelatedSearchesParamEnabled(String paramName) {
-        return ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(paramName);
     }
 
     // --------------------------------------------------------------------------------------------

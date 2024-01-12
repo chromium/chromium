@@ -230,13 +230,6 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
              "AutofillEnableVirtualCardMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, legal term of save card view and virtual card enroll view will
-// be moved before action buttons and icon will be moved after titles in those
-// views.
-BASE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment,
-             "AutofillMoveLegalTermsAndIconForNewCardEnrollment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Autofill will attempt to find standalone CVC fields for VCN
 // card on file when parsing forms.
 BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
@@ -248,7 +241,7 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
 // instead of the local card.
 BASE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard,
              "AutofillSuggestServerCardInsteadOfLocalCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, GPay-related links direct to the newer GPay Web site instead of
 // the legacy Payments Center.

@@ -61,7 +61,9 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kStartSurface.name) + "<" +
-      std::string(kStartSurface.name));
+      std::string(kStartSurface.name) + "," + std::string(kMagicStack.name) +
+      "," + std::string(kTabResumption.name) + ":" +
+      kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam);
   config.additional_args.push_back(
       "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
   config.additional_args.push_back(
@@ -107,30 +109,11 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   // Give time for NTP to be fully loaded so all elements are accessible.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1.0));
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Rotate to landscape to Magic Stack can be scrollable for iPhone.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
-  }
-
-  WaitUntilTabResumptionTileVisibleOrTimeout(true);
-
-  // Swipe over to the tab resumption module if needed.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_accessibilityID(
-                  kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier),
-              grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 343)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+                  @"Two tabs were expected to be open");
 }
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page

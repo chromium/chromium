@@ -123,6 +123,10 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   ]];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+  return UIStatusBarStyleLightContent;
+}
+
 - (void)didTapPlusButton {
   // TODO(crbug.com/1501837): Take into account the returned bool value of
   // `addNewItemInGroup`.

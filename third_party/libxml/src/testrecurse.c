@@ -10,6 +10,7 @@
  * daniel@veillard.com
  */
 
+#include "config.h"
 #include <stdio.h>
 
 #include <stdlib.h>
@@ -645,6 +646,8 @@ static void
 initSAX(xmlParserCtxtPtr ctxt) {
     ctxt->sax->startElementNs = NULL;
     ctxt->sax->endElementNs = NULL;
+    ctxt->sax->startElement = NULL;
+    ctxt->sax->endElement = NULL;
     ctxt->sax->characters = NULL;
     ctxt->sax->cdataBlock = NULL;
     ctxt->sax->ignorableWhitespace = NULL;
@@ -690,10 +693,6 @@ static char *resultFilename(const char *filename, const char *out,
         out = "";
 
     strncpy(suffixbuff,suffix,499);
-#ifdef VMS
-    if(strstr(base,".") && suffixbuff[0]=='.')
-      suffixbuff[0]='_';
-#endif
 
     if (snprintf(res, 499, "%s%s%s", out, base, suffixbuff) >= 499)
         res[499] = 0;

@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,9 +25,14 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "media/base/media_switches.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -362,6 +368,26 @@ void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+// static
+bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+    const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Only allow document PiP to be opened if the URL is of a type that we know
+  // how to display in the title bar.  Otherwise, the title bar might be
+  // misleading in certain scenarios.  See https://crbug.com/1460025 .
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return url.SchemeIs(url::kHttpsScheme) || url.SchemeIsFile() ||
+         net::IsLocalhost(url);
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void PictureInPictureWindowManager::CreateWindowInternal(
     content::WebContents* web_contents) {
   video_web_contents_observer_ =
@@ -436,7 +462,7 @@ PictureInPictureWindowManager::GetOverlayView(
     auto_pip_setting_helper_.reset();
   } else if (auto* pip_contents = GetChildWebContents()) {
     // For document pip, block input too.
-    auto_pip_setting_helper_->IgnoreInputEvents(pip_contents);
+    overlay_view->IgnoreInputEvents(pip_contents);
   }
 
   return overlay_view;

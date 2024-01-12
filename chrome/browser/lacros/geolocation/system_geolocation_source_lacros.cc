@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/grit/branded_strings.h"
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -54,60 +55,22 @@ void SystemGeolocationSourceLacros::RegisterPermissionUpdateCallback(
   permission_update_callback_.Run(current_status_);
 }
 
-void SystemGeolocationSourceLacros::TrackGeolocationAttempted() {
+void SystemGeolocationSourceLacros::OpenSystemPermissionSetting() {
   auto* lacros_service = chromeos::LacrosService::Get();
   CHECK(lacros_service);
 
-  // Service may not be available in older versions of Ash
-  if (!lacros_service->IsRegistered<crosapi::mojom::GeolocationService>()) {
-    LOG(WARNING) << "crosapi: GeolocationService API not registered";
+  if (!lacros_service->IsRegistered<crosapi::mojom::UrlHandler>()) {
     return;
   }
-  if (!lacros_service->IsAvailable<crosapi::mojom::GeolocationService>()) {
-    LOG(WARNING) << "crosapi: GeolocationService API not available";
+  if (!lacros_service->IsAvailable<crosapi::mojom::UrlHandler>()) {
     return;
   }
-  if (lacros_service
-          ->GetInterfaceVersion<crosapi::mojom::GeolocationService>() <
-      static_cast<int>(crosapi::mojom::GeolocationService::
-                           kTrackGeolocationAttemptedMinVersion)) {
-    return;
-  }
-  mojo::Remote<crosapi::mojom::GeolocationService>& service =
-      lacros_service->GetRemote<crosapi::mojom::GeolocationService>();
-  if (!service.is_connected()) {
-    return;
-  }
-
-  service->TrackGeolocationAttempted(
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
-}
-
-void SystemGeolocationSourceLacros::TrackGeolocationRelinquished() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  CHECK(lacros_service);
-
-  // Service may not be available in older versions of Ash
-  if (!lacros_service->IsRegistered<crosapi::mojom::GeolocationService>()) {
-    LOG(WARNING) << "crosapi: GeolocationService API not registered";
-    return;
-  }
-  if (!lacros_service->IsAvailable<crosapi::mojom::GeolocationService>()) {
-    LOG(WARNING) << "crosapi: GeolocationService API not available";
-    return;
-  }
-  if (lacros_service
-          ->GetInterfaceVersion<crosapi::mojom::GeolocationService>() <
-      static_cast<int>(crosapi::mojom::GeolocationService::
-                           kTrackGeolocationRelinquishedMinVersion)) {
-    return;
-  }
-  mojo::Remote<crosapi::mojom::GeolocationService>& service =
-      lacros_service->GetRemote<crosapi::mojom::GeolocationService>();
+  mojo::Remote<crosapi::mojom::UrlHandler>& service =
+      lacros_service->GetRemote<crosapi::mojom::UrlHandler>();
   if (service.is_connected()) {
-    // Use the default name for the browser.
-    service->TrackGeolocationRelinquished(
-        l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
+    // Open the appropriate CrOS system settings page.
+    service->OpenUrl(
+        GURL("chrome://os-settings/osPrivacy/privacyHub/geolocation"));
   }
 }
 

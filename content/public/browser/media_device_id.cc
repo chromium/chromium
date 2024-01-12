@@ -35,7 +35,7 @@ void GetMediaDeviceIDForHMAC(
     url::Origin security_origin,
     std::string hmac_device_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
+    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
   MediaDeviceSaltAndOrigin salt_and_origin(salt, security_origin);
   if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     GetRawDeviceIDForMediaStreamHMAC(

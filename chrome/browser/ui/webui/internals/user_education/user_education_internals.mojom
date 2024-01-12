@@ -4,6 +4,14 @@
 
 module mojom.user_education_internals;
 
+// Generic data about usage of a promo.
+struct FeaturePromoDemoPageData {
+  // The data being described.
+  string name;
+  // The value of the data.
+  string value;
+};
+
 // Common feature block for both tutorials and IPH promos.
 struct FeaturePromoDemoPageInfo {
   // The title of the promo, to be presented to the user.
@@ -19,11 +27,16 @@ struct FeaturePromoDemoPageInfo {
   // The list of supported platforms as text strings. (This mirrors the use on
   // the flags page.)
   array<string> supported_platforms;
+  // The names of other non-IPH features that must be enabled for this promo to
+  // display successfully.
+  array<string> required_features;
   // A list of human-readable instructions on how to set the browser up so that
   // the tutorial or IPH can be run.
   array<string> instructions;
   // The user education journey that follows this one, if any.
   string followed_by_internal_name;
+  // Any additional data about the promo or tutorial.
+  array<FeaturePromoDemoPageData> data;
 };
 
 // Provides access to browser-side user education data for
@@ -44,4 +57,7 @@ interface UserEducationInternalsPageHandler {
   // `feature_name`; the resulting string is an error message or empty string if
   // no error occurred.
   ShowFeaturePromo(string feature_name) => (string error_message);
+
+  // Clears the data (snooze, show count, etc.) associated with a promo.
+  ClearFeaturePromoData(string feature_name) => (string error_message);
 };

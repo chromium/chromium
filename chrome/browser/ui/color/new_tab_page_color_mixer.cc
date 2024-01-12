@@ -358,8 +358,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxResultsBackgroundHovered] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
-  mixer[kColorRealboxResultsControlBackgroundHovered] =
-      ui::SetAlpha(gfx::kGoogleGrey900, /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
+  mixer[kColorRealboxResultsButtonHover] = {
+      kColorRealboxResultsBackgroundHovered};
 
   mixer[kColorRealboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
   mixer[kColorRealboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
@@ -392,10 +392,6 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorRealboxResultsBackground] = {kColorOmniboxResultsBackground};
     mixer[kColorRealboxResultsBackgroundHovered] = {
         kColorOmniboxResultsBackgroundHovered};
-    mixer[kColorRealboxResultsControlBackgroundHovered] = ui::SetAlpha(
-        ui::SelectBasedOnDarkInput(kColorRealboxBackground, gfx::kGoogleGrey200,
-                                   gfx::kGoogleGrey900),
-        /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
     mixer[kColorRealboxResultsDimSelected] = {
         kColorOmniboxResultsTextDimmedSelected};
     mixer[kColorRealboxResultsForeground] = {kColorOmniboxText};

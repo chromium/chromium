@@ -23,8 +23,9 @@ class MediaToolbarButtonContextualMenu;
 // media session.
 class MediaToolbarButtonView : public ToolbarButton,
                                public MediaToolbarButtonControllerDelegate {
+  METADATA_HEADER(MediaToolbarButtonView, ToolbarButton)
+
  public:
-  METADATA_HEADER(MediaToolbarButtonView);
   MediaToolbarButtonView(
       BrowserView* browser_view,
       std::unique_ptr<MediaToolbarButtonContextualMenu> context_menu);

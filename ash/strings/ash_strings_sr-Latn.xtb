@@ -328,6 +328,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2361210043495191221">Uključi ili isključi WiFi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Ne možete da se prijavite na Chromebook</translation>
 <translation id="2367972762794486313">Prikažite aplikacije</translation>
+<translation id="2368828502825385061">Pronađi</translation>
 <translation id="2369165858548251131">„Zdravo“ na kineskom</translation>
 <translation id="2382875860893882175">Prebacivanje je trenutno pauzirano. Možete da nastavite sa prebacivanjem ili da zaustavite prebacivanje u svakom trenutku.</translation>
 <translation id="2386292613071805067">Izaberi sve na stranici</translation>
@@ -1133,6 +1134,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5537725057119320332">Prebacuj</translation>
 <translation id="5546397813406633847">Vrati pristup korisničkom nalogu</translation>
 <translation id="554893713779400387">Uključi/isključi diktiranje</translation>
+<translation id="5550417424894892620">Otpustite fajlove na pozadini da biste ih dodali u <ph name="HOLDING_SPACE_TITLE" />. Ne možete da dodajete fajlove na pozadini.</translation>
 <translation id="5551456515017410630">Otvori ili zatvori kalendar</translation>
 <translation id="5551974246223970793">Pri pretraživanju stranice idi na sledeće podudaranje za pretragu</translation>
 <translation id="5555639311269196631">Isključi hotspot</translation>
@@ -1505,6 +1507,7 @@ Novo instaliranje</translation>
 <translation id="7025533177575372252">Povežite <ph name="DEVICE_NAME" /> sa telefonom</translation>
 <translation id="7026338066939101231">Smanjenje</translation>
 <translation id="7029814467594812963">Izađi iz sesije</translation>
+<translation id="7031303610220416229">Pogledajte sve zadatke u Google zadacima</translation>
 <translation id="7032161822340700104">Dozvoljeno je samo 6 šablona. Uklonite šablon da biste sačuvali novi.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> želi da koristi uređaj <ph name="DEVICE_NAME" />. Uključite fizički prekidač na uređaju za: <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google pomoćnik</translation>
@@ -1818,6 +1821,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8351131234907093545">Napravite belešku</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> se koristi.</translation>
 <translation id="8369166482916924789">Sačuvana radna površina, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Potražite <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Slovo unapred</translation>
 <translation id="8371991222807690464">Učinak perifernog uređaja je možda ograničen u režimu gosta</translation>
 <translation id="8374601332003098278">Pritisnite Enter da biste snimili deo ekrana</translation>
@@ -1873,6 +1877,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortirajte aplikacije prema nazivu ili boji</translation>
 <translation id="8609384513243082612">Otvorite novu karticu</translation>
+<translation id="8612216344243590325">Čuvajte važne fajlove u folderu <ph name="HOLDING_SPACE_TITLE" /> umesto na pozadini. Samo prevucite fajlove u <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obaveštenja aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> su skrivena jer je zaštita od pregleda uključena</translation>
 <translation id="8619138598101195078">Smanji jačinu zvuka</translation>
 <translation id="8627191004499078455">Povezani ste sa uređajem <ph name="DEVICE_NAME" /></translation>

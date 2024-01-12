@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/protocol_serializer.h"
+
 #include <string>
 
 #include "base/strings/string_util.h"
 #include "base/version.h"
-#include "components/update_client/protocol_serializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {

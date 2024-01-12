@@ -86,14 +86,13 @@ void TestAutofillExternalDelegate::WaitForPopupHidden() {
 
 void TestAutofillExternalDelegate::CheckSuggestions(
     FieldGlobalId field_id,
-    size_t expected_num_suggestions,
-    const Suggestion expected_suggestions[]) {
+    const std::vector<Suggestion>& expected_suggestions) {
   // Ensure that these results are from the most recent query.
   EXPECT_TRUE(on_suggestions_returned_seen_);
 
   EXPECT_EQ(field_id, field_id_);
-  ASSERT_LE(expected_num_suggestions, suggestions_.size());
-  for (size_t i = 0; i < expected_num_suggestions; ++i) {
+  ASSERT_EQ(expected_suggestions.size(), suggestions_.size());
+  for (size_t i = 0; i < suggestions_.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("i: %" PRIuS, i));
     EXPECT_EQ(expected_suggestions[i].main_text.value,
               suggestions_[i].main_text.value);
@@ -103,8 +102,9 @@ void TestAutofillExternalDelegate::CheckSuggestions(
     EXPECT_EQ(expected_suggestions[i].icon, suggestions_[i].icon);
     EXPECT_EQ(expected_suggestions[i].popup_item_id,
               suggestions_[i].popup_item_id);
+    EXPECT_EQ(expected_suggestions[i].is_acceptable,
+              suggestions_[i].is_acceptable);
   }
-  ASSERT_EQ(expected_num_suggestions, suggestions_.size());
 }
 
 void TestAutofillExternalDelegate::CheckSuggestionsNotReturned(
@@ -115,7 +115,7 @@ void TestAutofillExternalDelegate::CheckSuggestionsNotReturned(
 }
 
 void TestAutofillExternalDelegate::CheckNoSuggestions(FieldGlobalId field_id) {
-  CheckSuggestions(field_id, 0, nullptr);
+  CheckSuggestions(field_id, {});
 }
 
 void TestAutofillExternalDelegate::CheckSuggestionCount(

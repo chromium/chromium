@@ -46,7 +46,7 @@ class PrinterInstaller {
   void Finish(InstallPrinterCallback cb, InstallPrinterResult res);
 
   // Unowned delegate granting access to printing stack dependencies.
-  const raw_ptr<CupsProxyServiceDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<CupsProxyServiceDelegate> delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PrinterInstaller> weak_factory_{this};

@@ -427,11 +427,6 @@
       <message name="IDS_EXTENSION_WEBGL_NOT_SUPPORTED" desc="Error message when an extension has a requirement for WebGL that the system does not support.">
         WebGL is not supported.
       </message>
-      <if expr="not use_aura">
-        <message name="IDS_EXTENSION_WINDOW_SHAPE_NOT_SUPPORTED" desc="Error message when an extension has a requirement for shaped windows that the system does not support.">
-          Shaped windows are not supported.
-        </message>
-      </if>
     </messages>
   </release>
 </grit>

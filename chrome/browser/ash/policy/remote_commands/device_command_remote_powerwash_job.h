@@ -32,7 +32,7 @@ class DeviceCommandRemotePowerwashJob : public RemoteCommandJob {
   void RunImpl(CallbackWithResult result_callback) override;
 
  private:
-  const raw_ptr<RemoteCommandsService, ExperimentalAsh> service_;
+  const raw_ptr<RemoteCommandsService> service_;
 };
 
 }  // namespace policy

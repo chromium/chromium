@@ -72,6 +72,11 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
     global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(
         std::move(creation_params), *reporting_proxy_, &GetFrame());
   }
+  void TearDown() override {
+    global_scope_->Dispose();
+    global_scope_->NotifyContextDestroyed();
+    PageTestBase::TearDown();
+  }
 
   const base::TickClock* GetTickClock() override {
     return platform_->test_task_runner()->GetMockTickClock();

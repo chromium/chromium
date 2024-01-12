@@ -623,15 +623,6 @@ bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserTriggerCriteriaExperiment);
 }
 
-bool IsDefaultBrowserPromoGenericTailoredTrainEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserGenericTailoredPromoTrain);
-}
-
-bool IsDefaultBrowserPromoOnlyGenericArmTrain() {
-  return kDefaultBrowserPromoGenericTailoredParam.Get() ==
-         DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric;
-}
-
 bool IsFullScreenPromoOnOmniboxCopyPasteEnabled() {
   return base::FeatureList::IsEnabled(kFullScreenPromoOnOmniboxCopyPaste);
 }
@@ -770,8 +761,7 @@ void LogPinnedTabsUsedForDefaultBrowserPromo() {
 }
 
 bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
-  const base::TimeDelta max_session_time =
-      base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
+  const base::TimeDelta max_session_time = base::Hours(6);
 
   if (HasRecordedEventForKeyLessThanDelay(
           kTimestampAppLastOpenedViaFirstPartyIntent,
@@ -803,8 +793,7 @@ bool HasRecentValidURLPastesAndRecordsCurrentPaste() {
 }
 
 bool HasRecentTimestampForKey(NSString* eventKey) {
-  const base::TimeDelta max_session_time =
-      base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
+  const base::TimeDelta max_session_time = base::Hours(6);
 
   if (HasRecordedEventForKeyLessThanDelay(eventKey, max_session_time)) {
     return YES;
@@ -988,24 +977,10 @@ bool IsTailoredPromoEligibleUser(bool is_signed_in) {
     return false;
   }
 
-  // When the default browser promo generic and tailored train experiment is
-  // enabled, allow the generic and tailored promos to be shown at least twice.
-  if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
-    return TailoredPromoInteractionCount() < 2 &&
-           GenericPromoInteractionCount() < 2;
-  }
-
   return !HasUserInteractedWithTailoredFullscreenPromoBefore();
 }
 
 bool IsGeneralPromoEligibleUser(bool is_signed_in) {
-  // When the default browser promo generic and tailored train experiment is
-  // enabled, the generic default browser promo will only be shown when the user
-  // is eligible for a tailored promo.
-  if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
-    return false;
-  }
-
   return !HasUserInteractedWithFullscreenPromoBefore() &&
          (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
           is_signed_in);

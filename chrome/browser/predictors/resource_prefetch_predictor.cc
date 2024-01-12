@@ -27,6 +27,7 @@
 #include "components/history/core/browser/url_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/origin.h"
 
@@ -404,7 +405,8 @@ absl::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
     return absl::nullopt;
   }
 
-  if (!url.is_valid() || url.host().empty()) {
+  if (!url.is_valid() || url.host().empty() || net::IsLocalhost(url) ||
+      !url.SchemeIsHTTPOrHTTPS()) {
     return absl::nullopt;
   }
   LcppData data;

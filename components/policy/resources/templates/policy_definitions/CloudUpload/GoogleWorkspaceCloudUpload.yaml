@@ -36,7 +36,7 @@ schema:
   - disallowed
   - automated
   type: string
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:122-
 tags: []
 type: string-enum

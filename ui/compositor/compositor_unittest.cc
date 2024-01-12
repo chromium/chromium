@@ -329,6 +329,8 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// ui::ThroughputTracker is only supported on ChromeOS
 TEST_F(CompositorTestWithMessageLoop, ThroughputTracker) {
   auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
   viz::ParentLocalSurfaceIdAllocator allocator;
@@ -457,6 +459,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerInvoluntaryReport) {
   // Stop() fails but no DCHECK or crash.
   EXPECT_FALSE(tracker.Stop());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/608436): Flaky on windows trybots

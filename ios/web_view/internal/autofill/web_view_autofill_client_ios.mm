@@ -87,7 +87,6 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
               web_state_->GetBrowserState()->IsOffTheRecord())),
       form_data_importer_(
           std::make_unique<FormDataImporter>(this,
-                                             payments_network_interface_.get(),
                                              personal_data_manager_,
                                              locale)),
       strike_database_(strike_database),
@@ -158,7 +157,7 @@ payments::PaymentsAutofillClient*
 WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>();
+        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>(bridge_);
   }
 
   return payments_autofill_client_.get();
@@ -210,7 +209,8 @@ translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
   return nullptr;
 }
 
-void WebViewAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
+void WebViewAutofillClientIOS::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
   NOTREACHED();
 }
 
@@ -322,7 +322,7 @@ AutofillClient::PopupOpenArgs WebViewAutofillClientIOS::GetReopenPopupArgs(
 
 void WebViewAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }
@@ -371,13 +371,16 @@ bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
 }
 
-void WebViewAutofillClientIOS::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  [bridge_ loadRiskData:std::move(callback)];
-}
-
 LogManager* WebViewAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
+}
+
+void WebViewAutofillClientIOS::set_bridge(
+    id<CWVAutofillClientIOSBridge> bridge) {
+  bridge_ = bridge;
+  if (payments_autofill_client_) {
+    payments_autofill_client_->set_bridge(bridge);
+  }
 }
 
 }  // namespace autofill

@@ -89,8 +89,8 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   gamepad_icon_view_->SetProperty(views::kMarginsKey, kGamepadIconMargins);
 
   // Add the title view.
-  title_view_ = AddChildView(
-      bubble_utils::CreateLabel(ash::TypographyToken::kCrosButton2));
+  title_view_ =
+      AddChildView(bubble_utils::CreateLabel(TypographyToken::kCrosButton2));
 
   // Add the arrow icon view.
   arrow_icon_view_ = AddChildView(std::make_unique<views::ImageView>());

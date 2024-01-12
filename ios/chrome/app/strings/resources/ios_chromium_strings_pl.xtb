@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Wskazówka dotycząca Chromium</translation>
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>
 <translation id="2178608107313874732">Chromium nie może teraz użyć aparatu</translation>
-<translation id="219374086636266276">Możesz <ph name="BEGIN_LINK" />określić, jakie dane Chromium mają być zapisywane<ph name="END_LINK" /> na koncie Google.
-W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chromium.</translation>
 <translation id="2195025571279539885">Czy następnym razem Chromium ma zaproponować Ci tłumaczenie stron tej witryny, których język to <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2218146227246548550">Twoja organizacja wymaga od Ciebie zalogowania się w Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Ten adres jest obecnie zapisany w Chromium. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="USER_EMAIL" />.</translation>
@@ -65,6 +63,9 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="2730884209570016437">Chromium nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="2784449251446768092">Zarządzaj ustawieniami Chromium</translation>
 <translation id="2798503587425057129">Otwiera listę Do przeczytania w Chromium.</translation>
+<translation id="28276745681323897">Możesz <ph name="BEGIN_LINK" />określić, jakie dane Chromium mają być zapisywane<ph name="END_LINK" /> na koncie Google.
+
+W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chromium.</translation>
 <translation id="2843571538056574338">Korzystaj w Chromium z autouzupełniania</translation>
 <translation id="2918709798697875261">Twoja organizacja nie pozwala Ci zalogować się w Chromium.</translation>
 <translation id="2942241131342758843">Używaj domyślnie Chromium, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>

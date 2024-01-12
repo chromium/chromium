@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "content/test/test_render_widget_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -152,22 +152,22 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                                               bool has_user_gesture);
 
   void SimulateDidChangeOpener(
-      const absl::optional<blink::LocalFrameToken>& opener_frame_token);
+      const std::optional<blink::LocalFrameToken>& opener_frame_token);
 
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
 
   // Returns the number of FedCM issues of FederatedAuthRequestResult type
-  // `status_type` sent to DevTools. If `status_type` is absl::nullopt, returns
+  // `status_type` sent to DevTools. If `status_type` is std::nullopt, returns
   // the total number of FedCM issues of any type sent to DevTools.
   int GetFederatedAuthRequestIssueCount(
-      absl::optional<blink::mojom::FederatedAuthRequestResult> status_type);
+      std::optional<blink::mojom::FederatedAuthRequestResult> status_type);
 
   // Returns the number of FedCM issues of FederatedAuthUserInfoRequestResult
-  // type `status_type` sent to DevTools. If `status_type` is absl::nullopt,
+  // type `status_type` sent to DevTools. If `status_type` is std::nullopt,
   // returns the total number of FedCM issues of any type sent to DevTools.
   int GetFederatedAuthUserInfoRequestIssueCount(
-      absl::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
+      std::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
           status_type);
 
   // If set, navigations will appear to have cleared the history list in the
@@ -260,7 +260,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
-      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ControllerServiceWorkerInfoPtr
           controller_service_worker_info,
@@ -271,8 +271,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
           keep_alive_loader_factory,
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           fetch_later_loader_factory,
-      mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
-      const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+      const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token) override;
@@ -284,7 +283,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool has_stale_copy_in_cache,
       int32_t error_code,
       int32_t extended_error_code,
-      const absl::optional<std::string>& error_page_content,
+      const std::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       const blink::DocumentToken& document_token,

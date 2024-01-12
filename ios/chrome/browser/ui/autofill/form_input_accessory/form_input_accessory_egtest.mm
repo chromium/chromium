@@ -301,6 +301,11 @@ constexpr char kFormZip[] = "form_zip";
 // accessory with the proper suggestion visible and that tapping on that
 // suggestion properly fills the related fields on the form.
 - (void)testFillCreditCardFieldsOnForm {
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -317,6 +322,8 @@ constexpr char kFormZip[] = "form_zip";
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:card];
+
+  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that tapping on an address related field opens the keyboard

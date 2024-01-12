@@ -509,7 +509,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     base::Time current = base::Time::Now();
     items->clear();
     GetOnRecordManager()->GetAllDownloads(items);
-    CHECK_EQ(0, static_cast<int>(items->size()));
+    CHECK(items->empty());
     std::vector<GURL> url_chain;
     url_chain.push_back(GURL());
     for (size_t i = 0; i < count; ++i) {
@@ -1102,6 +1102,38 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result_list.size());
   ASSERT_TRUE(result_list[0].is_int());
   EXPECT_EQ(id, result_list[0].GetInt());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_Open_Remove_Open) {
+  static const HistoryDownloadInfo kHistoryInfo[] = {
+      {FILE_PATH_LITERAL("file.txt"), DownloadItem::COMPLETE,
+       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS}};
+  DownloadManager::DownloadVector all_downloads;
+  ASSERT_TRUE(CreateHistoryDownloads(kHistoryInfo, std::size(kHistoryInfo),
+                                     &all_downloads));
+  DownloadItem* download_item = all_downloads[0];
+  ASSERT_TRUE(download_item);
+  EXPECT_FALSE(download_item->GetFileExternallyRemoved());
+  EXPECT_FALSE(download_item->GetOpened());
+  EXPECT_FALSE(download_item->GetOpenWhenComplete());
+
+  RunFunction(base::MakeRefCounted<DownloadsRemoveFileFunction>(),
+              DownloadItemIdAsArgList(download_item));
+  EXPECT_TRUE(download_item->GetFileExternallyRemoved());
+  EXPECT_FALSE(download_item->GetOpened());
+  EXPECT_FALSE(download_item->GetOpenWhenComplete());
+
+  scoped_refptr<DownloadsOpenFunction> open_function =
+      base::MakeRefCounted<DownloadsOpenFunction>();
+  open_function->set_user_gesture(true);
+  EXPECT_STREQ(errors::kFileAlreadyDeleted,
+               RunFunctionAndReturnError(open_function,
+                                         DownloadItemIdAsArgList(download_item))
+                   .c_str());
+  EXPECT_TRUE(download_item->GetFileExternallyRemoved());
+  EXPECT_FALSE(download_item->GetOpened());
+  EXPECT_FALSE(download_item->GetOpenWhenComplete());
 }
 
 scoped_refptr<ExtensionFunction> MockedGetFileIconFunction(

@@ -12,7 +12,12 @@ class Size;
 
 namespace chromeos::editor_menu {
 
-enum class CardType { kQuickAnswers = 0, kEditorMenu };
+enum class CardType {
+  // Currently `kDefault` can be either Quick Answers or Mahi Menu.
+  kDefault = 0,
+
+  kEditorMenu = 1
+};
 
 // Helper to compute editor menu bounds that for the provided anchor view
 // bounds. This tries to position the editor menu somewhere above/below/around

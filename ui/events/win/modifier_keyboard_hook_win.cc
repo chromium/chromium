@@ -272,7 +272,7 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
   std::unique_ptr<KeyEvent> key_event =
       std::make_unique<KeyEvent>(KeyEventFromMSG(msg));
   if (is_repeat)
-    key_event->set_flags(key_event->flags() | EF_IS_REPEAT);
+    key_event->SetFlags(key_event->flags() | EF_IS_REPEAT);
   ForwardCapturedKeyEvent(key_event.get());
 
   return true;

@@ -50,7 +50,7 @@ class SearchTagRegistry {
     void ProcessPendingSearchTags(const std::vector<SearchConcept>& search_tags,
                                   bool is_pending_add);
 
-    raw_ptr<SearchTagRegistry, ExperimentalAsh> registry_;
+    raw_ptr<SearchTagRegistry> registry_;
 
     // A SearchConcept along with a bool of the pending update state. If the
     // bool is true, the concept should be added; if the bool is false, the

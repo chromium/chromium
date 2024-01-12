@@ -15,7 +15,7 @@
  *  image: function(number, number):!PiexWasmImageResult
  * }}
  */
-let PiexWasmModule;
+export let PiexWasmModule;
 
 /**
  * Subset of the Emscripten Module API required for initialization. See
@@ -160,6 +160,7 @@ class PiexLoaderResponse {
  * @const {!Uint8Array}
  */
 const adobeProfile = new Uint8Array([
+  // clang-format off
   // APP2 ICC_PROFILE\0 segment header.
   0xff, 0xe2, 0x02, 0x40, 0x49, 0x43, 0x43, 0x5f, 0x50, 0x52, 0x4f, 0x46,
   0x49, 0x4c, 0x45, 0x00, 0x01, 0x01,
@@ -211,6 +212,7 @@ const adobeProfile = new Uint8Array([
   0x00, 0x00, 0x34, 0x8d, 0x00, 0x00, 0xa0, 0x2c, 0x00, 0x00, 0x0f, 0x95,
   0x58, 0x59, 0x5a, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x26, 0x31,
   0x00, 0x00, 0x10, 0x2f, 0x00, 0x00, 0xbe, 0x9c,
+  // clang-format on
 ]);
 
 /**
@@ -554,10 +556,13 @@ class ImageBuffer {
         switch (rowPad) {
           case 3:
             bitmap.setUint8(output++, 0);
+          // Fall through.
           case 2:
             bitmap.setUint8(output++, 0);
+          // Fall through.
           case 1:
             bitmap.setUint8(output++, 0);
+            // Fall through.
         }
 
         paddingOffset += rowStride;

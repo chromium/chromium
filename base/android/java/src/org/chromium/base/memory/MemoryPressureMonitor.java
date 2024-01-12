@@ -114,6 +114,18 @@ public class MemoryPressureMonitor {
                                 if (pressure != null) {
                                     notifyPressure(pressure);
                                 }
+
+                                // We start from Android U due to changes in
+                                // how App Freezer works in that release.
+                                //
+                                // See |PreFreezeBackgroundMemoryTrimmer| for
+                                // more details.
+                                if (level == ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
+                                        && android.os.Build.VERSION.SDK_INT
+                                                >= android.os.Build.VERSION_CODES
+                                                        .UPSIDE_DOWN_CAKE) {
+                                    MemoryPressureListener.onPreFreeze();
+                                }
                             }
 
                             @Override

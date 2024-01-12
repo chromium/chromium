@@ -14,10 +14,9 @@ bool CloudIdentifier::operator==(const CloudIdentifier& other) const {
   return provider_name == other.provider_name && id == other.id;
 }
 
-EntryMetadata::EntryMetadata() {}
+EntryMetadata::EntryMetadata() = default;
 
-EntryMetadata::~EntryMetadata() {
-}
+EntryMetadata::~EntryMetadata() = default;
 
 OpenedFile::OpenedFile(const base::FilePath& file_path, OpenFileMode mode)
     : file_path(file_path), mode(mode) {}
@@ -25,8 +24,7 @@ OpenedFile::OpenedFile(const base::FilePath& file_path, OpenFileMode mode)
 OpenedFile::OpenedFile() : mode(OPEN_FILE_MODE_READ) {
 }
 
-OpenedFile::~OpenedFile() {
-}
+OpenedFile::~OpenedFile() = default;
 
 ScopedUserInteraction::ScopedUserInteraction() = default;
 ScopedUserInteraction::~ScopedUserInteraction() = default;

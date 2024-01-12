@@ -24,3 +24,20 @@ constexpr base::FeatureParam<GreySnapshotOptimizationLevel>
         &kGreySnapshotOptimization, "level",
         GreySnapshotOptimizationLevel::kDoNotStoreToDisk,
         &kGreySnapshotOptimizationLevelOptions};
+
+BOOL IsGreySnapshotOptimizationEnabled() {
+  if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
+    return YES;
+  }
+  return NO;
+}
+
+BOOL IsGreySnapshotOptimizationNoCacheEnabled() {
+  if (IsGreySnapshotOptimizationEnabled()) {
+    if (kGreySnapshotOptimizationLevelParam.Get() ==
+        GreySnapshotOptimizationLevel::kDoNotStoreToDiskAndCache) {
+      return YES;
+    }
+  }
+  return NO;
+}

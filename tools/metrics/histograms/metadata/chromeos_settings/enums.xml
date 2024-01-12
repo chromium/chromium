@@ -36,6 +36,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="NightLightSchedule"/>
   <int value="7" label="DisplayPage"/>
   <int value="8" label="MirrorMode"/>
+  <int value="9" label="UnifiedMode"/>
+  <int value="10" label="PrimaryDisplay"/>
 </enum>
 
 <enum name="DisplayType">

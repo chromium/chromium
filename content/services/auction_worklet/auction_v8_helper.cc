@@ -519,7 +519,7 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const std::string& src,
     const GURL& src_url,
     const DebugId* debug_id,
-    absl::optional<std::string>& error_out) {
+    std::optional<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
 
@@ -564,7 +564,7 @@ v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CompileWasm(
     const std::string& payload,
     const GURL& src_url,
     const DebugId* debug_id,
-    absl::optional<std::string>& error_out) {
+    std::optional<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Isolate* v8_isolate = isolate();
 
@@ -596,7 +596,7 @@ v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CloneWasmModule(
 }
 
 std::unique_ptr<AuctionV8Helper::TimeLimit> AuctionV8Helper::CreateTimeLimit(
-    absl::optional<base::TimeDelta> script_timeout) {
+    std::optional<base::TimeDelta> script_timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<ScriptTimeoutHelper>(
       this, timer_task_runner_, script_timeout.value_or(script_timeout_));

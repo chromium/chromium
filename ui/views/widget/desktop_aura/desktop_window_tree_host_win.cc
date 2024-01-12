@@ -535,7 +535,7 @@ DesktopWindowTreeHostWin::CreateNonClientFrameView() {
 }
 
 bool DesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
-  return IsTranslucentWindowOpacitySupported();
+  return true;
 }
 
 bool DesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent() const {
@@ -599,10 +599,6 @@ void DesktopWindowTreeHostWin::FlashFrame(bool flash_frame) {
 
 bool DesktopWindowTreeHostWin::IsAnimatingClosed() const {
   return pending_close_;
-}
-
-bool DesktopWindowTreeHostWin::IsTranslucentWindowOpacitySupported() const {
-  return true;
 }
 
 void DesktopWindowTreeHostWin::SizeConstraintsChanged() {
@@ -1001,6 +997,10 @@ void DesktopWindowTreeHostWin::HandleEndWMSizeMove() {
 }
 
 void DesktopWindowTreeHostWin::HandleMove() {
+  // Adding/removing a monitor, or changing the primary monitor can cause a
+  // WM_MOVE message before `OnDisplayChanged()`. Without this call, we would
+  // DCHECK due to stale `DisplayInfo`s. See https:://crbug.com/1413940.
+  display::win::ScreenWin::UpdateDisplayInfosIfNeeded();
   CheckForMonitorChange();
   OnHostMovedInPixels();
 }

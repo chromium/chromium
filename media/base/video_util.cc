@@ -790,7 +790,7 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
 
   bool result;
   if (gr_context &&
-      !(caps.supports_yuv_rgb_conversion &&
+      !(caps.supports_yuv_to_rgb_conversion &&
         src_frame.mailbox_holder(src_plane).mailbox.IsSharedImage())) {
     result = ReadbackTexturePlaneToMemorySyncSkImage(
         src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri,

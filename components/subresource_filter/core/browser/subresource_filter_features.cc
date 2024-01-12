@@ -7,6 +7,7 @@
 #include <map>
 #include <ostream>
 #include <sstream>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -42,16 +43,16 @@ class CommaSeparatedStrings {
   CommaSeparatedStrings(const CommaSeparatedStrings&) = delete;
   CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
 
-  bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
+  bool CaseInsensitiveContains(std::string_view lowercase_key) const {
     return base::ranges::any_of(
-        pieces_, [lowercase_key](base::StringPiece element) {
+        pieces_, [lowercase_key](std::string_view element) {
           return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
         });
   }
 
  private:
   const std::string backing_string_;
-  const std::vector<base::StringPiece> pieces_;
+  const std::vector<std::string_view> pieces_;
 };
 
 std::string TakeVariationParamOrReturnEmpty(
@@ -66,7 +67,7 @@ std::string TakeVariationParamOrReturnEmpty(
 }
 
 mojom::ActivationLevel ParseActivationLevel(
-    const base::StringPiece activation_level) {
+    const std::string_view activation_level) {
   if (base::EqualsCaseInsensitiveASCII(activation_level,
                                        kActivationLevelEnabled))
     return mojom::ActivationLevel::kEnabled;
@@ -76,7 +77,7 @@ mojom::ActivationLevel ParseActivationLevel(
   return mojom::ActivationLevel::kDisabled;
 }
 
-ActivationScope ParseActivationScope(const base::StringPiece activation_scope) {
+ActivationScope ParseActivationScope(const std::string_view activation_scope) {
   if (base::EqualsCaseInsensitiveASCII(activation_scope,
                                        kActivationScopeAllSites))
     return ActivationScope::ALL_SITES;
@@ -112,7 +113,7 @@ double ParsePerformanceMeasurementRate(const std::string& rate) {
   return value < 1 ? value : 1;
 }
 
-int ParseInt(const base::StringPiece value) {
+int ParseInt(const std::string_view value) {
   int result = 0;
   base::StringToInt(value, &result);
   return result;
@@ -211,11 +212,11 @@ std::vector<Configuration> SortConfigsByDecreasingPriority(
   return configs;
 }
 
-base::StringPiece GetLexicographicallyGreatestRulesetFlavor(
+std::string_view GetLexicographicallyGreatestRulesetFlavor(
     const std::vector<Configuration>& configs) {
-  base::StringPiece greatest_flavor;
+  std::string_view greatest_flavor;
   for (const auto& config : configs) {
-    base::StringPiece flavor = config.general_settings.ruleset_flavor;
+    std::string_view flavor = config.general_settings.ruleset_flavor;
     if (flavor > greatest_flavor)
       greatest_flavor = flavor;
   }

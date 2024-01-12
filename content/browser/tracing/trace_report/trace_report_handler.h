@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
 #define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
 #include "base/token.h"
@@ -16,7 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 // Handles communication between the browser and chrome://traces-internals.

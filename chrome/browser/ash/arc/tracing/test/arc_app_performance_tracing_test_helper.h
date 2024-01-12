@@ -75,7 +75,7 @@ class ArcAppPerformanceTracingTestHelper {
 
  private:
   // Unowned pointer.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Timestamps used in generated commits.
   base::TimeTicks ticks_now_ =

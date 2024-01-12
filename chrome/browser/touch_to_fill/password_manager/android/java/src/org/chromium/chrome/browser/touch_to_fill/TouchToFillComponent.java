@@ -8,7 +8,7 @@ import android.content.Context;
 
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
 
@@ -26,6 +26,7 @@ public interface TouchToFillComponent {
     interface Delegate {
         /**
          * Called when the user select one of the credentials shown in the TouchToFillComponent.
+         *
          * @param credential The selected {@link Credential}.
          */
         void onCredentialSelected(Credential credential);
@@ -33,9 +34,10 @@ public interface TouchToFillComponent {
         /**
          * Called when the user select one of the Web Authentication credentials shown in the
          * TouchToFillComponent.
-         * @param credential The selected {@link WebAuthnCredential}.
+         *
+         * @param credential The selected {@link WebauthnCredential}.
          */
-        void onWebAuthnCredentialSelected(WebAuthnCredential credential);
+        void onWebAuthnCredentialSelected(WebauthnCredential credential);
 
         /**
          * Called when the user dismisses the TouchToFillComponent. Not called if a suggestion was
@@ -45,6 +47,7 @@ public interface TouchToFillComponent {
 
         /**
          * Called when the user selects the "Manage Passwords" option.
+         *
          * @param passkeysShown True when the sheet contained passkey credentials.
          */
         void onManagePasswordsSelected(boolean passkeysShown);
@@ -58,11 +61,12 @@ public interface TouchToFillComponent {
 
     /**
      * Initializes the component.
+     *
      * @param context A {@link Context} to create views and retrieve resources.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles dismiss events.
      * @param bottomSheetFocusHelper A {@link BottomSheetFocusHelper} used to restore accessibility
-     *         focus after the BottomSheet closes.
+     *     focus after the BottomSheet closes.
      */
     void initialize(
             Context context,
@@ -75,7 +79,7 @@ public interface TouchToFillComponent {
      *
      * @param url A {@link String} that contains the URL to display credentials for.
      * @param isOriginSecure A {@link boolean} that indicates whether the current origin is secure.
-     * @param webauthnCredentials A list of {@link WebAuthnCredential}s that will be displayed.
+     * @param webauthnCredentials A list of {@link WebauthnCredential}s that will be displayed.
      * @param credentials A list of {@link Credential}s that will be displayed.
      * @param triggerSubmission A {@link boolean} that indicates whether a form should be submitted
      *     after filling.
@@ -89,7 +93,7 @@ public interface TouchToFillComponent {
     void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            List<WebAuthnCredential> webauthnCredentials,
+            List<WebauthnCredential> webauthnCredentials,
             List<Credential> credentials,
             boolean triggerSubmission,
             boolean managePasskeysHidesPasswords,

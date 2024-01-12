@@ -164,7 +164,7 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
     std::move(callback).Run(base::FilePath(std::move(result)));
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 };
 
 }  // namespace

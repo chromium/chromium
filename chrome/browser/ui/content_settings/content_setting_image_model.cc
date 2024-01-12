@@ -673,6 +673,7 @@ void ContentSettingImageModel::SetBubbleWasAutoOpened(
 }
 
 void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
+  is_blocked_ = blocked;
   GetIconFromType(type, blocked, &icon_, &icon_badge_);
 }
 

@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_AUTHENTICATOR_REQUEST_CLIENT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_AUTHENTICATOR_REQUEST_CLIENT_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
@@ -20,7 +21,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
@@ -84,7 +84,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // credentials so thought is required before allowing an origin to assert an
   // RP ID. RP ID strings may be stored on authenticators and may later appear
   // in management UI.
-  virtual absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
+  virtual std::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin);
 
@@ -119,8 +119,8 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
 
   // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
   // API call originating from |render_frame_host| should be overridden with
-  // that value, or absl::nullopt otherwise.
-  virtual absl::optional<bool>
+  // that value, or std::nullopt otherwise.
+  virtual std::optional<bool>
   IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost* render_frame_host);
 
@@ -143,7 +143,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // authenticator. May return nullopt if the authenticator is not available in
   // the current context, in which case the Touch ID authenticator will be
   // unavailable.
-  virtual absl::optional<TouchIdAuthenticatorConfig>
+  virtual std::optional<TouchIdAuthenticatorConfig>
   GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -290,7 +290,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       const std::string& rp_id,
       RequestSource request_source,
       device::FidoRequestType request_type,
-      absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      std::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory);
@@ -299,7 +299,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
   struct Hints {
     // The site's preferred transport for this operation.
-    absl::optional<device::FidoTransportProtocol> transport;
+    std::optional<device::FidoTransportProtocol> transport;
   };
 
   // SetHints communicates the "hints" that were set in the request. See

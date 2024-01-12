@@ -238,6 +238,45 @@ Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank) {
   return default_axes;
 }
 
+bool IsDepthwiseConv2d(uint32_t input_channels,
+                       uint32_t output_channels,
+                       uint32_t groups) {
+  return groups == input_channels && groups == output_channels && groups != 1;
+}
+
+base::expected<void, String> ValidateFilterLayout(
+    bool depthwise,
+    V8MLInputOperandLayout input_layout,
+    V8MLConv2dFilterOperandLayout filter_layout) {
+  CHECK(input_layout.AsEnum() == V8MLInputOperandLayout::Enum::kNhwc);
+
+  if (!depthwise) {
+    // For regular conv2d, NHWC input layout expects weights layout in ohwi that
+    // is [groups * group_output_channels, kernel_height, kernel_width,
+    // group_input_channels].
+    //
+    // TODO(crbug.com/1273291): support other layouts by transposing the
+    // filter operand.
+    if (filter_layout.AsEnum() != V8MLConv2dFilterOperandLayout::Enum::kOhwi) {
+      return base::unexpected(String::Format(
+          "The filter layout %s is not supported.", filter_layout.AsCStr()));
+    }
+  } else {
+    // For depthwise conv2d, NHWC input layout expects weights layout in ihwo
+    // that is [1, kernel_height, kernel_width, input_channels *
+    // depth_multiplier].
+    //
+    // TODO(crbug.com/1273291): support other layouts by transposing the
+    // filter operand.
+    if (filter_layout.AsEnum() != V8MLConv2dFilterOperandLayout::Enum::kIhwo) {
+      return base::unexpected(String::Format(
+          "The filter layout %s is not supported.", filter_layout.AsCStr()));
+    }
+  }
+
+  return base::ok();
+}
+
 webnn::Padding2d CalculateConvTransposePadding2D(
     const blink::MLConvTranspose2dOptions* options,
     uint32_t input_height,

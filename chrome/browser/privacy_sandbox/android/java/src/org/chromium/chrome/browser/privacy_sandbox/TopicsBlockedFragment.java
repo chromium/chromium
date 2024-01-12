@@ -13,6 +13,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -28,7 +29,12 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_topics_page_blocked_topics_sub_page_title);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            getActivity().setTitle(R.string.settings_topics_page_blocked_topics_heading_new);
+        } else {
+            getActivity().setTitle(R.string.settings_topics_page_blocked_topics_sub_page_title);
+        }
         SettingsUtils.addPreferencesFromResource(this, R.xml.block_list_preference);
 
         mBlockedTopicsCategory = findPreference(BLOCKED_TOPICS_PREFERENCE);
@@ -85,6 +91,11 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void updateBlockedTopicsDescription() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            mBlockedTopicsCategory.setSummary(null);
+            return;
+        }
         mBlockedTopicsCategory.setSummary(
                 mBlockedTopicsCategory.getPreferenceCount() == 0
                         ? R.string.settings_topics_page_blocked_topics_description_empty

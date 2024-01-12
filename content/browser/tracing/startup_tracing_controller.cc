@@ -139,7 +139,7 @@ class StartupTracingController::BackgroundTracer {
     EmergencyTraceFinalisationCoordinator::GetInstance().OnTracingStarted(
         task_runner_,
         base::BindOnce(&BackgroundTracer::Stop, weak_ptr_factory_.GetWeakPtr(),
-                       absl::nullopt));
+                       std::nullopt));
 
     tracing_session_->SetOnStopCallback([&]() { OnTracingStopped(); });
     tracing_session_->StartBlocking();
@@ -147,7 +147,7 @@ class StartupTracingController::BackgroundTracer {
     TRACE_EVENT("startup", "StartupTracingController::Start");
   }
 
-  void Stop(absl::optional<base::FilePath> output_file) {
+  void Stop(std::optional<base::FilePath> output_file) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Tracing might have already been finished due to a timeout.

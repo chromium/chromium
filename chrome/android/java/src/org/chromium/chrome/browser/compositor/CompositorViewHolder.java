@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -1419,15 +1418,11 @@ public class CompositorViewHolder extends FrameLayout
         if (mUrlBar != null && mUrlBar.isFocused()) mUrlBar.clearFocus();
         boolean wasVisible = false;
         if (hasFocus()) {
-            if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-                KeyboardVisibilityDelegate keyboardVisibilityDelegate =
-                        KeyboardVisibilityDelegate.getInstance();
-                wasVisible = keyboardVisibilityDelegate.isKeyboardShowing(getContext(), this);
-                if (wasVisible) {
-                    keyboardVisibilityDelegate.hideKeyboard(this);
-                }
-            } else {
-                wasVisible = KeyboardVisibilityDelegate.getInstance().hideKeyboard(this);
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate =
+                    KeyboardVisibilityDelegate.getInstance();
+            wasVisible = keyboardVisibilityDelegate.isKeyboardShowing(getContext(), this);
+            if (wasVisible) {
+                keyboardVisibilityDelegate.hideKeyboard(this);
             }
         }
         if (wasVisible) {

@@ -66,10 +66,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TechnologyStateController {
   }
 
  private:
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<HotspotOperationDelegate, ExperimentalAsh>
-      hotspot_operation_delegate_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<HotspotOperationDelegate> hotspot_operation_delegate_ = nullptr;
 
   void OnDisableWifiForHotspotFailed(PrepareEnableHotspotCallback callback,
                                      const std::string& error_name);

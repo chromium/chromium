@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/style/typography.h"
@@ -109,7 +109,7 @@ void AddSuggestionContentToView(
 
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
-                 PopupType popup_type,
+                 FillingProduct main_filling_product,
                  int maximum_width_single_line);
 
 // Creates a label for the suggestion's main text.
@@ -124,14 +124,10 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupRowContentView& content_view,
     const Suggestion& suggestion,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     int text_style = views::style::STYLE_SECONDARY);
 
 int GetMaxPopupAddressProfileWidth();
-
-void AddSuggestionStrategyContentCellChildren(PopupRowContentView* view,
-                                              const Suggestion& suggestion,
-                                              PopupType popup_type);
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
     const gfx::VectorIcon& vector_icon,

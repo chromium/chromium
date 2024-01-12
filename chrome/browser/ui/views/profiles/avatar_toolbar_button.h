@@ -20,9 +20,9 @@ class Browser;
 class BrowserView;
 
 class AvatarToolbarButton : public ToolbarButton {
- public:
-  METADATA_HEADER(AvatarToolbarButton);
+  METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
 
+ public:
   // States of the button ordered in priority of getting displayed.
   enum class State {
     kIncognitoProfile,

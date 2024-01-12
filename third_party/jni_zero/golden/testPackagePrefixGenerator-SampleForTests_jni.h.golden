@@ -90,8 +90,8 @@ JNI_BOUNDARY_EXPORT void
     jobject b) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "AddStructB");
-  return native->AddStructB(env, base::android::JavaParamRef<jobject>(env, caller),
-      base::android::JavaParamRef<jobject>(env, b));
+  return native->AddStructB(env, jni_zero::JavaParamRef<jobject>(env, caller),
+      jni_zero::JavaParamRef<jobject>(env, b));
 }
 
 JNI_BOUNDARY_EXPORT void
@@ -102,30 +102,29 @@ JNI_BOUNDARY_EXPORT void
     jobject caller) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "Destroy");
-  return native->Destroy(env, base::android::JavaParamRef<jobject>(env, caller));
+  return native->Destroy(env, jni_zero::JavaParamRef<jobject>(env, caller));
 }
 
-static base::android::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(JNIEnv* env, const
-    base::android::JavaParamRef<jclass>& arg0);
+static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(JNIEnv* env, const
+    jni_zero::JavaParamRef<jclass>& arg0);
 
 JNI_BOUNDARY_EXPORT jclass
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1getClass(
     JNIEnv* env,
     jclass jcaller,
     jclass arg0) {
-  return JNI_SampleForTests_GetClass(env, base::android::JavaParamRef<jclass>(env, arg0)).Release();
+  return JNI_SampleForTests_GetClass(env, jni_zero::JavaParamRef<jclass>(env, arg0)).Release();
 }
 
 static jdouble JNI_SampleForTests_GetDoubleFunction(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& caller);
+    jni_zero::JavaParamRef<jobject>& caller);
 
 JNI_BOUNDARY_EXPORT jdouble
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1getDoubleFunction(
     JNIEnv* env,
     jclass jcaller,
     jobject caller) {
-  return JNI_SampleForTests_GetDoubleFunction(env, base::android::JavaParamRef<jobject>(env,
-      caller));
+  return JNI_SampleForTests_GetDoubleFunction(env, jni_zero::JavaParamRef<jobject>(env, caller));
 }
 
 static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv* env);
@@ -137,33 +136,32 @@ JNI_BOUNDARY_EXPORT jfloat
   return JNI_SampleForTests_GetFloatFunction(env);
 }
 
-static base::android::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatype(JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller);
+static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatype(JNIEnv* env, const
+    jni_zero::JavaParamRef<jobject>& caller);
 
 JNI_BOUNDARY_EXPORT jobject
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1getNonPODDatatype(
     JNIEnv* env,
     jclass jcaller,
     jobject caller) {
-  return JNI_SampleForTests_GetNonPODDatatype(env, base::android::JavaParamRef<jobject>(env,
+  return JNI_SampleForTests_GetNonPODDatatype(env, jni_zero::JavaParamRef<jobject>(env,
       caller)).Release();
 }
 
-static base::android::ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(JNIEnv* env,
-    const base::android::JavaParamRef<jthrowable>& arg0);
+static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(JNIEnv* env, const
+    jni_zero::JavaParamRef<jthrowable>& arg0);
 
 JNI_BOUNDARY_EXPORT jthrowable
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1getThrowable(
     JNIEnv* env,
     jclass jcaller,
     jthrowable arg0) {
-  return JNI_SampleForTests_GetThrowable(env, base::android::JavaParamRef<jthrowable>(env,
+  return JNI_SampleForTests_GetThrowable(env, jni_zero::JavaParamRef<jthrowable>(env,
       arg0)).Release();
 }
 
-static jlong JNI_SampleForTests_Init(JNIEnv* env, const base::android::JavaParamRef<jobject>&
-    caller,
-    const base::android::JavaParamRef<jstring>& param);
+static jlong JNI_SampleForTests_Init(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& caller,
+    const jni_zero::JavaParamRef<jstring>& param);
 
 JNI_BOUNDARY_EXPORT jlong
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1init(
@@ -171,8 +169,8 @@ JNI_BOUNDARY_EXPORT jlong
     jclass jcaller,
     jobject caller,
     jstring param) {
-  return JNI_SampleForTests_Init(env, base::android::JavaParamRef<jobject>(env, caller),
-      base::android::JavaParamRef<jstring>(env, param));
+  return JNI_SampleForTests_Init(env, jni_zero::JavaParamRef<jobject>(env, caller),
+      jni_zero::JavaParamRef<jstring>(env, param));
 }
 
 JNI_BOUNDARY_EXPORT void
@@ -183,7 +181,7 @@ JNI_BOUNDARY_EXPORT void
     jobject caller) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "IterateAndDoSomethingWithStructB");
-  return native->IterateAndDoSomethingWithStructB(env, base::android::JavaParamRef<jobject>(env,
+  return native->IterateAndDoSomethingWithStructB(env, jni_zero::JavaParamRef<jobject>(env,
       caller));
 }
 
@@ -195,7 +193,7 @@ JNI_BOUNDARY_EXPORT jint
     jobject caller) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "Method", 0);
-  return native->Method(env, base::android::JavaParamRef<jobject>(env, caller));
+  return native->Method(env, jni_zero::JavaParamRef<jobject>(env, caller));
 }
 
 JNI_BOUNDARY_EXPORT jdouble
@@ -206,7 +204,7 @@ JNI_BOUNDARY_EXPORT jdouble
     jobject caller) {
   CPPClass::InnerClass* native = reinterpret_cast<CPPClass::InnerClass*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "MethodOtherP0", 0);
-  return native->MethodOtherP0(env, base::android::JavaParamRef<jobject>(env, caller));
+  return native->MethodOtherP0(env, jni_zero::JavaParamRef<jobject>(env, caller));
 }
 
 JNI_BOUNDARY_EXPORT jstring
@@ -217,12 +215,12 @@ JNI_BOUNDARY_EXPORT jstring
     jobject caller) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "ReturnAString", nullptr);
-  return native->ReturnAString(env, base::android::JavaParamRef<jobject>(env, caller)).Release();
+  return native->ReturnAString(env, jni_zero::JavaParamRef<jobject>(env, caller)).Release();
 }
 
-static void JNI_SampleForTests_SetNonPODDatatype(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& caller,
-    const base::android::JavaParamRef<jobject>& rect);
+static void JNI_SampleForTests_SetNonPODDatatype(JNIEnv* env, const jni_zero::JavaParamRef<jobject>&
+    caller,
+    const jni_zero::JavaParamRef<jobject>& rect);
 
 JNI_BOUNDARY_EXPORT void
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1setNonPODDatatype(
@@ -230,21 +228,21 @@ JNI_BOUNDARY_EXPORT void
     jclass jcaller,
     jobject caller,
     jobject rect) {
-  return JNI_SampleForTests_SetNonPODDatatype(env, base::android::JavaParamRef<jobject>(env,
-      caller), base::android::JavaParamRef<jobject>(env, rect));
+  return JNI_SampleForTests_SetNonPODDatatype(env, jni_zero::JavaParamRef<jobject>(env, caller),
+      jni_zero::JavaParamRef<jobject>(env, rect));
 }
 
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_Constructor2(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(JNIEnv* env,
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(JNIEnv* env,
     JniIntWrapper foo,
     JniIntWrapper bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -256,18 +254,18 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructo
   jobject ret =
       env->NewObject(clazz,
           call_context.base.method_id, as_jint(foo), as_jint(bar));
-  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_addStructA1(nullptr);
-static void Java_SampleForTests_addStructA(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jobject>& a) {
+static void Java_SampleForTests_addStructA(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj, const
+    jni_zero::JavaRef<jobject>& a) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -282,13 +280,13 @@ static void Java_SampleForTests_addStructA(JNIEnv* env, const base::android::Jav
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_getClass1(nullptr);
-static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jclass>& arg0) {
+static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv* env, const
+    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jclass>& arg0) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -300,17 +298,17 @@ static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JN
   jclass ret =
       static_cast<jclass>(env->CallObjectMethod(obj.obj(),
           call_context.base.method_id, arg0.obj()));
-  return base::android::ScopedJavaLocalRef<jclass>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jclass>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_getInnerEnum0(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,
@@ -322,18 +320,18 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEn
   jobject ret =
       env->CallStaticObjectMethod(clazz,
           call_context.base.method_id);
-  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_getInnerEnum1(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env,
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env,
     JniIntWrapper a) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,
@@ -345,18 +343,17 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEn
   jobject ret =
       env->CallStaticObjectMethod(clazz,
           call_context.base.method_id, as_jint(a));
-  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_getInnerInterface0(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env)
-    {
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,
@@ -368,18 +365,18 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerIn
   jobject ret =
       env->CallStaticObjectMethod(clazz,
           call_context.base.method_id);
-  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_getThrowable1(nullptr);
-static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jthrowable>& arg0) {
+static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(JNIEnv* env, const
+    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jthrowable>& arg0) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -391,18 +388,18 @@ static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThro
   jthrowable ret =
       static_cast<jthrowable>(env->CallObjectMethod(obj.obj(),
           call_context.base.method_id, arg0.obj()));
-  return base::android::ScopedJavaLocalRef<jthrowable>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jthrowable>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_iterateAndDoSomething0(nullptr);
-static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj) {
+static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const jni_zero::JavaRef<jobject>&
+    obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -417,14 +414,14 @@ static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_javaMethod2(nullptr);
-static jint Java_SampleForTests_javaMethod(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
+static jint Java_SampleForTests_javaMethod(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper foo,
     JniIntWrapper bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), 0);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -442,7 +439,7 @@ static jint Java_SampleForTests_javaMethod(JNIEnv* env, const base::android::Jav
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_javaMethodWithAnnotatedParam4(nullptr);
 static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj, JniIntWrapper foo,
+    jni_zero::JavaRef<jobject>& obj, JniIntWrapper foo,
     JniIntWrapper bar,
     JniIntWrapper baz,
     JniIntWrapper bat) {
@@ -450,7 +447,7 @@ static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -466,12 +463,12 @@ static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_methodThatThrowsException0(nullptr);
 static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj) {
+    jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env));
 
-  jni_generator::JniJavaCallContextUnchecked call_context;
+  jni_zero::JniJavaCallContextUnchecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -487,13 +484,13 @@ static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_methodWithGenericParams2(nullptr);
 static void Java_SampleForTests_methodWithGenericParams(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& foo,
-    const base::android::JavaRef<jobject>& bar) {
+    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jobject>& foo,
+    const jni_zero::JavaRef<jobject>& bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -509,12 +506,12 @@ static void Java_SampleForTests_methodWithGenericParams(JNIEnv* env, const
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_packagePrivateJavaMethod0(nullptr);
 static void Java_SampleForTests_packagePrivateJavaMethod(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj) {
+    jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -534,7 +531,7 @@ static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(env), false);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,
@@ -551,16 +548,16 @@ static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA_create3(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEnv* env, jlong l,
+static jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEnv* env, jlong l,
     JniIntWrapper i,
-    const base::android::JavaRef<jstring>& s) {
+    const jni_zero::JavaRef<jstring>& s) {
   jclass clazz =
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz(env);
   CHECK_CLAZZ(env, clazz,
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz(env),
           nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,
@@ -572,19 +569,19 @@ static base::android::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEn
   jobject ret =
       env->CallStaticObjectMethod(clazz,
           call_context.base.method_id, l, as_jint(i), s.obj());
-  return base::android::ScopedJavaLocalRef<jobject>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_getKey0(nullptr);
-static jlong Java_InnerStructB_getKey(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+static jlong Java_InnerStructB_getKey(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj) {
   jclass clazz =
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(env),
           0);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -601,15 +598,15 @@ static jlong Java_InnerStructB_getKey(JNIEnv* env, const base::android::JavaRef<
 
 static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_getValue0(nullptr);
-static base::android::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj) {
+static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* env, const
+    jni_zero::JavaRef<jobject>& obj) {
   jclass clazz =
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(env),
           nullptr);
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
           env,
@@ -621,7 +618,7 @@ static base::android::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNI
   jstring ret =
       static_cast<jstring>(env->CallObjectMethod(obj.obj(),
           call_context.base.method_id));
-  return base::android::ScopedJavaLocalRef<jstring>(env, ret);
+  return jni_zero::ScopedJavaLocalRef<jstring>(env, ret);
 }
 
 }  // namespace android

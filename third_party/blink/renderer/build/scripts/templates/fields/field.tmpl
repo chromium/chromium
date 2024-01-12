@@ -256,6 +256,27 @@ const {{field.type_name}}&
 {% set boolean_and = boolean_and or joiner('&& ') %}
 {% for subgroup in group.subgroups %}
   {# If every field in this subgroup is inherited, we directly compare the
+     group instead, delegating to operator== (with direct pointer comparison
+     as a fast path). #}
+  {% set group_expression = group_getter_expression(subgroup) %}
+  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
+    {{boolean_and()}}base::ValuesEquivalent({{group_expression}}.Get(), o.{{group_expression}}.Get())
+  {# Otherwise, we would have to recursively generate comparison operations
+     on fields in the subgroup. #}
+  {% elif subgroup.all_fields|selectattr("is_inherited")|list|length > 0 -%}
+    {{boolean_and()}}(base::ValuesEquivalent({{group_expression}}.Get(), o.{{group_expression}}.Get())
+|| ({{fieldwise_pointer_compare_inherited(subgroup)}}))
+  {% endif %}
+{% endfor %}
+{% for field in group.fields if field.is_inherited -%}
+  {{boolean_and()}}{{getter_expression(field)}} == o.{{getter_expression(field)}}
+{% endfor %}
+{% endmacro %}
+
+{% macro fieldwise_pointer_compare_inherited_old(group, boolean_and=None) %}
+{% set boolean_and = boolean_and or joiner('&& ') %}
+{% for subgroup in group.subgroups %}
+  {# If every field in this subgroup is inherited, we directly compare the
      group pointer instead. #}
   {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
@@ -264,7 +285,7 @@ const {{field.type_name}}&
      on fields in the subgroup. #}
   {% elif subgroup.all_fields|selectattr("is_inherited")|list|length > 0 -%}
     {{boolean_and()}}({{group_expression}}.Get() == o.{{group_expression}}.Get()
-|| ({{fieldwise_pointer_compare_inherited(subgroup)}}))
+|| ({{fieldwise_pointer_compare_inherited_old(subgroup)}}))
   {% endif %}
 {% endfor %}
 {% for field in group.fields if field.is_inherited -%}

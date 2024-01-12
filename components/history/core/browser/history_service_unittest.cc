@@ -703,8 +703,12 @@ class HistoryDBTaskImpl : public HistoryDBTask {
  public:
   static const int kWantInvokeCount;
 
-  HistoryDBTaskImpl(int* invoke_count, bool* done_invoked)
-      : invoke_count_(invoke_count), done_invoked_(done_invoked) {}
+  HistoryDBTaskImpl(int* invoke_count,
+                    bool* done_invoked,
+                    base::OnceClosure quit_closure)
+      : invoke_count_(invoke_count),
+        done_invoked_(done_invoked),
+        quit_closure_(std::move(quit_closure)) {}
 
   HistoryDBTaskImpl(const HistoryDBTaskImpl&) = delete;
   HistoryDBTaskImpl& operator=(const HistoryDBTaskImpl&) = delete;
@@ -715,7 +719,7 @@ class HistoryDBTaskImpl : public HistoryDBTask {
 
   void DoneRunOnMainThread() override {
     *done_invoked_ = true;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
 
   raw_ptr<int> invoke_count_;
@@ -723,6 +727,7 @@ class HistoryDBTaskImpl : public HistoryDBTask {
 
  private:
   ~HistoryDBTaskImpl() override = default;
+  base::OnceClosure quit_closure_;
 };
 
 // static
@@ -735,15 +740,16 @@ TEST_F(HistoryServiceTest, HistoryDBTask) {
   base::CancelableTaskTracker task_tracker;
   int invoke_count = 0;
   bool done_invoked = false;
+  base::RunLoop loop;
   history_service_->ScheduleDBTask(
       FROM_HERE,
-      std::unique_ptr<history::HistoryDBTask>(
-          new HistoryDBTaskImpl(&invoke_count, &done_invoked)),
+      std::unique_ptr<history::HistoryDBTask>(new HistoryDBTaskImpl(
+          &invoke_count, &done_invoked, loop.QuitWhenIdleClosure())),
       &task_tracker);
   // Run the message loop. When HistoryDBTaskImpl::DoneRunOnMainThread runs,
   // it will stop the message loop. If the test hangs here, it means
   // DoneRunOnMainThread isn't being invoked correctly.
-  base::RunLoop().Run();
+  loop.Run();
   CleanupHistoryService();
   // WARNING: history has now been deleted.
   history_service_.reset();
@@ -758,8 +764,8 @@ TEST_F(HistoryServiceTest, HistoryDBTaskCanceled) {
   bool done_invoked = false;
   history_service_->ScheduleDBTask(
       FROM_HERE,
-      std::unique_ptr<history::HistoryDBTask>(
-          new HistoryDBTaskImpl(&invoke_count, &done_invoked)),
+      std::unique_ptr<history::HistoryDBTask>(new HistoryDBTaskImpl(
+          &invoke_count, &done_invoked, base::DoNothing())),
       &task_tracker);
   task_tracker.TryCancelAll();
   CleanupHistoryService();

@@ -20,7 +20,6 @@
 #include "ash/debug.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
-#include "ash/multi_profile_uma.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
@@ -45,6 +44,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
@@ -156,13 +156,11 @@ void RecordNewTab(const ui::Accelerator& accelerator) {
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
 }
 
-void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
+void RecordSwitchToLastUsedIme(bool key_pressed) {
   base::RecordAction(UserMetricsAction("Accel_Previous_Ime"));
-  if (accelerator.key_state() == ui::Accelerator::KeyState::PRESSED) {
+  if (key_pressed) {
     RecordImeSwitchByAccelerator();
-    Shell::Get()->ime_controller()->SwitchToLastUsedIme();
   }
-  // Else: consume the Ctrl+Space ET_KEY_RELEASED event but do not do anything.
 }
 
 bool CanHandleSwitchIme(const ui::Accelerator& accelerator) {
@@ -726,6 +724,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
     case AcceleratorAction::kDebugClearUseKMeansPref:
+    case AcceleratorAction::kDebugToggleFocusModeState:
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
     case AcceleratorAction::kDebugToggleShowDebugBorders:
     case AcceleratorAction::kDebugToggleShowFpsCounter:
@@ -932,6 +931,9 @@ void AcceleratorControllerImpl::PerformAction(
         action == AcceleratorAction::kVolumeUp);
   }
 
+  const bool key_pressed =
+      accelerator.key_state() == ui::Accelerator::KeyState::PRESSED;
+
   // If your accelerator invokes more than one line of code, please either
   // implement it in your module's controller code or pull it into a HandleFoo()
   // function above.
@@ -1010,6 +1012,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
     case AcceleratorAction::kDebugClearUseKMeansPref:
+    case AcceleratorAction::kDebugToggleFocusModeState:
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
     case AcceleratorAction::kDebugSystemUiStyleViewer:
@@ -1294,21 +1297,18 @@ void AcceleratorControllerImpl::PerformAction(
       HandleSwitchIme(accelerator);
       break;
     case AcceleratorAction::kSwitchToLastUsedIme:
-      HandleSwitchToLastUsedIme(accelerator);
+      RecordSwitchToLastUsedIme(key_pressed);
+      accelerators::SwitchToLastUsedIme(key_pressed);
       break;
     case AcceleratorAction::kSwitchToNextIme:
       RecordSwitchToNextIme(accelerator);
       accelerators::SwitchToNextIme();
       break;
     case AcceleratorAction::kSwitchToNextUser:
-      MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Next_User"));
       accelerators::CycleUser(CycleUserDirection::NEXT);
       break;
     case AcceleratorAction::kSwitchToPreviousUser:
-      MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Previous_User"));
       accelerators::CycleUser(CycleUserDirection::PREVIOUS);
       break;

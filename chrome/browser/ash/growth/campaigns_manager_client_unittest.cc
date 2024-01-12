@@ -93,8 +93,7 @@ class CampaignsManagerClientTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
-  raw_ptr<FakeCrOSComponentManager, ExperimentalAsh> cros_component_manager_ =
-      nullptr;
+  raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;

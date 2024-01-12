@@ -378,6 +378,9 @@ struct CrxComponent {
   // Specifies that this CRX can be cached for differential updates.
   // The default for this value is |true|.
   bool allow_cached_copies = true;
+
+  // Specifies whether updates can be initiated on metered network connections.
+  bool allow_updates_on_metered_connection = true;
 };
 
 // Called when a non-blocking call of UpdateClient completes.

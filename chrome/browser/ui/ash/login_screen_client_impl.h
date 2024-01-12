@@ -149,7 +149,7 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
   void ShowGaiaSigninInternal(const AccountId& prefilled_account);
   void StartUserRecoveryInternal(const AccountId& account_to_recover);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Captures authentication related user metrics for login screen.
   std::unique_ptr<ash::LoginAuthRecorder> auth_recorder_;

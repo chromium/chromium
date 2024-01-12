@@ -67,13 +67,13 @@ class KioskAppUpdateService : public KeyedService,
   // KioskAppManagerObserver overrides:
   void OnKioskAppCacheUpdated(const std::string& app_id) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string app_id_;
 
   // After we detect an upgrade we start a one-short timer to force restart.
   base::OneShotTimer restart_timer_;
 
-  raw_ptr<system::AutomaticRebootManager, ExperimentalAsh>
+  raw_ptr<system::AutomaticRebootManager>
       automatic_reboot_manager_;  // Not owned.
 };
 

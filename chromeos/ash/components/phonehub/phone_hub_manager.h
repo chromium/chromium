@@ -40,6 +40,7 @@ class UserActionRecorder;
 class IconDecoder;
 class AppStreamManager;
 class PhoneHubUiReadinessRecorder;
+class PhoneHubStructuredMetricsLogger;
 
 // Responsible for the core logic of the Phone Hub feature and exposes
 // interfaces via its public API. This class is intended to be a singleton.
@@ -81,6 +82,8 @@ class PhoneHubManager {
   virtual void SetSystemInfoProvider(
       eche_app::SystemInfoProvider* system_info_provider) = 0;
   virtual eche_app::SystemInfoProvider* GetSystemInfoProvider() = 0;
+  virtual PhoneHubStructuredMetricsLogger*
+  GetPhoneHubStructuredMetricsLogger() = 0;
 
   // Retrieves the timestamp of the last successful discovery for active host,
   // or nullopt if it hasn't been seen in the current Chrome session.

@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Não foi possível encontrar o caminho absoluto para o directório a empacotar.</translation>
 <translation id="5160071981665899014">Não foi possível carregar o ficheiro JavaScript "<ph name="RELATIVE_PATH" />" para o script.</translation>
 <translation id="5356315618422219272">Vista de aplicação: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Não são suportadas janelas com forma.</translation>
 <translation id="5456409301717116725">Esta extensão inclui o ficheiro-chave "<ph name="KEY_PATH" />". Provavelmente não quer fazer isso.</translation>
 <translation id="5486326529110362464">O valor de entrada para uma chave privada tem de existir.</translation>
 <translation id="5972529113578162692">O gestor deste computador requer que a extensão <ph name="EXTENSION_NAME" /> esteja instalada. Não é possível desinstalá-la.</translation>

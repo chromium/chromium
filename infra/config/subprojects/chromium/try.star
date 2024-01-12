@@ -123,6 +123,20 @@ luci.cq_group(
             groups = "project-chromium-tryjob-access",
         ),
     ],
+    additional_modes = [
+        cq.run_mode(
+            name = try_.MEGA_CQ_DRY_RUN_NAME,
+            cq_label_value = 1,
+            triggering_label = "Mega-CQ",
+            triggering_value = 1,
+        ),
+        cq.run_mode(
+            name = try_.MEGA_CQ_FULL_RUN_NAME,
+            cq_label_value = 2,
+            triggering_label = "Mega-CQ",
+            triggering_value = 1,
+        ),
+    ],
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
 )
 

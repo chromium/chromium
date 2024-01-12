@@ -57,13 +57,15 @@ js_type_check("closure_compile") {
     ":trash",
     ":traverse",
     ":zip_files",
+    "//ui/file_manager/integration_tests:js_from_ts",
   ]
 
   closure_flags =
       strict_error_checking_closure_args + [
         "language_in=ECMASCRIPT_2020",
-        "js_module_root=gen/ui/file_manager/",
-        "js_module_root=" + rebase_path("//ui/file_manager/", root_build_dir),
+        "js_module_root=gen/ui/file_manager/integration_tests/tsc/",
+        "js_module_root=" +
+            rebase_path("//ui/file_manager/integration_tests", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]

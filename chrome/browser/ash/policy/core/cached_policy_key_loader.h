@@ -76,8 +76,7 @@ class CachedPolicyKeyLoader {
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  const raw_ptr<ash::CryptohomeMiscClient, ExperimentalAsh>
-      cryptohome_misc_client_;
+  const raw_ptr<ash::CryptohomeMiscClient> cryptohome_misc_client_;
   const AccountId account_id_;
   const base::FilePath user_policy_key_dir_;
   base::FilePath cached_policy_key_path_;

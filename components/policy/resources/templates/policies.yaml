@@ -1184,9 +1184,9 @@ policies:
   1183: DeskAPIDeskSaveAndShareEnabled
   1184: OopPrintDriversAllowed
   1185: DeviceHardwareVideoDecodingEnabled
-  1186: TabOrganizationAllowed
-  1187: ComposeAllowed
-  1188: WallpaperSearchAllowed
+  1186: TabOrganizerSettings
+  1187: HelpMeWriteSettings
+  1188: CreateThemesSettings
   1189: ListenToThisPageEnabled
   1190: AlwaysOnVpnPreConnectUrlAllowlist
   1191: CACertificates

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <concepts>
 #include <iterator>
@@ -183,7 +184,10 @@ constexpr size_t must_not_be_dynamic_extent() {
 //   and treat borrowed ranges correctly.
 //
 // Additions beyond the C++ standard draft
+// - as_chars() function.
+// - as_writable_chars() function.
 // - as_byte_span() function.
+// - copy_from() method.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -339,6 +343,24 @@ class GSL_POINTER span {
     return reverse_iterator(begin());
   }
 
+  // Bounds-checked copy of spans into spans. The spans must be the exact
+  // same size or a hard CHECK() occurs. This is a non-std extension that
+  // is inspired by the Rust slice::copy_from_slice() method.
+  template <typename U, size_t M>
+  void copy_from(const span<U, M>& other)
+    requires(M != dynamic_extent && internal::LegalDataConversion<T, U>)
+  {
+    static_assert(N == M, "span size mismatch");
+    std::ranges::copy(other, data());
+  }
+  template <typename U, size_t M>
+  void copy_from(const span<U, M>& other)
+    requires(M == dynamic_extent && internal::LegalDataConversion<T, U>)
+  {
+    CHECK_EQ(size_bytes(), other.size_bytes());
+    std::ranges::copy(other, data());
+  }
+
  private:
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
@@ -488,6 +510,17 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return reverse_iterator(begin());
   }
 
+  // Bounds-checked copy of spans into spans. The spans must be the exact
+  // same size or a hard CHECK() occurs. This is a non-std extension that
+  // is inspired by the Rust slice::copy_from_slice() method.
+  template <typename U, size_t M>
+  void copy_from(const span<U, M>& other)
+    requires(internal::LegalDataConversion<T, U>)
+  {
+    CHECK_EQ(size_bytes(), other.size_bytes());
+    std::ranges::copy(other, data());
+  }
+
  private:
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
@@ -523,10 +556,32 @@ auto as_writable_bytes(span<T, X> s) noexcept {
   return span<uint8_t, N>(reinterpret_cast<uint8_t*>(s.data()), s.size_bytes());
 }
 
+// as_chars() is the equivalent of as_bytes(), except that it returns a
+// span of const char rather than const uint8_t. This non-std function is
+// added since chrome still represents many things as char arrays which
+// rightfully should be uint8_t.
+template <typename T, size_t X>
+auto as_chars(span<T, X> s) noexcept {
+  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
+  return span<const char, N>(reinterpret_cast<const char*>(s.data()),
+                             s.size_bytes());
+}
+
+// as_writable_chars() is the equivalent of as_writable_bytes(), except that
+// it returns a span of char rather than uint8_t. This non-std function is
+// added since chrome still represents many things as char arrays which
+// rightfully should be uint8_t.
+template <typename T, size_t X>
+  requires(!std::is_const_v<T>)
+auto as_writable_chars(span<T, X> s) noexcept {
+  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
+  return span<char, N>(reinterpret_cast<char*>(s.data()), s.size_bytes());
+}
+
 // Type-deducing helpers for constructing a span.
 template <int&... ExplicitArgumentBarrier, typename It>
 constexpr auto make_span(It it, StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T>(it, size);
 }
 
@@ -535,7 +590,7 @@ template <int&... ExplicitArgumentBarrier,
           typename End,
           typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
 constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T>(it, end);
 }
 
@@ -561,7 +616,7 @@ constexpr auto make_span(Container&& container) noexcept {
 // Usage: auto static_span = base::make_span<N>(...);
 template <size_t N, int&... ExplicitArgumentBarrier, typename It>
 constexpr auto make_span(It it, StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T, N>(it, size);
 }
 
@@ -571,7 +626,7 @@ template <size_t N,
           typename End,
           typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
 constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T, N>(it, end);
 }
 

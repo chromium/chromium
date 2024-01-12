@@ -78,8 +78,7 @@ class CameraRollDownloadManagerImpl
   int CalculateItemTransferRate(const DownloadItem& download_item) const;
 
   const base::FilePath download_path_;
-  raw_ptr<ash::HoldingSpaceKeyedService, ExperimentalAsh>
-      holding_space_keyed_service_;
+  raw_ptr<ash::HoldingSpaceKeyedService> holding_space_keyed_service_;
   // Performs blocking I/O operations for creating and deleting payload files.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

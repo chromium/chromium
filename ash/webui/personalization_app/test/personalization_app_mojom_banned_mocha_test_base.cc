@@ -6,8 +6,8 @@
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
@@ -69,6 +69,11 @@ class MockPersonalizationAppAmbientProvider
               (ShouldShowTimeOfDayBannerCallback callback),
               (override));
   MOCK_METHOD(void, HandleTimeOfDayBannerDismissed, (), (override));
+  MOCK_METHOD(void, EnableGeolocationForSystemServices, (), (override));
+  MOCK_METHOD(void,
+              IsGeolocationEnabledForSystemServices,
+              (IsGeolocationEnabledForSystemServicesCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppKeyboardBacklightProvider
@@ -158,6 +163,7 @@ class MockPersonalizationAppThemeProvider
               SetColorModeAutoScheduleEnabled,
               (bool enabled),
               (override));
+  MOCK_METHOD(void, EnableGeolocationForSystemServices, (), (override));
   MOCK_METHOD(void,
               GenerateSampleColorSchemes,
               (GenerateSampleColorSchemesCallback callback),
@@ -177,6 +183,10 @@ class MockPersonalizationAppThemeProvider
   MOCK_METHOD(void,
               IsColorModeAutoScheduleEnabled,
               (IsColorModeAutoScheduleEnabledCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              IsGeolocationEnabledForSystemServices,
+              (IsGeolocationEnabledForSystemServicesCallback callback),
               (override));
 };
 

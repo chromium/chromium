@@ -12,6 +12,7 @@
 
 namespace content {
 class WebUI;
+class WebUIMessageHandler;
 }  // namespace content
 
 // Chrome browser FileManagerUIDelegate implementation.
@@ -28,6 +29,10 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   // Extends the map with properties used by the files app, such as which
   // features are enabled. Returns the populated map to the caller.
   base::Value::Dict GetLoadTimeData() const override;
+
+  // Returns a PluralStringHandler which has localized plural strings inside.
+  std::unique_ptr<content::WebUIMessageHandler> GetPluralStringHandler()
+      const override;
 
   // Calls volume manager io_task_controller ProgressPausedTasks API to make
   // I/O state::PAUSED tasks emit their IOTask progress status.
@@ -52,7 +57,7 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   int32_t total_hosted_files_ = 0;
   int32_t total_available_offline_hosted_files_ = 0;
 
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 
   base::WeakPtrFactory<ChromeFileManagerUIDelegate> weak_ptr_factory_{this};
 };

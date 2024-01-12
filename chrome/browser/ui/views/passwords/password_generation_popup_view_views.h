@@ -14,9 +14,9 @@ class PasswordGenerationPopupController;
 
 class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
                                          public PasswordGenerationPopupView {
- public:
-  METADATA_HEADER(PasswordGenerationPopupViewViews);
+  METADATA_HEADER(PasswordGenerationPopupViewViews, autofill::PopupBaseView)
 
+ public:
   PasswordGenerationPopupViewViews(
       base::WeakPtr<PasswordGenerationPopupController> controller,
       views::Widget* parent_widget);

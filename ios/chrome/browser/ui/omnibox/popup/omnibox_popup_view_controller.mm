@@ -28,10 +28,10 @@
 #import "ios/chrome/browser/ui/omnibox/popup/carousel/omnibox_popup_carousel_cell.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_table_view.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -271,7 +271,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
   self.tableView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentAutomatic;
   if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      !IsIpadPopoutOmniboxEnabled()) {
     /// The popup view in multitasking displays suggestion icons outside of the
     /// safe area (too close to the leading edge). This is ok because the entire
     /// rows act as touch targets.
@@ -350,11 +351,11 @@ BOOL ShouldDismissKeyboardOnScroll() {
   CGRect omniboxFrame = self.omniboxGuide.layoutFrame;
   CGFloat leftMargin =
       IsRegularXRegularSizeClass(self) ? omniboxFrame.origin.x : 0;
-  CGFloat rightMargin = IsRegularXRegularSizeClass(self)
-                            ? self.view.bounds.size.width -
-                                  omniboxFrame.origin.x -
-                                  omniboxFrame.size.width
-                            : 0;
+  CGFloat rightMargin =
+      (IsRegularXRegularSizeClass(self) && !IsIpadPopoutOmniboxEnabled())
+          ? self.view.bounds.size.width - omniboxFrame.origin.x -
+                omniboxFrame.size.width
+          : 0;
 
   // Adjust the carousel to be aligned with the omnibox textfield.
   UIEdgeInsets margins = self.carouselCell.layoutMargins;
@@ -369,8 +370,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
 
   if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      !IsIpadPopoutOmniboxEnabled()) {
     CGFloat leadingPadding = kDefaultSuggestionLeadingOffset;
+
     if (IsRegularXRegularSizeClass(self)) {
       leadingPadding += CGRectGetMinX(omniboxFrame);
     }

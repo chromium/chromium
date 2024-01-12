@@ -223,8 +223,7 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
   }
 
  private:
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> ip_peripheral_service_proxy_ =
-      nullptr;
+  raw_ptr<dbus::ObjectProxy> ip_peripheral_service_proxy_ = nullptr;
 };
 
 }  // namespace

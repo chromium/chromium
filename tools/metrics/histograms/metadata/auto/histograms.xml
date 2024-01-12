@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AutoScreenBrightness.MissingAlsWhenBrightnessChanged"
-    enum="BooleanError" expires_after="2024-02-01">
+    enum="BooleanError" expires_after="2024-07-01">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AutoScreenBrightness.MissingPriorUserBrightnessRequest"
-    enum="BooleanError" expires_after="2024-02-01">
+    enum="BooleanError" expires_after="2024-07-01">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 
 MemorySaverBubbleDelegate::MemorySaverBubbleDelegate(
     Browser* browser,
@@ -26,13 +27,14 @@ void MemorySaverBubbleDelegate::OnSettingsClicked() {
   close_action_ = MemorySaverBubbleActionType::kOpenSettings;
 }
 
-void MemorySaverBubbleDelegate::OnAddSiteToExceptionsListClicked() {
+void MemorySaverBubbleDelegate::OnAddSiteToTabDiscardExceptionsListClicked() {
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   CHECK(web_contents);
   const std::string host = web_contents->GetURL().host();
   PrefService* const pref_service = browser_->profile()->GetPrefs();
-  memory_saver::AddSiteToExceptionsList(pref_service, host);
+  performance_manager::user_tuning::prefs::AddSiteToTabDiscardExceptionsList(
+      pref_service, host);
   close_action_ = MemorySaverBubbleActionType::kAddException;
 }
 

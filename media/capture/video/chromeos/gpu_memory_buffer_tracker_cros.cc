@@ -66,12 +66,6 @@ GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
   return base::UnsafeSharedMemoryRegion();
 }
 
-mojo::ScopedSharedBufferHandle
-GpuMemoryBufferTrackerCros::DuplicateAsMojoBuffer() {
-  NOTREACHED() << "Unsupported operation";
-  return mojo::ScopedSharedBufferHandle();
-}
-
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   DCHECK(buffer_);
@@ -87,6 +81,10 @@ GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   gfx::GpuMemoryBufferHandle handle = buffer_->CloneHandle();
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   return handle;
+}
+
+VideoCaptureBufferType GpuMemoryBufferTrackerCros::GetBufferType() {
+  return VideoCaptureBufferType::kGpuMemoryBuffer;
 }
 
 uint32_t GpuMemoryBufferTrackerCros::GetMemorySizeInBytes() {

@@ -53,16 +53,14 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void UpdateNotificationTitle();
   void UpdateNotificationIcon();
   void UpdateNotificationBodyMessage();
-  void UpdateNotificationTimeout();
 
   void CleanUpNotification();
 
-  raw_ptr<CupsPrintJobNotificationManager, ExperimentalAsh>
-      notification_manager_;
+  raw_ptr<CupsPrintJobNotificationManager> notification_manager_;
   std::unique_ptr<message_center::Notification> notification_;
   std::string notification_id_;
   base::WeakPtr<CupsPrintJob> print_job_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // If the notification has been closed in the middle of printing or not. If it
   // is true, then prevent the following print job progress update after close,

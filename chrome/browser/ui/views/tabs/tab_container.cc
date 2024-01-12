@@ -6,5 +6,5 @@
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-BEGIN_METADATA(TabContainer, views::View)
+BEGIN_METADATA(TabContainer)
 END_METADATA

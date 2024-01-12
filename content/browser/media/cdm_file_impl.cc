@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "content/browser/media/cdm_storage_manager.h"
 #include "content/browser/media/media_license_storage_host.h"
+#include "media/cdm/cdm_helpers.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -27,10 +28,6 @@ namespace {
 // The CDM interface has a restriction that file names can not begin with _,
 // so use it to prefix temporary files.
 const char kTemporaryFilePrefix = '_';
-
-// File size limit is 512KB. Licenses saved by the CDM are typically several
-// hundreds of bytes.
-const int64_t kMaxFileSizeBytes = 512 * 1024;
 
 // Maximum length of a file name.
 const size_t kFileNameMaxLength = 256;
@@ -133,7 +130,7 @@ void CdmFileImpl::Read(ReadCallback callback) {
   }
 }
 
-void CdmFileImpl::DidRead(absl::optional<std::vector<uint8_t>> data) {
+void CdmFileImpl::DidRead(std::optional<std::vector<uint8_t>> data) {
   DVLOG(3) << __func__ << " file: " << file_name_
            << ", success: " << (data.has_value() ? "yes" : "no");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -166,7 +163,7 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
 
   // Files are limited in size, so fail if file too big. This should have been
   // checked by the caller, but we don't fully trust IPC.
-  if (data.size() > kMaxFileSizeBytes) {
+  if (data.size() > media::kMaxFileSizeBytes) {
     DLOG(WARNING) << __func__
                   << " Too much data to write. #bytes = " << data.size();
     std::move(callback).Run(Status::kFailure);

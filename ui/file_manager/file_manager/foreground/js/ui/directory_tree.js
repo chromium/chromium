@@ -9,13 +9,13 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isEntryInsideDrive, isOneDrive, isOneDriveId, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
 import {getIconOverrides} from '../../../common/js/file_type.js';
+import {FilesAppDirEntry} from '../../../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {getMediaViewRootTypeFromVolumeId, RootType, RootTypesForUMA, shouldProvideIcons, Source, VolumeType} from '../../../common/js/volume_manager_types.js';
-import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
+import {PropStatus, SearchLocation} from '../../../state/state.js';
 import {getStore} from '../../../state/store.js';
 import {DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../constants.js';
 import {FileFilter} from '../directory_contents.js';
@@ -586,7 +586,7 @@ export class DirectoryItem extends FilesTreeItem {
     this.lastElementChild.removeChild(/** @type {!TreeItem} */ (child));
     // @ts-ignore: error TS2339: Property 'items' does not exist on type
     // 'DirectoryItem'.
-    if (this.items.length == 0) {
+    if (this.items.length === 0) {
       this.hasChildren = false;
     }
   }
@@ -1408,8 +1408,8 @@ class VolumeItem extends DirectoryItem {
   /**
    * Set up icon of this volume item.
    * @param {Element} icon Icon element to be setup.
-   * @param {import('../../../externs/volume_info.js').VolumeInfo} volumeInfo
-   *     VolumeInfo determines the icon type.
+   * @param {import('../../../background/js/volume_info.js').VolumeInfo}
+   *     volumeInfo VolumeInfo determines the icon type.
    * @private
    */
   setupIcon_(icon, volumeInfo) {
@@ -1423,7 +1423,7 @@ class VolumeItem extends DirectoryItem {
       icon.setAttribute('use-generic-provided-icon', '');
     }
 
-    if (volumeInfo.volumeType == VolumeType.GUEST_OS) {
+    if (volumeInfo.volumeType === VolumeType.GUEST_OS) {
       icon.setAttribute(
           'volume-type-icon', vmTypeToIconName(volumeInfo.vmType));
     } else {
@@ -1465,7 +1465,7 @@ class VolumeItem extends DirectoryItem {
   }
 
   /**
-   * @type {!import('../../../externs/volume_info.js').VolumeInfo}
+   * @type {!import('../../../background/js/volume_info.js').VolumeInfo}
    */
   get volumeInfo() {
     return this.volumeInfo_;
@@ -1767,8 +1767,8 @@ export class DriveVolumeItem extends VolumeItem {
     // @ts-ignore: error TS2341: Property 'fakeEntriesVisible_' is private and
     // only accessible within class 'DirectoryTree'.
     if (this.parentTree_.fakeEntriesVisible_) {
-      for (const key in this.volumeInfo_.fakeEntries) {
-        fakeEntries.push(this.volumeInfo_.fakeEntries[key]);
+      for (const fakeEntry of Object.values(this.volumeInfo_.fakeEntries)) {
+        fakeEntries.push(fakeEntry);
       }
       // This list is sorted by URL on purpose.
       fakeEntries.sort((a, b) => {
@@ -2317,8 +2317,8 @@ export class DirectoryTree extends Tree {
     this.directoryModel_ = null;
 
     /**
-     * @type {import('../../../externs/volume_manager.js').VolumeManager} this
-     *     is set in decorate()
+     * @type {import('../../../background/js/volume_manager.js').VolumeManager}
+     *     this is set in decorate()
      */
     // @ts-ignore: error TS2322: Type 'null' is not assignable to type
     // 'VolumeManager'.
@@ -2352,7 +2352,7 @@ export class DirectoryTree extends Tree {
   /**
    * Decorates an element.
    * @param {!DirectoryModel} directoryModel Current DirectoryModel.
-   * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+   * @param {!import('../../../background/js/volume_manager.js').VolumeManager}
    *     volumeManager VolumeManager of the system.
    * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
    * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
@@ -2407,7 +2407,7 @@ export class DirectoryTree extends Tree {
     // For Search V2 subscribe to the store so that we can listen to search
     // becoming active and inactive. We use this to hide or show the highlight
     // of the active item in the directory tree.
-    /** @type {!SearchData|undefined} */
+    /** @type {!import('../../../state/state.js').SearchData|undefined} */
     // @ts-ignore: error TS2739: Type '{}' is missing the following properties
     // from type 'SearchData': status, query, options
     this.cachedSearchState_ = {};
@@ -2424,7 +2424,7 @@ export class DirectoryTree extends Tree {
   }
 
   /**
-   * @param {!State} state
+   * @param {!import('../../../state/state.js').State} state
    */
   onStateChanged(state) {
     // Search.
@@ -2694,6 +2694,7 @@ export class DirectoryTree extends Tree {
             this.selectedItem = null;
           }
         },
+        /** @param {any} error */
         (error) => {
           console.warn('Failed to select by entry due to', error);
         });
@@ -2993,7 +2994,7 @@ export class DirectoryTree extends Tree {
 
   /**
    * The VolumeManager instance of the system.
-   * @type {import('../../../externs/volume_manager.js').VolumeManager}
+   * @type {import('../../../background/js/volume_manager.js').VolumeManager}
    */
   get volumeManager() {
     return this.volumeManager_;
@@ -3032,7 +3033,7 @@ export class DirectoryTree extends Tree {
  * Decorates an element.
  * @param {HTMLElement} el Element to be DirectoryTree.
  * @param {!DirectoryModel} directoryModel Current DirectoryModel.
- * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+ * @param {!import('../../../background/js/volume_manager.js').VolumeManager}
  *     volumeManager VolumeManager of the system.
  * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
  * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.

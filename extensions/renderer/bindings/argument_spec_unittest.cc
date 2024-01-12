@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -56,16 +58,16 @@ class ArgumentSpecUnitTest : public gin::V8Test {
 
   struct RunTestParams {
     RunTestParams(const ArgumentSpec& spec,
-                  base::StringPiece script_source,
+                  std::string_view script_source,
                   TestResult result)
         : spec(spec), script_source(script_source), expected_result(result) {}
 
     const raw_ref<const ArgumentSpec, ExperimentalRenderer> spec;
-    base::StringPiece script_source;
+    std::string_view script_source;
     TestResult expected_result;
-    base::StringPiece expected_json;
-    base::StringPiece expected_error;
-    base::StringPiece expected_thrown_message;
+    std::string_view expected_json;
+    std::string_view expected_error;
+    std::string_view expected_thrown_message;
     raw_ptr<const base::Value, ExperimentalRenderer> expected_value = nullptr;
     bool should_convert_to_base = true;
     bool should_convert_to_v8 = false;

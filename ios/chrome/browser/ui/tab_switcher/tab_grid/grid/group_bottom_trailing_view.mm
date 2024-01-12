@@ -4,180 +4,121 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_bottom_trailing_view.h"
 
-#import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
-// Offsets and dimension ratio constraints of the top and bottom subviews.
-const CGFloat kSubviewsDimensionRatio = 0.5;
-const CGFloat kSubviewsWidthOffset = 1;
-const CGFloat kSubviewsHeightOffset = 1;
+// The vertical/horizontal spacing to apply between the `GroupTabView` views.
+const CGFloat kSpacing = 2;
 }  // namespace
 
-@interface GroupGridBottomTrailingView ()
-
-@property(nonatomic, assign) NSInteger numberOfSubviews;
-@property(nonatomic, weak) TopAlignedImageView* mainSubview;
-@property(nonatomic, weak) TopAlignedImageView* topLeadingView;
-@property(nonatomic, weak) TopAlignedImageView* topTrailingView;
-@property(nonatomic, weak) TopAlignedImageView* bottomLeadingView;
-@property(nonatomic, weak) TopAlignedImageView* bottomTrailingView;
-
-@end
-
-@implementation GroupGridBottomTrailingView
+@implementation GroupGridBottomTrailingView {
+  // The view to display for 1 tab configuration.
+  GroupTabView* _mainSubview;
+  // The views to display  if the number of tabs exceeds 1.
+  GroupTabView* _topLeadingView;
+  GroupTabView* _topTrailingView;
+  GroupTabView* _bottomLeadingView;
+  GroupTabView* _bottomTrailingView;
+}
 
 - (instancetype)init {
-  self = [super initWithFrame:CGRectZero];
+  self = [super initWithSpacing:kSpacing];
   if (self) {
-    TopAlignedImageView* mainSubview = [[TopAlignedImageView alloc] init];
-    mainSubview.hidden = YES;
-    mainSubview.translatesAutoresizingMaskIntoConstraints = NO;
+    self.applicableCornerRadius = kGroupGridBottomTrailingCellCornerRadius;
+    _mainSubview = [[GroupTabView alloc] init];
+    _mainSubview.hidden = YES;
+    _mainSubview.layer.masksToBounds = YES;
 
-    TopAlignedImageView* topLeadingView = [self setupFaviconView];
-    TopAlignedImageView* topTrailingView = [self setupFaviconView];
-    TopAlignedImageView* bottomLeadingView = [self setupFaviconView];
-    TopAlignedImageView* bottomTrailingView = [self setupFaviconView];
+    _topLeadingView = [self makeGroupTabView];
+    _topTrailingView = [self makeGroupTabView];
+    _bottomLeadingView = [self makeGroupTabView];
+    _bottomTrailingView = [self makeGroupTabView];
 
-    [self addSubview:mainSubview];
-    [self addSubview:topLeadingView];
-    [self addSubview:topTrailingView];
-    [self addSubview:bottomLeadingView];
-    [self addSubview:bottomTrailingView];
+    _mainSubview.translatesAutoresizingMaskIntoConstraints = NO;
+    _topLeadingView.translatesAutoresizingMaskIntoConstraints = NO;
+    _topTrailingView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomLeadingView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomTrailingView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _mainSubview = mainSubview;
-    _topLeadingView = topLeadingView;
-    _topTrailingView = topTrailingView;
-    _bottomLeadingView = bottomLeadingView;
-    _bottomTrailingView = bottomTrailingView;
+    [self addSubview:_mainSubview];
+    [self updateTopLeadingWithView:_topLeadingView];
+    [self updateTopTrailingWithView:_topTrailingView];
+    [self updateBottomLeadingWithView:_bottomLeadingView];
+    [self updateBottomTrailingWithView:_bottomTrailingView];
 
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    AddSameConstraints(self, mainSubview);
+    AddSameConstraints(self, _mainSubview);
 
-    NSArray* constraints = @[
-      [topLeadingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [topLeadingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [topLeadingView.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [topLeadingView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-
-      [topTrailingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [topTrailingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [topTrailingView.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [topTrailingView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-
-      [bottomLeadingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [bottomLeadingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [bottomLeadingView.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor],
-      [bottomLeadingView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
-
-      [bottomTrailingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [bottomTrailingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [bottomTrailingView.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor],
-      [bottomTrailingView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-
-      [topLeadingView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:topTrailingView.leadingAnchor],
-      [topLeadingView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:bottomLeadingView.topAnchor],
-      [topTrailingView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:bottomTrailingView.topAnchor],
-      [bottomLeadingView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:bottomTrailingView.leadingAnchor],
-
-    ];
-    [NSLayoutConstraint activateConstraints:constraints];
   }
 
   return self;
 }
 
-- (void)setMainSubviewImageAndFavicon:
-    (GroupTabInfo*)mainSubviewImageAndFavicon {
+- (void)configureWithGroupTabInfo:(GroupTabInfo*)groupTabInfo {
   [self hideAllViews];
-  self.mainSubview.image = mainSubviewImageAndFavicon.snapshot;
-  self.mainSubview.hidden = NO;
-  _mainSubviewImageAndFavicon = mainSubviewImageAndFavicon;
+  [_mainSubview configureWithSnapshot:groupTabInfo.snapshot
+                              favicon:groupTabInfo.snapshot];
+  _mainSubview.hidden = NO;
 }
 
-- (void)setFavicons:(NSArray<UIImage*>*)favicons {
+- (void)configureWithFavicons:(NSArray<UIImage*>*)favicons
+           remainingTabsCount:(NSInteger)remainingTabsCount {
   // Start by hiding all the views as the number of visible views can change
   // depending on the number of object in `favicons`.
   [self hideAllViews];
+
   int faviconLength = [favicons count];
 
   if (faviconLength > 0) {
-    self.topLeadingView.image = favicons[0];
-    self.topLeadingView.hidden = NO;
+    [_topLeadingView configureWithFavicon:favicons[0]];
+    _topLeadingView.hidden = NO;
   }
 
   if (faviconLength > 1) {
-    self.topTrailingView.image = favicons[1];
-    self.topTrailingView.hidden = NO;
+    [_topTrailingView configureWithFavicon:favicons[1]];
+    _topTrailingView.hidden = NO;
   }
 
   if (faviconLength > 2) {
-    self.bottomLeadingView.image = favicons[2];
-    self.bottomLeadingView.hidden = NO;
+    [_bottomLeadingView configureWithFavicon:favicons[2]];
+    _bottomLeadingView.hidden = NO;
   }
 
   if (faviconLength == 4) {
-    self.bottomTrailingView.image = favicons[3];
-    self.bottomTrailingView.hidden = NO;
+    [_bottomTrailingView configureWithFavicon:favicons[3]];
+    _bottomTrailingView.hidden = NO;
+
+  } else if (remainingTabsCount > 0) {
+    [_bottomTrailingView configureWithRemainingTabsNumber:remainingTabsCount];
+    _bottomTrailingView.hidden = NO;
   }
-
-  // TODO(crbug.com/1501837): Add the bottom right view handling when the number
-  // of tabs exceeds 7.
-
-  _favicons = favicons;
 }
 
 #pragma mark - Private
 
+// Hides all the subview of the `GroupGridBottomTrailingView`.
 - (void)hideAllViews {
-  self.topLeadingView.hidden = YES;
-  self.topTrailingView.hidden = YES;
-  self.bottomLeadingView.hidden = YES;
-  self.bottomTrailingView.hidden = YES;
-  self.mainSubview.hidden = YES;
+  _topLeadingView.hidden = YES;
+  _topTrailingView.hidden = YES;
+  _bottomLeadingView.hidden = YES;
+  _bottomTrailingView.hidden = YES;
+  _mainSubview.hidden = YES;
 }
 
-- (TopAlignedImageView*)setupFaviconView {
-  TopAlignedImageView* imageView = [[TopAlignedImageView alloc] init];
-  imageView.hidden = YES;
-  imageView.layer.cornerRadius = kGroupGridBottomTrailingCellCornerRadius;
-  imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return imageView;
+// Returns a pre-configured `GroupTabView` with a background and a corner
+// radius, the returned view is hidden.
+- (GroupTabView*)makeGroupTabView {
+  GroupTabView* groupTabView = [[GroupTabView alloc] init];
+  groupTabView.hidden = YES;
+  groupTabView.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  groupTabView.layer.cornerRadius = kGroupGridBottomTrailingCellCornerRadius;
+  groupTabView.layer.masksToBounds = YES;
+  // TODO(crbug.com/1501837): Add the shadows.
+  return groupTabView;
 }
 
 @end

@@ -45,8 +45,4 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile));
 }
 
-bool MantaServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return features::IsMantaServiceEnabled();
-}
-
 }  // namespace manta

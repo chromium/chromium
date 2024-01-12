@@ -56,12 +56,12 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   // views::NonClientFrameView:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
-  const raw_ptr<views::Widget, ExperimentalAsh> frame_;
+  const raw_ptr<views::Widget> frame_;
 
   // View which contains the title and window controls.
-  raw_ptr<HeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<HeaderView> header_view_ = nullptr;
 
-  raw_ptr<OverlayView, ExperimentalAsh> overlay_view_ = nullptr;
+  raw_ptr<OverlayView> overlay_view_ = nullptr;
 
   bool frame_enabled_ = true;
 
@@ -95,7 +95,7 @@ class NonClientFrameViewBase::OverlayView : public views::View,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  raw_ptr<HeaderView, ExperimentalAsh> header_view_;
+  raw_ptr<HeaderView> header_view_;
 };
 
 }  // namespace chromeos

@@ -21,7 +21,7 @@ namespace blink {
 
 std::unique_ptr<URLLoader>
 InternetDisconnectedURLLoaderFactory::CreateURLLoader(
-    const WebURLRequest&,
+    const network::ResourceRequest&,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,

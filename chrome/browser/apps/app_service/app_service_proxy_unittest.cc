@@ -69,6 +69,16 @@ class FakePublisherForProxyTest : public AppPublisher {
     CallOnApps(known_app_ids_, /*uninstall=*/false);
   }
 
+  FakePublisherForProxyTest(AppServiceProxy* proxy, AppType app_type)
+      : AppPublisher(proxy), app_type_(app_type) {
+    RegisterPublisher(app_type_);
+  }
+
+  void InitApps(std::vector<std::string> initial_app_ids) {
+    known_app_ids_ = std::move(initial_app_ids);
+    CallOnApps(known_app_ids_, /*uninstall=*/false);
+  }
+
   void Launch(const std::string& app_id,
               int32_t event_flags,
               LaunchSource launch_source,
@@ -149,9 +159,8 @@ class FakePublisherForProxyTest : public AppPublisher {
     std::vector<AppPtr> apps;
     for (const auto& app_id : app_ids) {
       auto app = std::make_unique<App>(app_type_, app_id);
-      if (uninstall) {
-        app->readiness = Readiness::kUninstalledByUser;
-      }
+      app->readiness =
+          uninstall ? Readiness::kUninstalledByUser : Readiness::kReady;
       apps.push_back(std::move(app));
     }
     AppPublisher::Publish(std::move(apps), app_type_,
@@ -1631,7 +1640,7 @@ TEST_F(AppServiceProxyLaunchTest, SetPublisherUnavailable) {
 
   // Register the ARC publisher.
   FakePublisherForProxyTest pub1(proxy(), AppType::kCrostini,
-                                 std::vector<std::string>{});
+                                 std::vector<std::string>{kTestAppId2});
   auto& launch_requests1 = pub1.launch_requests();
 
   // Verify `kTestAppId2` still has the spinner.
@@ -1647,6 +1656,34 @@ TEST_F(AppServiceProxyLaunchTest, SetPublisherUnavailable) {
   // Verify the Launch request has been removed, and the launch function is not
   // called.
   EXPECT_FALSE(base::Contains(launch_requests2, kTestAppId1));
+}
+
+// Verify launching after OnApps.
+TEST_F(AppServiceProxyLaunchTest, LaunchAfterOnApps) {
+  constexpr char kTestAppId[] = "webapp";
+  InstallApp(AppType::kWeb, kTestAppId);
+
+  proxy()->Launch(kTestAppId, /*event_flags=*/0, LaunchSource::kFromTest);
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Register the WebApp publisher.
+  FakePublisherForProxyTest pub(proxy(), AppType::kWeb);
+  auto& launch_requests = pub.launch_requests();
+
+  // Verify `kTestAppId` still has the spinner.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+  EXPECT_TRUE(launch_requests.empty());
+
+  pub.InitApps(std::vector<std::string>{kTestAppId});
+
+  // Verify the spinner has been removed, and the launch function is called.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+  EXPECT_TRUE(base::Contains(launch_requests, kTestAppId));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

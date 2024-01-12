@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {listMountableGuests} from '../../common/js/api.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {getEntry, getStore} from '../../state/store.js';
 
@@ -62,7 +62,7 @@ export class GuestOsController {
       const navigationModelItem = new NavigationModelFakeItem(
           guest.displayName, NavigationModelItemType.GUEST_OS, guestOsEntry);
       const volumeType =
-          guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
+          guest.vmType === chrome.fileManagerPrivate.VmType.ARCVM ?
           VolumeType.ANDROID_FILES :
           VolumeType.GUEST_OS;
 

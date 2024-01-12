@@ -359,6 +359,7 @@ component("core") {
     "//gpu/config",
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/public/cpp/system",
+    "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -1493,10 +1494,13 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_css, "", "css")
   sources += rebase_path(blink_core_tests_display_lock, "", "display_lock")
   sources += rebase_path(blink_core_tests_dom, "", "dom")
+  sources += rebase_path(blink_core_tests_editing, "", "editing")
   sources += rebase_path(blink_core_tests_events, "", "events")
   sources +=
       rebase_path(blink_core_tests_execution_context, "", "execution_context")
   sources += rebase_path(blink_core_tests_fetch, "", "fetch")
+  sources += rebase_path(blink_core_tests_fileapi, "", "fileapi")
+  sources += rebase_path(blink_core_tests_frame, "", "frame")
   sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_tests_geometry, "", "geometry")
   sources +=
@@ -1537,6 +1541,7 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
   sources += rebase_path(blink_core_tests_url, "", "url")
   sources += rebase_path(blink_core_tests_url_pattern, "", "url_pattern")
+  sources += rebase_path(blink_core_tests_workers, "", "workers")
   sources +=
       rebase_path(blink_core_tests_view_transition, "", "view_transition")
   sources += rebase_path(blink_core_tests_xml, "", "xml")

@@ -128,7 +128,7 @@ class SMSClientImpl : public SMSClient {
     std::move(callback).Run(sms);
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   std::map<dbus::ObjectPath, std::unique_ptr<SMSReceiveHandler>>
       sms_receive_handlers_;

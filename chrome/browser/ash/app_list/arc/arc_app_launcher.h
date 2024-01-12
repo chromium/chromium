@@ -60,7 +60,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
                       apps::Readiness readiness);
 
   // Unowned pointer.
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
   // ARC app id.
   const std::string app_id_;
   // Optional intent to launch the app. If not set then app is started default

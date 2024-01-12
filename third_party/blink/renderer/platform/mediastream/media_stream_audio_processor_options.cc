@@ -13,6 +13,7 @@ void AudioProcessingProperties::DisableDefaultProperties() {
   goog_noise_suppression = false;
   goog_experimental_noise_suppression = false;
   goog_highpass_filter = false;
+  voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
 }
 
 bool AudioProcessingProperties::EchoCancellationEnabled() const {
@@ -39,7 +40,8 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
          goog_noise_suppression == other.goog_noise_suppression &&
          goog_experimental_noise_suppression ==
              other.goog_experimental_noise_suppression &&
-         goog_highpass_filter == other.goog_highpass_filter;
+         goog_highpass_filter == other.goog_highpass_filter &&
+         voice_isolation == other.voice_isolation;
 }
 
 bool AudioProcessingProperties::GainControlEnabled() const {

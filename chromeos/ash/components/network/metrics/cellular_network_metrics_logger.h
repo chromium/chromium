@@ -330,10 +330,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       const std::string& guid,
       const std::optional<std::string>& shill_error) override;
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<NetworkMetadataStore, DanglingUntriaged> network_metadata_store_ =
       nullptr;
-  raw_ptr<NetworkMetadataStore, DanglingUntriaged | ExperimentalAsh>
-      network_metadata_store_ = nullptr;
 
   base::ScopedObservation<ConnectionInfoMetricsLogger,
                           ConnectionInfoMetricsLogger::Observer>

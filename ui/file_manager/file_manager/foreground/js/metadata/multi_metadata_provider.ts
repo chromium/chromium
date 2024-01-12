@@ -4,9 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {isTrashEntry} from '../../../common/js/entry_utils.js';
 import {VolumeType} from '../../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';

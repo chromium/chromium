@@ -94,8 +94,7 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 

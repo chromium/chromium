@@ -41,6 +41,8 @@
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,28 +67,9 @@ namespace policy {
 
 namespace {
 
-const char kFakeUserEmail[] = "fake email";
-const char kFakeUsernameHash[] = "fake hash";
+const char kFakeUserEmail[] = "fakeuser@fakedomain.com";
 const char kFakeSerialNumber[] = "FakeSerial";
 const char kFakeAssetId[] = "FakeAssetId";
-
-class FakeUser : public user_manager::User {
- public:
-  FakeUser() : User(AccountId::FromUserEmail(kFakeUserEmail)) {
-    set_display_email(kFakeUserEmail);
-    set_username_hash(kFakeUsernameHash);
-  }
-
-  FakeUser(const FakeUser&) = delete;
-  FakeUser& operator=(const FakeUser&) = delete;
-
-  ~FakeUser() override {}
-
-  // User overrides
-  user_manager::UserType GetType() const override {
-    return user_manager::USER_TYPE_REGULAR;
-  }
-};
 
 class MockPolicyProvidedCertsObserver
     : public ash::PolicyCertificateProvider::Observer {
@@ -321,6 +304,9 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   NetworkConfigurationUpdaterAshTest() : certificate_importer_(nullptr) {}
 
   void SetUp() override {
+    fake_user_ =
+        user_manager_->AddUser(AccountId::FromUserEmail(kFakeUserEmail));
+
     ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
         ash::UserSessionManager::StartSessionType::kPrimary);
 
@@ -402,7 +388,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
       bool set_client_cert_importer) {
     UserNetworkConfigurationUpdaterAsh* updater =
         UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
-            &profile_, fake_user_, policy_service_.get(),
+            &profile_, *fake_user_, policy_service_.get(),
             &network_config_handler_)
             .release();
     if (set_client_cert_importer) {
@@ -441,14 +427,15 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   // NetworkConfigurationUpdater. When that happens, |certificate_importer_|
   // continues to point to that instance but
   // |client_certificate_importer_owned_| is released.
-  raw_ptr<FakeCertificateImporter, DanglingUntriaged | ExperimentalAsh>
-      certificate_importer_;
+  raw_ptr<FakeCertificateImporter, DanglingUntriaged> certificate_importer_;
   std::unique_ptr<ash::onc::CertificateImporter>
       client_certificate_importer_owned_;
 
   StrictMock<MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;
-  FakeUser fake_user_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      user_manager_{std::make_unique<user_manager::FakeUserManager>()};
+  raw_ptr<const user_manager::User> fake_user_;
 
   TestingProfile profile_;
 
@@ -559,7 +546,7 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
 
   ::onc::ONCSource source = onc::ONC_SOURCE_USER_POLICY;
   EXPECT_CALL(network_config_handler_,
-              SetPolicy(source, kFakeUsernameHash,
+              SetPolicy(source, fake_user_->username_hash(),
                         IsEqualTo(GetExpectedFakeNetworkConfigs(source)),
                         IsEqualTo(GetExpectedFakeGlobalNetworkConfig())));
 
@@ -609,7 +596,9 @@ TEST_F(NetworkConfigurationUpdaterAshTest, SetDeviceVariableExpansions) {
 TEST_F(NetworkConfigurationUpdaterAshTest, SetUserVariableExpansions) {
   Mock::VerifyAndClearExpectations(&network_config_handler_);
   const base::flat_map<std::string, std::string> kExpectedExpansions = {
-      {"LOGIN_EMAIL", kFakeUserEmail}, {"LOGIN_ID", kFakeUserEmail}};
+      {"LOGIN_EMAIL", kFakeUserEmail},
+      {"LOGIN_ID", "fakeuser"},  // The prefix of kFakeUserEmail before @.
+  };
   PolicyMap policy;
   policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kFakeONC),
@@ -618,12 +607,13 @@ TEST_F(NetworkConfigurationUpdaterAshTest, SetUserVariableExpansions) {
 
   ::onc::ONCSource source = onc::ONC_SOURCE_USER_POLICY;
   EXPECT_CALL(network_config_handler_,
-              SetPolicy(source, kFakeUsernameHash,
+              SetPolicy(source, fake_user_->username_hash(),
                         IsEqualTo(GetExpectedFakeNetworkConfigs(source)),
                         IsEqualTo(GetExpectedFakeGlobalNetworkConfig())));
-  EXPECT_CALL(network_config_handler_,
-              SetProfileWideVariableExpansions(/*userhash=*/kFakeUsernameHash,
-                                               Eq(kExpectedExpansions)));
+  EXPECT_CALL(
+      network_config_handler_,
+      SetProfileWideVariableExpansions(/*userhash=*/fake_user_->username_hash(),
+                                       Eq(kExpectedExpansions)));
 
   CreateNetworkConfigurationUpdaterForUserPolicy(
       /*set_client_cert_importer=*/false);
@@ -733,7 +723,7 @@ class NetworkConfigurationUpdaterAshTestWithParam
   // ManagedNetworkConfigurationHandler.
   std::string ExpectedUsernameHash() {
     if (GetParam() == key::kOpenNetworkConfiguration)
-      return kFakeUsernameHash;
+      return fake_user_->username_hash();
     return std::string();
   }
 

@@ -52,6 +52,6 @@ selection in the Network screen (an option only available on devices that have
 Offline Demo Mode Resources pre-installed).
 
 Offline Demo Mode Resources cros-component is a pre-installed version of Demo
-Mode Resources cros-somponent that includes resources that would normally be
+Mode Resources cros-component that includes resources that would normally be
 downloaded during online Demo Mode setup - for example, the Highlights App (an
 app that highlights Chrome OS features).

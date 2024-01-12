@@ -4,6 +4,8 @@
 
 #include "extensions/common/extensions_client.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "extensions/common/extension_icon_set.h"
@@ -86,14 +88,13 @@ bool ExtensionsClient::IsAPISchemaGenerated(const std::string& name) const {
   return false;
 }
 
-base::StringPiece ExtensionsClient::GetAPISchema(
-    const std::string& name) const {
+std::string_view ExtensionsClient::GetAPISchema(const std::string& name) const {
   for (const auto& provider : api_providers_) {
-    base::StringPiece api = provider->GetAPISchema(name);
+    std::string_view api = provider->GetAPISchema(name);
     if (!api.empty())
       return api;
   }
-  return base::StringPiece();
+  return std::string_view();
 }
 
 void ExtensionsClient::AddAPIProvider(

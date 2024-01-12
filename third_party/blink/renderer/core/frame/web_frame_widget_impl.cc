@@ -49,6 +49,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/ukm_manager.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -827,6 +828,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
 
   if (result != WebInputEventResult::kNotHandled) {
     if (WebInputEvent::Type::kRawKeyDown == event.GetType()) {
+#if BUILDFLAG(ENABLE_PPAPI)
+      // TODO(crbug.com/1279429): Delete the #if block when removing PPAPI.
       // Suppress the next keypress event unless the focused node is a plugin
       // node.  (Flash needs these keypress events to handle non-US keyboards.)
       Element* element = FocusedElement();
@@ -844,6 +847,9 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
       } else {
         suppress_next_keypress_event_ = true;
       }
+#else
+      suppress_next_keypress_event_ = true;
+#endif
     }
     return result;
   }
@@ -4460,10 +4466,35 @@ void WebFrameWidgetImpl::UpdateViewportDescription(
 bool WebFrameWidgetImpl::UpdateScreenRects(
     const gfx::Rect& widget_screen_rect,
     const gfx::Rect& window_screen_rect) {
-  if (!device_emulator_)
-    return false;
-  device_emulator_->OnUpdateScreenRects(widget_screen_rect, window_screen_rect);
-  return true;
+  bool should_send = WindowRect().origin() != window_screen_rect.origin();
+
+  if (device_emulator_) {
+    device_emulator_->OnUpdateScreenRects(widget_screen_rect,
+                                          window_screen_rect);
+  }
+  if (should_send) {
+    EnqueueMoveEvent();
+  }
+
+  return device_emulator_ != nullptr;
+}
+
+void WebFrameWidgetImpl::EnqueueMoveEvent() {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  if (!local_root_ || !local_root_->GetFrame() || !ForTopMostMainFrame()) {
+    return;
+  }
+
+  Document* document = local_root_->GetFrame()->GetDocument();
+  if (!document || !document->IsActive()) {
+    return;
+  }
+
+  document->EnqueueMoveEvent();
 }
 
 void WebFrameWidgetImpl::OrientationChanged() {

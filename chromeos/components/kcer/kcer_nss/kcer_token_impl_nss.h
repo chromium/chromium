@@ -58,12 +58,12 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
 
   // Returns a weak pointer for the token. The pointer can be used to post tasks
   // for the token.
-  base::WeakPtr<KcerTokenImplNss> GetWeakPtr();
+  base::WeakPtr<KcerToken> GetWeakPtr() override;
 
   // Initializes the token with the provided NSS slot. If `nss_slot` is nullptr,
   // the initialization is considered failed and the token will return an error
   // for all queued and future requests.
-  void Initialize(crypto::ScopedPK11Slot nss_slot);
+  void InitializeForNss(crypto::ScopedPK11Slot nss_slot) override;
 
   // Implements net::CertDatabase::Observer.
   void OnClientCertStoreChanged() override;
@@ -162,8 +162,8 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   // The underlying storage for KcerTokenNss. In this context the words "token"
   // and "slot" are synonyms.
   crypto::ScopedPK11Slot slot_;
-  // Queue for the tasks that were received while the tast queue was blocked.
-  std::queue<base::OnceClosure> task_queue_;
+  // Queue for the tasks that were received while the task queue was blocked.
+  std::deque<base::OnceClosure> task_queue_;
   // Cache for certificates.
   CertCacheNss cert_cache_;
 

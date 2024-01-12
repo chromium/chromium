@@ -179,10 +179,22 @@ BookmarkModelViewUsingLocalOrSyncableNodes::mobile_node() const {
   return underlying_model()->mobile_node();
 }
 
+void BookmarkModelViewUsingLocalOrSyncableNodes::EnsurePermanentNodesExist() {
+  // Local-or-syncable permanent folders always exist, nothing to be done.
+  CHECK(bookmark_bar_node());
+  CHECK(other_node());
+  CHECK(mobile_node());
+}
+
 void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
   // Relevant on iOS only, to delete all account bookmarks in a dedicated
   // BookmarkModel instance.
   underlying_model()->RemoveAllUserBookmarks();
+}
+
+bool BookmarkModelViewUsingLocalOrSyncableNodes::
+    HasWellKnownPermanentNodeUuids() const {
+  return true;
 }
 
 BookmarkModelViewUsingAccountNodes::BookmarkModelViewUsingAccountNodes(
@@ -207,9 +219,20 @@ const bookmarks::BookmarkNode* BookmarkModelViewUsingAccountNodes::mobile_node()
   return underlying_model()->account_mobile_node();
 }
 
+void BookmarkModelViewUsingAccountNodes::EnsurePermanentNodesExist() {
+  underlying_model()->CreateAccountPermanentFolders();
+  CHECK(bookmark_bar_node());
+  CHECK(other_node());
+  CHECK(mobile_node());
+}
+
 void BookmarkModelViewUsingAccountNodes::RemoveAllSyncableNodes() {
-  // TODO(crbug.com/1494120): Implement deletion properly.
-  NOTIMPLEMENTED();
+  underlying_model()->RemoveAccountPermanentFolders();
+}
+
+bool BookmarkModelViewUsingAccountNodes::HasWellKnownPermanentNodeUuids()
+    const {
+  return false;
 }
 
 }  // namespace sync_bookmarks

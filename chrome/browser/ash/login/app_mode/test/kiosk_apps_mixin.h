@@ -37,8 +37,7 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
   void SetUpInProcessBrowserTestFixture() override;
 
  private:
-  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> embedded_test_server_ =
-      nullptr;
+  raw_ptr<net::EmbeddedTestServer> embedded_test_server_ = nullptr;
   FakeCWS fake_cws_;
 };
 

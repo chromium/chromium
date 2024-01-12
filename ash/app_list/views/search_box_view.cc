@@ -71,10 +71,14 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -263,6 +267,23 @@ ui::ColorId GetFocusColorId(bool use_jelly_colors) {
              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
              : ui::kColorAshFocusRing;
 }
+
+class RoundRectPathGenerator : public views::HighlightPathGenerator {
+ public:
+  explicit RoundRectPathGenerator(const gfx::RoundedCornersF& radii)
+      : radii_(radii) {}
+  RoundRectPathGenerator(const RoundRectPathGenerator&) = delete;
+  RoundRectPathGenerator& operator=(const RoundRectPathGenerator&) = delete;
+  ~RoundRectPathGenerator() override = default;
+
+  // views::HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return gfx::RRectF(rect, radii_);
+  }
+
+ private:
+  const gfx::RoundedCornersF radii_;
+};
 
 }  // namespace
 
@@ -1680,14 +1701,32 @@ void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
         std::move(scoped_iph_session),
         LauncherSearchIphView::UiLocation::kSearchBox));
 
+    auto radii = base::i18n::IsRTL() ? kAssistantButtonBackgroundRadiiRTL
+                                     : kAssistantButtonBackgroundRadiiLTR;
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshControlBackgroundColorInactive,
-        base::i18n::IsRTL() ? kAssistantButtonBackgroundRadiiRTL
-                            : kAssistantButtonBackgroundRadiiLTR,
+        kColorAshControlBackgroundColorInactive, radii,
         /*for_border_thickness=*/0));
+
+    auto highlight_path_generator =
+        std::make_unique<RoundRectPathGenerator>(radii);
+    views::HighlightPathGenerator::Install(assistant_button(),
+                                           std::move(highlight_path_generator));
+
+    // The ink drop doesn't automatically pick up on rounded corner changes, so
+    // we need to manually notify it here.
+    views::InkDrop::Get(assistant_button())
+        ->GetInkDrop()
+        ->HostSizeChanged(assistant_button()->size());
+
+    // Update the focus ring.
+    views::FocusRing::Get(assistant_button())->SchedulePaint();
+
+    // Announce the IPH title.
+    GetViewAccessibility().AnnounceAlert(GetIphView()->GetTitleText());
   } else {
     DeleteIphView();
     assistant_button()->SetBackground(nullptr);
+    views::InstallCircleHighlightPathGenerator(assistant_button());
   }
 
   // Adding or removing IPH view can change `SearchBoxView` bounds largely.

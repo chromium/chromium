@@ -91,7 +91,11 @@ public class JankReportingRunnableTest {
 
         verify(mNativeMock)
                 .recordJankMetrics(
-                        new long[] {1_000_000L}, new int[] {2}, 0L, 1L, JankScenario.TAB_SWITCHER);
+                        new long[] {1_000_000L},
+                        new int[] {2},
+                        0L,
+                        1L,
+                        JankScenario.Type.TAB_SWITCHER);
     }
 
     @Test
@@ -142,7 +146,7 @@ public class JankReportingRunnableTest {
                         new int[] {2, 0},
                         1L,
                         5L,
-                        JankScenario.TAB_SWITCHER);
+                        JankScenario.Type.TAB_SWITCHER);
     }
 
     @Test

@@ -24,7 +24,7 @@ class VIEWS_EXPORT Badge : public View {
 
   ~Badge() override;
 
-  std::u16string GetText() const;
+  const std::u16string& GetText() const;
   void SetText(const std::u16string& text);
 
   // View:

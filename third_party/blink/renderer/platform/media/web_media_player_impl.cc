@@ -444,6 +444,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   // |pipeline_controller_|.
   pipeline_controller_ = std::make_unique<media::PipelineController>(
       std::move(pipeline),
+      base::BindRepeating(&WebMediaPlayerImpl::OnPipelineStarted, weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnPipelineSeeked, weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnPipelineSuspended, weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnBeforePipelineResume,
@@ -1628,6 +1629,8 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
   cdm_config_ = web_cdm->GetCdmConfig();
   DCHECK(!cdm_config_->key_system.empty());
 
+  media_log_->SetProperty<MediaLogProperty::kSetCdm>(cdm_config_.value());
+
   media_metrics_provider_->SetKeySystem(cdm_config_->key_system);
   if (cdm_config_->use_hw_secure_codecs)
     media_metrics_provider_->SetIsHardwareSecure();
@@ -1719,6 +1722,10 @@ void WebMediaPlayerImpl::OnPipelineSeeked(bool time_updated) {
   }
 
   attempting_suspended_start_ = false;
+}
+
+void WebMediaPlayerImpl::OnPipelineStarted(media::PipelineStatus status) {
+  media_metrics_provider_->OnStarted(status);
 }
 
 void WebMediaPlayerImpl::OnPipelineSuspended() {

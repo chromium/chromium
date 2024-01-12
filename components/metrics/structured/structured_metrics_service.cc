@@ -8,7 +8,6 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_features.h"
-#include "structured_metrics_service.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics::structured {

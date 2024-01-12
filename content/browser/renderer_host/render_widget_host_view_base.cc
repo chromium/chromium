@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -32,7 +34,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/public/common/page_visibility_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display_util.h"
@@ -319,14 +320,14 @@ void RenderWidgetHostViewBase::SetBackgroundColor(SkColor color) {
   }
 }
 
-absl::optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
+std::optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
   if (content_background_color_)
     return content_background_color_;
   return default_background_color_;
 }
 
 bool RenderWidgetHostViewBase::IsBackgroundColorOpaque() {
-  absl::optional<SkColor> bg_color = GetBackgroundColor();
+  std::optional<SkColor> bg_color = GetBackgroundColor();
   return bg_color ? SkColorGetA(*bg_color) == SK_AlphaOPAQUE : true;
 }
 
@@ -369,7 +370,7 @@ bool RenderWidgetHostViewBase::AccessibilityHasFocus() {
 }
 
 bool RenderWidgetHostViewBase::LockKeyboard(
-    absl::optional<base::flat_set<ui::DomCode>> codes) {
+    std::optional<base::flat_set<ui::DomCode>> codes) {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -789,8 +790,8 @@ void RenderWidgetHostViewBase::ImeCancelComposition() {
 
 void RenderWidgetHostViewBase::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds,
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (GetTextInputManager()) {
     GetTextInputManager()->ImeCompositionRangeChanged(
         this, range, character_bounds, line_bounds);
@@ -925,7 +926,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   gfx::Transform transform_root_to_original;
   query->GetTransformToTarget(original_view->GetFrameSinkId(),
                               &transform_root_to_original);
-  const absl::optional<gfx::PointF> point_in_pixels =
+  const std::optional<gfx::PointF> point_in_pixels =
       transform_root_to_original.InverseMapPoint(
           gfx::ConvertPointToPixels(point, device_scale_factor));
   if (!point_in_pixels.has_value())

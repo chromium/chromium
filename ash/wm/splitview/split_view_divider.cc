@@ -225,7 +225,7 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
       GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
   // TODO(b/308819668): Move `divider_position_` to here.
   const int divider_position =
-      SplitViewController::Get(GetRootWindow())->divider_position();
+      SplitViewController::Get(GetRootWindow())->GetDividerPosition();
   const bool landscape = IsCurrentScreenOrientationLandscape();
   return GetDividerBoundsInScreen(work_area_bounds_in_screen, landscape,
                                   divider_position, is_dragging);
@@ -298,6 +298,25 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
                                              const gfx::Rect& old_bounds,
                                              const gfx::Rect& new_bounds,
                                              ui::PropertyChangeReason reason) {
+  if (is_resizing_with_divider_ &&
+      display::Screen::GetScreen()->InTabletMode() &&
+      base::Contains(observed_windows_, window)) {
+    // Bounds may be changed while we are processing a resize event. In this
+    // case, we don't update the windows transform here, since it will be done
+    // soon anyway. If we are *not* currently processing a resize, it means the
+    // bounds of a window have been updated "async", and we need to update the
+    // window's transform.
+    if (!processing_resize_event_) {
+      // TODO(b/308819668): Remove this reference to `SplitViewController` when
+      // we move `divider_position` to here.
+      const int divider_position =
+          SplitViewController::Get(GetRootWindow())->GetDividerPosition();
+      for (aura::Window* window_to_transform : observed_windows_) {
+        SetWindowTransformDuringResizing(window_to_transform, divider_position);
+      }
+    }
+  }
+
   // We only care about the bounds change of windows in
   // |transient_windows_observations_|.
   if (!transient_windows_observations_.IsObservingSource(window))

@@ -345,12 +345,10 @@ class OverlayCandidateFactoryArbitraryTransformTest
     SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
     sqs->quad_to_target_transform = quad_to_target_transform;
     TextureDrawQuad quad;
-    float vertex_opacity[4] = {1.0, 1.0, 1.0, 1.0};
     quad.SetNew(sqs, quad_rect, quad_rect, false,
                 CreateResource(/*is_overlay_candidate=*/true), false,
-                gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent,
-                vertex_opacity, false, false, false,
-                gfx::ProtectedVideoType::kClear);
+                gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
+                false, false, gfx::ProtectedVideoType::kClear);
 
     return quad;
   }
@@ -706,11 +704,10 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     sqs->quad_to_target_transform = quad_to_target_transform;
     sqs->clip_rect = clip_rect;
     TextureDrawQuad quad;
-    float vertex_opacity[4] = {1.0, 1.0, 1.0, 1.0};
     quad.SetNew(sqs, quad_rect, quad_rect, false,
                 CreateResource(/*is_overlay_candidate=*/true), false,
                 quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
-                SkColors::kTransparent, vertex_opacity, false, false, false,
+                SkColors::kTransparent, false, false, false,
                 gfx::ProtectedVideoType::kClear);
 
     return quad;

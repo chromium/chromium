@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Eisiau cau hen dabiau?</translation>
 <translation id="1215127405478249895">Adolygu tabiau</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
+<translation id="1326271443836399892">Adolygu'r gosodiadau glanhau'r anhrefn presennol.</translation>
 <translation id="1499635324672558517">Cau pob tab Anhysbys</translation>
 <translation id="1657719826150349398">Symud tab i lawr</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> thab}many{<ph name="TABS_COUNT_MANY" /> thab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Tynnu o'r grŵp</translation>
 <translation id="3008554597174452548">Stopio olrhain y cynnyrch</translation>
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Mae gennych <ph name="TABS_COUNT_ONE" /> tab wedi'i archifo}zero{Mae gennych <ph name="TABS_COUNT_MANY" /> tab wedi'u harchifo}two{Mae gennych <ph name="TABS_COUNT_MANY" /> dab wedi'u harchifo}few{Mae gennych <ph name="TABS_COUNT_MANY" /> thab wedi'u harchifo}many{Mae gennych <ph name="TABS_COUNT_MANY" /> thab wedi'u harchifo}other{Mae gennych <ph name="TABS_COUNT_MANY" /> tab wedi'u harchifo}}</translation>
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3291470810748040983">Byddwch yn cael hysbysiad pan fydd pris is mewn tab sydd ar agor</translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Gwybodaeth am y siop hon wedi'i chau</translation>
 <translation id="9150694013019234766">Newidiwch rhwng tabiau yn eich grŵp tabiau yn agos at waelod y sgrîn</translation>
 <translation id="9169594135889675189">Ychwanegu tab newydd at y grŵp</translation>
+<translation id="955558140275419384">Adolygwch yr holl dabiau archif ar gyfer glanhau'r anhrefn trwy fynd i mewn i'r golygydd hwn.</translation>
 <translation id="959682366969460160">Byddwch yn drefnus</translation>
 </translationbundle>

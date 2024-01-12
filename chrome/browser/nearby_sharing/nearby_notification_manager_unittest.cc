@@ -278,12 +278,11 @@ class NearbyNotificationManagerTestBase : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  raw_ptr<MockNearbySharingService, ExperimentalAsh> nearby_service_;
+  raw_ptr<MockNearbySharingService> nearby_service_;
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<NearbyNotificationManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<MockSettingsOpener, DanglingUntriaged | ExperimentalAsh>
-      settings_opener_;
+  raw_ptr<MockSettingsOpener, DanglingUntriaged> settings_opener_;
   bool is_self_share_enabled_ = false;
 };
 
@@ -2064,7 +2063,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<NearbyNotificationManager> manager_;
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<ash::HoldingSpaceController> holding_space_controller_;

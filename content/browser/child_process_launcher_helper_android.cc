@@ -52,9 +52,9 @@ void StopChildProcess(base::ProcessHandle handle) {
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {}
 
-absl::optional<mojo::NamedPlatformChannel>
+std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<PosixFileDescriptorInfo>

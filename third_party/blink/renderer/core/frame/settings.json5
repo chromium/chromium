@@ -316,7 +316,6 @@
     {
       name: "spatialNavigationEnabled",
       initial: false,
-      invalidate: ["SpatialNavigation"],
     },
 
     // This setting adds a means to enable/disable touch initiated drag & drop. If
@@ -362,11 +361,6 @@
     },
 
     //////////////// Settings used by Android WebView below ////////////////
-
-    {
-      name: "useLegacyBackgroundSizeShorthandBehavior",
-      initial: false,
-    },
 
     // This quirk is to maintain compatibility with Android apps built on
     // the Android SDK prior to and including version 18.

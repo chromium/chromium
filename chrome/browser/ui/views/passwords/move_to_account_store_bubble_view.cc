@@ -100,8 +100,9 @@ void BackgroundBorderAdderImageSource::Draw(gfx::Canvas* canvas) {
 // A class represting an image with a badge. By default, the image is the globe
 // icon. However, badge could be updated via the UpdateBadge() method.
 class ImageWithBadge : public views::ImageView {
+  METADATA_HEADER(ImageWithBadge, views::ImageView)
+
  public:
-  METADATA_HEADER(ImageWithBadge);
   // Constructs a View hierarchy with the a badge positioned in the bottom-right
   // corner of |main_image|. In RTL mode the badge is positioned in the
   // bottom-left corner.
@@ -183,7 +184,7 @@ void ImageWithBadge::Render() {
   SetImage(ui::ImageModel::FromImageSkia(badged_image));
 }
 
-BEGIN_METADATA(ImageWithBadge, views::ImageView)
+BEGIN_METADATA(ImageWithBadge)
 END_METADATA
 
 std::unique_ptr<views::Label> CreateDescription() {
@@ -200,8 +201,9 @@ std::unique_ptr<views::Label> CreateDescription() {
 // A view that holds two badged images with an arrow between them to illustrate
 // that a password is being moved from the device to the account.
 class MoveToAccountStoreBubbleView::MovingBannerView : public views::View {
+  METADATA_HEADER(MovingBannerView, views::View)
+
  public:
-  METADATA_HEADER(MovingBannerView);
   MovingBannerView(std::unique_ptr<ImageWithBadge> from_image,
                    std::unique_ptr<ImageWithBadge> to_image);
   ~MovingBannerView() override = default;
@@ -330,3 +332,6 @@ void MoveToAccountStoreBubbleView::OnFaviconReady(const gfx::Image& favicon) {
     moving_banner_->UpdateFavicon(*favicon.ToImageSkia());
   }
 }
+
+BEGIN_METADATA(MoveToAccountStoreBubbleView)
+END_METADATA

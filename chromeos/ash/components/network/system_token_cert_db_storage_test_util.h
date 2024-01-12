@@ -44,7 +44,7 @@ class GetSystemTokenCertDbCallbackWrapper {
 
   base::RunLoop run_loop_;
   bool done_ = false;
-  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> nss_cert_database_ = nullptr;
+  raw_ptr<net::NSSCertDatabase> nss_cert_database_ = nullptr;
 
   base::WeakPtrFactory<GetSystemTokenCertDbCallbackWrapper> weak_ptr_factory_{
       this};

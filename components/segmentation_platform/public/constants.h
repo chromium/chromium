@@ -95,6 +95,9 @@ const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
 const char kIosModuleRankerKey[] = "ios_module_ranker";
 const char kIosModuleRankerUmaName[] = "IosModuleRanker";
 
+const char kAndroidHomeModuleRankerKey[] = "android_home_module_ranker";
+const char kAndroidHomeModuleRankerUmaName[] = "AndroidHomeModuleRanker";
+
 // This key is used to decide what modules a user should see on their Desktop
 // New Tab Page.
 const char kDesktopNtpModuleKey[] = "desktop_ntp_module";

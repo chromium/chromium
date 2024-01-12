@@ -35,8 +35,9 @@ absl::optional<std::string> LoadKeyCommitmentsFromDisk(base::ScopedFD fd) {
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
   std::string commitments;
-  if (!base::ReadStreamToString(file_stream.get(), &commitments))
+  if (!base::ReadStreamToString(file_stream.get(), &commitments)) {
     return absl::nullopt;
+  }
 
   return commitments;
 }

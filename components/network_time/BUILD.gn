@@ -4,8 +4,6 @@
 
 static_library("network_time") {
   sources = [
-    "historical_latencies_container.cc",
-    "historical_latencies_container.h",
     "network_time_pref_names.cc",
     "network_time_pref_names.h",
     "network_time_tracker.cc",
@@ -26,10 +24,7 @@ static_library("network_time") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "historical_latencies_container_unittest.cc",
-    "network_time_tracker_unittest.cc",
-  ]
+  sources = [ "network_time_tracker_unittest.cc" ]
 
   deps = [
     ":network_time",

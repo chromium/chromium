@@ -243,8 +243,7 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
   std::vector<std::optional<NetworkRequestError>> results_;
 
   MockCryptAuthClientFactory mock_client_factory_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_ = nullptr;
 
   std::unique_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_;
 };

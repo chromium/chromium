@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 
-NSString* const kIOSChromeNextVersionKey = @"UpdateInfobarUpgradeURL";
-NSString* const kIOSChromeUpgradeURLKey = @"UpdateInfobarNextVersion";
+const char kIOSChromeNextVersionKey[] = "UpdateInfobarUpgradeURL";
+const char kIOSChromeUpgradeURLKey[] = "UpdateInfobarNextVersion";
 NSString* const kIOSChromeUpToDateKey = @"UpdateInfobarIsUpToDate";
 NSString* const kLastInfobarDisplayTimeKey = @"UpdateInfobarLastDisplayTime";

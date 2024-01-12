@@ -8,6 +8,10 @@
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace features {
 
 // If enabled, base::DumpWithoutCrashing is called whenever an audio service
@@ -39,14 +43,17 @@ BASE_FEATURE(kAllowIAudioClient3,
 
 namespace media {
 
-#if BUILDFLAG(IS_LINUX)
-bool IsPulseaudioLoopbackCaptureSupported() {
-#if defined(USE_PULSEAUDIO)
+bool IsSystemLoopbackCaptureSupported() {
+#if BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+  return true;
+#elif BUILDFLAG(IS_MAC)
+  // Only supported on macOS 13.0+.
+  return base::mac::MacOSVersion() >= 13'00'00;
+#elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
   return true;
 #else
   return false;
-#endif  // defined(USE_PULSEAUDIO)
+#endif  // BUILDFLAG(IS_WIN) || defined(USE_CRAS)
 }
-#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace media

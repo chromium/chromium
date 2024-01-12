@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -79,7 +79,7 @@ class SentinelFile {
   SentinelFile& operator=(const SentinelFile&) = delete;
 
   bool IsPresent() { return base::PathExists(path_); }
-  bool Create() { return base::WriteFile(path_, base::StringPiece()); }
+  bool Create() { return base::WriteFile(path_, std::string_view()); }
   bool Remove() { return base::DeleteFile(path_); }
 
  private:
@@ -221,8 +221,8 @@ RulesetService::RulesetService(
 
   DCHECK(publisher_->BestEffortTaskRunner()->BelongsToCurrentThread());
   publisher_->BestEffortTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RulesetService::FinishInitialization, AsWeakPtr()));
+      FROM_HERE, base::BindOnce(&RulesetService::FinishInitialization,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 RulesetService::~RulesetService() {}
@@ -251,9 +251,9 @@ void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
     return;
   }
 
-  IndexAndStoreRuleset(
-      unindexed_ruleset_info,
-      base::BindOnce(&RulesetService::OpenAndPublishRuleset, AsWeakPtr()));
+  IndexAndStoreRuleset(unindexed_ruleset_info,
+                       base::BindOnce(&RulesetService::OpenAndPublishRuleset,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 IndexedRulesetVersion RulesetService::GetMostRecentlyIndexedVersion() const {
@@ -427,9 +427,9 @@ void RulesetService::FinishInitialization() {
                      indexed_ruleset_base_dir_, most_recently_indexed_version));
 
   if (!queued_unindexed_ruleset_info_.content_version.empty()) {
-    IndexAndStoreRuleset(
-        queued_unindexed_ruleset_info_,
-        base::BindOnce(&RulesetService::OpenAndPublishRuleset, AsWeakPtr()));
+    IndexAndStoreRuleset(queued_unindexed_ruleset_info_,
+                         base::BindOnce(&RulesetService::OpenAndPublishRuleset,
+                                        weak_ptr_factory_.GetWeakPtr()));
     queued_unindexed_ruleset_info_ = UnindexedRulesetInfo();
   }
 }
@@ -442,7 +442,8 @@ void RulesetService::IndexAndStoreRuleset(
       FROM_HERE,
       base::BindOnce(&RulesetService::IndexAndWriteRuleset,
                      indexed_ruleset_base_dir_, unindexed_ruleset_info),
-      base::BindOnce(&RulesetService::OnWrittenRuleset, AsWeakPtr(),
+      base::BindOnce(&RulesetService::OnWrittenRuleset,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(success_callback)));
 }
 
@@ -464,7 +465,8 @@ void RulesetService::OpenAndPublishRuleset(
 
   publisher_->TryOpenAndSetRulesetFile(
       file_path, version.checksum,
-      base::BindOnce(&RulesetService::OnRulesetSet, AsWeakPtr()));
+      base::BindOnce(&RulesetService::OnRulesetSet,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RulesetService::OnRulesetSet(RulesetFilePtr file) {

@@ -12,6 +12,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class PrefService;
 
 namespace browser_sync {
@@ -30,8 +34,20 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     syncer::ModelType type,
     const char* type_enabled_pref);
 
+// Migrates the current primary account (signed-in user) from "syncing" to
+// "signed-in", if they're eligible. The conditions for eligibility include
+// Sync-the-feature being enabled, and having been in a "healthy" state during
+// the previous browser run.
+// Meant to be called early during startup, in particular before any
+// KeyedServices are created.
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service);
+
+// Returns whether the current primary account was migrated from "syncing" to
+// "signed-in" via MaybeMigrateSyncingUserToSignedIn().
+bool WasPrimaryAccountMigratedFromSyncingToSignedIn(
+    const signin::IdentityManager* identity_manager,
+    const PrefService* pref_service);
 
 }  // namespace browser_sync
 

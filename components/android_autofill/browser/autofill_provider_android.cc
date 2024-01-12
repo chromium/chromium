@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -73,6 +75,19 @@ bool ShouldCacheForm(const FormStructure& form_structure) {
       parser.Parse(form_data, password_manager::FormDataParser::Mode::kFilling,
                    /*stored_usernames=*/{});
   return pw_form && pw_form->IsLikelyLoginForm();
+}
+
+// Extracts the underlying value of `check_result` and eliminates all other bits
+// if the bit for `FormDataAndroid::SimilarityCheckComponent::kGlobalId` is set.
+// Otherwise, it returns the value as is.
+// The motivation behind this is to reduce the number of metrics entries: If the
+// global ids differ, it is not interesting which other components differ as
+// well.
+auto ProjectSimilarityCheckResultToMetricsValue(
+    FormDataAndroid::SimilarityCheckResult check_result) {
+  static constexpr auto kGlobalId =
+      base::to_underlying(FormDataAndroid::SimilarityCheckComponent::kGlobalId);
+  return check_result.value() & kGlobalId ? kGlobalId : check_result.value();
 }
 
 constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
@@ -187,8 +202,11 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   // - The cached form is similar to the current form - i.e. it consists of the
   //   same DOM elements as the cached form and their attributes have not
   //   changed substantially enough - see `FormDataAndroid::SimilarFormAs`.
+  FormDataAndroid::SimilarityCheckResult similarity_result =
+      cached_form_ ? cached_form_->SimilarFormAsWithDiagnosis(form)
+                   : FormDataAndroid::kFormsAreSimilar;
   const bool is_similar_to_cached_form =
-      cached_form_ && cached_form_->SimilarFormAs(form);
+      cached_form_ && similarity_result == FormDataAndroid::kFormsAreSimilar;
   const bool use_id_of_cached_form =
       is_similar_to_cached_form && !has_used_cached_form_;
   form_ = std::make_unique<FormDataAndroid>(
@@ -226,6 +244,10 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
       base::UmaHistogramEnumeration(
           kPrefillRequestStateUma,
           PrefillRequestState::kRequestSentFormChanged);
+      base::UmaHistogramExactLinear(
+          kSimilarityCheckCacheRequestUma,
+          ProjectSimilarityCheckResultToMetricsValue(similarity_result),
+          FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
       return;
     }
 

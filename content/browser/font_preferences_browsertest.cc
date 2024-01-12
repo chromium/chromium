@@ -27,7 +27,7 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
     const base::Value::Dict* result =
         SendCommand("DOM.getDocument", std::move(params1));
 
-    absl::optional<int> body_node_id =
+    std::optional<int> body_node_id =
         result->FindIntByDottedPath("root.nodeId");
     DCHECK(body_node_id);
 

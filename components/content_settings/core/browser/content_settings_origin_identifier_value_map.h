@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
@@ -85,15 +86,21 @@ class OriginIdentifierValueMap {
 
   size_t size() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Returns an iterator for reading the rules for |content_type| and
-  // |resource_identifier|. It is not allowed to call functions of
-  // |OriginIdentifierValueMap| (also |GetRuleIterator|) before the iterator
-  // has been destroyed.
+  // Returns an iterator for reading the rules for |content_type|. It is not
+  // allowed to call functions of |OriginIdentifierValueMap| (also
+  // |GetRuleIterator|) before the iterator has been destroyed.
   //
   // |lock_| will be acquired and held until the returned RuleIterator is
   // destroyed.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type) const LOCKS_EXCLUDED(lock_);
+
+  // Returns the matching Rule with highest precedence or nullptr if no Rule
+  // matched.
+  std::unique_ptr<Rule> GetRule(const GURL& primary_url,
+                                const GURL& secondary_url,
+                                ContentSettingsType content_type) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   OriginIdentifierValueMap();
 

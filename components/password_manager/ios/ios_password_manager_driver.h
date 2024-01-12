@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/ios/password_manager_driver_bridge.h"
@@ -27,7 +28,7 @@ class WebState;
 }  // namespace web
 
 // An iOS implementation of password_manager::PasswordManagerDriver.
-class IOSPasswordManagerDriver
+class IOSPasswordManagerDriver final
     : public password_manager::PasswordManagerDriver,
       public base::RefCountedThreadSafe<IOSPasswordManagerDriver> {
  public:
@@ -62,6 +63,7 @@ class IOSPasswordManagerDriver
   bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
+  base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;
   const std::string& web_frame_id() const { return frame_id_; }
   const GURL& security_origin() const { return security_origin_; }
 
@@ -104,6 +106,8 @@ class IOSPasswordManagerDriver
   bool is_in_main_frame_;
   // The security origin associated with |web_frame_|.
   GURL security_origin_;
+
+  base::WeakPtrFactory<IOSPasswordManagerDriver> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_

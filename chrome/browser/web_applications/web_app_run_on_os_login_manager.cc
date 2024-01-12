@@ -45,14 +45,16 @@ void WebAppRunOnOsLoginManager::Start() {
     return;
   }
 
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin",
-      std::make_unique<AllAppsLockDescription>(),
+  provider_->scheduler().ScheduleCallback(
+      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin", AllAppsLockDescription(),
       base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
-                     GetWeakPtr()));
+                     GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
 }
 
-void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
+void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
+    AllAppsLock& lock,
+    base::Value::Dict& debug_value) {
   std::vector<std::string> app_names;
 
   for (const webapps::AppId& app_id : lock.registrar().GetAppIds()) {
@@ -63,6 +65,7 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
 
     std::string app_name = lock.registrar().GetAppShortName(app_id);
     app_names.push_back(std::move(app_name));
+    debug_value.EnsureList("app_names")->Append(app_name);
 
     // In case of already opened/restored apps, we do not launch them again
     if (lock.ui_manager().GetNumWindowsForApp(app_id) > 0) {
@@ -99,11 +102,11 @@ base::AutoReset<bool> WebAppRunOnOsLoginManager::SkipStartupForTesting() {
 }
 
 void WebAppRunOnOsLoginManager::RunAppsOnOsLoginForTesting() {
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin",
-      std::make_unique<AllAppsLockDescription>(),
+  provider_->scheduler().ScheduleCallback(
+      "WebAppRunOnOsLoginManager::RunAppsOnOsLogin", AllAppsLockDescription(),
       base::BindOnce(&WebAppRunOnOsLoginManager::RunAppsOnOsLogin,
-                     GetWeakPtr()));
+                     GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
 }
 
 }  // namespace web_app

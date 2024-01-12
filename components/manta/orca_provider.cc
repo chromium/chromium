@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
@@ -28,8 +29,9 @@ namespace {
 constexpr char kOauthConsumerName[] = "manta_orca";
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/x-protobuf";
-constexpr char kEndpointUrl[] =
+constexpr char kAutopushEndpointUrl[] =
     "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
+constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
 constexpr base::TimeDelta kTimeoutMs = base::Seconds(30);
 
@@ -52,6 +54,11 @@ absl::optional<Tone> GetTone(const std::string& tone) {
 
   return iter != tone_map.end() ? absl::optional<Tone>(iter->second)
                                 : absl::nullopt;
+}
+
+std::string GetEndpointUrl() {
+  return features::IsOrcaUseProdServerEnabled() ? kProdEndpointUrl
+                                                : kAutopushEndpointUrl;
 }
 
 absl::optional<proto::Request> ComposeRequest(
@@ -145,7 +152,7 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
   request.value().SerializeToString(&serialized_request);
 
   std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-      GURL{kEndpointUrl}, {kOAuthScope}, serialized_request);
+      GURL{GetEndpointUrl()}, {kOAuthScope}, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   MantaProtoResponseCallback internal_callback = base::BindOnce(

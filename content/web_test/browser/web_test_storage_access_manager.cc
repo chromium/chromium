@@ -18,7 +18,8 @@ namespace content {
 
 WebTestStorageAccessManager::WebTestStorageAccessManager(
     BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+    : browser_context_(
+          base::raw_ref<content::BrowserContext>::from_ptr(browser_context)) {}
 
 WebTestStorageAccessManager::~WebTestStorageAccessManager() = default;
 
@@ -28,6 +29,7 @@ void WebTestStorageAccessManager::SetStorageAccess(
     const bool blocked,
     blink::test::mojom::StorageAccessAutomation::SetStorageAccessCallback
         callback) {
+  CHECK(callback);
   if (!ContentSettingsPattern::FromString(origin).IsValid() ||
       !ContentSettingsPattern::FromString(embedding_origin).IsValid()) {
     std::move(callback).Run(false);
@@ -47,8 +49,11 @@ void WebTestStorageAccessManager::SetStorageAccess(
   // cause Storage Access API grants to become relevant.
   StoragePartition* storage_partition =
       browser_context_->GetDefaultStoragePartition();
-  storage_partition->GetCookieManagerForBrowserProcess()
-      ->BlockThirdPartyCookies(blocked);
+  CHECK(storage_partition);
+  network::mojom::CookieManager* cookie_manager =
+      storage_partition->GetCookieManagerForBrowserProcess();
+  CHECK(cookie_manager);
+  cookie_manager->BlockThirdPartyCookies(blocked);
   storage_partition->FlushNetworkInterfaceForTesting();
   std::move(callback).Run(true);
 }

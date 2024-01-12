@@ -17,7 +17,7 @@ import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 import {TtsManager} from './tts_manager.js';
 import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
 
-import AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 import AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;
 import RoleType = chrome.automation.RoleType;
@@ -60,7 +60,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   private currentNodeGroupItemIndex_: number;
   private currentNodeGroups_: ParagraphUtils.NodeGroup[];
   private currentNodeWord_: {start: number, end: number}|null;
-  private desktop_: chrome.automation.AutomationNode|undefined;
+  private desktop_: AutomationNode|undefined;
   private inputHandler_: InputHandler|null;
   private intervalId_: number|undefined;
   private nullSelectionTone_: HTMLAudioElement;
@@ -243,7 +243,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     }
 
     var rect = this.inputHandler_!.getMouseRect();
-    var nodes: chrome.automation.AutomationNode[] = [];
+    var nodes: AutomationNode[] = [];
     chrome.automation.getFocus(focusedNode => {
       // In some cases, e.g. ARC++, the window received in the hit test request,
       // which is computed based on which window is the event handler for the
@@ -254,7 +254,9 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       // that a node is in ARC++.
       if (!NodeUtils.findAllMatching(root, rect, nodes) && focusedNode &&
           focusedNode.root!.role !== RoleType.DESKTOP) {
-        NodeUtils.findAllMatching(focusedNode.root, rect, nodes);
+        // TODO(b/314203187): Determine if not null assertion is appropriate
+        // here.
+        NodeUtils.findAllMatching(focusedNode.root!, rect, nodes);
       }
       if (nodes.length === 1 && UiManager.isTrayButton(nodes[0])) {
         // Don't read only the Select-to-Speak toggle button in the tray unless
@@ -291,7 +293,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    */
   private requestSpeakSelectedText_(
       method: MetricsUtils.StartSpeechMethod,
-      focusedNode: chrome.automation.AutomationNode): void {
+      focusedNode: AutomationNode): void {
     // If nothing is selected, return early. Check if the focused node has
     // textSelStart and textSelEnd. For native UI like the omnibox, the root
     // might not have a selectionStartObject and selectionEndObject. Therefore
@@ -343,10 +345,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // say which node is selected and at what charOffset. See
     // https://crbug.com/803160 for more.
 
-    const startPosition =
-        NodeUtils.getDeepEquivalentForSelection(startObject, startOffset, true);
+    const startPosition = NodeUtils.getDeepEquivalentForSelection(
+        startObject!, startOffset, true);
     const endPosition =
-        NodeUtils.getDeepEquivalentForSelection(endObject, endOffset, false);
+        NodeUtils.getDeepEquivalentForSelection(endObject!, endOffset, false);
 
     // TODO(katie): We go into these blocks but they feel redundant. Can
     // there be another way to do this?
@@ -392,10 +394,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       method: MetricsUtils.StartSpeechMethod|null,
       focusedNode: AutomationNode|undefined): void {
     const nodes = [];
-    let selectedNode = firstPosition.node;
+    // TODO(b/314204374): AutomationUtil.findNextNode may return null.
+    let selectedNode: AutomationNode|null = firstPosition.node;
     // If the method is set, a user requested the speech.
     const userRequested = method !== null;
-    /**@type {number} */
     const methodNumber: number = method !== null ? method : -1;
     // Certain nodes such as omnibox store text value in the value property,
     // instead of the name property. The getNodeName method in ParagraphUtils
@@ -1210,11 +1212,6 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
           this.onNodeGroupSpeakingCompleted_();
           break;
         case chrome.tts.EventType.WORD:
-          // The Closure compiler doesn't realize that we did a !nodeGroup
-          // earlier so we check again here.
-          if (!nodeGroup) {
-            break;
-          }
           this.onTtsWordEvent_(event, nodeGroup);
           break;
         default:
@@ -1488,8 +1485,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
                 // window which received the hit test request is not part of the
                 // tree that contains the actual content. In such cases, use
                 // focus to get the appropriate root.
-                const focusedWindow = NodeUtils.getNearestContainingWindow(
-                    focusedNode.root || null);
+                const focusedWindow =
+                    NodeUtils.getNearestContainingWindow(focusedNode.root!);
                 if (focusedWindow != null && currentWindow === focusedWindow) {
                   resolve(true);
                   return;

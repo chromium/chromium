@@ -86,8 +86,7 @@ class RemoteDeviceLifeCycleImpl
   std::optional<ash::multidevice::RemoteDeviceRef> local_device_;
 
   // The entrypoint to the SecureChannel API.
-  raw_ptr<ash::secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
+  raw_ptr<ash::secure_channel::SecureChannelClient> secure_channel_client_;
 
   // The current state in the life cycle.
   RemoteDeviceLifeCycle::State state_;

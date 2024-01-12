@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -16,8 +17,7 @@
 
 namespace safe_browsing {
 
-class WebApiHandshakeChecker::CheckerOnSB
-    : public base::SupportsWeakPtr<WebApiHandshakeChecker::CheckerOnSB> {
+class WebApiHandshakeChecker::CheckerOnSB {
  public:
   CheckerOnSB(base::WeakPtr<WebApiHandshakeChecker> handshake_checker,
               GetDelegateCallback delegate_getter,
@@ -76,6 +76,7 @@ class WebApiHandshakeChecker::CheckerOnSB
         url_checker_delegate, web_contents_getter_, /*weak_web_state=*/nullptr,
         /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
         /*render_frame_token=*/std::nullopt, frame_tree_node_id_,
+        /*navigation_id=*/absl::nullopt,
         /*url_real_time_lookup_enabled=*/false,
         /*can_urt_check_subresource_url=*/false,
         /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
@@ -83,8 +84,6 @@ class WebApiHandshakeChecker::CheckerOnSB
         content::GetUIThreadTaskRunner({}),
         /*url_lookup_service=*/nullptr,
         /*hash_realtime_service_on_ui=*/nullptr,
-        /*mechanism_experimenter=*/nullptr,
-        /*is_mechanism_experiment_allowed=*/false,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone);
     url_checker_->CheckUrl(
@@ -93,12 +92,15 @@ class WebApiHandshakeChecker::CheckerOnSB
                        base::Unretained(this)));
   }
 
+  base::WeakPtr<CheckerOnSB> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
  private:
   // See comments in BrowserUrlLoaderThrottle::OnCheckUrlResult().
   void OnCheckUrlResult(
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
     DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                             ? content::BrowserThread::UI
@@ -116,6 +118,7 @@ class WebApiHandshakeChecker::CheckerOnSB
   void OnCompleteCheck(
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
     OnCompleteCheckInternal(proceed);
   }
@@ -139,6 +142,7 @@ class WebApiHandshakeChecker::CheckerOnSB
   const int frame_tree_node_id_;
   GURL last_committed_url_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
+  base::WeakPtrFactory<CheckerOnSB> weak_factory_{this};
 };
 
 WebApiHandshakeChecker::WebApiHandshakeChecker(

@@ -6,20 +6,19 @@ import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeop
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
 import {getType} from '../../common/js/file_type.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../externs/ts/state.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import {DialogType} from '../../state/state.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
-import {CommandHandler} from './command_handler.js';
+import {CommandHandler, type CommandHandlerDeps} from './command_handler.js';
 import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
@@ -34,7 +33,6 @@ import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_li
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
-
 
 /**
  * Controller for QuickView.
@@ -420,7 +418,7 @@ export class QuickViewController {
 
     const params =
         await this.getQuickViewParameters_(entry, items, tasks, canDelete);
-    if (this.quickViewModel_.getSelectedEntry() != entry) {
+    if (this.quickViewModel_.getSelectedEntry() !== entry) {
       return;  // Bail: there's no point drawing a stale selection.
     }
 
@@ -485,12 +483,12 @@ export class QuickViewController {
         const result =
             await this.loadThumbnailFromDrive_(thumbnailUrl, modificationTime);
         if (result.status === LoadImageResponseStatus.SUCCESS) {
-          if (params.type == 'video') {
+          if (params.type === 'video') {
             params.videoPoster = {
               data: result.data,
               dataType: 'url',
             };
-          } else if (params.type == 'image') {
+          } else if (params.type === 'image') {
             params.sourceContent = {
               data: result.data,
               dataType: 'url',
@@ -653,7 +651,7 @@ export class QuickViewController {
   private async loadRawFileThumbnailFromImageLoader_(entry: FileEntry):
       Promise<LoadImageResponse> {
     return new Promise((resolve, reject) => {
-      entry.file(function requestFileThumbnail(file) {
+      entry.file((file) => {
         const request = LoadImageRequest.createForUrl(entry.toURL());
         request.maxWidth = THUMBNAIL_MAX_WIDTH;
         request.maxHeight = THUMBNAIL_MAX_HEIGHT;

@@ -242,7 +242,6 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
       const base::TimeDelta& duration) = 0;
   virtual void SetVisibilityAnimationTransition(
       Widget::VisibilityTransition transition) = 0;
-  virtual bool IsTranslucentWindowOpacitySupported() const = 0;
   virtual ui::GestureRecognizer* GetGestureRecognizer() = 0;
   virtual ui::GestureConsumer* GetGestureConsumer() = 0;
   virtual void OnSizeConstraintsChanged() = 0;

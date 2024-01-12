@@ -10,6 +10,8 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/with_feature_override.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/root_view_controller_test.h"
@@ -119,6 +121,18 @@ class BaseGridViewControllerTest : public RootViewControllerTest,
   }
 
  protected:
+  TabSwitcherItem* TabItemForIndex(NSInteger index) {
+    GridDiffableDataSource* dataSource = view_controller_.diffableDataSource;
+    return [dataSource
+               itemIdentifierForIndexPath:[NSIndexPath indexPathForItem:index
+                                                              inSection:0]]
+        .tabSwitcherItem;
+  }
+
+  web::WebStateID IdentifierForIndex(NSInteger index) {
+    return TabItemForIndex(index).identifier;
+  }
+
   IOSChromeScopedTestingLocalState local_state_;
   BaseGridViewController* view_controller_;
   FakeGridViewControllerDelegate* delegate_;
@@ -135,8 +149,8 @@ TEST_P(BaseGridViewControllerTest, InitializeItems) {
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
   [view_controller_ populateItems:@[ item ] selectedItemID:newItemID];
-  EXPECT_EQ(newItemID, view_controller_.items[0].identifier);
-  EXPECT_EQ(1U, view_controller_.items.count);
+  EXPECT_EQ(newItemID, IdentifierForIndex(0));
+  EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
   EXPECT_EQ(1U, delegate_.itemCount);
 }
@@ -150,7 +164,7 @@ TEST_P(BaseGridViewControllerTest, InsertItem) {
           insertItem:[[TabSwitcherItem alloc] initWithIdentifier:newItemID]
              atIndex:2
       selectedItemID:newItemID];
-  EXPECT_EQ(3U, view_controller_.items.count);
+  EXPECT_EQ(3U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(2U, view_controller_.selectedIndex);
   EXPECT_EQ(3U, delegate_.itemCount);
 }
@@ -161,7 +175,7 @@ TEST_P(BaseGridViewControllerTest, RemoveItem) {
   // an itemCount of 2.
   [view_controller_ removeItemWithID:identifier_a_
                       selectedItemID:identifier_b_];
-  EXPECT_EQ(1U, view_controller_.items.count);
+  EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
   EXPECT_EQ(1U, delegate_.itemCount);
 }
@@ -194,21 +208,38 @@ TEST_P(BaseGridViewControllerTest, ReplaceItem) {
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
   [view_controller_ replaceItemID:identifier_a_ withItem:item];
-  EXPECT_EQ(newItemID, view_controller_.items[0].identifier);
+  EXPECT_EQ(newItemID, IdentifierForIndex(0));
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
 // Tests that an item is replaced with same identifier.
 TEST_P(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
+  // This test requires that the collection view be placed on the screen.
+  SetRootViewController(view_controller_);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return view_controller_.collectionView.visibleCells.count > 0;
+      }));
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  TabSwitcherItem* item =
-      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
-  id mock_item = OCMPartialMock(item);
+  TabSwitcherItem* existingItem = TabItemForIndex(0);
+  id mock_item = OCMPartialMock(existingItem);
   OCMStub([mock_item title]).andReturn(@"NEW-ITEM-TITLE");
-  [view_controller_ replaceItemID:identifier_a_ withItem:mock_item];
-  EXPECT_EQ(identifier_a_, view_controller_.items[0].identifier);
-  EXPECT_NSEQ(@"NEW-ITEM-TITLE", view_controller_.items[0].title);
+  TabSwitcherItem* itemForReplace =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
+  [view_controller_ replaceItemID:identifier_a_ withItem:itemForReplace];
+  NSString* identifier_cell_a =
+      [NSString stringWithFormat:@"%@0", kGridCellIdentifierPrefix];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        for (GridCell* cell in view_controller_.collectionView.visibleCells) {
+          if ([cell.accessibilityIdentifier isEqual:identifier_cell_a]) {
+            return [cell.title isEqual:@"NEW-ITEM-TITLE"];
+          }
+        }
+        return false;
+      }));
+  EXPECT_EQ(identifier_a_, IdentifierForIndex(0));
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
@@ -220,8 +251,8 @@ TEST_P(BaseGridViewControllerTest, ReplaceItemNotFound) {
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:notFoundItemID];
   [view_controller_ replaceItemID:notFoundItemID withItem:item];
-  EXPECT_NE(notFoundItemID, view_controller_.items[0].identifier);
-  EXPECT_NE(notFoundItemID, view_controller_.items[1].identifier);
+  EXPECT_NE(notFoundItemID, IdentifierForIndex(0));
+  EXPECT_NE(notFoundItemID, IdentifierForIndex(1));
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
@@ -230,7 +261,7 @@ TEST_P(BaseGridViewControllerTest, MoveSelectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ moveItemWithID:identifier_a_ toIndex:1];
-  EXPECT_EQ(identifier_a_, view_controller_.items[1].identifier);
+  EXPECT_EQ(identifier_a_, IdentifierForIndex(1));
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -240,7 +271,7 @@ TEST_P(BaseGridViewControllerTest, MoveUnselectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ moveItemWithID:identifier_b_ toIndex:0];
-  EXPECT_EQ(identifier_a_, view_controller_.items[1].identifier);
+  EXPECT_EQ(identifier_a_, IdentifierForIndex(1));
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -250,17 +281,18 @@ TEST_P(BaseGridViewControllerTest, MoveUnselectedItem) {
 TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   // This test requires that the collection view be placed on the screen.
   SetRootViewController(view_controller_);
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
         return view_controller_.collectionView.visibleCells.count > 0;
       }));
-  NSArray* items = view_controller_.items;
+  GridDiffableDataSource* dataSource = view_controller_.diffableDataSource;
   // Keep adding items until we get an item that is offscreen. Since device
   // sizes may vary, this is better than creating a fixed number of items that
   // we think will overflow to offscreen items.
   NSUInteger visibleCellsCount =
       view_controller_.collectionView.visibleCells.count;
-  while (visibleCellsCount >= items.count) {
+  while (visibleCellsCount >=
+         static_cast<NSUInteger>([[dataSource snapshot] numberOfItems])) {
     web::WebStateID uniqueID = web::WebStateID::NewUnique();
     TabSwitcherItem* item =
         [[TabSwitcherItem alloc] initWithIdentifier:uniqueID];

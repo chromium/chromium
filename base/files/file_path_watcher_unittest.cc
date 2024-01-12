@@ -238,7 +238,7 @@ class AccumulatingEventExpecter {
       ExpectedEventsSinceLastWait::kNone;
 };
 
-class TestDelegateBase : public SupportsWeakPtr<TestDelegateBase> {
+class TestDelegateBase {
  public:
   TestDelegateBase() = default;
   TestDelegateBase(const TestDelegateBase&) = delete;
@@ -250,12 +250,13 @@ class TestDelegateBase : public SupportsWeakPtr<TestDelegateBase> {
       const FilePathWatcher::ChangeInfo& change_info,
       const FilePath& path,
       bool error) = 0;
+  virtual base::WeakPtr<TestDelegateBase> AsWeakPtr() = 0;
 };
 
 // Receives and accumulates notifications from a specific `FilePathWatcher`.
 // This class is not thread safe. All methods must be called from the sequence
 // the instance is constructed on.
-class TestDelegate : public TestDelegateBase {
+class TestDelegate final : public TestDelegateBase {
  public:
   TestDelegate() : id_(g_next_delegate_id.GetNext()) {}
   TestDelegate(const TestDelegate&) = delete;
@@ -274,6 +275,10 @@ class TestDelegate : public TestDelegateBase {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Event event = ToEvent(change_info, path, error);
     received_events_.emplace_back(std::move(event));
+  }
+
+  base::WeakPtr<TestDelegateBase> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   // Gives all in-flight events a chance to arrive, then forgets all events that
@@ -342,6 +347,7 @@ class TestDelegate : public TestDelegateBase {
   const size_t id_;
 
   std::list<Event> received_events_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<TestDelegateBase> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -618,7 +624,7 @@ namespace {
 
 // Used by the DeleteDuringNotify test below.
 // Deletes the FilePathWatcher when it's notified.
-class Deleter : public TestDelegateBase {
+class Deleter final : public TestDelegateBase {
  public:
   explicit Deleter(OnceClosure done_closure)
       : watcher_(std::make_unique<FilePathWatcher>()),
@@ -638,11 +644,16 @@ class Deleter : public TestDelegateBase {
     std::move(done_closure_).Run();
   }
 
+  base::WeakPtr<TestDelegateBase> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   FilePathWatcher* watcher() const { return watcher_.get(); }
 
  private:
   std::unique_ptr<FilePathWatcher> watcher_;
   OnceClosure done_closure_;
+  base::WeakPtrFactory<Deleter> weak_ptr_factory_{this};
 };
 
 }  // namespace

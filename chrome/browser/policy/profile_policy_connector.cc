@@ -149,11 +149,9 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
                       base::TimeTicks::Now() - construction_time_);
   }
 
-  const raw_ptr<PolicyService, ExperimentalAsh> device_wide_policy_service_;
-  const raw_ptr<const ProxyPolicyProvider, ExperimentalAsh>
-      proxy_policy_provider_;
-  const raw_ptr<const ConfigurationPolicyProvider, ExperimentalAsh>
-      source_policy_provider_;
+  const raw_ptr<PolicyService> device_wide_policy_service_;
+  const raw_ptr<const ProxyPolicyProvider> proxy_policy_provider_;
+  const raw_ptr<const ConfigurationPolicyProvider> source_policy_provider_;
   const base::TimeTicks construction_time_ = base::TimeTicks::Now();
   base::OnceClosure proxied_policies_propagated_callback_;
   base::OneShotTimer timeout_timer_;
@@ -681,7 +679,6 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return "Kiosk";
     case user_manager::USER_TYPE_GUEST:
-    case user_manager::NUM_USER_TYPES:
       // Don't report the metric in uninteresting or unreachable cases.
       return "";
   }

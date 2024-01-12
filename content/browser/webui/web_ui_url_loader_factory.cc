@@ -4,6 +4,7 @@
 
 #include "content/public/browser/web_ui_url_loader_factory.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -42,7 +43,6 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/template_expressions.h"
 
 namespace content {
@@ -68,7 +68,7 @@ void ReadData(
     bool replace_in_js,
     scoped_refptr<URLDataSourceImpl> data_source,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
-    absl::optional<net::HttpByteRange> requested_range,
+    std::optional<net::HttpByteRange> requested_range,
     base::ElapsedTimer url_request_elapsed_timer,
     scoped_refptr<base::RefCountedMemory> bytes) {
   TRACE_EVENT0("ui", "WebUIURLLoader::ReadData");
@@ -149,7 +149,7 @@ void ReadData(
       std::move(client_remote));
 
   client->OnReceiveResponse(std::move(headers), std::move(pipe_consumer_handle),
-                            absl::nullopt);
+                            std::nullopt);
 
   network::URLLoaderCompletionStatus status(net::OK);
   status.encoded_data_length = output_size;
@@ -167,7 +167,7 @@ void DataAvailable(
     bool replace_in_js,
     scoped_refptr<URLDataSourceImpl> source,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
-    absl::optional<net::HttpByteRange> requested_range,
+    std::optional<net::HttpByteRange> requested_range,
     base::ElapsedTimer url_request_elapsed_timer,
     scoped_refptr<base::RefCountedMemory> bytes) {
   TRACE_EVENT0("ui", "WebUIURLLoader::DataAvailable");
@@ -212,7 +212,7 @@ void StartURLLoader(
   }
 
   // Load everything by default, but respect the Range header if present.
-  absl::optional<net::HttpByteRange> range;
+  std::optional<net::HttpByteRange> range;
   std::string range_header;
   if (request.headers.GetHeader(net::HttpRequestHeaders::kRange,
                                 &range_header)) {

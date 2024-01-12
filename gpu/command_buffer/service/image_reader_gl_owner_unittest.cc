@@ -92,7 +92,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
   }
 
   bool IsImageReaderSupported() const {
-    return base::android::AndroidImageReader::GetInstance().IsSupported();
+    return base::android::EnableAndroidImageReader();
   }
 
   scoped_refptr<TextureOwner> image_reader_;
@@ -194,8 +194,7 @@ TEST_F(ImageReaderGLOwnerSecureSurfaceControlTest, CreatesSecureAImageReader) {
   auto* a_image_reader = static_cast<ImageReaderGLOwner*>(image_reader_.get())
                              ->image_reader_for_testing();
   int32_t format = AIMAGE_FORMAT_YUV_420_888;
-  base::android::AndroidImageReader::GetInstance().AImageReader_getFormat(
-      a_image_reader, &format);
+  AImageReader_getFormat(a_image_reader, &format);
   EXPECT_EQ(format, AIMAGE_FORMAT_PRIVATE);
 }
 

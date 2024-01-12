@@ -42,6 +42,8 @@ class PasswordManagerClient;
 class PasswordManagerDriver;
 struct PossibleUsernameData;
 
+using FormOrDigest = absl::variant<autofill::FormData, PasswordFormDigest>;
+
 // This class helps with filling the observed form and with saving/updating the
 // stored information about it.
 class PasswordFormManager : public PasswordFormManagerForUI,
@@ -245,7 +247,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return password_save_manager_->GetProfileStoreFormSaverForTesting();
   }
 
-  const VotesUploader& votes_uploader() const { return votes_uploader_; }
+  const VotesUploader* votes_uploader() const {
+    return votes_uploader_.has_value() ? &votes_uploader_.value() : nullptr;
+  }
 #endif
 
  protected:
@@ -268,8 +272,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void CreatePendingCredentials();
 
  private:
-  using FormOrDigest = absl::variant<autofill::FormData, PasswordFormDigest>;
-
   // Delegating constructor.
   PasswordFormManager(
       PasswordManagerClient* client,
@@ -426,7 +428,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   std::unique_ptr<PasswordSaveManager> password_save_manager_;
 
-  VotesUploader votes_uploader_;
+  // Uploads crowdsourcing votes. Is not set if votes shouldn't be uploaded for
+  // the observed form.
+  std::optional<VotesUploader> votes_uploader_;
 
   // |is_submitted_| = true means that |*this| is ready for saving.
   // TODO(https://crubg.com/875768): Come up with a better name.
@@ -458,6 +462,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // The decision is captured at the provisional save time while it can be
   // already different for the landing page.
   bool is_saving_allowed_ = true;
+
+  // A password field that is used for generation.
+  autofill::FieldRendererId generation_element_;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

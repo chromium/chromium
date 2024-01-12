@@ -10,5 +10,8 @@ imageset("notifications_promo_icon") {
     "notifications_promo_icon.imageset/notifications_promo_icon.png",
     "notifications_promo_icon.imageset/notifications_promo_icon@2x.png",
     "notifications_promo_icon.imageset/notifications_promo_icon@3x.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon_dark.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon_dark@2x.png",
+    "notifications_promo_icon.imageset/notifications_promo_icon_dark@3x.png",
   ]
 }

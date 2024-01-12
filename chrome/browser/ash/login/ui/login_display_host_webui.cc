@@ -331,8 +331,7 @@ struct ShowLoginWizardSwitchLanguageCallbackData {
       : first_screen(first_screen), startup_manifest(startup_manifest) {}
 
   const OobeScreenId first_screen;
-  const raw_ptr<const StartupCustomizationDocument, ExperimentalAsh>
-      startup_manifest;
+  const raw_ptr<const StartupCustomizationDocument> startup_manifest;
 
   // lock UI while resource bundle is being reloaded.
   InputEventsBlocker events_blocker;

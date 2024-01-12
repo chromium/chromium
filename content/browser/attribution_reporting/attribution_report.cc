@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -33,7 +33,7 @@ namespace {
 
 base::Value::Dict GetReportBody(
     const AttributionReport::CommonAggregatableData& data,
-    absl::optional<uint64_t> trigger_debug_key) {
+    std::optional<uint64_t> trigger_debug_key) {
   base::Value::Dict dict;
 
   if (const auto& assembled_report = data.assembled_report;
@@ -82,9 +82,9 @@ AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::CommonAggregatableData::CommonAggregatableData(
-    absl::optional<attribution_reporting::SuitableOrigin>
+    std::optional<attribution_reporting::SuitableOrigin>
         aggregation_coordinator_origin,
-    absl::optional<std::string> verification_token,
+    std::optional<std::string> verification_token,
     attribution_reporting::AggregatableTriggerConfig
         aggregatable_trigger_config)
     : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
@@ -252,11 +252,11 @@ base::Value::Dict AttributionReport::ReportBody() const {
                 10000000.0;
             dict.Set("randomized_trigger_rate", rounded_rate);
 
-            if (absl::optional<uint64_t> debug_key = source.debug_key()) {
+            if (std::optional<uint64_t> debug_key = source.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
             }
 
-            if (absl::optional<uint64_t> debug_key =
+            if (std::optional<uint64_t> debug_key =
                     this->attribution_info().debug_key) {
               dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
             }
@@ -273,7 +273,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
             base::Value::Dict dict = GetReportBody(
                 data.common_data, this->attribution_info().debug_key);
 
-            if (absl::optional<uint64_t> debug_key = data.source.debug_key()) {
+            if (std::optional<uint64_t> debug_key = data.source.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
             }
 
@@ -297,9 +297,9 @@ void AttributionReport::set_external_report_id(base::Uuid external_report_id) {
 }
 
 // static
-absl::optional<base::Time> AttributionReport::MinReportTime(
-    absl::optional<base::Time> a,
-    absl::optional<base::Time> b) {
+std::optional<base::Time> AttributionReport::MinReportTime(
+    std::optional<base::Time> a,
+    std::optional<base::Time> b) {
   if (!a.has_value()) {
     return b;
   }
@@ -313,10 +313,25 @@ absl::optional<base::Time> AttributionReport::MinReportTime(
 
 void AttributionReport::PopulateAdditionalHeaders(
     net::HttpRequestHeaders& headers) const {
-  if (const auto* data = absl::get_if<AggregatableAttributionData>(&data_);
-      data && data->common_data.verification_token.has_value()) {
+  const std::optional<std::string>* verification_token = absl::visit(
+      base::Overloaded{
+          [](const EventLevelData&) -> const std::optional<std::string>* {
+            return nullptr;
+          },
+
+          [](const AggregatableAttributionData& data) {
+            return &data.common_data.verification_token;
+          },
+
+          [](const NullAggregatableData& data) {
+            return &data.common_data.verification_token;
+          },
+      },
+      data_);
+
+  if (verification_token && verification_token->has_value()) {
     headers.SetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                      *data->common_data.verification_token);
+                      **verification_token);
   }
 }
 

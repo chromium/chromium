@@ -8,6 +8,10 @@ assert(enable_extensions)
 
 source_set("controlled_frame") {
   sources = [
+    "api/controlled_frame_internal_api.cc",
+    "api/controlled_frame_internal_api.h",
+    "controlled_frame_extensions_browser_api_provider.cc",
+    "controlled_frame_extensions_browser_api_provider.h",
     "controlled_frame_menu_icon_loader.cc",
     "controlled_frame_menu_icon_loader.h",
   ]
@@ -17,7 +21,15 @@ source_set("controlled_frame") {
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
     "//content/public/common",
+    "//extensions/browser",
     "//extensions/common",
     "//ui/gfx",
   ]
+
+  configs += [
+    "//build/config:precompiled_headers",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
+
+  public_deps = [ "//chrome/browser/controlled_frame/api:api_registration" ]
 }

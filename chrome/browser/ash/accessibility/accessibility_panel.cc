@@ -44,7 +44,7 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
   }
 
  private:
-  raw_ptr<AccessibilityPanel, ExperimentalAsh> panel_;
+  raw_ptr<AccessibilityPanel> panel_;
 };
 
 AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,

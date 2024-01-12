@@ -112,8 +112,9 @@ std::optional<UpdatesSuppressedTimes> PolicyManager::GetUpdatesSuppressedTimes()
   std::optional<int> duration_min =
       GetIntegerPolicy(kUpdatesSuppressedDurationMin);
 
-  if (!start_hour || !start_min || !duration_min)
+  if (!start_hour || !start_min || !duration_min) {
     return std::nullopt;
+  }
 
   UpdatesSuppressedTimes supressed_times;
   supressed_times.start_hour_ = start_hour.value();

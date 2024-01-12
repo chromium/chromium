@@ -5,6 +5,8 @@
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 
 #include <stddef.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -84,7 +86,7 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     const Extension& extension,
     std::u16string* error) {
   auto info = std::make_unique<WebAccessibleResourcesInfo>();
-  auto get_error = [](size_t i, base::StringPiece message) {
+  auto get_error = [](size_t i, std::string_view message) {
     return ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidWebAccessibleResource, base::NumberToString(i),
         message);

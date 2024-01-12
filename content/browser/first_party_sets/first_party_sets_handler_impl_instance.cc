@@ -5,6 +5,7 @@
 #include "content/browser/first_party_sets/first_party_sets_handler_impl_instance.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
 #include "net/first_party_sets/sets_mutation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class SchemefulSite;
@@ -133,7 +133,7 @@ void FirstPartySetsHandlerImplInstance::GetContextConfigForPolicy(
   }
   if (global_sets_.has_value()) {
     std::move(callback).Run(
-        GetContextConfigForPolicyInternal(*policy, absl::nullopt));
+        GetContextConfigForPolicyInternal(*policy, std::nullopt));
     return;
   }
   // Add to the deque of callbacks that will be processed once the list
@@ -171,7 +171,7 @@ FirstPartySetsHandlerImplInstance::FirstPartySetsHandlerImplInstance(
 FirstPartySetsHandlerImplInstance::~FirstPartySetsHandlerImplInstance() =
     default;
 
-absl::optional<net::GlobalFirstPartySets>
+std::optional<net::GlobalFirstPartySets>
 FirstPartySetsHandlerImplInstance::GetSets(
     base::OnceCallback<void(net::GlobalFirstPartySets)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -187,7 +187,7 @@ FirstPartySetsHandlerImplInstance::GetSets(
             .Then(std::move(callback)));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FirstPartySetsHandlerImplInstance::Init(
@@ -226,14 +226,13 @@ void FirstPartySetsHandlerImplInstance::SetPublicFirstPartySets(
 
 void FirstPartySetsHandlerImplInstance::GetPersistedSetsForTesting(
     const std::string& browser_context_id,
-    base::OnceCallback<
-        void(absl::optional<std::pair<net::GlobalFirstPartySets,
-                                      net::FirstPartySetsContextConfig>>)>
-        callback) {
+    base::OnceCallback<void(
+        std::optional<std::pair<net::GlobalFirstPartySets,
+                                net::FirstPartySetsContextConfig>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!browser_context_id.empty());
   if (db_helper_.is_null()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   db_helper_
@@ -245,11 +244,11 @@ void FirstPartySetsHandlerImplInstance::GetPersistedSetsForTesting(
 
 void FirstPartySetsHandlerImplInstance::HasBrowserContextClearedForTesting(
     const std::string& browser_context_id,
-    base::OnceCallback<void(absl::optional<bool>)> callback) {
+    base::OnceCallback<void(std::optional<bool>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!browser_context_id.empty());
   if (db_helper_.is_null()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   db_helper_
@@ -320,13 +319,13 @@ void FirstPartySetsHandlerImplInstance::InvokePendingQueries() {
   on_sets_ready_callbacks_.reset();
 }
 
-absl::optional<net::FirstPartySetEntry>
+std::optional<net::FirstPartySetEntry>
 FirstPartySetsHandlerImplInstance::FindEntry(
     const net::SchemefulSite& site,
     const net::FirstPartySetsContextConfig& config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!global_sets_.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return global_sets_->FindEntry(site, config);
 }
@@ -495,7 +494,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
 
 void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const std::optional<net::SchemefulSite>& top_frame_site,
     const net::FirstPartySetsContextConfig& config,
     const base::ElapsedTimer& timer,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
@@ -513,7 +512,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
 net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
     const base::Value::Dict& policy,
-    const absl::optional<base::ElapsedTimer>& timer) const {
+    const std::optional<base::ElapsedTimer>& timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());
 

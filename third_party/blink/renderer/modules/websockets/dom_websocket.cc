@@ -36,7 +36,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -333,8 +332,6 @@ void DOMWebSocket::send(const String& message,
     return;
   }
 
-  RecordSendTypeHistogram(WebSocketSendType::kString);
-
   DCHECK(channel_);
   buffered_amount_ += encoded_message.length();
   channel_->Send(encoded_message, base::OnceClosure());
@@ -354,7 +351,6 @@ void DOMWebSocket::send(DOMArrayBuffer* binary_data,
     UpdateBufferedAmountAfterClose(binary_data->ByteLength());
     return;
   }
-  RecordSendTypeHistogram(WebSocketSendType::kArrayBuffer);
   DCHECK(channel_);
   buffered_amount_ += binary_data->ByteLength();
   channel_->Send(*binary_data, 0, binary_data->ByteLength(),
@@ -375,7 +371,6 @@ void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
     UpdateBufferedAmountAfterClose(array_buffer_view->byteLength());
     return;
   }
-  RecordSendTypeHistogram(WebSocketSendType::kArrayBufferView);
   DCHECK(channel_);
   buffered_amount_ += array_buffer_view->byteLength();
   channel_->Send(*array_buffer_view->buffer(), array_buffer_view->byteOffset(),
@@ -396,7 +391,6 @@ void DOMWebSocket::send(Blob* binary_data, ExceptionState& exception_state) {
     return;
   }
   uint64_t size = binary_data->size();
-  RecordSendTypeHistogram(WebSocketSendType::kBlob);
   buffered_amount_ += size;
   DCHECK(channel_);
 
@@ -626,10 +620,6 @@ void DOMWebSocket::NotifyWebSocketActivity() {
   if (context) {
     context->NotifyWebSocketActivity();
   }
-}
-
-void DOMWebSocket::RecordSendTypeHistogram(WebSocketSendType type) {
-  base::UmaHistogramEnumeration("WebCore.WebSocket.SendType", type);
 }
 
 void DOMWebSocket::Trace(Visitor* visitor) const {

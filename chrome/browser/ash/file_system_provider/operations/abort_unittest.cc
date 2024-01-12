@@ -32,8 +32,8 @@ const int kOperationRequestId = 3;
 
 class FileSystemProviderOperationsAbortTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsAbortTest() {}
-  ~FileSystemProviderOperationsAbortTest() override {}
+  FileSystemProviderOperationsAbortTest() = default;
+  ~FileSystemProviderOperationsAbortTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

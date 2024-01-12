@@ -935,12 +935,6 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
 
       <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy_sandbox. -->
-      <message name="IDS_PRIVACY_SANDBOX_STATUS_ENABLED" desc="Status text, displayed when the Privacy sandbox APIs are enabled.">
-        Trial features are on
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_STATUS_DISABLED" desc="Status text, displayed when the Privacy sandbox APIs are disabled.">
-        Trial features are off
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
         Learn about and control new technologies that aim to replace third-party cookies
       </message>
@@ -1812,16 +1806,16 @@ Your Google account may have other forms of browsing history like searches and a
         File might be harmful
       </message>
 
-        <!-- Mixed content download -->
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm an insecure download">
-          File can’t be downloaded securely
-        </message>
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the insecure download dialog for user to confirm the download.">
-          Keep
-        </message>
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the insecure download dialog for user to confirm the download.">
-          Discard
-        </message>
+      <!-- Mixed content download -->
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm an insecure download">
+        File can’t be downloaded securely
+      </message>
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the insecure download dialog for user to confirm the download.">
+        Keep
+      </message>
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the insecure download dialog for user to confirm the download.">
+        Discard
+      </message>
 
       <!-- Downloads location -->
       <message name="IDS_DOWNLOADS_LOCATION_SELECTOR_TITLE" desc="Title of the preference that allows the user to select which of the folders they would like to make the default location to save their downloads.">
@@ -1900,8 +1894,8 @@ Your Google account may have other forms of browsing history like searches and a
         New file name
       </message>
 
-       <!-- Duplicate download -->
-       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
+      <!-- Duplicate download -->
+      <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download again
       </message>
       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm the download of a duplicate file.">
@@ -1912,6 +1906,23 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_DUPLICATE_PAGE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm downloading a page that has been downloaded before.">
         Download page again?
+      </message>
+
+      <!-- Download open dialog -->
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
+        Automatically open PDFs?
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm they want to open a downloaded pdf file.">
+        Chrome can automatically open a PDF when you download them.
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the download always.">
+        Always open
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_JUST_ONCE_TEXT" desc="Text label for the button on the open download dialog for user to just open the current download once.">
+        Just once
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Automatically open pdf after download
       </message>
 
       <!-- About Chrome preferences -->
@@ -3908,6 +3919,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Cancel
       </message>
 
+      <!-- Account bookmarks strings -->
+      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER">
+        Only on this device
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER">
+        In your Google Account
+      </message>
+
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">
         Read
@@ -4284,6 +4303,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_MAX_NUMBER_OF_WINDOWS" desc="Toast message for when the user has tried to start more than 5 instances of Chrome window.">
         You can have up to 5 windows.
+      </message>
+      <message name="IDS_TAB_DROPPED_DIFFERENT_MODEL" desc="Toast that appears when a tab is dropped into tab strip with a different profile (regular v.s. incognito).">
+        You can find all open tabs in the tab switcher
       </message>
 
       <message name="IDS_CLOSE_TAB" desc="Context menu option that allows the user to close the selected tab.">
@@ -4720,18 +4742,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_IPH_IDENTITY_DISC_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text prompting the user that tapping identity disc will navigate to 'Sync and Google services' settings page.">
         To manage your Google account, tap the "Manage account" button
-      </message>
-      <message name="IDS_IPH_NTP_WITHOUT_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites.">
-        See your top sites
-      </message>
-      <message name="IDS_IPH_NTP_WITHOUT_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites. The 'Home' button name should match TC ID 2821179408673282599.">
-        To see your top sites, tap the Home button
-      </message>
-      <message name="IDS_IPH_NTP_WITH_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites and stories.">
-        See top sites and stories for you
-      </message>
-      <message name="IDS_IPH_NTP_WITH_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites and stories. The 'Home' button name should match TC ID 2821179408673282599.">
-        To see top sites and stories for you, tap the Home button
       </message>
       <message name="IDS_IPH_TAB_SWITCHER_TEXT" desc="The in-product-help message to open the tab switcher.">
         Open tabs to visit different pages at the same time

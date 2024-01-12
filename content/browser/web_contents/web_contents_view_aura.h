@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_AURA_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
@@ -108,7 +108,7 @@ class CONTENT_EXPORT WebContentsViewAura
                             DropMetadata drop_metadata,
                             std::unique_ptr<ui::OSExchangeData> data,
                             base::ScopedClosureRunner end_drag_runner,
-                            absl::optional<gfx::PointF> transformed_pt,
+                            std::optional<gfx::PointF> transformed_pt,
                             gfx::PointF screen_pt);
     OnPerformingDropContext(const OnPerformingDropContext& other) = delete;
     OnPerformingDropContext(OnPerformingDropContext&& other);
@@ -121,7 +121,7 @@ class CONTENT_EXPORT WebContentsViewAura
     DropMetadata drop_metadata;
     std::unique_ptr<ui::OSExchangeData> data;
     base::ScopedClosureRunner end_drag_runner;
-    absl::optional<gfx::PointF> transformed_pt;
+    std::optional<gfx::PointF> transformed_pt;
     gfx::PointF screen_pt;
   };
 
@@ -284,15 +284,15 @@ class CONTENT_EXPORT WebContentsViewAura
   void DragEnteredCallback(DropMetadata flags,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           absl::optional<gfx::PointF> transformed_pt);
+                           std::optional<gfx::PointF> transformed_pt);
   void DragUpdatedCallback(DropMetadata drop_metadata,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           absl::optional<gfx::PointF> transformed_pt);
+                           std::optional<gfx::PointF> transformed_pt);
   void PerformDropCallback(DropMetadata drop_metadata,
                            std::unique_ptr<ui::OSExchangeData> data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           absl::optional<gfx::PointF> transformed_pt);
+                           std::optional<gfx::PointF> transformed_pt);
 
   // Completes a drag exit operation by communicating with the renderer process.
   void CompleteDragExit();
@@ -301,7 +301,7 @@ class CONTENT_EXPORT WebContentsViewAura
   // The override with `drop_data` updates `current_drag_data_` before
   // completing the drop.
   void GotModifiedDropDataFromDelegate(OnPerformingDropContext drop_context,
-                                       absl::optional<DropData> drop_data);
+                                       std::optional<DropData> drop_data);
 
   // Completes a drop operation by communicating the drop data to the renderer
   // process.

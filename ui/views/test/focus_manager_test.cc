@@ -43,6 +43,7 @@ void FocusManagerTest::TearDown() {
         widget_focus_change_listener_);
   }
   GetWidget()->Close();
+  contents_view_ = nullptr;
 
   // Flush the message loop to make application verifiers happy.
   RunPendingMessages();

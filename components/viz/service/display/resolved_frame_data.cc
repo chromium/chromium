@@ -63,9 +63,24 @@ ResolvedPassData::ResolvedPassData(ResolvedPassData&& other) = default;
 ResolvedPassData& ResolvedPassData::operator=(ResolvedPassData&& other) =
     default;
 
+const CompositorRenderPass& ResolvedPassData::render_pass() const {
+  CHECK(fixed_.render_pass);
+  return *fixed_.render_pass;
+}
+
 void ResolvedPassData::CopyAndResetPersistentPassData() {
   previous_persistent_data_ = current_persistent_data_;
   current_persistent_data_ = PersistentPassData();
+}
+
+void ResolvedPassData::SetCompositorRenderPass(CompositorRenderPass* pass) {
+  CHECK(pass);
+  CHECK_EQ(pass->id, fixed_.render_pass_id);
+  fixed_.render_pass = pass;
+}
+
+void ResolvedPassData::ResetCompositorRenderPass() {
+  fixed_.render_pass = nullptr;
 }
 
 ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
@@ -104,7 +119,7 @@ void ResolvedFrameData::ForceReleaseResource() {
 
 void ResolvedFrameData::UpdateForActiveFrame(
     AggregatedRenderPassId::Generator& render_pass_id_generator) {
-  auto& compositor_frame = surface_->GetActiveOrInterpolatedFrame();
+  auto& compositor_frame = surface_->GetActiveFrame();
   auto& resource_list = compositor_frame.resource_list;
   auto& render_passes = compositor_frame.render_pass_list;
   size_t num_render_pass = render_passes.size();
@@ -252,6 +267,7 @@ void ResolvedFrameData::ResetAfterAggregation() {
   for (auto& resolved_pass : resolved_passes_) {
     resolved_pass.aggregation().Reset();
     resolved_pass.CopyAndResetPersistentPassData();
+    resolved_pass.ResetCompositorRenderPass();
   }
 
   previous_frame_index_ = frame_index_;
@@ -318,6 +334,21 @@ gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
 const gfx::Rect& ResolvedFrameData::GetOutputRect() const {
   DCHECK(valid_);
   return resolved_passes_.back().render_pass().output_rect;
+}
+
+void ResolvedFrameData::SetRenderPassPointers() {
+  const CompositorRenderPassList& render_pass_list =
+      surface_->GetActiveFrame().render_pass_list;
+
+  // `render_pass_list` and `resolved_passes_` should have the same size and
+  // order.
+  CHECK_EQ(render_pass_list.size(), resolved_passes_.size());
+  for (size_t i = 0; i < resolved_passes_.size(); ++i) {
+    ResolvedPassData& resolved_pass = resolved_passes_[i];
+    const auto& render_pass = render_pass_list[i];
+    CHECK_EQ(resolved_pass.render_pass_id(), render_pass->id);
+    resolved_pass.SetCompositorRenderPass(render_pass.get());
+  }
 }
 
 void ResolvedFrameData::RegisterWithResourceProvider() {

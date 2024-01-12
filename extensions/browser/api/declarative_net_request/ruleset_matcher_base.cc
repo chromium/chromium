@@ -214,6 +214,16 @@ std::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
   return GetMaxPriorityAction(std::move(action), std::move(parent_action));
 }
 
+std::optional<RequestAction> RulesetMatcherBase::GetHeadersReceivedAction(
+    const RequestParams& params) const {
+  std::optional<RequestAction> action =
+      GetHeadersReceivedActionIgnoringAncestors(params);
+  std::optional<RequestAction> parent_action =
+      GetAllowlistedFrameAction(params.parent_routing_id);
+
+  return GetMaxPriorityAction(std::move(action), std::move(parent_action));
+}
+
 void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   DCHECK(host);
   content::RenderFrameHost* parent = host->GetParentOrOuterDocument();
@@ -250,7 +260,11 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   // Hence we need not listen to OnRenderFrameCreated.
   DCHECK(host);
 
-  RequestParams params(host, navigation_handle->IsPost());
+  // TODO(crbug.com/1141166): Investigate if allowAllRequest rule should be
+  // supported based on response headers or if response headers are visible at
+  // this stage.
+  RequestParams params(host, navigation_handle->IsPost(),
+                       /*response_headers=*/nullptr);
 
   // Find the highest priority allowAllRequests action corresponding to this
   // frame.

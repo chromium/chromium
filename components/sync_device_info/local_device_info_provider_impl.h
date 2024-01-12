@@ -33,13 +33,12 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   ~LocalDeviceInfoProviderImpl() override;
 
   // MutableLocalDeviceInfoProvider implementation.
-  void Initialize(
-      const std::string& cache_guid,
-      const std::string& client_name,
-      const std::string& manufacturer_name,
-      const std::string& model_name,
-      const std::string& full_hardware_class,
-      std::unique_ptr<DeviceInfo> device_info_restored_from_store) override;
+  void Initialize(const std::string& cache_guid,
+                  const std::string& client_name,
+                  const std::string& manufacturer_name,
+                  const std::string& model_name,
+                  const std::string& full_hardware_class,
+                  const DeviceInfo* device_info_restored_from_store) override;
   void Clear() override;
   void UpdateClientName(const std::string& client_name) override;
   version_info::Channel GetChannel() const override;

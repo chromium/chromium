@@ -17,13 +17,14 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
+import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
- * Provides helper methods to wrap Fido2ApiCall invocations.
- * This class is useful to override GMS Core API interactions from Fido2CredentialRequest in tests.
+ * Provides helper methods to wrap Fido2ApiCall invocations. This class is useful to override GMS
+ * Core API interactions from Fido2CredentialRequest in tests.
  */
 public class Fido2ApiCallHelper {
     private static Fido2ApiCallHelper sInstance;
@@ -32,7 +33,9 @@ public class Fido2ApiCallHelper {
         sInstance = instance;
     }
 
-    /** @return The Fido2ApiCallHelper for use during the lifetime of the browser process. */
+    /**
+     * @return The Fido2ApiCallHelper for use during the lifetime of the browser process.
+     */
     public static Fido2ApiCallHelper getInstance() {
         if (sInstance == null) {
             sInstance = new Fido2ApiCallHelper();
@@ -47,16 +50,16 @@ public class Fido2ApiCallHelper {
 
     public void invokeFido2GetCredentials(
             String relyingPartyId,
-            OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
+            OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
             OnFailureListener failureCallback) {
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
         Parcel args = call.start();
-        Fido2ApiCall.WebAuthnCredentialDetailsListResult result =
-                new Fido2ApiCall.WebAuthnCredentialDetailsListResult();
+        Fido2ApiCall.WebauthnCredentialDetailsListResult result =
+                new Fido2ApiCall.WebauthnCredentialDetailsListResult();
         args.writeStrongBinder(result);
         args.writeString(relyingPartyId);
 
-        Task<List<WebAuthnCredentialDetails>> task =
+        Task<List<WebauthnCredentialDetails>> task =
                 call.run(
                         Fido2ApiCall.METHOD_BROWSER_GETCREDENTIALS,
                         Fido2ApiCall.TRANSACTION_GETCREDENTIALS,
@@ -79,14 +82,12 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
-        Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options, uri, clientDataHash, args);
+        Fido2ApiCallParams params = WebauthnModeProvider.getInstance().getFido2ApiCallParams();
+
+        params.mMethodInterfaces.makeCredential(options, uri, clientDataHash, args);
 
         Task<PendingIntent> task =
-                call.run(
-                        Fido2ApiCall.METHOD_BROWSER_REGISTER,
-                        Fido2ApiCall.TRANSACTION_REGISTER,
-                        args,
-                        result);
+                call.run(params.mRegisterMethodId, Fido2ApiCall.TRANSACTION_REGISTER, args, result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }
@@ -103,14 +104,11 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
+        Fido2ApiCallParams params = WebauthnModeProvider.getInstance().getFido2ApiCallParams();
+        params.mMethodInterfaces.getAssertion(
                 options, uri, clientDataHash, /* tunnelId= */ null, args);
         Task<PendingIntent> task =
-                call.run(
-                        Fido2ApiCall.METHOD_BROWSER_SIGN,
-                        Fido2ApiCall.TRANSACTION_SIGN,
-                        args,
-                        result);
+                call.run(params.mSignMethodId, Fido2ApiCall.TRANSACTION_SIGN, args, result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }

@@ -384,10 +384,19 @@ export class ImageRequestTask {
     return Promise
         .race([
           new Promise((resolve, reject) => {
-            video.addEventListener('canplay', resolve);
+            video.addEventListener('loadedmetadata', () => {
+              video.addEventListener('seeked', () => {
+                if (video.readyState >= video.HAVE_CURRENT_DATA) {
+                  resolve();
+                } else {
+                  video.addEventListener('loadeddata', resolve);
+                }
+              });
+              const halfDuration = video.duration / 2;
+              video.currentTime = halfDuration;
+            });
             video.addEventListener('error', reject);
-            video.currentTime = ImageRequestTask.VIDEO_THUMBNAIL_POSITION;
-            video.preload = 'auto';
+            video.preload = 'metadata';
             video.src = url;
             video.load();
           }),
@@ -395,9 +404,9 @@ export class ImageRequestTask {
             setTimeout(
                 resolve, ImageRequestTask.MAX_MILLISECONDS_TO_LOAD_VIDEO);
           }).then(() => {
-            // If we don't receive 'canplay' event after 3 seconds have passed
-            // for some reason (e.g. unseekable video), we give up generating
-            // thumbnail.
+            // If we can't get the frame at the midpoint of the video after 3
+            // seconds have passed for some reason (e.g. unseekable video), we
+            // give up generating thumbnail.
             video.src =
                 '';  // Make sure to stop loading remaining part of the video.
             throw new Error('Seeking video failed.');
@@ -480,10 +489,10 @@ export class ImageRequestTask {
     xhr.responseType = 'blob';
 
     xhr.onreadystatechange = () => {
-      if (xhr.readyState != 4) {
+      if (xhr.readyState !== 4) {
         return;
       }
-      if (xhr.status != 200) {
+      if (xhr.status !== 200) {
         onFailure(xhr.status);
         return;
       }
@@ -639,16 +648,6 @@ export class ImageRequestTask {
     this.canvas_.height = 0;
   }
 }
-
-/**
- * Seeks offset to generate video thumbnail.
- * TODO(ryoh):
- *   What is the best position for the thumbnail?
- *   The first frame seems not good -- sometimes it is a black frame.
- * @const
- * @type {number}
- */
-ImageRequestTask.VIDEO_THUMBNAIL_POSITION = 3;  // [sec]
 
 /**
  * The maximum milliseconds to load video. If loading video exceeds the limit,

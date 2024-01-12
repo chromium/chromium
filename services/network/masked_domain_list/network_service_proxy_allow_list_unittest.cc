@@ -103,8 +103,6 @@ TEST_F(NetworkServiceProxyAllowListTest, IsEnabledWhenManuallySet) {
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
 
   EXPECT_TRUE(allow_list.IsEnabled());
-  EXPECT_TRUE(allow_list.MakeIpProtectionCustomProxyConfig()
-                  ->rules.restrict_to_network_service_proxy_allow_list);
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, AllowListIsNotPopulatedByDefault) {
@@ -257,6 +255,24 @@ TEST_F(NetworkServiceProxyAllowListTest,
   EXPECT_TRUE(allow_list_first_party_bypass.Matches(
       GURL("https://example.com"),
       net::NetworkAnonymizationKey::CreateTransient()));
+}
+
+TEST_F(NetworkServiceProxyAllowListTest, AllowListWithoutBypassUsesLessMemory) {
+  NetworkServiceProxyAllowList allow_list_no_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  NetworkServiceProxyAllowList allow_list_first_party_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::
+          kFirstPartyToTopLevelFrame);
+  MaskedDomainList mdl;
+  auto* resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("foo");
+  resource_owner->add_owned_properties("property.com");
+  resource_owner->add_owned_resources()->set_domain("example.com");
+  allow_list_no_bypass.UseMaskedDomainList(mdl);
+  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+
+  EXPECT_GT(allow_list_first_party_bypass.EstimateMemoryUsage(),
+            allow_list_no_bypass.EstimateMemoryUsage());
 }
 
 class NetworkServiceProxyAllowListExperimentGroupMatchTest

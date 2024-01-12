@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -65,14 +64,11 @@ PhishyPageInteractionDetails::PhishyPageInteractionDetails(
 PhishyInteractionTracker::PhishyInteractionTracker(
     content::WebContents* web_contents)
     : web_contents_(web_contents), inactivity_delay_(base::Minutes(5)) {
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
-    ResetLoggingHelpers();
-  }
+  ResetLoggingHelpers();
 }
 
 PhishyInteractionTracker::~PhishyInteractionTracker() {
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) &&
-      is_phishy_ && !is_data_logged_) {
+  if (is_phishy_ && !is_data_logged_) {
     LogPageData();
     inactivity_timer_.Stop();
   }

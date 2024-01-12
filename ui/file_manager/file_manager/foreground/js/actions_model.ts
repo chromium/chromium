@@ -6,13 +6,13 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isDirectoryEntry, isSameVolume, unwrapEntry} from '../../common/js/entry_utils.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordBoolean} from '../../common/js/metrics.js';
 import {strf} from '../../common/js/translations.js';
 import {visitURL} from '../../common/js/util.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, FSP_ACTION_HIDDEN_ONEDRIVE_URL, FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL} from './constants.js';
 import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
@@ -126,7 +126,7 @@ class DriveToggleOfflineAction implements Action {
 
   execute() {
     const entries = this.entries_;
-    if (entries.length == 0) {
+    if (entries.length === 0) {
       return;
     }
 

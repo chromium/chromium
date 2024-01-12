@@ -93,14 +93,12 @@ class MultiDeviceSection
   mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
       settings_receiver_{this};
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<eche_app::EcheAppManager, ExperimentalAsh> eche_app_manager_;
-  raw_ptr<content::WebUIDataSource, DanglingUntriaged | ExperimentalAsh>
-      html_source_;
+  raw_ptr<eche_app::EcheAppManager> eche_app_manager_;
+  raw_ptr<content::WebUIDataSource, DanglingUntriaged> html_source_;
 };
 
 }  // namespace settings

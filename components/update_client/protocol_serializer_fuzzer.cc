@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/protocol_serializer.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,15 +13,12 @@
 #include <utility>
 #include <vector>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "components/update_client/protocol_handler.h"
-#include "components/update_client/protocol_serializer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct Environment {

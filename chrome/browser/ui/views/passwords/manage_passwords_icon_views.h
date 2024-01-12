@@ -15,8 +15,9 @@ class CommandUpdater;
 // View for the password icon in the Omnibox.
 class ManagePasswordsIconViews : public ManagePasswordsIconView,
                                  public PageActionIconView {
+  METADATA_HEADER(ManagePasswordsIconViews, PageActionIconView)
+
  public:
-  METADATA_HEADER(ManagePasswordsIconViews);
   ManagePasswordsIconViews(
       CommandUpdater* updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

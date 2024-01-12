@@ -774,6 +774,59 @@ void ClientControlledShellSurface::SetFloatToLocation(
   pending_window_state_ = chromeos::WindowStateType::kFloated;
 }
 
+void ClientControlledShellSurface::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
+  ShellSurfaceBase::OnDidProcessDisplayChanges(configuration_change);
+
+  if (!widget_) {
+    return;
+  }
+
+  // The PIP window bounds is adjusted in Ash when the screen is rotated, but
+  // Android has an obsolete bounds for a while and applies it incorrectly.
+  // We need to ignore those bounds change until the states are completely
+  // synced on both sides.
+  const bool any_displays_rotated = base::ranges::any_of(
+      configuration_change.display_metrics_changes,
+      [](const DisplayManagerObserver::DisplayMetricsChange& change) {
+        return change.changed_metrics &
+               display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+      });
+  if (GetWindowState()->IsPip() && any_displays_rotated) {
+    gfx::Rect bounds_after_rotation =
+        ash::PipPositioner::GetSnapFractionAppliedBounds(GetWindowState());
+    display_rotating_with_pip_ =
+        bounds_after_rotation !=
+        GetWindowState()->window()->GetBoundsInScreen();
+  }
+
+  // Early return if no display changes are relevant to the shell surface's host
+  // display.
+  const auto host_display_change = base::ranges::find(
+      configuration_change.display_metrics_changes, output_display_id(),
+      [](const DisplayManagerObserver::DisplayMetricsChange& change) {
+        return change.display->id();
+      });
+  if (host_display_change ==
+      configuration_change.display_metrics_changes.end()) {
+    return;
+  }
+
+  uint32_t changed_metrics = host_display_change->changed_metrics;
+  if (!display::Screen::GetScreen()->InTabletMode() || !widget_->IsActive() ||
+      !(changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
+    return;
+  }
+
+  Orientation target_orientation =
+      SizeToOrientation(host_display_change->display->size());
+  if (orientation_ == target_orientation) {
+    return;
+  }
+  expected_orientation_ = target_orientation;
+  EnsureCompositorIsLockedForOrientationChange();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
 void ClientControlledShellSurface::OnWindowDestroying(aura::Window* window) {
@@ -865,47 +918,6 @@ void ClientControlledShellSurface::OnDeviceScaleFactorChanged(float old_dsf,
   views::View::OnDeviceScaleFactorChanged(old_dsf, new_dsf);
 
   UpdateFrameWidth();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// display::DisplayObserver overrides:
-
-void ClientControlledShellSurface::OnDisplayMetricsChanged(
-    const display::Display& new_display,
-    uint32_t changed_metrics) {
-  SurfaceTreeHost::OnDisplayMetricsChanged(new_display, changed_metrics);
-
-  if (!widget_)
-    return;
-
-  // The PIP window bounds is adjusted in Ash when the screen is rotated, but
-  // Android has an obsolete bounds for a while and applies it incorrectly.
-  // We need to ignore those bounds change until the states are completely
-  // synced on both sides.
-  if (GetWindowState()->IsPip() && changed_metrics & DISPLAY_METRIC_ROTATION) {
-    gfx::Rect bounds_after_rotation =
-        ash::PipPositioner::GetSnapFractionAppliedBounds(GetWindowState());
-    display_rotating_with_pip_ =
-        bounds_after_rotation !=
-        GetWindowState()->window()->GetBoundsInScreen();
-  }
-
-  const display::Screen* screen = display::Screen::GetScreen();
-  display::Display current_display =
-      screen->GetDisplayNearestWindow(widget_->GetNativeWindow());
-  if (current_display.id() != new_display.id())
-    return;
-
-  if (!screen->InTabletMode() || !widget_->IsActive() ||
-      !(changed_metrics & DISPLAY_METRIC_ROTATION)) {
-    return;
-  }
-
-  Orientation target_orientation = SizeToOrientation(new_display.size());
-  if (orientation_ == target_orientation)
-    return;
-  expected_orientation_ = target_orientation;
-  EnsureCompositorIsLockedForOrientationChange();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

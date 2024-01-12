@@ -59,9 +59,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Identifier of the selected item.
   web::WebStateID _selectedItemID;
 
-  // Identifier of the lastest dragged item. This property is set when the item
+  // Lastest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
-  web::WebStateID _draggedItemID;
+  TabSwitcherItem* _draggedItem;
 
   // Identifier of the last item to be inserted. This is used to track if the
   // active tab was newly created when building the animation layout for
@@ -497,7 +497,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForItemWithID:_draggedItemID];
+  [self.dragDropHandler dragWillBeginForItem:_draggedItem];
   _dragEndAtNewIndex = NO;
   _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs,
@@ -527,11 +527,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
-  TabSwitcherItem* item = _items[indexPath.item];
-  _draggedItemID = item.identifier;
+  _draggedItem = _items[indexPath.item];
 
-  UIDragItem* dragItem =
-      [self.dragDropHandler dragItemForItemWithID:_draggedItemID];
+  UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
   return [NSArray arrayWithObjects:dragItem, nil];
 }
 

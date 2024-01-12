@@ -19,10 +19,15 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/enclave/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
+}
+
+namespace cbor {
+class Value;
 }
 
 namespace device {
@@ -31,35 +36,18 @@ class JSONRequest;
 
 namespace enclave {
 
-const char kInitPath[] = "v1/init";
-const char kCommandPath[] = "v1/cmd";
-
-// Keys for the RPC param names to the HTTP front end:
-const char kInitSessionRequestData[] = "request";
-const char kInitSessionResponseData[] = "response";
-const char kSessionId[] = "session_name";
-const char kSendCommandRequestData[] = "request";
-const char kSendCommandResponseData[] = "response";
-
-// The first argument is the handshake_hash, the second is the data that will
-// be signed. This is invoked asynchronously on a different thread, so there
-// must not be any thread-local dependencies in the callback.
-using EnclaveRequestSigningCallback =
-    base::RepeatingCallback<std::vector<uint8_t>(base::span<const uint8_t>,
-                                                 base::span<const uint8_t>)>;
-
 // Parses a decrypted assertion command response from the enclave.
 std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
-        ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
-                                  base::span<uint8_t> credential_id);
+        ParseGetAssertionResponse(cbor::Value response_value,
+                                  base::span<const uint8_t> credential_id);
 
 // Parses a decrypted registration command response from the enclave.
 std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
            absl::optional<sync_pb::WebauthnCredentialSpecifics>,
            std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
-        ParseMakeCredentialResponse(const std::vector<uint8_t>& response_cbor,
+        ParseMakeCredentialResponse(cbor::Value response,
                                     const CtapMakeCredentialRequest& request);
 
 // Returns a CBOR value with the provided GetAssertion request and associated
@@ -68,7 +56,8 @@ std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
 cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildGetAssertionCommand(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
-    std::string client_data_hash);
+    std::string client_data_hash,
+    std::vector<std::vector<uint8_t>> wrapped_secrets);
 
 // Returns a CBOR value with the provided MakeCredential request. The return
 // value can be serialized into a Command request according to the enclave
@@ -78,18 +67,18 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
 
 // Builds a CBOR serialization of the command to be sent to the enclave
 // service which can then be encrypted and sent over HTTPS.
-// |command_callback| is used to generate the encoded MakeCredential or
-//     GetAssertion command.
+//
+// |command| is either an array (in which case it is used directly) or another
+//     type of object (in which case it will be wrapped in a 1-element array).
 // |signing_callback| is used to generate the signature over the encoded
-//     command using the protected private key.
-// |device_id| is the unique identifier for this device which the server uses
-//     to look up the previously-registered public key.
+//     command using the protected private key. It can be null if the command
+//     does not need to be authenticated.
+// |handshake_hash| is the 32-byte hash from the Noise handshake.
 // |complete_callback| is invoked with the finished serialized command.
 void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
-    base::OnceCallback<cbor::Value()> command_callback,
-    EnclaveRequestSigningCallback signing_callback,
-    base::span<uint8_t> handshake_hash,
-    const std::vector<uint8_t>& device_id,
+    cbor::Value command,
+    SigningCallback signing_callback,
+    base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
     base::OnceCallback<void(std::vector<uint8_t>)> complete_callback);
 
 // For testing only. (Also this is obsolete, the test service code needs to

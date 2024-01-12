@@ -58,6 +58,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -92,18 +93,6 @@ PrefService* SetPrefService() {
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, true);
-  return prefs;
-}
-
-// Registers local preference for the Safety Check last run time.
-PrefService* SetLocalPrefService() {
-  TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
-
-  PrefRegistrySimple* registry = prefs->registry();
-
-  registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
-                             base::Time());
-
   return prefs;
 }
 
@@ -173,8 +162,8 @@ class SafetyCheckMediatorTest : public PlatformTest {
         browser_state_.get());
 
     pref_service_ = SetPrefService();
-
-    local_pref_service_ = SetLocalPrefService();
+    local_pref_service_ =
+        TestingApplicationContext::GetGlobal()->GetLocalState();
 
     mediator_ = [[SafetyCheckMediator alloc]
         initWithUserPrefService:pref_service_
@@ -197,17 +186,16 @@ class SafetyCheckMediatorTest : public PlatformTest {
     RunUntilIdle();
   }
 
-  void resetNSUserDefaultsForTesting() {
+  void ResetNSUserDefaultsForTesting() {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:kTimestampOfLastIssueFoundKey];
     [defaults removeObjectForKey:kIOSChromeUpToDateKey];
-    [defaults removeObjectForKey:kIOSChromeNextVersionKey];
-    [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   }
 
-  void resetLocalPrefsForTesting() {
-    local_pref_service_->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,
-                                 base::Time());
+  void ResetLocalPrefsForTesting() {
+    local_pref_service_->ClearPref(prefs::kIosSettingsSafetyCheckLastRunTime);
+    local_pref_service_->ClearPref(kIOSChromeNextVersionKey);
+    local_pref_service_->ClearPref(kIOSChromeUpgradeURLKey);
   }
 
   // Creates a form.
@@ -346,7 +334,7 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
   EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
   EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
 
-  resetNSUserDefaultsForTesting();
+  ResetNSUserDefaultsForTesting();
 }
 
 TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
@@ -370,7 +358,7 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_EQ(base::Time(), lastCompletedCheck);
 
-  resetNSUserDefaultsForTesting();
+  ResetNSUserDefaultsForTesting();
 }
 
 // Checks the timestamp of the latest run is set after the Safety Check
@@ -392,7 +380,7 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetForLatestRun) {
   EXPECT_GE(lastRunTime, base::Time::Now() - base::Seconds(1));
   EXPECT_LE(lastRunTime, base::Time::Now() + base::Seconds(1));
 
-  resetLocalPrefsForTesting();
+  ResetLocalPrefsForTesting();
 }
 
 #pragma mark - Safe Browsing check tests
@@ -666,7 +654,7 @@ TEST_F(SafetyCheckMediatorTest, OmahaRespondsUpToDate) {
   details.upgrade_url = GURL("http://foobar.org");
   [mediator_ handleOmahaResponse:details];
   EXPECT_EQ(mediator_.updateCheckRowState, UpdateCheckRowStateUpToDate);
-  resetNSUserDefaultsForTesting();
+  ResetNSUserDefaultsForTesting();
 }
 
 TEST_F(SafetyCheckMediatorTest, UpdateCheckUpToDateUI) {
@@ -693,7 +681,8 @@ TEST_F(SafetyCheckMediatorTest, OmahaRespondsOutOfDateAndUpdatesInfobarTime) {
       objectForKey:kLastInfobarDisplayTimeKey];
   EXPECT_GE([lastDisplay timeIntervalSinceNow], -1);
   EXPECT_LE([lastDisplay timeIntervalSinceNow], 1);
-  resetNSUserDefaultsForTesting();
+  ResetNSUserDefaultsForTesting();
+  ResetLocalPrefsForTesting();
 }
 
 TEST_F(SafetyCheckMediatorTest, UpdateCheckOutOfDateUI) {

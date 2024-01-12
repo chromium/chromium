@@ -19,6 +19,8 @@ EnumTraits<viz::mojom::PlaneConfig, viz::SharedImageFormat::PlaneConfig>::
       return viz::mojom::PlaneConfig::kY_UV;
     case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
       return viz::mojom::PlaneConfig::kY_UV_A;
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V_A:
+      return viz::mojom::PlaneConfig::kY_U_V_A;
   }
   NOTREACHED();
   return viz::mojom::PlaneConfig::kY_UV;
@@ -40,6 +42,9 @@ bool EnumTraits<viz::mojom::PlaneConfig, viz::SharedImageFormat::PlaneConfig>::
       return true;
     case viz::mojom::PlaneConfig::kY_UV_A:
       *out = viz::SharedImageFormat::PlaneConfig::kY_UV_A;
+      return true;
+    case viz::mojom::PlaneConfig::kY_U_V_A:
+      *out = viz::SharedImageFormat::PlaneConfig::kY_U_V_A;
       return true;
   }
   return false;

@@ -28,6 +28,7 @@ export enum PromoCardId {
   SHORTCUT = 'password_shortcut_promo',
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
   RELAUNCH_CHROME = 'relaunch_chrome_promo',
+  MOVE_PASSWORDS = 'move_passwords_promo',
 }
 
 /**
@@ -42,8 +43,9 @@ enum PromoCardMetricId {
   SHORTCUT = 2,
   UNUSED_ACCESS_ON_ANY_DEVICE = 3,
   RELAUNCH_CHROME = 4,
+  MOVE_PASSWORDS = 5,
   // Must be last.
-  COUNT = 5,
+  COUNT = 6,
 }
 
 function recordPromoCardAction(card: PromoCardMetricId) {
@@ -117,6 +119,8 @@ export class PromoCardElement extends PolymerElement {
       case PromoCardId.RELAUNCH_CHROME:
         chrome.send('restartBrowser');
         recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
+        break;
+      case PromoCardId.MOVE_PASSWORDS:
         break;
       default:
         assertNotReached();

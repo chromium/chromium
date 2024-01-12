@@ -27,6 +27,9 @@ enum {
   // Directory that contains user data in Lacros.
   USER_DATA_DIR,
 
+  // Directory that contains data in Ash.
+  ASH_DATA_DIR,
+
   PATH_END
 };
 

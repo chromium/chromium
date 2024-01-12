@@ -64,6 +64,11 @@ struct ContextMenuData {
   // Whether the image in context is a null.
   bool has_image_contents;
 
+  // This is true if the context menu was invoked on an image, media or plugin
+  // document. In these cases the resource for the hit-tested element might be
+  // the main resource, not a subresource.
+  bool is_image_media_plugin_document = false;
+
   // The encoding for the frame in context.
   std::string frame_encoding;
 

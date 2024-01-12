@@ -17,8 +17,6 @@
 
 namespace updater {
 
-struct RegistrationRequest;
-
 // Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
 HRESULT IsCOMCallerAllowed();
 
@@ -37,9 +35,7 @@ class AppServerWin : public AppServer {
   // Posts the `task` to the sequence bound to this instance.
   static void PostRpcTask(base::OnceClosure task);
 
-  scoped_refptr<UpdateService> update_service() {
-    return update_service_;
-  }
+  scoped_refptr<UpdateService> update_service() { return update_service_; }
 
   scoped_refptr<UpdateServiceInternal> update_service_internal() {
     return update_service_internal_;
@@ -61,9 +57,6 @@ class AppServerWin : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapInNewVersion() override;
-  bool MigrateLegacyUpdaters(
-      base::RepeatingCallback<void(const RegistrationRequest&)>
-          register_callback) override;
   void RepairUpdater(UpdaterScope scope, bool is_internal) override;
   void UninstallSelf() override;
   bool ShutdownIfIdleAfterTask() override;

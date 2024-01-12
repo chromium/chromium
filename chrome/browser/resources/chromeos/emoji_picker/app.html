@@ -20,53 +20,37 @@
     --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
             + var(--emoji-size) * (var(--emoji-per-row) - 1)
             + var(--emoji-spacing) * (var(--emoji-per-row) - 1));
+    --emoji-picker-group-button-padding: 8px;
+    --emoji-picker-group-button-border-radius: 4px;
+    --emoji-picker-group-button-icon-size: 24px;
+    --emoji-picker-group-button-height: 48px;
     --emoji-picker-group-highlight-bar-width: 24px;
     --emoji-picker-subcategory-bar-inline-margin: 18px;
+    --emoji-picker-tabs-vertical-padding: 0px;
     --emoji-tooltip-delay-in: 500ms;
     --emoji-tooltip-delay-out: 500ms;
 
     /**
      * Scemantic color css variables
-     *
-     * TODO(b/297297441): Drop the fallback values once Emoji Picker Jelly
-     * support is enabled by default.
      */
-    --emoji-picker-category-header-color: var(--cros-sys-on_surface_variant,
-                                          var(--cros-text-color-secondary));
-    --emoji-picker-container-color: var(--cros-sys-base_elevated,
-                                    var(--cros-bg-color));
-    --emoji-picker-focus-ring-color: var(--cros-sys-focus_ring,
-                                     var(--cros-focus-ring-color));
-    --emoji-picker-icon-button-icon-color: var(--cros-sys-on_surface,
-                                           var(--cros-icon-color-primary));
-    --emoji-picker-icon-toggle-unselected-color: var(--cros-sys-on_surface,
-                                                 var(--cros-icon-color-secondary));
-    --emoji-picker-icon-toggle-selected-color: var(--cros-sys-primary,
-                                               var(--cros-icon-color-prominent));
-    --emoji-picker-icon-toggle-selected-container-color: var(--cros-sys-app_base_shaded,
-                                                         var(--cros-highlight-color));
-    --emoji-picker-illustration-text-color: var(--cros-sys-on_surface_variant,
-                                     var(--cros-button-label-color-secondary-disabled));
-    --emoji-picker-illustration-link-color: var(--cros-sys-primary,
-                                     var(--cros-icon-color-prominent));
-    --emoji-picker-nudge-background-color: var(--cros-sys-primary,
-                                           var(--cros-nudge-background-color));
-    --emoji-picker-nudge-icon-color: var(--cros-sys-on_primary,
-                                     var(--cros-button-icon-color-primary));
-    --emoji-picker-search-field-clear-icon-color: var(--cros-sys-secondary,
-                                                  var(--cros-icon-color-primary));
-    --emoji-picker-search-field-placeholder-color: var(--cros-sys-secondary,
-                                                   var(--cros-text-color-disabled));
-    --emoji-picker-search-field-search-icon-color: var(--cros-sys-secondary,
-                                                   var(--cros-text-color-secondary));
-    --emoji-picker-search-field-container-color: var(--cros-sys-input_field_on_base,
-                                                 var(--cros-toolbar-search-bg-color));
-    --emoji-picker-symbol-color: var(--cros-sys-on_surface,
-                                 var(--cros-text-color-primary));
-    --emoji-picker-tab-selected-color: var(--cros-sys-primary,
-                                       var(--cros-icon-color-prominent));
-    --emoji-picker-tab-unselected-color: var(--cros-sys-on_surface_variant,
-                                         var(--cros-icon-color-secondary));
+    --emoji-picker-category-header-color: var(--cros-sys-on_surface_variant);
+    --emoji-picker-container-color: var(--cros-sys-base_elevated);
+    --emoji-picker-focus-ring-color: var(--cros-sys-focus_ring);
+    --emoji-picker-icon-button-icon-color: var(--cros-sys-on_surface);
+    --emoji-picker-icon-toggle-unselected-color: var(--cros-sys-on_surface);
+    --emoji-picker-icon-toggle-selected-color: var(--cros-sys-primary);
+    --emoji-picker-icon-toggle-selected-container-color: var(--cros-sys-app_base_shaded);
+    --emoji-picker-illustration-text-color: var(--cros-sys-on_surface_variant);
+    --emoji-picker-illustration-link-color: var(--cros-sys-primary);
+    --emoji-picker-nudge-background-color: var(--cros-sys-primary);
+    --emoji-picker-nudge-icon-color: var(--cros-sys-on_primary);
+    --emoji-picker-search-field-clear-icon-color: var(--cros-sys-secondary);
+    --emoji-picker-search-field-placeholder-color: var(--cros-sys-secondary);
+    --emoji-picker-search-field-search-icon-color: var(--cros-sys-secondary);
+    --emoji-picker-search-field-container-color: var(--cros-sys-input_field_on_base);
+    --emoji-picker-symbol-color: var(--cros-sys-on_surface);
+    --emoji-picker-tab-selected-color: var(--cros-sys-primary);
+    --emoji-picker-tab-unselected-color: var(--cros-sys-on_surface_variant);
 
     /* Actual properties of the emoji picker */
     background-color: var(--emoji-picker-container-color);
@@ -102,7 +86,6 @@
     display: flex;
     flex-direction: column;
     overflow-y: clip;
-    width: 100%;
   }
 
   #list-container {
@@ -178,10 +161,6 @@
 
   .divider {
     border-top: 1px solid var(--cros-separator-color);
-    /**
-     * TODO(b/297297441): Remove this line once jelly is enabled by default.
-     */
-    margin-inline: var(--emoji-picker-divider-inline-margin, var(--emoji-picker-subcategory-bar-inline-margin));
   }
 
   .sr-only {
@@ -195,13 +174,13 @@
   }
 
   /**
-   * With jelly flag on, the highlight bar should be on-top of the tab buttons.
+   * The highlight bar should be on-top of the tab buttons.
    */
-  #bar-container[jelly-support]{
+  #bar-container {
     margin-top: -4px;
   }
 
-  #bar-container[jelly-support] > #bar {
+  #bar-container > #bar {
     height: 4px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -355,8 +334,10 @@
     on-scroll="onSearchScroll"
     category-metadata="[[getCategoryMetadata(gifSupport, category)]]"
     gif-support$="[[gifSupport]]"
-    jelly-support$="[[jellySupport]]"
-    close-gif-nudge-overlay="[[closeGifNudgeOverlay]]">
+    close-gif-nudge-overlay="[[closeGifNudgeOverlay]]"
+    use-grouped-preference="[[shouldUseGroupedPreference(false)]]"
+    global-tone="[[globalTone]]"
+    global-gender="[[globalGender]]">
   </emoji-search>
 
 <div id="list-container" class$="[[computeListContainerClass(category, status)]]">
@@ -422,7 +403,6 @@
               group-id="[[item.groupId]]"
               active="[[item.active]]"
               disabled="[[item.disabled]]"
-              jelly-support$="[[jellySupport]]"
               name="[[item.name]]"
               class="tab"
               on-focus="preventV2TabScrolling"
@@ -441,7 +421,6 @@
                 group-id="[[item.groupId]]"
                 active="[[item.active]]"
                 disabled="[[item.disabled]]"
-                jelly-support$="[[jellySupport]]"
                 name="[[item.name]]"
                 class="tab"
                 on-focus="preventV2TabScrolling"
@@ -461,7 +440,7 @@
     </div>
   </div>
   <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
-  <div class="side-padding" id="bar-container" jelly-support$="[[jellySupport]]">
+  <div class="side-padding" id="bar-container">
     <div id="bar"
       on-transitionend="onBarTransitionEnd"
       on-transitionstart="onBarTransitionStart"></div>
@@ -472,10 +451,12 @@
       <div data-group$="[[item.groupId]]">
         <emoji-group data="[[item.emoji]]"
           gif-support$="[[gifSupport]]"
-          jelly-support$="[[jellySupport]]"
           group="[[item.name]]"
+          global-tone="[[globalTone]]"
+          global-gender="[[globalGender]]"
           preferred="[[item.preferences]]"
           clearable$="[[item.isHistory]]"
+          use-grouped-preference="[[shouldUseGroupedPreference(item.isHistory)]]"
           category$="[[item.category]]"
           class$="[[getEmojiGroupClassNames(item.emoji,item,category,activeInfiniteGroupId)]]">
         </emoji-group>
@@ -484,8 +465,7 @@
     <template is="dom-if" if="[[isGifInErrorState(status)]]">
       <emoji-error
         status="[[status]]"
-        error-message="[[errorMessage]]"
-        jelly-support$="[[jellySupport]]">
+        error-message="[[errorMessage]]">
       </emoji-error>
     </template>
   </div>
@@ -495,7 +475,6 @@
       group-id="[[dummyTab.groupId]]"
       active="[[dummyTab.active]]"
       disabled="[[dummyTab.disabled]]"
-      jelly-support$="[[jellySupport]]"
       name="[[dummyTab.name]]"
       class="tab"
       on-focus="preventV2TabScrolling"

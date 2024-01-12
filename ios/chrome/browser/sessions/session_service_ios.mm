@@ -404,8 +404,7 @@ using SaveSessionCallback =
     // Store end_time to avoid counting the time spent recording the first
     // metric as part of the second metric recorded (probably negligible).
     const base::TimeTicks end_time = base::TimeTicks::Now();
-    base::UmaHistogramTimes("Session.WebStates.SavingTimeOnMainThread",
-                            end_time - start_time);
+    base::UmaHistogramTimes(kSessionHistogramSavingTime, end_time - start_time);
     base::UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
                             end_time - archiving_start_time);
 

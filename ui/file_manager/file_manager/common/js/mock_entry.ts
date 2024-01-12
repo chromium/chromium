@@ -53,7 +53,7 @@ export class MockFileSystem implements FileSystem {
       let metadata: Metadata|undefined;
       let content: Blob|undefined;
 
-      if (typeof (entry) == 'string') {
+      if (typeof (entry) === 'string') {
         path = entry;
       } else {
         path = entry.fullPath;

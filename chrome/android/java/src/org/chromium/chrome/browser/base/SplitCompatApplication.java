@@ -33,6 +33,7 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.chrome.browser.ProductConfig;
@@ -47,7 +48,6 @@ import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionRepor
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporterFactory;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.module_installer.util.ModuleUtil;
-import org.chromium.components.version_info.VersionConstants;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -178,8 +178,8 @@ public class SplitCompatApplication extends Application {
                                 ContextUtils.getApplicationContext(), newIntent);
                         if (cannotLoadIn64Bit()) {
                             throw new RuntimeException(
-                                    "Starting in 64-bit mode requires the 64-bit native library. If "
-                                            + "the device is 64-bit only, see alternatives here: "
+                                    "Starting in 64-bit mode requires the 64-bit native library. If"
+                                            + " the device is 64-bit only, see alternatives here: "
                                             + "https://crbug.com/1303857#c7.",
                                     unsatisfiedLinkError);
                         } else if (cannotLoadIn32Bit()) {

@@ -98,15 +98,11 @@ ChromeVoxEditableTextUnitTest = class extends ChromeVoxE2ETest {
       importModule(
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
       importModule(
-          'AutomationEditableText',
-          '/chromevox/background/editing/editable_text.js'),
-      importModule(
           ['ChromeVoxEditableTextBase', 'TextChangeEvent'],
           '/chromevox/background/editing/editable_text_base.js'),
       importModule(
           'TypingEchoState', '/chromevox/background/editing/typing_echo.js'),
       importModule('TtsInterface', '/chromevox/background/tts_interface.js'),
-      importModule('Msgs', '/chromevox/common/msgs.js'),
       importModule('LocalStorage', '/common/local_storage.js'),
     ]);
 
@@ -114,36 +110,12 @@ ChromeVoxEditableTextUnitTest = class extends ChromeVoxE2ETest {
     ChromeVoxEditableTextBase.eventTypingEcho = false;
     ChromeVoxEditableTextBase.shouldSpeakInsertions = true;
     ChromeVox.braille = new TestBraille();
-
-    /** Simple mock. */
-    Msgs = {};
-
-    /**
-     * Simply return the message id.
-     * @param {string} msg Message id.
-     * @return {string} Message id.
-     */
-    Msgs.getMsg = function(msg) {
-      return msg;
-    };
   }
 };
 
-function createEditableText(value, start, end, isPassword, tts) {
-  const fakeNode = {state: {editable: true}};
-  const editable = new AutomationEditableText(fakeNode);
-  editable.value = value;
-  editable.start = start;
-  editable.end = end;
-  editable.isPassword = isPassword;
-  editable.tts = tts;
-
-  return editable;
-}
-
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CursorNavigation', function() {
   var tts = new TestTts();
-  var obj = createEditableText('Hello', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
 
   obj.changed(new TextChangeEvent('Hello', 1, 1));
   obj.changed(new TextChangeEvent('Hello', 2, 2));
@@ -152,7 +124,8 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CursorNavigation', function() {
   obj.changed(new TextChangeEvent('Hello', 5, 5));
   obj.changed(new TextChangeEvent('Hello', 4, 4));
   obj.changed(new TextChangeEvent('Hello', 3, 3));
-  assertEqualStringArrays(['H', 'e', 'l', 'l', 'o', 'o', 'l'], tts.get());
+  assertEqualStringArrays(
+      ['e', 'l', 'l', 'o', 'End of text', 'o', 'l'], tts.get());
   obj.changed(new TextChangeEvent('Hello', 0, 0));
   obj.changed(new TextChangeEvent('Hello', 5, 5));
   assertEqualStringArrays(['Hel', 'Hello'], tts.get());
@@ -161,7 +134,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CursorNavigation', function() {
 /** Test typing words. */
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
   var tts = new TestTts();
-  var obj = createEditableText('', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));
   obj.changed(new TextChangeEvent('He', 2, 2));
   obj.changed(new TextChangeEvent('Hel', 3, 3));
@@ -206,16 +179,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
   obj.changed(new TextChangeEvent('Hello, or', 7, 7));
   obj.changed(new TextChangeEvent('Hello, r', 7, 7));
   obj.changed(new TextChangeEvent('Hello, ', 7, 7));
-  assertEqualStringArrays(['r', 'o', 'W', 'W', 'o', 'r'], tts.get());
-
-  obj.changed(new TextChangeEvent('Hello, Wor', 10, 10));
-  obj.changed(new TextChangeEvent('Hello, Wor', 9, 9));
-  obj.changed(new TextChangeEvent('Hello, Wor', 8, 8));
-  obj.changed(new TextChangeEvent('Hello, Wor', 7, 7));
-  obj.changed(new TextChangeEvent('Hello, or', 7, 7));
-  obj.changed(new TextChangeEvent('Hello, r', 7, 7));
-  obj.changed(new TextChangeEvent('Hello, ', 7, 7));
-  assertEqualStringArrays(['Wor', 'r', 'o', 'W', 'o', 'r'], tts.get());
+  assertEqualStringArrays(['r', 'o', 'W', 'o', 'r'], tts.get());
 
   // Clear all
   obj.changed(new TextChangeEvent('', 0, 0));
@@ -231,7 +195,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
 /** Test selection. */
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Selection', function() {
   var tts = new TestTts();
-  var obj = createEditableText('Hello, world.', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('Hello, world.', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('Hello, world.', 0, 1));
   obj.changed(new TextChangeEvent('Hello, world.', 0, 2));
   obj.changed(new TextChangeEvent('Hello, world.', 0, 3));
@@ -243,25 +207,25 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Selection', function() {
         'H',
         'selected',
         'e',
-        'added_to_selection',
+        'added to selection',
         'l',
-        'added_to_selection',
+        'added to selection',
         'l',
-        'added_to_selection',
+        'added to selection',
         'o',
-        'added_to_selection',
+        'added to selection',
         ',',
-        'added_to_selection',
+        'added to selection',
       ],
       tts.get());
   obj.changed(new TextChangeEvent('Hello, world.', 0, 12));
-  assertEqualStringArrays([' world', 'added_to_selection'], tts.get());
+  assertEqualStringArrays([' world', 'added to selection'], tts.get());
   obj.changed(new TextChangeEvent('Hello, world.', 1, 12));
-  assertEqualStringArrays(['H', 'removed_from_selection'], tts.get());
+  assertEqualStringArrays(['H', 'removed from selection'], tts.get());
   obj.changed(new TextChangeEvent('Hello, world.', 2, 5));
   assertEqualStringArrays(['llo', 'selected'], tts.get());
   obj.changed(new TextChangeEvent('Hello, world.', 2, 2));
-  assertEqualStringArrays(['llo', 'removed_from_selection'], tts.get());
+  assertEqualStringArrays(['llo', 'removed from selection'], tts.get());
 });
 
 
@@ -272,7 +236,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Selection', function() {
  */
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
   var tts = new TestTts();
-  var obj = createEditableText('', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
 
   // User types 'g'
   obj.changed(new TextChangeEvent('g', 1, 1));
@@ -293,7 +257,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
 
   // The user presses right-arrow, which fully unselects the remaining text.
   obj.changed(new TextChangeEvent('google.com', 10, 10));
-  assertEqualStringArrays(['le.com', 'removed_from_selection'], tts.get());
+  assertEqualStringArrays(['le.com', 'removed from selection'], tts.get());
 
   // The user types '/'
   obj.changed(new TextChangeEvent('google.com/', 11, 11));
@@ -313,7 +277,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
 
   // The user presses right-arrow to accept the completion.
   obj.changed(new TextChangeEvent('google.com/firefox', 18, 18));
-  assertEqualStringArrays(['efox', 'removed_from_selection'], tts.get());
+  assertEqualStringArrays(['efox', 'removed from selection'], tts.get());
 });
 
 
@@ -323,7 +287,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingText', function() {
   // Initial value is Alabama.
   var tts = new TestTts();
-  var obj = createEditableText('Alabama', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('Alabama', 0, 0, false, tts);
 
   // Entire text replaced with Alaska.
   obj.changed(new TextChangeEvent('Alaska', 0, 0));
@@ -343,7 +307,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingText', function() {
 
   // Click between 'r' and 'i'.
   obj.changed(new TextChangeEvent('Arizona', 2, 2));
-  assertEqualStringArrays(['Arizona', 'removed_from_selection'], tts.get());
+  assertEqualStringArrays(['Arizona', 'removed from selection'], tts.get());
 
   // Next character removed from selection.
   obj.changed(new TextChangeEvent('Arizona', 2, 7));
@@ -361,7 +325,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingText', function() {
  */
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingLongText', function() {
   var tts = new TestTts();
-  var obj = createEditableText(
+  var obj = new ChromeVoxEditableTextBase(
       'I love deadlines. I like the whooshing sound they make as they fly by.',
       0, 0, false, tts);
 
@@ -377,7 +341,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingLongText', function() {
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CharacterEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
   var tts = new TestTts();
-  var obj = createEditableText('', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));
   obj.changed(new TextChangeEvent('He', 2, 2));
   obj.changed(new TextChangeEvent('Hel', 3, 3));
@@ -402,7 +366,7 @@ AX_TEST_F(
     'ChromeVoxEditableTextUnitTest', 'CharEchoInAutoComplete', function() {
       var tts = new TestTts();
       var url = 'chromevox.com';
-      var obj = createEditableText(url, 1, 13, false, tts);
+      var obj = new ChromeVoxEditableTextBase(url, 1, 13, false, tts);
 
       // This simulates a user typing into an auto complete text field one
       // character at a time. The selection is the completion and we toggle
@@ -436,7 +400,7 @@ AX_TEST_F(
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'WordEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.WORD);
   var tts = new TestTts();
-  var obj = createEditableText('', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));
   obj.changed(new TextChangeEvent('He', 2, 2));
   obj.changed(new TextChangeEvent('Hel', 3, 3));
@@ -458,7 +422,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'WordEcho', function() {
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'NoEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.NONE);
   var tts = new TestTts();
-  var obj = createEditableText('', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   obj.changed(new TextChangeEvent('H', 1, 1));
   obj.changed(new TextChangeEvent('He', 2, 2));
   obj.changed(new TextChangeEvent('Hel', 3, 3));
@@ -494,7 +458,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TextChangeEvent', function() {
 AX_TEST_F(
     'ChromeVoxEditableTextUnitTest', 'TypingNonBreakingSpaces', function() {
       var tts = new TestTts();
-      var obj = createEditableText('Hello', 0, 0, false, tts);
+      var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
 
       obj.changed(new TextChangeEvent('h', 1, 1));
       obj.changed(new TextChangeEvent('hi', 2, 2));
@@ -504,7 +468,7 @@ AX_TEST_F(
     });
 AX_TEST_F('ChromeVoxEditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
   var tts = new TestTts();
-  var obj = createEditableText('Hello', 0, 0, false, tts);
+  var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
   obj.multiline = true;
 
   obj.changed(new TextChangeEvent('wor', 0, 0));

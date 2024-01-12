@@ -66,7 +66,7 @@
     {
       directory: "tzdata-icu",
       rights: [ "r*" ],
-      path: "/config/tzdata",
+      path: "/config/tzdata/icu",
     },
     {
       // Capabilities used by the Runner itself.

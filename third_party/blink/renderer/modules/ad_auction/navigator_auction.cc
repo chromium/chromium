@@ -289,10 +289,12 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
   void AuctionComplete(
       ScriptPromiseResolver*,
       std::unique_ptr<ScopedAbortState>,
+      base::TimeTicks start_time,
+      bool is_server_auction,
       bool aborted_by_script,
       const absl::optional<FencedFrame::RedactedFencedFrameConfig>&);
 
-  void MaybeResolveAuction();
+  bool MaybeResolveAuction();
 
   void SetResolveToConfig(bool value) { resolve_to_config_ = value; }
 
@@ -3385,7 +3387,8 @@ ScriptPromise NavigatorAuction::createAuctionNonce(
 
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              AuctionAdConfig* mutable_config,
-                                             ExceptionState& exception_state) {
+                                             ExceptionState& exception_state,
+                                             base::TimeTicks start_time) {
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   if (!HandleOldDictNamesRun(mutable_config, exception_state)) {
@@ -3431,11 +3434,13 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
   }
 
   auction_handle->AttachQueuedPromises(*script_state);
+  bool is_server_auction = config->hasServerResponse();
   ad_auction_service_->RunAdAuction(
       std::move(mojo_config), std::move(abort_receiver),
       WTF::BindOnce(&NavigatorAuction::AuctionHandle::AuctionComplete,
                     WrapPersistent(auction_handle), WrapPersistent(resolver),
-                    std::move(scoped_abort_state)));
+                    std::move(scoped_abort_state), std::move(start_time),
+                    std::move(is_server_auction)));
   return promise;
 }
 
@@ -3444,6 +3449,7 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              Navigator& navigator,
                                              AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
@@ -3466,7 +3472,7 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
   }
 
   return From(ExecutionContext::From(script_state), navigator)
-      .runAdAuction(script_state, config, exception_state);
+      .runAdAuction(script_state, config, exception_state, start_time);
 }
 
 /* static */
@@ -3841,6 +3847,8 @@ void NavigatorAuction::CreateAuctionNonceComplete(
 void NavigatorAuction::AuctionHandle::AuctionComplete(
     ScriptPromiseResolver* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    base::TimeTicks start_time,
+    bool is_server_auction,
     bool aborted_by_script,
     const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
         result_config) {
@@ -3852,6 +3860,7 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
       scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
   ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope script_state_scope(script_state);
+  bool resolved_auction = false;
   if (aborted_by_script) {
     if (abort_signal && abort_signal->aborted()) {
       resolver->Reject(abort_signal->reason(script_state));
@@ -3868,19 +3877,28 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
     auction_resolver_ = resolver;
     auction_config_ = result_config;
 
-    MaybeResolveAuction();
+    resolved_auction = MaybeResolveAuction();
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    resolved_auction = true;
+  }
+  if (resolved_auction) {
+    std::string uma_prefix = "Ads.InterestGroup.Auction.";
+    if (is_server_auction) {
+      uma_prefix = "Ads.InterestGroup.ServerAuction.";
+    }
+    base::UmaHistogramTimes(uma_prefix + "TimeToResolve",
+                            base::TimeTicks::Now() - start_time);
   }
 }
 
-void NavigatorAuction::AuctionHandle::MaybeResolveAuction() {
+bool NavigatorAuction::AuctionHandle::MaybeResolveAuction() {
   if (!resolve_to_config_.has_value() || !auction_resolver_ ||
       !auction_config_.has_value()) {
     // Once both the resolveToConfig promise is resolved and the auction is
     // completed, this function will be called again to actually
     // complete the auction.
-    return;
+    return false;
   }
 
   if (resolve_to_config_.value() == true) {
@@ -3889,6 +3907,7 @@ void NavigatorAuction::AuctionHandle::MaybeResolveAuction() {
   } else {
     auction_resolver_->Resolve(KURL(auction_config_->urn_uuid().value()));
   }
+  return true;
 }
 
 void NavigatorAuction::GetURLFromURNComplete(
@@ -3948,15 +3967,16 @@ bool NavigatorAuction::canLoadAdAuctionFencedFrame(ScriptState* script_state) {
   }
 
   // Ensure that if any CSP headers are set that will affect a fenced frame,
-  // they allow all https urls to load. Opaque-ads fenced frames do not support
-  // allowing/disallowing specific hosts, as that could reveal information to
-  // a fenced frame about its embedding page. See design doc for more info:
+  // they allow all https urls to load. Opaque-ads fenced frames do not
+  // support allowing/disallowing specific hosts, as that could reveal
+  // information to a fenced frame about its embedding page. See design doc
+  // for more info:
   // https://github.com/WICG/fenced-frame/blob/master/explainer/interaction_with_content_security_policy.md
   // This is being checked in the renderer because processing of <meta> tags
-  // (including CSP) happen in the renderer after navigation commit, so we can't
-  // piggy-back off of the ancestor_or_self_has_cspee bit being sent from the
-  // browser (which is sent at commit time) since it doesn't know about all the
-  // CSP headers yet.
+  // (including CSP) happen in the renderer after navigation commit, so we
+  // can't piggy-back off of the ancestor_or_self_has_cspee bit being sent
+  // from the browser (which is sent at commit time) since it doesn't know
+  // about all the CSP headers yet.
   for (const auto& policy : csp->GetParsedPolicies()) {
     CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
         *policy, network::mojom::CSPDirectiveName::FencedFrameSrc);
@@ -4003,7 +4023,8 @@ bool NavigatorAuction::deprecatedRunAdAuctionEnforcesKAnonymity(
 ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     ScriptState* script_state,
     const AdAuctionDataConfig* config,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    base::TimeTicks start_time) {
   CHECK(config);
   if (!script_state->ContextIsValid()) {
     return ScriptPromise();
@@ -4038,11 +4059,12 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
       seller, coordinator,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
-          WrapPersistent(this))));
+          WrapPersistent(this), std::move(start_time))));
   return promise;
 }
 
 void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
+    base::TimeTicks start_time,
     ScriptPromiseResolver* resolver,
     mojo_base::BigBuffer data,
     const absl::optional<base::Uuid>& request_id,
@@ -4063,6 +4085,9 @@ void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
   }
   result->setRequestId(WebString::FromLatin1(request_id_str));
   resolver->Resolve(result);
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve",
+      base::TimeTicks::Now() - start_time);
 }
 
 /* static */
@@ -4071,6 +4096,7 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     Navigator& navigator,
     const AdAuctionDataConfig* config,
     ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
@@ -4094,7 +4120,8 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
   }
 
   return From(ExecutionContext::From(script_state), navigator)
-      .getInterestGroupAdAuctionData(script_state, config, exception_state);
+      .getInterestGroupAdAuctionData(script_state, config, exception_state,
+                                     std::move(start_time));
 }
 
 }  // namespace blink

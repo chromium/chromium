@@ -322,6 +322,7 @@ std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
     device::BluetoothUUID uuid) {
   auto mock_device = std::make_unique<FakeBluetoothDevice>(
       /*adapter=*/adapter, kTestBleDeviceAddress);
+  mock_device->SetPaired(false);
   mock_device->AddUUID(uuid);
   mock_device->SetServiceDataForUUID(uuid, {1, 2, 3});
   return mock_device;

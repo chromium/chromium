@@ -28,7 +28,7 @@ struct Task;
 // GlanceablesTaskViewV2 uses `views::FlexLayout` to show tasks metadata within
 // the `GlanceablesTasksView` or `TasksBubbleView`.
 // +---------------------------------------------------------------+
-// |`GlanceablesTaskViewV2`                                          |
+// |`GlanceablesTaskViewV2`                                        |
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
 // | |'button_'        | |'contents_view_'                       | |

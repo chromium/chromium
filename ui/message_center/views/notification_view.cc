@@ -449,8 +449,9 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
   }
   DCHECK_NE(block_notifications_message_id, 0);
 
-  inline_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kSettingsRowPadding, 0));
+  inline_settings_row()->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  inline_settings_row()->SetInsideBorderInsets(kSettingsRowPadding);
 
   auto block_all_button = std::make_unique<InlineSettingsRadioButton>(
       l10n_util::GetStringUTF16(block_notifications_message_id));

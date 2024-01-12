@@ -187,22 +187,19 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   //   to show 2 URL-what-you-typed suggestions.
   // - Don't transfer action matches since matches are annotated and converted
   //   on every pass to keep them associated with the triggering match.
+  // Exclude specialized suggestion types from being transferred to prevent
+  // user-visible artifacts.
   base::EraseIf(old_matches->matches_, [](const auto& old_match) {
     return old_match.type == AutocompleteMatchType::PEDAL ||
            (old_match.provider && old_match.provider->done()) ||
            old_match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-           old_match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+           old_match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
+           old_match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+           old_match.type == AutocompleteMatchType::TILE_SUGGESTION;
   });
 
   if (old_matches->empty())
     return;
-
-  // Exclude specialized suggestion types from being transferred to prevent
-  // user-visible artifacts.
-  base::EraseIf(old_matches->matches_, [](const auto& match) {
-    return match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
-           match.type == AutocompleteMatchType::TILE_SUGGESTION;
-  });
 
   if (empty()) {
     // If we've got no matches we can copy everything from the last result.
@@ -407,11 +404,13 @@ void AutocompleteResult::SortAndCull(
         sections.push_back(
             std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
         // Allow secondary zero-prefix suggestions in the NTP realbox or the
-        // WebUI omnibox, if any.
+        // WebUI omnibox popup.
+        // TODO(crbug/1396174): Disallow secondary zps in the WebUI omnibox
+        // before experimentation.
         if ((page_classification == OmniboxEventProto::NTP_REALBOX ||
-             base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
-            base::FeatureList::IsEnabled(
-                omnibox::kRealboxSecondaryZeroSuggest)) {
+             base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))) {
+          sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
+              suggestion_groups_map_));
           // Report whether secondary zero-prefix suggestions were triggered.
           if (base::ranges::any_of(
                   suggestion_groups_map_, [](const auto& entry) {
@@ -421,17 +420,6 @@ void AutocompleteResult::SortAndCull(
             triggered_feature_service->FeatureTriggered(
                 metrics::
                     OmniboxEventProto_Feature_REMOTE_SECONDARY_ZERO_SUGGEST);
-          }
-
-          // Don't show the secondary zero-prefix suggestions in the
-          // counterfactual arm.
-          if (!OmniboxFieldTrial::kRealboxSecondaryZeroSuggestCounterfactual
-                   .Get()) {
-            size_t max_previous_search_related =
-                OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
-                    .Get();
-            sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
-                max_previous_search_related, suggestion_groups_map_));
           }
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
@@ -540,7 +528,7 @@ void AutocompleteResult::SortAndCull(
   auto* default_match = this->default_match();
   if (default_match && default_match->destination_url.is_valid() &&
       !AutocompleteMatch::IsSearchType(default_match->type) &&
-      input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
+      !input.IsZeroSuggest() &&
       input.type() == metrics::OmniboxInputType::URL &&
       input.parts().scheme.is_nonempty()) {
     const std::u16string debug_info =

@@ -86,10 +86,10 @@ class CalendarKeyedService : public KeyedService {
 
   // The class is expected to run on UI thread.
   base::ThreadChecker thread_checker_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const AccountId account_id_;
   CalendarClientImpl calendar_client_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   CoreAccountId core_account_id_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<google_apis::RequestSender> sender_;

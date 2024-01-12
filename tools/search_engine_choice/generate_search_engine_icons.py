@@ -11,15 +11,15 @@ This should be run whenever template_url_prepopulate_data.cc changes the list of
 search engines used per country, or whenever prepopulated_engines.json changes
 a favicon.
 
-To run, `apt-get install python3-commentjson`, then
+To run:
 `python3 tools/search_engine_choice/generate_search_engine_icons.py`.
 """
 
 import hashlib
+import json
 import os
 import re
 import sys
-import commentjson
 import requests
 
 
@@ -115,14 +115,16 @@ def download_icons_from_android_search():
   """
   config_file_path = '../../tools/search_engine_choice/generate_search_engine_icons_config.json'
   prepopulated_engines_file_path = '../search_engines/prepopulated_engines.json'
-  image_destination_path = './default_100_percent/search_engine_choice/'
+  image_destination_path = 'search_engine_choice/'
 
-  delete_files_in_directory(image_destination_path)
+  delete_files_in_directory('./default_100_percent/' + image_destination_path)
+  delete_files_in_directory('./default_200_percent/' + image_destination_path)
+  delete_files_in_directory('./default_300_percent/' + image_destination_path)
 
   with open(config_file_path, 'r', encoding='utf-8') as config_json, open(
       prepopulated_engines_file_path, 'r', encoding='utf-8') as engines_json:
-    config_data = commentjson.loads(config_json.read())
-    engine_data = commentjson.loads(engines_json.read())
+    config_data = json.loads(json_comment_eater.Nom(config_json.read()))
+    engine_data = json.loads(json_comment_eater.Nom(engines_json.read()))
 
     icon_hash_to_name = {}
 
@@ -132,15 +134,15 @@ def download_icons_from_android_search():
 
       search_engine_keyword = engine_data['elements'][engine]['keyword']
       icon_name = keyword_to_identifer(search_engine_keyword)
-      icon_full_path = image_destination_path + f'{icon_name}.png'
+      icon_full_path = './default_100_percent/' + image_destination_path + f'{icon_name}.png'
       if engine in config_data['engine_aliases']:
         engine = config_data['engine_aliases'][engine]
 
       directory_url = f'https://www.gstatic.com/android_search/search_providers/{engine}/'
       try_filenames = [
-          config_data['non_default_icon_filenames'][engine]
+          config_data['non_default_icon_filenames'][engine] + 'mdpi.png'
       ] if engine in config_data['non_default_icon_filenames'] else [
-          'xxxhdpi.png', f'{engine}_xxxhdpi.png'
+          'mdpi.png', f'{engine}_mdpi.png'
       ]
       any_found = False
       for filename in try_filenames:
@@ -154,6 +156,7 @@ def download_icons_from_android_search():
           with open(icon_full_path, 'wb') as icon_file:
             icon_file.write(img_data.content)
           any_found = True
+          found_url = icon_url
           break
       if not any_found:
         print('WARNING: no icon found for search engine: %s' % engine)
@@ -166,6 +169,27 @@ def download_icons_from_android_search():
             icon_hash]
         os.remove(icon_full_path)
         continue
+
+      # Download hidpi versions
+      # If the low dpi version is basename_mdpi.png, download basename_xhdpi.png
+      # and basename_xxhdpi.png.
+      for (resource_path, hidpi) in [('./default_200_percent/', 'xhdpi'),
+                                     ('./default_300_percent/', 'xxhdpi')]:
+        # Replace the substring "mdpi" by "xhdpi" or "xxhdpi" from the end.
+        (basename, mdpi_suffix, png_extension) = icon_url.rpartition('mdpi')
+        hidpi_url = basename + hidpi + png_extension
+        hidpi_path = resource_path + image_destination_path + f'{icon_name}.png'
+        try:
+          img_data = requests.get(hidpi_url)
+        except requests.exceptions.RequestException as e:
+          print('Error when loading URL {hidpi_url}: {e}')
+          continue
+        if img_data.status_code == 200:
+          with open(hidpi_path, 'wb') as icon_file:
+            icon_file.write(img_data.content)
+        else:
+          print('WARNING: no %s icon found for search engine: %s' %
+                (suffix, engine))
 
       engine_keyword_to_icon_name[search_engine_keyword] = icon_name
       icon_hash_to_name[icon_hash] = icon_name
@@ -210,14 +234,12 @@ def generate_icon_resource_code():
     grdp_file.write('</grit-part>\n')
 
 
-def create_adding_icons_to_source_function():
-  """Generates the `AddGeneratedIconResources` in
-  `search_engine_choice/generated_icon_utils.cc`.
+def create_get_search_engine_generated_icon_path_function():
+  """Generates the `GetSearchEngineGeneratedIconPath` function.
 
-  Generates the function that will be used to populate the `WebUIDataSource`
-  with the generated icons.
+  The code is generated in `search_engine_choice/generated_icon_utils.cc`.
   """
-  print('Creating `AddGeneratedIconResources` function...')
+  print('Creating `GetSearchEngineGeneratedIconPath` function...')
 
   with open(
       '../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils.cc',
@@ -235,38 +257,51 @@ def create_adding_icons_to_source_function():
     utils_file.write(
         '#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"\n\n'
     )
-    utils_file.write('#include "base/check_op.h"\n')
-    utils_file.write('#include "build/branding_buildflags.h"\n')
-    utils_file.write(
-        '#include "components/grit/components_scaled_resources.h"\n')
-    utils_file.write(
-        '#include "content/public/browser/web_ui_data_source.h"\n\n')
 
-    # Create the function `AddGeneratedIconResources()`.
+    utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
+    utils_file.write('#include "build/branding_buildflags.h"\n')
+
     utils_file.write(
         ("// This code is generated using"
          "`tools/search_engine_choice/generate_search_engine_icons.py`."
          " Don't modify it manually.\n\n"))
-    utils_file.write('void AddGeneratedIconResources(content::WebUIDataSource*'
-                     ' source, const std::string& directory) {\n')
-    utils_file.write('\tCHECK(source);\n')
-    utils_file.write("\tCHECK_EQ(directory.back(), '/');\n")
 
-    # Add google to the source
-    utils_file.write('\t#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
-    utils_file.write('\tsource->AddResourcePath(directory + "google_com.png",'
-                     ' IDR_GOOGLE_COM_PNG);\n')
-    utils_file.write('\t#endif\n')
+    # Create the base::fixed_flat_map
+    utils_file.write('namespace {\n\n')
+
+    utils_file.write('constexpr auto kSearchEngineIconPathMap =\n')
+    utils_file.write(
+        '\tbase::MakeFixedFlatMap<std::u16string_view, std::string_view>({\n')
 
     for engine_keyword in engine_keyword_to_icon_name:
       engine_name = keyword_to_identifer(engine_keyword)
-      local_image_path = engine_name + '.png'
-      image_resource_id = 'IDR_' + engine_name.upper() + '_PNG'
-      utils_file.write('\tsource->AddResourcePath(directory + "' +
-                       local_image_path + '", ' + image_resource_id + ');\n')
+      utils_file.write('\t\t{u"' + engine_keyword + '",\n')
+      utils_file.write('\t\t "chrome://theme/IDR_' + engine_name.upper() +
+                       '_PNG"},\n')
 
+    # Add Google to the map
+    utils_file.write('\t\t{u"google.com",\n')
+    utils_file.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
+    utils_file.write('\t\t "chrome://theme/IDR_GOOGLE_COM_PNG"\n')
+    utils_file.write('#else\n')
+    utils_file.write('\t\t "chrome://theme/IDR_DEFAULT_FAVICON"\n')
+    utils_file.write('#endif\n')
+
+    utils_file.write('\t}});\n\n')
+
+    utils_file.write('}  // namespace\n\n')
+
+    # Create the function `GetSearchEngineGeneratedIconPath()`.
+    utils_file.write('std::string_view GetSearchEngineGeneratedIconPath(\n')
+    utils_file.write('\t\tconst std::u16string& engine_keyword) {\n')
+    utils_file.write(
+        '\tconst base::fixed_flat_map<std::u16string_view, std::string_view,\n')
+    utils_file.write(
+        '\t\tkSearchEngineIconPathMap.size()>::const_iterator iterator =\n')
+    utils_file.write('\t\t\tkSearchEngineIconPathMap.find(engine_keyword);\n')
+    utils_file.write('\treturn iterator == kSearchEngineIconPathMap.cend() ?\n')
+    utils_file.write('\t\tstd::string_view() : iterator->second;\n')
     utils_file.write('}\n')
-
 
 def generate_get_icon_resource_id_function():
   """Generates the `GetIconResourceId` function.
@@ -293,7 +328,6 @@ def generate_get_icon_resource_id_function():
         '#include "components/search_engines/search_engine_choice_utils.h"\n')
     utils_file.write('\n')
     utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
-    utils_file.write('#include "base/strings/utf_string_conversions.h"\n')
     utils_file.write('#include "build/branding_buildflags.h"\n')
     utils_file.write(
         '#include "components/grit/components_scaled_resources.h"\n')
@@ -309,15 +343,15 @@ def generate_get_icon_resource_id_function():
     utils_file.write('namespace {\n\n')
 
     utils_file.write('constexpr auto kSearchEngineResourceIdMap =\n')
-    utils_file.write('\tbase::MakeFixedFlatMap<std::wstring_view, int>({\n')
+    utils_file.write('\tbase::MakeFixedFlatMap<std::u16string_view, int>({\n')
 
     for engine_keyword in engine_keyword_to_icon_name:
       engine_name = keyword_to_identifer(engine_keyword)
-      utils_file.write('\t\t{L"' + engine_keyword + '",\n')
+      utils_file.write('\t\t{u"' + engine_keyword + '",\n')
       utils_file.write('\t\t IDR_' + engine_name.upper() + '_PNG},\n')
 
     # Add Google to the map
-    utils_file.write('\t\t{L"google.com",\n')
+    utils_file.write('\t\t{u"google.com",\n')
     utils_file.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
     utils_file.write('\t\t IDR_GOOGLE_COM_PNG\n')
     utils_file.write('#else\n')
@@ -333,11 +367,10 @@ def generate_get_icon_resource_id_function():
     # Create the function `GetIconResourceId()`.
     utils_file.write(
         'int GetIconResourceId(const std::u16string& engine_keyword) {\n')
-    utils_file.write('\tconst base::fixed_flat_map<std::wstring_view, int,\n')
+    utils_file.write('\tconst base::fixed_flat_map<std::u16string_view, int,\n')
     utils_file.write(
         '\t\tkSearchEngineResourceIdMap.size()>::const_iterator iterator =\n')
-    utils_file.write('\t\t\tkSearchEngineResourceIdMap.find(\n')
-    utils_file.write('\t\t\t\tbase::UTF16ToWide(engine_keyword));\n')
+    utils_file.write('\t\t\tkSearchEngineResourceIdMap.find(engine_keyword);\n')
     utils_file.write(
         '\treturn iterator == kSearchEngineResourceIdMap.cend() ?\n')
     utils_file.write('\t\t-1 : iterator->second;\n')
@@ -350,9 +383,17 @@ if sys.platform != 'linux':
   print(
       'Warning: This script has not been tested outside of the Linux platform')
 
-# Move to working directory to `src/components/resources/`.
 current_file_path = os.path.dirname(__file__)
 os.chdir(current_file_path)
+
+sys.path.insert(0,
+                os.path.normpath(current_file_path + "/../json_comment_eater"))
+try:
+  import json_comment_eater
+finally:
+  sys.path.pop(0)
+
+# Move to working directory to `src/components/resources/`.
 os.chdir('../../components/resources')
 
 # A set of search engines that are used in `template_url_prepopulate_data.cc`
@@ -367,7 +408,7 @@ populate_used_engines()
 download_icons_from_android_search()
 generate_icon_resource_code()
 generate_get_icon_resource_id_function()
-create_adding_icons_to_source_function()
+create_get_search_engine_generated_icon_path_function()
 # Format the generated code
 os.system('git cl format')
 print('Icon and code generation completed.')

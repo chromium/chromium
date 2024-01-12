@@ -5,6 +5,7 @@
 #include "base/task/sequence_manager/work_tracker.h"
 
 #include "base/check.h"
+#include "base/task/common/scoped_defer_task_posting.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace base::sequence_manager::internal {
@@ -66,10 +67,13 @@ void WorkTracker::SetRunTaskSynchronouslyAllowed(
 }
 
 void WorkTracker::WaitNoSyncWork() {
+  // Do not process new PostTasks, defer them. Tracing can call PostTask, but
+  // it will try to grab locks that are not allowed here.
+  ScopedDeferTaskPosting disallow_task_posting;
+  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
   // `std::memory_order_relaxed` instead of `kMemoryAcquireBeforeWork` because
   // the lock implicitly acquires memory released by `~SyncWorkAuthorization`.
   base::internal::CheckedAutoLock auto_lock(active_sync_work_lock_);
-  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
   uint32_t prev = state_.load(std::memory_order_relaxed);
   while (prev & kActiveSyncWork) {
     active_sync_work_cv_->Wait();

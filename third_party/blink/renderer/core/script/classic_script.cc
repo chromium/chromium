@@ -216,7 +216,7 @@ ScriptEvaluationResult ClassicScript::RunScriptOnScriptStateAndReturnValue(
     ExecuteScriptPolicy policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
   bool sanitize = GetSanitizeScriptErrors() == SanitizeScriptErrors::kSanitize;
-  probe::EvaluateScriptBlock probe_scope(ExecutionContext::From(script_state),
+  probe::EvaluateScriptBlock probe_scope(script_state,
                                          sanitize ? SourceUrl() : BaseUrl(),
                                          /*module=*/false, sanitize);
 

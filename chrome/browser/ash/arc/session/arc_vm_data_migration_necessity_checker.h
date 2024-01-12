@@ -40,7 +40,7 @@ class ArcVmDataMigrationNecessityChecker {
   void OnHasDataToMigrateResponse(CheckCallback callback,
                                   std::optional<bool> response);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ArcVmDataMigrationNecessityChecker> weak_ptr_factory_{
       this};

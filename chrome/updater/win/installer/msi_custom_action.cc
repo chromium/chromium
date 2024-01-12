@@ -4,10 +4,9 @@
 
 #include "chrome/updater/win/installer/msi_custom_action.h"
 
-#include <windows.h>
-
 #include <msi.h>
 #include <msiquery.h>
+#include <windows.h>
 
 #include <optional>
 #include <string>

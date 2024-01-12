@@ -154,7 +154,7 @@ class XuCameraService : public CfmObserver,
   void OnGetDevices(const std::vector<uint8_t>& guid_le,
                     GetUnitIdCallback callback,
                     std::vector<device::mojom::UsbDeviceInfoPtr> devices);
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<XuCamera, content::GlobalRenderFrameHostId> receivers_;
   mojo::Remote<device::mojom::UsbDeviceManager> usb_manager_;

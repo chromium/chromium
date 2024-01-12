@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom-forward.h"
@@ -183,6 +184,15 @@ crosapi::mojom::ProbeTpmInfoPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeTpmResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::TpmResultPtr input);
 
+crosapi::mojom::ProbeThermalSensorInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ThermalSensorInfoPtr input);
+
+crosapi::mojom::ProbeThermalInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ThermalInfoPtr input);
+
+crosapi::mojom::ProbeThermalResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ThermalResultPtr input);
+
 crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);
 
@@ -206,6 +216,9 @@ crosapi::mojom::ProbeFwupdVersionFormat Convert(
 
 crosapi::mojom::ProbeDisplayInputType Convert(
     cros_healthd::mojom::DisplayInputType input);
+
+crosapi::mojom::ProbeThermalSensorSource Convert(
+    cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource input);
 
 crosapi::mojom::BoolValuePtr Convert(bool input);
 

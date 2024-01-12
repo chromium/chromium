@@ -44,7 +44,7 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     const std::string& client_id,
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
-    absl::optional<blink::ServiceWorkerRouterRules> router_rules,
+    std::optional<blink::ServiceWorkerRouterRules> router_rules,
     blink::EmbeddedWorkerStatus initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver,
@@ -77,7 +77,7 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
 }
 
 bool ShouldBypassFetchHandlerForSubresource(
-    absl::optional<std::string> sha256_script_checksum) {
+    std::optional<std::string> sha256_script_checksum) {
   if (!base::FeatureList::IsEnabled(
           features::kServiceWorkerBypassFetchHandler)) {
     return false;

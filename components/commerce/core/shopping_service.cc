@@ -63,8 +63,6 @@
 
 namespace commerce {
 
-const long kToMicroCurrency = 1e6;
-
 const char kImageAvailabilityHistogramName[] =
     "Commerce.ShoppingService.ProductInfo.ImageAvailability";
 const char kProductInfoLocalExtractionTime[] =

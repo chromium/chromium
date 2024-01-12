@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -135,11 +136,8 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
   ZeroSuggestCacheService* zero_suggest_cache_service =
       ZeroSuggestCacheServiceFactory::GetForProfile(profile);
   if (optimization_guide_keyed_service && history_service) {
-    std::string country_code;
-    if (g_browser_process->variations_service()) {
-      country_code =
-          g_browser_process->variations_service()->GetStoredPermanentCountry();
-    }
+    std::string country_code =
+        GetCurrentCountryCode(g_browser_process->variations_service());
     return std::make_unique<optimization_guide::PageContentAnnotationsService>(
         std::make_unique<ChromeAutocompleteProviderClient>(profile),
         g_browser_process->GetApplicationLocale(), country_code,

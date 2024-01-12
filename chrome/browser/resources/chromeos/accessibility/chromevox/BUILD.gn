@@ -22,11 +22,17 @@ tsc_out_dir = "$target_gen_dir/tsc"
 #
 # TS files to compile.
 ts_modules = [
+  "background/chromevox_state.ts",
   "background/editing/editing.ts",
   "background/editing/rich_editable_text.ts",
   "background/editing/text_edit_handler.ts",
   "background/event/desktop_automation_interface.ts",
   "background/input/background_keyboard_handler.ts",
+  "background/logging/log_manager.ts",
+  "common/msgs.ts",
+  "common/tts_types.ts",
+  "panel/panel.ts",
+  "panel/panel_captions.ts",
 ]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
@@ -42,8 +48,6 @@ chromevox_es6_modules = [
   "../common/async_util.js",
   "../common/browser_util.js",
   "../common/key_code.js",
-  "../common/local_storage.js",
-  "../common/rect_util.js",
   "background/abstract_earcons.js",
   "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",
@@ -63,7 +67,6 @@ chromevox_es6_modules = [
   "background/braille/pan_strategy.js",
   "background/braille/spans.js",
   "background/chromevox_range.js",
-  "background/chromevox_state.js",
   "background/chromevox.js",
   "background/clipboard_handler.js",
   "background/color.js",
@@ -96,7 +99,6 @@ chromevox_es6_modules = [
   "background/input/smart_sticky_mode.js",
   "background/live_regions.js",
   "background/logging/event_stream_logger.js",
-  "background/logging/log_manager.js",
   "background/logging/log_store.js",
   "background/logging/log_url_watcher.js",
   "background/math_handler.js",
@@ -141,7 +143,6 @@ chromevox_es6_modules = [
   "common/learn_mode_bridge.js",
   "common/locale_output_helper.js",
   "common/log_types.js",
-  "common/msgs.js",
   "common/panel_bridge.js",
   "common/panel_command.js",
   "common/panel_menu_data.js",
@@ -150,14 +151,11 @@ chromevox_es6_modules = [
   "common/spannable.js",
   "common/settings_manager.js",
   "common/tree_dumper.js",
-  "common/tts_types.js",
   "learn_mode/learn_mode.js",
   "log_page/log.js",
   "log_page/log_loader.js",
   "panel/i_search_ui.js",
   "panel/menu_manager.js",
-  "panel/panel.js",
-  "panel/panel_captions.js",
   "panel/panel_interface.js",
   "panel/panel_menu.js",
   "panel/panel_menu_item.js",
@@ -195,20 +193,23 @@ ts_library("ts_build") {
   out_dir = tsc_out_dir
 
   definitions = [
-    "../definitions/tts.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
-    "../definitions/automation.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/i18n.d.ts",
-    "../definitions/tabs.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
     "../definitions/accessibility_private_mv2.d.ts",
-    "../definitions/settings_private_mv2.d.ts",
-    "../definitions/storage_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/chromeos_info_private.d.ts",
     "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/goog_i18n.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/login_state.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/tts.d.ts",
   ]
 
   in_files = []
@@ -238,7 +239,7 @@ chromevox_panel_script_loader_file = "panel/panel_loader.js"
 
 generate_message_formatting_data("i18n_data") {
   inputs = [ "//third_party/cldr/src/common/supplemental/plurals.xml" ]
-  output_dir = "$chromevox_out_dir/common"
+  output_dir = "$chromevox_out_dir"
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -251,6 +252,19 @@ run_jsbundler("copied_files") {
     "../common:copied_files",
     "../common:ts_build",
   ]
+
+  clear_dest_dirs = [
+    "background",
+    "common",
+    "earcons",
+    "images",
+    "injected",
+    "learn_mode",
+    "log_page",
+    "panel",
+    "tutorial",
+  ]
+
   sources = [
     "background/background.html",
     "earcons/chromevox_loaded.ogg",
@@ -321,7 +335,7 @@ template("generate_deps_js") {
 action("chromevox_phonetic_dictionaries_js") {
   script = "tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
-  output_file = "$chromevox_out_dir/background/phonetic_dictionaries.js"
+  output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
   outputs = [ output_file ]
   deps = [
     "//chrome/browser/resources/chromeos/accessibility:accessibility_strings",
@@ -405,8 +419,6 @@ if (is_chromeos_ash) {
     deps = [ ":chromevox_test_messages_js" ]
   }
 
-  # These tests can run in a pure V8 renderer (e.g. no DOM).
-
   # These tests need a full extension renderer.
   js2gtest("chromevox_extension_js_tests") {
     test_type = "extension"
@@ -451,9 +463,7 @@ if (is_chromeos_ash) {
     sources += [
       "background/braille/expanding_braille_translator_test.js",
       "background/braille/pan_strategy_test.js",
-
-      # TODO(anastasi): Determine why this test suite is flaky and re-enable.
-      # "background/editing/editable_text_base_test.js",
+      "background/editing/editable_text_base_test.js",
       "background/phonetic_data_test.js",
       "common/key_sequence_test.js",
       "common/spannable_test.js",

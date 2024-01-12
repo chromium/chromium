@@ -328,6 +328,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2361210043495191221">Toggle Wi-Fi <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2367972762794486313">Show apps</translation>
+<translation id="2368828502825385061">Locate</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2382875860893882175">Casting is currently paused. You can resume casting or stop casting at any time.</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
@@ -846,7 +847,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
-<translation id="4430019312045809116">volume</translation>
+<translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Apps are sorted by name</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
@@ -1132,6 +1133,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Recover user</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
+<translation id="5550417424894892620">Drop files on the desktop to add them to <ph name="HOLDING_SPACE_TITLE" />. You can't add files to desktop.</translation>
 <translation id="5551456515017410630">Open/close calendar</translation>
 <translation id="5551974246223970793">When searching a page, go to next match for search</translation>
 <translation id="5555639311269196631">Turn off hotspot</translation>
@@ -1504,6 +1506,7 @@ New install</translation>
 <translation id="7025533177575372252">Connect your <ph name="DEVICE_NAME" /> with your phone</translation>
 <translation id="7026338066939101231">Decrement</translation>
 <translation id="7029814467594812963">Exit session</translation>
+<translation id="7031303610220416229">See all tasks in Google Tasks</translation>
 <translation id="7032161822340700104">Only six templates allowed. Remove a template to save a new one.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> wants to use the <ph name="DEVICE_NAME" />. Turn on your device's physical <ph name="DEVICE_NAME" /> switch.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
@@ -1816,6 +1819,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8351131234907093545">Create note</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> in use.</translation>
 <translation id="8369166482916924789">Saved desk, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Search for <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Forward by letter</translation>
 <translation id="8371991222807690464">Peripheral performance may be limited in Guest mode</translation>
 <translation id="8374601332003098278">Press enter to record partial screen</translation>
@@ -1871,6 +1875,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sort your apps by name or colour</translation>
 <translation id="8609384513243082612">Open new tab</translation>
+<translation id="8612216344243590325">Keep important files in <ph name="HOLDING_SPACE_TITLE" /> instead of on the desktop. Just drag files to <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>
 <translation id="8619138598101195078">Turn volume down</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>

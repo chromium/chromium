@@ -40,15 +40,7 @@ inline v8::Local<v8::Value> ToV8(ScriptWrappable* impl,
                                  v8::Isolate* isolate) {
   if (UNLIKELY(!impl))
     return v8::Null(isolate);
-  v8::Local<v8::Value> wrapper = DOMDataStore::GetWrapper(impl, isolate);
-  if (!wrapper.IsEmpty())
-    return wrapper;
-
-  ScriptState* script_state =
-      ScriptState::From(creation_context->GetCreationContextChecked());
-  wrapper = impl->Wrap(script_state).ToLocalChecked();
-  DCHECK(!wrapper.IsEmpty());
-  return wrapper;
+  return impl->ToV8(isolate, creation_context).ToLocalChecked();
 }
 
 // Dictionary
@@ -60,7 +52,7 @@ inline v8::Local<v8::Value> ToV8(const bindings::DictionaryBase* dictionary,
     return v8::Null(isolate);
   ScriptState* script_state =
       ScriptState::From(creation_context->GetCreationContextChecked());
-  return dictionary->ToV8Value(script_state).ToLocalChecked();
+  return dictionary->ToV8(script_state).ToLocalChecked();
 }
 
 // Callback function
@@ -108,8 +100,7 @@ inline v8::Local<v8::Value> ToV8(const bindings::UnionBase* union_value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
   return union_value
-      ->ToV8Value(
-          ScriptState::From(creation_context->GetCreationContextChecked()))
+      ->ToV8(ScriptState::From(creation_context->GetCreationContextChecked()))
       .ToLocalChecked();
 }
 

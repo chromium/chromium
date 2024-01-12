@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "services/network/public/cpp/trigger_verification.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -96,7 +96,7 @@ base::Uuid ConfigurableStorageDelegate::NewReportID() const {
   return DefaultExternalReportID();
 }
 
-absl::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
+std::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
 ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return offline_report_delay_config_;
@@ -147,7 +147,7 @@ std::vector<AttributionStorageDelegate::NullAggregatableReport>
 ConfigurableStorageDelegate::GetNullAggregatableReports(
     const AttributionTrigger& trigger,
     base::Time trigger_time,
-    absl::optional<base::Time> attributed_source_time) const {
+    std::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return null_aggregatable_reports_;
 }
@@ -212,7 +212,7 @@ void ConfigurableStorageDelegate::set_report_delay(
 }
 
 void ConfigurableStorageDelegate::set_offline_report_delay_config(
-    absl::optional<OfflineReportDelayConfig> config) {
+    std::optional<OfflineReportDelayConfig> config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   offline_report_delay_config_ = config;
 }

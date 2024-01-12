@@ -10,9 +10,9 @@ MHTMLGenerationResult::MHTMLGenerationResult(int64_t file_size,
                                              const std::string* digest)
     : file_size(file_size) {
   if (digest) {
-    file_digest = absl::optional<std::string>(*digest);
+    file_digest = std::optional<std::string>(*digest);
   } else {
-    file_digest = absl::nullopt;
+    file_digest = std::nullopt;
   }
 }
 

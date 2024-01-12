@@ -210,7 +210,7 @@ class BoundSocket {
     port_ = port;
     net::IPEndPoint end_point(net::IPAddress::IPv4Localhost(), port);
     int result =
-        socket_->Listen(end_point, kListenBacklog, /*ipv6_only=*/absl::nullopt);
+        socket_->Listen(end_point, kListenBacklog, /*ipv6_only=*/std::nullopt);
     if (result < 0)
       return false;
 

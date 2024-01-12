@@ -48,8 +48,6 @@ LoginState::LoggedInUserType GetLoggedInUserTypeFromUser(
       return LoginState::LOGGED_IN_USER_KIOSK;
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::NUM_USER_TYPES:
-      break;  // Go to invalid-type handling code.
       // Since there is no default, the compiler warns about unhandled types.
   }
   NOTREACHED() << "Invalid type for active user: " << active_user.GetType();

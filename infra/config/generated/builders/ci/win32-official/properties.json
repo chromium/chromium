@@ -44,7 +44,8 @@
           "builder": "win32-official",
           "group": "tryserver.chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win32-official/targets"
     }
   },
   "$build/reclient": {

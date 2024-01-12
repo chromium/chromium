@@ -73,6 +73,7 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
   const char* NameInHeapSnapshot() const override { return "ScheduledAction"; }
 
   CallbackFunctionBase* CallbackFunction();
+  ScriptState* GetScriptState();
 
  private:
   Member<ScriptStateProtectingContext> script_state_;

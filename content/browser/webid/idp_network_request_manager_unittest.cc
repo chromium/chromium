@@ -239,8 +239,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
     auto record_error_metrics_callback = base::BindLambdaForTesting(
         [&](TokenResponseType token_response_type,
-            absl::optional<ErrorDialogType> error_dialog_type,
-            absl::optional<ErrorUrlType> error_url_type) {
+            std::optional<ErrorDialogType> error_dialog_type,
+            std::optional<ErrorUrlType> error_url_type) {
           token_response_type_ = token_response_type;
           error_dialog_type_ = error_dialog_type;
           error_url_type_ = error_url_type;
@@ -283,10 +283,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   TokenResponseType token_response_type() { return token_response_type_; }
-  absl::optional<ErrorDialogType> error_dialog_type() {
+  std::optional<ErrorDialogType> error_dialog_type() {
     return error_dialog_type_;
   }
-  absl::optional<ErrorUrlType> error_url_type() { return error_url_type_; }
+  std::optional<ErrorUrlType> error_url_type() { return error_url_type_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -294,8 +294,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester_;
   TokenResponseType token_response_type_;
-  absl::optional<ErrorDialogType> error_dialog_type_;
-  absl::optional<ErrorUrlType> error_url_type_;
+  std::optional<ErrorDialogType> error_dialog_type_;
+  std::optional<ErrorUrlType> error_url_type_;
 };
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
@@ -582,8 +582,8 @@ TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
                 GURL("https://www.google.com:8000/test/"))
                 ->spec());
 
-  EXPECT_EQ(absl::nullopt, IdpNetworkRequestManager::ComputeWellKnownUrl(
-                               GURL("https://192.101.0.1/test/")));
+  EXPECT_EQ(std::nullopt, IdpNetworkRequestManager::ComputeWellKnownUrl(
+                              GURL("https://192.101.0.1/test/")));
 }
 
 // Test that IdpNetworkRequestManager::FetchWellKnown() fails when the
@@ -709,7 +709,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingInvalidColor) {
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(absl::nullopt, idp_metadata.brand_background_color);
+  EXPECT_EQ(std::nullopt, idp_metadata.brand_background_color);
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
@@ -729,7 +729,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), idp_metadata.brand_background_color);
-  EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
+  EXPECT_EQ(std::nullopt, idp_metadata.brand_text_color);
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
@@ -747,8 +747,8 @@ TEST_F(IdpNetworkRequestManagerTest,
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(absl::nullopt, idp_metadata.brand_background_color);
-  EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
+  EXPECT_EQ(std::nullopt, idp_metadata.brand_background_color);
+  EXPECT_EQ(std::nullopt, idp_metadata.brand_text_color);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingSelectBestSize) {
@@ -1695,7 +1695,7 @@ TEST_F(IdpNetworkRequestManagerTest, DisconnectRequest) {
 
   base::RunLoop run_loop;
   FetchStatus disconnect_response;
-  absl::optional<std::string> disconnect_account_id;
+  std::optional<std::string> disconnect_account_id;
   auto callback = base::BindLambdaForTesting(
       [&](FetchStatus response, const std::string& account_id) {
         disconnect_response = response;

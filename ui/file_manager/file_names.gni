@@ -14,24 +14,11 @@ image_loader_static_js_files = [
 image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
-  # Externs:
-  "file_manager/externs/background/crostini.js",
-  "file_manager/externs/background/drive_sync_handler.js",
-  "file_manager/externs/background/progress_center.js",
-  "file_manager/externs/command_handler_deps.js",
-  "file_manager/externs/entry_location.js",
-  "file_manager/externs/exif_entry.js",
-  "file_manager/externs/metadata_model.js",
-  "file_manager/externs/progress_center_panel.js",
-  "file_manager/externs/ts/state.js",
-  "file_manager/externs/ts/store.js",
-
   # Files app Foreground:
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
 
   # Files app UI:
-  "file_manager/foreground/js/ui/dialog_footer.js",
   "file_manager/foreground/js/ui/directory_tree.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
@@ -81,12 +68,6 @@ ts_files = [
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
-  # Externs:
-  "file_manager/externs/files_app_entry_interfaces.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Lib.
   "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",
@@ -99,6 +80,7 @@ ts_files = [
   # State.
   "file_manager/state/file_key.ts",
   "file_manager/state/store.ts",
+  "file_manager/state/state.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -164,6 +146,7 @@ ts_files = [
   "file_manager/foreground/js/ui/command.ts",
   "file_manager/foreground/js/ui/context_menu_handler.ts",
   "file_manager/foreground/js/ui/drag_selector.ts",
+  "file_manager/foreground/js/ui/dialog_footer.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_manager_dialog_base.ts",
@@ -243,10 +226,10 @@ ts_files = [
   "file_manager/background/js/runtime_loaded_test_util.ts",
   "file_manager/background/js/test_util_base.ts",
   "file_manager/background/js/test_util.ts",
-  "file_manager/background/js/volume_info_impl.ts",
-  "file_manager/background/js/volume_info_list_impl.ts",
+  "file_manager/background/js/volume_info.ts",
+  "file_manager/background/js/volume_info_list.ts",
   "file_manager/background/js/volume_manager_factory.ts",
-  "file_manager/background/js/volume_manager_impl.ts",
+  "file_manager/background/js/volume_manager.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -534,6 +517,7 @@ ts_test_files = [
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.ts",
   "file_manager/foreground/js/ui/file_table_list_unittest.ts",
   "file_manager/foreground/js/ui/file_table_unittest.ts",
+  "file_manager/foreground/js/ui/file_tap_handler_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.ts",
   "file_manager/foreground/js/ui/menu_unittest.ts",
@@ -589,18 +573,12 @@ ts_generated_templates += [
 ]
 
 # d.ts. files that are automatically generated from the JS file.
-generate_definitions_js_files = [
-  "file_manager/externs/search_item.js",
-  "file_manager/externs/quick_view.js",
-]
+generate_definitions_js_files = [ "file_manager/externs/quick_view.js" ]
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
-  "file_manager/externs/volume_info.d.ts",
-  "file_manager/externs/volume_info_list.d.ts",
-  "file_manager/externs/volume_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
   "file_manager/foreground/js/ui/tree.d.ts",
 ]
@@ -627,7 +605,6 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Foreground:
-  "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
 

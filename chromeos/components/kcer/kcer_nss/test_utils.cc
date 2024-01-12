@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "chromeos/components/kcer/kcer_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/signature_verifier.h"
@@ -39,7 +40,7 @@ void TokenHolder::Initialize() {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &internal::KcerTokenImplNss::Initialize, weak_ptr_,
+          &internal::KcerToken::InitializeForNss, weak_ptr_,
           crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_slot_.slot()))));
 }
 
@@ -49,7 +50,7 @@ void TokenHolder::FailInitialization() {
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&internal::KcerTokenImplNss::Initialize, weak_ptr_,
+      base::BindOnce(&internal::KcerToken::InitializeForNss, weak_ptr_,
                      /*nss_slot=*/nullptr));
 }
 

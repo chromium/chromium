@@ -40,8 +40,8 @@ class DlpWindowObserver : public aura::WindowObserver {
   void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace policy

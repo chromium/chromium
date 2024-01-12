@@ -109,9 +109,9 @@ class SynchronousCompositorControlHost
   void ReturnFrame(
       uint32_t layer_tree_frame_sink_id,
       uint32_t metadata_version,
-      const absl::optional<viz::LocalSurfaceId>& local_surface_id,
-      absl::optional<viz::CompositorFrame> frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list) override {
+      const std::optional<viz::LocalSurfaceId>& local_surface_id,
+      std::optional<viz::CompositorFrame> frame,
+      std::optional<viz::HitTestRegionList> hit_test_region_list) override {
     if (frame && (!local_surface_id || !local_surface_id->is_valid())) {
       bad_message::ReceivedBadMessage(
           process_id_, bad_message::SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID);
@@ -222,6 +222,7 @@ SynchronousCompositorHost::DemandDrawHwAsync(
     const gfx::Size& viewport_size,
     const gfx::Rect& viewport_rect_for_tile_priority,
     const gfx::Transform& transform_for_tile_priority) {
+  draw_hw_called_ = true;
   invalidate_needs_draw_ = false;
   num_invalidates_since_last_draw_ = 0u;
   scoped_refptr<FrameFuture> frame_future = new FrameFuture();
@@ -266,9 +267,9 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
 
   uint32_t layer_tree_frame_sink_id;
   uint32_t metadata_version = 0u;
-  absl::optional<viz::LocalSurfaceId> local_surface_id;
-  absl::optional<viz::CompositorFrame> compositor_frame;
-  absl::optional<viz::HitTestRegionList> hit_test_region_list;
+  std::optional<viz::LocalSurfaceId> local_surface_id;
+  std::optional<viz::CompositorFrame> compositor_frame;
+  std::optional<viz::HitTestRegionList> hit_test_region_list;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
 
   {
@@ -312,7 +313,7 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
 void SynchronousCompositorHost::UpdateFrameMetaData(
     uint32_t version,
     viz::CompositorFrameMetadata frame_metadata,
-    absl::optional<viz::LocalSurfaceId> new_local_surface_id) {
+    std::optional<viz::LocalSurfaceId> new_local_surface_id) {
   // Ignore if |frame_metadata_version_| is newer than |version|. This
   // comparison takes into account when the unsigned int wraps.
   if ((frame_metadata_version_ - version) < 0x80000000) {
@@ -346,7 +347,7 @@ bool SynchronousCompositorHost::DemandDrawSwInProc(SkCanvas* canvas) {
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
       allow_base_sync_primitives;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
-  absl::optional<viz::CompositorFrameMetadata> metadata;
+  std::optional<viz::CompositorFrameMetadata> metadata;
   ScopedSetSkCanvas set_sk_canvas(canvas);
   blink::mojom::SyncCompositorDemandDrawSwParamsPtr params =
       blink::mojom::SyncCompositorDemandDrawSwParams::New();  // Unused.
@@ -360,7 +361,7 @@ bool SynchronousCompositorHost::DemandDrawSwInProc(SkCanvas* canvas) {
   if (!metadata)
     return false;
   UpdateState(std::move(common_renderer_params));
-  UpdateFrameMetaData(metadata_version, std::move(*metadata), absl::nullopt);
+  UpdateFrameMetaData(metadata_version, std::move(*metadata), std::nullopt);
   return true;
 }
 
@@ -417,7 +418,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
   if (!software_draw_shm_)
     return false;
 
-  absl::optional<viz::CompositorFrameMetadata> metadata;
+  std::optional<viz::CompositorFrameMetadata> metadata;
   uint32_t metadata_version = 0u;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
   {
@@ -436,7 +437,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
     return false;
 
   UpdateState(std::move(common_renderer_params));
-  UpdateFrameMetaData(metadata_version, std::move(*metadata), absl::nullopt);
+  UpdateFrameMetaData(metadata_version, std::move(*metadata), std::nullopt);
 
   SkBitmap bitmap;
   SkPixmap pixmap(info, software_draw_shm_->shared_memory.memory(), stride);
@@ -704,6 +705,19 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
 
   if (on_compute_scroll_called_ || !rwhva_->is_currently_scrolling_viewport()) {
     rwhva_->host()->ProgressFlingIfNeeded(args.frame_time);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kWebViewSuppressTapDuringFling)) {
+    // Normally, `OnComputeScroll` is called after `OnBeginFrame`, but before
+    // `DemandDrawHwAsync`. So `OnBeginFrame` calls before the first draw will
+    // end up here regardless of whether `OnComputeScroll` will be called. If
+    // these frames contain fling, then don't cancel fling prematurely. Note
+    // normally fling cannot happen from user interaction this way because touch
+    // scroll happens before fling.
+    if (draw_hw_called_) {
+      // If we are not ticking flings ourselves, also reset the tracking state
+      // for fling so the first tap during / after fling is not suppressed.
+      rwhva_->host()->StopFling();
+    }
   }
 
   if (needs_begin_frame) {

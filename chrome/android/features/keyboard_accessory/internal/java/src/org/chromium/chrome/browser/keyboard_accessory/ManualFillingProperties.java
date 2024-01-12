@@ -28,6 +28,8 @@ class ManualFillingProperties {
             new PropertyModel.WritableBooleanPropertyKey("show_when_visible");
     static final PropertyModel.WritableBooleanPropertyKey PORTRAIT_ORIENTATION =
             new PropertyModel.WritableBooleanPropertyKey("portrait_orientation");
+    static final PropertyModel.WritableBooleanPropertyKey IS_FULLSCREEN =
+            new PropertyModel.WritableBooleanPropertyKey("is_fullscreen");
     static final PropertyModel.WritableIntPropertyKey KEYBOARD_EXTENSION_STATE =
             new PropertyModel.WritableIntPropertyKey("keyboard_extension_state");
     static final PropertyModel.WritableBooleanPropertyKey SUPPRESSED_BY_BOTTOM_SHEET =
@@ -82,11 +84,13 @@ class ManualFillingProperties {
                         SHOW_WHEN_VISIBLE,
                         KEYBOARD_EXTENSION_STATE,
                         PORTRAIT_ORIENTATION,
+                        IS_FULLSCREEN,
                         SUPPRESSED_BY_BOTTOM_SHEET,
                         SHOULD_EXTEND_KEYBOARD)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)
+                .with(IS_FULLSCREEN, false)
                 .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
                 .with(SHOULD_EXTEND_KEYBOARD, true)
                 .build();

@@ -23,7 +23,6 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/pointers/raw_ptr_exclusion.h"
 #include "partition_alloc/raw_ptr_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -106,10 +105,10 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowPtrArithmetic instead.
   kAllowPtrArithmetic = (1 << 3),
 
-  // This pointer has BRP disabled for Vector-related raw_ptrs.
+  // This pointer has BRP disabled for experimental rewrites of containers.
   //
-  // Don't use directly, use VectorExperimental instead.
-  kVectorExperimental = (1 << 4),
+  // Don't use directly.
+  kDisableBRP = (1 << 4),
 
   // Uninitialized pointers are discouraged and disabled by default.
   //
@@ -131,9 +130,8 @@ enum class RawPtrTraits : unsigned {
   // Test only.
   kDummyForTest = (1 << 11),
 
-  kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kVectorExperimental | kAllowUninitialized |
-             kUseCountingImplForTest | kDummyForTest,
+  kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic | kDisableBRP |
+             kAllowUninitialized | kUseCountingImplForTest | kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -149,13 +147,14 @@ using partition_alloc::internal::RawPtrTraits;
 
 namespace raw_ptr_traits {
 
-// IsSupportedType<T>::value answers whether raw_ptr<T> 1) compiles and 2) is
-// always safe at runtime.  Templates that may end up using `raw_ptr<T>` should
-// use IsSupportedType to ensure that raw_ptr is not used with unsupported
-// types.  As an example, see how base::internal::StorageTraits uses
-// IsSupportedType as a condition for using base::internal::UnretainedWrapper
-// (which has a `ptr_` field that will become `raw_ptr<T>` after the Big
-// Rewrite).
+// IsSupportedType<T>::value answers whether raw_ptr<T>:
+//   1) compiles
+//   2) is safe at runtime
+//
+// Templates that may end up using raw_ptr should use IsSupportedType to ensure
+// that raw_ptr is not used with unsupported types. As an example, see how
+// base::internal::Unretained(Ref)Wrapper uses IsSupportedType to decide whether
+// it should use `raw_ptr<T>` or `T*`.
 template <typename T, typename SFINAE = void>
 struct IsSupportedType {
   static constexpr bool value = true;
@@ -227,9 +226,9 @@ using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
     /*AllowDangling=*/partition_alloc::internal::ContainsFlags(
         Traits,
         RawPtrTraits::kMayDangle),
-    /*VectorExperimental=*/partition_alloc::internal::ContainsFlags(
+    /*DisableBRP=*/partition_alloc::internal::ContainsFlags(
         Traits,
-        RawPtrTraits::kVectorExperimental)>;
+        RawPtrTraits::kDisableBRP)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 template <RawPtrTraits Traits>
@@ -424,17 +423,17 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Move is not supported as different traits may use different ref-counts, so
   // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
-            typename Unused = std::enable_if_t<Traits != PassedTraits>>
+            typename = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE constexpr explicit raw_ptr(
       const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
             raw_ptr_traits::ImplForTraits<raw_ptr<T, PassedTraits>::Traits>::
                 UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
-    // Limit cross-kind conversions only to cases where kMayDangle gets added,
-    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
-    // instead of disabling via SFINAE, so that the compiler catches other
-    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
-    // be taken.
+    // Limit cross-kind conversions only to cases where `kMayDangle` gets added,
+    // because that's needed for ExtractAsDangling() and Unretained(Ref)Wrapper.
+    // Use a static_assert, instead of disabling via SFINAE, so that the
+    // compiler catches other conversions. Otherwise the implicit
+    // `raw_ptr<T> -> T* -> raw_ptr<>` route will be taken.
     static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
                              RawPtrTraits::kMayDangle));
   }
@@ -443,14 +442,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Move is not supported as different traits may use different ref-counts, so
   // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
-            typename Unused = std::enable_if_t<Traits != PassedTraits>>
+            typename = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<T, PassedTraits>& p) noexcept {
     // Limit cross-kind assignments only to cases where `kMayDangle` gets added,
-    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
-    // instead of disabling via SFINAE, so that the compiler catches other
-    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
-    // be taken.
+    // because that's needed for ExtractAsDangling() and Unretained(Ref)Wrapper.
+    // Use a static_assert, instead of disabling via SFINAE, so that the
+    // compiler catches other conversions. Otherwise the implicit
+    // `raw_ptr<T> -> T* -> raw_ptr<>` route will be taken.
     static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
                              RawPtrTraits::kMayDangle));
 
@@ -475,7 +474,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -484,7 +483,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -508,7 +507,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   // Upcast assignment
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
@@ -527,7 +526,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
@@ -567,9 +566,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     void* operator new(size_t, void*) = delete;
     PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~EphemeralRawAddr() { original = copy; }
 
-    PA_ALWAYS_INLINE constexpr T** operator&() && { return &copy; }
+    PA_ALWAYS_INLINE constexpr T** operator&() && PA_LIFETIME_BOUND {
+      return &copy;
+    }
     // NOLINTNEXTLINE(google-explicit-constructor)
-    PA_ALWAYS_INLINE constexpr operator T*&() && { return copy; }
+    PA_ALWAYS_INLINE constexpr operator T*&() && PA_LIFETIME_BOUND {
+      return copy;
+    }
 
    private:
     friend class raw_ptr;
@@ -587,7 +590,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   template <typename U = T,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type>>>
   PA_ALWAYS_INLINE constexpr U& operator*() const {
     return *GetForDereference();
@@ -659,7 +662,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   template <typename Z,
             typename U = T,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
   PA_ALWAYS_INLINE constexpr U& operator[](Z delta_elems) const {
@@ -680,6 +683,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // compiler is free to implicitly convert to the underlying T* representation
   // and perform ordinary pointer arithmetic, thus invalidating the purpose
   // behind disabling them.
+  //
+  // For example, disabling these when `!is_offset_type<Z>` would remove the
+  // operators for Z=uint64_t on 32-bit systems. The compiler instead would
+  // generate code that converts `raw_ptr<T>` to `T*` and adds uint64_t to that,
+  // bypassing the OOB protection entirely.
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
                                                       Z delta_elems) {
@@ -702,6 +710,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return result -= delta_elems;
   }
 
+  // The "Do not disable operator+() and operator-()" comment above doesn't
+  // apply to the delta operator-() below.
   PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(const raw_ptr& p1,
                                                         const raw_ptr& p2) {
     static_assert(
@@ -775,80 +785,98 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // because a comparison operator defined inline would not be allowed to call
   // `raw_ptr<U>`'s private `GetForComparison()` method.
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend bool operator==(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
+  friend constexpr bool operator==(const raw_ptr<U, R1>& lhs,
+                                   const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend bool operator!=(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
+  friend constexpr bool operator!=(const raw_ptr<U, R1>& lhs,
+                                   const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend bool operator<(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
+  friend constexpr bool operator<(const raw_ptr<U, R1>& lhs,
+                                  const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend bool operator>(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
+  friend constexpr bool operator>(const raw_ptr<U, R1>& lhs,
+                                  const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend bool operator<=(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
+  friend constexpr bool operator<=(const raw_ptr<U, R1>& lhs,
+                                   const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend bool operator>=(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
+  friend constexpr bool operator>=(const raw_ptr<U, R1>& lhs,
+                                   const raw_ptr<V, R2>& rhs);
 
   // Comparisons with U*. These operators also handle the case where the RHS is
   // T*.
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator==(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator==(const raw_ptr& lhs,
+                                                    U* rhs) {
     return lhs.GetForComparison() == rhs;
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator!=(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator!=(const raw_ptr& lhs,
+                                                    U* rhs) {
     return !(lhs == rhs);
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator==(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator==(U* lhs,
+                                                    const raw_ptr& rhs) {
     return rhs == lhs;  // Reverse order to call the operator above.
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator!=(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator!=(U* lhs,
+                                                    const raw_ptr& rhs) {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator<(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator<(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() < rhs;
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator<=(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator<=(const raw_ptr& lhs,
+                                                    U* rhs) {
     return lhs.GetForComparison() <= rhs;
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator>(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator>(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() > rhs;
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator>=(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator>=(const raw_ptr& lhs,
+                                                    U* rhs) {
     return lhs.GetForComparison() >= rhs;
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator<(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator<(U* lhs, const raw_ptr& rhs) {
     return lhs < rhs.GetForComparison();
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator<=(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator<=(U* lhs,
+                                                    const raw_ptr& rhs) {
     return lhs <= rhs.GetForComparison();
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator>(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator>(U* lhs, const raw_ptr& rhs) {
     return lhs > rhs.GetForComparison();
   }
   template <typename U>
-  PA_ALWAYS_INLINE friend bool operator>=(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator>=(U* lhs,
+                                                    const raw_ptr& rhs) {
     return lhs >= rhs.GetForComparison();
   }
 
   // Comparisons with `std::nullptr_t`.
-  PA_ALWAYS_INLINE friend bool operator==(const raw_ptr& lhs, std::nullptr_t) {
+  PA_ALWAYS_INLINE friend constexpr bool operator==(const raw_ptr& lhs,
+                                                    std::nullptr_t) {
     return !lhs;
   }
-  PA_ALWAYS_INLINE friend bool operator!=(const raw_ptr& lhs, std::nullptr_t) {
+  PA_ALWAYS_INLINE friend constexpr bool operator!=(const raw_ptr& lhs,
+                                                    std::nullptr_t) {
     return !!lhs;  // Use !! otherwise the costly implicit cast will be used.
   }
-  PA_ALWAYS_INLINE friend bool operator==(std::nullptr_t, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator==(std::nullptr_t,
+                                                    const raw_ptr& rhs) {
     return !rhs;
   }
-  PA_ALWAYS_INLINE friend bool operator!=(std::nullptr_t, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend constexpr bool operator!=(std::nullptr_t,
+                                                    const raw_ptr& rhs) {
     return !!rhs;  // Use !! otherwise the costly implicit cast will be used.
   }
 
@@ -890,47 +918,45 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return ptr;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union, #global-scope, #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION T* wrapped_ptr_;
+  T* wrapped_ptr_;
 
   template <typename U, base::RawPtrTraits R>
   friend class raw_ptr;
 };
 
 template <typename U, typename V, RawPtrTraits Traits1, RawPtrTraits Traits2>
-PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, Traits1>& lhs,
-                                 const raw_ptr<V, Traits2>& rhs) {
+PA_ALWAYS_INLINE constexpr bool operator==(const raw_ptr<U, Traits1>& lhs,
+                                           const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() == rhs.GetForComparison();
 }
 
 template <typename U, typename V, RawPtrTraits Traits1, RawPtrTraits Traits2>
-PA_ALWAYS_INLINE bool operator!=(const raw_ptr<U, Traits1>& lhs,
-                                 const raw_ptr<V, Traits2>& rhs) {
+PA_ALWAYS_INLINE constexpr bool operator!=(const raw_ptr<U, Traits1>& lhs,
+                                           const raw_ptr<V, Traits2>& rhs) {
   return !(lhs == rhs);
 }
 
 template <typename U, typename V, RawPtrTraits Traits1, RawPtrTraits Traits2>
-PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, Traits1>& lhs,
-                                const raw_ptr<V, Traits2>& rhs) {
+PA_ALWAYS_INLINE constexpr bool operator<(const raw_ptr<U, Traits1>& lhs,
+                                          const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() < rhs.GetForComparison();
 }
 
 template <typename U, typename V, RawPtrTraits Traits1, RawPtrTraits Traits2>
-PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, Traits1>& lhs,
-                                const raw_ptr<V, Traits2>& rhs) {
+PA_ALWAYS_INLINE constexpr bool operator>(const raw_ptr<U, Traits1>& lhs,
+                                          const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() > rhs.GetForComparison();
 }
 
 template <typename U, typename V, RawPtrTraits Traits1, RawPtrTraits Traits2>
-PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, Traits1>& lhs,
-                                 const raw_ptr<V, Traits2>& rhs) {
+PA_ALWAYS_INLINE constexpr bool operator<=(const raw_ptr<U, Traits1>& lhs,
+                                           const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() <= rhs.GetForComparison();
 }
 
 template <typename U, typename V, RawPtrTraits Traits1, RawPtrTraits Traits2>
-PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, Traits1>& lhs,
-                                 const raw_ptr<V, Traits2>& rhs) {
+PA_ALWAYS_INLINE constexpr bool operator>=(const raw_ptr<U, Traits1>& lhs,
+                                           const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() >= rhs.GetForComparison();
 }
 
@@ -1021,10 +1047,6 @@ constexpr auto AcrossTasksDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // instead of the raw_ptr.
 constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 
-// Does nothing.
-// TODO(bartekn): Remove once no longer referenced.
-constexpr auto ExperimentalAsh = base::RawPtrTraits::kEmpty;
-
 // The use of uninitialized pointers is strongly discouraged. raw_ptrs will
 // be initialized to nullptr by default in all cases when building against
 // Chromium. However, third-party projects built in a standalone manner may
@@ -1059,8 +1081,7 @@ constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
 // will be replaced by DanglingUntriaged where necessary.
 // Update: The alias now temporarily disables BRP. This is due to performance
 // issues. BRP will be re-enabled once the issues are identified and handled.
-constexpr inline auto VectorExperimental =
-    base::RawPtrTraits::kVectorExperimental;
+constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
 
 // Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
 // in Mocked method signatures as the macros don't allow commas within.

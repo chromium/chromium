@@ -44,6 +44,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_features.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/null_task_runner.h"
@@ -133,10 +135,6 @@ std::string GetTestNameSuffix(
     const testing::TestParamInfo<std::tuple<RunnerType, WakeUpType>>& info) {
   return StrCat({"With", ToString(std::get<0>(info.param)).substr(1),
                  ToString(std::get<1>(info.param))});
-}
-
-void PrintTo(const RunnerType type, std::ostream* os) {
-  *os << ToString(type);
 }
 
 TaskQueueImpl* GetTaskQueueImpl(TaskQueue* task_queue) {
@@ -5784,6 +5782,85 @@ TEST_F(SequenceManagerRunOrPostTaskTest, ConcurrentCalls) {
   EXPECT_FALSE(did_complete_task_2);
   RunLoop().RunUntilIdle();
   EXPECT_TRUE(did_complete_task_2);
+}
+
+// Verify the behavior of `SequenceCheckerImpl` and `ThreadCheckerImpl` in a
+// callback that runs synchronously in `RunOrPostTask` on another thread.
+TEST_F(SequenceManagerRunOrPostTaskTest, SequenceAndThreadChecker) {
+  SimulateInsideRunLoop();
+
+  SequenceCheckerImpl sequence_checker;
+  ThreadCheckerImpl thread_checker;
+  absl::optional<SequenceCheckerImpl> sequence_checker_bound_in_task;
+  absl::optional<ThreadCheckerImpl> thread_checker_bound_in_task;
+
+  EXPECT_TRUE(other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&]() {
+        bool did_run = false;
+
+        task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&]() {
+              EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
+              EXPECT_FALSE(thread_checker.CalledOnValidThread());
+              sequence_checker_bound_in_task.emplace();
+              thread_checker_bound_in_task.emplace();
+              EXPECT_TRUE(
+                  sequence_checker_bound_in_task->CalledOnValidSequence());
+              EXPECT_TRUE(thread_checker_bound_in_task->CalledOnValidThread());
+              did_run = true;
+            }));
+        EXPECT_TRUE(did_run);
+        EXPECT_FALSE(sequence_checker_bound_in_task->CalledOnValidSequence());
+        EXPECT_FALSE(thread_checker_bound_in_task->CalledOnValidThread());
+      })));
+
+  FlushOtherThread();
+  EXPECT_TRUE(sequence_checker_bound_in_task->CalledOnValidSequence());
+  EXPECT_FALSE(thread_checker_bound_in_task->CalledOnValidThread());
+}
+
+// Same as SequenceManagerRunOrPostTaskTest.SequenceAndThreadChecker, but
+// `RunOrPostTask()` is invoked from a `ThreadPool` task (i.e. within a
+// `TaskScope`).
+TEST_F(SequenceManagerRunOrPostTaskTest,
+       SequenceAndThreadCheckerFromThreadPool) {
+  SimulateInsideRunLoop();
+
+  SequenceCheckerImpl sequence_checker;
+  ThreadCheckerImpl thread_checker;
+  absl::optional<SequenceCheckerImpl> sequence_checker_bound_in_task;
+  absl::optional<ThreadCheckerImpl> thread_checker_bound_in_task;
+
+  ThreadPoolInstance::Create("TestPool");
+  ThreadPoolInstance::Get()->Start({/* max_num_foreground_threads_in=*/1});
+
+  EXPECT_TRUE(ThreadPool::PostTask(
+      FROM_HERE, BindLambdaForTesting([&]() {
+        bool did_run = false;
+        task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&]() {
+              EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
+              EXPECT_FALSE(thread_checker.CalledOnValidThread());
+              sequence_checker_bound_in_task.emplace();
+              thread_checker_bound_in_task.emplace();
+              EXPECT_TRUE(
+                  sequence_checker_bound_in_task->CalledOnValidSequence());
+              EXPECT_TRUE(thread_checker_bound_in_task->CalledOnValidThread());
+              did_run = true;
+            }));
+        EXPECT_TRUE(did_run);
+        EXPECT_FALSE(sequence_checker_bound_in_task->CalledOnValidSequence());
+        EXPECT_FALSE(thread_checker_bound_in_task->CalledOnValidThread());
+      })));
+
+  ThreadPoolInstance::Get()->FlushForTesting();
+  ThreadPoolInstance::Get()->JoinForTesting();
+  ThreadPoolInstance::Set(nullptr);
+
+  EXPECT_TRUE(sequence_checker_bound_in_task->CalledOnValidSequence());
+  EXPECT_FALSE(thread_checker_bound_in_task->CalledOnValidThread());
 }
 
 TEST(

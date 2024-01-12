@@ -22,19 +22,19 @@ class MockSharingService : public SharingService {
 
   MOCK_CONST_METHOD1(
       GetDeviceCandidates,
-      std::vector<std::unique_ptr<syncer::DeviceInfo>>(
+      std::vector<std::unique_ptr<SharingTargetDeviceInfo>>(
           sync_pb::SharingSpecificFields::EnabledFeatures required_feature));
 
   MOCK_METHOD4(
       SendMessageToDevice,
-      base::OnceClosure(const syncer::DeviceInfo& device,
+      base::OnceClosure(const SharingTargetDeviceInfo& device,
                         base::TimeDelta response_timeout,
                         chrome_browser_sharing::SharingMessage message,
                         SharingMessageSender::ResponseCallback callback));
 
   MOCK_CONST_METHOD1(
       GetDeviceByGuid,
-      std::unique_ptr<syncer::DeviceInfo>(const std::string& guid));
+      std::unique_ptr<SharingTargetDeviceInfo>(const std::string& guid));
 
   MOCK_METHOD2(
       RegisterSharingHandler,

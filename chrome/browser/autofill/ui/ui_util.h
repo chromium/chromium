@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_AUTOFILL_UI_UI_UTIL_H_
 #define CHROME_BROWSER_AUTOFILL_UI_UI_UTIL_H_
 
+#include <optional>
+
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -16,7 +17,7 @@ namespace autofill {
 
 // Retrieves user's primary account from BrowserContext, traversing a chain
 // of dependencies up to signin::IdentityManager.
-absl::optional<AccountInfo> GetPrimaryAccountInfoFromBrowserContext(
+std::optional<AccountInfo> GetPrimaryAccountInfoFromBrowserContext(
     content::BrowserContext* context);
 
 }  // namespace autofill

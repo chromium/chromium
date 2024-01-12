@@ -109,7 +109,7 @@ class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
   void OnAppsReady();
 
   // Unowned pointer.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::OnceClosure ready_callback_;
 

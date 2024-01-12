@@ -227,6 +227,10 @@ void CompanionMetricsLogger::OnVisualSuggestionsResult(
       ukm::GetExponentialBucketMin(metrics.results_count, kBucketSpacing);
 }
 
+void CompanionMetricsLogger::OnServerSideUrlFilterEvent() {
+  base::UmaHistogramBoolean("Companion.ServerSideUrlFilterEvent", true);
+}
+
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
 

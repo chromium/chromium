@@ -47,6 +47,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     absl::optional<bool> echo_cancellation;
     absl::optional<bool> auto_gain_control;
     absl::optional<bool> noise_supression;
+    absl::optional<bool> voice_isolation;
     String echo_cancellation_type;
     int32_t sample_rate = -1;
     int32_t sample_size = -1;

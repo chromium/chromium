@@ -136,6 +136,22 @@ You can also follow the manual instructions on the
 [Mac page](../mac_build_instructions.md), but make sure you set the
 GN arg `target_os="ios"`.
 
+### Faster builds
+
+This section contains some things you can change to speed up your builds,
+sorted so that the things that make the biggest difference are first.
+
+#### Use Reclient
+
+Google employees should use Reclient, a distributed compilation system. Detailed
+information is available internally but the relevant gn arg is:
+* `use_remoteexec = true`
+
+Google employees can visit
+[go/building-chrome-mac#using-remote-execution](https://goto.google.com/building-chrome-mac#using-remote-execution)
+for more information. For external contributors, Reclient does not support iOS
+builds.
+
 ## Building for device
 
 To be able to build and run Chromium and the tests for devices, you need to

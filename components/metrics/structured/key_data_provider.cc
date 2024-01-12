@@ -23,4 +23,9 @@ void KeyDataProvider::NotifyKeyReady() {
   }
 }
 
+std::optional<uint64_t> KeyDataProvider::GetSecondaryId(
+    const std::string& project_name) {
+  return std::nullopt;
+}
+
 }  // namespace metrics::structured

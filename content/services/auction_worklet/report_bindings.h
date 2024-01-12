@@ -5,11 +5,12 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_REPORT_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_REPORT_BINDINGS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 
@@ -31,7 +32,7 @@ class ReportBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  const absl::optional<GURL>& report_url() const { return report_url_; }
+  const std::optional<GURL>& report_url() const { return report_url_; }
 
  private:
   static void SendReportTo(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -39,7 +40,7 @@ class ReportBindings : public Bindings {
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
   // This is cleared if an exception is thrown.
-  absl::optional<GURL> report_url_;
+  std::optional<GURL> report_url_;
 
   // sendReportTo() can only be called once.
   bool already_called_ = false;

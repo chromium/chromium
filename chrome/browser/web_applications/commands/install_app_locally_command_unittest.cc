@@ -232,21 +232,12 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
   }
 }
 
-TEST_P(InstallAppLocallyCommandTest, NoAppInRegistrarCorrectLog) {
+TEST_P(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   const webapps::AppId app_id = "abcde";
 
   base::test::TestFuture<void> test_future;
   provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-
-  base::Value::Dict logs =
-      provider().command_manager().ToDebugValue().TakeDict();
-  base::Value::List* command_log = logs.FindList("command_log");
-  ASSERT_NE(command_log, nullptr);
-  base::Value::Dict* debug_value =
-      command_log->front().GetDict().FindDict("value");
-  EXPECT_EQ(*debug_value->FindString("command_result"), "app_not_in_registry");
-
   EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
 }
 

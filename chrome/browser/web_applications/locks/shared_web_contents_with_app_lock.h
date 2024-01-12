@@ -35,6 +35,8 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
  public:
   explicit SharedWebContentsWithAppLockDescription(
       base::flat_set<webapps::AppId> app_ids);
+  SharedWebContentsWithAppLockDescription(
+      SharedWebContentsWithAppLockDescription&&);
   ~SharedWebContentsWithAppLockDescription();
 };
 

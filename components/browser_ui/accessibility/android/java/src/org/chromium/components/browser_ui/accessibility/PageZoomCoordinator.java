@@ -90,7 +90,8 @@ public class PageZoomCoordinator {
 
         mModel.set(
                 PageZoomProperties.RESET_ZOOM_VISIBLE,
-                ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM));
+                ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS));
 
         // Adjust bottom margin for any bottom controls
         setBottomMargin(mBottomControlsOffset);

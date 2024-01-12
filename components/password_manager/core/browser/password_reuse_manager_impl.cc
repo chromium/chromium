@@ -59,7 +59,7 @@ bool IsPasswordReuseDetectionEnabled() {
 // Represents a single CheckReuse() request. Implements functionality to
 // listen to reuse events and propagate them to |consumer| on the sequence on
 // which CheckReuseRequest is created.
-class CheckReuseRequest : public PasswordReuseDetectorConsumer {
+class CheckReuseRequest final : public PasswordReuseDetectorConsumer {
  public:
   // |consumer| must not be null.
   explicit CheckReuseRequest(PasswordReuseDetectorConsumer* consumer);
@@ -78,9 +78,14 @@ class CheckReuseRequest : public PasswordReuseDetectorConsumer {
       const std::string& domain,
       uint64_t reused_password_hash) override;
 
+  base::WeakPtr<PasswordReuseDetectorConsumer> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   const base::WeakPtr<PasswordReuseDetectorConsumer> consumer_weak_;
+  base::WeakPtrFactory<CheckReuseRequest> weak_ptr_factory_{this};
 };
 
 CheckReuseRequest::CheckReuseRequest(PasswordReuseDetectorConsumer* consumer)
@@ -184,9 +189,7 @@ void PasswordReuseManagerImpl::Init(
 #endif
 }
 
-void PasswordReuseManagerImpl::ReportMetrics(
-    const std::string& username,
-    bool is_under_advanced_protection) {
+void PasswordReuseManagerImpl::ReportMetrics(const std::string& username) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (username.empty())
     return;
@@ -196,8 +199,7 @@ void PasswordReuseManagerImpl::ReportMetrics(
                                              /*is_gaia_password=*/true)
           ? metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF
           : metrics_util::IsSyncPasswordHashSaved::NOT_SAVED;
-  metrics_util::LogIsSyncPasswordHashSaved(hash_password_state,
-                                           is_under_advanced_protection);
+  metrics_util::LogIsSyncPasswordHashSaved(hash_password_state);
 }
 
 void PasswordReuseManagerImpl::CheckReuse(

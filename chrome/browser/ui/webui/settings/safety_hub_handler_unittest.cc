@@ -5,6 +5,7 @@
 #include <ctime>
 #include <memory>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -692,14 +693,18 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafeBrowsingCardData_DisabledByUser) {
 TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
   // TODO(crbug.com/1459305): Remove this after adding names for those
   // types.
-  std::list<ContentSettingsType> no_name_types = {
-      ContentSettingsType::DURABLE_STORAGE,
-      ContentSettingsType::ACCESSIBILITY_EVENTS,
-      ContentSettingsType::NFC,
-      ContentSettingsType::FILE_SYSTEM_READ_GUARD,
-      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION};
+  static constexpr auto kNoNameTypes =
+      base::MakeFixedFlatSet<ContentSettingsType>({
+          // clang-format off
+          ContentSettingsType::DURABLE_STORAGE,
+          ContentSettingsType::ACCESSIBILITY_EVENTS,
+          ContentSettingsType::NFC,
+          ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+          ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
+          // clang-format on
+      });
 
   // Add all content settings in the content setting registry to revoked
   // permissions list.
@@ -729,13 +734,10 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
         base::Value(dict.Clone()));
 
-    // Unless the permission in no_name_types, it should be shown on the UI.
+    // Unless the permission in kNoNameTypes, it should be shown on the UI.
     const auto& revoked_permissions =
         handler()->PopulateUnusedSitePermissionsData();
-    bool is_no_name_type =
-        (std::find(no_name_types.begin(), no_name_types.end(), type) !=
-         no_name_types.end());
-    if (is_no_name_type) {
+    if (base::Contains(kNoNameTypes, type)) {
       EXPECT_EQ(revoked_permissions.size(), 0U);
     } else {
       EXPECT_EQ(revoked_permissions.size(), 1U);

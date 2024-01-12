@@ -43,7 +43,8 @@ bool CompareNotifications(message_center::Notification* n1,
 // Returns a vector of notifications that should have their own message
 // view sorted for display, using CompareNotifications() above for the sorting
 // order.
-std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView();
+std::vector<message_center::Notification*> ASH_EXPORT
+GetSortedNotificationsWithOwnView();
 
 // Returns total notifications count, with a filter to not count some of them
 // These notifications such as camera, media controls, etc. don't need an

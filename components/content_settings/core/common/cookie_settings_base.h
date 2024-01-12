@@ -98,7 +98,9 @@ class CookieSettingsBase {
     kAllowBy3PCDHeuristics = 5,
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
-    kMaxValue = kAllowByTopLevelStorageAccess,
+    kAllowByCORSException = 8,
+    kAllowByTopLevel3PCD = 9,
+    kMaxValue = kAllowByTopLevel3PCD,
   };
 
   class CookieSettingWithMetadata {
@@ -143,7 +145,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 6>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 7>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -295,8 +297,8 @@ class CookieSettingsBase {
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
   // ContentSettingsTypes. Currently only COOKIES, TPCD_SUPPORT, STORAGE_ACCESS,
-  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, and TOP_LEVEL_STORAGE_ACCESS
-  // are required.
+  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_TPCD_SUPPORT, and
+  // TOP_LEVEL_STORAGE_ACCESS are required.
   virtual ContentSetting GetContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
@@ -306,7 +308,12 @@ class CookieSettingsBase {
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
 
+  bool IsAllowedByTopLevel3pcdSupportSetting(const GURL& first_party_url) const;
+
   bool ShouldConsider3pcdSupportSettings(
+      net::CookieSettingOverrides overrides) const;
+
+  bool ShouldConsiderTopLevel3pcdSupportSettings(
       net::CookieSettingOverrides overrides) const;
 
   bool ShouldConsider3pcdHeuristicsGrantsSettings(

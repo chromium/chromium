@@ -119,7 +119,7 @@ class PluginVmFilesTest : public testing::Test {
   FakePluginVmFeatures fake_plugin_vm_features_;
   base::test::ScopedRunningOnChromeOS running_on_chromeos_;
   std::string app_id_;
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
+  raw_ptr<storage::ExternalMountPoints> mount_points_;
   std::string mount_name_;
 };
 

@@ -9,6 +9,18 @@
 
 namespace apps {
 
+// Do not modify existing strings, they are used by metrics.
+std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
+  switch (surface) {
+    case AppInstallSurface::kAppInstallNavigationThrottle:
+      return out << "AppInstallNavigationThrottle";
+    case AppInstallSurface::kAppPreloadServiceOem:
+      return out << "AppPreloadServiceOem";
+    case AppInstallSurface::kAppPreloadServiceDefault:
+      return out << "AppPreloadServiceDefault";
+  }
+}
+
 std::ostream& operator<<(std::ostream& out, const AppInstallIcon& icon) {
   out << "AppInstallIcon{";
   out << "url: " << icon.url;

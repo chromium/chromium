@@ -106,7 +106,7 @@ class TestExternalCache : public ExternalCache {
                           const std::string& crx_path,
                           const std::string& version);
 
-  const raw_ptr<ExternalCacheDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ExternalCacheDelegate> delegate_;
   const bool always_check_for_updates_;
 
   std::optional<net::BackoffEntry::Policy> backoff_policy_;

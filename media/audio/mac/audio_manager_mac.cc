@@ -1503,7 +1503,6 @@ AudioDeviceID AudioManagerMac::FindFirstOutputSubdevice(
   return kAudioObjectUnknown;
 }
 
-// static
 OSStatus AudioManagerMac::GetInputDeviceStreamFormat(
     AudioUnit audio_unit,
     AudioStreamBasicDescription* input_format) {

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">โปรตุเกสด้วยแป้นพิมพ์สหรัฐฯ แบบสากล</translation>
 <translation id="1629521517399325891">ใช้ใบรับรองของผู้ใช้กับการตรวจสอบสิทธิ์เครือข่ายไม่ได้</translation>
 <translation id="1641780993263690097">พินอินภาษาจีน</translation>
-<translation id="1646019627374511909">กำลังทำให้ไฟล์ <ph name="NUMBER_OF_ITEMS" /> ไฟล์ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="164969095109328410">อุปกรณ์ Chrome</translation>
 <translation id="1661207570040737402">คุณใช้พื้นที่เก็บข้อมูลใน Google Workspace ของไดรฟ์ที่แชร์หมดแล้ว</translation>
 <translation id="1661867754829461514">ไม่พบ PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">สเปรดชีตของ Google</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
 <translation id="3486821258960016770">มองโกเลีย</translation>
-<translation id="3495304270784461826">ข้อผิดพลาด <ph name="COUNT" /> รายการ</translation>
 <translation id="3509680540198371098">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="3511705761158917664">กำลังเตรียมการซิงค์ <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="3522708245912499433">โปรตุเกส</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">นโยบายของผู้ดูแลระบบบล็อกการคัดลอกไฟล์ <ph name="COUNT" /> ไฟล์</translation>
 <translation id="6509122719576673235">นอร์เวย์</translation>
 <translation id="6528513914570774834">อนุญาตให้ผู้ใช้อุปกรณ์นี้คนอื่นๆ ใช้เครือข่ายนี้ได้</translation>
-<translation id="653019979737152879">กำลังซิงค์ <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">ล่าสุด</translation>
 <translation id="6558280019477628686">เกิดข้อผิดพลาด อาจไม่ได้ลบบางรายการ</translation>
 <translation id="656398493051028875">กำลังลบ "<ph name="FILENAME" />"...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">คุณออฟไลน์อยู่ การซิงค์ไฟล์จะดำเนินต่อเมื่อคุณเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
-<translation id="7592775719802218421">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
 <translation id="7627790789328695202">อ๊ะ มี <ph name="FILE_NAME" /> อยู่แล้ว เปลี่ยนชื่อแล้วลองอีกครั้ง</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8147028810663464959">ความกว้างอักขระเป็นแบบเต็ม</translation>
 <translation id="8151638057146502721">กำหนดค่า</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{ข้อผิดพลาด 1 รายการ}other{ข้อผิดพลาด # รายการ}}</translation>
 <translation id="8154842056504218462">เลือกรายการทั้งหมดอยู่</translation>
 <translation id="8157684860301034423">ดึงข้อมูลแอปไม่สำเร็จ</translation>
 <translation id="8175731104491895765">ฝรั่งเศส (เบลเยียม)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">ให้สิทธิ์แก่ <ph name="VM_NAME" /> ในการเข้าถึงไฟล์ในโฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">คีย์ WEP ไม่ถูกต้อง</translation>
 <translation id="8372852072747894550">กรีก</translation>
+<translation id="8377269993083688872">เลย์เอาต์อีเมล</translation>
 <translation id="8386903983509584791">สแกนเสร็จแล้ว</translation>
 <translation id="8387733224523483503">แตกไฟล์ <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="8395901698320285466">มิติข้อมูล</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">เลือกไฟล์เพื่อเปิด</translation>
 <translation id="8577897833047451336">โครเอเชีย</translation>
 <translation id="8578308463707544055">อินโดนีเซีย</translation>
-<translation id="8579285237314169903">กำลังซิงค์ <ph name="NUMBER_OF_FILES" /> รายการ...</translation>
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">อนุญาตให้ใช้พร็อกซีสำหรับเครือข่ายที่แชร์ไว้</translation>
 <translation id="8790981080411996443">คนกำลังรดน้ำต้นไม้</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{คำเตือน 1 รายการ}other{คำเตือน # รายการ}}</translation>
 <translation id="8808686172382650546">แมว</translation>
 <translation id="8810671769985673465">การซิปล้มเหลว มีรายการต่อไปนี้อยู่แล้ว "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">สเปน (สเปน)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว โปรดเลือกชื่ออื่น</translation>
 <translation id="9046895021617826162">การเชื่อมต่อล้มเหลว</translation>
 <translation id="9065512565307033593">หากไม่ยืนยัน ระบบจะปิดใช้สิทธิ์เข้าถึงเครือข่ายของคุณ</translation>
-<translation id="9083722265619106011">{0,plural, =1{คำเตือน 1 รายการ}other{คำเตือน <ph name="COUNT" /> รายการ}}</translation>
 <translation id="908378762078012445">รัสเซียด้วยแป้นพิมพ์ AATSEEL (ตามการออกเสียง)</translation>
 <translation id="9086302186042011942">กำลังซิงค์</translation>
 <translation id="9099674669267916096">จำนวนหน้า</translation>

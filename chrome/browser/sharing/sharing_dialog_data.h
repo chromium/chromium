@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
-#include "components/sync_device_info/device_info.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -45,7 +45,7 @@ struct SharingDialogData {
   SharingDialogType type = SharingDialogType::kErrorDialog;
   SharingFeatureName prefix = SharingFeatureName::kUnknown;
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
   std::vector<SharingApp> apps;
 
   std::u16string title;
@@ -56,7 +56,7 @@ struct SharingDialogData {
   int origin_text_id = 0;
   absl::optional<url::Origin> initiating_origin;
 
-  base::OnceCallback<void(const syncer::DeviceInfo&)> device_callback;
+  base::OnceCallback<void(const SharingTargetDeviceInfo&)> device_callback;
   base::OnceCallback<void(const SharingApp&)> app_callback;
   base::OnceCallback<void(SharingDialog*)> close_callback;
 };

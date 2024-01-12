@@ -446,7 +446,7 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
           this),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_TURN_OFF_BUTTON_TEXT));
   exit_button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_END_VR);
-  exit_button->SetProminent(true);
+  exit_button->SetStyle(ui::ButtonStyle::kProminent);
   // Set views::kInternalPaddingKey for flex layout to account for internal
   // button padding when calculating margins.
   exit_button->SetProperty(views::kInternalPaddingKey,
@@ -654,5 +654,5 @@ PageInfoMainView::CreateAdPersonalizationSection() {
   return ads_personalization_section;
 }
 
-BEGIN_METADATA(PageInfoMainView, views::View)
+BEGIN_METADATA(PageInfoMainView)
 END_METADATA

@@ -116,7 +116,8 @@ h2 {
             id="[[item.internalName]]"
             hidden$="[[!promoFilter_(item, filter)]]"
             promo="[[item]]"
-            on-promo-launch="showFeaturePromo_">
+            on-promo-launch="showFeaturePromo_"
+            on-clear-promo-data="clearPromoData_">
         </user-education-internals-card>
       </template>
     </div>

@@ -45,6 +45,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.HighlightingEnabled" enum="BooleanEnabled"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording if highlighting is enabled or disabled. Emitted when
+    the user toggles the &quot;Highlighting enabled&quot; setting.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.HighlightingEnabled.OnStartup" enum="BooleanEnabled"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording if highlighting is enabled or disabled on session
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.HighlightingSupported" enum="BooleanSupported"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording if highlighting is supported. Emitted when a
+    playback is successfully created.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.IsPageReadabilitySuccessful" enum="BooleanSuccess"
     expires_after="2024-06-02">
   <owner>andreaxg@google.com</owner>
@@ -77,6 +110,42 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records if a tab playback creation succeeds or fails. Emitted in the tab
     playback creation callback. Does not mean playback has started.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording what speed setting a user selects for the ReadAloud
+    playback. Emitted when the ReadAloud speed pref is changed.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.VoiceChanged.{VoiceID}" enum="Boolean"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording what voice a user changes to. Emitted when the
+    ReadAloud pref for voice is changed by the user. This only ever logs the
+    value &quot;true&quot; because we only care about the total count.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.VoicePreviewed.{VoiceID}" enum="Boolean"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording what voice a user previews. Emitted when a voice
+    preview playback is created successfully in ReadAloudController. This only
+    ever logs the value &quot;true&quot; because we only care about the total
+    count.
   </summary>
 </histogram>
 

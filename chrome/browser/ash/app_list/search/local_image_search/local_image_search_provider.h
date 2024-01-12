@@ -38,7 +38,7 @@ class LocalImageSearchProvider : public SearchProvider {
   base::TimeTicks query_start_time_;
   std::u16string last_query_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
 
   SEQUENCE_CHECKER(sequence_checker_);

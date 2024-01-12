@@ -206,9 +206,6 @@ OpaqueResponseBlockingAnalyzer::OpaqueResponseBlockingAnalyzer(
     : per_factory_state_(&state) {}
 
 OpaqueResponseBlockingAnalyzer::~OpaqueResponseBlockingAnalyzer() {
-  base::UmaHistogramEnumeration("SiteIsolation.ORB.BlockingReason",
-                                blocking_decision_reason_);
-
   // TODO(https://crbug.com/1178928): Add UMA tracking the size of ORB state
   // from `per_factory_state_`.
 }
@@ -479,15 +476,6 @@ OpaqueResponseBlockingAnalyzer::ShouldHandleBlockedResponseAs() const {
   }
 
   return BlockedResponseHandling::kEmptyResponse;
-}
-
-void OpaqueResponseBlockingAnalyzer::ReportOrbBlockedAndCorbDidnt() const {
-  // We encountered a scenario where ORB may block more than CORB and therefore
-  // let's log some extra data that may help us understand the kind of
-  // backcompatiblity risk that this scenario represents.
-  base::UmaHistogramEnumeration(
-      "SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason",
-      blocking_decision_reason_);
 }
 
 void OpaqueResponseBlockingAnalyzer::StoreAllowedAudioVideoRequest(

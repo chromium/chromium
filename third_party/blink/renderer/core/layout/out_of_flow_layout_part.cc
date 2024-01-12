@@ -397,7 +397,11 @@ class OOFCandidateStyleIterator {
       StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
       style_engine.UpdateStyleForPositionFallback(*element_, try_set);
     }
-    return element_->GetComputedStyle();
+    CHECK(element_->GetLayoutObject());
+    // Returns LayoutObject ComputedStyle instead of element style for layout
+    // purposes. The style may be different, in particular for body -> html
+    // propagation of writing modes.
+    return element_->GetLayoutObject()->Style();
   }
 
   Element* element_ = nullptr;

@@ -7,15 +7,25 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setGeolocationPermissionEnabledAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
+
+
 
 /**
  * @fileoverview contains all of the functions to interact with ambient mode
  * related C++ side through mojom calls. Handles setting |PersonalizationStore|
  * state in response to mojom data.
  */
+
+export async function initializeData(
+    provider: AmbientProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  const {geolocationEnabled} =
+      await provider.isGeolocationEnabledForSystemServices();
+  store.dispatch(setGeolocationPermissionEnabledAction(geolocationEnabled));
+}
 
 // Enable or disable ambient mode.
 export async function setAmbientModeEnabled(
@@ -103,4 +113,10 @@ export function dismissTimeOfDayBanner(store: PersonalizationStore): void {
   getAmbientProvider().handleTimeOfDayBannerDismissed();
 
   store.dispatch(setShouldShowTimeOfDayBannerAction(false));
+}
+
+export function enableGeolocationForSystemServices(
+    store: PersonalizationStore) {
+  getAmbientProvider().enableGeolocationForSystemServices();
+  store.dispatch(setGeolocationPermissionEnabledAction(true));
 }

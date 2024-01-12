@@ -49,13 +49,13 @@ class NotificationRemover : public HostScanCache::Observer,
       const ActiveHost::ActiveHostChangeInfo& active_host_change_info) override;
 
  private:
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<NotificationPresenter, ExperimentalAsh> notification_presenter_;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<NotificationPresenter> notification_presenter_;
+  raw_ptr<HostScanCache> host_scan_cache_;
+  raw_ptr<ActiveHost> active_host_;
 };
 
 }  // namespace ash::tether

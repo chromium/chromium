@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
@@ -33,7 +34,6 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -149,7 +149,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
     // automatically called from LoadURL.
     virtual bool CreateRenderViewForRenderManager(
         RenderViewHost* render_view_host,
-        const absl::optional<blink::FrameToken>& opener_frame_token,
+        const std::optional<blink::FrameToken>& opener_frame_token,
         RenderFrameProxyHost* proxy_host) = 0;
     virtual void CreateRenderWidgetHostViewForRenderManager(
         RenderViewHost* render_view_host) = 0;
@@ -214,7 +214,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
              const UrlInfo& url_info);
 
    private:
-    absl::optional<bool> is_same_site_;
+    std::optional<bool> is_same_site_;
   };
 
   // The delegate pointer must be non-null and is not owned by this class. It
@@ -331,7 +331,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // updated opener will be forwarded to any other RenderFrameProxies and
   // RenderFrames for this FrameTreeNode.
   void DidChangeOpener(
-      const absl::optional<blink::LocalFrameToken>& opener_frame_token,
+      const std::optional<blink::LocalFrameToken>& opener_frame_token,
       SiteInstanceGroup* source_site_instance_group);
 
   // Creates and initializes a RenderFrameHost. If |for_early_commit| is true
@@ -406,11 +406,11 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
   // Returns the frame token for a RenderFrameHost or RenderFrameProxyHost
   // that has the given SiteInstanceGroup and is associated with this
-  // RenderFrameHostManager. Returns absl::nullopt if none is found. Note that
+  // RenderFrameHostManager. Returns std::nullopt if none is found. Note that
   // the FrameToken will internally be either a LocalFrameToken (if the frame is
   // a RenderFrameHost in the given |site_instance_group|) or a RemoteFrameToken
   // (if it is a RenderFrameProxyHost).
-  absl::optional<blink::FrameToken> GetFrameTokenForSiteInstanceGroup(
+  std::optional<blink::FrameToken> GetFrameTokenForSiteInstanceGroup(
       SiteInstanceGroup* site_instance_group);
 
   // Notifies the RenderFrameHostManager that a new NavigationRequest has been
@@ -506,9 +506,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Returns a blink::FrameToken for the current FrameTreeNode's opener
   // node in the given SiteInstanceGroup.  May return a frame token of either a
   // RenderFrameHost (if opener's current or pending RFH has SiteInstanceGroup
-  // |group|) or a RenderFrameProxyHost.  Returns absl::nullopt if there is
+  // |group|) or a RenderFrameProxyHost.  Returns std::nullopt if there is
   // no opener, or if the opener node doesn't have a proxy for |group|.
-  absl::optional<blink::FrameToken> GetOpenerFrameToken(
+  std::optional<blink::FrameToken> GetOpenerFrameToken(
       SiteInstanceGroup* group);
 
   // Tells the |render_frame_host|'s renderer that its RenderFrame is being
@@ -956,13 +956,13 @@ class CONTENT_EXPORT RenderFrameHostManager {
   bool InitRenderFrame(RenderFrameHostImpl* render_frame_host);
 
   // Find the `blink::FrameToken` of the frame or proxy that this frame will
-  // replace or absl::nullopt if there is none. When initializing a new
+  // replace or std::nullopt if there is none. When initializing a new
   // RenderFrame for `render_frame_host`, it may be replacing a RenderFrameProxy
   // or another RenderFrame in the renderer or recovering from a crash.
   // `existing_proxy` is the proxy for `this` in the destination renderer,
   // nullptr if there is no proxy. `render_frame_host` is used only for sanity
   // checking.
-  absl::optional<blink::FrameToken> GetReplacementFrameToken(
+  std::optional<blink::FrameToken> GetReplacementFrameToken(
       RenderFrameProxyHost* existing_proxy,
       RenderFrameHostImpl* render_frame_host) const;
 

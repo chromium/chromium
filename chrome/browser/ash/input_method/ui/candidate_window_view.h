@@ -107,9 +107,9 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
 
   // Views created in the class will be part of tree of |this|, so these
   // child views will be deleted when |this| is deleted.
-  raw_ptr<InformationTextArea, ExperimentalAsh> auxiliary_text_;
-  raw_ptr<InformationTextArea, ExperimentalAsh> preedit_;
-  raw_ptr<views::View, ExperimentalAsh> candidate_area_;
+  raw_ptr<InformationTextArea> auxiliary_text_;
+  raw_ptr<InformationTextArea> preedit_;
+  raw_ptr<views::View> candidate_area_;
 
   // The candidate views are used for rendering candidates.
   std::vector<raw_ptr<CandidateView, VectorExperimental>> candidate_views_;

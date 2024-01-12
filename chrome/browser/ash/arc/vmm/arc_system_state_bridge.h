@@ -63,12 +63,12 @@ class ArcSystemStateBridge : public KeyedService,
   void UpdateAppRunningState(mojom::SystemAppRunningStatePtr state) override;
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   mojom::SystemAppRunningStatePtr state_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::ObserverList<Observer> observer_list_;
 

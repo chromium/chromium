@@ -142,7 +142,7 @@ class LockScreenStartReauthDialog
       scoped_observation_{this};
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_;
 

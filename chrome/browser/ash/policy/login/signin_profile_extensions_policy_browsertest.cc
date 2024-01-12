@@ -176,7 +176,7 @@ class ExtensionUpdateAvailabilityObserver final
   void OnChromeUpdateAvailable() override {}
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const extensions::ExtensionId extension_id_;
   const base::Version awaited_version_;
   base::RunLoop run_loop_;

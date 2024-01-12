@@ -165,6 +165,7 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
@@ -190,6 +191,7 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
   }
@@ -227,6 +229,7 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
@@ -273,6 +276,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(!vector.empty(), test_case.valid);
     if (!test_case.valid) {
@@ -309,6 +313,7 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
   }
@@ -330,6 +335,7 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
@@ -350,7 +356,7 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
@@ -371,7 +377,7 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
@@ -404,7 +410,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -428,7 +434,7 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
@@ -443,7 +449,6 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
                               ":-internal-multi-select-focus",
                               ":-internal-shadow-host-has-appearance",
                               ":-internal-spatial-navigation-focus",
-                              ":-internal-spatial-navigation-interest",
                               ":-internal-video-persistent",
                               ":-internal-video-persistent-ancestor"};
 
@@ -459,6 +464,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_EQ(author_vector.size(), 0u);
 
@@ -467,6 +473,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(ua_vector.size(), 0u);
   }
@@ -659,7 +666,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -690,7 +697,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -717,6 +724,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_EQ(test_case, list->SelectorsText());
@@ -741,6 +749,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+        /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
@@ -767,6 +776,7 @@ static bool IsCounted(const char* selector,
   HeapVector<CSSSelector> arena;
   CSSSelectorParser::ParseSelector(range, context, CSSNestingType::kNone,
                                    /*parent_rule_for_nesting=*/nullptr,
+                                   /*is_within_scope=*/false,
                                    /*semicolon_aborts_nested_selector=*/false,
                                    sheet, arena);
 
@@ -976,7 +986,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         range, context, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr,
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -1017,6 +1027,7 @@ TEST(CSSSelectorParserTest, WebKitScrollbarPseudoParsing) {
           MakeGarbageCollected<CSSParserContext>(
               kHTMLStandardMode, SecureContextMode::kInsecureContext),
           CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+          /*is_within_scope=*/false,
           /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
       EXPECT_EQ(vector.size(), state ? 1u : 0u);
     }
@@ -1120,9 +1131,9 @@ static CSSSelectorList* ParseNested(String inner_rule,
           ? nullptr
           : DynamicTo<StyleRule>(
                 css_test_helpers::ParseRule(document, "div {}"));
-
+  bool is_within_scope = nesting_type == CSSNestingType::kScope;
   CSSSelectorList* list = css_test_helpers::ParseSelectorList(
-      inner_rule, nesting_type, parent_rule_for_nesting);
+      inner_rule, nesting_type, parent_rule_for_nesting, is_within_scope);
   if (!list || !list->First()) {
     return nullptr;
   }

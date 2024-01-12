@@ -158,10 +158,21 @@ class PopupBaseView::Widget : public views::Widget {
       return;
     }
 
+    // Suppress the exit event on MacOS and Windows generated when the sub-popup
+    // initially opens. We assume that it is the sub-popup that hovers
+    // the parent by its semi-transparent shadow part. But in theory it could be
+    // another window, which is not a problem because the popup closes on focus
+    // loss anyway. The exit event will be synthesized by the sub-popup later
+    // (find the trick that does this below).
+    if (event->type() == ui::EventType::ET_MOUSE_EXITED &&
+        GetContentsView()->IsMouseHovered()) {
+      return;
+    }
+
     // Retrigger mouse moves on the parent to make selection/highlighting work
-    // properly and thus provide more intuitive UX when the child's
-    // transparent parts (e.g. shadow) overlap parent (assuming that
-    // the contents are not x`overlapped).
+    // properly and thus provide more intuitive UX when the child's transparent
+    // parts (e.g. shadow) overlap the parent (assuming that the child contents
+    // view is not overlapped).
     if (event->type() == ui::EventType::ET_MOUSE_MOVED &&
         !GetContentsView()->IsMouseHovered() &&
         parent_content_view->IsMouseHovered()) {

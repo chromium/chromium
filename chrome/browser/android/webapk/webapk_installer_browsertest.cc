@@ -119,25 +119,6 @@ class WebApkInstallerRunner {
     run_loop.Run();
   }
 
-  void RunInstallForService(std::unique_ptr<WebApkInstaller> installer,
-                            std::unique_ptr<std::string> serialized_webapk,
-                            const std::u16string& short_name,
-                            webapps::ShortcutInfo::Source source) {
-    base::RunLoop run_loop;
-    on_completed_callback_ = run_loop.QuitClosure();
-
-    GURL manifest_url("httsp://manifest.com");
-
-    // WebApkInstaller owns itself.
-    WebApkInstaller::InstallWithProtoAsyncForTesting(
-        installer.release(), std::move(serialized_webapk), short_name, source,
-        SkBitmap(), manifest_url,
-        base::BindOnce(&WebApkInstallerRunner::OnCompleted,
-                       base::Unretained(this)));
-
-    run_loop.Run();
-  }
-
   void RunUpdateWebApk(std::unique_ptr<WebApkInstaller> installer,
                        const base::FilePath& update_request_path) {
     base::RunLoop run_loop;
@@ -425,56 +406,6 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
   runner.RunInstallWebApk(std::move(installer), web_contents(),
                           DefaultShortcutInfo());
   EXPECT_EQ(webapps::WebApkInstallResult::REQUEST_TIMEOUT, runner.result());
-}
-
-// InstallForService tests
-
-// Test installation for service succeeding
-IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, ServiceSuccess) {
-  std::unique_ptr<WebApkInstaller> installer(
-      new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
-
-  std::unique_ptr<std::string> serialized_proto = DefaultSerializedWebApk();
-  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
-
-  WebApkInstallerRunner runner;
-  runner.RunInstallForService(std::move(installer), std::move(serialized_proto),
-                              shortcut_info.short_name, shortcut_info.source);
-
-  EXPECT_EQ(webapps::WebApkInstallResult::SUCCESS, runner.result());
-}
-
-// Test installation for service failing if not enough space
-IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, ServiceFailOnLowSpace) {
-  std::unique_ptr<WebApkInstaller> installer(
-      new TestWebApkInstaller(profile(), SpaceStatus::NOT_ENOUGH_SPACE));
-
-  std::unique_ptr<std::string> serialized_proto = DefaultSerializedWebApk();
-  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
-
-  WebApkInstallerRunner runner;
-  runner.RunInstallForService(std::move(installer), std::move(serialized_proto),
-                              shortcut_info.short_name, shortcut_info.source);
-
-  EXPECT_EQ(webapps::WebApkInstallResult::NOT_ENOUGH_SPACE, runner.result());
-}
-
-// Test installation for service failing if serialized apk invalid.
-IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
-                       ServiceFailOnInvalidSerializedWebApk) {
-  std::unique_ptr<WebApkInstaller> installer(
-      new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
-
-  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
-  std::string invalid_serialized_webapk = "😀";
-
-  WebApkInstallerRunner runner;
-  runner.RunInstallForService(
-      std::move(installer),
-      std::make_unique<std::string>(invalid_serialized_webapk),
-      shortcut_info.short_name, shortcut_info.source);
-
-  EXPECT_EQ(webapps::WebApkInstallResult::REQUEST_INVALID, runner.result());
 }
 
 namespace {

@@ -115,6 +115,7 @@ TEST_F(StyleRuleTest, SetPreludeTextReparentsStyleRules) {
   scope_rule->SetPreludeText(GetDocument().GetExecutionContext(),
                              "(.x) to (.b &)", CSSNestingType::kNone,
                              /* parent_rule_for_nesting */ nullptr,
+                             /* is_within_scope */ false,
                              /* style_sheet */ nullptr);
 
   const StyleScope& scope_after = scope_rule->GetStyleScope();

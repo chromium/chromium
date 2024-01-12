@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/persisted_data.h"
+
 #include <map>
 #include <memory>
 #include <string>
@@ -10,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/update_client/persisted_data.h"
 #include "components/update_client/test_activity_data_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

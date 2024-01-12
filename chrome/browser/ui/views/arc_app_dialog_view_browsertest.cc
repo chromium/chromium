@@ -106,10 +106,9 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return profile_; }
 
  private:
-  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
-      arc_app_list_pref_ = nullptr;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_pref_ = nullptr;
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };

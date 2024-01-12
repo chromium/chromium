@@ -22,8 +22,6 @@ struct StoredProfileCounts {
   size_t total = 0;
   // The subset of profiles that hasn't been used in a fixed period of time.
   size_t disused = 0;
-  // The subset of profiles that doesn't have a country stored.
-  size_t without_country = 0;
 };
 
 // Records statistics for the number of used, disused, and potentially,

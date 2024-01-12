@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/to_string.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,6 +111,18 @@ TEST_F(PreloadAppDefinitionTest, IsNotTestApp) {
   ASSERT_FALSE(app_def.IsTestApp());
 }
 
+TEST_F(PreloadAppDefinitionTest, GetInstallSurface) {
+  proto::AppPreloadListResponse_App app;
+
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
+  EXPECT_EQ(PreloadAppDefinition(app).GetInstallSurface(),
+            AppInstallSurface::kAppPreloadServiceOem);
+
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_DEFAULT);
+  EXPECT_EQ(PreloadAppDefinition(app).GetInstallSurface(),
+            AppInstallSurface::kAppPreloadServiceDefault);
+}
+
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlWebsite) {
   proto::AppPreloadListResponse_App app = CreateTestWebApp();
   app.mutable_web_extras()->set_manifest_url(
@@ -194,6 +207,41 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
 
   ASSERT_EQ(app_def.GetWebAppManifestId().spec(),
             "https://example.com/path/of/manifest_id");
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppId) {
+  proto::AppPreloadListResponse_App app;
+  app.set_package_id("web:https://example.com/path/of/manifest_id");
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_EQ(app_def.GetWebAppId(), "pckfllnaogmpbmijcjpenfdglaikbiea");
+}
+
+TEST_F(PreloadAppDefinitionTest, ToAppInstallData) {
+  proto::AppPreloadListResponse_App app;
+  app.set_name("Example App");
+  app.set_package_id("web:https://www.example.com/index.html");
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
+  auto* web_extras = app.mutable_web_extras();
+  web_extras->set_original_manifest_url(
+      "https://www.example.com/manifest.json");
+  web_extras->set_manifest_url("https://cdn.com/manifest.json");
+
+  AppInstallData expectation(
+      PackageId(AppType::kWeb, "https://www.example.com/index.html"));
+  expectation.name = "Example App";
+  WebAppInstallData& web_app_expecatation =
+      expectation.app_type_data.emplace<WebAppInstallData>();
+  web_app_expecatation.original_manifest_url =
+      GURL("https://www.example.com/manifest.json");
+  web_app_expecatation.proxied_manifest_url =
+      GURL("https://cdn.com/manifest.json");
+  web_app_expecatation.document_url = GURL("https://www.example.com/");
+
+  EXPECT_EQ(
+      base::ToString(PreloadAppDefinition(std::move(app)).ToAppInstallData()),
+      base::ToString(expectation));
 }
 
 }  // namespace apps

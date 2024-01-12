@@ -411,6 +411,10 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
   return absl::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> SpellcheckCustomDictionary::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
     : is_valid_file(false) {}
 

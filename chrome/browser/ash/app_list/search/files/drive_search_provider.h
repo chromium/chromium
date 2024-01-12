@@ -72,8 +72,8 @@ class DriveSearchProvider : public SearchProvider {
   std::u16string last_query_;
   std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> drive_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<drive::DriveIntegrationService> drive_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveSearchProvider> weak_factory_{this};

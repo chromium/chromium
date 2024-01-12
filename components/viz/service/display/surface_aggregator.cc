@@ -733,13 +733,18 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     // Mark the frame as used this aggregation so it persists.
     resolved_frame.MarkAsUsedInAggregation();
 
-    // If there is a new CompositorFrame for `surface` compute resolved frame
-    // data for the new resolved CompositorFrame.
     if (resolved_frame.previous_frame_index() !=
         surface->GetActiveFrameIndex()) {
+      // If there is a new CompositorFrame for `surface` compute resolved frame
+      // data.
       base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
       stats_->declare_resources_time += timer.Elapsed();
+    } else if (resolved_frame.is_valid()) {
+      // The same `CompositorFrame` since last aggregation. Set the
+      // `CompositorRenderPass` pointer back to `ResolvedPassData`. Only
+      // applicable to valid `ResolvedFrameData`.
+      resolved_frame.SetRenderPassPointers();
     }
   }
 
@@ -812,7 +817,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
   if (resolved_frame->surface_id() != primary_surface_id &&
       !surface_quad->stretch_content_to_fill_bounds) {
     const CompositorFrame& fallback_frame =
-        resolved_frame->surface()->GetActiveOrInterpolatedFrame();
+        resolved_frame->surface()->GetActiveFrame();
 
     gfx::Rect fallback_rect(fallback_frame.size_in_pixels());
 
@@ -862,7 +867,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
   ++stats_->copied_surface_count;
 
-  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
+  const CompositorFrame& frame = surface->GetActiveFrame();
 
   // If we are stretching content to fill the SurfaceDrawQuad, or if the device
   // scale factor mismatches between content and SurfaceDrawQuad, we appply an
@@ -1593,7 +1598,7 @@ void SurfaceAggregator::CopyQuadsToPass(
 
 void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
   Surface* surface = resolved_frame.surface();
-  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
+  const CompositorFrame& frame = surface->GetActiveFrame();
 
   // The root surface is allowed to have copy output requests, so grab them
   // off its render passes. This map contains a set of CopyOutputRequests
@@ -2032,8 +2037,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
 void SurfaceAggregator::ProcessResolvedFrame(
     ResolvedFrameData& resolved_frame) {
   Surface* surface = resolved_frame.surface();
-  const CompositorFrame& compositor_frame =
-      surface->GetActiveOrInterpolatedFrame();
+  const CompositorFrame& compositor_frame = surface->GetActiveFrame();
 
   // Ref the resources in the surface, and let the provider know we've received
   // new resources from the compositor frame.
@@ -2131,7 +2135,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   if (root_resolved_pass.aggregation().will_draw)
     surface->OnWillBeDrawn();
 
-  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
+  const CompositorFrame& frame = surface->GetActiveFrame();
   for (const SurfaceRange& surface_range : frame.metadata.referenced_surfaces) {
     damage_ranges_[surface_range.end().frame_sink_id()].push_back(
         surface_range);
@@ -2251,8 +2255,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
 
-  const CompositorFrame& root_surface_frame =
-      surface->GetActiveOrInterpolatedFrame();
+  const CompositorFrame& root_surface_frame = surface->GetActiveFrame();
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::TerminatingFlow::Global(
@@ -2464,9 +2467,7 @@ bool SurfaceAggregator::NotifySurfaceDamageAndCheckForDisplayDamage(
   if (iter != resolved_frames_.end()) {
     auto& resolved_frame = iter->second;
     DCHECK(resolved_frame.surface()->HasActiveFrame());
-    if (resolved_frame.surface()
-            ->GetActiveOrInterpolatedFrame()
-            .resource_list.empty()) {
+    if (resolved_frame.surface()->GetActiveFrame().resource_list.empty()) {
       // When a client submits a CompositorFrame without resources it's
       // typically done to force return of existing resources to the client.
       resolved_frame.ForceReleaseResource();

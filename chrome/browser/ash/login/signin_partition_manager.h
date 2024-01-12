@@ -116,7 +116,7 @@ class SigninPartitionManager : public KeyedService {
   };
 
  private:
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   ClearStoragePartitionTask clear_storage_partition_task_;
   GetSystemNetworkContextTask get_system_network_context_task_;
@@ -130,8 +130,7 @@ class SigninPartitionManager : public KeyedService {
   std::string current_storage_partition_name_;
   // The StoragePartition identified by `storage_partition_domain_` and
   // `current_storage_partition_name_`.
-  raw_ptr<content::StoragePartition, ExperimentalAsh>
-      current_storage_partition_ = nullptr;
+  raw_ptr<content::StoragePartition> current_storage_partition_ = nullptr;
 };
 
 }  // namespace login

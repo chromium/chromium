@@ -299,7 +299,8 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 ProfileOAuth2TokenServiceIOSDelegate::CreateAccessTokenFetcher(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuth2AccessTokenConsumer* consumer) {
+    OAuth2AccessTokenConsumer* consumer,
+    const std::string& token_binding_challenge) {
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
   return std::make_unique<SSOAccessTokenFetcher>(consumer, provider_.get(),

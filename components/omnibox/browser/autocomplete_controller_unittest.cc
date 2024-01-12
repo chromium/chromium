@@ -754,9 +754,62 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
           "history 1400 .5",
           "shortcut 1000 .1",
       }));
+
+  // When transferring matches, culls the lowest ML ranked matches, rather than
+  // the lowest traditional ranked matches.
+  controller_.internal_result_.Reset();
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, false,
+          {
+              CreateSearchMatch("search 1270", true, 1270),
+              CreateSearchMatch("search 1260", true, 1260),
+              CreateSearchMatch("search 1250", true, 1250),
+              CreateSearchMatch("search 1240", true, 1240),
+              CreateSearchMatch("search 1230", true, 1230),
+              CreateSearchMatch("search 1220", true, 1220),
+              CreateSearchMatch("search 1210", true, 1210),
+              CreateHistoryUrlMlScoredMatch("history 1100 .5", true, 1100, .5),
+              CreateHistoryUrlMlScoredMatch("history 1000 .9", true, 1000, .9),
+          }),
+      testing::ElementsAreArray({
+          "search 1270",
+          "search 1260",
+          "search 1250",
+          "search 1240",
+          "search 1230",
+          "search 1220",
+          "search 1210",
+          "history 1000 .9",
+      }));
+
+  // When not transferring matches, like above, culls the lowest ML ranked
+  // matches, rather than the lowest traditional ranked matches.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateSearchMatch("search 1270", true, 1270),
+          CreateSearchMatch("search 1260", true, 1260),
+          CreateSearchMatch("search 1250", true, 1250),
+          CreateSearchMatch("search 1240", true, 1240),
+          CreateSearchMatch("search 1230", true, 1230),
+          CreateSearchMatch("search 1220", true, 1220),
+          CreateSearchMatch("search 1210", true, 1210),
+          CreateHistoryUrlMlScoredMatch("history 1100 .5", true, 1100, .5),
+          CreateHistoryUrlMlScoredMatch("history 1000 .9", true, 1000, .9),
+      }),
+      testing::ElementsAreArray({
+          "search 1270",
+          "search 1260",
+          "search 1250",
+          "search 1240",
+          "search 1230",
+          "search 1220",
+          "search 1210",
+          "history 1000 .9",
+      }));
 }
 
-TEST_F(AutocompleteControllerTest, MlRanking_stableSearchRanking) {
+TEST_F(AutocompleteControllerTest, MlRanking_StableSearchRanking) {
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
   scoped_ml_config.GetMLConfig().ml_url_scoring = true;
   scoped_ml_config.GetMLConfig().url_scoring_model = true;
@@ -905,6 +958,59 @@ TEST_F(AutocompleteControllerTest, MlRanking_stableSearchRanking) {
           "history 1000 .5",
           "shortcut 1400 .1",
       }));
+
+  // When transferring matches, culls the lowest ML ranked matches, rather than
+  // the lowest traditional ranked matches.
+  controller_.internal_result_.Reset();
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, false,
+          {
+              CreateSearchMatch("search 1270", true, 1270),
+              CreateSearchMatch("search 1260", true, 1260),
+              CreateSearchMatch("search 1250", true, 1250),
+              CreateSearchMatch("search 1240", true, 1240),
+              CreateSearchMatch("search 1230", true, 1230),
+              CreateSearchMatch("search 1220", true, 1220),
+              CreateSearchMatch("search 1210", true, 1210),
+              CreateHistoryUrlMlScoredMatch("history 1100 .5", true, 1100, .5),
+              CreateHistoryUrlMlScoredMatch("history 1000 .9", true, 1000, .9),
+          }),
+      testing::ElementsAreArray({
+          "search 1270",
+          "search 1260",
+          "search 1250",
+          "search 1240",
+          "search 1230",
+          "search 1220",
+          "search 1210",
+          "history 1000 .9",
+      }));
+
+  // When not transferring matches, like above, culls the lowest ML ranked
+  // matches, rather than the lowest traditional ranked matches.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateSearchMatch("search 1270", true, 1270),
+          CreateSearchMatch("search 1260", true, 1260),
+          CreateSearchMatch("search 1250", true, 1250),
+          CreateSearchMatch("search 1240", true, 1240),
+          CreateSearchMatch("search 1230", true, 1230),
+          CreateSearchMatch("search 1220", true, 1220),
+          CreateSearchMatch("search 1210", true, 1210),
+          CreateHistoryUrlMlScoredMatch("history 1100 .5", true, 1100, .5),
+          CreateHistoryUrlMlScoredMatch("history 1000 .9", true, 1000, .9),
+      }),
+      testing::ElementsAreArray({
+          "search 1270",
+          "search 1260",
+          "search 1250",
+          "search 1240",
+          "search 1230",
+          "search 1220",
+          "search 1210",
+          "history 1000 .9",
+      }));
 }
 
 TEST_F(AutocompleteControllerTest, UpdateResult_MLRanking_PreserveDefault) {
@@ -1006,18 +1112,15 @@ TEST_F(AutocompleteControllerTest, UpdateResult_MLRanking_AllMatches) {
               CreateHistoryUrlMlScoredMatch("history 900 .1", true, 900, .1),
               CreateHistoryUrlMlScoredMatch("history 1000 0", true, 1000, 0),
           }),
-      // TODO(manukh): After ML reranking is fixed to consider matches before
-      //   culling, this should include the 100 and 200 matches instead of 900
-      //   and 1000.
       testing::ElementsAreArray({
+          "history 100 .9",
+          "history 200 .8",
           "history 300 .7",
           "history 400 .6",
           "history 500 .5",
           "history 600 .4",
           "history 700 .3",
           "history 800 .2",
-          "history 900 .1",
-          "history 1000 0",
       }));
 }
 #endif  //  BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_ANDROID) &&

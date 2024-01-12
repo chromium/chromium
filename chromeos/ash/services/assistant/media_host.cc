@@ -116,7 +116,7 @@ class MediaHost::ChromeosMediaStateObserver
                               std::move(media_state));
   }
 
-  const raw_ptr<MediaHost, ExperimentalAsh> parent_;
+  const raw_ptr<MediaHost> parent_;
   mojo::Receiver<media_session::mojom::MediaControllerObserver> receiver_{this};
 
   // Info associated to the active media session.
@@ -197,7 +197,7 @@ class MediaHost::LibassistantMediaDelegate
     return *parent_->chromeos_media_controller_;
   }
 
-  const raw_ptr<MediaHost, ExperimentalAsh> parent_;
+  const raw_ptr<MediaHost> parent_;
   mojo::Receiver<MediaDelegate> receiver_;
 };
 

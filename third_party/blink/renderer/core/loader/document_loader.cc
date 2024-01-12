@@ -999,7 +999,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics = nullptr;
   ScriptState* script_state = nullptr;
-  if (frame_->IsMainFrame()) {
+  if (frame_->IsMainFrame() &&
+      base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     script_state = ToScriptStateForMainWorld(frame_);
     if (script_state) {
       CHECK(frame_->DomWindow());
@@ -1010,7 +1011,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
         // need to do that now.
         soft_navigation_event_scope =
             std::make_unique<SoftNavigationEventScope>(
-                heuristics, SoftNavigationHeuristics::EventScopeType::Navigate,
+                heuristics, SoftNavigationHeuristics::EventScopeType::kNavigate,
                 /*is_new_interaction=*/true);
         heuristics->SameDocumentNavigationStarted(script_state);
       }
@@ -2640,14 +2641,9 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
-    auto required_permissions_for_fenced_frames =
-        FencedFrameProperties()
-            ? base::make_span(
-                  FencedFrameProperties()->effective_enabled_permissions())
-            : base::span<const mojom::blink::PermissionsPolicyFeature>();
     security_init.ApplyPermissionsPolicy(
         *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
-        required_permissions_for_fenced_frames);
+        FencedFrameProperties());
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide

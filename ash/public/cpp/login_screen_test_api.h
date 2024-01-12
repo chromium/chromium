@@ -105,6 +105,11 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static std::u16string GetPinRequestWidgetTitle();
   static void SubmitPinRequestWidget(const std::string& pin);
   static void CancelPinRequestWidget();
+
+  static bool IsLocalAuthenticationDialogVisible();
+  static void CancelLocalAuthenticationDialog();
+  static void SubmitPasswordLocalAuthenticationDialog(
+      const std::string& password);
 };
 
 }  // namespace ash

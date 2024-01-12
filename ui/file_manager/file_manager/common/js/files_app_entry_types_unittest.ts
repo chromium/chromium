@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import type {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 
 import {CombinedReaders, EntryList, FakeEntryImpl, StaticReader, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
@@ -544,5 +544,5 @@ export async function testFakeEntry() {
   }, notReached /* error */);
 
   // It should be called for getMetadata and for getParent.
-  await waitUntil(() => callCounter == 2);
+  await waitUntil(() => callCounter === 2);
 }

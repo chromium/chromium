@@ -133,7 +133,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   std::set<GURL> frame_ancestors_;
 
   // Supported scheme if not one of the default supported schemes.
-  absl::optional<std::string> supported_scheme_;
+  std::optional<std::string> supported_scheme_;
 };
 
 }  // namespace content

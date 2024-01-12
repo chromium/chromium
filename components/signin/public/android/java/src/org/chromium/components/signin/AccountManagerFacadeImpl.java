@@ -49,7 +49,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      */
     @VisibleForTesting public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
-    /** The maximum amount of acceptable retries (for a total of MAXIMUM_RETRIES+1 attempts). */
+    /**
+     * The maximum amount of acceptable retries (for a total of MAXIMUM_RETRIES+1 attempts). *
+     *
+     * <p>WARNING: This is tied to the number of buckets of a UMA histogram and should therefore not
+     * exceed 100.
+     */
     @VisibleForTesting public static final int MAXIMUM_RETRIES = 5;
 
     // Prefix used to define the capability name for querying Identity services. This
@@ -327,7 +332,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     return Collections.unmodifiableList(
                             Arrays.asList(mDelegate.getAccountsSynchronous()));
                 } catch (AccountManagerDelegateException delegateException) {
-                    // TODO(crbug.com/1504732): Record error metrics for this exception.
                     Log.e(TAG, "Error fetching accounts from the delegate.", delegateException);
                     return null;
                 }
@@ -335,6 +339,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             protected void onPostExecute(@Nullable List<Account> allAccounts) {
+                boolean didBackoffSucceed = true;
                 if (allAccounts == null) {
                     if (shouldRetry()) {
                         // Wait for a fixed amount of time then try to fetch the accounts again.
@@ -350,6 +355,17 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         // might block certain features. Fall back to an empty list to allow the
                         // user to proceed.
                         allAccounts = List.of();
+                        didBackoffSucceed = false;
+                    }
+                }
+                if (mNumberOfRetries != 0) {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Signin.GetAccountsBackoffSuccess", didBackoffSucceed);
+                    if (didBackoffSucceed) {
+                        RecordHistogram.recordExactLinearHistogram(
+                                "Signin.GetAccountsBackoffRetries",
+                                mNumberOfRetries,
+                                MAXIMUM_RETRIES + 1);
                     }
                 }
                 mNumberOfRetries = 0;

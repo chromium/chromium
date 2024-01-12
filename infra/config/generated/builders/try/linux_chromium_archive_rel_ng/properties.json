@@ -37,7 +37,8 @@
           "builder": "linux-archive-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_archive_rel_ng/targets"
     }
   },
   "$build/reclient": {

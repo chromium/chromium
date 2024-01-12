@@ -745,6 +745,19 @@ struct _xmlSAXHandler {
     setDocumentLocatorSAXFunc setDocumentLocator;
     startDocumentSAXFunc startDocument;
     endDocumentSAXFunc endDocument;
+    /*
+     * `startElement` and `endElement` are only used by the legacy SAX1
+     * interface and should not be used in new software. If you really
+     * have to enable SAX1, the preferred way is set the `initialized`
+     * member to 1 instead of XML_SAX2_MAGIC.
+     *
+     * For backward compatibility, it's also possible to set the
+     * `startElementNs` and `endElementNs` handlers to NULL.
+     *
+     * You can also set the XML_PARSE_SAX1 parser option, but versions
+     * older than 2.12.0 will probably crash if this option is provided
+     * together with custom SAX callbacks.
+     */
     startElementSAXFunc startElement;
     endElementSAXFunc endElement;
     referenceSAXFunc reference;
@@ -758,8 +771,14 @@ struct _xmlSAXHandler {
     getParameterEntitySAXFunc getParameterEntity;
     cdataBlockSAXFunc cdataBlock;
     externalSubsetSAXFunc externalSubset;
+    /*
+     * `initialized` should always be set to XML_SAX2_MAGIC to enable the
+     * modern SAX2 interface.
+     */
     unsigned int initialized;
-    /* The following fields are extensions available only on version 2 */
+    /*
+     * The following members are only used by the SAX2 interface.
+     */
     void *_private;
     startElementNsSAX2Func startElementNs;
     endElementNsSAX2Func endElementNs;
@@ -822,15 +841,30 @@ typedef xmlParserInputPtr (*xmlExternalEntityLoader) (const char *URL,
  */
 
 XMLPUBVAR const char *const xmlParserVersion;
+XML_DEPRECATED
+XMLPUBVAR const int oldXMLWDcompatibility;
+XML_DEPRECATED
+XMLPUBVAR const xmlSAXLocator xmlDefaultSAXLocator;
+#ifdef LIBXML_SAX1_ENABLED
+XML_DEPRECATED
+XMLPUBVAR const xmlSAXHandlerV1 xmlDefaultSAXHandler;
+#endif
+
 #ifdef LIBXML_THREAD_ENABLED
 /* backward compatibility */
 XMLPUBFUN const char *const *__xmlParserVersion(void);
+XML_DEPRECATED
+XMLPUBFUN const int *__oldXMLWDcompatibility(void);
+XML_DEPRECATED
+XMLPUBFUN const xmlSAXLocator *__xmlDefaultSAXLocator(void);
+#ifdef LIBXML_SAX1_ENABLED
+XML_DEPRECATED
+XMLPUBFUN const xmlSAXHandlerV1 *__xmlDefaultSAXHandler(void);
+#endif
 #endif
 
 /** DOC_DISABLE */
-#define XML_GLOBALS_PARSER_CORE \
-  XML_OP(oldXMLWDcompatibility, int, XML_DEPRECATED) \
-  XML_OP(xmlDefaultSAXLocator, xmlSAXLocator, XML_DEPRECATED) \
+#define XML_GLOBALS_PARSER \
   XML_OP(xmlDoValidityCheckingDefaultValue, int, XML_DEPRECATED) \
   XML_OP(xmlGetWarningsDefaultValue, int, XML_DEPRECATED) \
   XML_OP(xmlKeepBlanksDefaultValue, int, XML_DEPRECATED) \
@@ -838,18 +872,10 @@ XMLPUBFUN const char *const *__xmlParserVersion(void);
   XML_OP(xmlLoadExtDtdDefaultValue, int, XML_DEPRECATED) \
   XML_OP(xmlParserDebugEntities, int, XML_DEPRECATED) \
   XML_OP(xmlPedanticParserDefaultValue, int, XML_DEPRECATED) \
-  XML_OP(xmlSubstituteEntitiesDefaultValue, int, XML_DEPRECATED)
-
-#ifdef LIBXML_SAX1_ENABLED
-  #define XML_GLOBALS_PARSER_SAX1 \
-    XML_OP(xmlDefaultSAXHandler, xmlSAXHandlerV1, XML_DEPRECATED)
-#else
-  #define XML_GLOBALS_PARSER_SAX1
-#endif
-
-#define XML_GLOBALS_PARSER \
-  XML_GLOBALS_PARSER_CORE \
-  XML_GLOBALS_PARSER_SAX1
+  XML_OP(xmlSubstituteEntitiesDefaultValue, int, XML_DEPRECATED) \
+  XML_OP(xmlIndentTreeOutput, int, XML_NO_ATTR) \
+  XML_OP(xmlTreeIndentString, const char *, XML_NO_ATTR) \
+  XML_OP(xmlSaveNoEmptyTags, int, XML_NO_ATTR)
 
 #define XML_OP XML_DECLARE_GLOBAL
 XML_GLOBALS_PARSER
@@ -872,6 +898,9 @@ XML_GLOBALS_PARSER
     XML_GLOBAL_MACRO(xmlPedanticParserDefaultValue)
   #define xmlSubstituteEntitiesDefaultValue \
     XML_GLOBAL_MACRO(xmlSubstituteEntitiesDefaultValue)
+  #define xmlIndentTreeOutput XML_GLOBAL_MACRO(xmlIndentTreeOutput)
+  #define xmlTreeIndentString XML_GLOBAL_MACRO(xmlTreeIndentString)
+  #define xmlSaveNoEmptyTags XML_GLOBAL_MACRO(xmlSaveNoEmptyTags)
 #endif
 /** DOC_ENABLE */
 
@@ -882,6 +911,12 @@ XMLPUBFUN void
 		xmlInitParser		(void);
 XMLPUBFUN void
 		xmlCleanupParser	(void);
+XML_DEPRECATED
+XMLPUBFUN void
+		xmlInitGlobals		(void);
+XML_DEPRECATED
+XMLPUBFUN void
+		xmlCleanupGlobals	(void);
 
 /*
  * Input functions
@@ -1145,18 +1180,18 @@ XMLPUBFUN xmlParserInputPtr
  * Node infos.
  */
 XMLPUBFUN const xmlParserNodeInfo*
-		xmlParserFindNodeInfo	(const xmlParserCtxtPtr ctxt,
-				         const xmlNodePtr node);
+		xmlParserFindNodeInfo	(xmlParserCtxtPtr ctxt,
+				         xmlNodePtr node);
 XMLPUBFUN void
 		xmlInitNodeInfoSeq	(xmlParserNodeInfoSeqPtr seq);
 XMLPUBFUN void
 		xmlClearNodeInfoSeq	(xmlParserNodeInfoSeqPtr seq);
 XMLPUBFUN unsigned long
-		xmlParserFindNodeInfoIndex(const xmlParserNodeInfoSeqPtr seq,
-                                         const xmlNodePtr node);
+		xmlParserFindNodeInfoIndex(xmlParserNodeInfoSeqPtr seq,
+                                         xmlNodePtr node);
 XMLPUBFUN void
 		xmlParserAddNodeInfo	(xmlParserCtxtPtr ctxt,
-					 const xmlParserNodeInfoPtr info);
+					 xmlParserNodeInfoPtr info);
 
 /*
  * External entities handling actually implemented in xmlIO.

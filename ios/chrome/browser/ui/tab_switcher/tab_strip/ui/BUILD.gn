@@ -12,6 +12,7 @@ swift_source_set("swift") {
     "tab_strip_layout.swift",
     "tab_strip_new_tab_button.swift",
     "tab_strip_new_tab_button_delegate.swift",
+    "tab_strip_separator_view.swift",
     "tab_strip_view_controller.swift",
     "tab_strip_view_controller_delegate.swift",
   ]
@@ -33,8 +34,10 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
   ]

@@ -58,7 +58,7 @@ class CONTENT_EXPORT StreamTextureHost
         const gpu::Mailbox& mailbox,
         const gfx::Size& coded_size,
         const gfx::Rect& visible_rect,
-        const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) = 0;
+        const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) = 0;
     virtual ~Listener() {}
   };
 
@@ -77,7 +77,7 @@ class CONTENT_EXPORT StreamTextureHost
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info) override;
+      std::optional<gpu::VulkanYCbCrInfo> ycbcr_info) override;
 
   int32_t route_id_;
   raw_ptr<Listener, ExperimentalRenderer> listener_;

@@ -131,7 +131,7 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   // Generate the input for stable mount ID hash (simplifies testing).
   std::string GenerateStableMountIdInput() const;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const SmbUrl share_url_;
   const std::string display_name_;
   MountOptions options_;

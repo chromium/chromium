@@ -75,6 +75,8 @@ class TestPageLoadMetricsEmbedderInterface
     return false;
   }
 
+  bool IsNonTabWebUI() override { return test_->is_non_tab_webui(); }
+
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override {
@@ -90,14 +92,16 @@ class TestPageLoadMetricsEmbedderInterface
 PageLoadMetricsObserverTester::PageLoadMetricsObserverTester(
     content::WebContents* web_contents,
     content::RenderViewHostTestHarness* rfh_test_harness,
-    const RegisterObserversCallback& callback)
+    const RegisterObserversCallback& callback,
+    bool is_non_tab_webui)
     : register_callback_(callback),
       web_contents_(web_contents),
       rfh_test_harness_(rfh_test_harness),
       metrics_web_contents_observer_(
           MetricsWebContentsObserver::CreateForWebContents(
               web_contents,
-              std::make_unique<TestPageLoadMetricsEmbedderInterface>(this))) {}
+              std::make_unique<TestPageLoadMetricsEmbedderInterface>(this))),
+      is_non_tab_webui_(is_non_tab_webui) {}
 
 PageLoadMetricsObserverTester::~PageLoadMetricsObserverTester() {}
 

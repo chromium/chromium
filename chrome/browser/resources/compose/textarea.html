@@ -33,6 +33,7 @@
 
   #inputContainer {
     display: flex;
+    flex-direction: column;
     height: 100%;
   }
 
@@ -50,7 +51,6 @@
     resize: none;
     width: 100%;
     height: var(--compose-textarea-input-height);
-    min-height: 100%;
     box-sizing: border-box;
     padding: 10px;
     scroll-padding-block: 10px;
@@ -74,6 +74,10 @@
 
   textarea::placeholder {
     color: var(--cr-secondary-text-color);
+  }
+
+  #input:focus::placeholder  {
+    color: transparent;
   }
 
   :host-context([chrome-refresh-2023]) textarea::placeholder {
@@ -185,7 +189,10 @@
 
 <div id="inputContainer" hidden$="[[readonly]]">
   <textarea id="input"
-      placeholder="$i18n{inputPlaceholder}"
+      placeholder="$i18n{inputPlaceholderTitle}
+ • $i18n{inputPlaceholderLine1}
+ • $i18n{inputPlaceholderLine2}
+ • $i18n{inputPlaceholderLine3}"
       value="{{value::input}}"
       required
       autofocus
@@ -203,8 +210,8 @@
   <div id="readonlyText">[[value]]</div>
   <div id="editButtonContainer"
       hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode, readonly)]]">
-    <cr-icon-button iron-icon="compose:edit" title="$i18n{editButton}"
-        on-click="onEditClick_">
+    <cr-icon-button id="editButton" iron-icon="compose:edit"
+        title="$i18n{editButton}" on-click="onEditClick_">
     </cr-icon-button>
   </div>
 </div>

@@ -155,7 +155,6 @@ enum class StateKey {
   kHasBlockedTopics = 10,
   kAdvanceClockBy = 11,
   kActiveTopicsConsent = 12,
-  kApisEnabledV2 = 13,
   kTrialsConsentDecisionMade = 14,
   kTrialsNoticeDisplayed = 15,
   kM1ConsentDecisionPreviouslyMade = 16,
@@ -293,7 +292,6 @@ struct CookieContentSettingException {
 void SetupTestState(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* map,
-    bool privacy_sandbox_enabled,
     bool block_third_party_cookies,
     ContentSetting default_cookie_setting,
     const std::vector<CookieContentSettingException>& user_cookie_exceptions,

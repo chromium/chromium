@@ -164,23 +164,18 @@ void OverlayProcessorWin::ProcessForOverlays(
       frames_since_using_dc_layers_map_);
   *candidates = std::move(root_render_pass_overlay_data.promoted_overlays);
 
-  if (base::FeatureList::IsEnabled(features::kDCompPresenter)) {
-    if (!root_render_pass->copy_requests.empty()) {
-      // A DComp surface is not readable by viz.
-      // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if
-      // there are e.g. copy output requests present.
-      CHECK(!root_render_pass->needs_synchronous_dcomp_commit);
-    }
-
-    // |root_render_pass| will be promoted to overlay only if
-    // |output_surface_plane| is present.
-    DCHECK_NE(output_surface_plane, nullptr);
-    output_surface_plane->enable_blending =
-        root_render_pass->has_transparent_background;
-  } else {
-    output_surface_->SetEnableDCLayers(
-        root_render_pass->needs_synchronous_dcomp_commit);
+  if (!root_render_pass->copy_requests.empty()) {
+    // A DComp surface is not readable by viz.
+    // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if
+    // there are e.g. copy output requests present.
+    CHECK(!root_render_pass->needs_synchronous_dcomp_commit);
   }
+
+  // |root_render_pass| will be promoted to overlay only if
+  // |output_surface_plane| is present.
+  DCHECK_NE(output_surface_plane, nullptr);
+  output_surface_plane->enable_blending =
+      root_render_pass->has_transparent_background;
 
   if (debug_settings_->show_dc_layer_debug_borders) {
     InsertDebugBorderDrawQuadsForOverlayCandidates(

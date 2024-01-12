@@ -1043,6 +1043,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, SVGImageMetricsAreNotRecorded) {
 enum SyncScrollMutation {
   kSyncScrollMutatesPosition,
   kSyncScrollMutatesTransform,
+  kSyncScrollMutatesScrollOffset,
   kSyncScrollMutatesPositionBeforeAccess,
   kSyncScrollMutatesNothing,
 };
@@ -1080,6 +1081,9 @@ class LocalFrameUkmAggregatorSyncScrollTest
         break;
       case SyncScrollMutation::kSyncScrollMutatesTransform:
         ss << "MutatesTransform";
+        break;
+      case SyncScrollMutation::kSyncScrollMutatesScrollOffset:
+        ss << "MutatesScrollOffset";
         break;
       case SyncScrollMutation::kSyncScrollMutatesNothing:
         ss << "MutatesNothing";
@@ -1164,6 +1168,9 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollMutation::kSyncScrollMutatesTransform:
         return base::StringPrintf(
             "card.style.transform = 'translateY(' + %s + 'px)'", pos.c_str());
+      case SyncScrollMutation::kSyncScrollMutatesScrollOffset:
+        return base::StringPrintf("subscroller.scrollTop = %s + 'px'",
+                                  pos.c_str());
       case SyncScrollMutation::kSyncScrollMutatesPositionBeforeAccess:
         return base::StringPrintf(
             "card.style.top = Math.floor(Math.random() * 100) + 'px'; var "
@@ -1226,8 +1233,18 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
         height: 100px;
         position: absolute;
       }
+      #subscroller {
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        top:0;
+        overflow: scroll;
+      }
     </style>
     <div id='card'></div>
+    <div id='subscroller'>
+      <div style='background:blue;width50px;height:10000px'></div>
+    </div>
     <div style='background:orange;width:100px;height:10000px'></div>
     <script>
       %s
@@ -1245,7 +1262,7 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
 
   // We haven't scrolled at this point, so we should never have a count.
   histogram_tester.ExpectTotalCount(
-      "Blink.PossibleSynchronizedScrollCount.UpdateTime.PreFCP", 0);
+      "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PreFCP", 0);
 
   // Cause a pre-FCP scroll.
   auto* scrolling_element =
@@ -1258,7 +1275,7 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
   // Now that we'ev scrolled, we should have an update if triggering conditions
   // are met.
   histogram_tester.ExpectTotalCount(
-      "Blink.PossibleSynchronizedScrollCount.UpdateTime.PreFCP",
+      "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PreFCP",
       should_trigger ? 1 : 0);
 
   // Cause FCP on the next frame.
@@ -1279,26 +1296,26 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
   if (should_trigger) {
     // Should only have triggered for the one pre FCP scroll.
     EXPECT_THAT(
-        histogram_tester.GetAllSamples("Blink.PossibleSynchronizedScrollCount."
+        histogram_tester.GetAllSamples("Blink.PossibleSynchronizedScrollCount2."
                                        "UpdateTime.AggregatedPreFCP"),
         base::BucketsAre(base::Bucket(1, 1)));
     // Should only have triggered for the one post FCP scroll.
     histogram_tester.ExpectTotalCount(
-        "Blink.PossibleSynchronizedScrollCount.UpdateTime.PostFCP", 1);
+        "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PostFCP", 1);
     // Should only trigger for the two scroll top adjustments.
     EXPECT_THAT(
-        histogram_tester.GetAllSamples("Renderer.PossibleSynchronizedScroll"),
+        histogram_tester.GetAllSamples("Renderer.PossibleSynchronizedScroll2"),
         base::BucketsInclude(base::Bucket(0, 2), base::Bucket(1, 2)));
   } else {
     // Should never trigger.
     EXPECT_THAT(
-        histogram_tester.GetAllSamples("Blink.PossibleSynchronizedScrollCount."
+        histogram_tester.GetAllSamples("Blink.PossibleSynchronizedScrollCount2."
                                        "UpdateTime.AggregatedPreFCP"),
         base::BucketsAre(base::Bucket(0, 1)));
     histogram_tester.ExpectTotalCount(
-        "Blink.PossibleSynchronizedScrollCount.UpdateTime.PostFCP", 0);
+        "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PostFCP", 0);
     EXPECT_THAT(
-        histogram_tester.GetAllSamples("Renderer.PossibleSynchronizedScroll"),
+        histogram_tester.GetAllSamples("Renderer.PossibleSynchronizedScroll2"),
         base::BucketsInclude(base::Bucket(0, 4)));
   }
 }
@@ -1310,6 +1327,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(
             SyncScrollMutation::kSyncScrollMutatesPosition,
             SyncScrollMutation::kSyncScrollMutatesTransform,
+            SyncScrollMutation::kSyncScrollMutatesScrollOffset,
             SyncScrollMutation::kSyncScrollMutatesPositionBeforeAccess,
             SyncScrollMutation::kSyncScrollMutatesNothing),
         ::testing::Values(

@@ -314,6 +314,23 @@ const base::FeatureParam<int> kBoostImagePriorityImageSize{&kBoostImagePriority,
 const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
     &kBoostImagePriority, "tight_medium_limit", 2};
 
+// Boost the priority of certain loading tasks (https://crbug.com/1470003).
+BASE_FEATURE(kBoostImageSetLoadingTaskPriority,
+             "BoostImageSetLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostFontLoadingTaskPriority,
+             "BoostFontLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostVideoLoadingTaskPriority,
+             "BoostVideoLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostRenderBlockingStyleLoadingTaskPriority,
+             "BoostRenderBlockingStyleLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostNonRenderBlockingStyleLoadingTaskPriority,
+             "BoostNonRenderBlockingStyleLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // https://github.com/patcg-individual-drafts/topics
 // Kill switch for the Topics API.
 BASE_FEATURE(kBrowsingTopics,
@@ -891,6 +908,17 @@ const base::FeatureParam<base::TimeDelta> kFledgeDebugReportRestrictedCooldown{
 const base::FeatureParam<base::TimeDelta> kFledgeDebugReportShortCooldown{
     &kFledgeSampleDebugReports, "fledge_debug_report_short_cooldown",
     base::Days(14)};
+const base::FeatureParam<int> kFledgeDebugReportSamplingRandomMax{
+    &kFledgeSampleDebugReports, "fledge_debug_report_sampling_random_max",
+    1000};
+const base::FeatureParam<int>
+    kFledgeDebugReportSamplingRestrictedCooldownRandomMax{
+        &kFledgeSampleDebugReports,
+        "fledge_debug_report_sampling_restricted_cooldown_random_max", 10};
+
+BASE_FEATURE(kFledgeDebugReportFilterAfterSampling,
+             "FledgeDebugReportFilterAfterSampling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",
@@ -1189,6 +1217,23 @@ const base::FeatureParam<int> kHttpDiskCachePrewarmingMaxUrlLength{
     &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_max_url_length",
     1024};
 
+const base::FeatureParam<int> kHttpDiskCachePrewarmingHistorySize{
+    &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_history_size", 1024};
+
+const base::FeatureParam<base::TimeDelta>
+    kHttpDiskCachePrewarmingReprewarmPeriod{
+        &kHttpDiskCachePrewarming,
+        "http_disk_cache_prewarming_reprewarm_period", base::Minutes(10)};
+
+const base::FeatureParam<bool> kHttpDiskCachePrewarmingTriggerOnNavigation{
+    &kHttpDiskCachePrewarming,
+    "http_disk_cache_prewarming_trigger_on_navigation", true};
+
+const base::FeatureParam<bool>
+    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover{
+        &kHttpDiskCachePrewarming,
+        "http_disk_cache_prewarming_trigger_on_pointer_down_or_hover", true};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
@@ -1293,14 +1338,6 @@ const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
 const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
     &kLowPriorityScriptLoading, "low_pri_async_loading_main_frame_only", false};
 
-// If enabled, the setTimeout(..., 0) will clamp to 4ms after a custom `nesting`
-// level.
-// Tracking bug: https://crbug.com/1108877.
-BASE_FEATURE(kMaxUnthrottledTimeoutNestingLevel,
-             "MaxUnthrottledTimeoutNestingLevel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kMaxUnthrottledTimeoutNestingLevelParam{
-    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 15};
 BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1597,7 +1634,7 @@ BASE_FEATURE(kForceProduceCompileHints,
 
 BASE_FEATURE(kConsumeCompileHints,
              "ConsumeCompileHints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLocalCompileHints,
              "LocalCompileHints",
@@ -1648,10 +1685,6 @@ BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
              "RegisterJSSourceLocationBlockingBFCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRemoteResourceCache,
-             "RemoteResourceCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRemoveAuthroizationOnCrossOriginRedirect,
              "RemoveAutorizationOnCrossOriginRedirect",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1662,7 +1695,7 @@ BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
 
 BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxBlockingTimeMsForRenderBlockingFonts(
     &features::kRenderBlockingFonts,
@@ -1938,6 +1971,12 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
 
+// Warms up service workers from bookmarks, omnibox, etc.
+const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpFromLoadingPredictor{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_from_loading_predictor",
+        true};
+
 BASE_FEATURE(kStartMediaStreamCaptureIndicatorInBrowser,
              "StartMediaStreamCaptureIndicatorInBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2054,6 +2093,12 @@ BASE_FEATURE(kEnableFileBackedBlobFactory,
              "EnableFileBackedBlobFactory",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the usage of unload handlers causes a blocklisted reason for
+// BFCache. The purpose is to capture their source location.
+BASE_FEATURE(kUnloadBlocklisted,
+             "UnloadBlocklisted",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to use 'TexImage2D' instead of 'TexStorage2DEXT' when creating a
 // staging texture for |DrawingBuffer|. This is a killswitch; remove when
 // launched.
@@ -2088,6 +2133,10 @@ BASE_FEATURE(kVSyncDecoding,
 const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration{
         &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
+
+BASE_FEATURE(kVSyncEncoding,
+             "VSyncEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp,
              "WebRtcUseCaptureBeginTimestamp",
@@ -2237,11 +2286,6 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
 // Helper functions for querying feature status. Please define any features or
 // constants for features in the section above.
 
-// TODO(https://crbug.com/1331187): Delete the function.
-int GetMaxUnthrottledTimeoutNestingLevel() {
-  return kMaxUnthrottledTimeoutNestingLevelParam.Get();
-}
-
 bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
   return base::FeatureList::IsEnabled(kAllowPageWithIDBConnectionInBFCache) &&
          base::FeatureList::IsEnabled(kAllowPageWithIDBTransactionInBFCache);
@@ -2258,11 +2302,6 @@ bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {
 
 bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
-}
-
-bool IsMaxUnthrottledTimeoutNestingLevelEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kMaxUnthrottledTimeoutNestingLevel);
 }
 
 bool IsNewBaseUrlInheritanceBehaviorEnabled() {
@@ -2297,6 +2336,10 @@ bool IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled() {
          base::FeatureList::IsEnabled(
              features::
                  kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
+}
+
+bool IsUnloadBlocklisted() {
+  return base::FeatureList::IsEnabled(kUnloadBlocklisted);
 }
 
 bool ParkableStringsUseSnappy() {

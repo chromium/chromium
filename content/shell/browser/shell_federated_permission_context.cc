@@ -115,7 +115,7 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const absl::optional<std::string>& account_id) {
+    const std::optional<std::string>& account_id) {
   bool skip_account_check = !account_id;
   return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
                       [&](const auto& entry) {
@@ -178,13 +178,13 @@ void ShellFederatedPermissionContext::RevokeSharingPermission(
   }
 }
 
-absl::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
+std::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   auto idp_signin_status = idp_signin_status_.find(idp_origin.Serialize());
   if (idp_signin_status != idp_signin_status_.end()) {
     return idp_signin_status->second;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 

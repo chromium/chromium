@@ -49,20 +49,17 @@ class BorealisServiceFake : public BorealisService {
   void SetSurveyHandlerForTesting(BorealisSurveyHandler* survey_handler);
 
  private:
-  raw_ptr<BorealisAppLauncher, ExperimentalAsh> app_launcher_ = nullptr;
-  raw_ptr<BorealisAppUninstaller, ExperimentalAsh> app_uninstaller_ = nullptr;
-  raw_ptr<BorealisContextManager, ExperimentalAsh> context_manager_ = nullptr;
-  raw_ptr<BorealisFeatures, DanglingUntriaged | ExperimentalAsh> features_ =
+  raw_ptr<BorealisAppLauncher> app_launcher_ = nullptr;
+  raw_ptr<BorealisAppUninstaller> app_uninstaller_ = nullptr;
+  raw_ptr<BorealisContextManager> context_manager_ = nullptr;
+  raw_ptr<BorealisFeatures, DanglingUntriaged> features_ = nullptr;
+  raw_ptr<BorealisInstaller> installer_ = nullptr;
+  raw_ptr<BorealisInstallUrlHandler> install_url_handler_ = nullptr;
+  raw_ptr<BorealisLaunchOptions> launch_options_ = nullptr;
+  raw_ptr<BorealisShutdownMonitor, DanglingUntriaged> shutdown_monitor_ =
       nullptr;
-  raw_ptr<BorealisInstaller, ExperimentalAsh> installer_ = nullptr;
-  raw_ptr<BorealisInstallUrlHandler, ExperimentalAsh> install_url_handler_ =
-      nullptr;
-  raw_ptr<BorealisLaunchOptions, ExperimentalAsh> launch_options_ = nullptr;
-  raw_ptr<BorealisShutdownMonitor, DanglingUntriaged | ExperimentalAsh>
-      shutdown_monitor_ = nullptr;
-  raw_ptr<BorealisWindowManager, DanglingUntriaged | ExperimentalAsh>
-      window_manager_ = nullptr;
-  raw_ptr<BorealisSurveyHandler, ExperimentalAsh> survey_handler_ = nullptr;
+  raw_ptr<BorealisWindowManager, DanglingUntriaged> window_manager_ = nullptr;
+  raw_ptr<BorealisSurveyHandler> survey_handler_ = nullptr;
 };
 
 }  // namespace borealis

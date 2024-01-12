@@ -12,8 +12,9 @@
 // ImportLockDialogView asks the user to shut down Firefox before starting the
 // profile import.
 class ImportLockDialogView : public views::DialogDelegateView {
+  METADATA_HEADER(ImportLockDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ImportLockDialogView);
   ImportLockDialogView(const ImportLockDialogView&) = delete;
   ImportLockDialogView& operator=(const ImportLockDialogView&) = delete;
 

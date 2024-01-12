@@ -90,7 +90,7 @@ GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
 // case if the origin is opaque to still compute a meaningful site URL.
 url::Origin GetPossiblyOverriddenOriginFromUrl(
     const GURL& url,
-    absl::optional<url::Origin> overridden_origin) {
+    std::optional<url::Origin> overridden_origin) {
   bool scheme_allows_origin_override =
       url.SchemeIs(url::kDataScheme) || url.IsAboutBlank();
   if (overridden_origin.has_value() && scheme_allows_origin_override) {
@@ -222,7 +222,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // trusted.
   bool is_jitless = url_info.is_pdf;
 
-  absl::optional<StoragePartitionConfig> storage_partition_config =
+  std::optional<StoragePartitionConfig> storage_partition_config =
       url_info.storage_partition_config;
 
   if (compute_site_url) {

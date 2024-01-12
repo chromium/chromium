@@ -102,11 +102,11 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
     return result;
   }
 
-  virtual absl::optional<network::CrossOriginEmbedderPolicy>
+  virtual std::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id);
-  virtual absl::optional<network::CrossOriginOpenerPolicy>
+  virtual std::optional<network::CrossOriginOpenerPolicy>
   cross_origin_opener_policy(const std::string& id);
-  virtual absl::optional<
+  virtual std::optional<
       std::vector<network::mojom::ContentSecurityPolicyHeader>>
   content_security_policy(const std::string& id);
 

@@ -18,7 +18,7 @@ stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"
 # JS bundling with rollup.
 # This is for files direct from the src/:  input_folder="./".
 copy("stage_static") {
-  sources = media_app_static_js_sources + media_app_unconverted_js_sources + [
+  sources = media_app_unconverted_js_sources + [
               "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
               "//ui/file_manager/image_loader/piex_loader.js",
             ]
@@ -29,7 +29,6 @@ copy("stage_static") {
 copy("stage_generated") {
   sources = [
     "$root_gen_dir/ash/webui/media_app_ui/media_app_ui.mojom-lite.js",
-    "$root_gen_dir/ash/webui/media_app_ui/media_app_ui_untrusted.mojom-lite.js",
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
     "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
@@ -39,7 +38,6 @@ copy("stage_generated") {
 
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
-    "//ash/webui/media_app_ui:mojo_bindings_untrusted_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
   ]
 }
@@ -59,7 +57,8 @@ copy("stage_for_tsc") {
   # to engage logic in ts_library.py that handles clearing out old build
   # dependencies.
   sources = media_app_converted_ts_sources + media_app_static_defs +
-            media_app_unconverted_js_sources + media_app_static_js_sources
+            media_app_unconverted_js_sources +
+            [ "//ui/file_manager/image_loader/piex_loader.js" ]
   outputs = [ ts_root_dir + "/{{source_file_part}}" ]
 }
 
@@ -77,6 +76,7 @@ optimize_webui("launch_rollup") {
   js_module_in_files = [ "launch.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
+    ":stage_compiled_ts",
     ":stage_generated",
     ":stage_static",
     "//ash/webui/system_apps/public/js:build_ts",
@@ -103,6 +103,7 @@ optimize_webui("piex_rollup") {
   js_module_in_files = [ "piex_module.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
+    ":stage_compiled_ts",
     ":stage_generated",
     ":stage_static",
   ]
@@ -123,57 +124,19 @@ media_closure_flags = system_app_closure_flags_strict + [
                       ]
 
 group("closure_compile") {
-  deps = [
-    ":closure_compile_index",
-    ":closure_compile_piex_module",
-  ]
+  deps = [ ":closure_compile_index" ]
 }
 
 js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
-  deps = [ ":launch" ]
-}
-
-js_type_check("closure_compile_piex_module") {
-  closure_flags = media_closure_flags
-  deps = [ ":piex_module" ]
-}
-
-js_library("app_context_test_support") {
-}
-
-js_library("launch") {
-  externs_list = [
-    "//ash/webui/web_applications/externs/file_handling.externs.js",
-    "//ash/webui/web_applications/externs/file_system_access.externs.js",
-    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
-    "dom_draft.externs.js",
-
-    # The privileged context can't access the app, but shares struct definitions
-    # passed over postMessage.
-    "media_app.externs.js",
-  ]
   deps = [
-    ":app_context_test_support",
     ":error_reporter",
-    ":message_types",
     ":mojo_api_bootstrap",
-    "//ash/webui/common/resources:load_time_data.m",
   ]
-}
-
-js_library("message_types") {
 }
 
 js_library("error_reporter") {
   externs_list = [ "$externs_path/crash_report_private.js" ]
-}
-
-js_library("piex_module_loader") {
-}
-
-js_library("piex_module") {
-  deps = [ "//ui/file_manager/image_loader:piex_loader" ]
 }
 
 js_library("mojo_api_bootstrap") {
@@ -190,19 +153,5 @@ js_library("mojo_api_bootstrap") {
     # `//third_party/blink/public/mojom:mojom_platform` target.
     "//ash/webui/media_app_ui:mojo_bindings_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
-  ]
-}
-
-js_library("mojo_api_bootstrap_untrusted") {
-  sources = [
-    "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite-for-compile.js",
-    "$target_gen_dir/../../media_app_ui_untrusted.mojom-lite-for-compile.js",
-  ]
-
-  deps = [ "//mojo/public/mojom/base:base_js_library_for_compile" ]
-
-  extra_deps = [
-    "//ash/webui/media_app_ui:mojo_bindings_untrusted_js",
-    "//ui/gfx/geometry/mojom:mojom",
   ]
 }

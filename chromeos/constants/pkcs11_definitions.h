@@ -65,6 +65,9 @@ inline constexpr uint32_t PKCS11_CKA_PUBLIC_EXPONENT = 0x00000122;
 inline constexpr uint32_t PKCS11_CKA_EC_PARAMS = 0x00000180;
 inline constexpr uint32_t PKCS11_CKA_EC_POINT = 0x00000181;
 
+// PKCS #11 v2.20 section A Manifest constants page 377.
+inline constexpr uint32_t PKCS11_CKM_RSA_PKCS_KEY_PAIR_GEN = 0x00000000;
+
 // PKCS #11 v2.20 section A Manifest constants pages 381-382.
 inline constexpr uint32_t PKCS11_CKR_OK = 0x00000000;
 inline constexpr uint32_t PKCS11_CKR_GENERAL_ERROR = 0x00000005;

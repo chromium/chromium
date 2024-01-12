@@ -215,9 +215,6 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   }
 
   // Observers.
-  model_observation_.Observe(model_.get());
-  permissions_manager_observation_.Observe(
-      extensions::PermissionsManager::Get(browser_->profile()));
   // TODO(pbos): Consider splitting out tab-strip observing into another class.
   // Triggers for Extensions-related bubbles should preferably be separate from
   // the container where they are shown.
@@ -251,6 +248,101 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
   // so |anchored_widgets_| should now be empty.
   DCHECK(anchored_widgets_.empty());
   CHECK(!views::WidgetObserver::IsInObserverList());
+}
+
+void ExtensionsToolbarContainer::CreateActions() {
+  DCHECK(icons_.empty());
+  DCHECK(actions_.empty());
+
+  // If the model isn't initialized, wait for it.
+  if (!model_->actions_initialized()) {
+    return;
+  }
+
+  for (const auto& action_id : model_->action_ids()) {
+    CreateActionForId(action_id);
+  }
+
+  ReorderViews();
+  UpdateContainerVisibility();
+}
+
+void ExtensionsToolbarContainer::AddAction(
+    const ToolbarActionsModel::ActionId& action_id) {
+  CreateActionForId(action_id);
+  ReorderViews();
+
+  // Auto hide mode should not become visible due to extensions being added,
+  // only due to user interaction.
+  if (display_mode_ != DisplayMode::kAutoHide) {
+    UpdateContainerVisibility();
+  }
+
+  UpdateControlsVisibility();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void ExtensionsToolbarContainer::RemoveAction(
+    const ToolbarActionsModel::ActionId& action_id) {
+  // TODO(pbos): Handle extension upgrades, see ToolbarActionsBar. Arguably this
+  // could be handled inside the model and be invisible to the container when
+  // permissions are unchanged.
+
+  auto iter = base::ranges::find(actions_, action_id,
+                                 &ToolbarActionViewController::GetId);
+  DCHECK(iter != actions_.end());
+  // Ensure the action outlives the UI element to perform any cleanup.
+  std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
+  actions_.erase(iter);
+
+  // Undo the popout, if necessary. Actions expect to not be popped out while
+  // destroying.
+  if (popped_out_action_ == action_id) {
+    UndoPopOut();
+  }
+
+  RemoveChildViewT(GetViewForId(action_id));
+  icons_.erase(action_id);
+
+  UpdateContainerVisibilityAfterAnimation();
+  UpdateControlsVisibility();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void ExtensionsToolbarContainer::UpdateAction(
+    const ToolbarActionsModel::ActionId& action_id) {
+  ToolbarActionViewController* action = GetActionForId(action_id);
+  if (action) {
+    action->UpdateState();
+    ToolbarActionView* action_view = GetViewForId(action_id);
+    // Only update hover card if it's currently showing for action, otherwise it
+    // would mistakenly show the hover card.
+    if (action_hover_card_controller_->IsHoverCardShowingForAction(
+            action_view)) {
+      action_hover_card_controller_->UpdateHoverCard(
+          action_view, ToolbarActionHoverCardUpdateType::kToolbarActionUpdated);
+    }
+  }
+
+  UpdateControlsVisibility();
+}
+
+void ExtensionsToolbarContainer::UpdatePinnedActions() {
+  for (const auto& it : icons_) {
+    UpdateIconVisibility(it.first);
+  }
+  ReorderViews();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void ExtensionsToolbarContainer::UpdateRequestAccessButton(
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    content::WebContents* web_contents) {
+  extensions_controls_->UpdateRequestAccessButton(actions_, site_setting,
+                                                  web_contents);
 }
 
 void ExtensionsToolbarContainer::UpdateAllIcons() {
@@ -584,110 +676,6 @@ void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
   MaybeShowIPH();
 }
 
-void ExtensionsToolbarContainer::OnToolbarActionAdded(
-    const ToolbarActionsModel::ActionId& action_id) {
-  CreateActionForId(action_id);
-  ReorderViews();
-
-  // Auto hide mode should not become visible due to extensions being added,
-  // only due to user interaction.
-  if (display_mode_ != DisplayMode::kAutoHide)
-    UpdateContainerVisibility();
-
-  UpdateControlsVisibility();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ExtensionsToolbarContainer::OnToolbarActionRemoved(
-    const ToolbarActionsModel::ActionId& action_id) {
-  // TODO(pbos): Handle extension upgrades, see ToolbarActionsBar. Arguably this
-  // could be handled inside the model and be invisible to the container when
-  // permissions are unchanged.
-
-  auto iter = base::ranges::find(actions_, action_id,
-                                 &ToolbarActionViewController::GetId);
-  DCHECK(iter != actions_.end());
-  // Ensure the action outlives the UI element to perform any cleanup.
-  std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
-  actions_.erase(iter);
-
-  // Undo the popout, if necessary. Actions expect to not be popped out while
-  // destroying.
-  if (popped_out_action_ == action_id) {
-    UndoPopOut();
-  }
-
-  RemoveChildViewT(GetViewForId(action_id));
-  icons_.erase(action_id);
-
-  UpdateContainerVisibilityAfterAnimation();
-  UpdateControlsVisibility();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ExtensionsToolbarContainer::OnToolbarActionUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {
-  ToolbarActionViewController* action = GetActionForId(action_id);
-  if (action) {
-    action->UpdateState();
-    ToolbarActionView* action_view = GetViewForId(action_id);
-    // Only update hover card if it's currently showing for action, otherwise it
-    // would mistakenly show the hover card.
-    if (action_hover_card_controller_->IsHoverCardShowingForAction(
-            action_view)) {
-      action_hover_card_controller_->UpdateHoverCard(
-          action_view, ToolbarActionHoverCardUpdateType::kToolbarActionUpdated);
-    }
-  }
-
-  UpdateControlsVisibility();
-}
-
-void ExtensionsToolbarContainer::OnToolbarModelInitialized() {
-  CreateActions();
-}
-
-void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
-  for (const auto& it : icons_)
-    UpdateIconVisibility(it.first);
-  ReorderViews();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ExtensionsToolbarContainer::OnUserPermissionsSettingsChanged(
-    const extensions::PermissionsManager::UserPermissionsSettings& settings) {
-  UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update request access button hover card. This
-  // will be slightly different than 'OnToolbarActionUpdated' since site
-  // settings update are not tied to a specific action.
-}
-
-void ExtensionsToolbarContainer::OnShowAccessRequestsInToolbarChanged(
-    const extensions::ExtensionId& extension_id,
-    bool can_show_requests) {
-  UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update requests access button hover card. This is
-  // tricky because it would need to change the items in the dialog. Another
-  // option is to close the hover card if its shown whenever request access
-  // button is updated.
-}
-
-void ExtensionsToolbarContainer::OnExtensionDismissedRequests(
-    const extensions::ExtensionId& extension_id,
-    const url::Origin& origin) {
-  auto* web_contents = GetCurrentWebContents();
-  extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-
-  extensions_controls_->UpdateRequestAccessButton(actions_, site_setting,
-                                                  web_contents);
-}
-
 void ExtensionsToolbarContainer::ReorderViews() {
   const auto& pinned_action_ids = model_->pinned_action_ids();
   for (size_t i = 0; i < pinned_action_ids.size(); ++i)
@@ -705,21 +693,6 @@ void ExtensionsToolbarContainer::ReorderViews() {
   if (close_side_panel_button_) {
     ReorderChildView(close_side_panel_button_, children().size());
   }
-}
-
-void ExtensionsToolbarContainer::CreateActions() {
-  DCHECK(icons_.empty());
-  DCHECK(actions_.empty());
-
-  // If the model isn't initialized, wait for it.
-  if (!model_->actions_initialized())
-    return;
-
-  for (const auto& action_id : model_->action_ids())
-    CreateActionForId(action_id);
-
-  ReorderViews();
-  UpdateContainerVisibility();
 }
 
 void ExtensionsToolbarContainer::CreateActionForId(

@@ -133,11 +133,11 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   // Root widget. It is assumed that widget is placed as a full-screen inside
   // LockContainer.
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   // Reference to view owned by widget_.
-  raw_ptr<LayoutWidgetDelegateView, ExperimentalAsh> layout_view_ = nullptr;
+  raw_ptr<LayoutWidgetDelegateView> layout_view_ = nullptr;
   // Reference to dialog view stored in widget_.
-  raw_ptr<OobeWebDialogView, ExperimentalAsh> dialog_view_ = nullptr;
+  raw_ptr<OobeWebDialogView> dialog_view_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};

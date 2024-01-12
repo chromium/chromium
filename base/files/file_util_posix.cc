@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include <bit>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/base_switches.h"
@@ -512,16 +513,20 @@ bool DirectoryExists(const FilePath& path) {
   return S_ISDIR(file_info.st_mode);
 }
 
-bool ReadFromFD(int fd, char* buffer, size_t bytes) {
-  size_t total_read = 0;
-  while (total_read < bytes) {
-    ssize_t bytes_read =
-        HANDLE_EINTR(read(fd, buffer + total_read, bytes - total_read));
-    if (bytes_read <= 0)
-      break;
-    total_read += static_cast<size_t>(bytes_read);
+bool ReadFromFD(int fd, span<char> buffer) {
+  while (!buffer.empty()) {
+    ssize_t bytes_read = HANDLE_EINTR(read(fd, buffer.data(), buffer.size()));
+
+    if (bytes_read <= 0) {
+      return false;
+    }
+    buffer = buffer.subspan(static_cast<size_t>(bytes_read));
   }
-  return total_read == bytes;
+  return true;
+}
+
+bool ReadFromFD(int fd, char* buffer, size_t bytes) {
+  return ReadFromFD(fd, make_span(buffer, bytes));
 }
 
 ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
@@ -931,18 +936,27 @@ File FILEToFile(FILE* file_stream) {
 }
 #endif  // !BUILDFLAG(IS_NACL)
 
-int ReadFile(const FilePath& filename, char* data, int max_size) {
+std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  if (max_size < 0)
-    return -1;
   int fd = HANDLE_EINTR(open(filename.value().c_str(), O_RDONLY));
-  if (fd < 0)
-    return -1;
+  if (fd < 0) {
+    return std::nullopt;
+  }
 
-  long bytes_read = HANDLE_EINTR(read(fd, data, static_cast<size_t>(max_size)));
-  if (IGNORE_EINTR(close(fd)) < 0)
-    return -1;
-  return checked_cast<int>(bytes_read);
+  // TODO(crbug.com/1333521): Consider supporting reading more than INT_MAX
+  // bytes.
+  size_t bytes_to_read = static_cast<size_t>(checked_cast<int>(buffer.size()));
+
+  ssize_t bytes_read = HANDLE_EINTR(read(fd, buffer.data(), bytes_to_read));
+  if (IGNORE_EINTR(close(fd)) < 0) {
+    return std::nullopt;
+  }
+  if (bytes_read < 0) {
+    return std::nullopt;
+  }
+
+  static_assert(SSIZE_MAX <= UINT64_MAX);
+  return bytes_read;
 }
 
 int WriteFile(const FilePath& filename, const char* data, int size) {

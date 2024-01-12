@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/background_downloader_win.h"
+
 #include <windows.h>
 
 #include "base/files/file_path.h"
@@ -9,17 +11,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_types.h"
-#include "components/update_client/background_downloader_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {
 namespace {
-static constexpr base::FilePath::CharType kTestDirPrefix[] =
+constexpr base::FilePath::CharType kTestDirPrefix[] =
     FILE_PATH_LITERAL("chrome_BITS_(test)_");
-static constexpr base::FilePath::CharType kTestDirMatcher[] =
+constexpr base::FilePath::CharType kTestDirMatcher[] =
     FILE_PATH_LITERAL("chrome_BITS_(test)_*");
-static constexpr char kTestDownloadFilename[] = "test_file.txt";
-static constexpr char kTestDownloadContent[] = "Hello, World!";
+constexpr char kTestDownloadFilename[] = "test_file.txt";
+constexpr char kTestDownloadContent[] = "Hello, World!";
 }  // namespace
 
 class BackgroundDownloaderWinTest : public testing::Test {

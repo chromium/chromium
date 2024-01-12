@@ -1086,8 +1086,7 @@ class CupsPrintersManagerImpl
   std::vector<PrinterDetector::DetectedPrinter> servers_detections_;
 
   // Not owned.
-  const raw_ptr<SyncedPrintersManager, ExperimentalAsh>
-      synced_printers_manager_;
+  const raw_ptr<SyncedPrintersManager> synced_printers_manager_;
   base::ScopedObservation<SyncedPrintersManager,
                           SyncedPrintersManager::Observer>
       synced_printers_manager_observation_{this};
@@ -1115,7 +1114,7 @@ class CupsPrintersManagerImpl
       enterprise_printers_provider_observation_{this};
 
   // Not owned
-  const raw_ptr<PrinterEventTracker, ExperimentalAsh> event_tracker_;
+  const raw_ptr<PrinterEventTracker> event_tracker_;
 
   // Categorized printers.  This is indexed by PrinterClass.
   PrintersMap printers_;

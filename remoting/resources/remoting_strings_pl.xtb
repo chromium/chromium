@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Wykryto niezgodną wersję protokołu. Upewnij się, że na obu komputerach masz zainstalowaną najnowszą wersję oprogramowania, i spróbuj ponownie.</translation>
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="1201402288615127009">Dalej</translation>
-<translation id="1296511125400541222">Copyright 2023 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="1297009705180977556">Błąd podczas łączenia z: <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Żądany obiekt nie istnieje.</translation>
 <translation id="1480046233931937785">Autorzy</translation>
@@ -89,7 +88,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="4808503597364150972">Wpisz PIN dla: <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Wyślij PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="4974476491460646149">Połączenie z hostem <ph name="HOSTNAME" /> zostało zakończone</translation>
 <translation id="4985296110227979402">Najpierw musisz skonfigurować funkcję dostępu zdalnego na komputerze.</translation>
 <translation id="4987330545941822761">Pulpit zdalny Chrome nie może określić przeglądarki do lokalnego otwierania adresów URL. Wybierz ją z listy poniżej.</translation>
@@ -154,6 +152,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="7693372326588366043">Odśwież listę hostów</translation>
 <translation id="7714222945760997814">Zgłoś to</translation>
 <translation id="7868137160098754906">Wpisz kod PIN komputera zdalnego.</translation>
+<translation id="7881455334687220899">Copyright 2024 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="7895403300744144251">Zasady bezpieczeństwa obowiązujące na komputerze zdalnym nie zezwalają na nawiązywanie połączeń z Twojego konta.</translation>
 <translation id="7936528439960309876">Zadokuj do prawej</translation>
 <translation id="7970576581263377361">Uwierzytelnianie nie powiodło się. Zaloguj się ponownie do Chromium.</translation>
@@ -185,6 +184,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="8747048596626351634">Sesja została zerwana lub nie udało się jej rozpocząć. Jeśli sesja ~/.chrome-remote-desktop-session istnieje na komputerze zdalnym, upewnij się, że spowodowała ona uruchomienie długotrwałego procesu na pierwszym planie, takiego jak środowisko pulpitu lub menedżer okien.</translation>
 <translation id="8804164990146287819">Polityka prywatności</translation>
 <translation id="8906511416443321782">Aby przechwytywać dźwięk i przesyłać go do klienta Pulpitu zdalnego Chrome, wymagany jest dostęp do mikrofonu.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="9111855907838866522">Masz połączenie z urządzeniem zdalnym. Aby otworzyć menu, kliknij ekran czterema palcami.</translation>
 <translation id="9126115402994542723">Nie pytaj ponownie o kod PIN, gdy bieżące urządzenie będzie łączyć się z tym hostem.</translation>
 <translation id="916856682307586697">Uruchom domyślną sesję X</translation>

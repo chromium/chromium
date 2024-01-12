@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/omnibox/autocomplete_controller_android.h"
 
+#include <jni.h>
 #include <stddef.h>
 #include <memory>
 #include <string>
@@ -116,12 +117,14 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcontroller,
     Profile* profile,
-    std::unique_ptr<ChromeAutocompleteProviderClient> client)
+    std::unique_ptr<ChromeAutocompleteProviderClient> client,
+    bool is_low_memory_device)
     : profile_{profile},
       java_controller_{env, jcontroller.obj()},
       autocomplete_controller_{std::make_unique<AutocompleteController>(
           std::move(client),
-          AutocompleteClassifier::DefaultOmniboxProviders())} {
+          AutocompleteClassifier::DefaultOmniboxProviders(
+              is_low_memory_device))} {
   autocomplete_controller_->AddObserver(this);
 
   AutocompleteControllerEmitter* emitter =
@@ -340,9 +343,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   OmniboxLog log(
       // For zero suggest, record an empty input string instead of the
       // current URL.
-      input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
-          ? std::u16string()
-          : input_.text(),
+      input_.IsZeroSuggest() ? std::u16string() : input_.text(),
       false,                /* don't know */
       input_.type(), false, /* not keyword mode */
       OmniboxEventProto::INVALID, true, OmniboxPopupSelection(suggestion_line),
@@ -497,7 +498,8 @@ void AutocompleteControllerAndroid::WarmUpRenderProcess() const {
 static jlong JNI_AutocompleteController_Create(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcontroller,
-    const JavaParamRef<jobject>& jprofile) {
+    const JavaParamRef<jobject>& jprofile,
+    jboolean is_low_memory_device) {
   DCHECK(!jcontroller.is_null());
   DCHECK(!jprofile.is_null());
 
@@ -506,5 +508,6 @@ static jlong JNI_AutocompleteController_Create(
 
   return reinterpret_cast<jlong>(new AutocompleteControllerAndroid(
       env, std::move(jcontroller), profile,
-      std::make_unique<ChromeAutocompleteProviderClient>(profile)));
+      std::make_unique<ChromeAutocompleteProviderClient>(profile),
+      is_low_memory_device));
 }

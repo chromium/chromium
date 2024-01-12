@@ -41,6 +41,8 @@ class ReadWriter {
  public:
   using Close2Callback =
       base::OnceCallback<void(const Close2ResponseProto& response)>;
+  using FlushCallback =
+      base::OnceCallback<void(const FlushResponseProto& response)>;
   using Read2Callback =
       base::OnceCallback<void(const Read2ResponseProto& response)>;
   using Write2Callback =
@@ -66,6 +68,9 @@ class ReadWriter {
   void Close(scoped_refptr<storage::FileSystemContext> fs_context,
              Close2Callback callback);
 
+  void Flush(scoped_refptr<storage::FileSystemContext> fs_context,
+             FlushCallback callback);
+
   void Read(scoped_refptr<storage::FileSystemContext> fs_context,
             int64_t offset,
             int64_t length,
@@ -86,6 +91,12 @@ class ReadWriter {
 
   // The CallXxx and OnXxx methods are static (but take a WeakPtr) so that the
   // callback will run even if the WeakPtr is invalidated.
+
+  static void OnDefaultFlush(
+      base::WeakPtr<ReadWriter> weak_ptr,
+      FlushCallback callback,
+      scoped_refptr<storage::FileSystemContext> fs_context,
+      int flush_posix_error_code);
 
   static void OnEOFFlushBeforeActualClose(
       base::WeakPtr<ReadWriter> weak_ptr,

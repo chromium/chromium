@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
+namespace base::internal {
 
 TEST(SequenceTokenTest, IsValid) {
   EXPECT_FALSE(SequenceToken().IsValid());
@@ -50,16 +50,15 @@ TEST(SequenceTokenTest, OperatorNotEquals) {
 TEST(SequenceTokenTest, GetForCurrentThread) {
   const SequenceToken token = SequenceToken::Create();
 
-  EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
+  EXPECT_TRUE(SequenceToken::GetForCurrentThread().IsValid());
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(token);
+    TaskScope task_scope(token, /* is_thread_bound=*/false);
     EXPECT_TRUE(SequenceToken::GetForCurrentThread().IsValid());
     EXPECT_EQ(token, SequenceToken::GetForCurrentThread());
   }
 
-  EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
+  EXPECT_TRUE(SequenceToken::GetForCurrentThread().IsValid());
 }
 
 TEST(SequenceTokenTest, ToInternalValue) {
@@ -78,26 +77,26 @@ TEST(TaskTokenTest, InvalidDefaultConstructed) {
 }
 
 // Expect a TaskToken returned by TaskToken::GetForCurrentThread() outside the
-// scope of a ScopedSetSequenceTokenForCurrentThread to be invalid.
+// scope of a TaskScope to be invalid.
 TEST(TaskTokenTest, InvalidOutsideScope) {
   EXPECT_FALSE(TaskToken::GetForCurrentThread().IsValid());
 }
 
 // Expect an invalid TaskToken not to be equal with a valid TaskToken.
 TEST(TaskTokenTest, ValidNotEqualsInvalid) {
-  ScopedSetSequenceTokenForCurrentThread
-      scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+  TaskScope task_scope(SequenceToken::Create(),
+                       /* is_thread_bound=*/false);
   TaskToken valid = TaskToken::GetForCurrentThread();
   TaskToken invalid;
   EXPECT_NE(valid, invalid);
 }
 
 // Expect TaskTokens returned by TaskToken::GetForCurrentThread() in the scope
-// of the same ScopedSetSequenceTokenForCurrentThread instance to be
+// of the same TaskScope instance to be
 // valid and equal with each other.
 TEST(TaskTokenTest, EqualInSameScope) {
-  ScopedSetSequenceTokenForCurrentThread
-      scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+  TaskScope task_scope(SequenceToken::Create(),
+                       /* is_thread_bound=*/false);
 
   const TaskToken token_a = TaskToken::GetForCurrentThread();
   const TaskToken token_b = TaskToken::GetForCurrentThread();
@@ -108,20 +107,20 @@ TEST(TaskTokenTest, EqualInSameScope) {
 }
 
 // Expect TaskTokens returned by TaskToken::GetForCurrentThread() in the scope
-// of different ScopedSetSequenceTokenForCurrentThread instances to be
+// of different TaskScope instances to be
 // valid but not equal to each other.
 TEST(TaskTokenTest, NotEqualInDifferentScopes) {
   TaskToken token_a;
   TaskToken token_b;
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+    TaskScope task_scope(SequenceToken::Create(),
+                         /* is_thread_bound=*/false);
     token_a = TaskToken::GetForCurrentThread();
   }
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+    TaskScope task_scope(SequenceToken::Create(),
+                         /* is_thread_bound=*/false);
     token_b = TaskToken::GetForCurrentThread();
   }
 
@@ -130,4 +129,34 @@ TEST(TaskTokenTest, NotEqualInDifferentScopes) {
   EXPECT_NE(token_a, token_b);
 }
 
-}  // namespace base
+TEST(TaskScopeTest, ThreadBound) {
+  // Code running outside of a `TaskScope` is thread-bound.
+  EXPECT_TRUE(CurrentTaskIsThreadBound());
+
+  {
+    TaskScope scope(SequenceToken::Create(), /* is_thread_bound=*/false);
+    EXPECT_FALSE(CurrentTaskIsThreadBound());
+    {
+      TaskScope inner_scope(SequenceToken::Create(), /* is_thread_bound=*/true);
+      EXPECT_TRUE(CurrentTaskIsThreadBound());
+    }
+    EXPECT_FALSE(CurrentTaskIsThreadBound());
+  }
+
+  EXPECT_TRUE(CurrentTaskIsThreadBound());
+
+  {
+    TaskScope scope(SequenceToken::Create(), /* is_thread_bound=*/true);
+    EXPECT_TRUE(CurrentTaskIsThreadBound());
+    {
+      TaskScope inner_scope(SequenceToken::Create(),
+                            /* is_thread_bound=*/false);
+      EXPECT_FALSE(CurrentTaskIsThreadBound());
+    }
+    EXPECT_TRUE(CurrentTaskIsThreadBound());
+  }
+
+  EXPECT_TRUE(CurrentTaskIsThreadBound());
+}
+
+}  // namespace base::internal

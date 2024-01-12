@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/win/wrapped_window_proc.h"
 
 namespace {
@@ -80,8 +81,9 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   CHECK(!initialized);
   initialized = true;
 
-  if (!InitializeDatabaseOnly(updater_scope))
+  if (!InitializeDatabaseOnly(updater_scope)) {
     return false;
+  }
 
   base::debug::SetDumpWithoutCrashingFunction(
       [] { CRASHPAD_SIMULATE_CRASH(); });

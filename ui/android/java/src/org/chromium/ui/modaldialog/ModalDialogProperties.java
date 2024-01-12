@@ -51,13 +51,15 @@ public class ModalDialogProperties {
     @IntDef({
         ModalDialogProperties.ButtonType.POSITIVE,
         ModalDialogProperties.ButtonType.NEGATIVE,
-        ModalDialogProperties.ButtonType.TITLE_ICON
+        ModalDialogProperties.ButtonType.TITLE_ICON,
+        ButtonType.POSITIVE_EPHEMERAL
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
         int POSITIVE = 0;
         int NEGATIVE = 1;
         int TITLE_ICON = 2;
+        int POSITIVE_EPHEMERAL = 3;
     }
 
     /**
@@ -73,6 +75,40 @@ public class ModalDialogProperties {
         int PRIMARY_OUTLINE_NEGATIVE_OUTLINE = 0;
         int PRIMARY_FILLED_NEGATIVE_OUTLINE = 1;
         int PRIMARY_OUTLINE_NEGATIVE_FILLED = 2;
+    }
+
+    /**
+     * Specifies a button as part of a button group. To employ this UI component, set an array of
+     * `ModalDialogButtonSpec` objects as value for the property value for the property key
+     * `BUTTON_GROUP_BUTTON_SPEC_LIST`.
+     */
+    public static class ModalDialogButtonSpec {
+        private final @ButtonType int mButtonType;
+        private final String mText;
+        private final String mContentDescription;
+
+        public ModalDialogButtonSpec(@ButtonType int buttonType, String buttonText) {
+            this(buttonType, buttonText, buttonText);
+        }
+
+        public ModalDialogButtonSpec(
+                @ButtonType int buttonType, String buttonText, String buttonContentDescription) {
+            mButtonType = buttonType;
+            mText = buttonText;
+            mContentDescription = buttonContentDescription;
+        }
+
+        public int getButtonType() {
+            return mButtonType;
+        }
+
+        public String getText() {
+            return mText;
+        }
+
+        public String getContentDescription() {
+            return mContentDescription;
+        }
     }
 
     /** Styles of the dialog. Only one of them can be set at the same time. */
@@ -179,6 +215,10 @@ public class ModalDialogProperties {
     public static final ReadableObjectPropertyKey<Runnable> TOUCH_FILTERED_CALLBACK =
             new ReadableObjectPropertyKey<>();
 
+    /** Configure a button group UI component. */
+    public static final ReadableObjectPropertyKey<ModalDialogButtonSpec[]>
+            BUTTON_GROUP_BUTTON_SPEC_LIST = new ReadableObjectPropertyKey<>();
+
     /** Whether the title is scrollable with the message. */
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
@@ -226,8 +266,9 @@ public class ModalDialogProperties {
                 NEGATIVE_BUTTON_DISABLED,
                 FOOTER_MESSAGE,
                 CANCEL_ON_TOUCH_OUTSIDE,
-                FILTER_TOUCH_FOR_SECURITY,
+                BUTTON_GROUP_BUTTON_SPEC_LIST,
                 TOUCH_FILTERED_CALLBACK,
+                FILTER_TOUCH_FOR_SECURITY,
                 TITLE_SCROLLABLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,

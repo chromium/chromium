@@ -208,12 +208,14 @@ class VIZ_SERVICE_EXPORT Surface final {
   const CompositorFrame& GetActiveFrame() const;
   const CompositorFrameMetadata& GetActiveFrameMetadata() const;
 
-  void SetInterpolatedFrame(CompositorFrame frame);
-  const CompositorFrame& GetActiveOrInterpolatedFrame() const;
-  bool HasInterpolatedFrame() const;
-  // Returns true if the active or interpolated frame has damage due to a
-  // surface animation. This means that the damage should be respected even if
-  // the active frame index has not changed.
+  // ViewTransition needs to interpolate a new CompositorFrame from the active
+  // one of this Surface. The interpolated new frame replaces the currently
+  // active one via this API.
+  void SetActiveFrameForViewTransition(CompositorFrame frame);
+
+  // Returns true if the active frame has damage due to a surface animation.
+  // This means that the damage should be respected even if the active frame
+  // index has not changed.
   bool HasSurfaceAnimationDamage() const;
 
   // Returns the currently pending frame. You must check where HasPendingFrame()
@@ -404,7 +406,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   // Queue of uncommitted frames, oldest first.
   base::circular_deque<FrameData> uncommitted_frames_;
 
-  absl::optional<CompositorFrame> interpolated_frame_;
   bool seen_first_frame_activation_ = false;
   bool seen_first_surface_embedding_ = false;
 

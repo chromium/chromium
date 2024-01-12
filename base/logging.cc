@@ -33,6 +33,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -460,6 +461,8 @@ void SetLogFatalCrashKey(LogMessage* log_message) {
 
   base::AutoReset<bool> guard(&guarded, true);
 
+  // Note that we intentionally use LOG_FATAL here (old name for LOGGING_FATAL)
+  // as that's understood and used by the crash backend.
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "LOG_FATAL", base::debug::CrashKeySize::Size1024);
   base::debug::SetCrashKeyString(crash_key, log_message->BuildCrashString());
@@ -602,7 +605,7 @@ bool ShouldLogToStderr(int severity) {
 }
 
 int GetVlogVerbosity() {
-  return std::max(-1, LOG_INFO - GetMinLogLevel());
+  return std::max(-1, LOGGING_INFO - GetMinLogLevel());
 }
 
 int GetVlogLevelHelper(const char* file, size_t N) {
@@ -689,11 +692,17 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 }
 
 LogMessage::~LogMessage() {
+  Flush();
+}
+
+void LogMessage::Flush() {
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
-  if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
-    // Include a stack trace on a fatal, unless a debugger is attached.
+  // Include a stack trace on a fatal, unless running within a death test proc
+  // or a debugger is attached.
+  if (severity_ == LOGGING_FATAL && !::base::internal::InDeathTestChild() &&
+      !base::debug::BeingDebugged()) {
     base::debug::StackTrace stack_trace;
     stream_ << std::endl;  // Newline to separate from log message.
     stack_trace.OutputToStream(&stream_);
@@ -1028,6 +1037,11 @@ void LogMessage::HandleFatal(size_t stack_start,
   }
 }
 
+LogMessageFatal::~LogMessageFatal() {
+  Flush();
+  base::ImmediateCrash();
+}
+
 #if BUILDFLAG(IS_WIN)
 // This has already been defined in the header, but defining it again as DWORD
 // ensures that the type used in the header is equivalent to DWORD. If not,
@@ -1045,14 +1059,17 @@ SystemErrorCode GetLastSystemErrorCode() {
 
 BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
 #if BUILDFLAG(IS_WIN)
-  const int kErrorMessageBufferSize = 256;
-  char msgbuf[kErrorMessageBufferSize];
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-  DWORD len = FormatMessageA(flags, nullptr, error_code, 0, msgbuf,
-                             std::size(msgbuf), nullptr);
+  LPWSTR msgbuf = nullptr;
+  DWORD len = ::FormatMessageW(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, error_code, 0, reinterpret_cast<LPWSTR>(&msgbuf), 0, nullptr);
   if (len) {
+    std::u16string message = base::WideToUTF16(msgbuf);
+    ::LocalFree(msgbuf);
+    msgbuf = nullptr;
     // Messages returned by system end with line breaks.
-    return base::CollapseWhitespaceASCII(msgbuf, true) +
+    return base::UTF16ToUTF8(base::CollapseWhitespace(message, true)) +
            base::StringPrintf(" (0x%lX)", error_code);
   }
   return base::StringPrintf("Error (0x%lX) while retrieving error. (0x%lX)",
@@ -1071,12 +1088,23 @@ Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 Win32ErrorLogMessage::~Win32ErrorLogMessage() {
+  AppendError();
+}
+
+void Win32ErrorLogMessage::AppendError() {
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   DWORD last_error = err_;
   base::debug::Alias(&last_error);
 }
+
+Win32ErrorLogMessageFatal::~Win32ErrorLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
+}
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 ErrnoLogMessage::ErrnoLogMessage(const char* file,
                                  int line,
@@ -1085,12 +1113,23 @@ ErrnoLogMessage::ErrnoLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 ErrnoLogMessage::~ErrnoLogMessage() {
+  AppendError();
+}
+
+void ErrnoLogMessage::AppendError() {
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   int last_error = err_;
   base::debug::Alias(&last_error);
 }
+
+ErrnoLogMessageFatal::~ErrnoLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void CloseLogFile() {

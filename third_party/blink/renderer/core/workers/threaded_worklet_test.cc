@@ -5,6 +5,7 @@
 #include <bitset>
 
 #include "base/gtest_prod_util.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/core/workers/worklet_thread_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -83,24 +85,25 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
     WorkletThreadHolder<ThreadedWorkletThreadForTest>::ClearInstance();
   }
 
-  void TestSecurityOrigin() {
+  void TestSecurityOrigin(WTF::CrossThreadOnceClosure quit_closure) {
     WorkletGlobalScope* global_scope = To<WorkletGlobalScope>(GlobalScope());
     // The SecurityOrigin for a worklet should be a unique opaque origin, while
     // the owner Document's SecurityOrigin shouldn't.
     EXPECT_TRUE(global_scope->GetSecurityOrigin()->IsOpaque());
     EXPECT_FALSE(global_scope->DocumentSecurityOrigin()->IsOpaque());
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
-  void TestAgentCluster(base::UnguessableToken owner_agent_cluster_id) {
+  void TestAgentCluster(base::UnguessableToken owner_agent_cluster_id,
+                        WTF::CrossThreadOnceClosure quit_closure) {
     ASSERT_TRUE(owner_agent_cluster_id);
     EXPECT_EQ(GlobalScope()->GetAgentClusterID(), owner_agent_cluster_id);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
-  void TestContentSecurityPolicy() {
+  void TestContentSecurityPolicy(WTF::CrossThreadOnceClosure quit_closure) {
     EXPECT_TRUE(IsCurrentThread());
     ContentSecurityPolicy* csp = GlobalScope()->GetContentSecurityPolicy();
     KURL main_document_url = KURL("https://example.com/script.js");
@@ -123,12 +126,13 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
         KURL("https://disallowed.example.com"), RedirectStatus::kNoRedirect));
 
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
   // Test that having an invalid CSP does not result in an exception.
   // See bugs: 844383,844317
-  void TestInvalidContentSecurityPolicy() {
+  void TestInvalidContentSecurityPolicy(
+      WTF::CrossThreadOnceClosure quit_closure) {
     EXPECT_TRUE(IsCurrentThread());
 
     // At this point check that the CSP that was set is indeed invalid.
@@ -140,32 +144,34 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
               csp[0]->header->type);
 
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
   // Emulates API use on threaded WorkletGlobalScope.
-  void CountFeature(WebFeature feature) {
+  void CountFeature(WebFeature feature,
+                    WTF::CrossThreadOnceClosure quit_closure) {
     EXPECT_TRUE(IsCurrentThread());
     GlobalScope()->CountUse(feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
   // Emulates deprecated API use on threaded WorkletGlobalScope.
-  void CountDeprecation(WebFeature feature) {
+  void CountDeprecation(WebFeature feature,
+                        WTF::CrossThreadOnceClosure quit_closure) {
     EXPECT_TRUE(IsCurrentThread());
     Deprecation::CountDeprecation(GlobalScope(), feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
-  void TestTaskRunner() {
+  void TestTaskRunner(WTF::CrossThreadOnceClosure quit_closure) {
     EXPECT_TRUE(IsCurrentThread());
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         GlobalScope()->GetTaskRunner(TaskType::kInternalTest);
     EXPECT_TRUE(task_runner->RunsTasksInCurrentSequence());
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
-                        CrossThreadBindOnce(&test::ExitRunLoop));
+                        CrossThreadBindOnce(std::move(quit_closure)));
   }
 
  private:
@@ -291,21 +297,25 @@ class ThreadedWorkletTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_;
   Persistent<ThreadedWorkletMessagingProxyForTest> messaging_proxy_;
 };
 
 TEST_F(ThreadedWorkletTest, SecurityOrigin) {
+  base::RunLoop loop;
   MessagingProxy()->Start();
 
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(&ThreadedWorkletThreadForTest::TestSecurityOrigin,
-                          CrossThreadUnretained(GetWorkerThread())));
-  test::EnterRunLoop();
+                          CrossThreadUnretained(GetWorkerThread()),
+                          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 }
 
 TEST_F(ThreadedWorkletTest, AgentCluster) {
+  base::RunLoop loop;
   MessagingProxy()->Start();
 
   // The worklet should be in the owner window's agent cluster.
@@ -313,11 +323,13 @@ TEST_F(ThreadedWorkletTest, AgentCluster) {
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(&ThreadedWorkletThreadForTest::TestAgentCluster,
                           CrossThreadUnretained(GetWorkerThread()),
-                          GetExecutionContext()->GetAgentClusterID()));
-  test::EnterRunLoop();
+                          GetExecutionContext()->GetAgentClusterID(),
+                          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 }
 
 TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
+  base::RunLoop loop;
   // Set up the CSP for Document before starting ThreadedWorklet because
   // ThreadedWorklet inherits the owner Document's CSP.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
@@ -334,11 +346,13 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           &ThreadedWorkletThreadForTest::TestContentSecurityPolicy,
-          CrossThreadUnretained(GetWorkerThread())));
-  test::EnterRunLoop();
+          CrossThreadUnretained(GetWorkerThread()),
+          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 }
 
 TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
+  base::RunLoop loop;
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
   csp->AddPolicies(ParseContentSecurityPolicies(
       "invalid-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
@@ -352,8 +366,9 @@ TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           &ThreadedWorkletThreadForTest::TestInvalidContentSecurityPolicy,
-          CrossThreadUnretained(GetWorkerThread())));
-  test::EnterRunLoop();
+          CrossThreadUnretained(GetWorkerThread()),
+          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 }
 
 TEST_F(ThreadedWorkletTest, UseCounter) {
@@ -366,20 +381,28 @@ TEST_F(ThreadedWorkletTest, UseCounter) {
   // API use on the threaded WorkletGlobalScope should be recorded in UseCounter
   // on the Document.
   EXPECT_FALSE(GetDocument().IsUseCounted(kFeature1));
-  PostCrossThreadTask(
-      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountFeature,
-                          CrossThreadUnretained(GetWorkerThread()), kFeature1));
-  test::EnterRunLoop();
+  {
+    base::RunLoop loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountFeature,
+                            CrossThreadUnretained(GetWorkerThread()), kFeature1,
+                            CrossThreadBindOnce(loop.QuitClosure())));
+    loop.Run();
+  }
   EXPECT_TRUE(GetDocument().IsUseCounted(kFeature1));
 
   // API use should be reported to the Document only one time. See comments in
   // ThreadedWorkletObjectProxyForTest::CountFeature.
-  PostCrossThreadTask(
-      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountFeature,
-                          CrossThreadUnretained(GetWorkerThread()), kFeature1));
-  test::EnterRunLoop();
+  {
+    base::RunLoop loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountFeature,
+                            CrossThreadUnretained(GetWorkerThread()), kFeature1,
+                            CrossThreadBindOnce(loop.QuitClosure())));
+    loop.Run();
+  }
 
   // This feature is randomly selected from Deprecation::deprecationMessage().
   const WebFeature kFeature2 = WebFeature::kPaymentInstruments;
@@ -387,33 +410,44 @@ TEST_F(ThreadedWorkletTest, UseCounter) {
   // Deprecated API use on the threaded WorkletGlobalScope should be recorded in
   // UseCounter on the Document.
   EXPECT_FALSE(GetDocument().IsUseCounted(kFeature2));
-  PostCrossThreadTask(
-      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountDeprecation,
-                          CrossThreadUnretained(GetWorkerThread()), kFeature2));
-  test::EnterRunLoop();
+  {
+    base::RunLoop loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountDeprecation,
+                            CrossThreadUnretained(GetWorkerThread()), kFeature2,
+                            CrossThreadBindOnce(loop.QuitClosure())));
+    loop.Run();
+  }
   EXPECT_TRUE(GetDocument().IsUseCounted(kFeature2));
 
   // API use should be reported to the Document only one time. See comments in
   // ThreadedWorkletObjectProxyForTest::CountDeprecation.
-  PostCrossThreadTask(
-      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountDeprecation,
-                          CrossThreadUnretained(GetWorkerThread()), kFeature2));
-  test::EnterRunLoop();
+  {
+    base::RunLoop loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(&ThreadedWorkletThreadForTest::CountDeprecation,
+                            CrossThreadUnretained(GetWorkerThread()), kFeature2,
+                            CrossThreadBindOnce(loop.QuitClosure())));
+    loop.Run();
+  }
 }
 
 TEST_F(ThreadedWorkletTest, TaskRunner) {
   MessagingProxy()->Start();
 
+  base::RunLoop loop;
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(&ThreadedWorkletThreadForTest::TestTaskRunner,
-                          CrossThreadUnretained(GetWorkerThread())));
-  test::EnterRunLoop();
+                          CrossThreadUnretained(GetWorkerThread()),
+                          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 }
 
 TEST_F(ThreadedWorkletTest, NestedRunLoopTermination) {
+  base::RunLoop loop;
   MessagingProxy()->Start();
 
   ThreadedWorkletMessagingProxyForTest* second_messaging_proxy =
@@ -445,8 +479,9 @@ TEST_F(ThreadedWorkletTest, NestedRunLoopTermination) {
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(&ThreadedWorkletThreadForTest::TestTaskRunner,
-                          CrossThreadUnretained(GetWorkerThread())));
-  test::EnterRunLoop();
+                          CrossThreadUnretained(GetWorkerThread()),
+                          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 }
 
 }  // namespace blink

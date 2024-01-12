@@ -119,7 +119,7 @@ CAGradientLayer* CarouselGradientLayer() {
 }
 
 - (void)layoutSubviews {
-  if (self.shouldApplyLayoutMarginsGuide) {
+  if (self.shouldApplyLayoutMarginsGuide && !IsIpadPopoutOmniboxEnabled()) {
     [self updateGradient];
   }
   if (base::i18n::IsRTL()) {
@@ -136,7 +136,7 @@ CAGradientLayer* CarouselGradientLayer() {
 
   // When applying margins guide, add gradient at the right edge to indicate a
   // scrollable view.
-  if (self.shouldApplyLayoutMarginsGuide) {
+  if (self.shouldApplyLayoutMarginsGuide && !IsIpadPopoutOmniboxEnabled()) {
     self.contentView.layer.mask = self.gradientLayer;
   }
 

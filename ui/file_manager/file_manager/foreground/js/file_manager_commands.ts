@@ -8,12 +8,14 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrives, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
-import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
@@ -21,20 +23,16 @@ import type {TrashEntry} from '../../common/js/trash.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash} from '../../common/js/trash.js';
 import {isNullOrUndefined, visitURL} from '../../common/js/util.js';
 import {FileSystemType, isRecentArcEntry, RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import {readSubDirectories, updateFileData} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
+import {DialogType} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 import type {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {type ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
-import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
+import {type CommandHandlerDeps, MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getEventEntry, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
 import type {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
 import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_util.js';
@@ -135,7 +133,7 @@ export class UnmountCommand extends FilesCommand {
       } catch (error) {
         console.warn('Cannot unmount (redacted):', error);
         console.debug(`Cannot unmount '${volume.volumeId}':`, error);
-        if (error != VolumeError.PATH_NOT_MOUNTED) {
+        if (error !== VolumeError.PATH_NOT_MOUNTED) {
           errorCallback(volume.volumeType);
         }
       }
@@ -224,7 +222,7 @@ export class FormatCommand extends FilesCommand {
 
     // |root| is null for unrecognized volumes. Enable format command for such
     // volumes.
-    const isUnrecognizedVolume = (root == null);
+    const isUnrecognizedVolume = (root === null);
     // See the comment in execute() for why doing this.
     if (!root) {
       root = directoryModel.getCurrentDirEntry();
@@ -527,10 +525,10 @@ export class ToggleHiddenAndroidFoldersCommand extends FilesCommand {
         !!fileManager.volumeManager.getCurrentProfileVolumeInfo(
             VolumeType.ANDROID_FILES);
     const currentRootType = fileManager.directoryModel.getCurrentRootType();
-    const isInMyFiles = currentRootType == RootType.MY_FILES ||
-        currentRootType == RootType.DOWNLOADS ||
-        currentRootType == RootType.CROSTINI ||
-        currentRootType == RootType.ANDROID_FILES;
+    const isInMyFiles = currentRootType === RootType.MY_FILES ||
+        currentRootType === RootType.DOWNLOADS ||
+        currentRootType === RootType.CROSTINI ||
+        currentRootType === RootType.ANDROID_FILES;
     event.canExecute = hasAndroidFilesVolumeInfo && isInMyFiles;
     event.command.setHidden(!event.canExecute);
     event.command.checked = fileManager.fileFilter.isAllAndroidFoldersVisible();
@@ -2085,7 +2083,7 @@ export class GuestOsShareCommand extends FilesCommand {
     };
     // Show a confirmation dialog if we are sharing the root of a volume.
     // Non-Drive volume roots are always '/'.
-    if (entry.fullPath == '/') {
+    if (entry.fullPath === '/') {
       fileManager.ui.confirmDialog.showHtml(
           str(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
           strf(
@@ -2094,9 +2092,9 @@ export class GuestOsShareCommand extends FilesCommand {
           share, () => {});
     } else if (
         info.isRootEntry &&
-        (info.rootType == RootType.DRIVE ||
-         info.rootType == RootType.COMPUTERS_GRAND_ROOT ||
-         info.rootType == RootType.SHARED_DRIVES_GRAND_ROOT)) {
+        (info.rootType === RootType.DRIVE ||
+         info.rootType === RootType.COMPUTERS_GRAND_ROOT ||
+         info.rootType === RootType.SHARED_DRIVES_GRAND_ROOT)) {
       // Only show the dialog for My Drive, Shared Drives Grand Root and
       // Computers Grand Root.  Do not show for roots of a single Shared
       // Drive or Computer.
@@ -2560,12 +2558,12 @@ export class VolumeStorageCommand extends FilesCommand {
     }
 
     // Can execute only for local file systems.
-    if (currentVolumeInfo.volumeType == VolumeType.MY_FILES ||
-        currentVolumeInfo.volumeType == VolumeType.DOWNLOADS ||
-        currentVolumeInfo.volumeType == VolumeType.CROSTINI ||
-        currentVolumeInfo.volumeType == VolumeType.GUEST_OS ||
-        currentVolumeInfo.volumeType == VolumeType.ANDROID_FILES ||
-        currentVolumeInfo.volumeType == VolumeType.DOCUMENTS_PROVIDER) {
+    if (currentVolumeInfo.volumeType === VolumeType.MY_FILES ||
+        currentVolumeInfo.volumeType === VolumeType.DOWNLOADS ||
+        currentVolumeInfo.volumeType === VolumeType.CROSTINI ||
+        currentVolumeInfo.volumeType === VolumeType.GUEST_OS ||
+        currentVolumeInfo.volumeType === VolumeType.ANDROID_FILES ||
+        currentVolumeInfo.volumeType === VolumeType.DOCUMENTS_PROVIDER) {
       event.canExecute = true;
     }
   }

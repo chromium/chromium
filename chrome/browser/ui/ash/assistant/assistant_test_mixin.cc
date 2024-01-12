@@ -79,7 +79,7 @@ class AssistantStatusWaiter : private AssistantStateObserver {
       std::move(quit_loop_).Run();
   }
 
-  const raw_ptr<AssistantState, ExperimentalAsh> state_;
+  const raw_ptr<AssistantState> state_;
   AssistantStatus const expected_status_;
 
   base::OnceClosure quit_loop_;
@@ -164,7 +164,7 @@ class ResponseWaiter : private views::ViewObserver {
   virtual std::optional<std::string> GetResponseTextOfView(
       views::View* view) const = 0;
 
-  raw_ptr<views::View, ExperimentalAsh> parent_view_;
+  raw_ptr<views::View> parent_view_;
   base::OnceClosure quit_loop_;
 };
 
@@ -291,7 +291,7 @@ class CallbackViewHierarchyChangedObserver : views::ViewObserver {
  private:
   base::RepeatingCallback<void(const views::ViewHierarchyChangedDetails&)>
       callback_;
-  raw_ptr<views::View, ExperimentalAsh> parent_view_;
+  raw_ptr<views::View> parent_view_;
 };
 
 }  // namespace
@@ -361,7 +361,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin fake_gaia_;
 
   LoginManagerMixin::TestUserInfo user_;
-  const raw_ptr<InProcessBrowserTest, ExperimentalAsh> test_base_;
+  const raw_ptr<InProcessBrowserTest> test_base_;
   UserContext user_context_;
   std::string access_token_{FakeGaiaMixin::kFakeAllScopeAccessToken};
 };

@@ -176,15 +176,15 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       /*render_frame_token=*/std::nullopt,
       /*frame_tree_node_id=*/
       security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
-      can_perform_full_url_lookup, can_url_realtime_check_subresource_url,
+      /*navigation_id=*/std::nullopt, can_perform_full_url_lookup,
+      can_url_realtime_check_subresource_url,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
       /*url_lookup_service_metric_suffix=*/"",
       /*last_committed_url=*/web_state->GetLastCommittedURL(),
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
-      /*mechanism_experimenter=*/nullptr,
-      /*is_mechanism_experiment_allowed=*/false, hash_real_time_selection);
+      hash_real_time_selection);
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {

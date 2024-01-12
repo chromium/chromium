@@ -19,7 +19,7 @@ static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 void SetError(FederatedProviderFetcher::FetchResult& fetch_result,
               blink::mojom::FederatedAuthRequestResult result,
               content::FedCmRequestIdTokenStatus token_status,
-              absl::optional<std::string> additional_console_error_message) {
+              std::optional<std::string> additional_console_error_message) {
   fetch_result.error = FederatedProviderFetcher::FetchError(
       result, token_status, additional_console_error_message);
 }
@@ -34,7 +34,7 @@ FederatedProviderFetcher::FetchError::FetchError(const FetchError&) = default;
 FederatedProviderFetcher::FetchError::FetchError(
     blink::mojom::FederatedAuthRequestResult result,
     FedCmRequestIdTokenStatus token_status,
-    absl::optional<std::string> additional_console_error_message)
+    std::optional<std::string> additional_console_error_message)
     : result(result),
       token_status(token_status),
       additional_console_error_message(
@@ -99,7 +99,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
   if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess &&
       !ShouldSkipWellKnownEnforcementForIdp(
           fetch_result.identity_provider_config_url)) {
-    absl::optional<std::string> additional_console_error_message =
+    std::optional<std::string> additional_console_error_message =
         webid::ComputeConsoleMessageForHttpResponseCode(kWellKnownFileStr,
                                                         status.response_code);
 
@@ -162,7 +162,7 @@ void FederatedProviderFetcher::OnConfigFetched(
   constexpr char kConfigFileStr[] = "config file";
 
   if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
-    absl::optional<std::string> additional_console_error_message =
+    std::optional<std::string> additional_console_error_message =
         webid::ComputeConsoleMessageForHttpResponseCode(kConfigFileStr,
                                                         status.response_code);
 
@@ -216,7 +216,7 @@ void FederatedProviderFetcher::OnError(
     FetchResult& fetch_result,
     blink::mojom::FederatedAuthRequestResult result,
     content::FedCmRequestIdTokenStatus token_status,
-    absl::optional<std::string> additional_console_error_message) {
+    std::optional<std::string> additional_console_error_message) {
   SetError(fetch_result, result, token_status,
            additional_console_error_message);
   RunCallbackIfDone();
@@ -335,7 +335,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   if (result.wellknown.provider_urls.size() > kMaxProvidersInWellKnownFile) {
     SetError(result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
              TokenStatus::kWellKnownTooBig,
-             /*additional_console_error_message=*/absl::nullopt);
+             /*additional_console_error_message=*/std::nullopt);
     return;
   }
 
@@ -345,7 +345,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   if (!provider_url_is_valid) {
     SetError(result, FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
              TokenStatus::kConfigNotInWellKnown,
-             /*additional_console_error_message=*/absl::nullopt);
+             /*additional_console_error_message=*/std::nullopt);
     return;
   }
 }

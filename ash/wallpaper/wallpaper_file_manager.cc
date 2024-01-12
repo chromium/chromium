@@ -155,6 +155,7 @@ base::FilePath SaveWallpaperToPath(WallpaperType type,
                                    const std::string& file_name,
                                    WallpaperLayout layout,
                                    gfx::ImageSkia image,
+                                   const std::string& image_metadata,
                                    int resized_width = 0,
                                    int resized_height = 0) {
   const base::FilePath file_path = wallpaper_dir.Append(file_name);
@@ -165,7 +166,7 @@ base::FilePath SaveWallpaperToPath(WallpaperType type,
   EnsureWallpaperDirectoryExists(wallpaper_dir);
   const bool success = ResizeAndSaveWallpaper(
       image, file_path, layout, resized_width ? resized_width : image.width(),
-      resized_height ? resized_height : image.height());
+      resized_height ? resized_height : image.height(), image_metadata);
   return success ? file_path : base::FilePath();
 }
 
@@ -176,7 +177,8 @@ base::FilePath SaveWallpaperPerType(WallpaperType type,
                                     const std::string& wallpaper_files_id,
                                     const std::string& file_name,
                                     const WallpaperLayout layout,
-                                    const gfx::ImageSkia& image) {
+                                    const gfx::ImageSkia& image,
+                                    const std::string& image_metadata) {
   switch (type) {
     case WallpaperType::kOnline:
     case WallpaperType::kDaily: {
@@ -186,8 +188,10 @@ base::FilePath SaveWallpaperPerType(WallpaperType type,
           GetOnlineWallpaperFileName(file_name, WallpaperResolution::kSmall);
       SaveWallpaperToPath(type, wallpaper_dir, small_wallpaper_file_name,
                           WALLPAPER_LAYOUT_CENTER_CROPPED, image,
-                          kSmallWallpaperMaxWidth, kSmallWallpaperMaxHeight);
-      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image);
+                          image_metadata, kSmallWallpaperMaxWidth,
+                          kSmallWallpaperMaxHeight);
+      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image,
+                                 image_metadata);
     }
     case WallpaperType::kCustomized:
     case WallpaperType::kPolicy: {
@@ -198,26 +202,27 @@ base::FilePath SaveWallpaperPerType(WallpaperType type,
           type,
           GetCustomWallpaperDir(wallpaper_dir, kSmallWallpaperSubDir,
                                 wallpaper_files_id),
-          file_name, layout, image, kSmallWallpaperMaxWidth,
+          file_name, layout, image, image_metadata, kSmallWallpaperMaxWidth,
           kSmallWallpaperMaxHeight);
       SaveWallpaperToPath(
           type,
           GetCustomWallpaperDir(wallpaper_dir, kLargeWallpaperSubDir,
                                 wallpaper_files_id),
-          file_name, layout, image, kLargeWallpaperMaxWidth,
+          file_name, layout, image, image_metadata, kLargeWallpaperMaxWidth,
           kLargeWallpaperMaxHeight);
       return SaveWallpaperToPath(
           type,
           GetCustomWallpaperDir(wallpaper_dir, kOriginalWallpaperSubDir,
                                 wallpaper_files_id),
-          file_name, WALLPAPER_LAYOUT_STRETCH, image);
+          file_name, WALLPAPER_LAYOUT_STRETCH, image, image_metadata);
     }
     case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
     case WallpaperType::kSeaPen:
       // Save the Google Photo and Sea Pen wallpaper in original size to the
       // local file system.
-      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image);
+      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image,
+                                 image_metadata);
     default:
       NOTREACHED() << "Invalid wallpaper type.";
       return base::FilePath();
@@ -289,6 +294,7 @@ void WallpaperFileManager::SaveWallpaperToDisk(
     const std::string& file_name,
     const WallpaperLayout layout,
     const gfx::ImageSkia& image,
+    const std::string& image_metadata,
     SaveWallpaperCallback callback,
     const std::string& wallpaper_files_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -304,7 +310,8 @@ void WallpaperFileManager::SaveWallpaperToDisk(
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&SaveWallpaperPerType, type, wallpaper_dir,
-                     wallpaper_files_id, file_name, layout, deep_copy),
+                     wallpaper_files_id, file_name, layout, deep_copy,
+                     image_metadata),
       std::move(callback));
 }
 

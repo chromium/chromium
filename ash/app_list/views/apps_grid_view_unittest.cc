@@ -61,6 +61,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -335,7 +336,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     auto* helper = GetAppListTestHelper();
     if (create_as_tablet_mode_) {
       // The app list will be shown automatically when tablet mode is enabled.
-      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      ash::TabletModeControllerTestApi().EnterTabletMode();
     } else {
       helper->ShowAppList();
     }

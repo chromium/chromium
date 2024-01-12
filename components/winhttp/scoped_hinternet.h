@@ -17,8 +17,9 @@ namespace internal {
 struct ScopedHInternetTraits {
   static HINTERNET InvalidValue() { return nullptr; }
   static void Free(HINTERNET handle) {
-    if (handle != InvalidValue())
+    if (handle != InvalidValue()) {
       WinHttpCloseHandle(handle);
+    }
   }
 };
 

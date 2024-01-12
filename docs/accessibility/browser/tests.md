@@ -69,6 +69,12 @@ autoninja -C out/release content_browsertests && \
   out/release/content_browsertests --gtest_filter="All/DumpAccessibilityTree*"
 ```
 
+Expectation baselines for each OS can be generated via:
+
+```
+tools/accessibility/rebase_dump_accessibility_tree_test.py
+```
+
 ## Other content_browsertests
 
 There are many other tests in content/ that relate to accessibility. All of

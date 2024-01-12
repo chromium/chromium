@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/status.h"
 #include "media/gpu/android/codec_surface_bundle.h"
 #include "media/gpu/android/device_info.h"
 #include "media/gpu/media_gpu_export.h"
@@ -166,17 +167,25 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   scoped_refptr<CodecSurfaceBundle> SurfaceBundle();
 
   // Queues |buffer| if the codec has an available input buffer.
-  enum class QueueStatus { kOk, kError, kTryAgainLater, kNoKey };
+  struct QueueStatusTraits {
+    enum class Codes { kOk, kError, kTryAgainLater, kNoKey };
+    static constexpr StatusGroupType Group() { return "QueueStatus"; }
+  };
+  using QueueStatus = TypedStatus<QueueStatusTraits>;
   QueueStatus QueueInputBuffer(const DecoderBuffer& buffer);
 
   // Like MediaCodecBridge::DequeueOutputBuffer() but it outputs a
   // CodecOutputBuffer instead of an index. |*codec_buffer| must be null.
-  // If this returns MEDIA_CODEC_OK then either |*end_of_stream| will be set to
-  // true or |*codec_buffer| will be non-null. The EOS buffer is returned to the
-  // codec immediately. Unlike MediaCodecBridge, this does not return
-  // MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED or MEDIA_CODEC_OUTPUT_FORMAT_CHANGED. It
-  // tries to dequeue another buffer instead.
-  enum class DequeueStatus { kOk, kError, kTryAgainLater };
+  // If this returns kOk then either |*end_of_stream| will be set to true or
+  // |*codec_buffer| will be non-null. The EOS buffer is returned to the codec
+  // immediately. Unlike MediaCodecBridge, this does not return
+  // kOutputBuffersChanged or kOutputFormatChanged.
+  // It tries to dequeue another buffer instead.
+  struct DequeueStatusTraits {
+    enum class Codes : StatusCodeType { kOk, kError, kTryAgainLater };
+    static constexpr StatusGroupType Group() { return "DequeueStatus"; }
+  };
+  using DequeueStatus = TypedStatus<DequeueStatusTraits>;
   DequeueStatus DequeueOutputBuffer(
       base::TimeDelta* presentation_time,
       bool* end_of_stream,

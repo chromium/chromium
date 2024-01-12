@@ -65,7 +65,7 @@ class PrintJobHistoryServiceImpl : public PrintJobHistoryService,
                           std::vector<printing::proto::PrintJobInfo> entries);
 
   std::unique_ptr<PrintJobDatabase> print_job_database_;
-  raw_ptr<CupsPrintJobManager, ExperimentalAsh> print_job_manager_;
+  raw_ptr<CupsPrintJobManager> print_job_manager_;
   PrintJobHistoryCleaner print_job_history_cleaner_;
   // Used for avoiding that callbacks are called after the class was
   // destroyed already.

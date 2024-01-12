@@ -198,6 +198,7 @@ void GaiaScreen::ShowImpl() {
   // Continue QuickStart flow if there is an ongoing setup.
   if (context()->quick_start_setup_ongoing) {
     exit_callback_.Run(Result::QUICK_START_ONGOING);
+    return;
   }
 
   if (!backlights_forced_off_observation_.IsObserving()) {
@@ -342,8 +343,6 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
                                            ->gaia_config.gaia_path;
   if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) ==
       GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_SAML_REDIRECT) {
-    // TODO(b/309131477): use reauth path in "SAML redirect" mode if this is a
-    // reauthentication of a known user.
     gaia_path = WizardContext::GaiaPath::kSamlRedirect;
   } else if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
     gaia_path = WizardContext::GaiaPath::kReauth;

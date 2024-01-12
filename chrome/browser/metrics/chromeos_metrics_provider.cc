@@ -253,8 +253,7 @@ bool ChromeOSMetricsProvider::UpdateUserTypeUMA() {
     return false;
   }
   user_manager::UserType user_type = primary_user->GetType();
-  base::UmaHistogramEnumeration("UMA.PrimaryUserType", user_type,
-                                user_manager::UserType::NUM_USER_TYPES);
+  base::UmaHistogramEnumeration("UMA.PrimaryUserType", user_type);
   return true;
 }
 

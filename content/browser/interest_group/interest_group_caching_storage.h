@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
 namespace content {
@@ -74,6 +75,8 @@ class CONTENT_EXPORT StorageInterestGroups
     }
     return storage_interest_groups;
   }
+
+  std::optional<SingleStorageInterestGroup> FindGroup(std::string_view name);
 
   bool IsExpired() { return expiry_ < base::Time::Now(); }
 
@@ -170,14 +173,15 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
       const std::string& key,
-      base::OnceCallback<void(absl::optional<base::Time>)> callback);
+      base::OnceCallback<void(std::optional<base::Time>)> callback);
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& key);
 
   // Gets a single interest group.
   void GetInterestGroup(
       const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
+          callback);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   void GetAllInterestGroupOwners(
@@ -202,7 +206,7 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
       base::flat_set<url::Origin> origins,
-      base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+      base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
           callback);
 
   // Gets a list of all interest group joining origins. Each joining origin

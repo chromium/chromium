@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -39,9 +41,6 @@ public class BackPressManager implements Destroyable {
     public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
-    public static final BooleanCachedFieldTrialParameter START_UP_MOVE_TO_BACK =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "move_task_to_back", true);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
 
@@ -85,6 +84,8 @@ public class BackPressManager implements Destroyable {
                 @SuppressLint("WrongConstant") // Suppress mLastCalledHandlerType assignment warning
                 @Override
                 public void handleOnBackPressed() {
+                    if (mOnBackPressed != null) mOnBackPressed.run();
+                    recordSystemBackCountIfBeforeFirstVisibleContent();
                     mLastCalledHandlerType = -1;
                     BackPressManager.this.handleBackPress();
                     // This means this back is triggered by a gesture rather than the back button.
@@ -135,6 +136,9 @@ public class BackPressManager implements Destroyable {
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
+    private boolean mBackBeforeFirstVisibleContentRecorded;
+    private Supplier<Boolean> mIsFirstVisibleContentDrawnSupplier;
+    private Runnable mOnBackPressed;
 
     /**
      * @return True if the back gesture refactor is enabled.
@@ -162,7 +166,7 @@ public class BackPressManager implements Destroyable {
      *     pressed during start up. Otherwise, call `onBackPressed` to trigger default behavior.
      */
     public static boolean shouldMoveToBackDuringStartup() {
-        return START_UP_MOVE_TO_BACK.getValue();
+        return ChromeFeatureList.sBackGestureMoveToBackDuringStartup.isEnabled();
     }
 
     /**
@@ -256,12 +260,38 @@ public class BackPressManager implements Destroyable {
     }
 
     /**
+     * Set a callback fired when a back press is triggered. This is introduced to investigate data
+     * inconsistency between experimental groups. and is not intended to be re-used.
+     * TODO(crbug.com/1504020): remove after sufficient data is collected.
+     */
+    public void setOnBackPressedListener(Runnable callback) {
+        mOnBackPressed = callback;
+    }
+
+    /**
      * Turn on more checks if a system back arm is available, such as when running on tabbed
      * activity.
      * @param hasSystemBackArm True if system back arm is feasible.
      */
     public void setHasSystemBackArm(boolean hasSystemBackArm) {
         mHasSystemBackArm = hasSystemBackArm;
+    }
+
+    /** Set a supplier to provide whether first visible content has been drawn. */
+    public void setIsFirstVisibleContentDrawnSupplier(Supplier<Boolean> supplier) {
+        mIsFirstVisibleContentDrawnSupplier = supplier;
+    }
+
+    /**
+     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/1504020):
+     * remove after it is fixed.
+     */
+    public void recordSystemBackCountIfBeforeFirstVisibleContent() {
+        if (mBackBeforeFirstVisibleContentRecorded) return;
+        if (mIsFirstVisibleContentDrawnSupplier != null
+                && mIsFirstVisibleContentDrawnSupplier.get()) return;
+        mBackBeforeFirstVisibleContentRecorded = true;
+        RecordUserAction.record("SystemBackBeforeFirstVisibleContent");
     }
 
     private void backPressStateChanged() {

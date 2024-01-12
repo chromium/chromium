@@ -95,9 +95,12 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
-  absl::optional<compose::ComposeHintMetadata> compose_metadata =
-      optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
-          metadata.any_metadata().value());
+  absl::optional<compose::ComposeHintMetadata> compose_metadata;
+  if (metadata.any_metadata().has_value()) {
+    compose_metadata =
+        optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
+            metadata.any_metadata().value());
+  }
   if (!compose_metadata.has_value()) {
     DVLOG(2) << "Optimization guide has no metadata, returns unspecified";
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
@@ -197,8 +200,11 @@ bool ComposeEnabling::ShouldTriggerPopup(
     return false;
   }
 
-  if (!PageLevelChecks(translate_manager, top_level_frame_origin,
-                       element_frame_origin)
+  // TODO(b/319661274): Support fenced frame checks from the Autofill popup
+  // entry point.
+  bool is_in_fenced_frame = false;
+  if (!PageLevelChecks(translate_manager, url, top_level_frame_origin,
+                       element_frame_origin, is_in_fenced_frame)
            .has_value()) {
     return false;
   }
@@ -253,8 +259,8 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
   }
 
   auto show_status = PageLevelChecks(
-      translate_manager, rfh->GetMainFrame()->GetLastCommittedOrigin(),
-      params.frame_origin);
+      translate_manager, url, rfh->GetMainFrame()->GetLastCommittedOrigin(),
+      params.frame_origin, rfh->IsNestedWithinFencedFrame());
   if (show_status.has_value()) {
     compose::LogComposeContextMenuShowStatus(
         compose::ComposeShowStatus::kShouldShow);
@@ -295,12 +301,25 @@ void ComposeEnabling::PrepareToEnableOnRestart() {
 
 base::expected<void, compose::ComposeShowStatus>
 ComposeEnabling::PageLevelChecks(translate::TranslateManager* translate_manager,
+                                 GURL url,
                                  const url::Origin& top_level_frame_origin,
-                                 const url::Origin& element_frame_origin) {
+                                 const url::Origin& element_frame_origin,
+                                 bool is_nested_within_fenced_frame) {
   if (auto profile_show_status = IsEnabled();
       !profile_show_status.has_value()) {
     DVLOG(2) << "not enabled";
     return profile_show_status;
+  }
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    DVLOG(2) << "incorrect scheme";
+    return base::unexpected(compose::ComposeShowStatus::kIncorrectScheme);
+  }
+
+  if (is_nested_within_fenced_frame) {
+    DVLOG(2) << "field nested within fenced frame not supported";
+    return base::unexpected(
+        compose::ComposeShowStatus::kFormFieldNestedInFencedFrame);
   }
 
   // Note: This does not check frames between the current and the top level

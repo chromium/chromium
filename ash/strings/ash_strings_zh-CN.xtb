@@ -189,7 +189,7 @@
 <translation id="1720011244392820496">开启 Wi-Fi 同步</translation>
 <translation id="1720230731642245863">热点已关闭</translation>
 <translation id="1731815243805539470">切换到上一个用户</translation>
-<translation id="1733996486177697563">在深色主题和浅色主题之间切换。轻触并按住相应桌面，然后选择“壁纸和样式”。</translation>
+<translation id="1733996486177697563">在深色主题和浅色主题之间切换。轻触并按住相应桌面，然后选择“壁纸和风格”。</translation>
 <translation id="1736898441010944794">“<ph name="NAME" />”对蓝牙设备可见。</translation>
 <translation id="1737078180382804488">取消设置查看手机中的通知</translation>
 <translation id="174102739345480129">标记工具已关闭。</translation>
@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">开启/关闭 Wi-Fi。<ph name="STATE" />。</translation>
 <translation id="2367186422933365202">无法登录 Chromebook</translation>
 <translation id="2367972762794486313">显示应用</translation>
+<translation id="2368828502825385061">定位</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2382875860893882175">目前已暂停投放。您可随时恢复投放或停止投放。</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
@@ -1085,7 +1086,7 @@
 <translation id="533282197239610265">显示投放设备</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
-<translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和样式”。</translation>
+<translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和风格”。</translation>
 <translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
 <translation id="5361524080961918551">已下载<ph name="LANGUAGE" />语音文件的部分内容</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
@@ -1130,6 +1131,7 @@
 <translation id="5537725057119320332">投放</translation>
 <translation id="5546397813406633847">让用户恢复登录</translation>
 <translation id="554893713779400387">开启/关闭语音输入</translation>
+<translation id="5550417424894892620">将文件拖放到桌面上即可将其添加到<ph name="HOLDING_SPACE_TITLE" />。您无法将文件添加到桌面。</translation>
 <translation id="5551456515017410630">打开/关闭日历</translation>
 <translation id="5551974246223970793">搜索网页时，转到下一个相符的搜索结果</translation>
 <translation id="5555639311269196631">关闭热点</translation>
@@ -1502,6 +1504,7 @@
 <translation id="7025533177575372252">将您的<ph name="DEVICE_NAME" />连接到手机</translation>
 <translation id="7026338066939101231">减少</translation>
 <translation id="7029814467594812963">退出会话</translation>
+<translation id="7031303610220416229">在 Google Tasks 中查看所有任务</translation>
 <translation id="7032161822340700104">最多只能保存 6 个模板。若要保存新模板，请先移除一个已存模板。</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />想使用<ph name="DEVICE_NAME" />。请开启您设备的物理<ph name="DEVICE_NAME" />开关。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
@@ -1814,6 +1817,7 @@
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />正被使用。</translation>
 <translation id="8369166482916924789">已保存的桌面“<ph name="SAVE_AND_RECALL_DESK_NAME" />”</translation>
+<translation id="8370414029565771236">搜索“<ph name="TEXT" />”</translation>
 <translation id="8371779926711439835">前进一个字母</translation>
 <translation id="8371991222807690464">在访客模式下，外围设备的性能可能会受到限制</translation>
 <translation id="8374601332003098278">按 Enter 键即可录制局部屏幕</translation>
@@ -1869,6 +1873,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
 <translation id="8609384513243082612">打开新标签页</translation>
+<translation id="8612216344243590325">请将重要文件保存在<ph name="HOLDING_SPACE_TITLE" />中，而不是放在桌面。只需将文件拖到<ph name="HOLDING_SPACE_TITLE" />即可。</translation>
 <translation id="8614517853887502247">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />和<ph name="APP_2_TITLE" />通知</translation>
 <translation id="8619138598101195078">调低音量</translation>
 <translation id="8627191004499078455">已连接到<ph name="DEVICE_NAME" /></translation>

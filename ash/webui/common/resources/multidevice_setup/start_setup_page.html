@@ -1,18 +1,12 @@
 <style include="multidevice-setup-shared">
-  #multidevice-summary-message a {
-    display: inline-block;
-  }
-
   #singleDeviceName {
     color: var(--cros-sys-on_surface);
+    font: var(--cros-body-2-font);
+    font-family: var(--cros-font-family-google-sans);
   }
 
   .offline-device-name {
     color: var(--cros-sys-on_surface_variant);
-  }
-
-  :host-context(body.jelly-enabled) #singleDeviceName,
-                                    .offline-device-name {
     font: var(--cros-body-2-font);
     font-family: var(--cros-font-family-google-sans);
   }
@@ -52,11 +46,23 @@
     box-sizing: border-box;
     display: flex;
     min-height: 48px;
-    padding: 12px 0;
+    padding: 18px 0;
+    gap: 20px;
   }
 
   #feature-details-container-header {
     margin-bottom: 16px;
+  }
+
+  .feature-detail-text {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    max-width: 60%;
+  }
+
+  .feature-detail-text > span:first-of-type {
+    font-weight: bold;
   }
 
   :host-context([orientation=horizontal]) #additional-content-container {
@@ -67,16 +73,13 @@
 
   #feature-details-container {
     color: var(--cros-sys-on_surface);
+    font: var(--cros-body-1-font);
+    font-family: var(--cros-font-family-google-sans);
     padding-top: 40px;
   }
 
-  :host-context(body.jelly-enabled) #feature-details-container {
-    font: var(--cros-body-1-font);
-    font-family: var(--cros-font-family-google-sans);
-  }
-
-  .feature-detail:not(:last-child) {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  .feature-detail:not(:last-of-type) {
+    border-bottom: 1px solid var(--cros-sys-separator);
   }
 
   .feature-detail iron-icon {
@@ -84,7 +87,6 @@
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     min-width: 20px;
-    padding: 0 20px;
   }
 
   /* Hide the animation when not enough space in vertical mode. */
@@ -105,18 +107,10 @@
 
 <ui-page header-text="[[i18nDynamic(locale, headerTextId)]]"
     icon-name="google-g">
-  <span slot="message" id="multidevice-summary-message" inner-h-t-m-l=
-      "[[i18nAdvancedDynamic_(locale, 'startSetupPageMessage')]]">
-  </span>
   <span slot="message">
     <div id="animation-container">
-      <!-- TODO(b/279667779): Remove iron-media-query and dark mode check when
-                              Jelly is fully launched. -->
-      <iron-media-query query="(prefers-color-scheme: dark)"
-          query-matches="{{isDarkModeActive_}}">
-      </iron-media-query>
       <cros-lottie-renderer id="multideviceSetupAnimation"
-          asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
+          asset-url="[[getAnimationUrl_()]]"
           autoplay="true" dynamic="true" aria-hidden="true">
       </cros-lottie-renderer>
     </div>
@@ -151,29 +145,45 @@
         <div id="feature-details-container-header">
           [[i18nDynamic(locale, 'startSetupPageFeatureListHeader')]]
         </div>
+        <!-- Feature: Phone Hub -->
+        <template is="dom-if" if="[[phoneHubEnabled_]]">
+          <div class="feature-detail">
+            <iron-icon icon="multidevice-setup-icons-20:phonehub">
+            </iron-icon>
+            <div class="feature-detail-text">
+              <span>[[i18nDynamic(locale, 'startSetupPageFeaturePhoneHubTitle')]]</span>
+              <span>[[i18nDynamic(locale, 'startSetupPageFeaturePhoneHubDescription')]]</span>
+            </div>
+          </div>
+        </template>
+        <!-- Feature: Smart Lock -->
+        <div class="feature-detail">
+          <iron-icon icon="multidevice-setup-icons-20:smart-lock">
+          </iron-icon>
+          <div class="feature-detail-text">
+            <span>[[i18nDynamic(locale, 'startSetupPageFeatureSmartLockTitle')]]</span>
+            <span>[[i18nDynamic(locale, 'startSetupPageFeatureSmartLockDescription')]]</span>
+          </div>
+        </div>
+        <!-- Feature: Wifi Sync -->
         <template is="dom-if" if="[[wifiSyncEnabled_]]">
           <div class="feature-detail">
-            <iron-icon icon="multidevice-setup-icons-20:wifi">
+            <iron-icon icon="multidevice-setup-icons-20:wifi-sync">
             </iron-icon>
-            <span>
-              [[i18nDynamic(locale, 'startSetupPageFeatureWifiSync')]]
-            </span>
+            <div class="feature-detail-text">
+              <span>[[i18nDynamic(locale, 'startSetupPageFeatureWifiSyncTitle')]]</span>
+              <span>[[i18nDynamic(locale, 'startSetupPageFeatureWifiSyncDescription')]]</span>
+            </div>
           </div>
         </template>
-        <template is="dom-if" if="[[phoneHubCameraRollEnabled_]]">
-          <div class="feature-detail">
-            <iron-icon icon="multidevice-setup-icons-20:image">
-            </iron-icon>
-            <span>
-              [[i18nDynamic(locale, 'startSetupPageFeatureCameraRoll')]]
-            </span>
-          </div>
-        </template>
+        <!-- Feature: Instant Tethering -->
         <div class="feature-detail">
-          <iron-icon icon="multidevice-setup-icons-20:features"></iron-icon>
-          <span>
-            [[i18nDynamic(locale, 'startSetupPageFeatureListAddFeatures')]]
-          </span>
+          <iron-icon icon="multidevice-setup-icons-20:instant-tethering">
+          </iron-icon>
+          <div class="feature-detail-text">
+            <span>[[i18nDynamic(locale, 'startSetupPageFeatureInstantTetheringTitle')]]</span>
+            <span>[[i18nDynamic(locale, 'startSetupPageFeatureInstantTetheringDescription')]]</span>
+          </div>
         </div>
       </div>
       <div class="footnote">

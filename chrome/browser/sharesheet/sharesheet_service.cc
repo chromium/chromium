@@ -89,6 +89,8 @@ void SharesheetService::ShowBubble(
     CloseCallback close_callback) {
   DCHECK(intent);
   DCHECK(intent->IsShareIntent());
+  CHECK(delivered_callback);
+
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   PrepareToShowBubble(std::move(intent), std::move(get_native_window_callback),
                       std::move(delivered_callback), std::move(close_callback));

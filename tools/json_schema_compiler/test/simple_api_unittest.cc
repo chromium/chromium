@@ -145,6 +145,27 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
   }
 }
 
+TEST(JsonSchemaCompilerSimpleTest, RequiredFunctionParameter) {
+  {
+    base::Value::List params_value;
+    params_value.Append(base::Value::Dict());
+    params_value.Append("asdf");
+    std::optional<simple_api::RequiredFunctionParameter::Params> params(
+        simple_api::RequiredFunctionParameter::Params::Create(params_value));
+    EXPECT_TRUE(params.has_value());
+    EXPECT_TRUE(params->function_parameter.empty());
+    EXPECT_EQ("asdf", params->second);
+  }
+  {
+    base::Value::List params_value;
+    params_value.Append(5);
+    params_value.Append("asdf");
+    std::optional<simple_api::RequiredFunctionParameter::Params> params(
+        simple_api::RequiredFunctionParameter::Params::Create(params_value));
+    EXPECT_FALSE(params.has_value());
+  }
+}
+
 TEST(JsonSchemaCompilerSimpleTest, NoParamsResultCreate) {
   base::Value results(simple_api::OptionalString::Results::Create());
   base::Value::List expected;

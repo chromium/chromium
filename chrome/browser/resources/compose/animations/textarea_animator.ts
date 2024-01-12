@@ -34,7 +34,7 @@ export class ComposeTextareaAnimator extends Animator {
         {duration: 100, easing: 'linear'});
 
     return [
-      this.fadeOutAndHide('#inputContainer', 'block', {duration: 250}),
+      this.fadeOutAndHide('#inputContainer', 'flex', {duration: 250}),
       this.fadeIn('#readonlyContainer', {duration: 250}),
       dimensionsAnimation,
       colorAnimation,

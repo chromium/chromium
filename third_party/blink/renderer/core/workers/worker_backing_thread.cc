@@ -116,14 +116,17 @@ void IsolateInForegroundNotification() {
   WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
 }
 
-void SetBatterySaverModeForWorkerThreadIsolates(
-    bool battery_saver_mode_enabled) {
-  base::AutoLock locker(IsolatesLock());
-
-  for (v8::Isolate* isolate : Isolates()) {
-    isolate->SetBatterySaverMode(battery_saver_mode_enabled);
-  }
-  BatterySaverModeEnabled() = battery_saver_mode_enabled;
+void SetBatterySaverModeForAllIsolates(bool battery_saver_mode_enabled) {
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating(
+          [](bool battery_saver_mode_enabled, v8::Isolate* isolate) {
+            isolate->SetBatterySaverMode(battery_saver_mode_enabled);
+          },
+          battery_saver_mode_enabled));
+  WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
+      battery_saver_mode_enabled);
 }
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
@@ -213,6 +216,17 @@ void WorkerBackingThread::
       isolate->IsolateInForegroundNotification();
     }
   }
+}
+
+// static
+void WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
+    bool battery_saver_mode_enabled) {
+  base::AutoLock locker(IsolatesLock());
+
+  for (v8::Isolate* isolate : Isolates()) {
+    isolate->SetBatterySaverMode(battery_saver_mode_enabled);
+  }
+  BatterySaverModeEnabled() = battery_saver_mode_enabled;
 }
 
 }  // namespace blink

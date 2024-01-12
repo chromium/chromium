@@ -107,7 +107,7 @@ class MediaManagerMock : public assistant_client::MediaManager {
   }
 
  private:
-  raw_ptr<Listener, ExperimentalAsh> listener_ = nullptr;
+  raw_ptr<Listener> listener_ = nullptr;
 };
 
 }  // namespace

@@ -36,6 +36,7 @@ class GURL;
 @protocol TabGridActivityObserver;
 @protocol TabGridConsumer;
 @protocol TabContextMenuProvider;
+@protocol TabGridMediatorProviderWrangler;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
@@ -100,6 +101,11 @@ enum class TabGridPageConfiguration {
 
 // Mutator to apply all user change in the model.
 @property(nonatomic, weak) id<TabGridMutator> mutator;
+
+// Temporary provider to determine where the mediator and the view controller
+// lose current page sync.
+// TODO(crbug.com/1457146): Remove once all the flow have been matched.
+@property(nonatomic, weak) id<TabGridMediatorProviderWrangler> provider;
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
@@ -172,11 +178,6 @@ enum class TabGridPageConfiguration {
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-
-// Tells the receiver to prepare for its appearance by pre-requesting any
-// resources it needs from data sources. This should be called before any
-// transitions are triggered.
-- (void)prepareForAppearance;
 
 // Notifies the ViewController that its content is being displayed or hidden.
 - (void)contentWillAppearAnimated:(BOOL)animated;

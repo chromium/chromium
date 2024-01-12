@@ -49,6 +49,25 @@ BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
+// Docking Promo experiment variations.
+extern const char kIOSDockingPromoExperimentType[];
+
+// Feature flag to enable the Docking Promo.
+BASE_DECLARE_FEATURE(kIOSDockingPromo);
+
+// Param values for the Docking Promo display trigger experimental arms.
+enum class DockingPromoDisplayTriggerArm {
+  kAfterFRE = 0,
+  kAppLaunch = 1,
+  kDuringFRE = 2,
+};
+
+// Helper function to check if kIOSDockingPromo is enabled.
+bool IsDockingPromoEnabled();
+
+// Returns the experiment type for the Docking Promo feature.
+DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled();
+
 // Feature flag to enable the non-modal DB promo cooldown refactor separating
 // the cooldown periods for full screen and non-modal promos, as well as
 // Finchable cooldown period for non-modal promos.
@@ -58,22 +77,6 @@ BASE_DECLARE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor);
 // overridable through Finch.
 extern const base::FeatureParam<int>
     kNonModalDefaultBrowserPromoCooldownRefactorParam;
-
-// Feature flag to enable the default browser promo generic and tailored train
-// experiment.
-BASE_DECLARE_FEATURE(kDefaultBrowserGenericTailoredPromoTrain);
-
-// Param values for the default browser promo generic and tailored train
-// experiment.
-enum class DefaultBrowserPromoGenericTailoredArm {
-  kOnlyGeneric,
-  kOnlyTailored,
-};
-
-// Feature param for the default browser promo generic and tailored train
-// experiment.
-extern const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
-    kDefaultBrowserPromoGenericTailoredParam;
 
 // Feature flag that enables the default browser video promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
@@ -127,12 +130,6 @@ BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 // Feature flag to enable UITraitCollection workaround for fixing incorrect
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);
-
-// Feature flag to enable the use of UIButtonConfigurations in iOS 15+.
-BASE_DECLARE_FEATURE(kEnableUIButtonConfiguration);
-
-// Returns true if the use of UIButtonConfigurations is enabled.
-bool IsUIButtonConfigurationEnabled();
 
 // Feature flag to enable duplicate NTP cleanup.
 BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
@@ -313,24 +310,9 @@ BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
 // signed in non syncing users.
 BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);
 
-// Engagement criteria type for a feed refresh.
-enum class FeedRefreshEngagementCriteriaType {
-  // Any scroll or interaction.
-  kSimpleEngagement = 0,
-  // Meets minimum scroll criteria or any interaction.
-  kEngagement = 1,
-  // Meets good visit criteria.
-  kGoodVisit = 2,
-  kMaxValue = kGoodVisit,
-};
-
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
-
-// Feature flag to enable feed invisible foreground refresh. Check feature
-// params instead of using this constant.
-BASE_DECLARE_FEATURE(kEnableFeedInvisibleForegroundRefresh);
 
 // Feature flag to enable the Following feed in the NTP.
 // Use IsWebChannelsEnabled() instead of this constant directly.
@@ -338,12 +320,6 @@ BASE_DECLARE_FEATURE(kEnableWebChannels);
 
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
-
-// Feature flag to enable feed experiment tagging.
-BASE_DECLARE_FEATURE(kEnableFeedExperimentTagging);
-
-// Feature flag to disable Discover-controlled foregrounding refreshes.
-BASE_DECLARE_FEATURE(kFeedDisableHotStartRefresh);
 
 // Feature flag to enable the Follow UI update.
 BASE_DECLARE_FEATURE(kEnableFollowUIUpdate);
@@ -398,47 +374,6 @@ extern const char kBackgroundRefreshIntervalInSeconds[];
 // max age in seconds. This value is compared against the age of the feed when
 // performing a background refresh. A zero value means the age check is ignored.
 extern const char kBackgroundRefreshMaxAgeInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
-// following a Feed session.
-extern const char kEnableFeedSessionCloseForegroundRefresh[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
-// on app backgrounding.
-extern const char kEnableFeedAppCloseForegroundRefresh[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
-// soon after the app is backgrounded.
-extern const char kEnableFeedAppCloseBackgroundRefresh[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
-// engagement criteria type to refresh the feed.
-extern const char kFeedRefreshEngagementCriteriaType[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
-// background refresh interval in seconds.
-extern const char kAppCloseBackgroundRefreshIntervalInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the time
-// interval used to set the refresh timer.
-extern const char kFeedRefreshTimerTimeoutInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the refresh
-// threshold when the last refresh was seen.
-extern const char kFeedSeenRefreshThresholdInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the refresh
-// threshold when the last refresh was unseen.
-extern const char kFeedUnseenRefreshThresholdInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable using
-// engagement as a signal to invalidate the cache when the app is foregrounded.
-// This can result in a visible refresh when the NTP is visible during
-// foregrounding, or invisible refresh when a non-NTP is shown during
-// foregrounding. The engagement signals may include a deep scroll or 4 views,
-// and no sooner than 5 minutes from the last refresh.
-extern const char
-    kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[];
 
 // Feature param under `kIOSHideFeedWithSearchChoice` to only target the
 // feature at certain countries (i.e. only hide the feed when the device is
@@ -506,58 +441,12 @@ double GetBackgroundRefreshIntervalInSeconds();
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
 
-// Whether feed can be refreshed while not visible.
-bool IsFeedInvisibleForegroundRefreshEnabled();
-
-// Whether feed is refreshed after the user ends a Feed session, but while the
-// app is still in the foreground (e.g., user switches tabs, user navigates away
-// from Feed in current tab).
-bool IsFeedSessionCloseForegroundRefreshEnabled();
-
-// Whether feed is refreshed at the moment the app is backgrounding. This is
-// different from background refresh.
-bool IsFeedAppCloseForegroundRefreshEnabled();
-
-// Whether feed is refreshed in the background soon after the app is
-// backgrounded, and the capability was enabled at startup.
-bool IsFeedAppCloseBackgroundRefreshEnabled();
-
-// Returns the engagement criteria type for a feed refresh.
-FeedRefreshEngagementCriteriaType GetFeedRefreshEngagementCriteriaType();
-
-// The earliest interval to refresh in the background after app enters the
-// background in app close background refresh.
-double GetAppCloseBackgroundRefreshIntervalInSeconds();
-
-// Returns the time interval used to set the session end timer.
-double GetFeedRefreshTimerTimeoutInSeconds();
-
-// Returns the refresh threshold (aka feed expiration) for a feed that has been
-// seen.
-double GetFeedSeenRefreshThresholdInSeconds();
-
-// Returns the refresh threshold (aka feed expiration) for an unseen feed.
-double GetFeedUnseenRefreshThresholdInSeconds();
-
 // Returns whether the feed hide with search choice feature should be targeted
 // only at devices from certain countries.
 bool IsIOSHideFeedWithSearchChoiceTargeted();
 
-// YES if user engagement is used as a signal to invalidate the cache when the
-// app is foregrounded. This can result in a visible refresh when the NTP is
-// visible during foregrounding, or invisible refresh when a non-NTP is shown
-// during foregrounding. The engagement signals may include a deep scroll or 4
-// views, and no sooner than 5 minutes from the last refresh.
-bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled();
-
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
-
-// Whether the feed experiment tagging is enabled.
-bool IsFeedExperimentTaggingEnabled();
-
-// Whether Discover-controlled foregrounding refreshes are disabled.
-bool IsFeedHotStartRefreshDisabled();
 
 // YES when Follow UI Update is enabled.
 bool IsFollowUIUpdateEnabled();
@@ -656,5 +545,15 @@ int TimeUntilShowingCompactedSetUpList();
 
 // Helper for whether the external action handling flag is enabled.
 bool IsExternalActionSchemeHandlingEnabled();
+
+// Kill switch for disabling the navigations when the application is in
+// foreground inactive state after opening an external app.
+BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
+
+// Feature flag to enable Tips Notifications.
+BASE_DECLARE_FEATURE(kIOSTipsNotifications);
+
+// Helper for whether Tips Notifications are enabled.
+bool IsIOSTipsNotificationsEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

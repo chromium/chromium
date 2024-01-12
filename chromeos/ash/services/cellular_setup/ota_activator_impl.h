@@ -129,11 +129,9 @@ class OtaActivatorImpl : public OtaActivator,
   void FlushForTesting();
 
   mojo::Remote<mojom::ActivationDelegate> activation_delegate_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_;
-  raw_ptr<NetworkActivationHandler, ExperimentalAsh>
-      network_activation_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
+  raw_ptr<NetworkActivationHandler> network_activation_handler_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 

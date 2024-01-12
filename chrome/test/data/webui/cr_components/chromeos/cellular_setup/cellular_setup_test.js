@@ -55,16 +55,16 @@ suite('CrComponentsCellularSetupTest', function() {
   test('Show pSim flow ui', async function() {
     init();
     await flushAsync();
-    let eSimFlow = cellularSetupPage.$$('esim-flow-ui');
-    let pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+    let eSimFlow = cellularSetupPage.shadowRoot.querySelector('esim-flow-ui');
+    let pSimFlow = cellularSetupPage.shadowRoot.querySelector('psim-flow-ui');
 
     assertTrue(!!eSimFlow);
     assertFalse(!!pSimFlow);
 
     cellularSetupPage.currentPageName = CellularSetupPageName.PSIM_FLOW_UI;
     await flushAsync();
-    eSimFlow = cellularSetupPage.$$('esim-flow-ui');
-    pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+    eSimFlow = cellularSetupPage.shadowRoot.querySelector('esim-flow-ui');
+    pSimFlow = cellularSetupPage.shadowRoot.querySelector('psim-flow-ui');
 
     assertFalse(!!eSimFlow);
     assertTrue(!!pSimFlow);
@@ -73,8 +73,8 @@ suite('CrComponentsCellularSetupTest', function() {
   test('Show eSIM flow ui', async function() {
     init();
     await flushAsync();
-    const eSimFlow = cellularSetupPage.$$('esim-flow-ui');
-    const pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+    const eSimFlow = cellularSetupPage.shadowRoot.querySelector('esim-flow-ui');
+    const pSimFlow = cellularSetupPage.shadowRoot.querySelector('psim-flow-ui');
 
     // By default eSIM flow is always shown
     assertTrue(!!eSimFlow);

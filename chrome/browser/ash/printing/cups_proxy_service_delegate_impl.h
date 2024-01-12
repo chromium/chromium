@@ -64,10 +64,10 @@ class CupsProxyServiceDelegateImpl
                       PrinterSetupResult result);
 
   // Current/active Profile. Not owned.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Handle to a CupsPrintersManager associated with profile_. Not owned.
-  const raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
+  const raw_ptr<CupsPrintersManager> printers_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CupsProxyServiceDelegateImpl> weak_factory_{this};

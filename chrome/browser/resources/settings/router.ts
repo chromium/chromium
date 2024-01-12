@@ -49,6 +49,7 @@ export interface SettingsRoutes {
   PRIVACY_SANDBOX_AD_MEASUREMENT: Route;
   PRIVACY_SANDBOX_FLEDGE: Route;
   PRIVACY_SANDBOX_TOPICS: Route;
+  PRIVACY_SANDBOX_MANAGE_TOPICS: Route;
   RESET: Route;
   RESET_DIALOG: Route;
   SAFETY_CHECK: Route;
@@ -100,6 +101,7 @@ export interface SettingsRoutes {
   SITE_SETTINGS_VR: Route;
   SITE_SETTINGS_WINDOW_MANAGEMENT: Route;
   SITE_SETTINGS_ZOOM_LEVELS: Route;
+  SITE_SETTINGS_WEB_PRINTING: Route;
   SPELL_CHECK: Route;
   SYNC: Route;
   SYNC_ADVANCED: Route;

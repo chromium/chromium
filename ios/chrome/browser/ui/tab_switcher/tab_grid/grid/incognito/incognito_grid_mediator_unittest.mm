@@ -27,6 +27,7 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
+    [mediator_ currentlySelectedGrid:YES];
   }
 
   void TearDown() override {
@@ -93,6 +94,10 @@ TEST_F(IncognitoGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_EQ(3UL, consumer_.items.size());
   [mediator_ closeAllItems];
   EXPECT_EQ(0UL, consumer_.items.size());
+
+  EXPECT_EQ(TabGridPageIncognitoTabs,
+            fake_toolbars_mediator_.configuration.page);
+  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator_.configuration.mode);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);

@@ -79,14 +79,12 @@ class PeopleSection : public OsSettingsSection,
 
   std::optional<SyncSection> sync_subsection_;
 
-  raw_ptr<account_manager::AccountManager, ExperimentalAsh> account_manager_ =
+  raw_ptr<account_manager::AccountManager> account_manager_ = nullptr;
+  raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
       nullptr;
-  raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
-      account_manager_facade_ = nullptr;
-  raw_ptr<AccountAppsAvailability, ExperimentalAsh> account_apps_availability_ =
-      nullptr;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<AccountAppsAvailability> account_apps_availability_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<PrefService> pref_service_;
 
   // An observer for `AccountManagerFacade`. Automatically deregisters when
   // `this` is destructed.

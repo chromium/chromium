@@ -7,16 +7,22 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator_provider_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
 
 @protocol GridToolbarsMutator;
 @protocol TabGridConsumer;
 @protocol TabGridPageMutator;
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 class PrefService;
 
 // Mediates between model layer and tab grid UI layer.
-@interface TabGridMediator : NSObject <TabGridMutator>
+@interface TabGridMediator
+    : NSObject <TabGridMediatorProviderWrangler, TabGridMutator>
 
 // Mutator for regular Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> regularPageMutator;
@@ -32,6 +38,7 @@ class PrefService;
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

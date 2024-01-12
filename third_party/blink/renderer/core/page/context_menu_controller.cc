@@ -784,6 +784,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         ContextMenuData::kCheckableMenuItemChecked;
   }
 
+  if (Document* doc = selected_frame->GetDocument()) {
+    data.is_image_media_plugin_document = doc->IsImageDocument() ||
+                                          doc->IsMediaDocument() ||
+                                          doc->IsPluginDocument();
+  }
   data.referrer_policy = selected_frame->DomWindow()->GetReferrerPolicy();
 
   if (menu_provider_) {

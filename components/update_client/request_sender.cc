@@ -75,9 +75,10 @@ void RequestSender::Send(
 
   if (use_signing_) {
     public_key_ = GetKey(kKeyPubBytesBase64);
-    if (public_key_.empty())
+    if (public_key_.empty()) {
       return HandleSendError(
           static_cast<int>(ProtocolError::MISSING_PUBLIC_KEY), 0);
+    }
   }
 
   SendInternal();
@@ -181,16 +182,18 @@ void RequestSender::OnNetworkFetcherComplete(
   VLOG(1) << "Request completed from url: " << original_url.spec();
 
   int error = -1;
-  if (!net_error && response_code_ == 200)
+  if (!net_error && response_code_ == 200) {
     error = 0;
-  else if (response_code_ != -1)
+  } else if (response_code_ != -1) {
     error = response_code_;
-  else
+  } else {
     error = net_error;
+  }
 
   int retry_after_sec = -1;
-  if (original_url.SchemeIsCryptographic() && error > 0)
+  if (original_url.SchemeIsCryptographic() && error > 0) {
     retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

@@ -72,5 +72,5 @@ void FindBarIcon::UpdateImpl() {
   SetActive(GetVisible(), was_visible != GetVisible());
 }
 
-BEGIN_METADATA(FindBarIcon, PageActionIconView)
+BEGIN_METADATA(FindBarIcon)
 END_METADATA

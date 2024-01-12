@@ -19,8 +19,12 @@ tsc_out_dir = "$target_gen_dir/tsc"
 
 # TS files to compile.
 ts_modules = [
+  "auto_scan_manager.ts",
   "commands.ts",
+  "focus_ring_manager.ts",
+  "history.ts",
   "navigator_interfaces.ts",
+  "point_scan_manager.ts",
   "settings_manager.ts",
 ]
 
@@ -64,17 +68,15 @@ group("build") {
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = switch_access_dir
+  clear_dest_dirs = [ "." ]
   deps = [
     ":ts_build",
     "../common:copied_files",
   ]
   sources = [
     "action_manager.js",
-    "auto_scan_manager.js",
     "background.html",
     "cache.js",
-    "focus_ring_manager.js",
-    "history.js",
     "icons/back.svg",
     "icons/copy.svg",
     "icons/cut.svg",
@@ -117,7 +119,6 @@ run_jsbundler("copied_files") {
     "nodes/switch_access_node.js",
     "nodes/tab_node.js",
     "nodes/window_node.js",
-    "point_scan_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
     "switch_access_predicate.js",

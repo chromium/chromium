@@ -145,7 +145,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
       url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
       env, registration.top_level_origin.GetURL());
-  absl::optional<AttributionInputEvent> input_event = registration.input_event;
+  std::optional<AttributionInputEvent> input_event = registration.input_event;
 
   int request_id = next_callback_id_++;
   pending_registration_callbacks_.emplace(

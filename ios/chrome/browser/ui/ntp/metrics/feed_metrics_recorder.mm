@@ -13,7 +13,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/discover_feed/model/discover_feed_refresher.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
@@ -58,12 +57,6 @@ using feed::FeedUserActionType;
 // metric.
 @property(nonatomic, assign) NSDate* activityBucketLastReportedDate;
 
-// Tracks whether user has engaged with the latest refreshed content. The term
-// "engaged" is defined by its usage in this file. For example, it may be
-// similar to `engagedSimpleReportedDiscover`.
-@property(nonatomic, assign, getter=hasEngagedWithLatestRefreshedContent)
-    BOOL engagedWithLatestRefreshedContent;
-
 // Tracking property to record a scroll for Good Visits.
 // TODO(crbug.com/1373650) separate the property below in two, one for each
 // feed.
@@ -90,9 +83,6 @@ using feed::FeedUserActionType;
 // The aggregate of time a user has spent in the feed for
 // `ContentSuggestions.Feed.TimeSpentInFeed`
 @property(nonatomic, assign) base::TimeDelta timeSpentInFeed;
-
-// Timer to refresh the feed.
-@property(nonatomic, strong) NSTimer* refreshTimer;
 
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
@@ -123,11 +113,6 @@ using feed::FeedUserActionType;
 }
 
 #pragma mark - Public
-
-- (void)dealloc {
-  [self.refreshTimer invalidate];
-  self.refreshTimer = nil;
-}
 
 + (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger {
   base::UmaHistogramEnumeration(kDiscoverFeedRefreshTrigger, trigger);
@@ -180,10 +165,7 @@ using feed::FeedUserActionType;
 
 - (void)recordNTPDidChangeVisibility:(BOOL)visible {
   self.isNTPVisible = visible;
-  // Invalidate the timer when the user returns to the feed since the feed
-  // should not be refreshed when the user is viewing it.
   if (visible) {
-    [self.refreshTimer invalidate];
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                     kOpenedFeedSurface
                                   asInteraction:NO];
@@ -584,10 +566,6 @@ using feed::FeedUserActionType;
 
 - (void)recordFeedWillRefresh {
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
-  // The feed will have new content so reset the engagement tracking variable.
-  // TODO(crbug.com/1423467): We need to know whether the feed was actually
-  // refreshed, and not just when it was triggered.
-  self.engagedWithLatestRefreshedContent = NO;
 }
 
 - (void)recordFeedSelected:(FeedType)feedType
@@ -1040,10 +1018,6 @@ using feed::FeedUserActionType;
   // Chrome run.
   if (scrollDistance > 0 || interacted) {
     [self recordEngagedSimple];
-    if (GetFeedRefreshEngagementCriteriaType() ==
-        FeedRefreshEngagementCriteriaType::kSimpleEngagement) {
-      self.engagedWithLatestRefreshedContent = YES;
-    }
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
@@ -1051,20 +1025,9 @@ using feed::FeedUserActionType;
   // Chrome run.
   if (scrollDistance > kMinScrollThreshold || interacted) {
     [self recordEngaged];
-    if (GetFeedRefreshEngagementCriteriaType() ==
-        FeedRefreshEngagementCriteriaType::kEngagement) {
-      self.engagedWithLatestRefreshedContent = YES;
-    }
   }
 
   [self.sessionRecorder recordUserInteractionOrScrolling];
-
-  // This must be called after setting `engagedWithLatestRefreshedContent`
-  // properly after scrolling or interactions.
-  if (IsFeedSessionCloseForegroundRefreshEnabled() &&
-      [self hasEngagedWithLatestRefreshedContent]) {
-    [self setOrExtendRefreshTimer];
-  }
 }
 
 // Checks if a Good Visit should be recorded. `interacted` is YES if it was
@@ -1250,10 +1213,6 @@ using feed::FeedUserActionType;
     UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
                               FeedEngagementType::kGoodVisit);
     self.goodVisitReportedDiscover = YES;
-    if (GetFeedRefreshEngagementCriteriaType() ==
-        FeedRefreshEngagementCriteriaType::kGoodVisit) {
-      self.engagedWithLatestRefreshedContent = YES;
-    }
   }
 
   // Log interaction for Following feed.
@@ -1426,29 +1385,6 @@ using feed::FeedUserActionType;
       break;
     case FeedTypeFollowing:
       UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedURLOpened, 0, 1);
-  }
-}
-
-// Sets or extends the refresh timer.
-- (void)setOrExtendRefreshTimer {
-  [self.refreshTimer invalidate];
-  __weak FeedMetricsRecorder* weakSelf = self;
-  self.refreshTimer = [NSTimer
-      scheduledTimerWithTimeInterval:GetFeedRefreshTimerTimeoutInSeconds()
-                              target:weakSelf
-                            selector:@selector(refreshTimerEnded)
-                            userInfo:nil
-                             repeats:NO];
-}
-
-// Signals that the refresh timer ended.
-- (void)refreshTimerEnded {
-  [self.refreshTimer invalidate];
-  self.refreshTimer = nil;
-  if (!self.isNTPVisible) {
-    // The feed refresher checks feed engagement criteria.
-    self.feedRefresher->RefreshFeed(
-        FeedRefreshTrigger::kForegroundFeedNotVisible);
   }
 }
 

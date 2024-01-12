@@ -44,6 +44,8 @@ class GraphInfoBuilder final {
   //  mojom::Activation::Tag kind;
   //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
   //  absl::optional<float> elu_alpha;
+  //  absl::optional<float> hard_sigmoid_alpha;
+  //  absl::optional<float> hard_sigmoid_beta;
   //  absl::optional<float> leaky_relu_alpha;
   //  absl::optional<float> linear_alpha;
   //  absl::optional<float> linear_beta;
@@ -66,6 +68,14 @@ class GraphInfoBuilder final {
         CHECK(activation.elu_alpha.has_value());
         elu->alpha = activation.elu_alpha.value();
         return mojom::Activation::NewElu(std::move(elu));
+      }
+      case mojom::Activation::Tag::kHardSigmoid: {
+        auto hard_sigmoid = mojom::HardSigmoid::New();
+        CHECK(activation.hard_sigmoid_alpha.has_value());
+        CHECK(activation.hard_sigmoid_beta.has_value());
+        hard_sigmoid->alpha = activation.hard_sigmoid_alpha.value();
+        hard_sigmoid->beta = activation.hard_sigmoid_beta.value();
+        return mojom::Activation::NewHardSigmoid(std::move(hard_sigmoid));
       }
       case mojom::Activation::Tag::kLeakyRelu: {
         auto leaky_relu = mojom::LeakyRelu::New();
@@ -93,6 +103,8 @@ class GraphInfoBuilder final {
         softplus->steepness = activation.softplus_steepness.value();
         return mojom::Activation::NewSoftplus(std::move(softplus));
       }
+      case mojom::Activation::Tag::kSoftsign:
+        return mojom::Activation::NewSoftsign(mojom::Softsign::New());
       case mojom::Activation::Tag::kTanh:
         return mojom::Activation::NewTanh(mojom::Tanh::New());
       default:
@@ -246,6 +258,11 @@ class GraphInfoBuilder final {
     graph_info_->operations.push_back(
         mojom::Operation::NewGemm(std::move(gemm)));
   }
+
+  void BuildHardSigmoid(uint64_t input_operand_id,
+                        uint64_t output_operand_id,
+                        absl::optional<float> alpha,
+                        absl::optional<float> beta);
 
   // A `LayerNormalizationAttributes` type should have the following members:
   // struct LayerNormalizationAttributes {
@@ -403,6 +420,8 @@ class GraphInfoBuilder final {
   void BuildSoftplus(uint64_t input_operand_id,
                      uint64_t output_operand_id,
                      float steepness);
+
+  void BuildSoftsign(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSplit(uint64_t input_operand_id,
                   const std::vector<uint64_t>& output_operand_ids,

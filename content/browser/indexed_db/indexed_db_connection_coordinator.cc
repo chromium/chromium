@@ -141,15 +141,12 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
 class IndexedDBConnectionCoordinator::OpenRequest
     : public IndexedDBConnectionCoordinator::ConnectionRequest {
  public:
-  OpenRequest(
-      IndexedDBBucketContext& bucket_context,
-      IndexedDBDatabase* db,
-      std::unique_ptr<IndexedDBPendingConnection> pending_connection,
-      IndexedDBConnectionCoordinator* connection_coordinator,
-      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
+  OpenRequest(IndexedDBBucketContext& bucket_context,
+              IndexedDBDatabase* db,
+              std::unique_ptr<IndexedDBPendingConnection> pending_connection,
+              IndexedDBConnectionCoordinator* connection_coordinator)
       : ConnectionRequest(bucket_context, db, connection_coordinator),
-        pending_(std::move(pending_connection)),
-        client_state_checker_(std::move(client_state_checker)) {
+        pending_(std::move(pending_connection)) {
     db_->metadata_.was_cold_open = pending_->was_cold_open;
   }
 
@@ -219,7 +216,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       DCHECK(is_new_database);
       pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(pending_->database_callbacks),
-                                std::move(client_state_checker_)),
+                                std::move(pending_->client_state_checker)),
           db_->metadata_);
       bucket_context_handle_.Release();
       state_ = RequestState::kDone;
@@ -231,7 +228,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
       pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(pending_->database_callbacks),
-                                std::move(client_state_checker_)),
+                                std::move(pending_->client_state_checker)),
           db_->metadata_);
       state_ = RequestState::kDone;
       bucket_context_handle_.Release();
@@ -309,8 +306,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
     DCHECK(state_ == RequestState::kPendingLocks);
 
     DCHECK(!lock_receiver_.locks.empty());
-    connection_ = db_->CreateConnection(std::move(pending_->database_callbacks),
-                                        std::move(client_state_checker_));
+    connection_ =
+        db_->CreateConnection(std::move(pending_->database_callbacks),
+                              std::move(pending_->client_state_checker));
     bucket_context_handle_.Release();
     DCHECK(!connection_ptr_for_close_comparision_);
     connection_ptr_for_close_comparision_ = connection_.get();
@@ -411,10 +409,6 @@ class IndexedDBConnectionCoordinator::OpenRequest
   // This raw pointer is stored solely for comparison to the connection in
   // OnConnectionClosed. It is not guaranteed to be pointing to a live object.
   raw_ptr<IndexedDBConnection> connection_ptr_for_close_comparision_ = nullptr;
-
-  // A pointer referencing to the checker that can be used to obtain some state
-  // information of the IndexedDB client.
-  scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker_;
 
   base::WeakPtrFactory<OpenRequest> weak_factory_{this};
 };
@@ -567,11 +561,9 @@ IndexedDBConnectionCoordinator::IndexedDBConnectionCoordinator(
 IndexedDBConnectionCoordinator::~IndexedDBConnectionCoordinator() = default;
 
 void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
-    std::unique_ptr<IndexedDBPendingConnection> connection,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
+    std::unique_ptr<IndexedDBPendingConnection> connection) {
   request_queue_.push(std::make_unique<OpenRequest>(
-      *bucket_context_, db_, std::move(connection), this,
-      std::move(client_state_checker)));
+      *bucket_context_, db_, std::move(connection), this));
   bucket_context_->QueueRunTasks();
 }
 

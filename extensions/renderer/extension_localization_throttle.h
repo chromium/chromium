@@ -14,9 +14,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
-namespace blink {
-class WebURL;
-}  // namespace blink
+class GURL;
 
 namespace extensions {
 
@@ -29,7 +27,7 @@ class ExtensionLocalizationThrottle : public blink::URLLoaderThrottle {
   // is a chrome-extention scheme URL.
   static std::unique_ptr<ExtensionLocalizationThrottle> MaybeCreate(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-      const blink::WebURL& request_url);
+      const GURL& request_url);
 
   ~ExtensionLocalizationThrottle() override;
 

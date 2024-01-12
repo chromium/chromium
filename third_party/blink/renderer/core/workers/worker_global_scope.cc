@@ -593,11 +593,8 @@ WorkerGlobalScope::WorkerGlobalScope(
               (creation_params->agent_cluster_id.is_empty()
                    ? base::UnguessableToken::Create()
                    : creation_params->agent_cluster_id),
-              base::FeatureList::IsEnabled(
-                  scheduler::kMicrotaskQueuePerWorkerAgent)
-                  ? v8::MicrotaskQueue::New(thread->GetIsolate(),
-                                            v8::MicrotasksPolicy::kScoped)
-                  : nullptr),
+              v8::MicrotaskQueue::New(thread->GetIsolate(),
+                                      v8::MicrotasksPolicy::kScoped)),
           creation_params->global_scope_name,
           creation_params->parent_devtools_token,
           creation_params->v8_cache_options,

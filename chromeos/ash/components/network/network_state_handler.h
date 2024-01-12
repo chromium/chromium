@@ -804,12 +804,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
       TechnologyState::TECHNOLOGY_UNAVAILABLE;
 
   // Provides stub cellular networks. Not owned by this instance.
-  raw_ptr<StubCellularNetworksProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StubCellularNetworksProvider, DanglingUntriaged>
       stub_cellular_networks_provider_ = nullptr;
 
   // Not owned by this instance.
-  raw_ptr<const TetherSortDelegate, ExperimentalAsh> tether_sort_delegate_ =
-      nullptr;
+  raw_ptr<const TetherSortDelegate> tether_sort_delegate_ = nullptr;
 
   // Ensure that Shutdown() gets called exactly once.
   bool did_shutdown_ = false;

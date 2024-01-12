@@ -156,7 +156,13 @@ class PLATFORM_EXPORT ScriptWrappable
   // This method must be overridden by DEFINE_WRAPPERTYPEINFO macro.
   virtual const WrapperTypeInfo* GetWrapperTypeInfo() const = 0;
 
-  // Creates and returns a new wrapper object.
+  // Returns a wrapper object, creating it if needed.
+  v8::MaybeLocal<v8::Value> ToV8(ScriptState*);
+  v8::MaybeLocal<v8::Value> ToV8(v8::Isolate*,
+                                 v8::Local<v8::Object> creation_context_object);
+
+  // Creates and returns a new wrapper object. This DCHECKs that a wrapper does
+  // not exist yet. Use ToV8() if a wrapper might already exist.
   virtual v8::MaybeLocal<v8::Value> Wrap(ScriptState*);
 
   // Associates the instance with the given |wrapper| if this instance is not

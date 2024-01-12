@@ -229,7 +229,7 @@ void ScreenAIService::InitializeOCR(
 
 void ScreenAIService::InitializeOCRInternal(
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
-    InitializeMainContentExtractionCallback callback,
+    InitializeOCRCallback callback,
     std::unique_ptr<PreloadedModelData> model_data) {
   // `model_data` contains the content of the model files and its accessors are
   // passed to the library. It should be kept in memory until after library
@@ -320,13 +320,26 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
   auto result = library_->PerformOcr(image);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
   int lines_count = result ? result->lines_size() : 0;
+  unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
                               lines_count);
-  base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time", elapsed_time);
   base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
-                              image.width() * image.height());
+                              image_size);
+  if (image_size < 500 * 500) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Small",
+                            elapsed_time);
+  } else if (image_size < 1000 * 1000) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Medium",
+                            elapsed_time);
+  } else if (image_size < 2000 * 2000) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Large",
+                            elapsed_time);
+  } else {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.XLarge",
+                            elapsed_time);
+  }
 
   // If needed to extend to more clients, an identifier can be passed from the
   // client to introduce itself and these metrics can be collected based on it.

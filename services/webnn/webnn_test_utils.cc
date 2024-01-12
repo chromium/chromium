@@ -240,6 +240,23 @@ void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
       mojom::Operation::NewGather(std::move(gather)));
 }
 
+void GraphInfoBuilder::BuildHardSigmoid(uint64_t input_operand_id,
+                                        uint64_t output_operand_id,
+                                        absl::optional<float> alpha,
+                                        absl::optional<float> beta) {
+  mojom::HardSigmoidPtr hard_sigmoid = mojom::HardSigmoid::New();
+  hard_sigmoid->input_operand_id = input_operand_id;
+  hard_sigmoid->output_operand_id = output_operand_id;
+  if (alpha.has_value()) {
+    hard_sigmoid->alpha = alpha.value();
+  }
+  if (beta.has_value()) {
+    hard_sigmoid->beta = beta.value();
+  }
+  graph_info_->operations.push_back(
+      mojom::Operation::NewHardSigmoid(std::move(hard_sigmoid)));
+}
+
 void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
                                   uint64_t slope_operand_id,
                                   uint64_t output_operand_id) {
@@ -310,6 +327,15 @@ void GraphInfoBuilder::BuildSoftplus(uint64_t input_operand_id,
   softplus->steepness = steepness;
   graph_info_->operations.push_back(
       mojom::Operation::NewSoftplus(std::move(softplus)));
+}
+
+void GraphInfoBuilder::BuildSoftsign(uint64_t input_operand_id,
+                                     uint64_t output_operand_id) {
+  mojom::SoftsignPtr softsign = mojom::Softsign::New();
+  softsign->input_operand_id = input_operand_id;
+  softsign->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewSoftsign(std::move(softsign)));
 }
 
 void GraphInfoBuilder::BuildTanh(uint64_t input_operand_id,

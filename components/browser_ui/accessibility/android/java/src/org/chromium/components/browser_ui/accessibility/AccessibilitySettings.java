@@ -15,16 +15,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
 /** Fragment to keep track of all the accessibility related preferences. */
 public class AccessibilitySettings extends PreferenceFragmentCompat
-        implements Preference.OnPreferenceChangeListener, CustomDividerFragment {
+        implements Preference.OnPreferenceChangeListener {
     public static final String PREF_TEXT_SCALE = "text_scale";
     public static final String PREF_PAGE_ZOOM_DEFAULT_ZOOM = "page_zoom_default_zoom";
+    public static final String PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT =
+            "page_zoom_include_os_adjustment";
     public static final String PREF_PAGE_ZOOM_ALWAYS_SHOW = "page_zoom_always_show";
     public static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
     public static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
@@ -33,6 +34,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
     private TextScalePreference mTextScalePref;
     private PageZoomPreference mPageZoomDefaultZoomPref;
+    private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
     private ChromeSwitchPreference mPageZoomAlwaysShowPref;
     private ChromeSwitchPreference mForceEnableZoomPref;
     private boolean mRecordFontSizeChangeOnStop;
@@ -72,11 +74,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     }
 
     @Override
-    public boolean hasDivider() {
-        return false;
-    }
-
-    @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.accessibility_preferences);
 
@@ -84,6 +81,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mPageZoomDefaultZoomPref = (PageZoomPreference) findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         mPageZoomAlwaysShowPref =
                 (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW);
+        mPageZoomIncludeOSAdjustment =
+                (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
         if (mDelegate.showPageZoomSettingsUI()) {
             mTextScalePref.setVisible(false);
@@ -94,6 +93,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
+
+            // When enhancements (v2) are also enabled, show additional controls.
+            mPageZoomIncludeOSAdjustment.setVisible(
+                    ContentFeatureMap.isEnabled(
+                            ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS));
+
             // When Smart Zoom feature is enabled, set the required delegate.
             if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
                 mPageZoomDefaultZoomPref.setTextSizeContrastDelegate(
@@ -102,6 +107,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         } else {
             mPageZoomDefaultZoomPref.setVisible(false);
             mPageZoomAlwaysShowPref.setVisible(false);
+            mPageZoomIncludeOSAdjustment.setVisible(false);
             mTextScalePref.setOnPreferenceChangeListener(this);
             mTextScalePref.updateFontScaleFactors(
                     mFontSizePrefs.getFontScaleFactor(),
@@ -137,7 +143,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 });
 
         Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+        if (mDelegate.showPageZoomSettingsUI()
+                && ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)) {
             zoomInfo.setVisible(true);
             zoomInfo.setOnPreferenceClickListener(
                     preference -> {
@@ -193,6 +201,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     mDelegate.getBrowserContextHandle(), (Integer) newValue);
         } else if (PREF_PAGE_ZOOM_ALWAYS_SHOW.equals(preference.getKey())) {
             PageZoomUtils.setShouldAlwaysShowZoomMenuItem((Boolean) newValue);
+        } else if (PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT.equals(preference.getKey())) {
+            // TODO(mschillaci): Implement the override behavior for OS level.
         }
         return true;
     }

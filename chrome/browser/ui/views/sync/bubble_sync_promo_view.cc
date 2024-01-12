@@ -135,5 +135,5 @@ void BubbleSyncPromoView::EnableSync() {
   delegate_->OnEnableSync(account.value_or(AccountInfo()));
 }
 
-BEGIN_METADATA(BubbleSyncPromoView, views::View)
+BEGIN_METADATA(BubbleSyncPromoView)
 END_METADATA

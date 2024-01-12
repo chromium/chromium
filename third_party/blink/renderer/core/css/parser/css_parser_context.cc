@@ -43,7 +43,6 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
                        other->mode_,
                        other->referrer_,
                        other->is_html_document_,
-                       other->use_legacy_background_size_shorthand_behavior_,
                        other->secure_context_mode_,
                        other->world_,
                        use_counter_document,
@@ -63,7 +62,6 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
                        other->mode_,
                        referrer,
                        other->is_html_document_,
-                       other->use_legacy_background_size_shorthand_behavior_,
                        other->secure_context_mode_,
                        other->world_,
                        use_counter_document,
@@ -79,7 +77,6 @@ CSSParserContext::CSSParserContext(CSSParserMode mode,
                        WTF::TextEncoding(),
                        mode,
                        Referrer(),
-                       false,
                        false,
                        secure_context_mode,
                        nullptr,
@@ -115,10 +112,6 @@ CSSParserContext::CSSParserContext(
           document.InQuirksMode() ? kHTMLQuirksMode : kHTMLStandardMode,
           referrer,
           IsA<HTMLDocument>(document),
-          document.GetSettings()
-              ? document.GetSettings()
-                    ->GetUseLegacyBackgroundSizeShorthandBehavior()
-              : false,
           document.GetExecutionContext()
               ? document.GetExecutionContext()->GetSecureContextMode()
               : SecureContextMode::kInsecureContext,
@@ -136,7 +129,6 @@ CSSParserContext::CSSParserContext(const ExecutionContext& context)
                        Referrer(context.Url().StrippedForUseAsReferrer(),
                                 context.GetReferrerPolicy()),
                        true,
-                       false,
                        context.GetSecureContextMode(),
                        context.GetCurrentWorld(),
                        IsA<LocalDOMWindow>(&context)
@@ -151,7 +143,6 @@ CSSParserContext::CSSParserContext(
     CSSParserMode mode,
     const Referrer& referrer,
     bool is_html_document,
-    bool use_legacy_background_size_shorthand_behavior,
     SecureContextMode secure_context_mode,
     scoped_refptr<const DOMWrapperWorld> world,
     const Document* use_counter_document,
@@ -162,8 +153,6 @@ CSSParserContext::CSSParserContext(
       mode_(mode),
       referrer_(referrer),
       is_html_document_(is_html_document),
-      use_legacy_background_size_shorthand_behavior_(
-          use_legacy_background_size_shorthand_behavior),
       secure_context_mode_(secure_context_mode),
       document_(use_counter_document),
       resource_fetch_restriction_(resource_fetch_restriction) {
@@ -177,8 +166,6 @@ bool CSSParserContext::operator==(const CSSParserContext& other) const {
          charset_ == other.charset_ && mode_ == other.mode_ &&
          is_ad_related_ == other.is_ad_related_ &&
          is_html_document_ == other.is_html_document_ &&
-         use_legacy_background_size_shorthand_behavior_ ==
-             other.use_legacy_background_size_shorthand_behavior_ &&
          secure_context_mode_ == other.secure_context_mode_ &&
          resource_fetch_restriction_ == other.resource_fetch_restriction_;
 }

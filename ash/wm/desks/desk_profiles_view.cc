@@ -14,6 +14,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -25,6 +26,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -106,6 +108,7 @@ class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
           gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
               kIconProfileSize, icon)));
       item_view->SetTitle(base::UTF8ToUTF16(summary.name));
+      item_view->SetHighlightWhenSelectedWithChildViews(true);
       // Add a secondary title for email if available. Note that local profile
       // may not have an associated email.
       if (!summary.email.empty()) {
@@ -185,7 +188,10 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // Builds and saves a default menu model to `context_menu_model_`;
   void BuildMenuModel() {
     auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-    CHECK(delegate);
+    if (!delegate) {
+      // For Ash unit test there is no delegate available.
+      return;
+    }
 
     profiles_ = delegate->GetProfilesSnapshot();
     for (size_t index = 0; index < profiles_.size(); ++index) {
@@ -228,11 +234,20 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
     : desk_(desk) {
   desk_->AddObserver(this);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  SetPreferredSize(kIconButtonSize);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetSize(kIconButtonSize);
   icon_->SetImageSize(kIconButtonSize);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+  focus_ring->SetPathGenerator(
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
+  views::InstallCircleHighlightPathGenerator(this);
+
   UpdateIcon();
   icon_->SetPaintToLayer();
   icon_->layer()->SetFillsBoundsOpaquely(false);
@@ -251,7 +266,10 @@ DeskProfilesButton::~DeskProfilesButton() {
 void DeskProfilesButton::UpdateIcon() {
   CHECK(desk_);
   auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-  CHECK(delegate);
+  if (!delegate) {
+    // For Ash unit test there is no delegate available.
+    return;
+  }
   // Initialize Desk's Lacros profile id with primary profile id.
   const uint64_t primary_profile_id = delegate->GetPrimaryProfileId();
   if (desk_->lacros_profile_id() == 0 && primary_profile_id != 0) {
@@ -261,6 +279,7 @@ void DeskProfilesButton::UpdateIcon() {
           desk_->lacros_profile_id())) {
     icon_image_ = summary->icon;
     icon_->SetImage(icon_image_);
+    icon_->SetTooltipText(base::UTF8ToUTF16(summary->name));
   }
 }
 
@@ -276,10 +295,12 @@ void DeskProfilesButton::OnDeskDestroyed(const Desk* desk) {
   desk_ = nullptr;
 }
 
-void DeskProfilesButton::OnMouseReleased(const ui::MouseEvent& event) {
+bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
+  base::UmaHistogramBoolean(kDeskProfilesPressesHistogramName, true);
   if (event.IsLeftMouseButton()) {
     CreateMenu(event);
   }
+  return ImageButton::OnMousePressed(event);
 }
 
 void DeskProfilesButton::OnGestureEvent(ui::GestureEvent* event) {

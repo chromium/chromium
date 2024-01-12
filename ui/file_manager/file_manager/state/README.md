@@ -134,7 +134,7 @@ slice.addReducer(
 
 function updateDeviceConnectionStateReducer(
   currentState: State,
-  payload: typeof updateDeviceConnectionState.PAYLOAD
+  payload: GetActionFactoryPayload<typeof updateDeviceConnectionState>
 ): State {
   // ...
 }
@@ -227,7 +227,7 @@ from the selector when the component is destroyed. For example:
 
 ## State
 
-The interface `State` in `../externs/ts/state.js` describes the shape and types
+The interface `State` in `../state/state.js` describes the shape and types
 of the Files app state.
 
 At runtime, the state is just a plain Object the interface is used throughout
@@ -238,7 +238,7 @@ correct types.
 
 Every part of the State should be typed. While we still support Closure type
 check we maintain the type definition using `@typedef` in
-`../externs/ts/state.js` which is understood by both Closure and TS compilers.
+`../state/state.js` which is understood by both Closure and TS compilers.
 
 **NOTE:** To define a property as optional you should use the markup
 `(!TypeName|undefined)`, because that's closest we can get for Closure and TS to
@@ -405,7 +405,7 @@ For UI Settings we have 2 actions:
 The State changes slightly from before, we add a `status` attribute, its type is
 the enum `PropStatus`.
 
-In file `../externs/ts/state.js`:
+In file `../state/state.js`:
 
 ```typescript
 /**

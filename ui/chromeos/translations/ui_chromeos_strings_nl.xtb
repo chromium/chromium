@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugees met Amerikaans toetsenbord (internationaal)</translation>
 <translation id="1629521517399325891">Het gebruikerscertificaat is niet beschikbaar voor netwerkverificatie.</translation>
 <translation id="1641780993263690097">Chinees (Pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> bestanden offline beschikbaar maken</translation>
 <translation id="164969095109328410">Chrome-apparaat</translation>
 <translation id="1661207570040737402">Je hebt geen Google Workspace-opslag meer over in je gedeelde Drive.</translation>
 <translation id="1661867754829461514">Pincode ontbreekt</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google-spreadsheet</translation>
 <translation id="3479552764303398839">Niet nu</translation>
 <translation id="3486821258960016770">Mongools</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Synchronisatie van <ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
 <translation id="3522708245912499433">Portugees</translation>
@@ -720,7 +718,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> bestanden kopiëren is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="6509122719576673235">Noors</translation>
 <translation id="6528513914570774834">Andere gebruikers van dit apparaat toestaan om dit netwerk te gebruiken</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> synchroniseren...</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>
@@ -854,7 +851,6 @@
 <translation id="7553492409867692754">Linux-apps toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Je bent op dit moment offline. De synchronisatie wordt hervat als je verbinding hebt met internet.</translation>
 <translation id="7589661784326793847">Een ogenblik geduld</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> offline beschikbaar maken</translation>
 <translation id="7600126690270271294">Servisch</translation>
 <translation id="7603724359189955920">Rasters</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> bestaat al. Geef een nieuwe naam op en probeer het opnieuw.</translation>
@@ -938,6 +934,7 @@
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8147028810663464959">Karakterbreedte: volledig (vol)</translation>
 <translation id="8151638057146502721">Configureren</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fout.}other{# fouten.}}</translation>
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
 <translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
@@ -971,6 +968,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
+<translation id="8377269993083688872">E-mailindelingen</translation>
 <translation id="8386903983509584791">Scan voltooid</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> geëxtraheerd.</translation>
 <translation id="8395901698320285466">Afmetingen</translation>
@@ -1009,7 +1007,6 @@
 <translation id="8569764466147087991">Selecteer een bestand om te openen</translation>
 <translation id="8577897833047451336">Kroatisch</translation>
 <translation id="8578308463707544055">Indonesisch</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> items synchroniseren...</translation>
 <translation id="8600173386174225982">Bestandslijst is gewijzigd naar miniatuurweergave.</translation>
 <translation id="8601932370724196034">Crostini-afbeeldingsbestand</translation>
 <translation id="8609695766746872526">IJslands</translation>
@@ -1030,6 +1027,7 @@
 <translation id="8787254343425541995">Proxy's voor gedeelde netwerken toestaan</translation>
 <translation id="8790981080411996443">Persoon die de planten water geeft</translation>
 <translation id="8798099450830957504">Standaard</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 waarschuwing.}other{# waarschuwingen.}}</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Inpakken mislukt. Item bestaat al: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">Spaans (Spanje)</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
 <translation id="9046895021617826162">Verbinding mislukt</translation>
 <translation id="9065512565307033593">Als de verificatie mislukt, wordt je netwerktoegang ingetrokken.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 waarschuwing.}other{<ph name="COUNT" /> waarschuwingen.}}</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
 <translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>

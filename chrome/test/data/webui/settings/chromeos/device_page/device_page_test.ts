@@ -286,48 +286,50 @@ suite('<settings-device-page>', () => {
         devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
   });
 
-  test(
-      'graphics tablet row visibility based on devices connected', async () => {
-        const provider = new FakeInputDeviceSettingsProvider();
-        setInputDeviceSettingsProviderForTesting(provider);
-        provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+  suite('graphics tablet subpage', () => {
+    function queryTabletRow(): HTMLElement|null {
+      return devicePage.shadowRoot!.querySelector<HTMLElement>('#tabletRow');
+    }
+    test(
+        'graphics tablet row visibility depends on devices connected',
+        async () => {
+          const provider = new FakeInputDeviceSettingsProvider();
+          setInputDeviceSettingsProviderForTesting(provider);
+          provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
-        // Tests with flag on.
-        setPeripheralCustomizationEnabled(true);
-        await init();
+          // Tests with flag on.
+          setPeripheralCustomizationEnabled(true);
+          await init();
 
-        assertTrue(
-            isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
+          assertTrue(isVisible(queryTabletRow()));
 
-        provider.setFakeGraphicsTablets([]);
-        await flushTasks();
-        assertFalse(
-            isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
+          provider.setFakeGraphicsTablets([]);
+          await flushTasks();
+          assertFalse(isVisible(queryTabletRow()));
 
-        provider.setFakeGraphicsTablets(fakeGraphicsTablets);
-        await flushTasks();
-        assertTrue(
-            isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
-      });
+          provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+          await flushTasks();
+          assertTrue(isVisible(queryTabletRow()));
+        });
 
-  test('graphics tablet subpage navigates back to device page', async () => {
-    const provider = new FakeInputDeviceSettingsProvider();
-    setInputDeviceSettingsProviderForTesting(provider);
-    provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+    test('graphics tablet subpage navigates back to device page', async () => {
+      const provider = new FakeInputDeviceSettingsProvider();
+      setInputDeviceSettingsProviderForTesting(provider);
+      provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
-    // Tests with flag on.
-    setPeripheralCustomizationEnabled(true);
-    await init();
+      // Tests with flag on.
+      setPeripheralCustomizationEnabled(true);
+      await init();
 
-    const row =
-        devicePage.shadowRoot!.querySelector<HTMLButtonElement>(`#tabletRow`);
-    assertTrue(!!row);
-    row.click();
-    assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      const row = queryTabletRow();
+      assertTrue(!!row);
+      row.click();
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
 
-    provider.setFakeGraphicsTablets([]);
-    await flushTasks();
-    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+      provider.setFakeGraphicsTablets([]);
+      await flushTasks();
+      assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+    });
   });
 
   suite('audio', () => {
@@ -1194,7 +1196,41 @@ suite('<settings-device-page>', () => {
     });
   }
 
-  suite('per-device keyboard', () => {
+  suite('keyboard subpage', () => {
+    function queryKeyboardRow(): HTMLElement|null {
+      return devicePage.shadowRoot!.querySelector('#keyboardRow');
+    }
+
+    test('Keyboard row is not visible if device split is enabled', async () => {
+      setDeviceSplitEnabled(true);
+
+      await init();
+      assertFalse(isVisible(queryKeyboardRow()));
+    });
+
+    test('Keyboard row is visible if device split is disabled', async () => {
+      setDeviceSplitEnabled(false);
+
+      await init();
+      assertTrue(isVisible(queryKeyboardRow()));
+    });
+
+    test('Clicking keyboard row goes to keyboard subpage', async () => {
+      setDeviceSplitEnabled(false);
+      await init();
+
+      const keyboardRow = queryKeyboardRow();
+      assertTrue(!!keyboardRow);
+      keyboardRow.click();
+
+      assertEquals(routes.KEYBOARD, Router.getInstance().currentRoute);
+      const subpage = devicePage.shadowRoot!.querySelector<HTMLElement>(
+          'settings-keyboard');
+      assertTrue(!!subpage);
+    });
+  });
+
+  suite('per-device-keyboard subpage', () => {
     let perDeviceKeyboardPage: SettingsPerDeviceKeyboardElement;
     let inputDeviceSettingsProvider: FakeInputDeviceSettingsProvider;
 
@@ -1231,6 +1267,40 @@ suite('<settings-device-page>', () => {
       const connectedKeyboards = perDeviceKeyboardPage.get('keyboards');
       assertTrue(!!connectedKeyboards);
       assertDeepEquals(fakeKeyboards, connectedKeyboards);
+    });
+  });
+
+  suite('pointers subpage', () => {
+    function queryPointersRow(): HTMLElement|null {
+      return devicePage.shadowRoot!.querySelector('#pointersRow');
+    }
+
+    test('Pointers row is not visible if device split is enabled', async () => {
+      setDeviceSplitEnabled(true);
+
+      await init();
+      assertFalse(isVisible(queryPointersRow()));
+    });
+
+    test('Pointers row is visible if device split is disabled', async () => {
+      setDeviceSplitEnabled(false);
+
+      await init();
+      assertTrue(isVisible(queryPointersRow()));
+    });
+
+    test('Clicking pointers row goes to pointers subpage', async () => {
+      setDeviceSplitEnabled(false);
+      await init();
+
+      const pointersRow = queryPointersRow();
+      assertTrue(!!pointersRow);
+      pointersRow.click();
+
+      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
+      const subpage = devicePage.shadowRoot!.querySelector<HTMLElement>(
+          'settings-pointers');
+      assertTrue(!!subpage);
     });
   });
 
@@ -1308,6 +1378,22 @@ suite('<settings-device-page>', () => {
       const perDevicePointingStickPage = devicePage.shadowRoot!.querySelector(
           'settings-per-device-pointing-stick');
       assertTrue(!!perDevicePointingStickPage);
+    });
+  });
+
+  suite('stylus subpage', () => {
+    test('Clicking stylus row goes to stylus subpage', async () => {
+      await init();
+
+      const stylusRow =
+          devicePage.shadowRoot!.querySelector<HTMLElement>('#stylusRow');
+      assertTrue(!!stylusRow);
+      stylusRow.click();
+
+      assertEquals(routes.STYLUS, Router.getInstance().currentRoute);
+      const subpage =
+          devicePage.shadowRoot!.querySelector<HTMLElement>('settings-stylus');
+      assertTrue(!!subpage);
     });
   });
 

@@ -7,6 +7,7 @@
 #include <string.h>  // for memset()
 
 #include <ostream>
+#include <string_view>
 
 #include "base/bit_cast.h"
 #include "base/check.h"
@@ -27,17 +28,18 @@ VisitedLinkCommon::~VisitedLinkCommon() = default;
 
 // FIXME: this uses linear probing, it should be replaced with quadratic
 // probing or something better. See VisitedLinkWriter::AddFingerprint
-bool VisitedLinkCommon::IsVisited(const char* canonical_url,
-                                  size_t url_len) const {
-  if (url_len == 0)
+bool VisitedLinkCommon::IsVisited(std::string_view canonical_url) const {
+  if (canonical_url.size() == 0) {
     return false;
-  if (!hash_table_ || table_length_ == 0)
+  }
+  if (!hash_table_ || table_length_ == 0) {
     return false;
-  return IsVisited(ComputeURLFingerprint(canonical_url, url_len));
+  }
+  return IsVisited(ComputeURLFingerprint(canonical_url));
 }
 
 bool VisitedLinkCommon::IsVisited(const GURL& url) const {
-  return IsVisited(url.spec().data(), url.spec().size());
+  return IsVisited(url.spec());
 }
 
 bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
@@ -77,16 +79,15 @@ bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
 
 // static
 VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
-    const char* canonical_url,
-    size_t url_len,
+    std::string_view canonical_url,
     const uint8_t salt[LINK_SALT_LENGTH]) {
-  DCHECK(url_len > 0) << "Canonical URLs should not be empty";
+  DCHECK(canonical_url.size() > 0) << "Canonical URLs should not be empty";
 
   base::MD5Context ctx;
   base::MD5Init(&ctx);
   base::MD5Update(&ctx, base::StringPiece(reinterpret_cast<const char*>(salt),
                                           LINK_SALT_LENGTH));
-  base::MD5Update(&ctx, base::StringPiece(canonical_url, url_len));
+  base::MD5Update(&ctx, canonical_url);
 
   base::MD5Digest digest;
   base::MD5Final(&digest, &ctx);

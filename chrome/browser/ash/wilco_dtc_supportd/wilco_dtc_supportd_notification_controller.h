@@ -58,8 +58,7 @@ class WilcoDtcSupportdNotificationController {
       const message_center::SystemNotificationWarningLevel color_type,
       const HelpAppLauncher::HelpTopic topic) const;
 
-  raw_ptr<ProfileManager, DanglingUntriaged | ExperimentalAsh>
-      profile_manager_;  // non-owned
+  raw_ptr<ProfileManager, DanglingUntriaged> profile_manager_;  // non-owned
 };
 
 }  // namespace ash

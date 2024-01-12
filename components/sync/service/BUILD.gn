@@ -109,6 +109,8 @@ static_library("service") {
 
   if (is_android) {
     sources += [
+      "../android/explicit_passphrase_platform_client.cc",
+      "../android/explicit_passphrase_platform_client.h",
       "../android/sync_service_android_bridge.cc",
       "../android/sync_service_android_bridge.h",
     ]

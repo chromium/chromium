@@ -44,7 +44,7 @@ class TerminalPrivateAPI : public BrowserContextKeyedAPI {
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "TerminalPrivateAPI"; }
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 

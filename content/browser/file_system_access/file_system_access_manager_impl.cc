@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -56,7 +57,6 @@
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -355,12 +355,12 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
     GetSandboxedFileSystemCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GetSandboxedFileSystem(receivers_.current_context(),
-                         /*bucket=*/absl::nullopt, std::move(callback));
+                         /*bucket=*/std::nullopt, std::move(callback));
 }
 
 void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
     const BindingContext& binding_context,
-    const absl::optional<storage::BucketLocator>& bucket,
+    const std::optional<storage::BucketLocator>& bucket,
     GetSandboxedFileSystemCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1752,7 +1752,10 @@ void FileSystemAccessManagerImpl::DidCleanupAccessHandleCapacityAllocation(
   // `CreateAccessHandleHost`) which is undefined behavior. Instead, we'll move
   // it out of the set before erasing and then destroying.
   size_t initial_size = access_handle_host_receivers_.size();
+
   auto iter = access_handle_host_receivers_.find(access_handle_host);
+  CHECK(iter != access_handle_host_receivers_.end());
+
   auto access_handle_host_receiver = std::move(*iter);
   access_handle_host_receivers_.erase(iter);
 
@@ -1770,7 +1773,7 @@ void FileSystemAccessManagerImpl::ResolveTransferToken(
                            [](ResolveTransferTokenCallback callback,
                               FileSystemAccessTransferTokenImpl* token) {
                              if (!token) {
-                               std::move(callback).Run(absl::nullopt);
+                               std::move(callback).Run(std::nullopt);
                                return;
                              }
                              std::move(callback).Run(token->url());

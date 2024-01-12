@@ -765,7 +765,7 @@ std::string RenderFrameDevToolsAgentHost::GetOpenerId() {
 std::string RenderFrameDevToolsAgentHost::GetOpenerFrameId() {
   if (!frame_tree_node_)
     return std::string();
-  const absl::optional<base::UnguessableToken>& opener_devtools_frame_token =
+  const std::optional<base::UnguessableToken>& opener_devtools_frame_token =
       frame_tree_node_->opener_devtools_frame_token();
   return opener_devtools_frame_token ? opener_devtools_frame_token->ToString()
                                      : std::string();
@@ -1016,45 +1016,45 @@ void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
   });
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 RenderFrameDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
   FrameTreeNode* frame_tree_node =
       protocol::FrameTreeNodeFromDevToolsFrameToken(
           frame_host_->frame_tree_node(), id);
   if (!frame_tree_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   return rfhi->cross_origin_embedder_policy();
 }
 
-absl::optional<network::CrossOriginOpenerPolicy>
+std::optional<network::CrossOriginOpenerPolicy>
 RenderFrameDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
   FrameTreeNode* frame_tree_node =
       protocol::FrameTreeNodeFromDevToolsFrameToken(
           frame_host_->frame_tree_node(), id);
   if (!frame_tree_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   return rfhi->cross_origin_opener_policy();
 }
 
-absl::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
+std::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
 RenderFrameDevToolsAgentHost::content_security_policy(const std::string& id) {
   FrameTreeNode* frame_tree_node =
       protocol::FrameTreeNodeFromDevToolsFrameToken(
           frame_host_->frame_tree_node(), id);
   if (!frame_tree_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
   const PolicyContainerPolicies& policies =
       rfhi->policy_container_host()->policies();
   if (policies.content_security_policies.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   } else {
     std::vector<network::mojom::ContentSecurityPolicyHeader> csp_headers;
     for (const auto& content_security_policy :

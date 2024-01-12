@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugisisk med amerikansk internationalt tastatur</translation>
 <translation id="1629521517399325891">Brugercertifikatet kan ikke anvendes til netværksgodkendelse.</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer gøres tilgængelige offline</translation>
 <translation id="164969095109328410">Chrome-enhed</translation>
 <translation id="1661207570040737402">Du har brugt al din Google Workspace-lagerplads for fællesdrevet.</translation>
 <translation id="1661867754829461514">Pinkode mangler</translation>
@@ -296,7 +295,7 @@
 <translation id="3353984535370177728">Vælg en mappe, der skal uploades</translation>
 <translation id="3356580349448036450">Fuldført</translation>
 <translation id="3358452157379365236">Guitar</translation>
-<translation id="3368922792935385530">Tilsluttet</translation>
+<translation id="3368922792935385530">Forbundet</translation>
 <translation id="3372635229069101468">Klik på <ph name="BEGIN_BOLD" />Detaljer<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalesisk InScript-tastatur</translation>
 <translation id="338691029516748599">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, opret forbindelse</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fejl.</translation>
 <translation id="3509680540198371098">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="3511705761158917664">Gør klar til synkronisere <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Administratorpolitikken tillader ikke, at du kopierer <ph name="COUNT" /> filer</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>
-<translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Seneste</translation>
 <translation id="6558280019477628686">Der opstod en fejl. Nogle elementer blev muligvis ikke slettet.</translation>
 <translation id="656398493051028875">Slettter "<ph name="FILENAME" />"...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Giv Linux-apps adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du er i øjeblikket offline. Filsynkronisering genoptages, når du har forbindelse til internettet</translation>
 <translation id="7589661784326793847">Vent et øjeblik</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> gøres tilgængelig offline</translation>
 <translation id="7600126690270271294">Serbisk</translation>
 <translation id="7603724359189955920">Gitre</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> findes allerede. Giv filen et nyt navn, og prøv igen.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8147028810663464959">Tegnbredden er Fuld</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fejl.}one{# fejl.}other{# fejl.}}</translation>
 <translation id="8154842056504218462">Alle elementer er valgt.</translation>
 <translation id="8157684860301034423">Appoplysningerne kunne ikke hentes.</translation>
 <translation id="8175731104491895765">Fransk (Belgien)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Giv <ph name="VM_NAME" /> adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
+<translation id="8377269993083688872">Maillayouts</translation>
 <translation id="8386903983509584791">Scanningen er udført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ud.</translation>
 <translation id="8395901698320285466">Mål</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Vælg den fil, der skal åbnes</translation>
 <translation id="8577897833047451336">Kroatisk</translation>
 <translation id="8578308463707544055">Indonesisk</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementer synkroniseres...</translation>
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Tillad proxyer til delte netværk</translation>
 <translation id="8790981080411996443">Person, der vander blomster</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advarsel.}one{# advarsel.}other{# advarsler.}}</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Komprimering mislykkedes, elementet findes: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spansk (Spanien)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vælg et andet navn.</translation>
 <translation id="9046895021617826162">Forbindelsen mislykkedes</translation>
 <translation id="9065512565307033593">Hvis du ikke verificerer, mister du adgangen til netværket.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advarsel.}one{<ph name="COUNT" /> advarsel.}other{<ph name="COUNT" /> advarsler.}}</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9099674669267916096">Sideantal</translation>

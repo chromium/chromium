@@ -514,11 +514,12 @@ namespace downloads {
         optional GetFileIconOptions options,
         GetFileIconCallback callback);
 
-    // Open the downloaded file now if the $(ref:DownloadItem) is complete;
-    // otherwise returns an error through $(ref:runtime.lastError). Requires the
-    // <code>"downloads.open"</code> permission in addition to the
-    // <code>"downloads"</code> permission. An $(ref:onChanged) event will fire
-    // when the item is opened for the first time.
+    // Opens the downloaded file now if the $(ref:DownloadItem) is complete;
+    // otherwise returns an error through $(ref:runtime.lastError). This method
+    // requires the <code>"downloads.open"</code> permission in addition to the
+    // <code>"downloads"</code> permission. An $(ref:onChanged) event fires
+    // when the item is opened for the first time. This method can only be called
+    // in response to a user gesture.
     // |downloadId|: The identifier for the downloaded file.
     static void open(long downloadId);
 

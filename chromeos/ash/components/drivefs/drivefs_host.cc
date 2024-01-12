@@ -249,7 +249,7 @@ class DriveFsHost::MountState : public DriveFsSession {
   }
 
   // Owns |this|.
-  const raw_ptr<DriveFsHost, ExperimentalAsh> host_;
+  const raw_ptr<DriveFsHost> host_;
 
   std::unique_ptr<DriveFsSearch> search_;
   std::unique_ptr<DriveFsHttpClient> http_client_;

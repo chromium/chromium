@@ -55,10 +55,10 @@ enum Modifier {
  * contains the following four.
  */
 const modifierBitMaskToString: Map<number, string> = new Map([
-  [Modifier.CONTROL, 'Ctrl'],
-  [Modifier.SHIFT, 'Shift'],
-  [Modifier.ALT, 'Alt'],
-  [Modifier.META, 'Meta'],
+  [Modifier.CONTROL, 'ctrl'],
+  [Modifier.SHIFT, 'shift'],
+  [Modifier.ALT, 'alt'],
+  [Modifier.META, 'meta'],
 ]);
 
 /**
@@ -67,16 +67,18 @@ const modifierBitMaskToString: Map<number, string> = new Map([
 function getInputKeys(keyEvent: KeyEvent): string[] {
   const inputKeysArray: string[] = [];
   modifierBitMaskToString.forEach((modifierName: string, bitValue: number) => {
-    // Now if pressing a single modifier key like "shift", it will show
-    // "shift + shift" instead of a single "shift".
-    // Temporarily add a condition to check modifierName duplicating with
-    // keyDisplay until it's fixed in the key combination logics.
-    if ((keyEvent.modifiers & bitValue) !== 0 &&
-        modifierName !== keyEvent.keyDisplay) {
+    if ((keyEvent.modifiers & bitValue) !== 0) {
       inputKeysArray.push(modifierName, '+');
     }
   });
-  if (keyEvent.keyDisplay !== undefined && keyEvent.keyDisplay.length !== 0) {
+
+  // Now if pressing a single modifier key like "shift", it will show
+  // "shift + shift" instead of a single "shift".
+  // Temporarily add a condition to check modifierName duplicating with
+  // keyDisplay until it's fixed in the key combination logics.
+  // TODO(yyhyyh@): Remove the condition when it's fixed in backend.
+  if (keyEvent.keyDisplay !== undefined && keyEvent.keyDisplay.length !== 0 &&
+      !inputKeysArray.includes(keyEvent.keyDisplay.toLowerCase())) {
     inputKeysArray.push(keyEvent.keyDisplay);
   } else {
     // If no regular key to display, remove the extra '+'.

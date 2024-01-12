@@ -34,9 +34,11 @@ class JniAndroidExceptionTestContext final {
     CHECK(instance == nullptr);
     instance = this;
     SetJavaExceptionCallback(CapturingExceptionCallback);
+    g_log_fatal_callback_for_testing = CapturingLogFatalCallback;
   }
 
   ~JniAndroidExceptionTestContext() {
+    g_log_fatal_callback_for_testing = nullptr;
     SetJavaExceptionCallback(prev_exception_callback_);
     env->ExceptionClear();
     Java_JniAndroidTestUtils_restoreGlobalExceptionHandler(env);
@@ -44,10 +46,7 @@ class JniAndroidExceptionTestContext final {
   }
 
  private:
-  static void CapturingAssertionHandler(const char* file,
-                                        int line,
-                                        const base::StringPiece message,
-                                        const base::StringPiece stack_trace) {
+  static void CapturingLogFatalCallback(const char* message) {
     auto* self = instance;
     CHECK(self);
     // Capture only the first one (can be called multiple times due to
@@ -81,12 +80,6 @@ class JniAndroidExceptionTestContext final {
   bool throw_oom_in_exception_callback = false;
   std::optional<std::string> assertion_message;
   std::optional<std::string> last_java_exception;
-
- private:
-  // Make this the last member so that it is destructed before
-  // |assertion_message|.
-  const logging::ScopedLogAssertHandler scoped_assert_handler_{
-      base::BindRepeating(CapturingAssertionHandler)};
 };
 
 JniAndroidExceptionTestContext* JniAndroidExceptionTestContext::instance =

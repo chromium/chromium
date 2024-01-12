@@ -170,6 +170,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
       bool limited_sending_mode);
   virtual bool HasNoRenderFrame() const;
+  virtual bool IsMainFrame() const;
 
   // Collects the data use of the frame request for a provisional load until the
   // load is committed. We want to collect data use for completed navigations in

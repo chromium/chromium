@@ -381,13 +381,11 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  protected:
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-  raw_ptr<InputMethodManagerImpl, DanglingUntriaged | ExperimentalAsh>
-      manager_ = nullptr;
-  raw_ptr<MockCandidateWindowController, ExperimentalAsh>
-      candidate_window_controller_ = nullptr;
+  raw_ptr<InputMethodManagerImpl, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<MockCandidateWindowController> candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
-  raw_ptr<FakeImeKeyboard, ExperimentalAsh> keyboard_ = nullptr;
-  raw_ptr<ui::ime::InputMethodMenuManager, ExperimentalAsh> menu_manager_;
+  raw_ptr<FakeImeKeyboard> keyboard_ = nullptr;
+  raw_ptr<ui::ime::InputMethodMenuManager> menu_manager_;
 };
 
 TEST_F(InputMethodManagerImplTest, TestGetImeKeyboard) {

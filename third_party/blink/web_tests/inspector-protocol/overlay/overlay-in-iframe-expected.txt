@@ -1,0 +1,2 @@
+Verifies that overlay of an iframe element doesn't crash.
+

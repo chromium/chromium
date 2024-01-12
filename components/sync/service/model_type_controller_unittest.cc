@@ -65,6 +65,7 @@ class MockDelegate : public ModelTypeControllerDelegate {
               (const override));
   MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
   MOCK_METHOD(void, ClearMetadataIfStopped, (), (override));
+  MOCK_METHOD(void, ReportBridgeErrorForTest, (), (override));
 };
 
 // Class used to expose ReportModelError() publicly.

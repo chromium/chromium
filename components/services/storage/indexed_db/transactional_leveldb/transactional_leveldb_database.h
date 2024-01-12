@@ -62,9 +62,9 @@ class TransactionalLevelDBDatabase
 
   ~TransactionalLevelDBDatabase() override;
 
-  leveldb::Status Put(const std::string_view& key, std::string* value);
-  leveldb::Status Remove(const std::string_view& key);
-  virtual leveldb::Status Get(const std::string_view& key,
+  leveldb::Status Put(std::string_view key, std::string* value);
+  leveldb::Status Remove(std::string_view key);
+  virtual leveldb::Status Get(std::string_view key,
                               std::string* value,
                               bool* found);
   virtual leveldb::Status Write(LevelDBWriteBatch* write_batch);
@@ -77,7 +77,7 @@ class TransactionalLevelDBDatabase
   std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(
       leveldb::ReadOptions options);
 
-  void Compact(const std::string_view& start, const std::string_view& stop);
+  void Compact(std::string_view start, std::string_view stop);
   void CompactAll();
 
   leveldb::ReadOptions DefaultReadOptions();

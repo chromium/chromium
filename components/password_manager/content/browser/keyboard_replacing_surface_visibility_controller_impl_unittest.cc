@@ -26,7 +26,7 @@ class KeyboardReplacingSurfaceVisibilityControllerImplTest
 
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   password_mananger_driver() {
-    return base::AsWeakPtr(password_mananger_driver_.get());
+    return password_mananger_driver_->AsWeakPtrImpl();
   }
 
   void ResetPasswordManagerDriver() { password_mananger_driver_.reset(); }

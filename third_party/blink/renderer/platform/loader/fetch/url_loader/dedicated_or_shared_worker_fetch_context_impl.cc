@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -72,7 +73,7 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
   ~Factory() override = default;
 
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const WebURLRequest& request,
+      const network::ResourceRequest& request,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
@@ -110,7 +111,8 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
   base::WeakPtr<Factory> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
  private:
-  bool CanCreateServiceWorkerURLLoader(const WebURLRequest& request) {
+  bool CanCreateServiceWorkerURLLoader(
+      const network::ResourceRequest& request) {
     // TODO(horo): Unify this code path with
     // ServiceWorkerNetworkProviderForFrame::CreateURLLoader that is used
     // for document cases.
@@ -126,15 +128,15 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
     // TODO(falken): Let ServiceWorkerSubresourceLoaderFactory handle the
     // request and move this check there (i.e., for such URLs, it should use
     // its fallback factory).
-    if (!request.Url().ProtocolIs(url::kHttpScheme) &&
-        !request.Url().ProtocolIs(url::kHttpsScheme) &&
-        !Platform::Current()->OriginCanAccessServiceWorkers(request.Url())) {
+    if (!request.url.SchemeIsHTTPOrHTTPS() &&
+        !Platform::Current()->OriginCanAccessServiceWorkers(request.url)) {
       return false;
     }
 
-    // If GetSkipServiceWorker() returns true, no need to intercept the request.
-    if (request.GetSkipServiceWorker())
+    // If `skip_service_worker` is true, no need to intercept the request.
+    if (request.skip_service_worker) {
       return false;
+    }
 
     return true;
   }
@@ -389,7 +391,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
 
 WebVector<std::unique_ptr<URLLoaderThrottle>>
 DedicatedOrSharedWorkerFetchContextImpl::CreateThrottles(
-    const WebURLRequest& request) {
+    const network::ResourceRequest& request) {
   if (throttle_provider_) {
     return throttle_provider_->CreateThrottles(ancestor_frame_token_, request);
   }

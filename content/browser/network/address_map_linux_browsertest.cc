@@ -312,7 +312,7 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
 
    private:
     mojo::Receiver<network::mojom::NetworkChangeManagerClient> receiver_;
-    absl::optional<base::RunLoop> run_loop_;
+    std::optional<base::RunLoop> run_loop_;
     ExpectedConnectionType expected_connection_type_;
   };
 

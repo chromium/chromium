@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Movimentar para a direita</translation>
 <translation id="3081586908890909590">Mudar para gravar vídeo</translation>
 <translation id="313467653172006084">30 QPS</translation>
+<translation id="3158534262962737808">Conectar-se a "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3354465018370944241">Configurações de fotos</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Proporção da foto</translation>
 <translation id="5057360777601936059">Sua câmera está indisponível no momento.
         Verifique se ela está conectada corretamente.</translation>
+<translation id="5157591164390831335">URL detectado.</translation>
 <translation id="5163387177077603948">Movendo para a direita</translation>
 <translation id="5235304959032763950">16 por 9</translation>
 <translation id="5266635337630551423">Canto superior esquerdo do documento</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Agradecemos o feedback sobre o app Câmera.
 
 Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma foto ou um vídeo de amostra e descreva o problema. Por exemplo, a foto está escura demais ou não está focando.</translation>
+<translation id="6519884562954018934">Participar do <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6617916774429601017">Mostrar todas as resoluções</translation>
 <translation id="6631515515009660915">Espelhamento desativado</translation>
@@ -158,6 +161,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8711011893539266636">Alterne o status do microfone. O microfone está desativado</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8732462232047530626">Visualizar metadados</translation>
+<translation id="874854738381978209">Rede Wi-Fi detectada.</translation>
 <translation id="8815966864175525708">Mudar para fotografar no modo retrato</translation>
 <translation id="8828441885228359828">Retomar gravação</translation>
 <translation id="8870695351537079478">Não foi possível começar a gravação</translation>

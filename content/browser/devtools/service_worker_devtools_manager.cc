@@ -4,6 +4,8 @@
 
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -18,7 +20,6 @@
 #include "ipc/ipc_listener.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -311,7 +312,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
     network->RequestSent(request_id, std::string(), request.headers,
                          *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
-                         /*initiator_url=*/absl::nullopt,
+                         /*initiator_url=*/std::nullopt,
                          /*initiator_devtools_request_id=*/"", timestamp);
   }
 }

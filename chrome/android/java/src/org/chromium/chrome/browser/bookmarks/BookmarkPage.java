@@ -24,13 +24,13 @@ public class BookmarkPage extends BasicNativePage {
      *
      * @param componentName The current activity component, used to open bookmarks.
      * @param snackbarManager Allows control over the app snackbar.
-     * @param isIncognito Whether the bookmark UI is loaded in incognito mode.
+     * @param profile The Profile associated with the bookmark UI.
      * @param host A NativePageHost to load urls.
      */
     public BookmarkPage(
             ComponentName componentName,
             SnackbarManager snackbarManager,
-            boolean isIncognito,
+            Profile profile,
             NativePageHost host) {
         super(host);
 
@@ -39,9 +39,8 @@ public class BookmarkPage extends BasicNativePage {
                         host.getContext(),
                         componentName,
                         false,
-                        isIncognito,
                         snackbarManager,
-                        Profile.getLastUsedRegularProfile(),
+                        profile,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         mTitle = host.getContext().getResources().getString(R.string.bookmarks);

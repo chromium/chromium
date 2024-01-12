@@ -41,8 +41,10 @@ absl::optional<redaction::PIIType> GetPIITypeOfStatusField(
     base::StringPiece status_field) {
   // List of keys in policy status that will be considered as PII and will be
   // redacted selectively.
+  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
   static const auto kPersonallyIdentifiableStatusFields =
-      base::MakeFixedFlatMap<base::StringPiece, redaction::PIIType>({
+      base::MakeFixedFlatMapNonConsteval<base::StringPiece,
+                                         redaction::PIIType>({
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
         {policy::kDeviceIdKey, redaction::PIIType::kStableIdentifier},
             {policy::kEnrollmentTokenKey,

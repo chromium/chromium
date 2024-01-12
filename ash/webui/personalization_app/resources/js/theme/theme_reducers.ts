@@ -64,6 +64,17 @@ export function staticColorSelectedReducer(
   }
 }
 
+export function geolocationPermissionEnabledReducer(
+    state: ThemeState['geolocationPermissionEnabled'], action: Actions,
+    _: PersonalizationState): ThemeState['geolocationPermissionEnabled'] {
+  switch (action.name) {
+    case ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED:
+      return action.enabled;
+    default:
+      return state;
+  }
+}
+
 export const themeReducers:
     {[K in keyof ThemeState]: ReducerFunction<ThemeState[K]>} = {
       colorModeAutoScheduleEnabled: colorModeAutoScheduleEnabledReducer,
@@ -71,4 +82,5 @@ export const themeReducers:
       colorSchemeSelected: colorSchemeSelectedReducer,
       sampleColorSchemes: sampleColorSchemesReducer,
       staticColorSelected: staticColorSelectedReducer,
+      geolocationPermissionEnabled: geolocationPermissionEnabledReducer,
     };

@@ -19,6 +19,10 @@
 - (void)downloadManagerViewControllerDidStartDownload:
     (UIViewController*)controller;
 
+// Called when the "Try again" button was tapped. Delegate should either retry
+// the download or the upload step depending on which step failed.
+- (void)downloadManagerViewControllerDidRetry:(UIViewController*)controller;
+
 // Called when Download (to Drive) button was tapped. Delegate should show the
 // Save to Drive UI.
 - (void)downloadManagerViewControllerDidStartDownloadToDrive:

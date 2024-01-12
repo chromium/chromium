@@ -244,7 +244,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // hash alone - this resumes operations that were waiting on the key
   // information to have been loaded.
   void OnEntryOpenedFromHash(uint64_t hash,
-                             const scoped_refptr<SimpleEntryImpl>& simple_entry,
                              EntryResultCallback callback,
                              EntryResult result);
 

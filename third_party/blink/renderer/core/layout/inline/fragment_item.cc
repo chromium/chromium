@@ -26,7 +26,6 @@ namespace {
 struct SameSizeAsFragmentItem {
   union {
     FragmentItem::TextItem text_;
-    FragmentItem::SvgTextItem svg_text_;
     FragmentItem::GeneratedTextItem generated_text_;
     FragmentItem::LineItem line_;
     FragmentItem::BoxItem box_;
@@ -47,11 +46,10 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
                            const TextOffsetRange& text_offset,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
-    : text_({std::move(shape_result), text_offset}),
+    : text_({std::move(shape_result), nullptr, text_offset}),
       rect_({PhysicalOffset(), size}),
       layout_object_(inline_item.GetLayoutObject()),
-      const_traced_type_(kNone),
-      type_(kText),
+      const_type_(kText),
       sub_type_(static_cast<unsigned>(inline_item.TextType())),
       style_variant_(static_cast<unsigned>(inline_item.GetStyleVariant())),
       is_hidden_for_paint_(is_hidden_for_paint),
@@ -80,8 +78,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
     : generated_text_({std::move(shape_result), text_content}),
       rect_({PhysicalOffset(), size}),
       layout_object_(&layout_object),
-      const_traced_type_(kNone),
-      type_(kGeneratedText),
+      const_type_(kGeneratedText),
       sub_type_(static_cast<unsigned>(text_type)),
       style_variant_(static_cast<unsigned>(style_variant)),
       is_hidden_for_paint_(is_hidden_for_paint),
@@ -113,8 +110,7 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
     : line_({&line, /* descendants_count */ 1}),
       rect_({PhysicalOffset(), line.Size()}),
       layout_object_(line.ContainerLayoutObject()),
-      const_traced_type_(kLineItem),
-      type_(kLine),
+      const_type_(kLine),
       sub_type_(static_cast<unsigned>(line.GetLineBoxType())),
       style_variant_(static_cast<unsigned>(line.GetStyleVariant())),
       is_hidden_for_paint_(false),
@@ -130,8 +126,7 @@ FragmentItem::FragmentItem(const PhysicalBoxFragment& box,
     : box_(&box, /* descendants_count */ 1),
       rect_({PhysicalOffset(), box.Size()}),
       layout_object_(box.GetLayoutObject()),
-      const_traced_type_(kBoxItem),
-      type_(kBox),
+      const_type_(kBox),
       style_variant_(static_cast<unsigned>(box.GetStyleVariant())),
       is_hidden_for_paint_(box.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(resolved_direction)),
@@ -141,11 +136,11 @@ FragmentItem::FragmentItem(const PhysicalBoxFragment& box,
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
 }
 
-// |const_traced_type_| will be re-initialized in another constructor called
-// inside this one.
+// |const_type_| will be re-initialized in another constructor called inside
+// this one.
 FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                            WritingMode writing_mode)
-    : const_traced_type_(kNone) {
+    : const_type_(kInvalid) {
   DCHECK(line_item.CanCreateFragmentItem());
 
   if (line_item.inline_item) {
@@ -195,8 +190,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       fragment_id_(source.fragment_id_),
       delta_to_next_for_same_layout_object_(
           source.delta_to_next_for_same_layout_object_),
-      const_traced_type_(source.const_traced_type_),
-      type_(source.type_),
+      const_type_(source.const_type_),
       sub_type_(source.sub_type_),
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
@@ -209,11 +203,6 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       NOTREACHED_NORETURN() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(source.text_);
-      break;
-    case kSvgText:
-      new (&svg_text_) SvgTextItem();
-      svg_text_.data =
-          std::make_unique<SvgFragmentData>(*source.svg_text_.data);
       break;
     case kGeneratedText:
       new (&generated_text_) GeneratedTextItem(source.generated_text_);
@@ -240,8 +229,7 @@ FragmentItem::FragmentItem(FragmentItem&& source)
       fragment_id_(source.fragment_id_),
       delta_to_next_for_same_layout_object_(
           source.delta_to_next_for_same_layout_object_),
-      const_traced_type_(source.const_traced_type_),
-      type_(source.type_),
+      const_type_(source.const_type_),
       sub_type_(source.sub_type_),
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
@@ -254,9 +242,6 @@ FragmentItem::FragmentItem(FragmentItem&& source)
       NOTREACHED_NORETURN() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(std::move(source.text_));
-      break;
-    case kSvgText:
-      new (&svg_text_) SvgTextItem(std::move(source.svg_text_));
       break;
     case kGeneratedText:
       new (&generated_text_)
@@ -278,9 +263,6 @@ FragmentItem::~FragmentItem() {
       return;
     case kText:
       text_.~TextItem();
-      break;
-    case kSvgText:
-      svg_text_.~SvgTextItem();
       break;
     case kGeneratedText:
       generated_text_.~GeneratedTextItem();
@@ -341,8 +323,9 @@ bool FragmentItem::IsEmptyLineBox() const {
 }
 
 bool FragmentItem::IsStyleGeneratedText() const {
-  if (Type() == kText || Type() == kSvgText)
+  if (Type() == kText) {
     return GetLayoutObject()->IsStyleGenerated();
+  }
   return false;
 }
 
@@ -366,16 +349,13 @@ LayoutObject& FragmentItem::BlockInInline() const {
   return *block;
 }
 
-void FragmentItem::ConvertToSvgText(std::unique_ptr<SvgFragmentData> data,
-                                    const PhysicalRect& unscaled_rect,
-                                    bool is_hidden) {
+void FragmentItem::SetSvgFragmentData(scoped_refptr<const SvgFragmentData> data,
+                                      const PhysicalRect& unscaled_rect,
+                                      bool is_hidden) {
   DCHECK_EQ(Type(), kText);
-  is_hidden_for_paint_ = is_hidden;
-  text_.~TextItem();
-  new (&svg_text_) SvgTextItem();
-  svg_text_.data = std::move(data);
-  type_ = kSvgText;
+  text_.svg_data = std::move(data);
   rect_ = unscaled_rect;
+  is_hidden_for_paint_ = is_hidden;
 }
 
 void FragmentItem::SetSvgLineLocalRect(const PhysicalRect& unscaled_rect) {
@@ -384,7 +364,7 @@ void FragmentItem::SetSvgLineLocalRect(const PhysicalRect& unscaled_rect) {
 }
 
 gfx::RectF FragmentItem::ObjectBoundingBox(const FragmentItems& items) const {
-  DCHECK_EQ(Type(), kSvgText);
+  DCHECK(IsSvgText());
   const Font& scaled_font = ScaledFont();
   gfx::RectF ink_bounds = scaled_font.TextInkBounds(TextPaintInfo(items));
   if (const auto* font_data = scaled_font.PrimaryFont())
@@ -405,7 +385,7 @@ gfx::RectF FragmentItem::ObjectBoundingBox(const FragmentItems& items) const {
 }
 
 gfx::QuadF FragmentItem::SvgUnscaledQuad() const {
-  DCHECK_EQ(Type(), kSvgText);
+  DCHECK(IsSvgText());
   gfx::QuadF quad = BuildSvgTransformForBoundingBox().MapQuad(
       gfx::QuadF(GetSvgFragmentData()->rect));
   const float scaling_factor = SvgScalingFactor();
@@ -415,24 +395,26 @@ gfx::QuadF FragmentItem::SvgUnscaledQuad() const {
 
 PhysicalOffset FragmentItem::MapPointInContainer(
     const PhysicalOffset& point) const {
-  if (Type() != kSvgText || !HasSvgTransformForBoundingBox())
-    return point;
-  const float scaling_factor = SvgScalingFactor();
-  return PhysicalOffset::FromPointFRound(
-      gfx::ScalePoint(BuildSvgTransformForBoundingBox().Inverse().MapPoint(
-                          gfx::ScalePoint(gfx::PointF(point), scaling_factor)),
-                      scaling_factor));
+  if (IsSvgText() && HasSvgTransformForBoundingBox()) {
+    const float scaling_factor = SvgScalingFactor();
+    return PhysicalOffset::FromPointFRound(gfx::ScalePoint(
+        BuildSvgTransformForBoundingBox().Inverse().MapPoint(
+            gfx::ScalePoint(gfx::PointF(point), scaling_factor)),
+        scaling_factor));
+  }
+  return point;
 }
 
 float FragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
-  if (Type() != kSvgText)
-    return inline_offset.ToFloat();
-  return inline_offset.ToFloat() * SvgScalingFactor() /
-         GetSvgFragmentData()->length_adjust_scale;
+  if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
+    return inline_offset.ToFloat() * SvgScalingFactor() /
+           svg_data->length_adjust_scale;
+  }
+  return inline_offset.ToFloat();
 }
 
 bool FragmentItem::InclusiveContains(const gfx::PointF& position) const {
-  DCHECK_EQ(Type(), kSvgText);
+  DCHECK(IsSvgText());
   gfx::PointF scaled_position = gfx::ScalePoint(position, SvgScalingFactor());
   const gfx::RectF& item_rect = GetSvgFragmentData()->rect;
   if (!HasSvgTransformForBoundingBox())
@@ -538,8 +520,6 @@ PhysicalRect FragmentItem::InkOverflowRect() const {
 const ShapeResultView* FragmentItem::TextShapeResult() const {
   if (Type() == kText)
     return text_.shape_result.get();
-  if (Type() == kSvgText)
-    return svg_text_.data->shape_result.get();
   if (Type() == kGeneratedText)
     return generated_text_.shape_result.get();
   NOTREACHED();
@@ -549,8 +529,6 @@ const ShapeResultView* FragmentItem::TextShapeResult() const {
 TextOffsetRange FragmentItem::TextOffset() const {
   if (Type() == kText)
     return text_.text_offset;
-  if (Type() == kSvgText)
-    return svg_text_.data->text_offset;
   if (Type() == kGeneratedText)
     return {0, generated_text_.text.length()};
   NOTREACHED();
@@ -582,11 +560,6 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
     return StringView(items.Text(UsesFirstLineStyle()), text_.text_offset.start,
                       text_.text_offset.Length());
   }
-  if (Type() == kSvgText) {
-    return StringView(items.Text(UsesFirstLineStyle()),
-                      svg_text_.data->text_offset.start,
-                      svg_text_.data->text_offset.Length());
-  }
   if (Type() == kGeneratedText)
     return GeneratedText();
   NOTREACHED();
@@ -598,11 +571,6 @@ TextFragmentPaintInfo FragmentItem::TextPaintInfo(
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
             text_.text_offset.end, text_.shape_result.get()};
-  }
-  if (Type() == kSvgText) {
-    return {items.Text(UsesFirstLineStyle()), svg_text_.data->text_offset.start,
-            svg_text_.data->text_offset.end,
-            svg_text_.data->shape_result.get()};
   }
   if (Type() == kGeneratedText) {
     return {generated_text_.text, 0, generated_text_.text.length(),
@@ -623,12 +591,17 @@ TextDirection FragmentItem::ResolvedDirection() const {
 }
 
 bool FragmentItem::HasSvgTransformForPaint() const {
-  return Type() == kSvgText && (svg_text_.data->length_adjust_scale != 1.0f ||
-                                svg_text_.data->angle != 0.0f);
+  if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
+    return svg_data->length_adjust_scale != 1.0f || svg_data->angle != 0.0f;
+  }
+  return false;
 }
 
 bool FragmentItem::HasSvgTransformForBoundingBox() const {
-  return Type() == kSvgText && svg_text_.data->angle != 0.0f;
+  if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
+    return svg_data->angle != 0.0f;
+  }
+  return false;
 }
 
 // For non-<textPath>:
@@ -639,10 +612,11 @@ bool FragmentItem::HasSvgTransformForBoundingBox() const {
 // (x, y) is the center of the rotation.  The center points of a non-<textPath>
 // character and a <textPath> character are different.
 AffineTransform FragmentItem::BuildSvgTransformForPaint() const {
-  DCHECK_EQ(Type(), kSvgText);
-  if (svg_text_.data->in_text_path) {
-    if (svg_text_.data->angle == 0.0f)
+  DCHECK(IsSvgText());
+  if (text_.svg_data->in_text_path) {
+    if (text_.svg_data->angle == 0.0f) {
       return BuildSvgTransformForLengthAdjust();
+    }
     return BuildSvgTransformForTextPath(BuildSvgTransformForLengthAdjust());
   }
   AffineTransform transform = BuildSvgTransformForBoundingBox();
@@ -653,8 +627,8 @@ AffineTransform FragmentItem::BuildSvgTransformForPaint() const {
 }
 
 AffineTransform FragmentItem::BuildSvgTransformForLengthAdjust() const {
-  DCHECK_EQ(Type(), kSvgText);
-  const SvgFragmentData& svg_data = *svg_text_.data;
+  DCHECK(IsSvgText());
+  const SvgFragmentData& svg_data = *text_.svg_data;
   const bool is_horizontal = IsHorizontal();
   AffineTransform scale_transform;
   float scale = svg_data.length_adjust_scale;
@@ -679,8 +653,8 @@ AffineTransform FragmentItem::BuildSvgTransformForLengthAdjust() const {
 
 AffineTransform FragmentItem::BuildSvgTransformForTextPath(
     const AffineTransform& length_adjust) const {
-  DCHECK_EQ(Type(), kSvgText);
-  const SvgFragmentData& svg_data = *svg_text_.data;
+  DCHECK(IsSvgText());
+  const SvgFragmentData& svg_data = *text_.svg_data;
   DCHECK(svg_data.in_text_path);
   DCHECK_NE(svg_data.angle, 0.0f);
 
@@ -717,8 +691,8 @@ AffineTransform FragmentItem::BuildSvgTransformForTextPath(
 // (x, y) is the center of the rotation.  The center points of a non-<textPath>
 // character and a <textPath> character are different.
 AffineTransform FragmentItem::BuildSvgTransformForBoundingBox() const {
-  DCHECK_EQ(Type(), kSvgText);
-  const SvgFragmentData& svg_data = *svg_text_.data;
+  DCHECK(IsSvgText());
+  const SvgFragmentData& svg_data = *text_.svg_data;
   AffineTransform transform;
   if (svg_data.angle == 0.0f)
     return transform;
@@ -871,12 +845,12 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
 
     TextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
-      if (Type() == kSvgText) {
+      if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
         ink_overflow_type_ =
             static_cast<unsigned>(ink_overflow_.SetSvgTextInkOverflow(
                 InkOverflowType(), cursor, paint_info, Style(), ScaledFont(),
-                GetSvgFragmentData()->rect, SvgScalingFactor(),
-                GetSvgFragmentData()->length_adjust_scale,
+                svg_data->rect, SvgScalingFactor(),
+                svg_data->length_adjust_scale,
                 BuildSvgTransformForBoundingBox(), self_and_contents_rect_out));
         return;
       }
@@ -991,9 +965,9 @@ LayoutUnit FragmentItem::InlinePositionForOffset(
   DCHECK_EQ(1u, text.length());
   if (!offset || UNLIKELY(IsRtl(Style().Direction())))
     return LayoutUnit();
-  if (Type() == kSvgText) {
-    return LayoutUnit(IsHorizontal() ? GetSvgFragmentData()->rect.width()
-                                     : GetSvgFragmentData()->rect.height());
+  if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
+    return LayoutUnit(IsHorizontal() ? svg_data->rect.width()
+                                     : svg_data->rect.height());
   }
   return IsHorizontal() ? Size().width : Size().height;
 }
@@ -1029,14 +1003,15 @@ PhysicalRect FragmentItem::LocalRect(StringView text,
                                      unsigned end_offset) const {
   LayoutUnit width = Size().width;
   LayoutUnit height = Size().height;
-  if (Type() == kSvgText) {
-    const SvgFragmentData& data = *GetSvgFragmentData();
+  if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
     if (IsHorizontal()) {
-      width = LayoutUnit(data.rect.size().width() / data.length_adjust_scale);
-      height = LayoutUnit(data.rect.size().height());
+      width = LayoutUnit(svg_data->rect.size().width() /
+                         svg_data->length_adjust_scale);
+      height = LayoutUnit(svg_data->rect.size().height());
     } else {
-      width = LayoutUnit(data.rect.size().width());
-      height = LayoutUnit(data.rect.size().height() / data.length_adjust_scale);
+      width = LayoutUnit(svg_data->rect.size().width());
+      height = LayoutUnit(svg_data->rect.size().height() /
+                          svg_data->length_adjust_scale);
     }
   }
   if (start_offset == StartOffset() && end_offset == EndOffset()) {
@@ -1075,15 +1050,16 @@ PhysicalRect FragmentItem::ComputeTextBoundsRectForHitTest(
   // We should not ignore fractional parts of border_rect in SVG because this
   // item might have much larger screen size than border_rect.
   // See svg/hittest/text-small-font-size.html.
-  if (Type() == kSvgText)
+  if (IsSvgText()) {
     return border_rect;
+  }
   return PhysicalRect(ToPixelSnappedRect(border_rect));
 }
 
 PositionWithAffinity FragmentItem::PositionForPointInText(
     const PhysicalOffset& point,
     const InlineCursor& cursor) const {
-  DCHECK(Type() == kText || Type() == kSvgText);
+  DCHECK_EQ(Type(), kText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   if (IsGeneratedText())
     return PositionWithAffinity();
@@ -1094,7 +1070,7 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
 PositionWithAffinity FragmentItem::PositionForPointInText(
     unsigned text_offset,
     const InlineCursor& cursor) const {
-  DCHECK(Type() == kText || Type() == kSvgText);
+  DCHECK_EQ(Type(), kText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());
   DCHECK_LE(text_offset, EndOffset());
@@ -1110,7 +1086,7 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
 
 unsigned FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
                                           const FragmentItems& items) const {
-  DCHECK(Type() == kText || Type() == kSvgText);
+  DCHECK_EQ(Type(), kText);
   const ComputedStyle& style = Style();
   const LayoutUnit& point_in_line_direction =
       style.IsHorizontalWritingMode() ? point.left : point.top;
@@ -1143,11 +1119,19 @@ unsigned FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
 
 void FragmentItem::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
-  // Looking up |const_trace_type_| inside Trace() is safe since it is const.
-  if (const_traced_type_ == kLineItem)
-    visitor->Trace(line_);
-  else if (const_traced_type_ == kBoxItem)
-    visitor->Trace(box_);
+  // Looking up |const_type_| inside Trace() is safe since it is const.
+  switch (const_type_) {
+    case kInvalid:
+    case kText:
+    case kGeneratedText:
+      break;
+    case kLine:
+      visitor->Trace(line_);
+      break;
+    case kBox:
+      visitor->Trace(box_);
+      break;
+  }
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
@@ -1158,10 +1142,6 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
     case FragmentItem::kText:
       ostream << "Text " << item.StartOffset() << "-" << item.EndOffset() << " "
               << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
-      break;
-    case FragmentItem::kSvgText:
-      ostream << "SvgText " << item.StartOffset() << "-" << item.EndOffset()
-              << " " << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
       break;
     case FragmentItem::kGeneratedText:
       ostream << "GeneratedText \"" << item.GeneratedText() << "\"";

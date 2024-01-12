@@ -22,6 +22,7 @@ import pyyaml
 
 _CACHED_FILES = {}
 _CACHED_POLICY_CHANGE_LIST = []
+_CACHED_POLICY_DEFINITION_MAP = {}
 
 _COMPONENTS_POLICY_PATH = os.path.join('components', 'policy')
 _TEST_CASES_DEPOT_PATH = os.path.join(
@@ -122,12 +123,29 @@ def _GetCurrentVersion(input_api):
   return _CACHED_FILES['version']
 
 
+def _GetPolicyDefinitionMap(input_api):
+  '''Returns a dict of policy definitions as they are in this changelist.
+     Args:
+       input_api
+     Returns:
+       Dictionary of policies loaded from their yaml files with the policy name
+       as the key.
+  '''
+  global _CACHED_POLICY_DEFINITION_MAP
+  if not _CACHED_POLICY_DEFINITION_MAP:
+    policy_definitions = GetPolicyTemplates()['policy_definitions']
+    _CACHED_POLICY_DEFINITION_MAP = \
+        {policy['name']: policy for policy in policy_definitions}
+
+  return _CACHED_POLICY_DEFINITION_MAP
+
+
 def _GetUnchangedPolicyList(input_api):
   '''Returns a list of policies NOT modified in the changelist
      Args:
        input_api
-      Returns:
-        The list of policies loaded from their yaml files with the 'name' added.
+     Returns:
+       The list of policies loaded from their yaml files with the 'name' added.
   '''
   changed_policy_names = {
       policy['policy'] for policy in _GetPolicyChangeList(input_api)
@@ -151,15 +169,16 @@ def _GetUnchangedPolicyList(input_api):
     results.append(policy)
   return results
 
+
 def _GetPolicyChangeList(input_api):
   '''Returns a list of policies modified in the changelist with their old schema
      next to their new schemas.
      Args:
        input_api
-      Returns:
-        object with the following schema:
-        { 'name': 'string', 'old_policy': dict, 'new_policy': dict }
-        The policies are the values loaded from their yaml files.
+     Returns:
+       List of objects with the following schema:
+       { 'name': 'string', 'old_policy': dict, 'new_policy': dict }
+       The policies are the values loaded from their yaml files.
   '''
   if _CACHED_POLICY_CHANGE_LIST:
     return _CACHED_POLICY_CHANGE_LIST
@@ -225,6 +244,27 @@ def _GetPolicyChangeList(input_api):
   return _CACHED_POLICY_CHANGE_LIST
 
 
+def _IsPolicyUnsupported(input_api, policy):
+  '''Returns true if `policy` is unsupported on the current Chrome version on
+     all platforms. These policies may not have any prefs and tests associated
+     with them.'''
+  if len(policy.get('future_on', [])) > 0:
+    # If the policy will be released in the future, it is supported.
+    return False
+
+  current_version = _GetCurrentVersion(input_api)
+  policy_platforms = _GetPlatformSupportMap(policy)
+  for _, supported_versions in policy_platforms.items():
+    if not supported_versions['to']:
+      # Policy doesn't have an end of support version.
+      return False
+
+    if supported_versions['to'] >= current_version:
+      return False
+
+  return True
+
+
 def CheckPolicyTestCases(input_api, output_api):
   '''Verifies that the all defined policies have a test case.
   This is ran when policy_test_cases.json, policies.yaml or this PRESUBMIT.py
@@ -254,15 +294,19 @@ def CheckPolicyTestCases(input_api, output_api):
     policy_name = os.path.splitext(filename)[0]
     tested_policies.add(policy_name)
 
-  # Finally check if any policies are missing.
-  missing = policy_names - tested_policies
+  # Finally check if any policies or tests are missing.
+  policies_with_missing_tests = policy_names - tested_policies
   extra = tested_policies - policy_names
-  error_missing = ("Policy '%s' was added but test file '%s' was not "
-                  "found. Please update accordingly.")
-  error_extra = ("Policy '%s' is tested at '%s' but policy definition not "
-                 "found. Please update accordingly.")
+  error_missing = ("Policy '%s' is declared but its test file '%s' was not "
+                  "found. Please update the test accordingly.")
+  error_extra = ("Policy '%s' is tested at '%s' but its policy definition was "
+                 "not found. Please update the policy definition accordingly.")
   results = []
-  for policy in missing:
+  for policy in policies_with_missing_tests:
+    policy_definition = _GetPolicyDefinitionMap(input_api).get(policy, {})
+    if _IsPolicyUnsupported(input_api, policy_definition):
+      # Unsupported policies won't have tests.
+      continue
     results.append(output_api.PresubmitError(
       error_missing % (
         policy, os.path.join(test_case_depot_path, f'{policy}.json'))))
@@ -790,7 +834,7 @@ def CheckDevicePolicies(input_api, output_api):
              if policy_change['new_policy'] != None):
     return results
 
-  policy_definitions = GetPolicyTemplates()['policy_definitions']
+  policy_definitions = list(_GetPolicyDefinitionMap(input_api).values())
 
   proto_map = _LoadYamlFile(root, _DEVICE_POLICY_PROTO_MAP_PATH)
   legacy_proto_map = _LoadYamlFile(root, _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH)

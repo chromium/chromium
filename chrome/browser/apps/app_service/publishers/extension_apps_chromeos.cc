@@ -989,7 +989,7 @@ void ExtensionAppsChromeOs::OnSizeCalculated(const std::string& app_id,
   app->app_size_in_bytes = size;
   apps.push_back(std::move(app));
   AppPublisher::Publish(std::move(apps), app_type(),
-                        /*should_notify_initialized=*/true);
+                        /*should_notify_initialized=*/false);
 }
 
 IconEffects ExtensionAppsChromeOs::GetIconEffects(

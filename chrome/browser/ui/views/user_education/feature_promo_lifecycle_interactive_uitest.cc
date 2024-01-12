@@ -4,10 +4,13 @@
 
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -24,6 +27,7 @@
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
@@ -52,6 +56,12 @@ BASE_FEATURE(kFeaturePromoLifecycleTestPromo2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo3,
              "TEST_FeaturePromoLifecycleTestPromo3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeaturePromoLifecycleTestAlert,
+             "TEST_FeaturePromoLifecycleTestAlert",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeaturePromoLifecycleTestAlert2,
+             "TEST_FeaturePromoLifecycleTestAlert2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
@@ -92,29 +102,34 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   }
 
   auto InBrowser(base::OnceCallback<void(Browser*)> callback) {
-    return WithView(kBrowserViewElementId,
-                    base::BindOnce(
-                        [](base::OnceCallback<void(Browser*)> callback,
-                           BrowserView* browser_view) {
-                          std::move(callback).Run(browser_view->browser());
-                        },
-                        std::move(callback)));
+    return std::move(
+        WithView(kBrowserViewElementId,
+                 base::BindOnce(
+                     [](base::OnceCallback<void(Browser*)> callback,
+                        BrowserView* browser_view) {
+                       std::move(callback).Run(browser_view->browser());
+                     },
+                     std::move(callback)))
+            .SetDescription("InBrowser()"));
   }
 
   auto CheckBrowser(base::OnceCallback<bool(Browser*)> callback) {
-    return CheckView(
-        kBrowserViewElementId,
-        base::BindOnce(
-            [](base::OnceCallback<bool(Browser*)> callback,
-               BrowserView* browser_view) {
-              return std::move(callback).Run(browser_view->browser());
-            },
-            std::move(callback)));
+    return std::move(
+        CheckView(kBrowserViewElementId,
+                  base::BindOnce(
+                      [](base::OnceCallback<bool(Browser*)> callback,
+                         BrowserView* browser_view) {
+                        return std::move(callback).Run(browser_view->browser());
+                      },
+                      std::move(callback)))
+            .SetDescription("CheckBrowser()"));
   }
 
   auto CheckSnoozePrefs(bool is_dismissed, int show_count, int snooze_count) {
-    return CheckBrowser(base::BindLambdaForTesting(
-        [this, is_dismissed, show_count, snooze_count](Browser* browser) {
+    return std::move(
+        CheckBrowser(base::BindLambdaForTesting([this, is_dismissed, show_count,
+                                                 snooze_count](
+                                                    Browser* browser) {
           auto data = GetStorageService(browser)->ReadPromoData(
               kFeaturePromoLifecycleTestPromo);
 
@@ -139,7 +154,10 @@ class FeaturePromoLifecycleUiTest : public TestBase {
           }
 
           return !testing::Test::HasNonfatalFailure();
-        }));
+        }))
+            .SetDescription(base::StringPrintf("CheckSnoozePrefs(%s, %d, %d)",
+                                               is_dismissed ? "true" : "false",
+                                               show_count, snooze_count)));
   }
 
   auto SetSnoozePrefs(const PromoData& data) {
@@ -155,8 +173,9 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   auto AttemptIPH(
       bool should_show,
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
-    return CheckBrowser(base::BindLambdaForTesting(
-        [this, should_show, feature](Browser* browser) {
+    return std::move(
+        CheckBrowser(base::BindLambdaForTesting([this, should_show,
+                                                 feature](Browser* browser) {
           auto* const tracker = GetTracker(browser);
           if (should_show) {
             last_show_time_.first = base::Time::Now();
@@ -166,9 +185,12 @@ class FeaturePromoLifecycleUiTest : public TestBase {
             EXPECT_CALL(*tracker, ShouldTriggerHelpUI(Ref(*feature))).Times(0);
           }
 
-          if (should_show !=
-              GetPromoController(browser)->MaybeShowPromo(*feature)) {
-            LOG(ERROR) << "MaybeShowPromo did not return expected value.";
+          const auto result =
+              GetPromoController(browser)->MaybeShowPromo(*feature);
+          if (should_show != result) {
+            LOG(ERROR) << "MaybeShowPromo did not return expected value; "
+                          "return value is "
+                       << result;
             return false;
           }
 
@@ -185,11 +207,14 @@ class FeaturePromoLifecycleUiTest : public TestBase {
           }
 
           return true;
-        }));
+        }))
+            .SetDescription(base::StringPrintf("AttemptIPH(%s, %s)",
+                                               should_show ? "true" : "false",
+                                               feature->name)));
   }
 
   auto SnoozeIPH() {
-    return Steps(
+    auto steps = Steps(
         Do(base::BindLambdaForTesting(
             [this]() { last_snooze_time_.first = base::Time::Now(); })),
         PressButton(
@@ -198,10 +223,12 @@ class FeaturePromoLifecycleUiTest : public TestBase {
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
         Do(base::BindLambdaForTesting(
             [this]() { last_snooze_time_.second = base::Time::Now(); })));
+    AddDescription(steps, "SnoozeIPH(%s)");
+    return steps;
   }
 
   auto DismissIPH() {
-    return Steps(
+    auto steps = Steps(
         PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
         WaitForHide(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -209,36 +236,47 @@ class FeaturePromoLifecycleUiTest : public TestBase {
           auto* const promo = GetPromoController(browser)->current_promo_.get();
           return !promo || (!promo->is_promo_active() && !promo->help_bubble());
         })));
+    AddDescription(steps, "DismissIPH(%s)");
+    return steps;
   }
 
   auto AbortIPH(
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
-    return InBrowser(base::BindLambdaForTesting([feature](Browser* browser) {
-      GetPromoController(browser)->EndPromo(
-          *feature, user_education::EndFeaturePromoReason::kAbortPromo);
-    }));
+    return std::move(
+        InBrowser(base::BindLambdaForTesting([feature](Browser* browser) {
+          GetPromoController(browser)->EndPromo(
+              *feature, user_education::EndFeaturePromoReason::kAbortPromo);
+        })).SetDescription(base::StringPrintf("AbortIPH(%s)", feature->name)));
   }
 
   auto CheckDismissed(
       bool dismissed,
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
-    return CheckBrowser(
-        base::BindLambdaForTesting([dismissed, feature](Browser* browser) {
+    return std::move(
+        CheckBrowser(base::BindLambdaForTesting([dismissed,
+                                                 feature](Browser* browser) {
           return GetPromoController(browser)->HasPromoBeenDismissed(*feature) ==
                  dismissed;
-        }));
+        }))
+            .SetDescription(base::StringPrintf("CheckDismissed(%s, %s)",
+                                               dismissed ? "true" : "false",
+                                               feature->name)));
   }
 
   auto CheckDismissedWithReason(
       user_education::FeaturePromoClosedReason close_reason,
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
-    return CheckBrowser(
-        base::BindLambdaForTesting([close_reason, feature](Browser* browser) {
+    std::ostringstream desc;
+    desc << "CheckDismissedWithReason(" << close_reason << ", " << feature->name
+         << ")";
+    return std::move(
+        CheckBrowser(base::BindLambdaForTesting([close_reason,
+                                                 feature](Browser* browser) {
           user_education::FeaturePromoClosedReason actual_reason;
           return GetPromoController(browser)->HasPromoBeenDismissed(
                      *feature, &actual_reason) &&
                  actual_reason == close_reason;
-        }));
+        })).SetDescription(desc.str()));
   }
 
   static BrowserFeaturePromoController* GetPromoController(Browser* browser) {
@@ -522,6 +560,20 @@ class FeaturePromoLifecycleCriticaUiTest : public FeaturePromoLifecycleUiTest {
         user_education::FeaturePromoSpecification::CreateForLegacyPromo(
             &kFeaturePromoLifecycleTestPromo3, kToolbarAppMenuButtonElementId,
             IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP));
+    result.emplace_back(
+        user_education::FeaturePromoSpecification::CreateForCustomAction(
+            kFeaturePromoLifecycleTestAlert, kToolbarAppMenuButtonElementId,
+            IDS_TAB_GROUPS_NEW_GROUP_PROMO, IDS_OK, base::DoNothing()));
+    result.back().set_promo_subtype_for_testing(
+        user_education::FeaturePromoSpecification::PromoSubtype::
+            kActionableAlert);
+    result.emplace_back(
+        user_education::FeaturePromoSpecification::CreateForCustomAction(
+            kFeaturePromoLifecycleTestAlert2, kToolbarAppMenuButtonElementId,
+            IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, IDS_OK, base::DoNothing()));
+    result.back().set_promo_subtype_for_testing(
+        user_education::FeaturePromoSpecification::PromoSubtype::
+            kActionableAlert);
     return result;
   }
 };
@@ -566,11 +618,36 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo2));
 }
 
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, AlertBlocksAlert) {
+  RunTestSequence(AttemptIPH(true, &kFeaturePromoLifecycleTestAlert),
+                  AttemptIPH(false, &kFeaturePromoLifecycleTestAlert2),
+                  DismissIPH(),
+                  CheckDismissed(true, &kFeaturePromoLifecycleTestAlert),
+                  CheckDismissed(false, &kFeaturePromoLifecycleTestAlert2));
+}
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
+                       CriticalCancelsAlert) {
+  RunTestSequence(AttemptIPH(true, &kFeaturePromoLifecycleTestAlert),
+                  AttemptIPH(true, &kFeaturePromoLifecycleTestPromo),
+                  DismissIPH(),
+                  CheckDismissed(true, &kFeaturePromoLifecycleTestPromo),
+                  CheckDismissed(false, &kFeaturePromoLifecycleTestAlert));
+}
+
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest,
                        CriticalCancelsNormal) {
   RunTestSequence(AttemptIPH(true, &kFeaturePromoLifecycleTestPromo3),
                   AttemptIPH(true, &kFeaturePromoLifecycleTestPromo),
                   DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestPromo),
+                  CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3));
+}
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticaUiTest, AlertCancelsNormal) {
+  RunTestSequence(AttemptIPH(true, &kFeaturePromoLifecycleTestPromo3),
+                  AttemptIPH(true, &kFeaturePromoLifecycleTestAlert),
+                  DismissIPH(),
+                  CheckDismissed(true, &kFeaturePromoLifecycleTestAlert),
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3));
 }

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FaceLandmarker, FilesetResolver} from './mediapipe_task_vision/task_vision.js';
+import {DrawingUtils, FaceLandmarker, FilesetResolver} from './mediapipe_task_vision/task_vision.js';
+import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
+import {MouseController} from './mouse_controller.js';
 
 /**
  * Handles interaction with the webcam and FaceLandmarker.
@@ -12,6 +14,7 @@ import {FaceLandmarker, FilesetResolver} from './mediapipe_task_vision/task_visi
 export class WebCamFaceLandmarker {
   private faceLandmarker_: FaceLandmarker|null = null;
   declare private intervalID_: number|null;
+  private drawingUtils_: DrawingUtils|undefined;
   constructor() {
     this.intervalID_ = null;
   }
@@ -65,14 +68,56 @@ export class WebCamFaceLandmarker {
     // Send result to the background page for processing.
     chrome.runtime.sendMessage(
         undefined, {type: 'faceLandmarkerResult', result});
+
+    this.displayFaceLandmarkerResult_(result);
+  }
+
+  private displayFaceLandmarkerResult_(result: FaceLandmarkerResult): void {
+    if (!result || !result.faceLandmarks || !result.faceLandmarks[0] ||
+        !result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX]) {
+      return;
+    }
+    const overlay = document.getElementById('overlay') as HTMLCanvasElement;
+    const ctx = overlay.getContext('2d')!;
+    if (!this.drawingUtils_) {
+      const video = document.getElementById('cameraStream');
+      overlay.width = video!.offsetWidth;
+      overlay.height = video!.offsetHeight;
+      this.drawingUtils_ = new DrawingUtils(ctx);
+    }
+
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+    for (const landmarks of result.faceLandmarks) {
+      this.drawingUtils_.drawConnectors(
+          landmarks, FaceLandmarker.FACE_LANDMARKS_CONTOURS,
+          {color: '#C0C0C060', lineWidth: 2});
+    }
+
+    // Center point.
+    ctx.beginPath();
+    ctx.arc(overlay.width / 2, overlay.height / 2, 2, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'blue';
+    ctx.stroke();
+
+    // Forehead point.
+    const foreheadLocation =
+        result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX];
+    const x = foreheadLocation.x;
+    const y = foreheadLocation.y;
+    ctx.beginPath();
+    ctx.arc(x * overlay.width, y * overlay.height, 2, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'red';
+    ctx.stroke();
   }
 }
 export namespace WebCamFaceLandmarker {
   /**
    * The interval, in milliseconds, for which we request results from the
-   * FaceLandmarker API.
+   * FaceLandmarker API. This should be frequent enough to give a real-time
+   * feeling.
    */
-  export const DETECT_FACE_LANDMARKS_INTERVAL_MS = 200;
+  export const DETECT_FACE_LANDMARKS_INTERVAL_MS = 60;
 }
 
 declare global {
@@ -81,9 +126,8 @@ declare global {
 
 document.addEventListener('DOMContentLoaded', () => {
   globalThis.webCamFaceLandmarker = new WebCamFaceLandmarker();
-  const button = document.createElement('button');
-  button.textContent = 'Click to start FaceGaze';
-  button.addEventListener(
+  const button = document.getElementById('startButton');
+  button?.addEventListener(
       'click', () => globalThis.webCamFaceLandmarker.init());
-  document.body.appendChild(button);
+  button?.removeAttribute('hidden');
 });

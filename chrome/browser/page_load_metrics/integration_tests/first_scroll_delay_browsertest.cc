@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
@@ -67,12 +69,10 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
   // Check UKM.
   std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       ukm_recorder().GetEntriesByName(PageLoad::kEntryName);
-  auto name_filter = [](const ukm::mojom::UkmEntry* entry) {
+  // There could be other metrics recorded for PageLoad; filter them out.
+  std::erase_if(entries, [](const ukm::mojom::UkmEntry* entry) {
     return !ukm::TestUkmRecorder::EntryHasMetric(
         entry, PageLoad::kInteractiveTiming_FirstScrollDelayName);
-  };
-  // There could be other metrics recorded for PageLoad; filter them out.
-  entries.erase(std::remove_if(entries.begin(), entries.end(), name_filter),
-                entries.end());
+  });
   EXPECT_EQ(1ul, entries.size());
 }

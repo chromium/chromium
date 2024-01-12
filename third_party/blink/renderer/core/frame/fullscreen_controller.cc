@@ -270,10 +270,6 @@ void FullscreenController::FullscreenElementChanged(
 
       frame->GetLocalFrameHostRemote().FullscreenStateChanged(
           in_fullscreen, std::move(mojo_options));
-      if (IsSpatialNavigationEnabled(frame)) {
-        doc.GetPage()->GetSpatialNavigationController().FullscreenStateChanged(
-            new_element);
-      }
     }
   }
 }

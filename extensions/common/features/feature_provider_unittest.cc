@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
@@ -153,7 +154,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 TEST(FeatureProviderTest, GetChildren) {
   FeatureProvider provider;
 
-  auto add_feature = [&provider](base::StringPiece name,
+  auto add_feature = [&provider](std::string_view name,
                                  bool no_parent = false) {
     auto feature = std::make_unique<SimpleFeature>();
     feature->set_name(name);

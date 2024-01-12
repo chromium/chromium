@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugaldarra, nazioarteko teklatu estatubatuarrarekin</translation>
 <translation id="1629521517399325891">Erabiltzaile-ziurtagiria ez dago erabilgarri sarea autentifikatzeko.</translation>
 <translation id="1641780993263690097">Txinatarra (pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fitxategi konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="164969095109328410">Chrome-ko gailua</translation>
 <translation id="1661207570040737402">Unitate partekatuaren Google Workspace-ko biltegi osoa erabili duzu.</translation>
 <translation id="1661867754829461514">PINa falta da</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google kalkulu-orria</translation>
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3486821258960016770">Mongoliarra</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errore.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> elementu sinkronizatzeko prestatzen…</translation>
 <translation id="3522708245912499433">Portugaldarra</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Administratzailearen gidalerroek ez dute uzten <ph name="COUNT" /> fitxategi kopiatzen</translation>
 <translation id="6509122719576673235">Norvegiarra</translation>
 <translation id="6528513914570774834">Baimendu sare hau erabiltzea gailu hau darabiltenei</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> sinkronizatzen…</translation>
 <translation id="6549689063733911810">Azkenak</translation>
 <translation id="6558280019477628686">Errore bat gertatu da. Agian ez dira ezabatu elementu batzuk.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ezabatzen…</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak erabiltzeko baimena Linux-eko aplikazioei</translation>
 <translation id="7555339735447658365">Ez zaude konektatuta. Internetera konektatzen zarenean berrekingo zaio fitxategien sinkronizazioari.</translation>
 <translation id="7589661784326793847">Itxaron unetxo batean</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> fitxategia konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="7600126690270271294">Serbiarra</translation>
 <translation id="7603724359189955920">Saretak</translation>
 <translation id="7627790789328695202">Badago <ph name="FILE_NAME" /> izena duen fitxategia. Aldatu izena eta saiatu berriro.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Hasieratzen…</translation>
 <translation id="8147028810663464959">Karaktere-zabalera osoa da</translation>
 <translation id="8151638057146502721">Konfiguratu</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 errore.}other{# errore.}}</translation>
 <translation id="8154842056504218462">Hautatu dira sarrera guztiak.</translation>
 <translation id="8157684860301034423">Ezin izan da eskuratu aplikazioaren informazioa.</translation>
 <translation id="8175731104491895765">Frantsesa (Belgika)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak erabiltzeko baimena <ph name="VM_NAME" /> makina birtualari</translation>
 <translation id="8372369524088641025">WEP gako okerra</translation>
 <translation id="8372852072747894550">Greziarra</translation>
+<translation id="8377269993083688872">Mezu elektronikoen diseinuak</translation>
 <translation id="8386903983509584791">Amaitu da bilaketa</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> atera da.</translation>
 <translation id="8395901698320285466">Dimentsioak</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Hautatu irekitzeko fitxategi bat</translation>
 <translation id="8577897833047451336">Kroaziarra</translation>
 <translation id="8578308463707544055">Indonesiarra</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementu sinkronizatzen…</translation>
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Baimendu proxyak sare partekatuetan</translation>
 <translation id="8790981080411996443">Landareak ureztatzen ari den pertsona</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 abisu.}other{# abisu.}}</translation>
 <translation id="8808686172382650546">Katua</translation>
 <translation id="8810671769985673465">Ezin izan da konprimitu; elementua bazegoen lehendik ere: “<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Espainiarra (Espainia)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="9065512565307033593">Egiaztapena gauzatzen ez baduzu, desgaitu egingo da sarerako sarbidea.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 abisu.}other{<ph name="COUNT" /> abisu.}}</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
 <translation id="9086302186042011942">Sinkronizatzen</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>

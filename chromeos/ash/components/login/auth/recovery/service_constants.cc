@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
+
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-
+#include "base/strings/string_number_conversions.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -75,10 +76,12 @@ GURL GetRecoveryServiceBaseURL() {
 }  // namespace
 
 std::string GetRecoveryHsmPublicKey() {
-  if (IsUsingTestEnvironment()) {
-    return kTestingHsmPublicKey;
-  }
-  return kHsmPublicKey;
+  std::string decoded_key;
+  const bool result = base::HexStringToString(
+      IsUsingTestEnvironment() ? kTestingHsmPublicKey : kHsmPublicKey,
+      &decoded_key);
+  CHECK(result);
+  return decoded_key;
 }
 
 std::string GetRecoveryLedgerName() {

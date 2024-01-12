@@ -111,9 +111,9 @@ BLINK_EXPORT void DecommitFreeableMemory();
 BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
     v8::MemoryPressureLevel);
 
-// Send a request to the worker thread isolates to prioritize energy efficiency
+// Send a request to the all isolates to prioritize energy efficiency
 // because the embedder is running in battery saver mode.
-BLINK_EXPORT void SetBatterySaverModeForWorkerThreadIsolates(
+BLINK_EXPORT void SetBatterySaverModeForAllIsolates(
     bool battery_saver_mode_enabled);
 
 // Send isolate background/foreground notification to worker thread isolates.

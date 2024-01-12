@@ -222,7 +222,7 @@ void MagnifierSurfaceControl::UpdateLayers() {
     return;
   }
 
-  absl::optional<SkColor> background_color = rwhva->GetBackgroundColor();
+  std::optional<SkColor> background_color = rwhva->GetBackgroundColor();
   rounded_corner_layer_->SetBackgroundColor(
       background_color ? SkColor4f::FromColor(background_color.value())
                        : SkColors::kWhite);

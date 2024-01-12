@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Português com teclado americano internacional</translation>
 <translation id="1629521517399325891">O certificado do utilizador não está disponível para a autenticação de rede.</translation>
 <translation id="1641780993263690097">Chinês pinyin</translation>
-<translation id="1646019627374511909">A disponibilizar <ph name="NUMBER_OF_ITEMS" /> ficheiros offline…</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Usou todo o armazenamento do Google Workspace do disco partilhado.</translation>
 <translation id="1661867754829461514">Falta o PIN</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Folha de cálculo do Google</translation>
 <translation id="3479552764303398839">Agora não</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3511705761158917664">A preparar a sincronização de <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="3522708245912499433">Português</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">A ação de mover <ph name="COUNT" /> ficheiros foi bloqueada pela política da pessoa que administra</translation>
 <translation id="6509122719576673235">Norueguês</translation>
 <translation id="6528513914570774834">Permitir que outros utilizadores deste dispositivo utilizem esta rede</translation>
-<translation id="653019979737152879">A sincronizar <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">Ocorreu um erro. É possível que alguns itens não tenham sido eliminados.</translation>
 <translation id="656398493051028875">A eliminar "<ph name="FILENAME" />"...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Conceda autorização às apps Linux para aceder a ficheiros na pasta <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Está atualmente offline. A sincronização de ficheiros é retomada quando tiver ligação à Internet</translation>
 <translation id="7589661784326793847">Aguarde um momento</translation>
-<translation id="7592775719802218421">A disponibilizar o ficheiro <ph name="FILE_NAME" /> offline…</translation>
 <translation id="7600126690270271294">Sérvio</translation>
 <translation id="7603724359189955920">Grelhas</translation>
 <translation id="7627790789328695202">Ups, <ph name="FILE_NAME" /> já existe. Dê um nome novo e tente novamente.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8147028810663464959">A largura de carateres é Completa</translation>
 <translation id="8151638057146502721">Configurar</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erro.}other{# erros.}}</translation>
 <translation id="8154842056504218462">Selecionou todas as entradas.</translation>
 <translation id="8157684860301034423">Falha ao obter informações da aplicação.</translation>
 <translation id="8175731104491895765">Francês (Bélgica)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Dar autorização a <ph name="VM_NAME" /> para aceder aos ficheiros na pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Chave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
+<translation id="8377269993083688872">Esquemas de emails</translation>
 <translation id="8386903983509584791">Análise concluída</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extraído.</translation>
 <translation id="8395901698320285466">Dimensões</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Selecione um ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonésio</translation>
-<translation id="8579285237314169903">A sincronizar <ph name="NUMBER_OF_FILES" /> itens...</translation>
 <translation id="8600173386174225982">A lista de ficheiros foi alterada para a vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Permitir proxies para redes partilhadas</translation>
 <translation id="8790981080411996443">Pessoa a regar plantas</translation>
 <translation id="8798099450830957504">Predefinição</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 aviso.}other{# avisos.}}</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Falha ao comprimir; o item existe: "<ph name="FILE_NAME" />".</translation>
 <translation id="8813284582615685103">Espanhol (Espanha)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">O ficheiro com o nome "<ph name="FILE_NAME" />" já existe. Escolha um nome diferente.</translation>
 <translation id="9046895021617826162">A ligação falhou</translation>
 <translation id="9065512565307033593">Se não validar, o seu acesso à rede será desativado.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 aviso.}other{<ph name="COUNT" /> avisos.}}</translation>
 <translation id="908378762078012445">Russo com teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>

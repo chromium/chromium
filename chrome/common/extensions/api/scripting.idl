@@ -52,7 +52,7 @@ namespace scripting {
     // specified.
     [serializableFunction]InjectedFunction? func;
 
-    // The arguments to curry into a provided function. This is only valid if
+    // The arguments to pass to the provided function. This is only valid if
     // the <code>func</code> parameter is specified. These arguments must be
     // JSON-serializable.
     any[]? args;
@@ -121,13 +121,13 @@ namespace scripting {
     // with a '_' as it's reserved as a prefix for generated script IDs.
     DOMString id;
     // Specifies which pages this content script will be injected into. See
-    // <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings. Must be specified for
+    // <a href="develop/concepts/match-patterns">Match Patterns</a> for more
+    // details on the syntax of these strings. Must be specified for
     // $(ref:registerContentScripts).
     DOMString[]? matches;
     // Excludes pages that this content script would otherwise be injected into.
-    // See <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // See <a href="develop/concepts/match-patterns">Match Patterns</a> for
+    // more details on the syntax of these strings.
     DOMString[]? excludeMatches;
     // The list of CSS files to be injected into matching pages. These are
     // injected in the order they appear in this array, before any DOM is

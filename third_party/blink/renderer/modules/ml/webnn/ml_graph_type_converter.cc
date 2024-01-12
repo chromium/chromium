@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
@@ -174,6 +175,27 @@ blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
   return elu_mojo;
 }
 
+blink_mojom::HardSigmoidPtr CreateHardSigmoid(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* hard_sigmoid,
+    bool is_activation) {
+  auto hard_sigmoid_mojo = blink_mojom::HardSigmoid::New();
+  // Activation has no input or output operands.
+  if (!is_activation) {
+    hard_sigmoid_mojo->input_operand_id =
+        GetOperatorInputId(hard_sigmoid, operand_to_id_map);
+    hard_sigmoid_mojo->output_operand_id =
+        GetOperatorOutputId(hard_sigmoid, operand_to_id_map);
+  }
+
+  const auto* options =
+      static_cast<const MLHardSigmoidOptions*>(hard_sigmoid->Options());
+  CHECK(options);
+  hard_sigmoid_mojo->alpha = options->alpha();
+  hard_sigmoid_mojo->beta = options->beta();
+  return hard_sigmoid_mojo;
+}
+
 OperationPtr CreateExpandOperation(const OperandToIdMap& operand_to_id_map,
                                    const MLOperator* expand) {
   auto expand_mojo = blink_mojom::Expand::New();
@@ -244,6 +266,9 @@ base::expected<ActivationPtr, String> CreateActivation(
     case blink::MLOperator::OperatorKind::kElu:
       return blink_mojom::Activation::NewElu(
           CreateElu(operand_to_id_map, ml_operator, true));
+    case blink::MLOperator::OperatorKind::kHardSigmoid:
+      return blink_mojom::Activation::NewHardSigmoid(
+          CreateHardSigmoid(operand_to_id_map, ml_operator, true));
     case blink::MLOperator::OperatorKind::kLeakyRelu:
       return blink_mojom::Activation::NewLeakyRelu(
           CreateLeakyRelu(operand_to_id_map, ml_operator, true));
@@ -256,6 +281,8 @@ base::expected<ActivationPtr, String> CreateActivation(
     case blink::MLOperator::OperatorKind::kSoftplus:
       return blink_mojom::Activation::NewSoftplus(
           CreateSoftplus(operand_to_id_map, ml_operator, true));
+    case blink::MLOperator::OperatorKind::kSoftsign:
+      return blink_mojom::Activation::NewSoftsign(blink_mojom::Softsign::New());
     case blink::MLOperator::OperatorKind::kTanh:
       return blink_mojom::Activation::NewTanh(blink_mojom::Tanh::New());
     default:
@@ -870,6 +897,16 @@ OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewSoftmax(std::move(softmax_mojo));
 }
 
+OperationPtr CreateSoftsignOperation(const OperandToIdMap& operand_to_id_map,
+                                     const MLOperator* softsign) {
+  auto softsign_mojo = blink_mojom::Softsign::New();
+  softsign_mojo->input_operand_id =
+      GetOperatorInputId(softsign, operand_to_id_map);
+  softsign_mojo->output_operand_id =
+      GetOperatorOutputId(softsign, operand_to_id_map);
+  return blink_mojom::Operation::NewSoftsign(std::move(softsign_mojo));
+}
+
 OperationPtr CreateSplitOperation(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* split) {
   auto split_mojo = blink_mojom::Split::New();
@@ -1051,6 +1088,9 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateGatherOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kHardSigmoid:
+      return blink_mojom::Operation::NewHardSigmoid(
+          CreateHardSigmoid(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kInstanceNormalization:
       return CreateInstanceNormalizationOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLayerNormalization:
@@ -1115,6 +1155,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kSoftplus:
       return blink_mojom::Operation::NewSoftplus(
           CreateSoftplus(operand_to_id_map, op, false));
+    case MLOperator::OperatorKind::kSoftsign:
+      return CreateSoftsignOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSplit:
       return CreateSplitOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kTanh:
@@ -1126,8 +1168,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kHardSwish:
       [[fallthrough]];
     case MLOperator::OperatorKind::kLinear:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kSoftsign:
       break;
   }
   return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +

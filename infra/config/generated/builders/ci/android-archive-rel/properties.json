@@ -58,7 +58,8 @@
           "builder": "android-clobber-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-archive-rel/targets"
     }
   },
   "$build/reclient": {

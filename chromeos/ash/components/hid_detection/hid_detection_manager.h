@@ -109,7 +109,7 @@ class HidDetectionManager {
   // types to notify observers of status changes.
   void NotifyHidDetectionStatusChanged();
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace ash::hid_detection

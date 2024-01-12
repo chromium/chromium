@@ -110,13 +110,11 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
       const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> http_client_factory_ =
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NearbyShareClientFactory> http_client_factory_ = nullptr;
+  raw_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_ =
       nullptr;
-  raw_ptr<NearbyShareLocalDeviceDataManager, ExperimentalAsh>
-      local_device_data_manager_ = nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
-      profile_info_provider_ = nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
   std::unique_ptr<ash::nearby::NearbyScheduler>
       periodic_contact_upload_scheduler_;
   std::unique_ptr<ash::nearby::NearbyScheduler>

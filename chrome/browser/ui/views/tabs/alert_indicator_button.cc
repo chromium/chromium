@@ -157,14 +157,16 @@ AlertIndicatorButton::~AlertIndicatorButton() = default;
 
 void AlertIndicatorButton::TransitionToAlertState(
     std::optional<TabAlertState> next_state) {
-  if (next_state == alert_state_)
+  if (next_state == alert_state_) {
     return;
+  }
 
   std::optional<TabAlertState> previous_alert_showing_state =
       showing_alert_state_;
 
-  if (next_state)
+  if (next_state) {
     UpdateIconForAlertState(next_state.value());
+  }
 
   if ((alert_state_ == TabAlertState::AUDIO_PLAYING &&
        next_state == TabAlertState::AUDIO_MUTING) ||
@@ -174,21 +176,24 @@ void AlertIndicatorButton::TransitionToAlertState(
     showing_alert_state_ = next_state;
     fade_animation_.reset();
   } else {
-    if (!next_state)
+    if (!next_state) {
       showing_alert_state_ = alert_state_;  // Fading-out indicator.
-    else
+    } else {
       showing_alert_state_ = next_state;  // Fading-in to next indicator.
+    }
     fade_animation_ = CreateTabAlertIndicatorFadeAnimation(next_state);
-    if (!fade_animation_delegate_)
+    if (!fade_animation_delegate_) {
       fade_animation_delegate_ = std::make_unique<FadeAnimationDelegate>(this);
+    }
     fade_animation_->set_delegate(fade_animation_delegate_.get());
     fade_animation_->Start();
   }
 
   alert_state_ = next_state;
 
-  if (previous_alert_showing_state != showing_alert_state_)
+  if (previous_alert_showing_state != showing_alert_state_) {
     parent_tab_->AlertStateChanged();
+  }
 
   UpdateEnabledForMuteToggle();
 }
@@ -210,16 +215,18 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
     enable = GetTab()->GetWidthOfLargestSelectableRegion() >= required_width;
   }
 
-  if (enable == was_enabled)
+  if (enable == was_enabled) {
     return;
+  }
 
   SetEnabled(enable);
 }
 
 void AlertIndicatorButton::OnParentTabButtonColorChanged() {
   if (alert_state_ == TabAlertState::AUDIO_PLAYING ||
-      alert_state_ == TabAlertState::AUDIO_MUTING)
+      alert_state_ == TabAlertState::AUDIO_MUTING) {
     UpdateIconForAlertState(alert_state_.value());
+  }
 }
 
 views::View* AlertIndicatorButton::GetTooltipHandlerForPoint(
@@ -272,16 +279,18 @@ bool AlertIndicatorButton::IsTriggerableEvent(const ui::Event& event) {
   // modifier keys are being held down.
   if (event.IsMouseEvent() &&
       (!static_cast<const ui::MouseEvent*>(&event)->IsOnlyLeftMouseButton() ||
-       IsShiftOrControlDown(event)))
+       IsShiftOrControlDown(event))) {
     return false;
+  }
 
   // For gesture events on an inactive tab, require an even wider tab before
   // click-to-mute can be triggered.  See comments in
   // UpdateEnabledForMuteToggle().
   if (event.IsGestureEvent() && !GetTab()->IsActive()) {
     const int required_width = width() * kMinGestureSelectableAreaPercent / 100;
-    if (GetTab()->GetWidthOfLargestSelectableRegion() < required_width)
+    if (GetTab()->GetWidthOfLargestSelectableRegion() < required_width) {
       return false;
+    }
   }
 
   return views::ImageButton::IsTriggerableEvent(event);
@@ -291,14 +300,17 @@ void AlertIndicatorButton::PaintButtonContents(gfx::Canvas* canvas) {
   double opaqueness = 1.0;
   if (fade_animation_) {
     opaqueness = fade_animation_->GetCurrentValue();
-    if (!alert_state_)
+    if (!alert_state_) {
       opaqueness = 1.0 - opaqueness;  // Fading out, not in.
+    }
   }
-  if (opaqueness < 1.0)
+  if (opaqueness < 1.0) {
     canvas->SaveLayerAlpha(opaqueness * SK_AlphaOPAQUE);
+  }
   ImageButton::PaintButtonContents(canvas);
-  if (opaqueness < 1.0)
+  if (opaqueness < 1.0) {
     canvas->Restore();
+  }
 }
 
 gfx::ImageSkia AlertIndicatorButton::GetImageToPaint() {
@@ -502,5 +514,5 @@ void AlertIndicatorButton::UpdateIconForAlertState(TabAlertState state) {
                 GetTabAlertIndicatorImageForPressedState(state, color));
 }
 
-BEGIN_METADATA(AlertIndicatorButton, views::ImageButton)
+BEGIN_METADATA(AlertIndicatorButton)
 END_METADATA

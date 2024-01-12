@@ -121,6 +121,15 @@ message ChurnObservationMetadata {
   // Whether the device was `first active` during the corresponding cohort
   // period.
   optional FirstActiveDuringCohort first_active_during_cohort = 3;
+
+  // Device ActivateDate, read from VPD. In YYYY-WW ISO8601 format.
+  // Value exists after first OOBE completion and device restart.
+  // Statistics provider loads VPD file in the chrome browser preloop,
+  // before ActivateDate may be first written.
+  optional string first_activate_week = 4;
+
+  // Device last powerwash week. Formatted YYYY-WW in ISO8601 format.
+  optional string last_powerwash_week = 5;
 }
 
 // This message is part of the import request. For some use cases, such as

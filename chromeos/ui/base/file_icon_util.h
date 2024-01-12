@@ -34,6 +34,7 @@ enum class IconType {
   kGmap,
   kGsheet,
   kGsite,
+  kGmaillayout,
   kGslide,
   kGtable,
   kLinux,

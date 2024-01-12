@@ -22,8 +22,8 @@ class LevelDBWriteBatch {
   static std::unique_ptr<LevelDBWriteBatch> Create();
   ~LevelDBWriteBatch();
 
-  void Put(const std::string_view& key, const std::string_view& value);
-  void Remove(const std::string_view& key);
+  void Put(std::string_view key, std::string_view value);
+  void Remove(std::string_view key);
   void Clear();
 
  private:

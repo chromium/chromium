@@ -1113,12 +1113,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       profile_->GetPrefs()->GetBoolean(
           prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
-  IpProtectionConfigProvider* ip_protection_auth_token_getter =
+  IpProtectionConfigProvider* ipp_config_provider =
       IpProtectionConfigProvider::Get(profile_);
-  if (ip_protection_auth_token_getter) {
-    ip_protection_auth_token_getter->AddReceiver(
+  if (ipp_config_provider) {
+    ipp_config_provider->AddNetworkService(
         network_context_params->ip_protection_config_getter
-            .InitWithNewPipeAndPassReceiver());
+            .InitWithNewPipeAndPassReceiver(),
+        network_context_params->ip_protection_proxy_delegate
+            .InitWithNewPipeAndPassRemote());
   }
 
   network_context_params->afp_block_list_experiment_enabled =

@@ -4,7 +4,6 @@ include_rules = [
   "+components/mirroring/mojom",
   "+components/mirroring/service",
   "+components/openscreen_platform",
-  "+components/version_info",
   "+crypto",
   "+gpu/config",
   "+gpu/ipc/client",

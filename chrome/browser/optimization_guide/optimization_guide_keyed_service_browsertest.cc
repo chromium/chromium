@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+
 #include <memory>
 
 #include "base/base64.h"
@@ -20,12 +22,13 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
@@ -46,6 +49,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
@@ -356,9 +360,14 @@ class OptimizationGuideKeyedServiceBrowserTest
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   void EnableSignIn() {
+    auto account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
     identity_test_env_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("user@gmail.com",
-                                      signin::ConsentLevel::kSignin);
+        ->UpdateAccountInfoForAccount(account_info);
   }
 
   void SignOut() {
@@ -1230,6 +1239,38 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
 
+// Creating multiple profiles isn't supported easily on ash and android.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       LogOnDeviceMetricsSingleTimeForMultipleProfiles) {
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  OnDeviceModelComponentStateManager* on_device_component_state_manager =
+      OnDeviceModelComponentStateManager::GetInstanceForTesting();
+  ASSERT_TRUE(on_device_component_state_manager);
+
+  // Add a second profile which should not log performance class.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath path = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileWaiter profile_waiter;
+  profile_manager->CreateProfileAsync(path, {});
+  profile_waiter.WaitForProfileAdded();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester()
+               ->GetAllSamples(
+                   "OptimizationGuide.ModelExecution."
+                   "OnDeviceModelPerformanceClass")
+               .size() > 0;
+  }));
+
+  // Make sure all tasks have finished running.
+  content::RunAllTasksUntilIdle();
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+}
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1527,7 +1568,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   // Disable logging via via the enterprise policy to state
   // kAllowWithoutLogging.
   policies.Set(
-      policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           optimization_guide::model_execution::prefs::
@@ -1547,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   ogks->UploadModelQualityLogs(std::move(log_entry_1));
 
   // Disable logging via via the enterprise policy to kDisable state.
-  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    optimization_guide::model_execution::prefs::
@@ -1568,7 +1609,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   // Enable logging via via the enterprise policy to state kAllow this shouldn't
   // stop upload.
-  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    optimization_guide::model_execution::prefs::

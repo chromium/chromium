@@ -26,18 +26,16 @@ class HttpRequestHeaders;
 namespace safe_browsing {
 
 class UrlCheckerDelegate;
-class SafeBrowsingLookupMechanismExperimenter;
 
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
-class PingManager;
 
 // UrlCheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
 // must be called on the IO thread. The results are synced back to the
 // throttle.
 // TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
 // UI thread.
-class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
+class UrlCheckerOnSB final {
  public:
   struct StartParams {
     StartParams(net::HttpRequestHeaders headers,
@@ -60,9 +58,11 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
     OnCompleteCheckResult(
         bool proceed,
         bool showed_interstitial,
+        bool has_post_commit_interstitial_skipped,
         SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
     bool proceed;
     bool showed_interstitial;
+    bool has_post_commit_interstitial_skipped;
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
   };
 
@@ -75,11 +75,13 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   using NativeUrlCheckNotifier = base::OnceCallback<void(
       bool /* proceed */,
       bool /* showed_interstitial */,
+      bool /* has_post_commit_interstitial_skipped */,
       SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */)>;
 
   UrlCheckerOnSB(
       GetDelegateCallback delegate_getter,
       int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id,
       base::RepeatingCallback<content::WebContents*()> web_contents_getter,
       OnCompleteCheckCallback complete_callback,
       bool url_real_time_lookup_enabled,
@@ -89,8 +91,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       std::string url_lookup_service_metric_suffix,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager,
-      bool is_mechanism_experiment_allowed,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   ~UrlCheckerOnSB();
@@ -101,8 +101,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   // Checks the specified |url| using |url_checker_|.
   void CheckUrl(const GURL& url, const std::string& method);
 
-  void LogWillProcessResponseTime(base::TimeTicks reached_time);
-
   // Replaces the current |complete_callback_| with the new |callback|.
   void SwapCompleteCallback(OnCompleteCheckCallback callback);
 
@@ -110,6 +108,10 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker);
 
   bool IsRealTimeCheckForTesting();
+
+  base::WeakPtr<UrlCheckerOnSB> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   // If |slow_check_notifier| is non-null, it indicates that a "slow check" is
@@ -121,11 +123,13 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   void OnCompleteCheck(
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   // The following member stays valid until |url_checker_| is created.
@@ -134,8 +138,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_for_testing_;
   int frame_tree_node_id_;
-  scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-      mechanism_experimenter_;
+  absl::optional<int64_t> navigation_id_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;
   bool url_real_time_lookup_enabled_ = false;
@@ -146,11 +149,10 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
   base::WeakPtr<HashRealTimeService> hash_realtime_service_;
-  base::WeakPtr<PingManager> ping_manager_;
-  bool is_mechanism_experiment_allowed_ = false;
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
       hash_realtime_utils::HashRealTimeSelection::kNone;
   base::TimeTicks creation_time_;
+  base::WeakPtrFactory<UrlCheckerOnSB> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

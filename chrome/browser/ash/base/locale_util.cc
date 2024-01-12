@@ -49,7 +49,7 @@ struct SwitchLanguageData {
   locale_util::LanguageSwitchResult result;
   const bool enable_locale_keyboard_layouts;
   const bool login_layouts_only;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile;
+  raw_ptr<Profile, DanglingUntriaged> profile;
 };
 
 // Runs on ThreadPool thread under PostTaskAndReply().

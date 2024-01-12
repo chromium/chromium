@@ -634,7 +634,7 @@ void PluginVmInstallerView::StartInstallation() {
     OnError(failure_reason.value());
 }
 
-BEGIN_METADATA(PluginVmInstallerView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(PluginVmInstallerView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Message)
 END_METADATA

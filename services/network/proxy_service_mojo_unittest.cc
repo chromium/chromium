@@ -133,15 +133,20 @@ class ProxyServiceMojoTest : public testing::Test {
             true /* pac_quick_check_enabled */, &network_delegate_);
   }
 
+  void DeleteService() {
+    fetcher_ = nullptr;
+    proxy_resolution_service_.reset();
+  }
+
   base::test::TaskEnvironment task_environment_;
   TestMojoProxyResolverFactory test_mojo_proxy_resolver_factory_;
   TestNetworkDelegate network_delegate_;
   net::MockHostResolver mock_host_resolver_;
-  // Owned by |proxy_resolution_service_|.
-  raw_ptr<net::MockPacFileFetcher, DanglingUntriaged> fetcher_;
   net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<net::ConfiguredProxyResolutionService>
       proxy_resolution_service_;
+  // Owned by |proxy_resolution_service_|.
+  raw_ptr<net::MockPacFileFetcher> fetcher_;
 };
 
 TEST_F(ProxyServiceMojoTest, Basic) {
@@ -163,7 +168,7 @@ TEST_F(ProxyServiceMojoTest, Basic) {
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ("PROXY foo:1234", info.ToDebugString());
   EXPECT_EQ(0u, mock_host_resolver_.num_resolve());
-  proxy_resolution_service_.reset();
+  DeleteService();
 }
 
 TEST_F(ProxyServiceMojoTest, DnsResolution) {
@@ -186,7 +191,7 @@ TEST_F(ProxyServiceMojoTest, DnsResolution) {
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ("QUIC bar:4321", info.ToDebugString());
   EXPECT_EQ(1u, mock_host_resolver_.num_resolve());
-  proxy_resolution_service_.reset();
+  DeleteService();
 }
 
 TEST_F(ProxyServiceMojoTest, Error) {

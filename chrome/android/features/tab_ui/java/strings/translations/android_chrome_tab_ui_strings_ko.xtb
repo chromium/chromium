@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">기존 탭을 닫으시겠습니까?</translation>
 <translation id="1215127405478249895">탭 검토하기</translation>
 <translation id="125153950246128346">다른 탭을 보려면 탭하세요.</translation>
+<translation id="1326271443836399892">현재의 불필요한 항목 제거 설정을 검토합니다.</translation>
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="3008554597174452548">제품 추적 중지</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{보관처리된 탭이 <ph name="TABS_COUNT_ONE" />개 있습니다}other{보관처리된 탭이 <ph name="TABS_COUNT_MANY" />개 있습니다}}</translation>
 <translation id="3194464645767632461">평점</translation>
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">매장에 관한 정보가 닫힘</translation>
 <translation id="9150694013019234766">화면 하단의 탭 그룹에서 탭 간 전환</translation>
 <translation id="9169594135889675189">그룹에 새 탭 추가</translation>
+<translation id="955558140275419384">이 편집기로 이동해 보관처리된 모든 탭을 검토하고 불필요한 탭을 정리합니다.</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
 </translationbundle>

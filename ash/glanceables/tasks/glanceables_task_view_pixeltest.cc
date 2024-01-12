@@ -46,8 +46,7 @@ class GlanceablesTaskViewPixelTest
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(gfx::Rect(/*width=*/370, /*height=*/50));
     widget_->SetContentsView(std::make_unique<GlanceablesTaskView>(
-        task_.get(), /*mark_as_completed_callback=*/base::DoNothing(),
-        /*save_callback=*/base::DoNothing()));
+        task_.get(), /*mark_as_completed_callback=*/base::DoNothing()));
   }
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()

@@ -16,10 +16,16 @@
     overflow: hidden;
   }
 
-  #actions-focus-border:focus-within {
+  #actions-focus-border:focus-within,
+  /* Keep outline when chip receives active state after being focused. */
+  #actions-focus-border:focus-within:has(#action:active) {
     outline: 2px solid var(--color-realbox-results-action-chip-focus-outline);
     border-radius: 10px;
     margin-inline-start: -2px;
+  }
+
+  #actions-focus-border:has(#action:active) {
+    outline: none;
   }
 
   .container {
@@ -41,7 +47,8 @@
     padding-bottom: 12px;
   }
 
-  :host([has-outset-action-focus-ring]:not([realbox-consistent-row-height])) .container {
+  :host([has-outset-action-focus-ring][inlined-actions]:not([realbox-consistent-row-height])) .container,
+  :host([has-outset-action-focus-ring]:not([realbox-consistent-row-height])) .container.underneath  {
     height: 38px;
     padding-top: 3px;
     padding-bottom: 3px;
@@ -281,11 +288,71 @@
       #remove {
     display: none;
   }
+
+  /* TODO(niharm): Clean up all the following rules once
+   * OmniboxActionsUISimplification is launched */
+  /* The rules below are only triggered in the following case:
+   *    1) Action chips are not inlined
+   *    2) Cr23 Hover Shape flag is on
+   *    3) Match has an associated action */
+  .icon-text-action-container {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .icon-text-container {
+    display: flex;
+  }
+
+  :host([show-cr-non-inlined-hover-fill]) .container:not(.actions) {
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+  }
+
+  :host([show-cr-non-inlined-hover-fill]) #focus-indicator {
+    height: 44px;
+    top: 0px;
+  }
+
+  :host([show-cr-non-inlined-hover-fill]) .actions {
+    margin-inline-start: 30px;
+    padding-inline-start: 10px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    height: 34px;
+  }
+
 </style>
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>
-  <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
-  <div id="text-container" class$="[[simplifiedClass_]]">
+  <!-- TODO(niharm): Remove icon-text-action-container once
+       OmniboxActionsUISimplification is launched-->
+  <div class="icon-text-action-container" hidden$="[[!showCrNonInlinedHoverFill]]">
+    <div class="icon-text-container">
+      <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
+      <div id="text-container" class$="[[simplifiedClass_]]">
+        <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
+          <span id="prefix">[[tailSuggestPrefix_]]</span>
+          <span id="ellipsis">...&nbsp</span>
+        </span>
+        <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
+        <span id="separator" class="dim">[[separatorText_]]</span>
+        <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
+      </div>
+    </div>
+    <div class="actions container" aria-hidden="true">
+      <template is="dom-repeat" items="[[match.actions]]">
+        <div id="actions-focus-border">
+          <cr-realbox-action id="action" action="[[item]]"
+            action-index="[[actionIndex_(item)]]"
+            on-execute-action="onExecuteAction_" tabindex="1">
+          </cr-realbox-action>
+        </div>
+      </template>
+    </div>
+  </div>
+  <cr-realbox-icon id="icon" match="[[match]]" hidden="[[showCrNonInlinedHoverFill]]"></cr-realbox-icon>
+  <div id="text-container" class$="[[simplifiedClass_]]" hidden="[[showCrNonInlinedHoverFill]]">
     <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
       <span id="prefix">[[tailSuggestPrefix_]]</span>
       <!-- This is equivalent to AutocompleteMatch::kEllipsis which is

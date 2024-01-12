@@ -62,6 +62,17 @@
     gap: 8px;
     grid-template-columns: auto auto auto;
   }
+
+  #geolocationWarningDiv {
+    display: flex;
+    width: inherit;
+    margin-top: 5px;
+  }
+
+  #warningIcon {
+    margin-inline-end: 5px;
+    min-width: var(--iron-icon-width);
+  }
 </style>
 <div id="container">
   <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
@@ -104,4 +115,20 @@
       <div class="text">$i18n{autoColorMode}</div>
     </cr-button>
   </iron-selector>
+  <template is="dom-if" if="[[shouldShowGeolocationWarningText_]]" restamp>
+    <div id="geolocationWarningDiv">
+      <iron-icon id="warningIcon" icon="cr20:warning"></iron-icon>
+      <localized-link
+          on-link-clicked="openGeolocationDialog_"
+          localized-string="$i18n{geolocationWarningTextForWallpaper}">
+      </localized-link>
+    </div>
+  </template>
 </div>
+
+<template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
+  <geolocation-dialog id="geolocationDialog"
+      on-geolocation-enabled="onGeolocationEnabled_"
+      on-close="onGeolocationDialogClose_">
+  </geolocation-dialog>
+</template>

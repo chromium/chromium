@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">Դիտեք Chromebook-ի նոր թվային ամսագիրը ստեղծագործողների համար</translation>
 <translation id="1270369111467284986">Հնարավոր մուտքի էջ</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
+<translation id="1300115153046603471">APN-ը կանխադրված և <ph name="ATTACH" /> տեսակի է։</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> րոպե</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">դիտարկիչի գլխավոր էջ</translation>
 <translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
-<translation id="1539242642795599947">APN-ը կանխադրված և attach տեսակի է։</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
 <translation id="1561927818299383735">ֆոնային լուսավորության գույնը</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">Մուտքի պատկեր</translation>
 <translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
 <translation id="2652403576514495859">միացնել կամ անջատել թելադրումը</translation>
+<translation id="2656001153562991489">Բացառապես Chromebook Plus-ի համար</translation>
 <translation id="267442004702508783">թարմացնել</translation>
 <translation id="268270014981824665">խամրեցնել ստեղնաշարի լուսավորությունը</translation>
 <translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3862598938296403232">Նկարագրությունը պարտադիր է</translation>
+<translation id="386280020966669610">Ոգեշնչել</translation>
 <translation id="3865289341173661845">Տեղեկատվական բովանդակությունը հասանելի չէ։</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3866249974567520381">Նկարագրություն</translation>
@@ -441,10 +443,12 @@
 <translation id="4289849978083912975">Պատկերահանդես</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
+<translation id="4310735698903592804">Վերջին պաստառները ստեղծվել են Google AI-ի կողմից</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ստեղնը սեղմված է</translation>
 <translation id="4354430579665871434">ստեղն</translation>
 <translation id="4361257691546579041">APN-ը կանխադրված տեսակի է։</translation>
 <translation id="437294888293595148">Զրոյացնել բոլոր դյուրանցումները</translation>
+<translation id="4376423484621194274">Ձեր ադմինիստրատորը թույլ չի տալիս փակել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
 <translation id="4378551569595875038">Միացում…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -553,6 +557,7 @@
 <translation id="5088172560898466307">Սերվերի խնամորդի անուն</translation>
 <translation id="5089810972385038852">Նահանգ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Հոմանիշներ՝</translation>
 <translation id="5137451382116112100">Լիաէկրան</translation>
 <translation id="5142961317498132443">Նույնականացում</translation>
 <translation id="5145081769226915336">Ավտոմատ միացնե՞լ մուգ ռեժիմը</translation>
@@ -614,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Նորից սկանավորել</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Հնարավոր չէ անջատել կամ հեռացնել այս APN-ը։ Համոզվեք, որ միացված և կցված APN-ներն անջատված են կամ հեռացված։</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ստեղնը փորձարկվել է</translation>
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5649768706273821470">Լսել</translation>
@@ -645,6 +649,7 @@
 <translation id="5843706793424741864">Ֆարենհայտ</translation>
 <translation id="584953448295717128">Ավտոմատ հայտնաբերվել է APN։</translation>
 <translation id="5849570051105887917">Տան ծառայությունների մատակարարի կոդը</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Ցուցասրահի ալբոմ</translation>
 <translation id="5859969039821714932">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում առանց <ph name="KEY" /> ստեղնի։</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
@@ -660,12 +665,12 @@
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ձեր ֆայլը սկանավորվեց և պահվեց <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}one{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}other{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}}</translation>
 <translation id="5931523347251946569">Ֆայլը չի գտնվել</translation>
+<translation id="593880865674747800">Ստեղծեք պաստառներ այս ոճով</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
 <translation id="5946538341867151940">Դուք դեռ չեք միացել։ Եթե ձեր բջջային օպերատորը որոշակի APN է խորհուրդ տալիս, մուտքագրեք այդ APN-ի տվյալները՝ ընտրելով «+ Նոր APN»</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5984145644188835034">Կանխադրված պաստառ</translation>
-<translation id="6001235009374883388">APN-ը attach տեսակի է։</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
 <translation id="6019566113895157499">Ստեղնաշարային դյուրանցումներ</translation>
 <translation id="6034694447310538551">Միացնել տեղեկությունների ամենամսյա ավտոմատ զրոյացումը</translation>
@@ -683,6 +688,7 @@
 <translation id="6104112872696127344">Սկանավորումը չեղարկվել է</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
+<translation id="6108952804512516814">Ստեղծեք արհեստական բանականության օգնությամբ</translation>
 <translation id="6112878310391905610">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6113701710518389813">Վերև սլաք</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> ու ևս <ph name="NUMBER" /> ալբոմ</translation>
@@ -751,6 +757,7 @@
 <translation id="6526200165918397681">Համապատասխանեցնել պաստառին</translation>
 <translation id="6527081081771465939">Wi-Fi-ի անվտանգության անհայտ հաղորդակարգ</translation>
 <translation id="6535178685492749208">Դուք անցանց ռեժիմում եք։ Կարծիքը կուղարկվի ավելի ուշ։</translation>
+<translation id="6557784757915238407">APN-ը <ph name="ATTACH" /> տեսակի է։</translation>
 <translation id="65587193855025101">Պլանշետային</translation>
 <translation id="6560196641871357166">Գունեղ</translation>
 <translation id="6564646048574748301">Չհաջողվեց տպել – Տպիչն անհասանելի է</translation>
@@ -810,6 +817,7 @@
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ստեղնը</translation>
 <translation id="7068619307603204412">Նախապատրաստեք սարքը</translation>
+<translation id="7076851914315147928">Ընտրեք պաստառ</translation>
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
@@ -863,6 +871,7 @@
 <translation id="741244894080940828">փոխարկում</translation>
 <translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Հնարավոր չէ անջատել կամ հեռացնել այս APN-ը։ Համոզվեք, որ միացված <ph name="ATTACH" /> APN-ներն անջատված են կամ հեռացված։</translation>
 <translation id="7458970041932198923">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ ավատարները դիտելու և կարգավորելու համար։</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
 <translation id="7481312909269577407">Forward</translation>
@@ -914,9 +923,11 @@
 <translation id="7799817062559422778">Բաց ռեժիմ</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
+<translation id="7819831665603418705">Օգտագործեք ձևանմուշ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
 <translation id="7841134249932030522">Միացնել մուգ ռեժիմը</translation>
 <translation id="7846634333498149051">Ստեղնաշար</translation>
+<translation id="7850847810298646851">Պաստառը ստեղծվել է Google AI-ի կողմից</translation>
 <translation id="7856267634822906833">Bluetooth հպէկրան</translation>
 <translation id="7869143217755017858">Անջատել մուգ ռեժիմը</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -959,7 +970,6 @@
 <translation id="8151185429379586178">Ծրագրավորողի գործիքներ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />։</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Կցել</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>

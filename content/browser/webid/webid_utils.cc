@@ -81,12 +81,12 @@ void SetIdpSigninStatus(content::BrowserContext* context,
       origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
 
-absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
+std::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
     const char* endpoint_name,
     int http_response_code) {
   // Do not add error message for OK response status.
   if (http_response_code >= 200 && http_response_code <= 299)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (http_response_code < 0) {
     // In this case, the |response_code| represents a NET_ERROR, so we should
@@ -119,7 +119,7 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
     return false;
   }
 
-  const absl::optional<bool> idp_signin_status =
+  const std::optional<bool> idp_signin_status =
       permission_delegate->GetIdpSigninStatus(idp_origin);
   return !idp_signin_status.value_or(true);
 }
@@ -138,7 +138,7 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
   }
 
   // Record metrics on effect of IDP sign-in status API.
-  const absl::optional<bool> idp_signin_status =
+  const std::optional<bool> idp_signin_status =
       permission_delegate->GetIdpSigninStatus(idp_origin);
   metrics->RecordIdpSigninMatchStatus(idp_signin_status,
                                       fetch_status.parse_status);
@@ -413,7 +413,7 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     const GURL& provider_url,
     const url::Origin& embedder_origin,
     const url::Origin& requester_origin,
-    const absl::optional<std::string>& account_id,
+    const std::optional<std::string>& account_id,
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
   bool has_access = IsFedCmExemptIdpWithThirdPartyCookiesEnabled() &&

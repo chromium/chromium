@@ -44,7 +44,8 @@ void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
   }
 #endif
 
-  if (!IsNoStatePrefetch(web_contents()) && !IsSidePanel(web_contents())) {
+  if (!IsNoStatePrefetch(web_contents()) && !IsSidePanel(web_contents()) &&
+      !IsNonTabWebUI()) {
     tracker->AddObserver(
         std::make_unique<BackForwardCachePageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());

@@ -12,6 +12,8 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/toast/toast_overlay.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -31,11 +33,16 @@ using ::testing::_;
 
 namespace ash {
 
-namespace {
 class LoginScreenControllerTest : public AshTestBase {
  public:
   LoginScreenControllerTest() {
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
+  }
+
+  ToastOverlay* GetCurrentToast() {
+    aura::Window* root_window = Shell::GetRootWindowForNewWindows();
+    return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting(
+        root_window);
   }
 
  private:
@@ -231,5 +238,16 @@ TEST_F(LoginScreenControllerTest, SystemTrayFocus) {
   Shell::Get()->system_tray_notifier()->NotifyFocusOut(false);
 }
 
-}  // namespace
+TEST_F(LoginScreenControllerTest, KioskAppErrorToastIsDismissedOnDestroy) {
+  EXPECT_EQ(GetCurrentToast(), nullptr);
+  Shell::Get()->login_screen_controller()->ShowKioskAppError("Some error");
+
+  auto* toast = GetCurrentToast();
+  ASSERT_NE(toast, nullptr);
+  ASSERT_EQ(toast->GetText(), u"Some error");
+
+  Shell::Get()->login_screen_controller()->OnLockScreenDestroyed();
+  EXPECT_EQ(GetCurrentToast(), nullptr);
+}
+
 }  // namespace ash

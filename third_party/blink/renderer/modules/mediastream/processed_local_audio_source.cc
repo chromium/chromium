@@ -312,27 +312,55 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption)) {
-    // Optionally disable system voice isolation.
-    if (device().input.effects() &
-        media::AudioParameters::VOICE_ISOLATION_SUPPORTED) {
-      // Disable voice isolation on the device if browser-based echo
-      // cancellation is, since that otherwise breaks the AEC.
-      const bool browser_based_aec_active =
-          audio_processing_properties_.echo_cancellation_type ==
-          AudioProcessingProperties::EchoCancellationType::
-              kEchoCancellationAec3;
-      bool disable_system_voice_isolation = browser_based_aec_active;
+  if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption) &&
+      device().input.effects() &
+          media::AudioParameters::VOICE_ISOLATION_SUPPORTED) {
+    // Disable voice isolation on the device if browser-based echo
+    // cancellation is, since that otherwise breaks the AEC.
+    const bool browser_based_aec_active =
+        audio_processing_properties_.echo_cancellation_type ==
+        AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
+    const bool disable_system_voice_isolation_due_to_browser_aec =
+        browser_based_aec_active;
 
-      if (disable_system_voice_isolation) {
-        modified_device.input.set_effects(
-            modified_device.input.effects() |
-            media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION);
-        modified_device.input.set_effects(
-            modified_device.input.effects() &
-            ~media::AudioParameters::VOICE_ISOLATION);
-        device_is_modified = true;
-      }
+    if (disable_system_voice_isolation_due_to_browser_aec ||
+        audio_processing_properties_.voice_isolation ==
+            AudioProcessingProperties::VoiceIsolationType::
+                kVoiceIsolationDisabled) {
+      // Force voice isolation to be disabled.
+      modified_device.input.set_effects(
+          modified_device.input.effects() |
+          media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION);
+
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::VOICE_ISOLATION);
+    } else if (audio_processing_properties_.voice_isolation ==
+               AudioProcessingProperties::VoiceIsolationType::
+                   kVoiceIsolationEnabled) {
+      // Force voice isolation to be enabled.
+      modified_device.input.set_effects(
+          modified_device.input.effects() |
+          media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION);
+
+      modified_device.input.set_effects(
+          modified_device.input.effects() |
+          media::AudioParameters::VOICE_ISOLATION);
+    } else {
+      // Turn off voice isolation control.
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION);
+    }
+
+    if ((modified_device.input.effects() &
+         media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) !=
+            (device().input.effects() &
+             media::AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) ||
+        (modified_device.input.effects() &
+         media::AudioParameters::VOICE_ISOLATION) ||
+        (device().input.effects() & media::AudioParameters::VOICE_ISOLATION)) {
+      device_is_modified = true;
     }
   }
 #endif

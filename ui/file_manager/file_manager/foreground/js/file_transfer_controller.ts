@@ -6,22 +6,22 @@ import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
+import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str, strf} from '../../common/js/translations.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {FileErrorToDomError, visitURL} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {FileKey} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {FileKey} from '../../state/state.js';
 import {getFileData, getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
@@ -576,17 +576,17 @@ export class FileTransferController {
       console.warn(error);
     }
 
-    if (disallowedTransfers && disallowedTransfers.length != 0) {
+    if (disallowedTransfers && disallowedTransfers.length !== 0) {
       let toastText;
       if (pastePlan.isMove) {
-        if (disallowedTransfers.length == 1) {
+        if (disallowedTransfers.length === 1) {
           toastText = str('DLP_BLOCK_MOVE_TOAST');
         } else {
           toastText =
               strf('DLP_BLOCK_MOVE_TOAST_PLURAL', disallowedTransfers.length);
         }
       } else {
-        if (disallowedTransfers.length == 1) {
+        if (disallowedTransfers.length === 1) {
           toastText = str('DLP_BLOCK_COPY_TOAST');
         } else {
           toastText =
@@ -602,7 +602,7 @@ export class FileTransferController {
       });
       return 'dlp-blocked';
     }
-    if (sourceEntries.length == 0) {
+    if (sourceEntries.length === 0) {
       // This can happen when copied files were deleted before pasting
       // them. We execute the plan as-is, so as to share the post-copy
       // logic. This is basically same as getting empty by filtering
@@ -610,7 +610,7 @@ export class FileTransferController {
       return this.executePaste(pastePlan);
     }
     const confirmationType = pastePlan.getConfirmationType();
-    if (confirmationType == TransferConfirmationType.NONE) {
+    if (confirmationType === TransferConfirmationType.NONE) {
       return this.executePaste(pastePlan);
     }
     const messages = pastePlan.getConfirmationMessages(confirmationType);
@@ -1513,7 +1513,7 @@ export class FileTransferController {
         // The location is a fake entry that corresponds to special search.
         return DropEffectType.NONE;
       }
-      if (destinationLocationInfo.rootType == RootType.CROSTINI) {
+      if (destinationLocationInfo.rootType === RootType.CROSTINI) {
         // The location is a the fake entry for crostini.  Start container.
         return DropEffectType.NONE;
       }
@@ -1630,7 +1630,7 @@ export class FileTransferController {
    */
   private blinkSelection_() {
     const selection = this.selectionHandler_.selection;
-    if (!selection || selection.totalCount == 0) {
+    if (!selection || selection.totalCount === 0) {
       return;
     }
 
@@ -1712,7 +1712,7 @@ export class PastePlan {
     if (this.isMove) {
       if (source.isTeamDrive) {
         if (destination.isTeamDrive) {
-          if (source.teamDriveName == destination.teamDriveName) {
+          if (source.teamDriveName === destination.teamDriveName) {
             return TransferConfirmationType.NONE;
           } else {
             return TransferConfirmationType.MOVE_BETWEEN_SHARED_DRIVES;
@@ -1730,7 +1730,7 @@ export class PastePlan {
       }
       // Copying to Shared Drive.
       if (!(source.isTeamDrive &&
-            source.teamDriveName == destination.teamDriveName)) {
+            source.teamDriveName === destination.teamDriveName)) {
         // This is not a copy within the same Shared Drive.
         return TransferConfirmationType.COPY_FROM_OTHER_TO_SHARED_DRIVE;
       }
@@ -1742,7 +1742,7 @@ export class PastePlan {
    * Composes a confirmation message for the given type.
    */
   getConfirmationMessages(confirmationType: TransferConfirmationType) {
-    assert(this.sourceEntries.length != 0);
+    assert(this.sourceEntries.length !== 0);
     const sourceName = getTeamDriveName(this.sourceEntries[0]!);
     const destinationName = getTeamDriveName(this.destinationEntry);
     switch (confirmationType) {

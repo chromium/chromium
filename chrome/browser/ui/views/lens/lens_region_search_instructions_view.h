@@ -16,8 +16,10 @@ namespace lens {
 
 class LensRegionSearchInstructionsView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(LensRegionSearchInstructionsView,
+                  views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(LensRegionSearchInstructionsView);
   LensRegionSearchInstructionsView(views::View* anchor_view,
                                    base::OnceClosure close_callback,
                                    base::OnceClosure escape_callback);

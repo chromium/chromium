@@ -12,19 +12,23 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/permissions/embedded_permission_control_checker.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
 #include "url/origin.h"
 
+using blink::mojom::EmbeddedPermissionControlClient;
 using blink::mojom::EmbeddedPermissionControlResult;
 using blink::mojom::EmbeddedPermissionRequestDescriptorPtr;
 using blink::mojom::PermissionDescriptorPtr;
@@ -127,8 +131,8 @@ PermissionServiceImpl::PermissionServiceImpl(PermissionServiceContext* context,
 PermissionServiceImpl::~PermissionServiceImpl() {}
 
 void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
-    std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
-    RegisterPageEmbeddedPermissionControlCallback callback) {
+    std::vector<PermissionDescriptorPtr> permissions,
+    mojo::PendingRemote<EmbeddedPermissionControlClient> observer) {
   if (!base::FeatureList::IsEnabled(features::kPermissionElement)) {
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
@@ -136,14 +140,48 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     return;
   }
 
-  std::vector<PermissionStatus> statuses(permissions.size());
-  for (size_t i = 0; i < permissions.size(); ++i) {
-    statuses[i] = GetPermissionStatus(permissions[i]);
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(context_->render_frame_host());
+  CHECK(web_contents);
+  // TODO(crbug.com/1462930): Add more checks, such as permission policy and
+  // context check.
+  auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+
+  std::set<PermissionName> permission_names;
+  base::ranges::transform(
+      permissions, std::inserter(permission_names, permission_names.begin()),
+      [](const auto& p) { return p->name; });
+  if (permissions.size() != permission_names.size()) {
+    ReceivedBadMessage();
+    return;
   }
 
-  // TODO(crbug.com/1462930): Implement security measure to allow only 1 PEPC
-  // per page.
-  std::move(callback).Run(/*allowed=*/true, std::move(statuses));
+  checker->CheckPageEmbeddedPermission(
+      std::move(permission_names), std::move(observer),
+      base::BindOnce(
+          &PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered,
+          weak_factory_.GetWeakPtr(), std::move(permissions)));
+}
+
+void PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered(
+    std::vector<PermissionDescriptorPtr> permissions,
+    bool allow,
+    const mojo::Remote<EmbeddedPermissionControlClient>& client) {
+  if (!allow) {
+    client->OnEmbeddedPermissionControlRegistered(
+        /*allow=*/false,
+        /*statuses=*/std::nullopt);
+    return;
+  }
+
+  std::vector<PermissionStatus> statuses(permissions.size());
+  base::ranges::transform(permissions, statuses.begin(),
+                          [&](const auto& permission) {
+                            return this->GetPermissionStatus(permission);
+                          });
+  client->OnEmbeddedPermissionControlRegistered(/*allow=*/true,
+                                                std::move(statuses));
 }
 
 void PermissionServiceImpl::RequestPageEmbeddedPermission(

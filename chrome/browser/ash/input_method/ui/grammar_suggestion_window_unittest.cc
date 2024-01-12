@@ -35,7 +35,7 @@ class GrammarSuggestionWindowTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  raw_ptr<GrammarSuggestionWindow, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<GrammarSuggestionWindow, DanglingUntriaged>
       grammar_suggestion_window_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();

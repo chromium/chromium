@@ -49,7 +49,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     // Click "Add new rule".
     Elements.ElementsPanel.ElementsPanel.instance()
         .stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
-        .shadowRoot.querySelector('.plus')
+        .shadowRoot.querySelector('[aria-label="New Style Rule"]')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);
   }

@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">패키지할 디렉터리에 대한 절대 경로를 찾을 수 없습니다.</translation>
 <translation id="5160071981665899014">스크립트의 '<ph name="RELATIVE_PATH" />' JavaScript를 로드할 수 없습니다.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">창 모양은 지원되지 않습니다.</translation>
 <translation id="5456409301717116725">이 확장 프로그램은 키 파일 '<ph name="KEY_PATH" />'을(를) 포함합니다. 사용하지 않는 것이 좋습니다.</translation>
 <translation id="5486326529110362464">비공개 키 입력 값이 있어야 합니다.</translation>
 <translation id="5972529113578162692">이 시스템의 관리자가 <ph name="EXTENSION_NAME" />의 설치를 요구합니다. 이 확장 프로그램은 제거할 수 없습니다.</translation>

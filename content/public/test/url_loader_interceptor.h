@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_URL_LOADER_INTERCEPTOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,7 +24,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -119,12 +119,11 @@ class URLLoaderInterceptor {
   // Helper methods for use when intercepting.
   // Writes the given response body, header, and SSL Info to `client`.
   // If `url` is present, also computes the ParsedHeaders for the response.
-  static void WriteResponse(
-      base::StringPiece headers,
-      base::StringPiece body,
-      network::mojom::URLLoaderClient* client,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+  static void WriteResponse(base::StringPiece headers,
+                            base::StringPiece body,
+                            network::mojom::URLLoaderClient* client,
+                            std::optional<net::SSLInfo> ssl_info = std::nullopt,
+                            std::optional<GURL> url = std::nullopt);
 
   // Reads the given path, relative to the root source directory, and writes it
   // to |client|. For headers:
@@ -135,20 +134,18 @@ class URLLoaderInterceptor {
   //      guessed from the file extension
   // For SSL info, if |ssl_info| is specified, then it is added to the response.
   // If `url` is present, also computes the ParsedHeaders for the response.
-  static void WriteResponse(
-      const std::string& relative_path,
-      network::mojom::URLLoaderClient* client,
-      const std::string* headers = nullptr,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+  static void WriteResponse(const std::string& relative_path,
+                            network::mojom::URLLoaderClient* client,
+                            const std::string* headers = nullptr,
+                            std::optional<net::SSLInfo> ssl_info = std::nullopt,
+                            std::optional<GURL> url = std::nullopt);
 
   // Like above, but uses an absolute file path.
-  static void WriteResponse(
-      const base::FilePath& file_path,
-      network::mojom::URLLoaderClient* client,
-      const std::string* headers = nullptr,
-      absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
-      absl::optional<GURL> url = absl::nullopt);
+  static void WriteResponse(const base::FilePath& file_path,
+                            network::mojom::URLLoaderClient* client,
+                            const std::string* headers = nullptr,
+                            std::optional<net::SSLInfo> ssl_info = std::nullopt,
+                            std::optional<GURL> url = std::nullopt);
 
   // Returns an interceptor that (as long as it says alive) will intercept
   // requests to |url| and fail them using the provided |error|.

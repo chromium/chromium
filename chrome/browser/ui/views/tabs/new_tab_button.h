@@ -28,9 +28,9 @@ class InkDropContainerView;
 ///////////////////////////////////////////////////////////////////////////////
 class NewTabButton : public views::ImageButton,
                      public views::MaskedTargeterDelegate {
- public:
-  METADATA_HEADER(NewTabButton);
+  METADATA_HEADER(NewTabButton, views::ImageButton)
 
+ public:
   static const gfx::Size kButtonSize;
   static const int kIconSize;
 

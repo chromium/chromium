@@ -187,12 +187,12 @@ class NavigationHandleSXGAttributeObserver : public WebContentsObserver {
         navigation_handle->HasPrefetchedAlternativeSubresourceSignedExchange();
   }
 
-  const absl::optional<bool>& had_prefetched_alt_sxg() const {
+  const std::optional<bool>& had_prefetched_alt_sxg() const {
     return had_prefetched_alt_sxg_;
   }
 
  private:
-  absl::optional<bool> had_prefetched_alt_sxg_;
+  std::optional<bool> had_prefetched_alt_sxg_;
 };
 
 }  // namespace

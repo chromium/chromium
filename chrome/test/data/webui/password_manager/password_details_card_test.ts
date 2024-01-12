@@ -462,4 +462,33 @@ suite('PasswordDetailsCardTest', function() {
         card.shadowRoot!.querySelector('share-password-flow');
     assertFalse(!!sharePasswordFlow);
   });
+
+  test(
+      'clicking save password in account opens move password dialog',
+      async function() {
+        loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
+        passwordManager.data.isOptedInAccountStorage = true;
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: true,
+          isSyncingPasswords: false,
+        };
+
+        const card = await createCardElement();
+        card.isUsingAccountStore = true;
+        await flushTasks();
+
+        const movePasswordLabel = card!.shadowRoot!.querySelector<HTMLElement>(
+            '.move-password-container div');
+        assertTrue(!!movePasswordLabel);
+        assertTrue(isVisible(movePasswordLabel));
+
+        movePasswordLabel!.click();
+        await flushTasks();
+
+        const moveDialog =
+            card.shadowRoot!.querySelector('move-single-password-dialog');
+        assertTrue(!!moveDialog);
+        const dialog = moveDialog!.shadowRoot!.querySelector('#dialog');
+        assertTrue(!!dialog);
+      });
 });

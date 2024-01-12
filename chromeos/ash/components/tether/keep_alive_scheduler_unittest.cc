@@ -57,7 +57,7 @@ class FakeKeepAliveOperation : public KeepAliveOperation {
   multidevice::RemoteDeviceRef remote_device() { return remote_device_; }
 
  private:
-  raw_ptr<OperationDeletedHandler, ExperimentalAsh> handler_;
+  raw_ptr<OperationDeletedHandler> handler_;
   const multidevice::RemoteDeviceRef remote_device_;
 };
 
@@ -90,7 +90,7 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
  private:
   uint32_t num_created_;
   uint32_t num_deleted_;
-  raw_ptr<FakeKeepAliveOperation, ExperimentalAsh> last_created_;
+  raw_ptr<FakeKeepAliveOperation> last_created_;
 };
 
 }  // namespace
@@ -168,7 +168,7 @@ class KeepAliveSchedulerTest : public testing::Test {
   // TODO(hansberry): Use a fake for this when a real mapping scheme is created.
   std::unique_ptr<DeviceIdTetherNetworkGuidMap>
       device_id_tether_network_guid_map_;
-  raw_ptr<base::MockRepeatingTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockRepeatingTimer> mock_timer_;
 
   std::unique_ptr<FakeKeepAliveOperationFactory> fake_operation_factory_;
 

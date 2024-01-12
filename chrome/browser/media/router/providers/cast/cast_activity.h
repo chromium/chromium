@@ -107,7 +107,9 @@ class CastActivity {
       blink::mojom::PresentationConnectionCloseReason close_reason);
   virtual void TerminatePresentationConnections();
 
-  virtual void CreateMediaController(
+  // Binds the given |media_controller| and |observer| to the activity to
+  // receive media commands and notify observers.
+  virtual void BindMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) = 0;
 

@@ -201,6 +201,9 @@ constexpr uint8_t kNetscapeLostPasswordURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
 constexpr uint8_t kNetscapeRenewalTimeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
                                                0xf8, 0x42, 0x01, 0x0f};
 
+constexpr uint8_t kNetscapeServerGatedCrypto[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                  0xf8, 0x42, 0x04, 0x01};
+
 // Microsoft OIDs. Do we still need all these?
 //
 // 1.3.6.1.4.1.311.20.2
@@ -489,7 +492,7 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(bssl::kEmailProtection), IDS_CERT_EKU_EMAIL_PROTECTION},
     {bssl::der::Input(bssl::kTimeStamping), IDS_CERT_EKU_TIME_STAMPING},
     {bssl::der::Input(bssl::kOCSPSigning), IDS_CERT_EKU_OCSP_SIGNING},
-    {bssl::der::Input(bssl::kNetscapeServerGatedCrypto),
+    {bssl::der::Input(kNetscapeServerGatedCrypto),
      IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP},
 
     // Microsoft oids:

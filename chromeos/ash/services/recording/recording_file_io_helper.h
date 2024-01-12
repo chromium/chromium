@@ -71,7 +71,7 @@ class RecordingFileIoHelper {
   // The `RecordingEncoder` that owns this helper (either directly or
   // indirectly) which acts as a delegate of this class to notify with any IO
   // errors.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Once this value becomes <= 0, we trigger a remaining disk space poll.
   // Initialized to 0, so that we poll the disk space on the very first write

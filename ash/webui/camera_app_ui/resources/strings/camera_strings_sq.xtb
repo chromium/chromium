@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Bashkohu në "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3354465018370944241">Cilësimet e fotografive</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Raporti i pamjes së fotografisë</translation>
 <translation id="5057360777601936059">Kamera jote nuk ofrohet aktualisht.
         Kontrollo nëse kamera është lidhur si duhet.</translation>
+<translation id="5157591164390831335">URL-ja u zbulua.</translation>
 <translation id="5163387177077603948">Po zhvendoset djathtas</translation>
 <translation id="5235304959032763950">16 me 9</translation>
 <translation id="5266635337630551423">Këndi lart majtas i dokumentit</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Faleminderit për komentet e dhëna për aplikacionin e "Kamerës".
 
 Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngjit një fotografi ose video shembull dhe përshkruaj problemin. (Për shembull, fotografia është shumë e errët ose subjekti nuk është në fokus.)</translation>
+<translation id="6519884562954018934">Bashkohu në <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6617916774429601017">Shfaq të gjitha rezolucionet</translation>
 <translation id="6631515515009660915">Çaktivizo pasqyrën</translation>
@@ -158,6 +161,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8732462232047530626">Shiko paraprakisht metadatat</translation>
+<translation id="874854738381978209">U zbulua një rrjet Wi-Fi.</translation>
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>
 <translation id="8828441885228359828">Rifillo regjistrimin</translation>
 <translation id="8870695351537079478">Regjistrimi nuk mund të fillojë</translation>

@@ -67,10 +67,10 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController,
   // SetAdapterState() is called before the adapter is available.
   std::optional<bool> pending_adapter_enabled_state_;
 
-  raw_ptr<PrefService, ExperimentalAsh> primary_profile_prefs_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> primary_profile_prefs_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

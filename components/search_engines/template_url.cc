@@ -1502,19 +1502,35 @@ TemplateURL::TemplateURL(const TemplateURLData& data,
 TemplateURL::~TemplateURL() {
 }
 
-bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
+bool TemplateURL::IsBetterThanConflictingEngine(
     const TemplateURL* other) const {
   DCHECK(other);
+
+  auto is_ssp = [](const TemplateURL* turl) {
+    return turl->created_by_policy() ==
+           TemplateURLData::CreatedByPolicy::kSiteSearch;
+  };
+  auto no_policy = [](const TemplateURL* turl) {
+    return turl->created_by_policy() ==
+           TemplateURLData::CreatedByPolicy::kNoPolicy;
+  };
 
   // Site search engines set by enterprise policy have different priority over
   // existing search engines because we don't want to break current workflows
   // for power users.
-  if (this->created_by_policy() ==
-      TemplateURLData::CreatedByPolicy::kSiteSearch) {
+  if (is_ssp(this) && no_policy(other)) {
     return IsEnterpriseSideSearchEngineBetterThanEngine(this, other);
-  } else if (other->created_by_policy() ==
-             TemplateURLData::CreatedByPolicy::kSiteSearch) {
-    return IsEnterpriseSideSearchEngineBetterThanEngine(other, this);
+  } else if (no_policy(this) && is_ssp(other)) {
+    return !IsEnterpriseSideSearchEngineBetterThanEngine(other, this);
+  } else if (is_ssp(this) && is_ssp(other)) {
+    // If both engines are created by the SiteSearchSettings policy, prefer the
+    // one that is featured. Otherwise, fallback to the comparison based on
+    // the signals below.
+    if (this->featured_by_policy() && !other->featured_by_policy()) {
+      return true;
+    } else if (!this->featured_by_policy() && other->featured_by_policy()) {
+      return false;
+    }
   }
 
   auto get_sort_key = [](const TemplateURL* engine) {

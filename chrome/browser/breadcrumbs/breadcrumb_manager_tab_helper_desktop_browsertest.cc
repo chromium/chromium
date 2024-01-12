@@ -1,10 +1,9 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
-
 #include "base/containers/circular_deque.h"
+#include "build/build_config.h"
+#include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -58,7 +57,9 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests download navigation.
-IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
+// TODO(crbug.com/1516817): Re-enable this test
+IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest,
+                       DISABLED_Download) {
   const size_t num_startup_breadcrumbs = GetEvents().size();
 
   const GURL url =
@@ -115,8 +116,14 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
 };
 
 // Broken authentication.
+// Fails on Linux and Windows. http://crbug.com/1516817
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_BrokenAuthentication DISABLED_BrokenAuthentication
+#else
+#define MAYBE_BrokenAuthentication BrokenAuthentication
+#endif
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperSecurityStateBrowserTest,
-                       BrokenAuthentication) {
+                       MAYBE_BrokenAuthentication) {
   SetUpMockCertVerifierForHttpsServer(net::CERT_STATUS_DATE_INVALID,
                                       net::ERR_CERT_DATE_INVALID);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

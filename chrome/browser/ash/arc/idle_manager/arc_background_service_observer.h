@@ -40,7 +40,7 @@ class ArcBackgroundServiceObserver : public ash::ThrottleObserver,
       const mojom::SystemAppRunningState& state) override;
 
  private:
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_ = nullptr;
+  raw_ptr<content::BrowserContext> context_ = nullptr;
 
   base::ScopedObservation<ArcSystemStateBridge, ArcSystemStateBridge::Observer>
       observation_{this};

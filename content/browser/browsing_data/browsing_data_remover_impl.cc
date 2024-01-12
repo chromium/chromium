@@ -5,6 +5,7 @@
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -46,7 +47,6 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -120,7 +120,7 @@ BrowsingDataRemoverImpl::BrowsingDataRemoverImpl(
     : browser_context_(browser_context),
       remove_mask_(0xffffffffffffffffull),
       origin_type_mask_(0xffffffffffffffffull),
-      storage_partition_config_(absl::nullopt),
+      storage_partition_config_(std::nullopt),
       is_removing_(false) {
   DCHECK(browser_context_);
 }
@@ -220,7 +220,7 @@ void BrowsingDataRemoverImpl::RemoveWithFilterAndReply(
 }
 
 void BrowsingDataRemoverImpl::RemoveStorageBucketsAndReply(
-    const absl::optional<StoragePartitionConfig> storage_partition_config,
+    const std::optional<StoragePartitionConfig> storage_partition_config,
     const blink::StorageKey& storage_key,
     const std::set<std::string>& storage_buckets,
     base::OnceClosure callback) {
@@ -706,7 +706,7 @@ uint64_t BrowsingDataRemoverImpl::GetLastUsedOriginTypeMaskForTesting() {
   return origin_type_mask_;
 }
 
-absl::optional<StoragePartitionConfig>
+std::optional<StoragePartitionConfig>
 BrowsingDataRemoverImpl::GetLastUsedStoragePartitionConfigForTesting() {
   return storage_partition_config_;
 }
@@ -745,7 +745,7 @@ bool BrowsingDataRemoverImpl::RemovalTask::IsSameDeletion(
 }
 
 StoragePartition* BrowsingDataRemoverImpl::GetStoragePartition(
-    absl::optional<StoragePartitionConfig> storage_partition_config) {
+    std::optional<StoragePartitionConfig> storage_partition_config) {
   DCHECK(!browser_context_->ShutdownStarted());
   if (!storage_partitions_for_testing_.empty()) {
     StoragePartition* storage_partition =
@@ -850,7 +850,7 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type,
   // If any cookie deletions have been deferred do them now since all other
   // tasks are completed.
   if (!domains_for_deferred_cookie_deletion_.empty()) {
-    absl::optional<StoragePartitionConfig> storage_partition_config =
+    std::optional<StoragePartitionConfig> storage_partition_config =
         task_queue_.front().filter_builder->GetStoragePartitionConfig();
 
     DCHECK(remove_mask_ & DATA_TYPE_COOKIES);

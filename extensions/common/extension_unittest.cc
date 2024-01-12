@@ -5,6 +5,8 @@
 #include "extensions/common/extension.h"
 
 #include <optional>
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,7 +32,7 @@ testing::AssertionResult RunManifestVersionSuccess(
     base::Value::Dict manifest,
     Manifest::Type expected_type,
     int expected_manifest_version,
-    base::StringPiece expected_warning = "",
+    std::string_view expected_warning = "",
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS,
     ManifestLocation manifest_location = ManifestLocation::kInternal) {
   std::string error;

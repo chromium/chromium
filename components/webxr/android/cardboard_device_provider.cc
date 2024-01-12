@@ -29,7 +29,8 @@ CardboardDeviceProvider::CardboardDeviceProvider(
 CardboardDeviceProvider::~CardboardDeviceProvider() = default;
 
 void CardboardDeviceProvider::Initialize(
-    device::VRDeviceProviderClient* client) {
+    device::VRDeviceProviderClient* client,
+    content::WebContents* initializing_web_contents) {
   CHECK(!initialized_);
   DVLOG(2) << __func__ << ": Cardboard is supported, creating device";
 

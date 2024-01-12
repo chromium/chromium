@@ -36,7 +36,7 @@ class AppListModelBuilder {
     ~ScopedAppPositionInitCallbackForTest();
 
    private:
-    const raw_ptr<AppListModelBuilder, ExperimentalAsh> builder_;
+    const raw_ptr<AppListModelBuilder> builder_;
     AppPositionInitCallback callback_;
   };
 
@@ -82,23 +82,20 @@ class AppListModelBuilder {
 
  private:
   // Unowned pointers to the service that owns this and associated profile.
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh> service_ = nullptr;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService> service_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Unowned pointer to an app list model updater.
-  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
-      model_updater_ = nullptr;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged> model_updater_ = nullptr;
 
   // Unowned pointer to the app list controller.
-  raw_ptr<AppListControllerDelegate, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<AppListControllerDelegate, DanglingUntriaged> controller_;
 
   // Global constant defined for each item type.
   const char* item_type_;
 
   // The callback to initialize an app's position in tests.
-  raw_ptr<AppPositionInitCallback, ExperimentalAsh> position_setter_for_test_ =
-      nullptr;
+  raw_ptr<AppPositionInitCallback> position_setter_for_test_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_LIST_MODEL_BUILDER_H_

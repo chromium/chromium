@@ -146,7 +146,9 @@ _CONFIG = [
             'base::WeakPtrFactory',
             'base::WrapRefCounted',
             'base::WritableSharedMemoryMapping',
+            'base::as_byte_span',
             'base::as_bytes',
+            'base::as_chars',
             'base::bit_cast',
             'base::expected',
             'base::make_span',
@@ -181,6 +183,7 @@ _CONFIG = [
 
             # //base/functional/callback_helpers.h.
             'base::DoNothing',
+            'base::IgnoreArgs',
             'base::SplitOnceCallback',
 
             # //base/functional/callback.h is allowed, but you need to use
@@ -272,10 +275,6 @@ _CONFIG = [
 
             # //base/strings/strcat.h.
             'base::StrCat',
-
-            # //base/template_util.h.
-            'base::void_t',
-            'base::remove_cvref_t',
 
             # Debugging helpers from //base/debug are allowed everywhere.
             'base::debug::.+',

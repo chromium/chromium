@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -57,7 +58,6 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -167,7 +167,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     // Override with the default if a non-default coordinator is specified when
     // the feature is disabled.
-    updated_group.aggregation_coordinator_origin = absl::nullopt;
+    updated_group.aggregation_coordinator_origin = std::nullopt;
   }
 
   if (updated_group.aggregation_coordinator_origin &&
@@ -234,7 +234,7 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   // obtained from the closest ancestor that has valid fenced frame properties.
   // This is because both top-level ads and ad components may have ad auction
   // data.
-  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+  const std::optional<FencedFrameProperties>& fenced_frame_properties =
       GetFrame()->frame_tree_node()->GetFencedFrameProperties(
           FencedFramePropertiesNodeSource::kClosestAncestor);
 
@@ -352,7 +352,7 @@ void AdAuctionServiceImpl::RunAdAuction(
       AdAuctionResultMetrics::GetOrCreateForPage(render_frame_host().GetPage());
   if (!auction_result_metrics->ShouldRunAuction()) {
     std::move(callback).Run(/*aborted_by_script=*/false,
-                            /*config=*/absl::nullopt);
+                            /*config=*/std::nullopt);
     return;
   }
 
@@ -380,7 +380,7 @@ void AdAuctionServiceImpl::RunAdAuction(
   // reached limit, stop the auction.
   if (!urn_uuid.has_value()) {
     std::move(callback).Run(/*aborted_by_script=*/false,
-                            /*config=*/absl::nullopt);
+                            /*config=*/std::nullopt);
     return;
   }
 
@@ -423,10 +423,10 @@ class FencedFrameURLMappingObserver
  public:
   // Retrieves the URL that `urn_url` is mapped to, if any. If `send_reports` is
   // true, sends the reports associated with `urn_url`, if there are any.
-  static absl::optional<GURL> GetURL(RenderFrameHostImpl& render_frame_host,
-                                     const GURL& urn_url,
-                                     bool send_reports) {
-    absl::optional<GURL> mapped_url;
+  static std::optional<GURL> GetURL(RenderFrameHostImpl& render_frame_host,
+                                    const GURL& urn_url,
+                                    bool send_reports) {
+    std::optional<GURL> mapped_url;
     FencedFrameURLMappingObserver obs(&mapped_url, send_reports);
     content::FencedFrameURLMapping& mapping =
         render_frame_host.GetPage().fenced_frame_urls_map();
@@ -440,14 +440,14 @@ class FencedFrameURLMappingObserver
   }
 
  private:
-  FencedFrameURLMappingObserver(absl::optional<GURL>* mapped_url,
+  FencedFrameURLMappingObserver(std::optional<GURL>* mapped_url,
                                 bool send_reports)
       : mapped_url_(mapped_url), send_reports_(send_reports) {}
 
   ~FencedFrameURLMappingObserver() override = default;
 
   void OnFencedFrameURLMappingComplete(
-      const absl::optional<FencedFrameProperties>& properties) override {
+      const std::optional<FencedFrameProperties>& properties) override {
     if (properties) {
       if (properties->mapped_url()) {
         *mapped_url_ = properties->mapped_url()->GetValueIgnoringVisibility();
@@ -460,7 +460,7 @@ class FencedFrameURLMappingObserver
   }
 
   bool called_ = false;
-  raw_ptr<absl::optional<GURL>> mapped_url_;
+  raw_ptr<std::optional<GURL>> mapped_url_;
   bool send_reports_;
 };
 
@@ -510,7 +510,7 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
 
 void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
-    const absl::optional<url::Origin>& coordinator,
+    const std::optional<url::Origin>& coordinator,
     GetInterestGroupAdAuctionDataCallback callback) {
   if (seller.scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis("Invalid Seller");
@@ -544,13 +544,13 @@ void AdAuctionServiceImpl::CreateAdRequest(
     blink::mojom::AdRequestConfigPtr config,
     CreateAdRequestCallback callback) {
   if (!IsAdRequestValid(*config)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   // TODO(https://crbug.com/1249186): Actually request Ads and return a guid.
   // For now just act like it failed.
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void AdAuctionServiceImpl::FinalizeAd(const std::string& ads_guid,
@@ -563,7 +563,7 @@ void AdAuctionServiceImpl::FinalizeAd(const std::string& ads_guid,
 
   // TODO(https://crbug.com/1249186): Actually finalize Ad and return an URL.
   // For now just act like it failed.
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 network::mojom::URLLoaderFactory*
@@ -597,7 +597,7 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         render_frame_host().GetSiteInstance()->GetBrowserContext(),
         &render_frame_host(), render_frame_host().GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-        url::Origin(), /*navigation_id=*/absl::nullopt,
+        url::Origin(), /*navigation_id=*/std::nullopt,
         ukm::SourceIdObj::FromInt64(render_frame_host().GetPageUkmSourceId()),
         &factory_receiver, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
@@ -648,10 +648,10 @@ AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();
 }
 
-absl::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
+std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
   if (!base::FeatureList::IsEnabled(
           features::kFledgeFacilitatedTestingSignalsHeaders)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CookieDeprecationLabelManager* cdlm =
@@ -661,7 +661,7 @@ absl::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
   if (cdlm) {
     return cdlm->GetValue();
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -737,9 +737,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     const base::WeakPtr<PageImpl> page_impl,
     AuctionRunner* auction,
     bool aborted_by_script,
-    absl::optional<blink::InterestGroupKey> winning_group_key,
-    absl::optional<blink::AdSize> requested_ad_size,
-    absl::optional<blink::AdDescriptor> ad_descriptor,
+    std::optional<blink::InterestGroupKey> winning_group_key,
+    std::optional<blink::AdSize> requested_ad_size,
+    std::optional<blink::AdDescriptor> ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::vector<std::string> errors,
     std::unique_ptr<InterestGroupAuctionReporter> reporter) {
@@ -765,7 +765,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!ad_descriptor) {
     DCHECK(!reporter);
 
-    std::move(callback).Run(aborted_by_script, /*config=*/absl::nullopt);
+    std::move(callback).Run(aborted_by_script, /*config=*/std::nullopt);
     if (auction_result_metrics) {
       // `auction_result_metrics` can be null since PageUserData like
       // AdAuctionResultMetrics isn't guaranteed to be destroyed after document
@@ -819,7 +819,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       auction_result_metrics->ReportAuctionResult(
           AdAuctionResultMetrics::AuctionResult::kFailed);
     }
-    std::move(callback).Run(aborted_by_script, /*config=*/absl::nullopt);
+    std::move(callback).Run(aborted_by_script, /*config=*/std::nullopt);
     return;
   }
 
@@ -923,7 +923,7 @@ void AdAuctionServiceImpl::OnGotAuctionData(
 
   state.data = std::move(data);
 
-  absl::optional<url::Origin> coordinator = state.coordinator;
+  std::optional<url::Origin> coordinator = state.coordinator;
   scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
       GetRefCountedTrustedURLLoaderFactory();
   network::WrapperSharedURLLoaderFactory* loader_ptr = loader.get();
@@ -942,6 +942,8 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
     std::move(state.callback).Run({}, {}, maybe_key.error());
     return;
   }
+  const bool use_new_format =
+      base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType);
 
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
       maybe_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
@@ -952,13 +954,25 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
           std::string(state.data.request.begin(), state.data.request.end()),
           maybe_key->key, maybe_key_config.value(),
-          kBiddingAndAuctionEncryptionRequestMediaType.Get());
+          use_new_format
+              ? kBiddingAndAuctionEncryptionRequestMediaType
+              : quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel);
   if (!maybe_request.ok()) {
     std::move(state.callback).Run({}, {}, "Could not create request");
     return;
   }
 
   std::string data = maybe_request->EncapsulateAndSerialize();
+
+  // Preconnect to seller since we know JS will send a request there.
+  render_frame_host()
+      .GetStoragePartition()
+      ->GetNetworkContext()
+      ->PreconnectSockets(
+          /*num_streams=*/1, state.seller.GetURL(), /*allow_credentials=*/true,
+          render_frame_host()
+              .GetIsolationInfoForSubresources()
+              .network_anonymization_key());
 
   AdAuctionPageData* ad_auction_page_data =
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(
@@ -973,7 +987,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   ad_auction_page_data->GetDecoderFor(state.seller)->GetService();
 
   size_t start_offset = 0;
-  if (base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)) {
+  if (use_new_format) {
     // For the modified request format we need to prepend a version number byte
     // to the request.
     start_offset = 1;

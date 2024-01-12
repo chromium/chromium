@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugisisk med tastaturet USA-Internasjonal</translation>
 <translation id="1629521517399325891">Brukersertifikatet er ikke tilgjengelig for nettverksautentisering.</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
-<translation id="1646019627374511909">Gjør <ph name="NUMBER_OF_ITEMS" /> filer tilgjengelige uten nett</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
 <translation id="1661207570040737402">Du har brukt all lagringsplassen din på den delte disken i Google Workspace.</translation>
 <translation id="1661867754829461514">Personlig kode mangler</translation>
@@ -309,7 +308,6 @@
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> feil.</translation>
 <translation id="3509680540198371098">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="3511705761158917664">Forbereder synkronisering av <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
@@ -719,7 +717,6 @@
 <translation id="6503285896705205014">Kopiering av <ph name="COUNT" /> filer er blokkert på grunn av en administratorregel</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">La andre brukere av denne enheten bruke dette nettverket</translation>
-<translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" /> …</translation>
 <translation id="6549689063733911810">Siste</translation>
 <translation id="6558280019477628686">Det oppsto en feil. Enkelte elementer ble muligens ikke slettet.</translation>
 <translation id="656398493051028875">Sletter «<ph name="FILENAME" />» ...</translation>
@@ -853,7 +850,6 @@
 <translation id="7553492409867692754">Gi Linux-apper tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du er for øyeblikket uten nett. Filsynkroniseringen gjenopptas når du er koblet til internett</translation>
 <translation id="7589661784326793847">Vent et øyeblikk</translation>
-<translation id="7592775719802218421">Gjør <ph name="FILE_NAME" /> tilgjengelig uten nett</translation>
 <translation id="7600126690270271294">Serbisk</translation>
 <translation id="7603724359189955920">Rutenett</translation>
 <translation id="7627790789328695202">Beklager, <ph name="FILE_NAME" /> finnes allerede. Gi den et nytt navn og prøv igjen.</translation>
@@ -937,6 +933,7 @@
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8147028810663464959">Tegnbredden er Full</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 feil.}other{# feil.}}</translation>
 <translation id="8154842056504218462">Valgte alle oppføringene.</translation>
 <translation id="8157684860301034423">Kunne ikke hente appinfo.</translation>
 <translation id="8175731104491895765">Fransk (Belgia)</translation>
@@ -970,6 +967,7 @@
 <translation id="83651606385705612">Gi <ph name="VM_NAME" /> tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8372852072747894550">Gresk</translation>
+<translation id="8377269993083688872">E-postmaler</translation>
 <translation id="8386903983509584791">Skanningen er fullført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ut.</translation>
 <translation id="8395901698320285466">Dimensjoner</translation>
@@ -1008,7 +1006,6 @@
 <translation id="8569764466147087991">Velg en fil du vil åpne</translation>
 <translation id="8577897833047451336">Kroatisk</translation>
 <translation id="8578308463707544055">Indonesisk</translation>
-<translation id="8579285237314169903">Synkroniserer <ph name="NUMBER_OF_FILES" /> elementer …</translation>
 <translation id="8600173386174225982">Fillisten vises nå i miniatyrbildevisning.</translation>
 <translation id="8601932370724196034">Crostini-bildefil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
@@ -1029,6 +1026,7 @@
 <translation id="8787254343425541995">Gi tillatelse til proxy-tjenere for delte nettverk</translation>
 <translation id="8790981080411996443">Person som vanner blomster</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advarsel.}other{# advarsler.}}</translation>
 <translation id="8808686172382650546">Katt</translation>
 <translation id="8810671769985673465">Kunne ikke opprette ZIP-filen – elementet finnes allerede: «<ph name="FILE_NAME" />»</translation>
 <translation id="8813284582615685103">Spansk (Spania)</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Filnavnet «<ph name="FILE_NAME" />» finnes allerede. Velg et annet navn.</translation>
 <translation id="9046895021617826162">Tilkoblingen mislyktes</translation>
 <translation id="9065512565307033593">Hvis du ikke verifiserer SIM-kortet, blir nettverkstilgangen din slått av.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advarsel.}other{<ph name="COUNT" /> advarsler.}}</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9099674669267916096">Antall sider</translation>

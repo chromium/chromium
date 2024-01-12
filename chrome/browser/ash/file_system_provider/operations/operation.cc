@@ -22,8 +22,7 @@ Operation::Operation(RequestDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info)
     : file_system_info_(file_system_info), request_dispatcher_(dispatcher) {}
 
-Operation::~Operation() {
-}
+Operation::~Operation() = default;
 
 bool Operation::SendEvent(int request_id,
                           extensions::events::HistogramValue histogram_value,

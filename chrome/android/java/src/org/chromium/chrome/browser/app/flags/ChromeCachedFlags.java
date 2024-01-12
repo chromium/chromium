@@ -116,7 +116,6 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO,
                         StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
                         StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT,
-                        StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE,
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
@@ -127,8 +126,7 @@ public class ChromeCachedFlags {
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
-                        BackPressManager.TAB_HISTORY_RECOVER,
-                        BackPressManager.START_UP_MOVE_TO_BACK);
+                        BackPressManager.TAB_HISTORY_RECOVER);
 
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);

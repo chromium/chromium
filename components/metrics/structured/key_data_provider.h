@@ -62,7 +62,7 @@ class KeyDataProvider {
   // TODO(b/290096302): Refactor event sequence populator so there is no
   // dependency on concepts such as device/profile in //components.
   virtual std::optional<uint64_t> GetSecondaryId(
-      const std::string& project_name) = 0;
+      const std::string& project_name);
 
   // Retrieves the key data to be used for |project_name|. Returns nullptr if
   // the KeyData is not available for given |project_name|.

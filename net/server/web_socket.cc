@@ -73,9 +73,8 @@ void WebSocket::Accept(const HttpServerRequestInfo& request,
         traffic_annotation);
     return;
   }
-  std::string encoded_hash;
-  base::Base64Encode(base::SHA1HashString(key + websockets::kWebSocketGuid),
-                     &encoded_hash);
+  std::string encoded_hash = base::Base64Encode(
+      base::SHA1HashString(key + websockets::kWebSocketGuid));
 
   std::vector<WebSocketExtension> response_extensions;
   auto i = request.headers.find("sec-websocket-extensions");

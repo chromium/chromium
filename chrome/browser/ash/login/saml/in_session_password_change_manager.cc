@@ -34,7 +34,7 @@ using PasswordSource = InSessionPasswordChangeManager::PasswordSource;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This must be kept in sync with
-// SamlInSessionPasswordChangeEvent in tools/metrics/histogram/enums.xml
+// SamlInSessionPasswordChangeEvent in tools/metrics/histograms/enums.xml
 enum class InSessionPasswordChangeEvent {
   kManagerCreated = 0,
   kNotified = 1,

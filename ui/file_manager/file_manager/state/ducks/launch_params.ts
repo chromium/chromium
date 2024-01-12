@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LaunchParams, State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
+import type {LaunchParams, State} from '../../state/state.js';
 
 const slice = new Slice<State, State['launchParams']>('launchParams');
 export {slice as launchParamsSlice};

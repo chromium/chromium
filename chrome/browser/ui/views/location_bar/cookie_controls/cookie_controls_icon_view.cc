@@ -362,6 +362,6 @@ const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}
 
-BEGIN_METADATA(CookieControlsIconView, PageActionIconView)
+BEGIN_METADATA(CookieControlsIconView)
 ADD_READONLY_PROPERTY_METADATA(bool, AssociatedBubble)
 END_METADATA

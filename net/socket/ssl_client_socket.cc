@@ -37,12 +37,11 @@ base::Value::Dict NetLogClearCachedClientCertParams(
     const net::HostPortPair& host,
     const scoped_refptr<net::X509Certificate>& cert,
     bool is_cleared) {
-  base::Value::Dict dict;
-  dict.Set("host", host.ToString());
-  dict.Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
-                                : base::Value(base::Value::List()));
-  dict.Set("is_cleared", is_cleared);
-  return dict;
+  return base::Value::Dict()
+      .Set("host", host.ToString())
+      .Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
+                                : base::Value(base::Value::List()))
+      .Set("is_cleared", is_cleared);
 }
 
 }  // namespace

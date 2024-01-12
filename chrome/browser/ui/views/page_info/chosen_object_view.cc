@@ -124,5 +124,5 @@ void ChosenObjectView::UpdateIconImage(bool is_deleted) const {
       PageInfoViewFactory::GetChosenObjectIcon(*info_, is_deleted));
 }
 
-BEGIN_METADATA(ChosenObjectView, views::View)
+BEGIN_METADATA(ChosenObjectView)
 END_METADATA

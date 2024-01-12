@@ -36,9 +36,9 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kDiscardAnimationFinishes);
 // bottom of the enclosing view (this is so the crashed tab can animate out of
 // the bottom).
 class TabIcon : public views::View, public views::AnimationDelegateViews {
- public:
-  METADATA_HEADER(TabIcon);
+  METADATA_HEADER(TabIcon, views::View)
 
+ public:
   // Attention indicator types (use as a bitmask). There is only one visual
   // representation, but the state of each of these is tracked separately and
   // the indicator is shown as long as one is enabled.

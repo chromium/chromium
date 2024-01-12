@@ -339,15 +339,10 @@ void TestClipboard::WriteText(base::StringPiece text) {
 }
 
 void TestClipboard::WriteHTML(base::StringPiece markup,
-                              absl::optional<base::StringPiece> source_url) {
+                              absl::optional<base::StringPiece> source_url,
+                              ClipboardContentType /* content_type */) {
   GetDefaultStore().data[ClipboardFormatType::HtmlType()] = markup;
   GetDefaultStore().html_src_url = source_url.value_or("");
-}
-
-void TestClipboard::WriteUnsanitizedHTML(
-    base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
 }
 
 void TestClipboard::WriteSvg(base::StringPiece markup) {

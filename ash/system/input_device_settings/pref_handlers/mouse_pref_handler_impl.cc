@@ -7,10 +7,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
@@ -336,6 +336,9 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
     if (button_remappings_list) {
       mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
           *button_remappings_list, mouse->customization_restriction);
+    } else {
+      mouse->settings->button_remappings =
+          GetButtonRemappingListForConfig(mouse->mouse_button_config);
     }
   }
   DCHECK(mouse->settings);
@@ -394,6 +397,9 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     if (button_remappings_list) {
       mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
           *button_remappings_list, mouse->customization_restriction);
+    } else {
+      mouse->settings->button_remappings =
+          GetButtonRemappingListForConfig(mouse->mouse_button_config);
     }
   }
 }

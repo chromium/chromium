@@ -102,7 +102,7 @@ class RelatedSearchesStamp {
      *         Related Searches or the feature is not enabled.
      */
     String getRelatedSearchesStamp(String basePageLanguage) {
-        if (!isRelatedSearchesQualifiedAndEnabled(basePageLanguage)) return "";
+        if (!isQualifiedForRelatedSearches(basePageLanguage)) return "";
 
         boolean isLanguageRestricted = !TextUtils.isEmpty(getAllowedLanguages());
         return buildRelatedSearchesStamp(isLanguageRestricted);
@@ -137,18 +137,6 @@ class RelatedSearchesStamp {
                         + RELATED_SEARCHES_SELECTED_POSITION
                         + Integer.toString(suggestionIndex);
         return replaceQueryParam(searchUri, STAMP_PARAMETER, currentStamp + chosenPositionCode);
-    }
-
-    /**
-     * Checks if the current user is both qualified to do Related Searches and has the feature
-     * enabled. Qualifications may include restrictions on language during early development.
-     * @param basePageLanguage The language of the page, to check for server support.
-     * @return Whether the user is qualified to get Related Searches suggestions and the
-     *         experimental feature is enabled.
-     */
-    private boolean isRelatedSearchesQualifiedAndEnabled(String basePageLanguage) {
-        return isQualifiedForRelatedSearches(basePageLanguage)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
     }
 
     /**

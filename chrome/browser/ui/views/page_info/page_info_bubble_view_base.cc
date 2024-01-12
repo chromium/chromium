@@ -91,5 +91,5 @@ void PageInfoBubbleViewBase::WebContentsDestroyed() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
+BEGIN_METADATA(PageInfoBubbleViewBase)
 END_METADATA

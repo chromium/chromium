@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -38,7 +38,7 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
     bool automatically_send_requests,
     const url::Origin& top_level_origin,
     const GURL& trusted_signals_url,
-    absl::optional<uint16_t> experiment_group_id,
+    std::optional<uint16_t> experiment_group_id,
     const std::string& trusted_bidding_signals_slot_size_param,
     AuctionV8Helper* v8_helper)
     : type_(type),
@@ -67,7 +67,7 @@ TrustedSignalsRequestManager::~TrustedSignalsRequestManager() {
 std::unique_ptr<TrustedSignalsRequestManager::Request>
 TrustedSignalsRequestManager::RequestBiddingSignals(
     const std::string& interest_group_name,
-    const absl::optional<std::vector<std::string>>& keys,
+    const std::optional<std::vector<std::string>>& keys,
     LoadSignalsCallback load_signals_callback) {
   DCHECK_EQ(Type::kBiddingSignals, type_);
 
@@ -198,7 +198,7 @@ TrustedSignalsRequestManager::BatchedTrustedSignalsRequest::
 void TrustedSignalsRequestManager::OnSignalsLoaded(
     BatchedTrustedSignalsRequest* batched_request,
     scoped_refptr<Result> result,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   DCHECK(batched_requests_.find(batched_request) != batched_requests_.end());
   for (RequestImpl* request : batched_request->requests) {
     DCHECK_EQ(request->batched_request_, batched_request);

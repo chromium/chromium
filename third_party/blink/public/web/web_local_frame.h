@@ -35,7 +35,6 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
-#include "third_party/blink/public/mojom/loader/resource_cache.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-shared.h"
@@ -939,10 +938,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void AddHitTestOnTouchStartCallback(
       base::RepeatingCallback<void(const blink::WebHitTestResult&)>
           callback) = 0;
-
-  // Sets a ResourceCache hosted by another frame.
-  virtual void SetResourceCacheRemote(
-      CrossVariantMojoRemote<mojom::ResourceCacheInterfaceBase> remote) = 0;
 
   // Used to block and resume parsing of the current document in the frame.
   virtual void BlockParserForTesting() {}

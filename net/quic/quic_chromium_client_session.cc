@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -64,6 +63,14 @@
 #include "url/scheme_host_port.h"
 
 namespace net {
+
+namespace features {
+
+BASE_FEATURE(kQuicMigrationIgnoreDisconnectSignalDuringProbing,
+             "kQuicMigrationIgnoreDisconnectSignalDuringProbing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
 
 namespace {
 
@@ -2485,6 +2492,14 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kQuicMigrationIgnoreDisconnectSignalDuringProbing) &&
+      current_migration_cause_ == ON_NETWORK_MADE_DEFAULT) {
+    DVLOG(1) << "Ignoring a network disconnection signal because a "
+                "connection migration is happening on the default network.";
+    return;
+  }
+
   current_migration_cause_ = ON_NETWORK_DISCONNECTED;
   LogHandshakeStatusOnMigrationSignal();
   if (!OneRttKeysAvailable()) {
@@ -3051,6 +3066,12 @@ void QuicChromiumClientSession::StartProbing(
       base::BindOnce(&QuicChromiumClientSession::FinishStartProbing,
                      weak_factory_.GetWeakPtr(), std::move(probing_callback),
                      std::move(probing_socket), network, peer_address);
+
+  if (current_migration_cause_ != UNKNOWN_CAUSE &&
+      !MidMigrationCallbackForTesting().is_null()) {
+    std::move(MidMigrationCallbackForTesting()).Run();  // IN-TEST
+  }
+
   stream_factory_->ConnectAndConfigureSocket(
       std::move(configure_callback), probing_socket_ptr,
       ToIPEndPoint(peer_address), network, session_key_.socket_tag());

@@ -385,7 +385,9 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     contact_team_email = "angle-team@google.com",
-    xcode = xcode.xcode_default,
+    # TODO(crbug.com/1449999): Change to xcode_default once the machines
+    # are upgraded to MacOS13
+    xcode = xcode.x14main,
 )
 
 ci.thin_tester(

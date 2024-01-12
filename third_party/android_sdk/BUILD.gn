@@ -25,11 +25,19 @@ if (enable_java_templates) {
       variables = [ "library_name=${invoker.library_name}" ]
     }
     java_group(target_name) {
+      forward_variables_from(invoker, [ "jar_deps" ])
       deps = [ ":$_manifest_target" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
 
       # Makes the .jar appear in the classpath for compile steps.
-      input_jars_paths =
-          [ "${android_sdk}/optional/${invoker.library_name}.jar" ]
+      if (defined(invoker.input_jars_paths)) {
+        input_jars_paths = invoker.input_jars_paths
+      } else {
+        input_jars_paths =
+            [ "${android_sdk}/optional/${invoker.library_name}.jar" ]
+      }
 
       # Adds the <uses-library> tag to the manifest.
       mergeable_android_manifests = [ _manifest_path ]
@@ -50,5 +58,14 @@ if (enable_java_templates) {
   }
   android_sdk_optional_library("android_car_java") {
     library_name = "android.car"
+  }
+  if (!limit_android_deps) {
+    android_sdk_optional_library("android_window_extensions_java") {
+      library_name = "androidx.window.extensions"
+      jar_deps = [ "//third_party/android_sdk/window_extensions:androidx_window_extensions" ]
+      deps =
+          [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
+      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.javac.jar" ]
+    }
   }
 }

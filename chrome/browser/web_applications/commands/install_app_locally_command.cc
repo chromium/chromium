@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -28,26 +27,22 @@ namespace web_app {
 InstallAppLocallyCommand::InstallAppLocallyCommand(
     const webapps::AppId& app_id,
     base::OnceClosure install_callback)
-    : WebAppCommandTemplate<AppLock>("InstallAppLocallyCommand"),
-      app_lock_description_(std::make_unique<AppLockDescription>(app_id)),
-      app_id_(app_id),
-      install_callback_(std::move(install_callback)) {
-  debug_log_.Set("app_id", app_id_);
+    : WebAppCommand<AppLock>("InstallAppLocallyCommand",
+                             AppLockDescription(app_id),
+                             std::move(install_callback)),
+      app_id_(app_id) {
+  GetMutableDebugValue().Set("app_id", app_id_);
 }
 
 InstallAppLocallyCommand::~InstallAppLocallyCommand() = default;
-
-const LockDescription& InstallAppLocallyCommand::lock_description() const {
-  return *app_lock_description_;
-}
 
 void InstallAppLocallyCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
   if (!app_lock_->registrar().IsInstalled(app_id_)) {
-    debug_log_.Set("command_result", "app_not_in_registry");
-    ReportResultAndShutdown(CommandResult::kSuccess);
+    GetMutableDebugValue().Set("command_result", "app_not_in_registry");
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 
@@ -118,22 +113,8 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
   app_lock_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id_);
   app_lock_->registrar().NotifyWebAppFirstInstallTimeChanged(app_id_,
                                                              install_time);
-  debug_log_.Set("command_result", "success");
-  ReportResultAndShutdown(CommandResult::kSuccess);
-}
-
-void InstallAppLocallyCommand::OnShutdown() {
-  ReportResultAndShutdown(CommandResult::kShutdown);
-}
-
-base::Value InstallAppLocallyCommand::ToDebugValue() const {
-  base::Value::Dict value = debug_log_.Clone();
-  return base::Value(std::move(value));
-}
-
-void InstallAppLocallyCommand::ReportResultAndShutdown(CommandResult result) {
-  DCHECK(!install_callback_.is_null());
-  SignalCompletionAndSelfDestruct(result, std::move(install_callback_));
+  GetMutableDebugValue().Set("command_result", "success");
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 }  // namespace web_app

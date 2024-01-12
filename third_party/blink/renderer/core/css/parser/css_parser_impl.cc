@@ -1663,7 +1663,8 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
   }
 
   auto* style_scope = StyleScope::Parse(prelude, context_, nesting_type,
-                                        parent_rule_for_nesting, style_sheet_);
+                                        parent_rule_for_nesting,
+                                        is_within_scope_, style_sheet_);
   if (!style_scope) {
     return nullptr;
   }
@@ -1671,6 +1672,8 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
   if (observer_) {
     observer_->StartRuleBody(stream.Offset());
   }
+
+  base::AutoReset<bool> auto_is_within_scope(&is_within_scope_, true);
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
@@ -2037,7 +2040,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
 
   // Parse the prelude of the style rule
   base::span<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
-      stream, context_, nesting_type, parent_rule_for_nesting,
+      stream, context_, nesting_type, parent_rule_for_nesting, is_within_scope_,
       semicolon_aborts_nested_selector, style_sheet_, observer_, arena_);
 
   if (selector_vector.empty()) {

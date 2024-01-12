@@ -29,6 +29,8 @@ config("default_coverage") {
     cflags = [
       "-fprofile-instr-generate",
       "-fcoverage-mapping",
+      "-mllvm",
+      "-runtime-counter-relocation=true",
 
       # Following experimental flags removes unused header functions from the
       # coverage mapping data embedded in the test binaries, and the reduction
@@ -43,7 +45,10 @@ config("default_coverage") {
     # tools that will be used to process the coverage output. This is because
     # the coverage file format is not stable.
     if (use_chromium_rust_toolchain) {
-      rustflags += [ "-Cinstrument-coverage" ]
+      rustflags += [
+        "-Cinstrument-coverage",
+        "-Cllvm-args=-runtime-counter-relocation",
+      ]
     }
 
     if (is_linux || is_chromeos) {

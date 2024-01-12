@@ -20,7 +20,7 @@ class RelaunchChromeView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase:
   RelaunchChromeBubbleController* GetController() override;
   const RelaunchChromeBubbleController* GetController() const override;
-  void AddedToWidget() override;
+  ui::ImageModel GetWindowIcon() override;
 
   RelaunchChromeBubbleController controller_;
 };

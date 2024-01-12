@@ -23,13 +23,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthUseNativeWinApi);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enable UI options to explicitly invoke hybrid CTAP authentication on
-// Android.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidHybridClientUi);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Feature flag for the Google-internal
 // `WebAuthenticationAllowGoogleCorpRemoteRequestProxying` enterprise policy.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -80,14 +73,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
-
-// Enable new hybrid UI
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
-
-// Don't show the single-account sheet on macOS if Touch ID is available.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
 
 // Allow sites to opt into experimenting with conditional UI presentations.
 COMPONENT_EXPORT(DEVICE_FIDO)

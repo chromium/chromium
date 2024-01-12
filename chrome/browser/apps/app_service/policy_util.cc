@@ -63,7 +63,6 @@ constexpr auto kSystemWebAppsMapping =
          {"os_url_handler", ash::SystemWebAppType::OS_URL_HANDLER},
          {"firmware_update", ash::SystemWebAppType::FIRMWARE_UPDATE},
          {"os_flags", ash::SystemWebAppType::OS_FLAGS},
-         {"face_ml", ash::SystemWebAppType::FACE_ML},
          {"vc_background", ash::SystemWebAppType::VC_BACKGROUND}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {

@@ -45,7 +45,7 @@ class LanguagesHandler : public SettingsPageUIHandler {
   void HandleSetProspectiveUILanguage(const base::Value::List& args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Weak pointer.
+  raw_ptr<Profile> profile_;  // Weak pointer.
 #endif
 };
 

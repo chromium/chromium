@@ -78,8 +78,8 @@ CdmCapability TestCdmCapability() {
 }
 
 KeySystemCapabilities TestKeySystemCapabilities(
-    absl::optional<CdmCapability> sw_secure_capability,
-    absl::optional<CdmCapability> hw_secure_capability) {
+    std::optional<CdmCapability> sw_secure_capability,
+    std::optional<CdmCapability> hw_secure_capability) {
   KeySystemCapabilities key_system_capabilities;
   key_system_capabilities[kTestKeySystem] = KeySystemCapability(
       std::move(sw_secure_capability), std::move(hw_secure_capability));
@@ -147,7 +147,7 @@ TEST_F(KeySystemSupportImplTest, NoKeySystems) {
 TEST_F(KeySystemSupportImplTest, OneObserver) {
   EXPECT_CALL(get_support_cb_, Run(_))
       .WillOnce(RunOnceCallback<0>(
-          TestKeySystemCapabilities(TestCdmCapability(), absl::nullopt)));
+          TestKeySystemCapabilities(TestCdmCapability(), std::nullopt)));
   GetKeySystemSupport();
 
   EXPECT_EQ(results_.size(), 1u);              // One observer
@@ -164,7 +164,7 @@ TEST_F(KeySystemSupportImplTest, OneObserver) {
 TEST_F(KeySystemSupportImplTest, TwoObservers) {
   EXPECT_CALL(get_support_cb_, Run(_))
       .WillOnce(RunOnceCallback<0>(
-          TestKeySystemCapabilities(TestCdmCapability(), absl::nullopt)));
+          TestKeySystemCapabilities(TestCdmCapability(), std::nullopt)));
 
   base::RunLoop run_loop;
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_1_remote;
@@ -214,7 +214,7 @@ TEST_F(KeySystemSupportImplTest, TwoUpdates) {
 
   // Update twice, one with hardware capability, one without.
   base::RunLoop run_loop_2;
-  callback.Run(TestKeySystemCapabilities(TestCdmCapability(), absl::nullopt));
+  callback.Run(TestKeySystemCapabilities(TestCdmCapability(), std::nullopt));
   callback.Run(
       TestKeySystemCapabilities(TestCdmCapability(), TestCdmCapability()));
   run_loop_2.RunUntilIdle();

@@ -193,10 +193,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       const dbus::ObjectPath& euicc_path,
       std::unique_ptr<RequestAvailableProfilesInfo> info);
 
-  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
+  raw_ptr<CellularInhibitor> cellular_inhibitor_ = nullptr;
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 

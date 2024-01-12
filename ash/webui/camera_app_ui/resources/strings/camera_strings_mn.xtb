@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Баруун тийш чиглүүлэх</translation>
 <translation id="3081586908890909590">Видео бичих рүү сэлгэх</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />"-д нэгдэх</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3354465018370944241">Зургийн тохиргоо</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Зургийн харьцаа</translation>
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
+<translation id="5157591164390831335">URL илэрсэн.</translation>
 <translation id="5163387177077603948">Баруун тийш зөөж байна</translation>
 <translation id="5235304959032763950">16-г харьцах нь 9</translation>
 <translation id="5266635337630551423">Документын зүүн дээд булан</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Камер аппын талаар санал хүсэлт ирүүлсэнд баярлалаа.
 
 Хэрэв таны санал хүсэлт зургийн эсвэл видеоны чанартай холбоотой бол жишээ зураг эсвэл видеог хавсаргаад ямар алдаа байгааг тодорхойлно уу. (Жишээлбэл, зураг хэт бараан эсвэл субъект фокусгүй байна.)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />-д нэгдэх</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="6617916774429601017">Бүх нягтралыг харуулах</translation>
 <translation id="6631515515009660915">Тусгал үүсгэхийг унтраах</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">Микрофоны дууг хаах тохиргоог асаана уу/унтраана уу. Дууг хаах тохиргоо асаалттай байна</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8732462232047530626">Мета өгөгдлийг урьдчилан үзэх</translation>
+<translation id="874854738381978209">Wi-Fi сүлжээ илэрлээ.</translation>
 <translation id="8815966864175525708">Хөрөг зураг авахын тулд сэлгэх</translation>
 <translation id="8828441885228359828">Бичлэгийг үргэлжлүүлэх</translation>
 <translation id="8870695351537079478">Бичиж эхлэх боломжгүй байна</translation>

@@ -85,6 +85,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/nonclosable_app_ui_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "components/sync/model/string_ordinal.h"
@@ -167,6 +168,28 @@ void UninstallWebAppWithDialogFromStartupSwitch(const webapps::AppId& app_id,
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ShowNonclosableAppToast(const web_app::WebAppRegistrar& registrar,
+                             const webapps::AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* const service = chromeos::LacrosService::Get();
+  if (!service->IsRegistered<crosapi::mojom::NonclosableAppToastService>() ||
+      !service->IsAvailable<crosapi::mojom::NonclosableAppToastService>()) {
+    return;
+  }
+
+  crosapi::mojom::NonclosableAppToastService* const
+      nonclosable_app_toast_service =
+          service->GetRemote<crosapi::mojom::NonclosableAppToastService>()
+              .get();
+  nonclosable_app_toast_service->OnUserAttemptedClose(
+      app_id, registrar.GetAppShortName(app_id));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ShowNonclosableAppToast(app_id, registrar.GetAppShortName(app_id));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -289,7 +312,7 @@ bool WebAppUiManagerImpl::IsInAppWindow(
 }
 
 const webapps::AppId* WebAppUiManagerImpl::GetAppIdForWindow(
-    content::WebContents* web_contents) const {
+    const content::WebContents* web_contents) const {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (AppBrowserController::IsWebApp(browser)) {
     return &browser->app_controller()->app_id();
@@ -518,9 +541,31 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
                      std::move(uninstall_scheduled_callback)));
 }
 
-void WebAppUiManagerImpl::LaunchIsolatedWebAppInstaller(
+void WebAppUiManagerImpl::LaunchOrFocusIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {
-  ::web_app::LaunchIsolatedWebAppInstaller(profile_, bundle_path);
+  auto it = active_installers_.find(bundle_path);
+
+  if (it == active_installers_.end()) {
+    // If no installer exists for the path, we create a new coordinator
+    active_installers_[bundle_path] = ::web_app::LaunchIsolatedWebAppInstaller(
+        profile_, bundle_path,
+        base::BindOnce(&WebAppUiManagerImpl::OnIsolatedWebAppInstallerClosed,
+                       weak_ptr_factory_.GetWeakPtr(), bundle_path));
+  } else {
+    // If an installer already exists for |path|, we focus the existing
+    // installer.
+    FocusIsolatedWebAppInstaller(it->second);
+  }
+}
+
+void WebAppUiManagerImpl::OnIsolatedWebAppInstallerClosed(
+    base::FilePath bundle_path) {
+  auto it = active_installers_.find(bundle_path);
+  CHECK(it != active_installers_.end())
+      << "Installer with path " << bundle_path
+      << " is being closed, but it is not found in the list of active "
+         "installers.";
+  active_installers_.erase(it);
 }
 
 void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
@@ -576,7 +621,26 @@ void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
   }
 
   ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser->tab_strip_model()->AddObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppUiManagerImpl::OnBrowserCloseCancelled(Browser* browser,
+                                                  BrowserClosingStatus reason) {
+  DCHECK(started_);
+  if (!IsBrowserForInstalledApp(browser) ||
+      reason != BrowserClosingStatus::kDeniedByPolicy) {
+    return;
+  }
+
+  ShowNonclosableAppToast(
+      WebAppProvider::GetForWebApps(profile_)->registrar_unsafe(),
+      GetAppIdForBrowser(browser));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   DCHECK(started_);
@@ -589,6 +653,10 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   size_t& num_windows_for_app = num_windows_for_apps_map_[app_id];
   DCHECK_GT(num_windows_for_app, 0u);
   --num_windows_for_app;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser->tab_strip_model()->RemoveObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (num_windows_for_app > 0) {
     return;
@@ -605,6 +673,19 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 
   windows_closed_requests_map_.erase(app_id);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppUiManagerImpl::TabCloseCancelled(
+    const content::WebContents* contents) {
+  const webapps::AppId* app_id = GetAppIdForWindow(contents);
+  if (!app_id) {
+    return;
+  }
+
+  ShowNonclosableAppToast(
+      WebAppProvider::GetForWebApps(profile_)->registrar_unsafe(), *app_id);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(

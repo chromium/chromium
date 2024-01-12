@@ -80,7 +80,7 @@ class TestWebContentsObserver : public WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-  absl::optional<blink::mojom::ViewportFit> value_;
+  std::optional<blink::mojom::ViewportFit> value_;
   blink::mojom::ViewportFit wanted_value_ = blink::mojom::ViewportFit::kAuto;
 };
 

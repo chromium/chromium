@@ -15,8 +15,9 @@
 namespace payments {
 
 class ValidatingCombobox : public views::Combobox {
+  METADATA_HEADER(ValidatingCombobox, views::Combobox)
+
  public:
-  METADATA_HEADER(ValidatingCombobox);
   ValidatingCombobox(std::unique_ptr<ui::ComboboxModel> model,
                      std::unique_ptr<ValidationDelegate> delegate);
 

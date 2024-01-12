@@ -23,7 +23,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -279,8 +279,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   aura::Window::Windows windows_;
 
   // Owned by |user_manager_enabler_|.
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
+      nullptr;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
@@ -973,14 +973,14 @@ TEST_F(MultiProfileSupportTest, TabletModeInteraction) {
   EXPECT_FALSE(WindowState::Get(window(0))->IsMaximized());
   EXPECT_FALSE(WindowState::Get(window(1))->IsMaximized());
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   EXPECT_TRUE(WindowState::Get(window(0))->IsMaximized());
   EXPECT_TRUE(WindowState::Get(window(1))->IsMaximized());
 
   // Tests that on exiting tablet mode, the window states return to not
   // maximized.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(WindowState::Get(window(0))->IsMaximized());
   EXPECT_FALSE(WindowState::Get(window(1))->IsMaximized());
 }
@@ -1648,7 +1648,7 @@ TEST_F(MultiProfileSupportTest, WindowBoundsAfterTabletMode) {
   window(1)->SetBounds(bounds);
 
   // Enter tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   // Tests that bounds of both windows are maximized.
   const gfx::Rect maximized_bounds(0, 0, 400,
                                    200 - ShelfConfig::Get()->shelf_size());
@@ -1662,7 +1662,7 @@ TEST_F(MultiProfileSupportTest, WindowBoundsAfterTabletMode) {
                               display::Display::RotationSource::ACTIVE);
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   // Tests that both windows have the same bounds as when they entered tablet
   // mode.

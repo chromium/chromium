@@ -1,0 +1,234 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.magic_stack;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.State;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.SmallTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+
+/** Unit tests for {@link CirclePagerIndicatorDecoration}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class CirclePagerIndicatorDecorationUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private UiConfig mUiConfig;
+    @Mock private Canvas mCanvas;
+    @Mock private RecyclerView mRecyclerView;
+    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private LinearLayoutManager mLayoutManager;
+    @Mock private RecyclerView.State mState;
+    @Mock private View mView1;
+    @Mock private View mView2;
+
+    private int mIndicatorHeight;
+
+    private float mIndicatorItemDiameter;
+    private float mIndicatorRadius;
+
+    private float mIndicatorItemPadding;
+    private int mParentViewWidth;
+    private int mParentHeight;
+    private CirclePagerIndicatorDecoration mDecoration;
+    private Context mContext;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+        when(mRecyclerView.getAdapter()).thenReturn(mAdapter);
+        when(mRecyclerView.getLayoutManager()).thenReturn(mLayoutManager);
+        mDecoration =
+                new CirclePagerIndicatorDecoration(
+                        mContext, mUiConfig, 0, Color.BLACK, Color.GRAY, /* isTablet= */ false);
+
+        Resources resources = mContext.getResources();
+
+        mIndicatorItemPadding =
+                (float) resources.getDimensionPixelSize(R.dimen.page_indicator_internal_padding);
+        mIndicatorItemDiameter = resources.getDimensionPixelSize(R.dimen.page_indicator_dot_size);
+        mIndicatorRadius = mIndicatorItemDiameter / 2f;
+        mIndicatorHeight =
+                (int) mIndicatorItemDiameter
+                        + resources.getDimensionPixelSize(R.dimen.page_indicator_top_margin);
+        mParentViewWidth = 800;
+        mParentHeight = 400;
+        when(mRecyclerView.getHeight()).thenReturn(mParentHeight);
+        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
+        when(mRecyclerView.getWidth()).thenReturn(mParentViewWidth);
+    }
+
+    @Test
+    @SmallTest
+    public void testNoScrolling() {
+        int count = 3;
+        when(mAdapter.getItemCount()).thenReturn(count);
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
+        when(mLayoutManager.findViewByPosition(0)).thenReturn(mView1);
+
+        float dotsTotalLength = mIndicatorItemDiameter * count;
+        float paddingBetweenItems = (count - 1) * mIndicatorItemPadding;
+        float indicatorTotalWidth = dotsTotalLength + paddingBetweenItems;
+        float indicatorStartX = (mParentViewWidth - indicatorTotalWidth) / 2f;
+        float indicatorStartY = mParentHeight - mIndicatorItemDiameter;
+        float itemWidth = mIndicatorItemDiameter + mIndicatorItemPadding;
+
+        // Verifies that when there isn't any scrolling of the recyclerview, it draws inactive dots
+        // and a highlighted dot.
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(2))
+                .drawCircle(
+                        eq(indicatorStartX),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+        verify(mCanvas)
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+        verify(mCanvas)
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth * 2),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollTheRecyclerView() {
+        int count = 3;
+        when(mAdapter.getItemCount()).thenReturn(count);
+        float dotsTotalLength = mIndicatorItemDiameter * count;
+        float paddingBetweenItems = (count - 1) * mIndicatorItemPadding;
+        float indicatorTotalWidth = dotsTotalLength + paddingBetweenItems;
+        float indicatorStartX = (mParentViewWidth - indicatorTotalWidth) / 2f;
+        float itemWidth = mIndicatorItemDiameter + mIndicatorItemPadding;
+        float indicatorStartY = mParentHeight - mIndicatorItemDiameter;
+
+        // Begin to scroll the recyclerview.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
+        when(mLayoutManager.findViewByPosition(0)).thenReturn(mView1);
+        when(mView1.getLeft()).thenReturn(10);
+        // Verifies that the animation which is the round rectangle is drawn.
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas)
+                .drawRoundRect(
+                        eq(indicatorStartX - mIndicatorRadius),
+                        eq(indicatorStartY - mIndicatorRadius),
+                        eq(indicatorStartX + itemWidth + mIndicatorRadius),
+                        eq(indicatorStartY + mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        when(mView1.getLeft()).thenReturn(20);
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(2))
+                .drawRoundRect(
+                        eq(indicatorStartX - mIndicatorRadius),
+                        eq(indicatorStartY - mIndicatorRadius),
+                        eq(indicatorStartX + itemWidth + mIndicatorRadius),
+                        eq(indicatorStartY + mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        // Scroll to the second item of the recyclerview.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        when(mLayoutManager.findViewByPosition(1)).thenReturn(mView2);
+
+        // Verifies that not drawing the animation the second item is shown without scrolling.
+        when(mView2.getLeft()).thenReturn(0);
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas, times(2))
+                .drawRoundRect(
+                        eq(indicatorStartX - mIndicatorRadius),
+                        eq(indicatorStartY - mIndicatorRadius),
+                        eq(indicatorStartX + itemWidth + mIndicatorRadius),
+                        eq(indicatorStartY + mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        // Verifies that drawing the animation again if continue scrolling the recyclerview.
+        when(mView2.getLeft()).thenReturn(10);
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        verify(mCanvas)
+                .drawRoundRect(
+                        eq(indicatorStartX + itemWidth - mIndicatorRadius),
+                        eq(indicatorStartY - mIndicatorRadius),
+                        eq(indicatorStartX + itemWidth * 2 + mIndicatorRadius),
+                        eq(indicatorStartY + mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetItemOffsets() {
+        Rect rect = new Rect();
+        View view = Mockito.mock(View.class);
+        RecyclerView.State state = Mockito.mock(State.class);
+
+        DisplayStyle displayStyle =
+                new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
+        assertFalse(displayStyle.isSmall());
+        when(mLayoutManager.getChildCount()).thenReturn(3);
+
+        MarginLayoutParams layoutParams = Mockito.mock(MarginLayoutParams.class);
+        when(view.getLayoutParams()).thenReturn(layoutParams);
+
+        when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
+        int expectedItemWith = (int) (mParentViewWidth / 2 - mIndicatorItemPadding);
+
+        mDecoration =
+                new CirclePagerIndicatorDecoration(
+                        mContext, mUiConfig, 0, Color.BLACK, Color.GRAY, /* isTablet= */ true);
+
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        // Verifies that the minimum width is updated for the view.
+        assertEquals(mIndicatorHeight, rect.bottom);
+        assertEquals(0, rect.left);
+        verify(view).setMinimumWidth(eq(expectedItemWith));
+    }
+}

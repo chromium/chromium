@@ -34,6 +34,7 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/file_system_access_dialogs.h"
 #include "chrome/common/chrome_paths.h"
@@ -345,8 +346,16 @@ const struct {
     // XDG_CONFIG_HOME when it is not set ~/.config?
 };
 
+// Describes a rule for blocking a directory, which can be constructed
+// dynamically (based on state) or statically (from kBlockedPaths).
+struct BlockPathRule {
+  base::FilePath path;
+  BlockType type;
+};
+
 bool ShouldBlockAccessToPath(const base::FilePath& path,
-                             HandleType handle_type) {
+                             HandleType handle_type,
+                             std::vector<BlockPathRule> rules) {
   DCHECK(!path.empty());
   DCHECK(path.IsAbsolute());
 
@@ -373,9 +382,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   }
 #endif
 
-  base::FilePath nearest_ancestor;
-  int nearest_ancestor_path_key = kNoBasePathKey;
-  BlockType nearest_ancestor_block_type = kDontBlockChildren;
+  // Add the hard-coded rules to the dynamic rules.
   for (const auto& block : kBlockedPaths) {
     base::FilePath blocked_path;
     if (block.base_path_key != kNoBasePathKey) {
@@ -389,18 +396,21 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
       DCHECK(block.path);
       blocked_path = base::FilePath(block.path);
     }
+    rules.emplace_back(blocked_path, block.type);
+  }
 
-    if (check_path == blocked_path || check_path.IsParent(blocked_path)) {
+  base::FilePath nearest_ancestor;
+  BlockType nearest_ancestor_block_type = kDontBlockChildren;
+  for (const auto& block : rules) {
+    if (check_path == block.path || check_path.IsParent(block.path)) {
       VLOG(1) << "Blocking access to " << check_path
-              << " because it is a parent of " << blocked_path << " ("
-              << block.base_path_key << ")";
+              << " because it is a parent of " << block.path;
       return true;
     }
 
-    if (blocked_path.IsParent(check_path) &&
-        (nearest_ancestor.empty() || nearest_ancestor.IsParent(blocked_path))) {
-      nearest_ancestor = blocked_path;
-      nearest_ancestor_path_key = block.base_path_key;
+    if (block.path.IsParent(check_path) &&
+        (nearest_ancestor.empty() || nearest_ancestor.IsParent(block.path))) {
+      nearest_ancestor = block.path;
       nearest_ancestor_block_type = block.type;
     }
   }
@@ -421,7 +431,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
 
   // The nearest ancestor blocks access to its children, so block access.
   VLOG(1) << "Blocking access to " << check_path << " because it is inside "
-          << nearest_ancestor << " (" << nearest_ancestor_path_key << ")";
+          << nearest_ancestor;
   return true;
 }
 
@@ -1571,9 +1581,22 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     return;
   }
 
+  // Unlike the DIR_USER_DATA check, this handles the --user-data-dir override.
+  // We check for the user data dir in two different ways: directly, via the
+  // profile manager, where it exists (it does not in unit tests), and via the
+  // profile's directory, assuming the profile dir is a child of the user data
+  // dir.
+  std::vector<BlockPathRule> extra_rules;
+  extra_rules.emplace_back(profile_->GetPath().DirName(), kBlockAllChildren);
+  if (g_browser_process->profile_manager()) {
+    extra_rules.emplace_back(
+        g_browser_process->profile_manager()->user_data_dir(),
+        kBlockAllChildren);
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ShouldBlockAccessToPath, path, handle_type),
+      base::BindOnce(&ShouldBlockAccessToPath, path, handle_type, extra_rules),
       std::move(callback));
 }
 

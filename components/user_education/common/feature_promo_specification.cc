@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,6 +26,20 @@ bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
   static const char* const kAllowedPromoNames[] = {
       "IPH_TrackingProtectionOnboarding",
       "IPH_TrackingProtectionOffboarding",
+  };
+  for (const auto* promo_name : kAllowedPromoNames) {
+    if (!strcmp(promo_feature.name, promo_name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
+  // Add the text names of allowlisted actionable alerts here:
+  static const char* const kAllowedPromoNames[] = {
+      "IPH_DownloadEsbPromo",
+      "IPH_HighEfficiencyMode",
   };
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {
@@ -72,11 +87,13 @@ FeaturePromoSpecification::Metadata::Metadata(
     int launch_milestone_,
     std::string owners_,
     std::string triggering_condition_description_,
+    base::flat_set<const base::Feature*> required_features_,
     base::flat_set<Platforms> platforms_)
     : launch_milestone(launch_milestone_),
       owners(std::move(owners_)),
       triggering_condition_description(
           std::move(triggering_condition_description_)),
+      required_features(std::move(required_features_)),
       platforms(std::move(platforms_)) {}
 
 FeaturePromoSpecification::Metadata::Metadata() = default;
@@ -284,12 +301,21 @@ FeaturePromoSpecification& FeaturePromoSpecification::OverrideFocusOnShow(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
     PromoSubtype promo_subtype) {
-  CHECK(promo_type_ != PromoType::kUnspecified);
-  CHECK(promo_type_ != PromoType::kSnooze)
+  CHECK_NE(promo_type_, PromoType::kUnspecified);
+  CHECK_NE(promo_type_, PromoType::kSnooze)
       << "Basic snooze is not compatible with other promo subtypes.";
-  if (promo_subtype == PromoSubtype::kLegalNotice) {
-    CHECK(feature_);
-    CHECK(IsAllowedLegalNotice(*feature_));
+  switch (promo_subtype) {
+    case PromoSubtype::kLegalNotice:
+      CHECK(feature_);
+      CHECK(IsAllowedLegalNotice(*feature_));
+      break;
+    case PromoSubtype::kActionableAlert:
+      CHECK_EQ(promo_type_, PromoType::kCustomAction);
+      CHECK(feature_);
+      CHECK(IsAllowedActionableAlert(*feature_));
+      break;
+    default:
+      break;
   }
   promo_subtype_ = promo_subtype;
   return *this;
@@ -388,6 +414,9 @@ std::ostream& operator<<(
       break;
     case FeaturePromoSpecification::PromoSubtype::kLegalNotice:
       oss << "kLegalNotice";
+      break;
+    case FeaturePromoSpecification::PromoSubtype::kActionableAlert:
+      oss << "kActionableAlert";
       break;
   }
   return oss;

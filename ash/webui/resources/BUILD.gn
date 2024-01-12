@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//ash/webui/eche_app_ui/eche_app_ui.gni")
-import("//ash/webui/face_ml_app_ui/face_ml_app_ui.gni")
 import("//ash/webui/help_app_ui/help_app_ui.gni")
 import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//ash/webui/projector_app/projector_app.gni")
@@ -52,11 +51,6 @@ ash_generated_grit("shortcut_customization_app_resources") {
 ash_generated_grit("files_internals_resources") {
   source = "$root_gen_dir/ash/webui/files_internals/ash_files_internals_resources.grd"
   deps = [ "//ash/webui/files_internals:build_grd" ]
-}
-
-ash_generated_grit("system_extensions_internals_resources") {
-  source = "$root_gen_dir/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd"
-  deps = [ "//ash/webui/system_extensions_internals_ui:build_grd" ]
 }
 
 # Resources used by chrome-untrusted://demo-mode-app
@@ -226,39 +220,6 @@ grit("projector_app_bundle_resources") {
     "chromeos_projector_app_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-}
-
-# Resources used by chrome://face-ml
-ash_generated_grit("face_ml_app_resources") {
-  source = "$root_gen_dir/ash/webui/face_ml_app_ui/resources/trusted/ash_face_ml_app_resources.grd"
-  deps = [ "//ash/webui/face_ml_app_ui/resources/trusted:trusted_grd" ]
-}
-
-# Resources used by chrome-untrusted://face-ml
-ash_generated_grit("face_ml_app_untrusted_resources") {
-  source = "$root_gen_dir/ash/webui/face_ml_app_ui/resources/untrusted/ash_face_ml_app_untrusted_resources.grd"
-  deps = [ "//ash/webui/face_ml_app_ui/resources/untrusted:untrusted_grd" ]
-}
-
-# Resources automatically served by the chrome-untrusted://face-ml bundle, obtained via DEPS.
-grit("face_ml_app_bundle_resources") {
-  if (enable_cros_face_ml) {
-    # Obtained via an internal CIPD package in src/DEPS.
-    source = "//ash/webui/face_ml_app_ui/resources/prod/face_ml_app_bundle_resources.grd"
-  } else {
-    source = "//ash/webui/face_ml_app_ui/resources/mock/face_ml_app_bundle_mock_resources.grd"
-  }
-
-  use_brotli = true
-
-  outputs = [
-    "grit/ash_face_ml_app_bundle_resources.h",
-    "grit/ash_face_ml_app_bundle_resources_map.cc",
-    "grit/ash_face_ml_app_bundle_resources_map.h",
-    "ash_face_ml_app_bundle_resources.pak",
-  ]
-
-  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome-untrusted://projector-annotator SWA.

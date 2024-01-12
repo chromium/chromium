@@ -824,7 +824,7 @@ class CrostiniManager : public KeyedService,
 
   bool ShouldWarnAboutExpiredVersion(const guest_os::GuestId& container_id);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string owner_id_;
 
   bool skip_restart_for_testing_ = false;

@@ -9,9 +9,9 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {getContentMetadata, getContentMimeType} from '../../../common/js/api.js';
 import {unwrapEntry} from '../../../common/js/entry_utils.js';
 import {getType} from '../../../common/js/file_type.js';
+import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {getSanitizedScriptUrl} from '../../../common/js/trusted_script_url_policy_util.js';
 import {testSendMessage} from '../../../common/js/util.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {THUMBNAIL_MAX_HEIGHT, THUMBNAIL_MAX_WIDTH} from '../thumbnail_loader.js';
 
 import {MetadataItem, ParserMetadata} from './metadata_item.js';

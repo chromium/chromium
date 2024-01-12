@@ -909,20 +909,15 @@ void PhysicalFragment::AddOutlineRectsForCursor(
       }
       case FragmentItem::kGeneratedText:
       case FragmentItem::kText: {
-        if (!ShouldIncludeBlockInkOverflow(outline_type)) {
+        if (!item.IsSvgText() && !ShouldIncludeBlockInkOverflow(outline_type)) {
           break;
         }
-        PhysicalRect rect = item.RectInContainerFragment();
+        PhysicalRect rect =
+            item.IsSvgText() ? PhysicalRect::EnclosingRect(
+                                   cursor->Current().ObjectBoundingBox(*cursor))
+                             : item.RectInContainerFragment();
         if (UNLIKELY(text_combine))
           rect = text_combine->AdjustRectForBoundingBox(rect);
-        rect.Move(additional_offset);
-        collector.AddRect(rect);
-        break;
-      }
-      case FragmentItem::kSvgText: {
-        auto rect = PhysicalRect::EnclosingRect(
-            cursor->Current().ObjectBoundingBox(*cursor));
-        DCHECK(!text_combine);
         rect.Move(additional_offset);
         collector.AddRect(rect);
         break;

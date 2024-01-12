@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -36,30 +37,32 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
     DoCreateGpuMemoryBuffer(size, format);
     return std::make_unique<FakeGpuMemoryBuffer>(size, format);
   }
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         const viz::SharedImageFormat& si_format,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      const viz::SharedImageFormat& si_format,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     DoCreateSharedImage(si_format, gpu_memory_buffer->GetSize(), color_space,
                         surface_origin, alpha_type, usage,
                         gpu_memory_buffer->CloneHandle());
-    mailbox = gpu::Mailbox::GenerateForSharedImage();
+    return base::MakeRefCounted<gpu::ClientSharedImage>(
+        gpu::Mailbox::GenerateForSharedImage());
   }
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         gfx::BufferPlane plane,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gfx::BufferPlane plane,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     DoCreateSharedImage(gpu_memory_buffer, plane, color_space, surface_origin,
                         alpha_type, usage);
-    mailbox = gpu::Mailbox::GenerateForSharedImage();
+    return base::MakeRefCounted<gpu::ClientSharedImage>(
+        gpu::Mailbox::GenerateForSharedImage());
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,
@@ -81,7 +84,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                     uint32_t usage));
   MOCK_METHOD2(DestroySharedImage,
                void(const gpu::SyncToken& sync_token,
-                    const gpu::Mailbox& mailbox));
+                    scoped_refptr<gpu::ClientSharedImage> shared_image));
 
   base::WeakPtr<FakeContext> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 

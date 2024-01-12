@@ -40,3 +40,13 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithActivity(
   Java_PasswordCheckupLauncher_launchCheckupOnlineWithActivity(env, checkupUrl,
                                                                activity);
 }
+
+void PasswordCheckupLauncherHelperImpl::LaunchSafetyCheck(
+    JNIEnv* env,
+    ui::WindowAndroid* windowAndroid) {
+  if (windowAndroid == nullptr) {
+    return;
+  }
+  Java_PasswordCheckupLauncher_launchSafetyCheck(
+      env, windowAndroid->GetJavaObject());
+}

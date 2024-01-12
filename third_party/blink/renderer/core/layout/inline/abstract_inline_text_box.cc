@@ -500,7 +500,7 @@ String AbstractInlineTextBox::GetText() const {
   // first letter is excluded from the accessibility tree, so we need to prepend
   // its text here.
   if (LayoutText* first_letter = GetFirstLetterPseudoLayoutText())
-    result = first_letter->GetText().SimplifyWhiteSpace() + result;
+    result = first_letter->TransformedText().SimplifyWhiteSpace() + result;
 
   return result;
 }

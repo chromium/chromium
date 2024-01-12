@@ -17,7 +17,15 @@ class Time;
 
 namespace growth {
 
-enum class Slot { kDemoModeApp = 0 };
+// Entries should not be renumbered and numeric values should never be reused
+// as it is used for logging metrics as well. Please keep in sync with
+// "CampaignSlot" in src/tools/metrics/histograms/enums.xml.
+enum class Slot {
+  kDemoModeApp = 0,
+  kDemoModeFreePlayApps = 1,
+
+  kMaxValue = kDemoModeFreePlayApps
+};
 
 // Dictionary of supported targetings. For example:
 // {
@@ -43,6 +51,7 @@ using Payload = base::Value::Dict;
 // Dictionary of Campaign. For example:
 // {
 //    "id": 1,
+//    "studyId":1,
 //    "targetings": {...}
 //    "payload": {...}
 // }
@@ -59,25 +68,6 @@ using Campaigns = base::Value::List;
 // }
 using CampaignsPerSlot = base::Value::Dict;
 
-// All campaigns including proactive and reactive campaigns. For example:
-// {
-//   "proactiveCampaigns" : {
-//     "0": [...],
-//     "1": [...]
-//   },
-//   "reactiveCampaigns" : {
-//     "3": [...],
-//     "4": [...]
-//   },
-// }
-using CampaignsStore = base::Value::Dict;
-
-const CampaignsPerSlot* GetProactiveCampaigns(
-    const CampaignsStore* campaigns_store);
-
-const CampaignsPerSlot* GetReactiveCampaigns(
-    const CampaignsStore* campaigns_store);
-
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot);
 
@@ -86,6 +76,12 @@ const Targetings* GetTargetings(const Campaign* campaign);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+std::optional<int> GetCampaignId(const Campaign* campaign);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+std::optional<int> GetStudyId(const Campaign* campaign);
+
 // Lists of campaigns keyed by the targeted slot. The key is the slot ID in
 // string. For example:
 // {
@@ -93,25 +89,6 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
 //   "1": [...]
 // }
 using CampaignsPerSlot = base::Value::Dict;
-
-// All campaigns including proactive and reactive campaigns. For example:
-// {
-//   "proactiveCampaigns" : {
-//     "0": [...],
-//     "1": [...]
-//   },
-//   "reactiveCampaigns" : {
-//     "3": [...],
-//     "4": [...]
-//   },
-// }
-using CampaignsStore = base::Value::Dict;
-
-const CampaignsPerSlot* GetProactiveCampaigns(
-    const CampaignsStore* campaigns_store);
-
-const CampaignsPerSlot* GetReactiveCampaigns(
-    const CampaignsStore* campaigns_store);
 
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot);
@@ -144,7 +121,7 @@ class TargetingBase {
 
   // The dictionary that contains targeting definition. Owned by
   // `CampaignsManager`.
-  raw_ptr<const Targeting, ExperimentalAsh> targeting_;
+  raw_ptr<const Targeting> targeting_;
   // The targeting path.
   const char* targeting_path_;
 };
@@ -215,7 +192,7 @@ class SchedulingTargeting {
   const base::Time GetEndTime() const;
 
  private:
-  raw_ptr<const base::Value::Dict, ExperimentalAsh> scheduling_dict_;
+  raw_ptr<const base::Value::Dict> scheduling_dict_;
 };
 
 // Wrapper around scheduling targeting dictionary.

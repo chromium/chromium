@@ -60,8 +60,7 @@ VideoCodec ToCastVideoCodec(const ::media::VideoCodec video_codec,
       if (codec_profile == ::media::DOLBYVISION_PROFILE0 ||
           codec_profile == ::media::DOLBYVISION_PROFILE9) {
         return kCodecDolbyVisionH264;
-      } else if (codec_profile == ::media::DOLBYVISION_PROFILE4 ||
-                 codec_profile == ::media::DOLBYVISION_PROFILE5 ||
+      } else if (codec_profile == ::media::DOLBYVISION_PROFILE5 ||
                  codec_profile == ::media::DOLBYVISION_PROFILE7 ||
                  codec_profile == ::media::DOLBYVISION_PROFILE8) {
         return kCodecDolbyVisionHEVC;
@@ -135,8 +134,6 @@ VideoProfile ToCastVideoProfile(
       return kVP9Profile3;
     case ::media::DOLBYVISION_PROFILE0:
       return kDolbyVisionProfile0;
-    case ::media::DOLBYVISION_PROFILE4:
-      return kDolbyVisionProfile4;
     case ::media::DOLBYVISION_PROFILE5:
       return kDolbyVisionProfile5;
     case ::media::DOLBYVISION_PROFILE7:

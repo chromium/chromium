@@ -227,7 +227,8 @@ class AutofillMetricsBaseTest {
   }
 
   const bool is_in_any_main_frame_ = true;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
   syncer::TestSyncService sync_service_;

@@ -20,6 +20,7 @@ void AssociatedThreadId::BindToCurrentThread() {
   DCHECK(prev_thread_ref.is_null() ||
          prev_thread_ref == PlatformThread::CurrentRef());
 #endif
+  sequence_token_ = base::internal::SequenceToken::GetForCurrentThread();
   thread_ref_.store(PlatformThread::CurrentRef(), std::memory_order_release);
 
   // Rebind the thread and sequence checkers to the current thread/sequence.

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/metrics/shortcut_metrics.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -75,15 +76,24 @@ void AppServiceShortcutShelfContextMenu::GetMenuModel(
 
 void AppServiceShortcutShelfContextMenu::ExecuteCommand(int command_id,
                                                         int event_flags) {
-  if (command_id == ash::UNINSTALL) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(controller()->profile());
-    if (!proxy->ShortcutRegistryCache()->HasShortcut(shortcut_id_)) {
-      return;
+  switch (command_id) {
+    case ash::UNINSTALL: {
+      apps::AppServiceProxy* proxy =
+          apps::AppServiceProxyFactory::GetForProfile(controller()->profile());
+      if (!proxy->ShortcutRegistryCache()->HasShortcut(shortcut_id_)) {
+        return;
+      }
+      RecordShortcutRemovalSource(apps::ShortcutActionSource::kShelf);
+      proxy->RemoveShortcut(shortcut_id_, apps::UninstallSource::kShelf,
+                            nullptr /* parent_window */);
+      break;
     }
-    proxy->RemoveShortcut(shortcut_id_, apps::UninstallSource::kShelf,
-                          nullptr /* parent_window */);
-    return;
+    case ash::TOGGLE_PIN:
+      // This shelf context menu only appears when the shortcut is already
+      // pinned. Therefore, toggle pin results in unpinning the item.
+      RecordShortcutPinAction(apps::ShortcutPinAction::kUnpin);
+      [[fallthrough]];
+    default:
+      ExecuteCommonCommand(command_id, event_flags);
   }
-  ExecuteCommonCommand(command_id, event_flags);
 }

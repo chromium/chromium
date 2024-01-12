@@ -16,8 +16,8 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
@@ -330,7 +330,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
       storage_partition_impl, partition_domain,
       // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
-      ukm::kInvalidSourceId, WorkerDevToolsAgentHost::GetFor(this),
+      ukm::kInvalidSourceId, DedicatedWorkerDevToolsAgentHost::GetFor(this),
       token_.value(),
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
@@ -475,7 +475,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // `Network.onLoadingFinished` event.
   devtools_instrumentation::OnWorkerMainScriptLoadingFinished(
       FrameTreeNode::From(ancestor_render_frame_host),
-      WorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+      DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
       network::URLLoaderCompletionStatus(net::OK));
 
   client_->OnScriptLoadStarted(
@@ -504,7 +504,8 @@ void DedicatedWorkerHost::ScriptLoadStartFailed(
     // Notify that the loading failed to DevTools. It fires
     // `Network.onLoadingFailed` event.
     devtools_instrumentation::OnWorkerMainScriptLoadingFailed(
-        url, WorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+        url,
+        DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
         FrameTreeNode::From(ancestor_render_frame_host),
         ancestor_render_frame_host, status);
   }
@@ -554,7 +555,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       worker_process_host_->GetBrowserContext(),
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
-      GetStorageKey().origin(), /*navigation_id=*/absl::nullopt,
+      GetStorageKey().origin(), /*navigation_id=*/std::nullopt,
       ukm::SourceIdObj::FromInt64(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,

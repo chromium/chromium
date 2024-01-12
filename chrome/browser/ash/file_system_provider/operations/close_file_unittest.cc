@@ -32,8 +32,8 @@ const int kOpenRequestId = 3;
 
 class FileSystemProviderOperationsCloseFileTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsCloseFileTest() {}
-  ~FileSystemProviderOperationsCloseFileTest() override {}
+  FileSystemProviderOperationsCloseFileTest() = default;
+  ~FileSystemProviderOperationsCloseFileTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

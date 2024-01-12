@@ -115,7 +115,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesZeroState) {
   GetGlanceableTrayBubble()->GetTasksView()->ScrollViewToVisible();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_zero_state", /*revision_number=*/6,
+      "glanceables_zero_state", /*revision_number=*/7,
       GetGlanceableTrayBubble()->GetBubbleView()));
 }
 
@@ -187,7 +187,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesCalendarHeight) {
   ASSERT_TRUE(GetDateTray()->is_active());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_calendar_height", /*revision_number=*/1,
+      "glanceables_calendar_height", /*revision_number=*/2,
       GetGlanceableTrayBubble()->GetBubbleView()));
 }
 

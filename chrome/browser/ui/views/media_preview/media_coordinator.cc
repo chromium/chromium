@@ -12,11 +12,21 @@
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 
+MediaCoordinator::EligibleDevices::EligibleDevices() = default;
+MediaCoordinator::EligibleDevices::EligibleDevices(
+    std::vector<std::string> cameras,
+    std::vector<std::string> mics)
+    : cameras(cameras), mics(mics) {}
+MediaCoordinator::EligibleDevices::~EligibleDevices() = default;
+MediaCoordinator::EligibleDevices::EligibleDevices(const EligibleDevices&) =
+    default;
+
 MediaCoordinator::MediaCoordinator(ViewType view_type,
                                    views::View& parent_view,
                                    std::optional<size_t> index,
-                                   bool is_subsection) {
-  auto* media_view =
+                                   bool is_subsection,
+                                   EligibleDevices eligible_devices) {
+  media_view_ =
       parent_view.AddChildViewAt(std::make_unique<MediaView>(is_subsection),
                                  index.value_or(parent_view.children().size()));
 
@@ -27,19 +37,29 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
     const int kBorderThickness =
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
-    media_view->SetBorder(views::CreateThemedRoundedRectBorder(
+    media_view_->SetBorder(views::CreateThemedRoundedRectBorder(
         kBorderThickness, kRoundedRadius, ui::kColorButtonBorder));
-    media_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    media_view_->SetBackground(views::CreateThemedRoundedRectBackground(
         ui::kColorButtonBorder, kRoundedRadius));
   }
 
   if (view_type != ViewType::kMicOnly) {
-    camera_coordinator_.emplace(*media_view, /*needs_borders=*/!is_subsection);
+    camera_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
+                                eligible_devices.cameras);
   }
 
   if (view_type != ViewType::kCameraOnly) {
-    mic_coordinator_.emplace(*media_view, /*needs_borders=*/!is_subsection);
+    mic_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
+                             eligible_devices.mics);
   }
 }
 
-MediaCoordinator::~MediaCoordinator() = default;
+MediaCoordinator::~MediaCoordinator() {
+  // Reset child coordinators before removing view.
+  camera_coordinator_.reset();
+  mic_coordinator_.reset();
+  if (media_view_ && media_view_->parent()) {
+    media_view_->parent()->RemoveChildViewT(
+        std::exchange(media_view_, nullptr));
+  }
+}

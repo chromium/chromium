@@ -8,12 +8,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
-#include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
@@ -29,6 +29,15 @@ using ::testing::Property;
 namespace arc {
 
 namespace {
+
+std::unique_ptr<SharingTargetDeviceInfo> CreateFakeSharingTargetDeviceInfo(
+    const std::string& guid) {
+  return std::make_unique<SharingTargetDeviceInfo>(
+      guid, "Test name", SharingDevicePlatform::kUnknown,
+      /*pulse_interval=*/base::TimeDelta(),
+      syncer::DeviceInfo::FormFactor::kUnknown,
+      /*last_updated_timestamp=*/base::Time());
+}
 
 // Helper class to run tests that need a dummy WebContents and arc delegate.
 class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
@@ -999,8 +1008,8 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
   std::string device_guid = "device_guid";
   MockSharingService* sharing_service = CreateSharingService();
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
-  devices.push_back(CreateFakeDeviceInfo(device_guid));
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  devices.push_back(CreateFakeSharingTargetDeviceInfo(device_guid));
 
   GURL phone_number("tel:073%2099%209999%2099");
 
@@ -1009,8 +1018,8 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
       phone_number.GetContent());
   EXPECT_CALL(*sharing_service,
               SendMessageToDevice(
-                  Property(&syncer::DeviceInfo::guid, device_guid), testing::_,
-                  ProtoEquals(sharing_message), testing::_));
+                  Property(&SharingTargetDeviceInfo::guid, device_guid),
+                  testing::_, ProtoEquals(sharing_message), testing::_));
 
   OnIntentPickerClosedForTesting(
       web_contents()->GetWeakPtr(), phone_number,
@@ -1024,8 +1033,8 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
   CreateTab(/*started_from_arc=*/false);
 
   MockSharingService* sharing_service = CreateSharingService();
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
-  devices.push_back(CreateFakeDeviceInfo("device_guid"));
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("device_guid"));
 
   EXPECT_CALL(*sharing_service, GetDeviceCandidates(testing::_))
       .WillOnce(testing::Return(testing::ByMove(std::move(devices))));
@@ -1053,8 +1062,8 @@ TEST_F(ArcExternalProtocolDialogTestUtils,
   CreateTab(/*started_from_arc=*/false);
 
   MockSharingService* sharing_service = CreateSharingService();
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
-  devices.push_back(CreateFakeDeviceInfo("device_guid"));
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("device_guid"));
 
   EXPECT_CALL(*sharing_service, GetDeviceCandidates(testing::_))
       .WillOnce(testing::Return(testing::ByMove(std::move(devices))));

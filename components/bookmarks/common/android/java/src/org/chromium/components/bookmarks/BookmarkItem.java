@@ -20,6 +20,8 @@ public class BookmarkItem {
     private final long mDateAdded;
     private final boolean mRead;
     private final long mDateLastOpened;
+    private final boolean mIsAccountBookmark;
+
     private boolean mForceEditableForTesting;
 
     public BookmarkItem(
@@ -32,7 +34,8 @@ public class BookmarkItem {
             boolean isManaged,
             long dateAdded,
             boolean read,
-            long dateLastOpened) {
+            long dateLastOpened,
+            boolean isAccountBookmark) {
         mId = id;
         mTitle = title;
         mUrl = url;
@@ -43,6 +46,7 @@ public class BookmarkItem {
         mDateAdded = dateAdded;
         mRead = read;
         mDateLastOpened = dateLastOpened;
+        mIsAccountBookmark = isAccountBookmark;
     }
 
     /** Returns the title of the bookmark item. */
@@ -115,6 +119,11 @@ public class BookmarkItem {
      */
     public long getDateLastOpened() {
         return mDateLastOpened;
+    }
+
+    /** Returns whether the bookmark is linked to your Google account. */
+    public boolean isAccountBookmark() {
+        return mIsAccountBookmark;
     }
 
     // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.

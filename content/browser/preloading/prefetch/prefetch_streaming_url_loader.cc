@@ -146,7 +146,7 @@ void PrefetchStreamingURLLoader::OnReceiveEarlyHints(
 void PrefetchStreamingURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Cached metadata is not supported for prefetch.
   cached_metadata.reset();
 
@@ -154,7 +154,7 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 
   // Checks head to determine if the prefetch can be served.
   CHECK(on_prefetch_response_started_callback_);
-  absl::optional<PrefetchErrorOnResponseReceived> error =
+  std::optional<PrefetchErrorOnResponseReceived> error =
       std::move(on_prefetch_response_started_callback_).Run(head.get());
 
   // `head` and `body` are discarded if `response_reader_` is `nullptr`, because
@@ -195,7 +195,7 @@ void PrefetchStreamingURLLoader::HandleRedirect(
           /*removed_headers=*/std::vector<std::string>(),
           /*modified_headers=*/net::HttpRequestHeaders(),
           /*modified_cors_exempt_headers=*/net::HttpRequestHeaders(),
-          /*new_url=*/absl::nullopt);
+          /*new_url=*/std::nullopt);
       break;
     case PrefetchRedirectStatus::kSwitchNetworkContext:
       // The redirect requires a switch in network context, so the redirect will

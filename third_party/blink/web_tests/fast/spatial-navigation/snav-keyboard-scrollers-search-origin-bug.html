@@ -39,8 +39,8 @@
     assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
   }, "Make sure KeyboardFocusableScrollers is set.");
 
-  // This test checks that focusless mode allows entering focus into an element
-  // with the enter key and exiting it with the escape key.
+  // This test checks that spatial navigation allows entering focus into an
+  // element with the enter key and exiting it with the escape key.
   const first = document.getElementById("first");
   const link = document.getElementById("link");
 
@@ -53,7 +53,7 @@
     snav.triggerMove('Down');
     snav.triggerMove('Down');
 
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   link,
                   "link should start off interested.");
 

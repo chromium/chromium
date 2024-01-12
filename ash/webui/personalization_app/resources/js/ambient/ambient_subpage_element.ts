@@ -7,11 +7,11 @@
  * the ambient mode settings.
  */
 
-import '../../css/common.css.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
 import './albums_subpage_element.js';
-import './ambient_weather_element.js';
 import './ambient_preview_small_element.js';
 import './ambient_theme_list_element.js';
+import './ambient_weather_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 

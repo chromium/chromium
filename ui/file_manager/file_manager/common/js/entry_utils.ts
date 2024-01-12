@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {EntryLocation} from '../../externs/entry_location.js';
-import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {CurrentDirectory, EntryType, FileData} from '../../externs/ts/state.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {EntryLocation} from '../../background/js/entry_location_impl.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
 import type {TreeItem} from '../../foreground/js/ui/tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../../state/ducks/volumes.js';
+import {type CurrentDirectory, EntryType, type FileData} from '../../state/state.js';
 import {getEntry, getStore} from '../../state/store.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
@@ -223,7 +223,7 @@ export function isTeamDriveRoot(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 3 && isSharedDriveEntry(entry);
+  return tree.length === 3 && isSharedDriveEntry(entry);
 }
 
 /**
@@ -234,7 +234,7 @@ export function isTeamDrivesGrandRoot(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 2 && isSharedDriveEntry(entry);
+  return tree.length === 2 && isSharedDriveEntry(entry);
 }
 
 /**
@@ -245,7 +245,7 @@ export function isSharedDriveEntry(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree[0] == '' && tree[1] == SHARED_DRIVES_DIRECTORY_NAME;
+  return tree[0] === '' && tree[1] === SHARED_DRIVES_DIRECTORY_NAME;
 }
 
 /**
@@ -268,7 +268,7 @@ export function getTeamDriveName(entry: Entry|FakeEntry|FilesAppEntry): string {
  * Returns true if the given root type is for a container of recent files.
  */
 export function isRecentRootType(rootType: RootType|null) {
-  return rootType == RootType.RECENT;
+  return rootType === RootType.RECENT;
 }
 
 /**
@@ -289,7 +289,7 @@ export function isComputersRoot(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 3 && isComputersEntry(entry);
+  return tree.length === 3 && isComputersEntry(entry);
 }
 
 /**
@@ -300,14 +300,14 @@ export function isComputersEntry(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree[0] == '' && tree[1] == COMPUTERS_DIRECTORY_NAME;
+  return tree[0] === '' && tree[1] === COMPUTERS_DIRECTORY_NAME;
 }
 
 /**
  * Returns true if the given root type is Trash.
  */
 export function isTrashRootType(rootType: RootType|null) {
-  return rootType == RootType.TRASH;
+  return rootType === RootType.TRASH;
 }
 
 /**
@@ -391,11 +391,11 @@ export function isSiblingEntry(
     entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry): boolean {
   const path1 = entry1.fullPath.split('/');
   const path2 = entry2.fullPath.split('/');
-  if (path1.length != path2.length) {
+  if (path1.length !== path2.length) {
     return false;
   }
   for (let i = 0; i < path1.length - 1; i++) {
-    if (path1[i] != path2[i]) {
+    if (path1[i] !== path2[i]) {
       return false;
     }
   }

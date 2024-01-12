@@ -18,8 +18,7 @@ namespace password_manager {
 
 // Delegate facilitating communication between the password manager and
 // WebAuthn. It is associated with a single frame.
-class WebAuthnCredentialsDelegate
-    : public base::SupportsWeakPtr<WebAuthnCredentialsDelegate> {
+class WebAuthnCredentialsDelegate {
  public:
   virtual ~WebAuthnCredentialsDelegate() = default;
 
@@ -55,6 +54,9 @@ class WebAuthnCredentialsDelegate
   // shown on conditional UI autofill surfaces.
   virtual bool IsAndroidHybridAvailable() const = 0;
 #endif
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() = 0;
 };
 
 }  // namespace password_manager

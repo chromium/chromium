@@ -27,8 +27,8 @@ FakeBluetoothChooser::~FakeBluetoothChooser() {
           IMMEDIATE_TIMEOUT);
 
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
-      mojom::ChooserEventType::CHOOSER_CLOSED, /*origin=*/absl::nullopt,
-      /*peripheral_address=*/absl::nullopt));
+      mojom::ChooserEventType::CHOOSER_CLOSED, /*origin=*/std::nullopt,
+      /*peripheral_address=*/std::nullopt));
 }
 
 void FakeBluetoothChooser::OnRunBluetoothChooser(
@@ -37,7 +37,7 @@ void FakeBluetoothChooser::OnRunBluetoothChooser(
   event_handler_ = event_handler;
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
       mojom::ChooserEventType::CHOOSER_OPENED, origin,
-      /*peripheral_address=*/absl::nullopt));
+      /*peripheral_address=*/std::nullopt));
 }
 
 // mojom::FakeBluetoothChooser overrides
@@ -51,16 +51,16 @@ void FakeBluetoothChooser::Cancel() {
   DCHECK(event_handler_);
   event_handler_.Run(BluetoothChooserEvent::CANCELLED, std::string());
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
-      mojom::ChooserEventType::CHOOSER_CLOSED, /*origin=*/absl::nullopt,
-      /*peripheral_address=*/absl::nullopt));
+      mojom::ChooserEventType::CHOOSER_CLOSED, /*origin=*/std::nullopt,
+      /*peripheral_address=*/std::nullopt));
 }
 
 void FakeBluetoothChooser::Rescan() {
   DCHECK(event_handler_);
   event_handler_.Run(BluetoothChooserEvent::RESCAN, std::string());
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
-      mojom::ChooserEventType::DISCOVERING, /*origin=*/absl::nullopt,
-      /*peripheral_address=*/absl::nullopt));
+      mojom::ChooserEventType::DISCOVERING, /*origin=*/std::nullopt,
+      /*peripheral_address=*/std::nullopt));
 }
 
 // BluetoothChooser overrides
@@ -110,7 +110,7 @@ void FakeBluetoothChooser::AddOrUpdateDevice(const std::string& device_id,
                                              int signal_strength_level) {
   client_->OnEvent(mojom::FakeBluetoothChooserEvent::New(
       mojom::ChooserEventType::ADD_OR_UPDATE_DEVICE,
-      /*origin=*/absl::nullopt, /*peripheral_address=*/device_id));
+      /*origin=*/std::nullopt, /*peripheral_address=*/device_id));
 }
 
 }  // namespace content

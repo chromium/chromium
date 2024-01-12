@@ -88,8 +88,8 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     scoped_feature_list_->InitWithFeatures({enterprise_idle::kIdleTimeout}, {});
 
     SetUpAppState();
+    SetIdleTimeoutPolicies();
     InitIdleService();
-    SetIdleTimeoutActions();
     InitSceneWithAgent();
   }
 
@@ -113,13 +113,15 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
         idle_service_->GetActionRunnerForTesting());
   }
 
-  void SetIdleTimeoutActions() {
+  void SetIdleTimeoutPolicies() {
+    PrefService* prefs = browser_state_->GetPrefs();
+    prefs->SetTimeDelta(enterprise_idle::prefs::kIdleTimeout, base::Minutes(1));
     base::Value::List actions;
     actions.Append(
         static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
     // Set the `IdleTimeoutActions` policy. This is needed for the snackbar
     // message.
-    browser_state_->GetPrefs()->SetList(
+    prefs->SetList(
         enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
   }
 

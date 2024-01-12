@@ -68,6 +68,10 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING,
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN,
                     R.drawable.ic_offer_tag)
 
+// Note that R.drawable.plus_addresses_logo is always present, but the icon in
+// branded builds is different from the one in unbranded builds,
+DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS, R.drawable.plus_addresses_logo)
+
 // We display settings and edit icon for keyboard accessory using Android's
 // |VectorDrawableCompat|. We do not display these icons for autofill popup.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SETTINGS, R.drawable.ic_settings_black)

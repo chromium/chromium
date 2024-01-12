@@ -241,7 +241,7 @@ class UserImageManagerImpl::Job {
 
   const AccountId& account_id() const { return parent_->account_id_; }
 
-  raw_ptr<UserImageManagerImpl, DanglingUntriaged | ExperimentalAsh> parent_;
+  raw_ptr<UserImageManagerImpl, DanglingUntriaged> parent_;
 
   // Whether one of the Load*() or Set*() methods has been run already.
   bool run_;
@@ -994,7 +994,8 @@ void UserImageManagerImpl::TryToCreateImageSyncObserver() {
   const user_manager::User* user = GetUser();
   // If the currently logged-in user's user image is managed, the sync observer
   // must not be started so that the policy-set image does not get synced out.
-  if (!user_image_sync_observer_ && user && user->CanSyncImage() &&
+  // User image can be synced iff it has gaia account.
+  if (!user_image_sync_observer_ && user && user->HasGaiaAccount() &&
       !IsUserImageManaged()) {
     user_image_sync_observer_ = std::make_unique<UserImageSyncObserver>(user);
   }

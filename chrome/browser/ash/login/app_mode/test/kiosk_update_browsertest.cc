@@ -454,7 +454,7 @@ class KioskUpdateTest : public KioskBaseTest {
     }
 
     std::unique_ptr<base::RunLoop> runner_;
-    raw_ptr<KioskChromeAppManager, ExperimentalAsh> manager_;
+    raw_ptr<KioskChromeAppManager> manager_;
     const std::string app_id_;
     bool quit_ = false;
     bool update_success_ = false;
@@ -462,7 +462,7 @@ class KioskUpdateTest : public KioskBaseTest {
   };
 
   // Owned by DiskMountManager.
-  raw_ptr<KioskFakeDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<KioskFakeDiskMountManager, DanglingUntriaged>
       fake_disk_mount_manager_;
 };
 

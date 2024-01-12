@@ -89,7 +89,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool InsertBrowserContextCleared(
       const std::string& browser_context_id);
 
-  // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
+  // TODO(crbug.com/1219656): Consider returning std::nullopt for all the
   // fetching methods when having query errors
 
   // Gets the global First-Party Sets and the config used by

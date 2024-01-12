@@ -111,7 +111,7 @@ struct Environment {
     base::test::AllowCheckIsTestForTesting();
     base::CommandLine::Init(0, nullptr);
     TestTimeouts::Initialize();
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

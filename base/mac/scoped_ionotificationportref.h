@@ -20,7 +20,7 @@ struct ScopedIONotificationPortRefTraits {
   }
 };
 
-}  // namepsace internal
+}  // namespace internal
 
 using ScopedIONotificationPortRef =
     ScopedGeneric<IONotificationPortRef,

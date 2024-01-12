@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -88,21 +89,24 @@ void WebAppProfileSwitcher::QueryProfileWebAppRegistryToOpenWebApp(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(new_profile);
   CHECK(provider);
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+  provider->scheduler().ScheduleCallback(
       "QueryProfileWebAppRegistryToOpenWebApp",
-      std::make_unique<web_app::AppLockDescription>(app_id_),
+      web_app::AppLockDescription(app_id_),
       base::BindOnce(
           &WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
 }
 
 void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
-    web_app::AppLock& new_profile_lock) {
+    web_app::AppLock& new_profile_lock,
+    base::Value::Dict& debug_value) {
   if (new_profile_lock.registrar().IsInstalled(app_id_)) {
     // The web app is already installed and can be launched, or foregrounded,
     // if it's already launched.
     Browser* launched_app =
         web_app::AppBrowserController::FindForWebApp(*new_profile_, app_id_);
+    debug_value.Set("launched_app", launched_app ? true : false);
     if (launched_app) {
       launched_app->window()->Activate();
       RunCompletionCallback();

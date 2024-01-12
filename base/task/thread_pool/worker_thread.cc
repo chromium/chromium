@@ -178,8 +178,9 @@ bool WorkerThread::Start(
   io_thread_task_runner_ = std::move(io_thread_task_runner);
 #endif
 
-  if (should_exit_.IsSet() || join_called_for_testing_.IsSet())
+  if (should_exit_.IsSet() || join_called_for_testing()) {
     return true;
+  }
 
   DCHECK(!worker_thread_observer_);
   worker_thread_observer_ = worker_thread_observer;
@@ -198,20 +199,22 @@ bool WorkerThread::Start(
   return true;
 }
 
+void WorkerThread::Destroy() {
+  CheckedAutoLock auto_lock(thread_lock_);
+
+  // If |thread_handle_| wasn't joined, detach it.
+  if (!thread_handle_.is_null()) {
+    DCHECK(!join_called_for_testing());
+    PlatformThread::Detach(thread_handle_);
+  }
+}
+
 bool WorkerThread::ThreadAliveForTesting() const {
   CheckedAutoLock auto_lock(thread_lock_);
   return !thread_handle_.is_null();
 }
 
-WorkerThread::~WorkerThread() {
-  CheckedAutoLock auto_lock(thread_lock_);
-
-  // If |thread_handle_| wasn't joined, detach it.
-  if (!thread_handle_.is_null()) {
-    DCHECK(!join_called_for_testing_.IsSet());
-    PlatformThread::Detach(thread_handle_);
-  }
-}
+WorkerThread::~WorkerThread() = default;
 
 void WorkerThread::MaybeUpdateThreadType() {
   UpdateThreadType(GetDesiredThreadType());
@@ -239,7 +242,7 @@ bool WorkerThread::ShouldExit() const {
   // released and outlive |task_tracker_| in unit tests. However, when the
   // WorkerThread is released, |should_exit_| will be set, so check that
   // first.
-  return should_exit_.IsSet() || join_called_for_testing_.IsSet() ||
+  return should_exit_.IsSet() || join_called_for_testing() ||
          task_tracker_->IsShutdownComplete();
 }
 

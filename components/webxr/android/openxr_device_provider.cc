@@ -36,14 +36,18 @@ OpenXrDeviceProvider::~OpenXrDeviceProvider() {
   openxr_platform_helper_.reset();
 }
 
-void OpenXrDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
+void OpenXrDeviceProvider::Initialize(
+    device::VRDeviceProviderClient* client,
+    content::WebContents* initializing_web_contents) {
   CHECK(!initialized_);
 
   // TODO(https://crbug.com/1454942): Support non-shared buffer rendering path.
   if (device::XrImageTransportBase::UseSharedBuffer()) {
     openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
 
-    if (openxr_platform_helper_->EnsureInitialized()) {
+    if (openxr_platform_helper_->EnsureInitialized() &&
+        openxr_platform_helper_->CheckHardwareSupport(
+            initializing_web_contents)) {
       DVLOG(2) << __func__ << ": OpenXr is supported, creating device";
       // Unretained is safe since we own the device this callback is being
       // passed to and we ensure that it does not outlive us. The device is

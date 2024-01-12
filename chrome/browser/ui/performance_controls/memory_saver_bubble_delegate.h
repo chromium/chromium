@@ -19,7 +19,7 @@ class MemorySaverBubbleDelegate : public ui::DialogModelDelegate {
                                      MemorySaverBubbleObserver* observer);
 
   void OnSettingsClicked();
-  void OnAddSiteToExceptionsListClicked();
+  void OnAddSiteToTabDiscardExceptionsListClicked();
 
   void OnDialogDestroy();
 

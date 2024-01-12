@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/tether_controller.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
@@ -218,7 +219,8 @@ void PhoneHubUiController::HandleBubbleOpened() {
   auto feature_status =
       phone_hub_manager_->GetFeatureStatusProvider()->GetStatus();
   if (feature_status == FeatureStatus::kEnabledButDisconnected)
-    phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
+    phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow(
+        phonehub::DiscoveryEntryPoint::kPhoneHubBubbleOpen);
 
   if (features::IsEcheNetworkConnectionStateEnabled() &&
       feature_status == FeatureStatus::kEnabledAndConnected) {

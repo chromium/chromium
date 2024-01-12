@@ -37,6 +37,7 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onlanguagechange;
   attribute EventHandler onmessage;
   attribute EventHandler onmessageerror;
+  [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] attribute EventHandler onmove;
   attribute EventHandler onoffline;
   attribute EventHandler ononline;
   attribute EventHandler onpagehide;

@@ -399,6 +399,15 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
                               feature_config);
             }
             break;
+          case user_education::FeaturePromoSpecification::PromoSubtype::
+              kActionableAlert:
+            // These should not be session limited, and should limit other IPH.
+            if (is_session_limited || !limits_other_iph) {
+              MaybeAddFailure(failures, exceptions, feature,
+                              IPHFailureReason::kWrongSessionImpactPerApp,
+                              feature_config);
+            }
+            break;
         }
         break;
       case user_education::FeaturePromoSpecification::PromoType::kLegacy:

@@ -54,7 +54,7 @@ PageImpl::~PageImpl() {
   CancelLoadingMemoryTracker();
 }
 
-const absl::optional<GURL>& PageImpl::GetManifestUrl() const {
+const std::optional<GURL>& PageImpl::GetManifestUrl() const {
   return manifest_url_;
 }
 
@@ -105,16 +105,16 @@ const std::string& PageImpl::GetContentsMimeType() const {
   return contents_mime_type_;
 }
 
-void PageImpl::SetResizableForTesting(absl::optional<bool> resizable) {
+void PageImpl::SetResizableForTesting(std::optional<bool> resizable) {
   SetResizable(resizable);
 }
 
-void PageImpl::SetResizable(absl::optional<bool> resizable) {
+void PageImpl::SetResizable(std::optional<bool> resizable) {
   resizable_ = resizable;
   delegate_->OnCanResizeFromWebAPIChanged();
 }
 
-absl::optional<bool> PageImpl::GetResizable() {
+std::optional<bool> PageImpl::GetResizable() {
   return resizable_;
 }
 
@@ -123,7 +123,7 @@ void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   delegate_->OnFirstVisuallyNonEmptyPaint(*this);
 }
 
-void PageImpl::OnThemeColorChanged(const absl::optional<SkColor>& theme_color) {
+void PageImpl::OnThemeColorChanged(const std::optional<SkColor>& theme_color) {
   main_document_theme_color_ = theme_color;
   delegate_->OnThemeColorChanged(*this);
 }
@@ -200,7 +200,7 @@ void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
 void PageImpl::Activate(
     ActivationType type,
     StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
-    absl::optional<blink::ViewTransitionState> view_transition_state,
+    std::optional<blink::ViewTransitionState> view_transition_state,
     base::OnceCallback<void(base::TimeTicks)> completion_callback) {
   TRACE_EVENT1("navigation", "PageImpl::Activate", "activation_type", type);
 
@@ -425,6 +425,17 @@ void PageImpl::CancelLoadingMemoryTracker() {
     loading_memory_tracker_->Cancel();
     loading_memory_tracker_.reset();
   }
+}
+
+void PageImpl::SetLastCommitParams(
+    mojom::DidCommitProvisionalLoadParamsPtr commit_params) {
+  CHECK(GetMainDocument().IsOutermostMainFrame());
+  last_commit_params_ = std::move(commit_params);
+}
+
+mojom::DidCommitProvisionalLoadParamsPtr PageImpl::TakeLastCommitParams() {
+  CHECK(GetMainDocument().IsOutermostMainFrame());
+  return std::move(last_commit_params_);
 }
 
 }  // namespace content

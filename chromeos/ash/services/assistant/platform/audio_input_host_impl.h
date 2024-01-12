@@ -56,8 +56,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
       std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   mojo::Remote<libassistant::mojom::AudioInputController> remote_;
-  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
-      power_manager_client_;
+  const raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observer_;

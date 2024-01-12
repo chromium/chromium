@@ -24,12 +24,10 @@ export class EmojiErrorComponent extends PolymerElement {
     return {
       status: {type: Status},
       errorMessage: {type: String},
-      jellySupport: {type: Boolean, value: false},
     };
   }
   private status: Status;
   private errorMessage: string;
-  private jellySupport: boolean;
 
   isGifInHttpErrorState(status: Status): boolean {
     return status === Status.kHttpError;

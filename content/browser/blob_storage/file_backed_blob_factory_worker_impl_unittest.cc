@@ -90,7 +90,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_UnreadableFile) {
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
@@ -121,7 +121,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_ValidFile) {
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
@@ -159,7 +159,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_ExistingUUID) {
       process_id_, path));
 
   auto element1 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob1;
   factory_->RegisterBlob(blob1.BindNewPipeAndPassReceiver(), kId, kType,
@@ -179,7 +179,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_ExistingUUID) {
   EXPECT_FALSE(handle->IsBroken());
 
   auto element2 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob2;
   factory_->RegisterBlob(blob2.BindNewPipeAndPassReceiver(), kId, kType,
@@ -226,7 +226,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest,
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
@@ -273,7 +273,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, MultipleBindings) {
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
@@ -282,7 +282,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, MultipleBindings) {
   blob.FlushForTesting();
 
   auto element2 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
   mojo::Remote<blink::mojom::Blob> blob2;
   factory2->RegisterBlob(blob2.BindNewPipeAndPassReceiver(), kId2, kType,
                          std::move(element2));

@@ -163,8 +163,8 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
   receiver_.set_disconnect_handler(base::BindOnce(
       &PepperHostResolverMessageFilter::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt));
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt));
   host_resolve_context_ = context->MakeReplyMessageContext();
 
   return PP_OK_COMPLETIONPENDING;
@@ -173,8 +173,8 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
 void PepperHostResolverMessageFilter::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
@@ -191,7 +191,7 @@ void PepperHostResolverMessageFilter::OnComplete(
 
 void PepperHostResolverMessageFilter::OnLookupFinished(
     int net_result,
-    const absl::optional<net::AddressList>& addresses,
+    const std::optional<net::AddressList>& addresses,
     const ReplyMessageContext& context) {
   if (net_result != net::OK) {
     SendResolveError(NetErrorToPepperError(net_result), context);

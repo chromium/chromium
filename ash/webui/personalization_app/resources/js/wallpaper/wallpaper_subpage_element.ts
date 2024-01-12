@@ -7,12 +7,13 @@
  * personalization SWA.
  */
 
+import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+
 import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement, QueryParams} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {isSeaPenEnabled} from './sea_pen/load_time_booleans.js';
 import {getTemplate} from './wallpaper_subpage_element.html.js';
 
 export class WallpaperSubpageElement extends WithPersonalizationStore {

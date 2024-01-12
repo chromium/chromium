@@ -40,7 +40,8 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
       uint32_t usage,
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
-    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
+    return base::MakeRefCounted<gpu::ClientSharedImage>(
+        gpu::Mailbox::GenerateForSharedImage());
   }
 };
 

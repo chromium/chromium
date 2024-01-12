@@ -151,6 +151,7 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   }
 
   EnableExtensionIfSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+  EnableExtensionIfSupported(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME);
   EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
   EnableExtensionIfSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
 

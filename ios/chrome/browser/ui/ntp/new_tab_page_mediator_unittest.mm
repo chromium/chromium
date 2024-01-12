@@ -236,7 +236,12 @@ TEST_F(NewTabPageMediatorTest, TestHandleFeedLearnMoreTapped) {
 // Tests that the feed will be hidden when IOSHideFeedWithSearchChoice is
 // enabled and a non-Google search engine is chosen.
 TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoice) {
-  scoped_feature_list_.InitWithFeatures({kIOSHideFeedWithSearchChoice}, {});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {
+          {kIOSHideFeedWithSearchChoice,
+           {{kIOSHideFeedWithSearchChoiceTargeted, "false"}}},
+      },
+      {});
 
   // Test it with the default search engine.
   [mediator_ setUp];

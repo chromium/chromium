@@ -64,7 +64,7 @@ class TestPrefetchService : public PrefetchService {
     request->trusted_params->devtools_observer =
         devtools_observer->MakeSelfOwnedNetworkServiceDevToolsObserver();
     devtools_observer->OnStartSinglePrefetch(prefetch_container->RequestId(),
-                                             *request, absl::nullopt);
+                                             *request, std::nullopt);
 
     network::mojom::URLResponseHead response_head;
     devtools_observer->OnPrefetchResponseReceived(
@@ -194,7 +194,7 @@ class MockPrefetcher : public Prefetcher {
   void OnStartSinglePrefetch(
       const std::string& request_id,
       const network::ResourceRequest& request,
-      absl::optional<
+      std::optional<
           std::pair<const GURL&,
                     const network::mojom::URLResponseHeadDevToolsInfo&>>
           redirect_info) override {

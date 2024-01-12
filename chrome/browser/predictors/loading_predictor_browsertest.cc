@@ -439,7 +439,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     preconnect_manager_observer_ =
         std::make_unique<TestPreconnectManagerObserver>(
             loading_predictor_->preconnect_manager());
-    if (loading_predictor_->prefetch_manager()) {
+    if (base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch)) {
       prefetch_manager_observer_ =
           std::make_unique<TestPrefetchManagerObserver>(
               *loading_predictor_->prefetch_manager());

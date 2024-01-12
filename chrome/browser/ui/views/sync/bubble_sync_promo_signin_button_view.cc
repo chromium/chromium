@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -79,11 +80,11 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
                        .SetCallback(std::move(callback))
                        .SetText(l10n_util::GetStringUTF16(
                            IDS_PROFILES_DICE_SIGNIN_BUTTON))
-                       .SetProminent(true))
+                       .SetStyle(ui::ButtonStyle::kProminent))
       .BuildChildren();
 }
 
 BubbleSyncPromoSigninButtonView::~BubbleSyncPromoSigninButtonView() = default;
 
-BEGIN_METADATA(BubbleSyncPromoSigninButtonView, views::View)
+BEGIN_METADATA(BubbleSyncPromoSigninButtonView)
 END_METADATA

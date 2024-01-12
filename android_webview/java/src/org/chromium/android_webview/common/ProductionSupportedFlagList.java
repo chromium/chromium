@@ -407,10 +407,6 @@ public final class ProductionSupportedFlagList {
                 "Changes behavior of User-Agent Client Hints to send blank headers "
                         + "when the User-Agent string is overriden"),
         Flag.baseFeature(
-                BlinkFeatures.MAX_UNTHROTTLED_TIMEOUT_NESTING_LEVEL,
-                "Increases the nesting threshold before which "
-                        + "setTimeout(..., <4ms) starts being clamped to 4 ms."),
-        Flag.baseFeature(
                 BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
                 "Enables establishing the GPU channel asnchronously when requesting a new "
                         + "layer tree frame sink."),
@@ -498,7 +494,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
         Flag.baseFeature(BlinkFeatures.DYNAMIC_SCROLL_CULL_RECT_EXPANSION),
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
-        Flag.baseFeature(BlinkFeatures.SOLID_COLOR_LAYERS),
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(BlinkFeatures.ONE_PASS_RASTER_INVALIDATION),
@@ -665,6 +660,10 @@ public final class ProductionSupportedFlagList {
                 "Enables showing the cancel dialog by calling preventDefault() "
                         + "on beforeunload event."),
         Flag.baseFeature(
+                BlinkFeatures.CLOSE_WATCHER,
+                "Enables the CloseWatcher JS API and integrates behavior with dialog and popover"
+                        + " elements."),
+        Flag.baseFeature(
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
@@ -687,13 +686,17 @@ public final class ProductionSupportedFlagList {
                         + "it makes sure the changes made to do so in "
                         + "Chromium won't affect WebView."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_PROPAGATE_NETWORK_SIGNALS,
-                "This flag will allow webView to propagate networking signals to the networking"
-                    + " stack. Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault)"
-                    + " signals are propagated."),
+                AwFeatures.WEBVIEW_PROPAGATE_NETWORK_CHANGE_SIGNALS,
+                "This flag will allow webView to propagate networking change signals to the"
+                    + " networking stack. Only"
+                    + " onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are"
+                    + " propagated."),
         Flag.baseFeature(
                 ContentFeatures.PREFETCH_NEW_LIMITS,
                 "Enables new limits policy for SpeculationRules Prefetch."),
+        Flag.baseFeature(
+                ContentFeatures.PREFETCH_REDIRECTS,
+                "Enables following redirects during speculation rules prefetch."),
         Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_SUPPORT,
                 "Enables support for CSS vertical writing mode on non-text-based form"
@@ -805,6 +808,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.BACK_FORWARD_CACHE, "Controls if back/forward cache is enabled."),
         Flag.baseFeature(
+                ContentFeatures.WEBVIEW_SUPPRESS_TAP_DURING_FLING, "Supress tap during fling."),
+        Flag.baseFeature(
                 VizFeatures.INVALIDATE_LOCAL_SURFACE_ID_PRE_COMMIT,
                 "When enabled, invalidates the LocalSurfaceId of the DelegatedFrameHostAndroid when"
                         + " the old page is about to be unloaded."),
@@ -817,6 +822,30 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
                 "Starts capturing bfcache blocking details"),
+        Flag.baseFeature(
+                "MojoChannelAssociatedSendUsesRunOrPostTask",
+                "Enables optimization for sending messages on channel-associated interfaces"),
+        Flag.baseFeature(
+                BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_DIRECTION_SUPPORT,
+                "Enables support for CSS direction ltr and rtl on vertical slider elements"
+                        + " progress, meter and range."),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_IMAGE_SET_LOADING_TASK_PRIORITY,
+                "If enabled, image set loading tasks have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_FONT_LOADING_TASK_PRIORITY,
+                "If enabled, font loading tasks have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_VIDEO_LOADING_TASK_PRIORITY,
+                "If enabled, video loading tasks have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_RENDER_BLOCKING_STYLE_LOADING_TASK_PRIORITY,
+                "If enabled, render-blocking style loading tasks have higher priority on visible"
+                        + " pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_NON_RENDER_BLOCKING_STYLE_LOADING_TASK_PRIORITY,
+                "If enabled, non-render-blocking style loading tasks have higher priority on"
+                        + " visible pages"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

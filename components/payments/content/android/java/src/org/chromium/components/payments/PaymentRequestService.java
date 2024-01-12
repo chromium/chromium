@@ -59,11 +59,12 @@ import java.util.Set;
  * third_party/blink/public/mojom/payments/payment_request.mojom. This class provides the parts
  * shareable between Clank and WebLayer. The Clank specific logic lives in
  * org.chromium.chrome.browser.payments.ChromePaymentRequestService.
- * TODO(crbug.com/1102522): ChromePaymentRequestService is under refactoring, with the purpose of
+ *
+ * <p>TODO(crbug.com/1102522): ChromePaymentRequestService is under refactoring, with the purpose of
  * moving the business logic of ChromePaymentRequestService into PaymentRequestService and
  * eventually moving ChromePaymentRequestService. Note that the callers of the instances of this
- * class need to close them with
- * {@link PaymentRequestService#close()}, after which no usage is allowed.
+ * class need to close them with {@link PaymentRequestService#close()}, after which no usage is
+ * allowed.
  */
 public class PaymentRequestService
         implements PaymentAppFactoryDelegate,
@@ -155,11 +156,10 @@ public class PaymentRequestService
     private boolean mRejectShowForUserActivation;
 
     /**
-     * An observer interface injected when running tests to allow them to observe events.
-     * This interface holds events that should be passed back to the native C++ test
-     * harness and mirrors the C++ PaymentRequest::ObserverForTest() interface. Its methods
-     * should be called in the same places that the C++ PaymentRequest object will call its
-     * ObserverForTest.
+     * An observer interface injected when running tests to allow them to observe events. This
+     * interface holds events that should be passed back to the native C++ test harness and mirrors
+     * the C++ PaymentRequest::ObserverForTest() interface. Its methods should be called in the same
+     * places that the C++ PaymentRequest object will call its ObserverForTest.
      */
     public interface NativeObserverForTest {
         void onCanMakePaymentCalled();
@@ -202,6 +202,7 @@ public class PaymentRequestService
     public interface Delegate {
         /**
          * Creates an instance of BrowserPaymentRequest.
+         *
          * @param paymentRequestService The PaymentRequestService that it depends on.
          * @return The instance.
          */
@@ -210,23 +211,25 @@ public class PaymentRequestService
 
         /**
          * @return Whether the merchant's WebContents is currently showing an off-the-record tab.
-         *         Return true if the tab profile is not accessible from the WebContents.
+         *     Return true if the tab profile is not accessible from the WebContents.
          */
         boolean isOffTheRecord();
 
         /**
          * @return A non-null string if there is an invalid SSL certificate on the currently loaded
-         *         page.
+         *     page.
          */
         String getInvalidSslCertificateErrorMessage();
 
-        /** @return Whether the preferences allow CAN_MAKE_PAYMENT. */
+        /**
+         * @return Whether the preferences allow CAN_MAKE_PAYMENT.
+         */
         boolean prefsCanMakePayment();
 
         /**
          * @return If the merchant's WebContents is running inside of a Trusted Web Activity,
-         *         returns the package name for Trusted Web Activity. Otherwise returns an empty
-         *         string or null.
+         *     returns the package name for Trusted Web Activity. Otherwise returns an empty string
+         *     or null.
          */
         @Nullable
         String getTwaPackageName();
@@ -234,8 +237,9 @@ public class PaymentRequestService
         /**
          * Gets the WebContents from a RenderFrameHost if the WebContents has not been destroyed;
          * otherwise, return null.
+         *
          * @param renderFrameHost The {@link RenderFrameHost} of any frame in which the intended
-         *         WebContents contains.
+         *     WebContents contains.
          * @return The WebContents.
          */
         @Nullable
@@ -245,6 +249,7 @@ public class PaymentRequestService
 
         /**
          * Returns true for a valid URL from a secure origin.
+         *
          * @param url The URL to check.
          * @return Whether the origin of the URL is secure.
          */
@@ -254,9 +259,10 @@ public class PaymentRequestService
 
         /**
          * Creates a journey logger.
+         *
          * @param isIncognito Whether the user profile is incognito.
          * @param webContents The web contents where PaymentRequest API is invoked. Should not be
-         *         null.
+         *     null.
          */
         default JourneyLogger createJourneyLogger(boolean isIncognito, WebContents webContents) {
             return new JourneyLogger(isIncognito, webContents);
@@ -264,9 +270,10 @@ public class PaymentRequestService
 
         /**
          * Builds a String that strips down |uri| to its scheme, host, and port.
+         *
          * @param uri The URI to break down.
          * @return Stripped-down String containing the essential bits of the URL, or the original
-         *         URL if it fails to parse it.
+         *     URL if it fails to parse it.
          */
         default String formatUrlForSecurityDisplay(GURL uri) {
             return UrlFormatter.formatUrlForSecurityDisplay(uri, SchemeDisplay.SHOW);
@@ -282,6 +289,7 @@ public class PaymentRequestService
 
         /**
          * Checks whether the page at the given URL should be allowed to use the web payment APIs.
+         *
          * @param url The URL to check.
          * @return Whether the page is allowed to use web payment APIs.
          */
@@ -299,11 +307,11 @@ public class PaymentRequestService
 
         /**
          * Creates an instance of {@link PaymentRequestSpec} that stores the given info.
+         *
          * @param options The payment options, e.g., whether shipping is requested.
          * @param details The payment details, e.g., the total amount.
          * @param methodData The list of supported payment method identifiers and corresponding
-         *         payment
-         * method specific data.
+         *     payment method specific data.
          * @param appLocale The current application locale.
          * @return The payment request spec.
          */
@@ -315,13 +323,16 @@ public class PaymentRequestService
             return new PaymentRequestSpec(options, details, methodData, appLocale);
         }
 
-        /** @return The PaymentAppService that is used to create payment app for this service. */
+        /**
+         * @return The PaymentAppService that is used to create payment app for this service.
+         */
         default PaymentAppService getPaymentAppService() {
             return PaymentAppService.getInstance();
         }
 
         /**
          * Creates an instance of Android payment app factory.
+         *
          * @return The instance, can be null for testing.
          */
         @Nullable
@@ -331,7 +342,7 @@ public class PaymentRequestService
 
         /**
          * @return The context of the current activity, can be null when WebContents has been
-         *         destroyed, the activity is gone, the window is closed, etc.
+         *     destroyed, the activity is gone, the window is closed, etc.
          */
         @Nullable
         default Context getContext(RenderFrameHost renderFrameHost) {
@@ -341,8 +352,8 @@ public class PaymentRequestService
         }
 
         /**
-         * @return The WindowAndroid of the current activity, can be null when WebContents has
-         *          been destroyed, the activity is gone, etc.
+         * @return The WindowAndroid of the current activity, can be null when WebContents has been
+         *     destroyed, the activity is gone, etc.
          */
         @Nullable
         default WindowAndroid getWindowAndroid(RenderFrameHost renderFrameHost) {
@@ -368,10 +379,11 @@ public class PaymentRequestService
 
         /**
          * Called when a show request failed. This can happen when:
+         *
          * <ul>
-         *   <li>The merchant requests only unsupported payment methods.</li>
+         *   <li>The merchant requests only unsupported payment methods.
          *   <li>The merchant requests only payment methods that don't have corresponding apps and
-         *   are not able to add a credit card from PaymentRequest UI.</li>
+         *       are not able to add a credit card from PaymentRequest UI.
          * </ul>
          */
         void onPaymentRequestServiceShowFailed();
@@ -400,13 +412,13 @@ public class PaymentRequestService
 
     /**
      * Creates an instance of the class.
+     *
      * @param renderFrameHost The RenderFrameHost of the merchant page.
      * @param client The client of the renderer PaymentRequest, can be null.
      * @param onClosedListener A listener to be invoked when the service is closed.
      * @param delegate The delegate of this class.
      * @param paymentAppServiceBridgeSupplier The supplier of PaymentAppServiceBridge - a C++
-     *        factory that creates service-worker payment apps, secure payment confirmation apps,
-     *        etc.
+     *     factory that creates service-worker payment apps, secure payment confirmation apps, etc.
      */
     public PaymentRequestService(
             RenderFrameHost renderFrameHost,
@@ -429,12 +441,13 @@ public class PaymentRequestService
 
     /**
      * Initializes the payment request service.
+     *
      * @param methodData The supported methods specified by the merchant, need validation before
-     *        usage, can be null.
-     * @param details The payment details specified by the merchant, need validation before
-     *        usage, can be null.
-     * @param options The payment options specified by the merchant, need validation before
-     *        usage, can be null.
+     *     usage, can be null.
+     * @param details The payment details specified by the merchant, need validation before usage,
+     *     can be null.
+     * @param options The payment options specified by the merchant, need validation before usage,
+     *     can be null.
      * @return Whether the initialization is successful.
      */
     public boolean init(
@@ -533,9 +546,7 @@ public class PaymentRequestService
                     PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return false;
         }
-        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                && methodData.containsKey(MethodStrings.SECURE_PAYMENT_CONFIRMATION)
+        if (methodData.containsKey(MethodStrings.SECURE_PAYMENT_CONFIRMATION)
                 && !isValidSecurePaymentConfirmationRequest(methodData, options)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
@@ -629,8 +640,8 @@ public class PaymentRequestService
     }
 
     /**
-     * @return Whether the payment details is pending to be updated due to a promise that was
-     *         passed into PaymentRequest.show().
+     * @return Whether the payment details is pending to be updated due to a promise that was passed
+     *     into PaymentRequest.show().
      */
     public boolean isShowWaitingForUpdatedDetails() {
         return mIsShowWaitingForUpdatedDetails;
@@ -638,9 +649,10 @@ public class PaymentRequestService
 
     /**
      * Called to open a new PaymentHandler UI on the showing PaymentRequest.
+     *
      * @param url The url of the payment app to be displayed in the UI.
      * @return The WebContents of the payment handler that's just opened when the opening is
-     *         successful; null if failed.
+     *     successful; null if failed.
      */
     @Nullable
     public static WebContents openPaymentHandlerWindow(GURL url) {
@@ -654,6 +666,7 @@ public class PaymentRequestService
 
     /**
      * Disconnects from the PaymentRequestClient with a debug message.
+     *
      * @param debugMessage The debug message shown for web developers.
      * @param reason The reason of the disconnection defined in {@link PaymentErrorReason}.
      */
@@ -670,9 +683,7 @@ public class PaymentRequestService
             //      and non-matching credential UXs, and so is not a privacy leak.
             //   3. Erroring due to a lack of user activation when it is not allowed.
             boolean obscureRealError =
-                    PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                                    PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                            && mSpec != null
+                    mSpec != null
                             && mSpec.isSecurePaymentConfirmationRequested()
                             && mRejectShowErrorReason
                                     != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
@@ -693,6 +704,7 @@ public class PaymentRequestService
     /**
      * Set a native-side observer for PaymentRequest implementations. This observer should be set
      * before PaymentRequest implementations are instantiated.
+     *
      * @param nativeObserverForTest The native-side observer.
      */
     public static void setNativeObserverForTest(NativeObserverForTest nativeObserverForTest) {
@@ -700,7 +712,9 @@ public class PaymentRequestService
         ResettersForTesting.register(() -> sNativeObserverForTest = null);
     }
 
-    /** @return Get the native=side observer, for testing purpose only. */
+    /**
+     * @return Get the native=side observer, for testing purpose only.
+     */
     @Nullable
     public static NativeObserverForTest getNativeObserverForTest() {
         return sNativeObserverForTest;
@@ -779,10 +793,11 @@ public class PaymentRequestService
 
     /**
      * Invokes the given payment app.
+     *
      * @param paymentApp The payment app to be invoked.
      * @param paymentResponseHelper The helper to create and fill the response to send to the
-     *         merchant. The helper should have this instance as the delegate {@link
-     *         PaymentResponseHelperInterface.PaymentResponseResultCallback}.
+     *     merchant. The helper should have this instance as the delegate {@link
+     *     PaymentResponseHelperInterface.PaymentResponseResultCallback}.
      */
     public void invokePaymentApp(
             PaymentApp paymentApp, PaymentResponseHelperInterface paymentResponseHelper) {
@@ -922,8 +937,6 @@ public class PaymentRequestService
                 && !mSpec.isDestroyed()
                 && mSpec.isSecurePaymentConfirmationRequested()
                 && !mBrowserPaymentRequest.hasAvailableApps()
-                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
                 // In most cases, we show the 'No Matching Payment Credential' dialog in order to
                 // preserve user privacy. An exception is failure to download the card art icon -
                 // because we download it in all cases, revealing a failure doesn't leak any
@@ -1055,9 +1068,7 @@ public class PaymentRequestService
         PaymentApp selectedApp = mBrowserPaymentRequest.getSelectedPaymentApp();
         // TODO(crbug.com/1211947): Deduplicate this part with
         // SecurePaymentConfirmationController::SetupModelAndShowDialogIfApplicable().
-        return PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                && selectedApp != null
+        return selectedApp != null
                 && selectedApp.getPaymentAppType() == PaymentAppType.INTERNAL
                 && selectedApp.getInstrumentMethodNames().size() == 1
                 && selectedApp
@@ -1093,6 +1104,7 @@ public class PaymentRequestService
 
     /**
      * Ensures the available payment apps can make payment.
+     *
      * @return The error if the payment cannot be made; null otherwise.
      */
     @Nullable
@@ -1222,8 +1234,8 @@ public class PaymentRequestService
 
     /**
      * @return Whether hasEnrolledInstrument() query quota should be enforced. By default, the quota
-     *         is enforced only on https:// scheme origins. However, the tests also enable the quota
-     *         on localhost and file:// scheme origins to verify its behavior.
+     *     is enforced only on https:// scheme origins. However, the tests also enable the quota on
+     *     localhost and file:// scheme origins to verify its behavior.
      */
     private boolean shouldEnforceHasEnrolledInstrumentQueryQuota() {
         // If |mWebContents| is destroyed, don't bother checking the localhost or file:// scheme
@@ -1268,7 +1280,7 @@ public class PaymentRequestService
     /**
      * @param methodDataList A list of PaymentMethodData.
      * @return The validated method data, a mapping of method names to its PaymentMethodData(s);
-     *         when the given method data is invalid, returns null.
+     *     when the given method data is invalid, returns null.
      */
     @Nullable
     private static Map<String, PaymentMethodData> getValidatedMethodData(
@@ -1312,9 +1324,7 @@ public class PaymentRequestService
             // The renderer can create multiple instances of PaymentRequest and call show() on each
             // one. Only the first one will be shown. This also prevents multiple tabs and windows
             // from showing PaymentRequest UI at the same time.
-            onShowFailed(
-                    ErrorStrings.ANOTHER_UI_SHOWING,
-                    PaymentErrorReason.ALREADY_SHOWING);
+            onShowFailed(ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
             return;
         }
         if (!hadUserActivation) {
@@ -1350,7 +1360,7 @@ public class PaymentRequestService
      * @param options The payment options specified in the payment request.
      * @param allApps All available payment apps.
      * @return true when there is exactly one available payment app which can provide all requested
-     * information including shipping address and payer's contact information whenever needed.
+     *     information including shipping address and payer's contact information whenever needed.
      */
     private static boolean onlySingleAppCanProvideAllRequiredInformation(
             PaymentOptions options, List<PaymentApp> allApps) {
@@ -1377,8 +1387,7 @@ public class PaymentRequestService
 
     /**
      * @param methods The payment methods supported by the payment request.
-     * @return True when at least one url payment method identifier is specified in payment
-     *         request.
+     * @return True when at least one url payment method identifier is specified in payment request.
      */
     public static boolean isUrlPaymentMethodIdentifiersSupported(Set<String> methods) {
         for (String methodName : methods) {
@@ -1390,7 +1399,9 @@ public class PaymentRequestService
         return false;
     }
 
-    /** @return Whether the browser payment sheet should be skipped directly into the payment app. */
+    /**
+     * @return Whether the browser payment sheet should be skipped directly into the payment app.
+     */
     private boolean shouldSkipAppSelector() {
         assert mBrowserPaymentRequest != null;
         assert mSpec != null;
@@ -1450,8 +1461,9 @@ public class PaymentRequestService
 
     /**
      * The component part of the {@link PaymentRequest#updateWith} implementation.
+     *
      * @param details The details that the merchant provides to update the payment request, can be
-     *         null.
+     *     null.
      */
     /* package */ void updateWith(@Nullable PaymentDetails details) {
         if (mBrowserPaymentRequest == null) return;
@@ -1504,7 +1516,9 @@ public class PaymentRequestService
                 mSpec.getPaymentDetails(), hasNotifiedInvokedPaymentApp);
     }
 
-    /** The component part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation. */
+    /**
+     * The component part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation.
+     */
     /* package */ void onPaymentDetailsNotUpdated() {
         if (mBrowserPaymentRequest == null) return;
         if (!mIsShowCalled) {
@@ -1532,10 +1546,11 @@ public class PaymentRequestService
 
     /**
      * Completes the payment request. This method is triggered by PaymentResponse.complete() from
-     * the renderer, used to notify the UI of the completion, closes the UI and opened resources
-     * and close the payment request service.
-     * @param result The status of the transaction, defined in {@link PaymentComplete}, specified
-     *      by the merchant with complete(result).
+     * the renderer, used to notify the UI of the completion, closes the UI and opened resources and
+     * close the payment request service.
+     *
+     * @param result The status of the transaction, defined in {@link PaymentComplete}, specified by
+     *     the merchant with complete(result).
      */
     /* package */ void complete(int result) {
         if (mBrowserPaymentRequest == null) return;
@@ -1604,8 +1619,8 @@ public class PaymentRequestService
 
     /**
      * Implement {@link PaymentRequest#close}. This should be called by the renderer only. The
-     * closing triggered by other classes should call {@link #close} instead. The caller should
-     * stop referencing this class after calling this method.
+     * closing triggered by other classes should call {@link #close} instead. The caller should stop
+     * referencing this class after calling this method.
      */
     /* package */ void closeByRenderer() {
         mJourneyLogger.setAborted(AbortReason.MOJO_RENDERER_CLOSING);
@@ -1619,8 +1634,9 @@ public class PaymentRequestService
     }
 
     /**
-     * Called when the mojo connection with the renderer PaymentRequest has an error.  The caller
+     * Called when the mojo connection with the renderer PaymentRequest has an error. The caller
      * should stop referencing this class after calling this method.
+     *
      * @param e The mojo exception.
      */
     /* package */ void onConnectionError(MojoException e) {
@@ -1633,6 +1649,7 @@ public class PaymentRequestService
 
     /**
      * Abort the request because the (untrusted) renderer passes invalid data.
+     *
      * @param debugMessage The debug message to be sent to the renderer.
      */
     /* package */ void abortForInvalidDataFromRenderer(String debugMessage) {
@@ -1693,7 +1710,9 @@ public class PaymentRequestService
         PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
-    /** @return An observer for the payment request service, if any; otherwise, null. */
+    /**
+     * @return An observer for the payment request service, if any; otherwise, null.
+     */
     @Nullable
     public static PaymentRequestServiceObserverForTest getObserverForTest() {
         return sObserverForTest;
@@ -1730,8 +1749,7 @@ public class PaymentRequestService
     }
 
     /**
-     * @return The logger of the user journey of the Android PaymentRequest service, cannot be
-     *         null.
+     * @return The logger of the user journey of the Android PaymentRequest service, cannot be null.
      */
     public JourneyLogger getJourneyLogger() {
         return mJourneyLogger;
@@ -1740,6 +1758,7 @@ public class PaymentRequestService
     /**
      * Redact shipping address before exposing it in ShippingAddressChangeEvent.
      * https://w3c.github.io/payment-request/#shipping-address-changed-algorithm
+     *
      * @param shippingAddress The shipping address to redact in place.
      */
     private static void redactShippingAddress(PaymentAddress shippingAddress) {

@@ -62,26 +62,22 @@ bool GrabWindowSnapshot(gfx::NativeWindow native_window,
   return GrabViewSnapshot(window.contentView.superview, snapshot_bounds, image);
 }
 
-void GrabWindowSnapshotAndScaleAsync(
-    gfx::NativeWindow window,
-    const gfx::Rect& snapshot_bounds,
-    const gfx::Size& target_size,
-    GrabWindowSnapshotAsyncCallback callback) {
-  std::move(callback).Run(gfx::Image());
+void GrabWindowSnapshotAsync(gfx::NativeWindow native_window,
+                             const gfx::Rect& source_rect,
+                             GrabSnapshotImageCallback callback) {
+  // Make sure to grab the "window frame" view so we get current tab +
+  // tabstrip.
+  NSWindow* window = native_window.GetNativeNSWindow();
+  return GrabViewSnapshotAsync(window.contentView.superview, source_rect,
+                               std::move(callback));
 }
 
 void GrabViewSnapshotAsync(gfx::NativeView view,
                            const gfx::Rect& source_rect,
-                           GrabWindowSnapshotAsyncCallback callback) {
-  std::move(callback).Run(gfx::Image());
-}
-
-void GrabWindowSnapshotAsync(gfx::NativeWindow native_window,
-                             const gfx::Rect& source_rect,
-                             GrabWindowSnapshotAsyncCallback callback) {
-  NSWindow* window = native_window.GetNativeNSWindow();
-  return GrabViewSnapshotAsync(window.contentView.superview, source_rect,
-                               std::move(callback));
+                           GrabSnapshotImageCallback callback) {
+  gfx::Image image;
+  GrabViewSnapshot(view, source_rect, &image);
+  std::move(callback).Run(image);
 }
 
 }  // namespace ui

@@ -118,7 +118,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   for (const auto& header : request.headers) {
     std::string encoded_value;
     if (header.needs_base_64_encoded)
-      base::Base64Encode(header.value, &encoded_value);
+      encoded_value = base::Base64Encode(header.value);
     else
       encoded_value = header.value;
 

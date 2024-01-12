@@ -96,5 +96,5 @@ UrlIdentity PermissionPromptBaseView::GetUrlIdentity(
   return url_identity;
 }
 
-BEGIN_METADATA(PermissionPromptBaseView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(PermissionPromptBaseView)
 END_METADATA

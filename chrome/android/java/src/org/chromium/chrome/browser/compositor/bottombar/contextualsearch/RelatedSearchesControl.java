@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.RelatedSearchesSectionHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.RelatedSearchesUma;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.ui.base.LocalizationUtils;
@@ -58,9 +57,6 @@ public class RelatedSearchesControl {
 
     /** The resource loader that will handle the snapshot capturing. */
     private final DynamicResourceLoader mResourceLoader;
-
-    /** Whether this control is enabled or not. Even if enabled it may not have a View created. */
-    private final boolean mIsEnabled;
 
     private final OverlayPanel mOverlayPanel;
 
@@ -125,7 +121,6 @@ public class RelatedSearchesControl {
         mContext = context;
         mViewContainer = container;
         mResourceLoader = resourceLoader;
-        mIsEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mOverlayPanel = panel;
         mPanelSectionHost = panelSectionHost;
@@ -177,7 +172,6 @@ public class RelatedSearchesControl {
 
     /** Returns whether the SERP is showing due to a Related Searches suggestion. */
     public boolean isShowingRelatedSearchSerp() {
-        if (!mIsEnabled) return false;
         return mSelectedChip >= INDEX_OF_THE_FIRST_RELATED_SEARCHES;
     }
 
@@ -248,9 +242,7 @@ public class RelatedSearchesControl {
 
     /** Returns whether we have Related Searches to show or not.  */
     boolean hasReleatedSearchesToShow() {
-        return mIsEnabled
-                && mRelatedSearchesSuggestions != null
-                && mRelatedSearchesSuggestions.size() > 0;
+        return mRelatedSearchesSuggestions != null && mRelatedSearchesSuggestions.size() > 0;
     }
 
     @VisibleForTesting
@@ -639,8 +631,6 @@ public class RelatedSearchesControl {
         @Override
         protected void onFinishInflate() {
             super.onFinishInflate();
-
-            View view = getControlView();
 
             calculateHeight();
         }

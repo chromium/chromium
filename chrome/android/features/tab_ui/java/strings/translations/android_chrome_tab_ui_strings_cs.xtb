@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Chcete zavřít staré karty?</translation>
 <translation id="1215127405478249895">Zkontrolovat karty</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
+<translation id="1326271443836399892">Zkontrolovat aktuální nastavení úklidu.</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1657719826150349398">Přesunout kartu dolů</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="3008554597174452548">Přestat produkt sledovat</translation>
 <translation id="3052964831964880138">U produktu <ph name="PRODUCT_NAME" /> klesla cena o <ph name="PRICE_DROP" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> archivovanou kartu}few{Máte <ph name="TABS_COUNT_MANY" /> archivované karty}many{Máte <ph name="TABS_COUNT_MANY" /> archivované karty}other{Máte <ph name="TABS_COUNT_MANY" /> archivovaných karet}}</translation>
 <translation id="3194464645767632461">hodnocení</translation>
 <translation id="3291470810748040983">Když bude na otevřené kartě nižší cena, dostanete upozornění</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informace o této prodejně jsou zavřeny</translation>
 <translation id="9150694013019234766">Ve skupině karet v dolní části obrazovky můžete přepínat mezi kartami</translation>
 <translation id="9169594135889675189">Přidat do skupiny novou kartu</translation>
+<translation id="955558140275419384">V tomto editoru můžete zkontrolovat všechny archivované karty a ty nepotřebné odstranit.</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 </translationbundle>

@@ -15,9 +15,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.version_info.VersionInfo;
 
 /** Delegate used to retrieve information from the ContentProvider about partner customization. */
 public class CustomizationProviderDelegateUpstreamImpl implements CustomizationProviderDelegate {

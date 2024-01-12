@@ -1,0 +1,23 @@
+The test verifies CSS.setStyleTexts for view-transition pseudos.
+==== Initial opacity ====
+1
+==== Style sheet text ====
+#target {
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+  view-transition-name: target;
+}
+
+::view-transition-group(root),
+::view-transition-group(target) {
+  animation-duration: 300s;
+}
+
+::view-transition-group(target) {
+  opacity: 0.75;
+}
+
+==== Modified: expect 0.75 ====
+0.75
+

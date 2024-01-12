@@ -70,6 +70,7 @@ class CompanionPageHandler
                         bool use_new_tab) override;
   void OnLoadingState(side_panel::mojom::LoadingState loading_state) override;
   void RefreshCompanionPage() override;
+  void OnServerSideUrlFilterEvent() override;
 
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(

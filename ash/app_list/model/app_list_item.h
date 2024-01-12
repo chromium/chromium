@@ -148,6 +148,10 @@ class APP_LIST_MODEL_EXPORT AppListItem {
     metadata_->app_status = app_status;
   }
 
+  void UpdateAppHostBadgeForTesting(const gfx::ImageSkia fake_badge_icon) {
+    metadata_->badge_icon = fake_badge_icon;
+  }
+
  protected:
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
@@ -155,6 +159,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   friend class AppListBadgeController;
   friend class AppListItemList;
   friend class AppListItemListTest;
+  friend class AppListItemViewPixelTestBase;
   friend class AppListItemViewPixelTest;
   friend class AppListItemViewTest;
   friend class AppListModel;

@@ -6,6 +6,7 @@
 #define ASH_WEBUI_FILE_MANAGER_FILE_MANAGER_UI_DELEGATE_H_
 
 #include "base/values.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash {
 
@@ -16,6 +17,10 @@ class FileManagerUIDelegate {
 
   // Populates (writes) load time data to the source.
   virtual base::Value::Dict GetLoadTimeData() const = 0;
+
+  // Get a PluralStringHandler to populate plural strings to the source.
+  virtual std::unique_ptr<content::WebUIMessageHandler> GetPluralStringHandler()
+      const = 0;
 
   // Calls volume manager io_task_controller ProgressPausedTasks API to make
   // I/O state::PAUSED tasks emit their IOTask progress status.

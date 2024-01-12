@@ -408,6 +408,11 @@ targets.binaries.generated_script(
     label = "//chrome/android:chrome_junit_tests",
 )
 
+targets.binaries.console_test_launcher(
+    name = "chrome_ml_unittests",
+    label = "//components/optimization_guide/internal:chrome_ml_unittests",
+)
+
 targets.binaries.generated_script(
     name = "chrome_private_code_test",
     label = "//chrome:chrome_private_code_test",
@@ -823,6 +828,11 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "video_decode_accelerator_tests",
+    label = "//media/gpu/test:video_decode_accelerator_tests",
+)
+
+targets.binaries.console_test_launcher(
     name = "filesystem_service_unittests",
     label = "//components/services/filesystem:filesystem_service_unittests",
 )
@@ -1098,14 +1108,6 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.console_test_launcher(
     name = "lacros_chrome_unittests",
     label = "//chrome/test:lacros_chrome_unittests",
-)
-
-targets.binaries.generated_script(
-    name = "lacros_cq_tast_tests_eve",
-    label = "//chromeos/lacros:lacros_cq_tast_tests_eve",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
 )
 
 targets.binaries.console_test_launcher(
@@ -2106,6 +2108,20 @@ targets.binaries.script(
         "apks/TrichromeWebView64.apk",
         "--use-apk-under-test-flags-file",
         "-v",
+    ],
+)
+
+targets.binaries.script(
+    name = "webview_trichrome_64_cts_hostside_tests",
+    label = "//android_webview/test:webview_trichrome_64_cts_hostside_tests",
+    script = "//android_webview/tools/run_cts.py",
+    args = [
+        "--cts-gcs-path",
+        "../../android_webview/tools/cts_config/webview_cts_hostside_gcs_path.json",
+        "--additional-apk",
+        "apks/TrichromeLibrary64.apk",
+        "--use-webview-provider",
+        "apks/TrichromeWebView64.apk",
     ],
 )
 

@@ -685,6 +685,11 @@ chromium-metrics-reviews@google.com.
     After saving a password locally, the user opted in to saving this and future
     passwords in the account. Recorded only on Win/Mac/Linux.
   </int>
+  <int value="4"
+      label="kExplicitlyTriggeredForSinglePasswordInDetailsInSettings">
+    The user explicitly asked to move a password to account store from password
+    details page.
+  </int>
 </enum>
 
 <enum name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult">
@@ -710,7 +715,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Family picker: dialog canceled"/>
   <int value="10" label="Family picker: 'View family' clicked"/>
   <int value="11" label="Confirmation dialog: sharing canceled/interrupted"/>
-  <int value="12" label="Confirmation dialog: 'Learn more' clicked"/>
+  <int value="12"
+      label="(DEPRECATED in M122) Confirmation dialog: 'Learn more' clicked"/>
   <int value="13" label="Confirmation dialog: 'Change password' clicked"/>
   <int value="14" label="Dialog header: 'Help icon button' clicked"/>
 </enum>
@@ -1094,6 +1100,7 @@ chromium-metrics-reviews@google.com.
   <int value="11011" label="INVALID_DATA"/>
   <int value="11012" label="UNMAPPED_ERROR_CODE"/>
   <int value="11013" label="UNEXPECTED_ERROR"/>
+  <int value="11014" label="KEY_RETRIEVAL_REQUIRED"/>
   <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
   <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
   <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>

@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
       label="A password is received from the getCredential request."/>
   <int value="4" label="getCredential request failed."/>
   <int value="5" label="getCredential request cancelled by the user."/>
+  <int value="6" label="no credentials found from getCredential request."/>
 </enum>
 
 <enum name="CredManPrepareRequestEnum">

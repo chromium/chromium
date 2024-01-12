@@ -29,21 +29,21 @@ XMLPUBFUN void xmlCheckVersion(int version);
  *
  * the version string like "1.2.3"
  */
-#define LIBXML_DOTTED_VERSION "2.12.0"
+#define LIBXML_DOTTED_VERSION "2.13.0"
 
 /**
  * LIBXML_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXML_VERSION 21200
+#define LIBXML_VERSION 21300
 
 /**
  * LIBXML_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXML_VERSION_STRING "21200"
+#define LIBXML_VERSION_STRING "21300"
 
 /**
  * LIBXML_VERSION_EXTRA:
@@ -58,32 +58,7 @@ XMLPUBFUN void xmlCheckVersion(int version);
  * Macro to check that the libxml version in use is compatible with
  * the version the software has been compiled against
  */
-#define LIBXML_TEST_VERSION xmlCheckVersion(21200);
-
-#ifndef VMS
-#if 0
-/**
- * WITH_TRIO:
- *
- * defined if the trio support need to be configured in
- */
-#define WITH_TRIO
-#else
-/**
- * WITHOUT_TRIO:
- *
- * defined if the trio support should not be configured in
- */
-#define WITHOUT_TRIO
-#endif
-#else /* VMS */
-/**
- * WITH_TRIO:
- *
- * defined if the trio support need to be configured in
- */
-#define WITH_TRIO 1
-#endif /* VMS */
+#define LIBXML_TEST_VERSION xmlCheckVersion(21300);
 
 /**
  * LIBXML_THREAD_ENABLED:
@@ -448,7 +423,11 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #  endif
 #endif
 
-#if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
+#if defined(__LCC__)
+  #define XML_IGNORE_FPTR_CAST_WARNINGS
+  #define XML_POP_WARNINGS \
+    _Pragma("diag_default 1215")
+#elif defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
   #if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 800)
     #define XML_IGNORE_FPTR_CAST_WARNINGS \
       _Pragma("GCC diagnostic push") \
@@ -492,7 +471,7 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #endif
 #endif /* __GNUC__ */
 
-#define XML_EMPTY
+#define XML_NO_ATTR
 
 #ifdef LIBXML_THREAD_ENABLED
   #define XML_DECLARE_GLOBAL(name, type, attrs) \

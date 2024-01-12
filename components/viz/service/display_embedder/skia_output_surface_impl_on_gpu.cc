@@ -827,11 +827,16 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     base::StringPiece debug_label) {
-  constexpr uint32_t kUsage =
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  // The SharedImage created here will serve as the destination of a
+  // CopyOutputRequest and will eventually make it back to the client
+  // that issued that request. Thus, the usage here needs to capture the variety
+  // of clients' eventual allowed usages. Note that CopyOutputRequests are not
+  // writable via GLES2 (by contract).
+  constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                              gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+                              gpu::SHARED_IMAGE_USAGE_RASTER |
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   bool result = shared_image_factory_->CreateSharedImage(
@@ -2691,6 +2696,9 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gpu::SurfaceHandle surface_handle) {
+  if (context_is_lost_) {
+    return;
+  }
   shared_image_factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
       surface_handle, usage, std::move(debug_label));
@@ -2754,8 +2762,12 @@ void SkiaOutputSurfaceImplOnGpu::SetSharedImagePurgeable(
 gpu::SkiaImageRepresentation* SkiaOutputSurfaceImplOnGpu::GetSkiaRepresentation(
     gpu::Mailbox mailbox) {
   auto it = skia_representations_.find(mailbox);
-  // The cache entry should already have been created in CreateSharedImage().
-  DCHECK(it != skia_representations_.end());
+  if (it == skia_representations_.end()) {
+    // The cache entry should already have been created in CreateSharedImage(),
+    // except if context was lost.
+    DCHECK(context_is_lost_);
+    return nullptr;
+  }
 
   if (!it->second) {
     it->second = shared_image_representation_factory_->ProduceSkia(

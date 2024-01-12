@@ -158,7 +158,7 @@ class WebsiteMetrics : public BrowserListObserver,
     void OnInstallableWebAppStatusUpdated() override;
 
    private:
-    raw_ptr<WebsiteMetrics, ExperimentalAsh> owner_;
+    raw_ptr<WebsiteMetrics> owner_;
     base::ScopedObservation<webapps::AppBannerManager,
                             webapps::AppBannerManager::Observer>
         app_banner_manager_observer_{this};

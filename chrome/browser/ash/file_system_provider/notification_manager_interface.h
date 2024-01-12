@@ -18,13 +18,13 @@ class NotificationManagerInterface {
   // Callback for handling result of a notification.
   typedef base::OnceCallback<void(NotificationResult)> NotificationCallback;
 
-  NotificationManagerInterface() {}
+  NotificationManagerInterface() = default;
 
   NotificationManagerInterface(const NotificationManagerInterface&) = delete;
   NotificationManagerInterface& operator=(const NotificationManagerInterface&) =
       delete;
 
-  virtual ~NotificationManagerInterface() {}
+  virtual ~NotificationManagerInterface() = default;
 
   // Shows a notification about the request being unresponsive. The |callback|
   // is called when the notification is closed.

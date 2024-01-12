@@ -796,7 +796,7 @@ std::u16string GetApplicationNameForScheme(const GURL& url) {
   }
 
   return application_name.empty() ? u"xdg-open"
-                                  : base::ASCIIToUTF16(application_name);
+                                  : base::UTF8ToUTF16(application_name);
 }
 
 DefaultWebClientState GetDefaultBrowser() {

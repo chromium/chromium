@@ -104,10 +104,11 @@ void FeedbackUploader::SetMinimumRetryDelayForTesting(base::TimeDelta delay) {
 }
 
 void FeedbackUploader::QueueReport(std::unique_ptr<std::string> data,
-                                   bool has_email) {
+                                   bool has_email,
+                                   int product_id) {
   reports_queue_.emplace(base::MakeRefCounted<FeedbackReport>(
       feedback_reports_path_, base::Time::Now(), std::move(data), task_runner_,
-      has_email));
+      has_email, product_id));
   UpdateUploadTimer();
 }
 
@@ -236,11 +237,13 @@ void FeedbackUploader::DispatchReport() {
   resource_request->method = "POST";
 
   // Tell feedback server about the variation state of this install.
-  variations::AppendVariationsHeaderUnknownSignedIn(
-      feedback_post_url_,
-      is_off_the_record_ ? variations::InIncognito::kYes
-                         : variations::InIncognito::kNo,
-      resource_request.get());
+  if (report_being_dispatched_->should_include_variations()) {
+    variations::AppendVariationsHeaderUnknownSignedIn(
+        feedback_post_url_,
+        is_off_the_record_ ? variations::InIncognito::kYes
+                           : variations::InIncognito::kNo,
+        resource_request.get());
+  }
 
   if (report_being_dispatched_->has_email()) {
     AppendExtraHeadersToUploadRequest(resource_request.get());

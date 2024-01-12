@@ -49,7 +49,7 @@ class GoogleTtsStream : public mojom::GoogleTtsStream {
   void ReadMoreFrames(bool is_first_buffer);
 
   // Owning service.
-  raw_ptr<TtsService, ExperimentalAsh> owner_;
+  raw_ptr<TtsService> owner_;
 
   // Prebuilt.
   LibChromeTtsLoader libchrometts_;

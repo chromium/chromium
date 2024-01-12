@@ -245,8 +245,11 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
     auto* layout_text = To<LayoutText>(layout_object);
     if (layout_text->HasEmptyText())
       return false;
-    if (layout_text->GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())
+    if (layout_text->TransformedText()
+            .Impl()
+            ->ContainsOnlyWhitespaceOrEmpty()) {
       return true;
+    }
     auto adjacent_char =
         is_after ? layout_text->FirstCharacterAfterWhitespaceCollapsing()
                  : layout_text->LastCharacterAfterWhitespaceCollapsing();
@@ -1363,15 +1366,19 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
     if (!obj->IsMissingParent()) {
       return obj;
     }
-    DUMP_WILL_BE_CHECK(parent_if_known)
-        << "Missing parent: " << obj->ToString(true, true);
 
-    // The parent is provided when the object is being added to the parent.
-    // This is expected when re-adding a child to a parent via
-    // AXNodeObject::AddChildren(), as the parent on previous children
-    // will have been cleared immediately before re-adding any of them.
-    obj->SetParent(parent_if_known);
-    return obj;
+    if (parent_if_known) {
+      // The parent is provided when the object is being added to the parent.
+      // This is expected when re-adding a child to a parent via
+      // AXNodeObject::AddChildren(), as the parent on previous children
+      // will have been cleared immediately before re-adding any of them.
+      obj->SetParent(parent_if_known);
+      return obj;
+    }
+
+    // TODO(accessibility) Try to get rid of repair situations by addressing
+    // partial subtrees and mid-tree object removal directly when they occur.
+    return RepairChildrenOfIncludedParent(node);
   }
 
   return CreateAndInit(node, node->GetLayoutObject(), parent_if_known);
@@ -1399,8 +1406,6 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
       // parents and children are both always included in the tree.
       // Create the child with the aria-owns parent as its parent.
       GetOrCreate(ancestor, ax_owner);
-      // Process all aria-owns updates to make sure the relation is valid.
-      relation_cache_->ProcessUpdatesWithCleanLayout();
       if (AXObject* ax_owned_child = Get(ancestor)) {
         if (IsAriaOwned(ax_owned_child) &&
             ax_owned_child->CachedParentObject() == ax_owner) {
@@ -1447,9 +1452,12 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
     if (ancestor) {
       ancestors_to_repair.push_front(ancestor);
     }
-    if (ax_ancestor && ax_ancestor->LastKnownIsIncludedInTreeValue()) {
-      ax_included_ancestor = ax_ancestor;
-      break;
+    if (ax_ancestor) {
+      if (ax_ancestor->LastKnownIsIncludedInTreeValue()) {
+        ax_included_ancestor = ax_ancestor;
+        break;
+      }
+      ax_ancestor->SetNeedsToUpdateChildren();
     }
   };
 
@@ -2439,8 +2447,14 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
         pause_tree_updates_until_more_loaded_content_ = true;
       }
     }
+  } else {
+    // Handle case where neither NodeIsAttached() nor SubtreeIsAttached() will
+    // be called for this node. This occurs for nodes that are added to
+    // display:none subtrees. Ensure that these nodes partake in the AX tree.
+    ChildrenChanged(node->parentNode());
   }
 
+  // Process relations.
   if (Element* element = DynamicTo<Element>(node)) {
     if (relation_cache_) {
       // Register relation ids so that reverse relations can be computed.
@@ -2898,6 +2912,14 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
         << "\n* Computed parent: "
         << (object->ComputeParent() ? object->ComputeParent()->ToString(true)
                                     : "not found");
+    // Check whether cached values need an update before using any getters that
+    // will update them.
+    DCHECK(!object->NeedsToUpdateCachedValues())
+        << "No cached values should require an update: " << "\n* Object: "
+        << object->ToString(true);
+    DCHECK(!object->ChildrenNeedToUpdateCachedValues())
+        << "Cached values for children should not require an update: "
+        << "\n* Object: " << object->ToString(true);
     if (object->AccessibilityIsIncludedInTree()) {
       // All cached children must be included.
       for (const auto& child : object->CachedChildrenIncludingIgnored()) {
@@ -2953,10 +2975,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
         << "No children in the tree should require an update at this point: "
         << "\n* Object: " << object->ToString(true)
         << "\n* Included parent: " << included_parent->ToString(true);
-    DCHECK(!object->NeedsToUpdateCachedValues())
-        << "No cached values should require an update at this point: "
-        << "\n* Object: " << object->ToString(true)
-        << "\n* Included parent: " << included_parent->ToString(true);
+
     count++;
   }
 #endif
@@ -3061,7 +3080,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // For now, keep this line in order to pass CheckTreeIsUpdated().
     tree_update_callback_queue_popup_.clear();
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
     // On Android, the inline textboxes of focused editable subtrees are always
     // loaded, but only if inline text boxes are enabled.
     if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {
@@ -3411,7 +3430,8 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
       return nullptr;
     }
   }
-  CHECK(!ax_object->IsMissingParent());
+  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+      << ax_object->ToString(true, true);
 
   // Update cached attributes for all changed nodes before serialization,
   // because updating ignored/included can cause tree structure changes, and
@@ -3972,14 +3992,6 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       DeferTreeUpdate(TreeUpdateReason::kAriaSelectedChanged, element);
     } else if (attr_name == html_names::kAriaExpandedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaExpandedChanged, element);
-    } else if (attr_name == html_names::kAriaHiddenAttr) {
-      // Removing the subtree will also notify its parent that children changed,
-      // causing the subtree to recursively be rebuilt with correct cached
-      // values. This is much simpler than attempting to invalidate cached
-      // values in every node in the subtree, especially when cached values
-      // can depend on ancestor cached values, aria-owns and other markup
-      // can significantly complicate the code paths.
-      RemoveSubtreeWhenSafe(element);
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       if (relation_cache_) {
         relation_cache_->UpdateReverseOwnsRelations(*element);
@@ -4744,7 +4756,6 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
 // TODO(accessibility) Try to get rid of repair situations by addressing
 // partial subtrees and mid-tree object removal directly when they occur.
 AXObject* AXObjectCacheImpl::RestoreParentOrPrune(AXObject* child) {
-  CHECK(child->GetNode()) << "Cannot restore parents of nodeless objects.";
   AXObject* parent = Get(LayoutTreeBuilderTraversal::Parent(*child->GetNode()));
   if (parent) {
     child->SetParent(parent);

@@ -459,6 +459,18 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
         .expected = {-1.0, 2.0, -3.0, 4.0}}
         .Test(*this, scope);
   }
+  {
+    // Test element-wise sqrt operator for a 4-D tensor.
+    // The expected results should be the square root value of the input
+    // tensor, element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kSqrt,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1.0, 4.0, 9.0, 16.0}},
+        .expected = {1.0, 2.0, 3.0, 4.0}}
+        .Test(*this, scope);
+  }
 }
 
 template <typename T>
@@ -991,8 +1003,7 @@ struct Conv2dTester {
 };
 
 TEST_P(MLGraphTest, Conv2dTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -1493,8 +1504,7 @@ struct Pool2dTester {
 };
 
 TEST_P(MLGraphTest, Pool2dTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test averagePool2d operator for nhwc input layout.
     auto* options = MLPool2dOptions::Create();
@@ -2046,6 +2056,95 @@ TEST_P(MLGraphTest, SliceTest) {
         .expected = {4, 4, -6, -3, 7,  3,  1, -8, -1, -2, -3, 6,
                      1, 5, 3,  3,  -3, -8, 2, -1, -1, -6, 1,  -7}}
         .Test(*this, scope, builder);
+  }
+}
+
+TEST_P(MLGraphTest, BuildAndComputeGraphWithOnlyConstants) {
+  MLGraphV8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Build the graph whose relu operator has only constant operand as input.
+    auto* constant_operand =
+        BuildConstant<float>(builder, {3}, V8MLOperandDataType::Enum::kFloat32,
+                             {-1, 0, 1}, scope.GetExceptionState());
+    ASSERT_NE(constant_operand, nullptr);
+    auto* output_operand =
+        builder->relu(constant_operand, scope.GetExceptionState());
+    ASSERT_NE(output_operand, nullptr);
+    auto [graph, build_exception] =
+        BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs;
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
+    EXPECT_EQ(results, Vector<float>({0, 0, 1}));
+  }
+  {
+    // Build the graph whose add operator has only constant operands as input.
+    auto* constant_a_operand = BuildConstant<float>(
+        builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {1, 1, 1, 1},
+        scope.GetExceptionState());
+    ASSERT_NE(constant_a_operand, nullptr);
+    auto* constant_b_operand = BuildConstant<float>(
+        builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {2, 2, 2, 2},
+        scope.GetExceptionState());
+    ASSERT_NE(constant_b_operand, nullptr);
+    auto* output_operand = builder->add(constant_a_operand, constant_b_operand,
+                                        scope.GetExceptionState());
+    ASSERT_NE(output_operand, nullptr);
+    auto [graph, build_exception] =
+        BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs;
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
+    EXPECT_EQ(results, Vector<float>({3, 3, 3, 3}));
+  }
+  {
+    // Build the graph whose add and mul operators have only constant and
+    // intermediate operands as input.
+    auto* constant_a_operand = BuildConstant<float>(
+        builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {1, 1, 1, 1},
+        scope.GetExceptionState());
+    ASSERT_NE(constant_a_operand, nullptr);
+    auto* constant_b_operand = BuildConstant<float>(
+        builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {2, 2, 2, 2},
+        scope.GetExceptionState());
+    ASSERT_NE(constant_b_operand, nullptr);
+    auto* intermediate_operand = builder->add(
+        constant_a_operand, constant_b_operand, scope.GetExceptionState());
+    ASSERT_NE(intermediate_operand, nullptr);
+    auto* constant_c_operand = BuildConstant<float>(
+        builder, {2, 2}, V8MLOperandDataType::Enum::kFloat32, {3, 3, 3, 3},
+        scope.GetExceptionState());
+    ASSERT_NE(constant_c_operand, nullptr);
+    auto* output_operand = builder->mul(
+        intermediate_operand, constant_c_operand, scope.GetExceptionState());
+    ASSERT_NE(output_operand, nullptr);
+    auto [graph, build_exception] =
+        BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs;
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
+    EXPECT_EQ(results, Vector<float>({9, 9, 9, 9}));
   }
 }
 

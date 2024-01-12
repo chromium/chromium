@@ -67,8 +67,8 @@ struct CertificateHelperForTesting {
   void GetCertificates(chromeos::platform_keys::TokenId token_id,
                        platform_keys::GetCertificatesCallback callback);
 
-  raw_ptr<platform_keys::MockPlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::MockPlatformKeysService> platform_keys_service_ =
+      nullptr;
   scoped_refptr<net::X509Certificate> template_cert_;
   net::CertificateList cert_list_;
 };
@@ -93,8 +93,8 @@ class ProfileHelperForTesting {
   TestingProfileManager testing_profile_manager_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager>
       fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
-  raw_ptr<user_manager::User, ExperimentalAsh> user_ = nullptr;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
+  raw_ptr<user_manager::User> user_ = nullptr;
 };
 
 }  // namespace cert_provisioning

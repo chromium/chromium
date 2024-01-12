@@ -30,10 +30,11 @@
 
 #include "third_party/blink/renderer/platform/link_hash.h"
 
+#include <string_view>
+
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
-
 #include "url/url_util.h"
 
 namespace blink {
@@ -62,7 +63,9 @@ LinkHash VisitedLinkHash(const KURL& base, const AtomicString& relative) {
   url::RawCanonOutput<2048> buffer;
   if (!ResolveRelative(base, relative.GetString(), &buffer))
     return 0;
-  return Platform::Current()->VisitedLinkHash(buffer.data(), buffer.length());
+
+  return Platform::Current()->VisitedLinkHash(
+      std::string_view(buffer.data(), buffer.length()));
 }
 
 }  // namespace blink

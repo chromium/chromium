@@ -6,4 +6,5 @@ include_rules = [
   "+services/service_manager/public",
   "+ui",
   "+url",
+  "+net",
 ]

@@ -15,8 +15,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -33,18 +36,23 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CustomMessageCardViewBinderUnitTest {
-    @Mock private CustomMessageCardView mCustomMessageCardView;
     @Mock private CustomMessageCardProvider mProvider;
     @Mock private View mChildView;
 
     private Activity mActivity;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private CustomMessageCardView mCustomMessageCardView;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+
+        mCustomMessageCardView =
+                (CustomMessageCardView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.custom_message_card_item, /* root= */ null);
 
         mModel =
                 new PropertyModel.Builder(ALL_KEYS)
@@ -65,13 +73,13 @@ public class CustomMessageCardViewBinderUnitTest {
     @Test
     public void testSetChildView() {
         mModel.set(MESSAGE_CARD_VIEW, mChildView);
-        verify(mCustomMessageCardView, times(1)).setChildView(mChildView);
+        Assert.assertEquals(1, mCustomMessageCardView.getChildCount());
     }
 
     @Test
     public void testSetCardAlpha() {
-        mModel.set(CARD_ALPHA, 1F);
-        verify(mCustomMessageCardView, times(1)).setAlpha(1F);
+        mModel.set(CARD_ALPHA, 1f);
+        Assert.assertEquals(1f, mCustomMessageCardView.getAlpha(), MathUtils.EPSILON);
     }
 
     @Test

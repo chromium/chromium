@@ -38,8 +38,8 @@ class SyncChangeProcessor;
 //   foo
 //   checksum_v1 = ec3df4034567e59e119fcf87f2d9bad4
 //
-class SpellcheckCustomDictionary : public SpellcheckDictionary,
-                                   public syncer::SyncableService {
+class SpellcheckCustomDictionary final : public SpellcheckDictionary,
+                                         public syncer::SyncableService {
  public:
   // A change to the dictionary.
   class Change {
@@ -178,6 +178,7 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
  private:
   friend class DictionarySyncIntegrationTestHelper;

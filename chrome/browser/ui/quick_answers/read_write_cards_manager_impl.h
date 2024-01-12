@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 
 class QuickAnswersControllerImpl;
 
@@ -21,6 +23,10 @@ namespace chromeos {
 namespace editor_menu {
 class EditorMenuControllerImpl;
 }  // namespace editor_menu
+
+namespace mahi {
+class MahiMenuController;
+}  // namespace mahi
 
 class ReadWriteCardController;
 
@@ -36,18 +42,31 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   ~ReadWriteCardsManagerImpl() override;
 
   // ReadWriteCardController:
-  ReadWriteCardController* GetController(
-      const content::ContextMenuParams& params,
-      content::BrowserContext* context) override;
+  void FetchController(const content::ContextMenuParams& params,
+                       content::BrowserContext* context,
+                       editor_menu::FetchControllerCallback callback) override;
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();
   }
 
  private:
+  void OnEditorPanelContextCallback(
+      const content::ContextMenuParams& params,
+      editor_menu::FetchControllerCallback callback,
+      content::BrowserContext* context,
+      const crosapi::mojom::EditorPanelContextPtr editor_panel_context);
+
+  base::WeakPtr<chromeos::ReadWriteCardController>
+  GetMahiOrQuickAnswerControllerIfEligible(
+      const content::ContextMenuParams& params);
+
   std::unique_ptr<QuickAnswersControllerImpl> quick_answers_controller_;
   std::unique_ptr<chromeos::editor_menu::EditorMenuControllerImpl>
       editor_menu_controller_;
+  std::unique_ptr<chromeos::mahi::MahiMenuController> mahi_menu_controller_;
+
+  base::WeakPtrFactory<ReadWriteCardsManagerImpl> weak_factory_{this};
 };
 
 }  // namespace chromeos

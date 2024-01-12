@@ -154,6 +154,7 @@ public class PriceMessageService extends MessageService {
                     ? 2
                     : 1;
 
+    private final Profile mProfile;
     private final PriceWelcomeMessageProvider mPriceWelcomeMessageProvider;
     private final PriceWelcomeMessageReviewActionProvider mPriceWelcomeMessageReviewActionProvider;
     private final PriceDropNotificationManager mNotificationManager;
@@ -161,10 +162,12 @@ public class PriceMessageService extends MessageService {
     private PriceTabData mPriceTabData;
 
     PriceMessageService(
+            Profile profile,
             PriceWelcomeMessageProvider priceWelcomeMessageProvider,
             PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider,
             PriceDropNotificationManager notificationManager) {
         super(MessageType.PRICE_MESSAGE);
+        mProfile = profile;
         mPriceTabData = null;
         mPriceWelcomeMessageProvider = priceWelcomeMessageProvider;
         mPriceWelcomeMessageReviewActionProvider = priceWelcomeMessageReviewActionProvider;
@@ -176,11 +179,9 @@ public class PriceMessageService extends MessageService {
      */
     boolean preparePriceMessage(@PriceMessageType int type, @Nullable PriceTabData priceTabData) {
         assert (type == PriceMessageType.PRICE_WELCOME
-                        && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
-                                Profile.getLastUsedRegularProfile()))
+                        && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile))
                 || (type == PriceMessageType.PRICE_ALERTS
-                        && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
-                                Profile.getLastUsedRegularProfile()));
+                        && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
         if (type == PriceMessageType.PRICE_WELCOME) {
             PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
             if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
@@ -193,8 +194,7 @@ public class PriceMessageService extends MessageService {
             // When PriceWelcomeMessageCard is available, it takes priority over
             // PriceAlertsMessageCard which will be removed first. This should be called only if
             // PriceAlertsMessageCard is currently enabled.
-            if (PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
-                    Profile.getLastUsedRegularProfile())) {
+            if (PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile)) {
                 PriceTrackingUtilities.decreasePriceAlertsMessageCardShowCount();
             }
         } else if (type == PriceMessageType.PRICE_ALERTS) {

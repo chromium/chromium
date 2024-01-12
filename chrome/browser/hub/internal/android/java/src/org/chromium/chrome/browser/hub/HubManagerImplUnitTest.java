@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,15 +52,31 @@ public class HubManagerImplUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private Tab mTab;
     @Mock private Pane mTabSwitcherPane;
+    @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private HubLayoutController mHubLayoutController;
     @Mock private ObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
 
+    private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<FullButtonData> mActionButtonDataSupplier =
+            new ObservableSupplierImpl<>();
+
     private Activity mActivity;
     private FrameLayout mRootView;
-    private ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mTabSwitcherPane.getReferenceButtonDataSupplier())
+                .thenReturn(mReferenceButtonDataSupplier);
+        when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonDataSupplier);
+        when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
+                .thenReturn(mReferenceButtonDataSupplier);
+        when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
+                .thenReturn(mActionButtonDataSupplier);
+
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -81,7 +98,10 @@ public class HubManagerImplUnitTest {
                 new PaneListBuilder(new DefaultPaneOrderController())
                         .registerPane(
                                 PaneId.TAB_SWITCHER,
-                                LazyOneshotSupplier.fromValue(mTabSwitcherPane));
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         HubManager hubManager =
                 HubManagerFactory.createHubManager(
                         mActivity, builder, mBackPressManager, mTabSupplier);
@@ -96,9 +116,18 @@ public class HubManagerImplUnitTest {
     @Test
     @SmallTest
     public void testHubController() {
-        PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         HubManagerImpl hubManager =
                 new HubManagerImpl(mActivity, builder, mBackPressManager, mTabSupplier);
+        hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
+        verify(mTabSwitcherPane).setPaneHubController(null);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
         assertNull(hubManager.getHubCoordinatorForTesting());
@@ -107,6 +136,7 @@ public class HubManagerImplUnitTest {
         HubCoordinator coordinator = hubManager.getHubCoordinatorForTesting();
         assertNotNull(coordinator);
         verify(mBackPressManager).addHandler(eq(coordinator), eq(BackPressHandler.Type.HUB));
+        verify(mTabSwitcherPane).setPaneHubController(coordinator);
 
         View containerView = hubController.getContainerView();
         assertNotNull(containerView);
@@ -115,9 +145,14 @@ public class HubManagerImplUnitTest {
         mRootView.addView(containerView);
         assertEquals(mRootView, containerView.getParent());
 
+        hubManager.getPaneManager().focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
+        verify(mTabSwitcherPane, times(2)).setPaneHubController(null);
+        verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
+
         hubController.onHubLayoutDoneHiding();
         assertNull(hubManager.getHubCoordinatorForTesting());
         verify(mBackPressManager).removeHandler(eq(coordinator));
+        verify(mIncognitoTabSwitcherPane).setPaneHubController(null);
 
         // Container is still attached and will be removed separately.
         assertEquals(mRootView, containerView.getParent());

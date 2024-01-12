@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/content_setting.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -38,14 +40,14 @@ const char* const kDeprecatedTypesToBlock[] = {
     "ppapi-broker",
 };
 
-const char* GetForcedValueForDeprecatedSetting(base::StringPiece type) {
+const char* GetForcedValueForDeprecatedSetting(std::string_view type) {
   if (base::Contains(kDeprecatedTypesToAllow, type))
     return "allow";
   DCHECK(base::Contains(kDeprecatedTypesToBlock, type));
   return "block";
 }
 
-bool IsDeprecated(base::StringPiece type) {
+bool IsDeprecated(std::string_view type) {
   return base::Contains(kDeprecatedTypesToAllow, type) ||
          base::Contains(kDeprecatedTypesToBlock, type);
 }

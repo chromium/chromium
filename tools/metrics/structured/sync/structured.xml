@@ -1570,9 +1570,9 @@
         What caused DevTools to close (e.g. shortcut, close button, etc)
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">
@@ -1607,9 +1607,9 @@
         Arbitrary contextual information for the visual element.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">
@@ -1639,9 +1639,9 @@
         Arbitrary contextual information for the event.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">
@@ -1671,9 +1671,9 @@
         Arbitrary contextual information for the event.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">
@@ -1703,9 +1703,9 @@
         Arbitrary contextual information for the event.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">
@@ -1730,9 +1730,9 @@
         Arbitrary contextual information for the event.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">
@@ -1757,9 +1757,9 @@
         Arbitrary contextual information for the event.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" type="int">
+    <metric name="TimeSinceSessionStart" type="int">
       <summary>
-        Time in milliseconds since last DevTools event.
+        Time in milliseconds since DevTools sessions start.
       </summary>
     </metric>
     <metric name="SessionId" type="int">

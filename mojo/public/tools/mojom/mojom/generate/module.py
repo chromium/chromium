@@ -697,7 +697,8 @@ class Struct(ReferenceKind):
     old_fields = buildOrdinalFieldMap(rhs)
     if len(new_fields) < len(old_fields):
       # At least one field was removed, which is not OK.
-      return False
+      raise Exception('Removing struct fields from struct %s is not allowed.' %
+                      (self.mojom_name))
 
     # If there are N fields, existing ordinal values must exactly cover the
     # range from 0 to N-1.
@@ -711,7 +712,11 @@ class Struct(ReferenceKind):
       if not _IsFieldBackwardCompatible(new_field, old_field, checker):
         # Type or min-version mismatch between old and new versions of the same
         # ordinal field.
-        return False
+        raise Exception(
+            'Struct %s field with ordinal value %d have different type'
+            ' or min version, old name %s, new name %s.' %
+            (self.mojom_name, ordinal, old_field.mojom_name,
+             new_field.mojom_name))
 
     # At this point we know all old fields are intact in the new struct
     # definition. Now verify that all new fields have a high enough min version
@@ -723,14 +728,19 @@ class Struct(ReferenceKind):
       min_version = new_field.min_version or 0
       if min_version <= max_old_min_version:
         # A new field is being added to an existing version, which is not OK.
-        return False
+        raise Exception(
+            'Adding new fields to an existing MinVersion is not allowed'
+            ' for struct %s' % (self.mojom_name))
       if min_version < last_min_version:
         # The [MinVersion] of a field cannot be lower than the [MinVersion] of
         # a field with lower ordinal value.
-        return False
+        raise Exception(
+            'MinVersion of struct %s field %s cannot be lower than MinVersion'
+            ' of preceding fields' % (self.mojom_name, new_field))
       if IsReferenceKind(new_field.kind) and not IsNullableKind(new_field.kind):
         # New fields whose type can be nullable MUST be nullable.
-        return False
+        raise Exception('New struct %s field %s must be nullable' %
+                        (self.mojom_name, new_field))
 
     return True
 
@@ -1614,13 +1624,25 @@ class Enum(ValueKind):
     new_fields = buildVersionFieldMap(self)
 
     if new_fields.keys() != old_fields.keys() and not rhs.extensible:
-      return False
+      raise Exception("Non-extensible enum cannot be modified")
 
     for min_version, valid_values in old_fields.items():
-      if (min_version not in new_fields
-          or new_fields[min_version] != valid_values):
-        return False
+      if min_version not in new_fields:
+        raise Exception('New values added to an extensible enum '
+                        'do not specify MinVersion: %s' % new_fields)
 
+      if (new_fields[min_version] != valid_values):
+        if (len(new_fields[min_version]) < len(valid_values)):
+          raise Exception('Removing values for an existing MinVersion %s '
+                          'is not allowed' % min_version)
+
+        raise Exception(
+            'New values don\'t match old values'
+            'for an existing MinVersion %s,'
+            ' please specify MinVersion equal to "Next version" '
+            'in the enum description'
+            ' for the following values:\n%s' %
+            (min_version, new_fields[min_version].difference(valid_values)))
     return True
 
   def _tuple(self):

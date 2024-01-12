@@ -188,8 +188,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   // Returns true if this window is closed.
   bool MaybeCloseWindow() override;
 
-  HRESULT LaunchCmdLine(const AppCompletionInfo& app_info);
-  bool LaunchCmdLines(const ObserverCompletionInfo& info);
   HRESULT ChangeControlState();
   HRESULT SetMarqueeMode(bool is_marquee);
 

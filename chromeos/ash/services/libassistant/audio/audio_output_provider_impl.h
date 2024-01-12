@@ -92,8 +92,7 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       const assistant_client::OutputStreamFormat& stream_format);
 
   // Owned by |AssistantManagerServiceImpl|.
-  raw_ptr<mojom::PlatformDelegate, ExperimentalAsh> platform_delegate_ =
-      nullptr;
+  raw_ptr<mojom::PlatformDelegate> platform_delegate_ = nullptr;
 
   mojo::Remote<mojom::AudioOutputDelegate> audio_output_delegate_;
 

@@ -65,8 +65,7 @@ class FakeIntentHelperHost : public mojom::IntentHelperHost {
  private:
   // The connection holder must outlive |this| object.
   const raw_ptr<ConnectionHolder<arc::mojom::IntentHelperInstance,
-                                 arc::mojom::IntentHelperHost>,
-                ExperimentalAsh>
+                                 arc::mojom::IntentHelperHost>>
       intent_helper_connection_holder_;
 };
 

@@ -481,9 +481,7 @@ public class StatusBarColorControllerTest {
     }
 
     private int getScrimmedColor(@ColorInt int color, float fraction) {
-        final float scrimColorAlpha = (mScrimColor >>> 24) / 255f;
-        final int scrimColorOpaque = mScrimColor | 0xFF000000;
-        return ColorUtils.getColorWithOverlay(color, scrimColorOpaque, fraction * scrimColorAlpha);
+        return ColorUtils.overlayColor(color, mScrimColor, fraction);
     }
 
     private void waitForStatusBarColor(Activity activity, int expectedColor)

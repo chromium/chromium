@@ -50,6 +50,7 @@ class PortFactory:
         'mac.MacPort',
         'mock_drt.MockDRTPort',
         'test.TestPort',
+        'webview.WebviewPort',
         'win.WinPort',
     )
 

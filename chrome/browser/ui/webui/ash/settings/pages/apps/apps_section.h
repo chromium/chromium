@@ -61,9 +61,9 @@ class AppsSection : public OsSettingsSection,
   void UpdateAndroidSearchTags();
 
   std::optional<StartupSection> startup_subsection_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
+  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

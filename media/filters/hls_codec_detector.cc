@@ -47,12 +47,18 @@ void HlsCodecDetectorImpl::DetermineContainerAndCodec(
                                         /*container_only=*/false));
 }
 
+void HlsCodecDetectorImpl::PostSuccessToCallback(std::string container,
+                                                 std::string codecs) {
+  std::move(callback_).Run(ContainerAndCodecs{.container = std::move(container),
+                                              .codecs = std::move(codecs)});
+}
+
 void HlsCodecDetectorImpl::OnStreamFetched(
     bool container_only,
     HlsDataSourceProvider::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(callback_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::ReadChunk", this);
+  CHECK(callback_);
 
   if (!maybe_stream.has_value()) {
     HlsDemuxerStatus status = {HlsDemuxerStatus::Codes::kPlaylistUrlInvalid,
@@ -71,33 +77,28 @@ void HlsCodecDetectorImpl::OnStreamFetched(
   }
 
   // If this is the first call to `OnStreamFetched`, then `parser_` should be
-  // null, and needs to be created. If `DetermineContainer` fails to determine
-  // the container being used, then it will call `callback_` and not set
-  // `parser_`.
+  // null. Determining the container will create a parser for that specific
+  // container, if it supported.
   if (!parser_) {
-    DetermineContainer(container_only, stream->raw_data(), data_size);
+    auto err =
+        DetermineContainer(container_only, stream->raw_data(), data_size);
+    if (!err.is_ok()) {
+      std::move(callback_).Run(std::move(err));
+      return;
+    }
   }
 
-  if (!parser_) {
-    // `DetermineContainer` MUST execute `callback_` if it fails to create a
-    // parser.
-    CHECK(!callback_);
-    return;
-  }
-
-  // `DetermineContainer` MUST set `container_` if it also sets `parser_`.
+  // On success, `DetermineContainer` MUST create a parser and set the container
+  // type. Additionally, `callback_` must still be valid. If `container_only`
+  // is true, the parser is not initialized, and no codecs should provided.
+  CHECK(parser_);
+  CHECK(callback_);
   CHECK(!container_.empty());
-
   if (container_only) {
-    // If we only want the container, don't parse any data, and just return
-    // the container with an empty codec string.
-    std::move(callback_).Run(ContainerAndCodecs{
-        .container = std::move(container_),
-        .codecs = "",
-    });
-    return;
+    return PostSuccessToCallback(std::move(container_), "");
   }
 
+  // A failure to append data is not recoverable, unlike a failure to parse.
   if (!parser_->AppendToParseBuffer(stream->raw_data(), data_size)) {
     std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
     return;
@@ -105,58 +106,71 @@ void HlsCodecDetectorImpl::OnStreamFetched(
 
   auto parse_result = StreamParser::ParseStatus::kSuccessHasMoreData;
   while (StreamParser::ParseStatus::kSuccessHasMoreData == parse_result) {
+    // Calling `Parse` has the potential to trigger the container configs cb
+    // in the parser. The container config cb can trigger a parse failure if
+    // something unexpected happens, but the parse result response loses the
+    // detected codecs. As a result, the config cb methods we bind in this
+    // class directly respond to `callback_` with a more descriptive error.
+    // Similarly, `Parse` may also trigger the new buffers cb in the parser.
+    // Since buffers always come after configs, the new buffers CB will
+    // respond to `callback_` with success. If `callback_` here is unset, there
+    // is no more work to do.
     parse_result = parser_->Parse(StreamParser::kMaxPendingBytesPerParse);
     if (!callback_) {
-      // The parser has triggered the codec callback and we no longer need to
-      // parse data.
       return;
     }
   }
 
-  CHECK(callback_);
+  // The parser might fail since it's only being given a fragment of the full
+  // media content. If the parser has at some point already detected any codecs
+  // by the time it fails, we consider that to be successful. If it's truly a
+  // parse failure, then that should kill the player later on.
   if (StreamParser::ParseStatus::kFailed == parse_result) {
-    std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
-    return;
+    if (!codec_response_.length()) {
+      std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
+      return;
+    }
+    return PostSuccessToCallback(std::move(container_),
+                                 std::move(codec_response_));
   }
 
+  // The first chunk of data might not have contained the entire segment
+  // describing the codecs present. If the stream has no more data though,
+  // then the bitstream should be considered invalid.
   CHECK_EQ(StreamParser::ParseStatus::kSuccess, parse_result);
-  if (!stream->CanReadMore()) {
-    std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
+  if (stream->CanReadMore()) {
+    stream->Clear();
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "HLS::ReadChunk", this);
+    rendition_host_->ReadStream(
+        std::move(stream),
+        base::BindOnce(&HlsCodecDetectorImpl::OnStreamFetched,
+                       weak_factory_.GetWeakPtr(), container_only));
     return;
   }
 
-  // If the existing data was parsed but parsing hasn't resulted in a successful
-  // detection, keep reading from the data source until it is exhausted. The
-  // HLS chunks are usually not too large, and playback will need to read this
-  // chunk initially anyway, so fetching the whole thing isn't going to be an
-  // issue.
-  stream->Clear();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "HLS::ReadChunk", this);
-  rendition_host_->ReadStream(
-      std::move(stream),
-      base::BindOnce(&HlsCodecDetectorImpl::OnStreamFetched,
-                     weak_factory_.GetWeakPtr(), container_only));
+  // All the data has no been read, so if there was anything detected, it's time
+  // to return it.
+  if (codec_response_.length()) {
+    return PostSuccessToCallback(std::move(container_),
+                                 std::move(codec_response_));
+  }
+
+  std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
 }
 
-void HlsCodecDetectorImpl::DetermineContainer(bool container_only,
-                                              const uint8_t* data,
-                                              size_t size) {
+HlsDemuxerStatus HlsCodecDetectorImpl::DetermineContainer(bool container_only,
+                                                          const uint8_t* data,
+                                                          size_t size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   constexpr uint8_t kMP4FirstByte = 0x66;
   constexpr uint8_t kMPEGTSFirstByte = 0x47;
 
-  CHECK(callback_);
   CHECK(!parser_);
   CHECK(container_.empty());
 
   if (!size) {
-    std::move(callback_).Run(HlsDemuxerStatus::Codes::kInvalidBitstream);
-    return;
+    return HlsDemuxerStatus::Codes::kInvalidBitstream;
   }
-
-  // Supported headers
-  const std::vector<uint8_t> mp4 = {kMP4FirstByte, 0x74, 0x79, 0x70,
-                                    0x69,          0x73, 0x6F, 0x6D};
 
   StreamParser::NewConfigCB on_container_configs;
   switch (data[0]) {
@@ -188,19 +202,17 @@ void HlsCodecDetectorImpl::DetermineContainer(bool container_only,
       // it's not on the initial roadmap. The fragmented mp4 container will
       // start with the bytes 0x66 0x74 0x79 0x70 0x69 0x73 0x6F 0x6D, and we
       // can check for that later.
-      std::move(callback_).Run(HlsDemuxerStatus::Codes::kUnsupportedContainer);
-      return;
+      return HlsDemuxerStatus::Codes::kUnsupportedContainer;
     }
     default: {
-      std::move(callback_).Run(HlsDemuxerStatus::Codes::kUnsupportedContainer);
-      return;
+      return HlsDemuxerStatus::Codes::kUnsupportedContainer;
     }
   }
 
   if (container_only) {
     // Don't initialize the parser when we only care about querying the
     // container.
-    return;
+    return OkStatus();
   }
 
   // `this` owns `parser_` and never transfers it, while `parser` owns these
@@ -214,6 +226,8 @@ void HlsCodecDetectorImpl::DetermineContainer(bool container_only,
                 base::BindRepeating(&HlsCodecDetectorImpl::OnEncryptedMediaInit,
                                     base::Unretained(this)),
                 base::DoNothing(), base::DoNothing(), log_.get());
+
+  return OkStatus();
 }
 
 void HlsCodecDetectorImpl::AddCodecToResponse(std::string codec) {
@@ -229,6 +243,7 @@ void HlsCodecDetectorImpl::ParserInit(
 
 bool HlsCodecDetectorImpl::OnNewConfigMP2T(
     std::unique_ptr<MediaTracks> tracks) {
+  CHECK(callback_);
   for (const auto& [id, video_config] : tracks->GetVideoConfigs()) {
     if (video_config.codec() != VideoCodec::kH264) {
       HlsDemuxerStatus error = HlsDemuxerStatus::Codes::kUnsupportedCodec;
@@ -261,12 +276,8 @@ bool HlsCodecDetectorImpl::OnNewConfigMP2T(
 bool HlsCodecDetectorImpl::OnNewBuffers(
     const StreamParser::BufferQueueMap& buffers) {
   // Buffers come after all the configs, so once we hit the buffers, we can
-  // reply to `callback`. Move `codec_reponse_` and `container_` to clear them
-  // for the next parse.
-  std::move(callback_).Run(ContainerAndCodecs{
-      .container = std::move(container_),
-      .codecs = std::move(codec_response_),
-  });
+  // reply to `callback`.
+  PostSuccessToCallback(std::move(container_), std::move(codec_response_));
   return true;
 }
 

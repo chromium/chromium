@@ -155,7 +155,7 @@ class ExternalCacheImpl : public ExternalCache,
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Delegate that would like to get notifications about cache updates.
-  raw_ptr<ExternalCacheDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<ExternalCacheDelegate> delegate_;
 
   // Updates needs to be check for the extensions with external_crx too.
   bool always_check_updates_;

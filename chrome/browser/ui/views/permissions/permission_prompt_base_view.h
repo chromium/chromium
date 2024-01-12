@@ -19,8 +19,9 @@ class Browser;
 // * Ensure no button is selected by default to prevent unintended button
 // presses
 class PermissionPromptBaseView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(PermissionPromptBaseView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(PermissionPromptBaseView);
   PermissionPromptBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);

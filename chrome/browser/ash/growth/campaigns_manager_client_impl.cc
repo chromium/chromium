@@ -5,11 +5,13 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
@@ -18,14 +20,24 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/variations/synthetic_trials.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 inline constexpr char kCampaignComponentName[] = "growth-campaigns";
+
+// The synthetic trial name prefix for growth experiment. Formatted as
+// `CrOSGrowthStudy{studyId}`, where `studyId` is an integer. For non
+// experimental campaigns, `studyId` will be empty.
+inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
+// The synthetical trial group name for growth experiment. The campaign id
+// will be unique for different groups.
+inline constexpr char kGrowthGroupName[] = "CampaignId";
 
 }  // namespace
 
@@ -95,6 +107,20 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() const {
       make_pair(growth::ActionType::kInstallWebApp,
                 std::make_unique<InstallWebAppActionPerformer>()));
   return action_map;
+}
+
+void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
+    const std::optional<int> study_id,
+    const int campaign_id) const {
+  // If `study_id` is not null, appends it to the end of `trial_name`.
+  std::string trial_name(kGrowthStudyName);
+  if (study_id) {
+    base::StringAppendF(&trial_name, "%d", *study_id);
+  }
+  std::string group_name(kGrowthGroupName);
+  base::StringAppendF(&group_name, "%d", campaign_id);
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
+                                                            group_name);
 }
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(

@@ -42,4 +42,10 @@ CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
 
+INSERT INTO sources VALUES(2,2,3,4,5,6,7,8,9,10,11,0,13,14,15,16,17,18,19,20);
+INSERT INTO source_destinations VALUES(2,2); -- Corresponding source destination for corrupted source
+INSERT INTO dedup_keys VALUES(2,2,3); -- Corresponding dedup key for corrupted source
+INSERT INTO reports VALUES(2,2,3,4,5,6,7,8,9,10,1,12); -- Report with corrupted source.
+INSERT INTO reports VALUES(3,3,3,4,5,6,7,8,9,10,1,12); -- Corrupted report.
+
 COMMIT;

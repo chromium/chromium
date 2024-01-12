@@ -213,8 +213,7 @@ class ProjectorClientImplUnitTest
   base::HistogramTester histogram_tester_;
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> testing_profile_ =
-      nullptr;
+  raw_ptr<Profile, DanglingUntriaged> testing_profile_ = nullptr;
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
@@ -224,7 +223,7 @@ class ProjectorClientImplUnitTest
   std::unique_ptr<MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockAppClient> mock_app_client_;
   std::unique_ptr<MockLocaleUpdateController> mock_locale_controller_;
-  raw_ptr<speech::FakeSpeechRecognitionService, ExperimentalAsh> fake_service_;
+  raw_ptr<speech::FakeSpeechRecognitionService> fake_service_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

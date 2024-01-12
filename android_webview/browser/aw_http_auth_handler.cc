@@ -27,11 +27,13 @@ AwHttpAuthHandler::AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
                                      content::WebContents* web_contents,
                                      bool first_auth_attempt,
                                      LoginAuthRequiredCallback callback)
-    : web_contents_(web_contents->GetWeakPtr()),
-      host_(auth_info.challenger.host()),
+    : host_(auth_info.challenger.host()),
       realm_(auth_info.realm),
       callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   http_auth_handler_.Reset(Java_AwHttpAuthHandler_create(
       env, reinterpret_cast<intptr_t>(this), first_auth_attempt));
@@ -69,7 +71,9 @@ void AwHttpAuthHandler::Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 void AwHttpAuthHandler::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // The WebContents may have been destroyed during the PostTask.
+  // The WebContents may have been destroyed during the PostTask. There may also
+  // be no WebContents if the http auth request is from a service worker. This
+  // feature is currently unsupported by Android Webview.
   if (!web_contents_) {
     std::move(callback_).Run(std::nullopt);
     return;

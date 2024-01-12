@@ -31,7 +31,7 @@ class PrerenderCommitDeferringCondition : public CommitDeferringCondition,
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request,
       NavigationType navigation_type,
-      absl::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<int> candidate_prerender_frame_tree_node_id);
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
 

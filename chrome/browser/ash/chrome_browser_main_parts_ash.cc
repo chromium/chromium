@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -1123,7 +1124,7 @@ class GuestLanguageSetCallbackData {
       const std::unique_ptr<GuestLanguageSetCallbackData>& self,
       const locale_util::LanguageSwitchResult& result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile;
+  raw_ptr<Profile> profile;
 };
 
 // static
@@ -1257,6 +1258,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         g_browser_process->local_state(), ash::SessionController::Get());
 
     misconfigured_user_cleaner_->ScheduleCleanup();
+
+    essential_search_manager_ =
+        ::app_list::EssentialSearchManager::Create(profile);
 
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
@@ -1447,11 +1451,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
       MemoryMetrics::kDefaultPeriodInSeconds);
   memory_pressure_detail_->Start();
 
-  if (memory::ZramWritebackController::IsSupportedAndEnabled()) {
-    zram_writeback_controller_ = memory::ZramWritebackController::Create();
-    zram_writeback_controller_->Start();
-  }
-
   // ARCVM defers to Android's LMK to kill apps in low memory situations because
   // memory can't be reclaimed directly to ChromeOS.
   if (!arc::IsArcVmEnabled() &&
@@ -1489,10 +1488,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Do this early to keep logging from taking time during shutdown.
   if (memory_pressure_detail_ != nullptr) {
     memory_pressure_detail_->Stop();
-  }
-
-  if (zram_writeback_controller_ != nullptr) {
-    zram_writeback_controller_->Stop();
   }
 
   apn_migrator_.reset();
@@ -1574,6 +1569,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
+  essential_search_manager_.reset();
   if (features::IsTrafficCountersEnabled()) {
     traffic_counters_handler_.reset();
   }

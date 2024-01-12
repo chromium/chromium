@@ -10,6 +10,8 @@ source_set("data_controls") {
   sources = [
     "chrome_dlp_rules_manager.cc",
     "chrome_dlp_rules_manager.h",
+    "data_controls_dialog.cc",
+    "data_controls_dialog.h",
     "dlp_reporting_manager.cc",
     "dlp_reporting_manager.h",
     "rules_service.cc",
@@ -23,7 +25,9 @@ source_set("data_controls") {
 
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
+    "//components/constrained_window",
     "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
@@ -33,9 +37,11 @@ source_set("data_controls") {
     "//components/reporting/client:report_queue_factory",
     "//components/reporting/proto:record_constants",
     "//components/reporting/util:status",
+    "//components/strings:components_strings_grit",
     "//components/url_matcher",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",
+    "//ui/views",
     "//url",
   ]
   if (is_chromeos) {

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_MOCK_FILE_UTILS_WRAPPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_MOCK_FILE_UTILS_WRAPPER_H_
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -14,9 +17,10 @@ class MockFileUtilsWrapper : public FileUtilsWrapper {
  public:
   MockFileUtilsWrapper();
 
-  MOCK_METHOD(int,
+  MOCK_METHOD(bool,
               WriteFile,
-              (const base::FilePath& filename, const char* data, int size),
+              (const base::FilePath& filename,
+               base::span<const uint8_t> file_data),
               (override));
   MOCK_METHOD(bool,
               ReadFileToString,

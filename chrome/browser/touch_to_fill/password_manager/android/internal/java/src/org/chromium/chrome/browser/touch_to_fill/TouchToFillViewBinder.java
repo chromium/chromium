@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MorePasskeysProperties;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -57,6 +57,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 class TouchToFillViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link TouchToFillView} to update.
      * @param propertyKey The {@link PropertyKey} which changed.
@@ -86,6 +87,7 @@ class TouchToFillViewBinder {
 
     /**
      * Factory used to create a new View inside the ListView inside the TouchToFillView.
+     *
      * @param parent The parent {@link ViewGroup} of the new item.
      * @param itemType The type of View to create.
      */
@@ -129,6 +131,7 @@ class TouchToFillViewBinder {
 
     /**
      * This method creates a model change processor for each recycler view item when it is created.
+     *
      * @param holder A {@link TouchToFillViewHolder} holding the view and view binder for the MCP.
      * @param item A {@link MVCListAdapter.ListItem} holding the {@link PropertyModel} for the MCP.
      */
@@ -138,9 +141,10 @@ class TouchToFillViewBinder {
     }
 
     /**
-     * Called whenever a credential is bound to this view holder. Please note that this method
-     * might be called on the same list entry repeatedly, so make sure to always set a default
-     * for unused fields.
+     * Called whenever a credential is bound to this view holder. Please note that this method might
+     * be called on the same list entry repeatedly, so make sure to always set a default for unused
+     * fields.
+     *
      * @param model The model containing the data for the view
      * @param view The view to be bound
      * @param propertyKey The key of the property to be bound
@@ -204,13 +208,14 @@ class TouchToFillViewBinder {
 
     /**
      * Called whenever a WebAuthn credential is bound to this view holder.
+     *
      * @param model The model containing the data for the view
      * @param view The view to be bound
      * @param propertyKey The key of the property to be bound
      */
     private static void bindWebAuthnCredentialView(
             PropertyModel model, View view, PropertyKey propertyKey) {
-        WebAuthnCredential credential = model.get(WEBAUTHN_CREDENTIAL);
+        WebauthnCredential credential = model.get(WEBAUTHN_CREDENTIAL);
         view.findViewById(R.id.credential_origin).setVisibility(View.GONE);
         if (propertyKey == ON_WEBAUTHN_CLICK_LISTENER) {
             view.setOnClickListener(
@@ -259,6 +264,7 @@ class TouchToFillViewBinder {
 
     /**
      * Called whenever an action button to use more passkeys is bound to this view holder.
+     *
      * @param model The model containing the data for the view
      * @param view The view to be bound
      * @param propertyKey The key of the property to be bound
@@ -278,6 +284,7 @@ class TouchToFillViewBinder {
 
     /**
      * Called whenever a fill button for a single credential is bound to this view holder.
+     *
      * @param model The model containing the data for the view
      * @param view The view to be bound
      * @param propertyKey The key of the property to be bound
@@ -291,7 +298,7 @@ class TouchToFillViewBinder {
                         model.get(ON_CLICK_LISTENER).onResult(credential);
                     });
         } else if (propertyKey == ON_WEBAUTHN_CLICK_LISTENER) {
-            WebAuthnCredential webauthn_credential = model.get(WEBAUTHN_CREDENTIAL);
+            WebauthnCredential webauthn_credential = model.get(WEBAUTHN_CREDENTIAL);
             view.setOnClickListener(
                     clickedView -> {
                         model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(webauthn_credential);
@@ -327,6 +334,7 @@ class TouchToFillViewBinder {
 
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link View} of the header to update.
      * @param key The {@link PropertyKey} which changed.
@@ -347,7 +355,7 @@ class TouchToFillViewBinder {
         } else if (key == AVATAR) {
             ImageView sheetHeaderAvatar = view.findViewById(R.id.touch_to_fill_sheet_header_avatar);
             if (model.get(AVATAR) == null) {
-                sheetHeaderAvatar.setVisibility(View.GONE);
+                sheetHeaderAvatar.setVisibility(View.INVISIBLE);
             } else {
                 sheetHeaderAvatar.setVisibility(View.VISIBLE);
                 sheetHeaderAvatar.setImageDrawable(model.get(AVATAR));
@@ -359,6 +367,7 @@ class TouchToFillViewBinder {
 
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link View} of the header to update.
      * @param key The {@link PropertyKey} which changed.

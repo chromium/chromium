@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/api_signature.h"
 
+#include <string_view>
+
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -223,27 +225,27 @@ class APISignatureTest : public APIBindingTest {
   }
 
   void ExpectPass(const APISignature& signature,
-                  base::StringPiece arg_values,
-                  base::StringPiece expected_parsed_args,
+                  std::string_view arg_values,
+                  std::string_view expected_parsed_args,
                   binding::AsyncResponseType expected_response_type) {
     RunTest(signature, arg_values, expected_parsed_args, expected_response_type,
             true, std::string());
   }
 
   void ExpectFailure(const APISignature& signature,
-                     base::StringPiece arg_values,
+                     std::string_view arg_values,
                      const std::string& expected_error) {
-    RunTest(signature, arg_values, base::StringPiece(),
+    RunTest(signature, arg_values, std::string_view(),
             binding::AsyncResponseType::kNone, false, expected_error);
   }
 
   void ExpectResponsePass(const APISignature& signature,
-                          base::StringPiece arg_values) {
+                          std::string_view arg_values) {
     RunResponseTest(signature, arg_values, std::nullopt);
   }
 
   void ExpectResponseFailure(const APISignature& signature,
-                             base::StringPiece arg_values,
+                             std::string_view arg_values,
                              const std::string& expected_error) {
     RunResponseTest(signature, arg_values, expected_error);
   }
@@ -252,8 +254,8 @@ class APISignatureTest : public APIBindingTest {
 
  private:
   void RunTest(const APISignature& signature,
-               base::StringPiece arg_values,
-               base::StringPiece expected_parsed_args,
+               std::string_view arg_values,
+               std::string_view expected_parsed_args,
                binding::AsyncResponseType expected_response_type,
                bool should_succeed,
                const std::string& expected_error) {
@@ -281,7 +283,7 @@ class APISignatureTest : public APIBindingTest {
   }
 
   void RunResponseTest(const APISignature& signature,
-                       base::StringPiece arg_values,
+                       std::string_view arg_values,
                        std::optional<std::string> expected_error) {
     SCOPED_TRACE(arg_values);
     v8::Local<v8::Context> context = MainContext();

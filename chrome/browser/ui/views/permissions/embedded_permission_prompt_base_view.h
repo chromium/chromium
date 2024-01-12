@@ -13,6 +13,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/styled_label.h"
@@ -45,6 +46,8 @@ class Browser;
 // views::BubbleDialogDelegateView.
 
 class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
+  METADATA_HEADER(EmbeddedPermissionPromptBaseView, PermissionPromptBaseView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId1);

@@ -32,7 +32,7 @@ void MinimizeWindow(aura::Window* window) {
 }  // namespace
 
 struct BrowserAppInstanceRegistry::WindowEventList {
-  raw_ptr<aura::Window, ExperimentalAsh> window{nullptr};
+  raw_ptr<aura::Window> window{nullptr};
   std::vector<base::OnceCallback<void(aura::Window*)>> events;
 };
 

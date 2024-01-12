@@ -123,6 +123,7 @@ void CreateHTMLAudioElementCapturer(
   capabilities.echo_cancellation.emplace_back(false);
   capabilities.auto_gain_control.emplace_back(false);
   capabilities.noise_suppression.emplace_back(false);
+  capabilities.voice_isolation.emplace_back(false);
   capabilities.sample_size = {
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16),  // min
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)   // max

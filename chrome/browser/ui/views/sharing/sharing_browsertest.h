@@ -14,16 +14,12 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
 #include "chrome/browser/sharing/sharing_service.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "url/gurl.h"
-
-namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
 
 class PageActionIconView;
 
@@ -98,7 +94,7 @@ class SharingBrowserTest : public SyncTest {
       base::StringPiece link_text,
       base::StringPiece selection_text);
 
-  void CheckLastReceiver(const syncer::DeviceInfo& device) const;
+  void CheckLastReceiver(const SharingTargetDeviceInfo& device) const;
 
   chrome_browser_sharing::SharingMessage GetLastSharingMessageSent() const;
 

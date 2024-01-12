@@ -6,11 +6,12 @@
 #define EXTENSIONS_BROWSER_API_MESSAGING_MESSAGING_API_MESSAGE_FILTER_H_
 
 #include "base/callback_list.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
+#include "content/public/browser/browser_message_filter.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabTargetConnectionInfo;

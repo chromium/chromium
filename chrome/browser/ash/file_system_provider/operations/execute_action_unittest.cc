@@ -36,8 +36,8 @@ const char kActionId[] = "SHARE";
 
 class FileSystemProviderOperationsExecuteActionTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsExecuteActionTest() {}
-  ~FileSystemProviderOperationsExecuteActionTest() override {}
+  FileSystemProviderOperationsExecuteActionTest() = default;
+  ~FileSystemProviderOperationsExecuteActionTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

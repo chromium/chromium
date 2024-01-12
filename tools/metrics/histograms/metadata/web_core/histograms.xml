@@ -811,16 +811,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.WebSocket.SendType" enum="WebSocketSendType"
-    expires_after="2021-10-17">
-  <owner>yhirano@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Count the number of send() method calls on WebSockets for each argument
-    type.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

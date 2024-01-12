@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -91,7 +92,9 @@ scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner(
   // to discover the most native modifier accepted by the hardware video
   // decoder; this in turn may need to open the render node, and this is the
   // operation that may block.
-  if (in_video_decoder_process) {
+  if (in_video_decoder_process &&
+      !base::FeatureList::IsEnabled(
+          kUseDedicatedDecoderThreadInVideoDecoderProcess)) {
     return base::ThreadPool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
   }
@@ -672,6 +675,9 @@ void VideoDecoderPipeline::ResetTask(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  drop_transcrypted_buffers_ = true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   need_apply_new_resolution = false;
   decoder_->Reset(base::BindOnce(&VideoDecoderPipeline::OnResetDone,
                                  decoder_weak_this_, std::move(reset_cb)));
@@ -700,6 +706,10 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
     if (auxiliary_frame_pool_)
       auxiliary_frame_pool_->ReleaseAllFrames();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  drop_transcrypted_buffers_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   client_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
 }
@@ -1220,6 +1230,11 @@ void VideoDecoderPipeline::OnBufferTranscrypted(
   if (!transcrypted_buffer) {
     OnError("Error in buffer transcryption");
     std::move(decode_callback).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
+  if (drop_transcrypted_buffers_) {
+    std::move(decode_callback).Run(DecoderStatus::Codes::kAborted);
     return;
   }
 

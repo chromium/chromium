@@ -103,8 +103,6 @@ EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::ToMojom(
           HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
     case gpu::VideoCodecProfile::DOLBYVISION_PROFILE0:
       return gpu::mojom::VideoCodecProfile::DOLBYVISION_PROFILE0;
-    case gpu::VideoCodecProfile::DOLBYVISION_PROFILE4:
-      return gpu::mojom::VideoCodecProfile::DOLBYVISION_PROFILE4;
     case gpu::VideoCodecProfile::DOLBYVISION_PROFILE5:
       return gpu::mojom::VideoCodecProfile::DOLBYVISION_PROFILE5;
     case gpu::VideoCodecProfile::DOLBYVISION_PROFILE7:
@@ -249,9 +247,6 @@ bool EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::
       return true;
     case gpu::mojom::VideoCodecProfile::DOLBYVISION_PROFILE0:
       *out = gpu::VideoCodecProfile::DOLBYVISION_PROFILE0;
-      return true;
-    case gpu::mojom::VideoCodecProfile::DOLBYVISION_PROFILE4:
-      *out = gpu::VideoCodecProfile::DOLBYVISION_PROFILE4;
       return true;
     case gpu::mojom::VideoCodecProfile::DOLBYVISION_PROFILE5:
       *out = gpu::VideoCodecProfile::DOLBYVISION_PROFILE5;

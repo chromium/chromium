@@ -92,7 +92,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
   THREAD_CHECKER(thread_checker_);
   int socket_id_;
-  raw_ptr<P2PSocketClientDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<P2PSocketClientDelegate> delegate_;
   State state_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 

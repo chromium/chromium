@@ -236,10 +236,9 @@ class StateController : public ash::mojom::TrayActionClient,
 
   std::unique_ptr<AppManager> app_manager_;
 
-  raw_ptr<FocusCyclerDelegate, ExperimentalAsh> focus_cycler_delegate_ =
-      nullptr;
+  raw_ptr<FocusCyclerDelegate> focus_cycler_delegate_ = nullptr;
 
-  raw_ptr<extensions::AppWindow, ExperimentalAsh> note_app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow> note_app_window_ = nullptr;
 
   // Used to show first lock screen app run (toast) dialog when an app window
   // is first launched for an app.
@@ -270,7 +269,7 @@ class StateController : public ash::mojom::TrayActionClient,
 
   // The clock used to keep track of time, for example to report app window
   // lifetime metrics.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   base::WeakPtrFactory<StateController> weak_ptr_factory_{this};
 };

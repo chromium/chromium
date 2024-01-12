@@ -12,10 +12,10 @@ import androidx.core.view.ViewCompat;
  * Changes a view's padding when switching between {@link UiConfig} display styles. If the display
  * style is {@link HorizontalDisplayStyle#REGULAR}, a predetermined value will be used to set the
  * lateral padding. If the display style is {@link HorizontalDisplayStyle#WIDE}, the lateral padding
- * will be calculated using the available screen width to keep the view constrained to
- * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}
+ * will be calculated using the available screen width to keep the view constrained to {@link
+ * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}
  */
-public class ViewResizer implements DisplayStyleObserver {
+public class ViewResizer implements DisplayStyleObserver, View.OnLayoutChangeListener {
     /** The default value for the lateral padding. */
     private int mDefaultPaddingPixels;
 
@@ -40,6 +40,7 @@ public class ViewResizer implements DisplayStyleObserver {
         mMinWidePaddingPixels = minWidePaddingPixels;
         mUiConfig = config;
         mDisplayStyleObserver = new DisplayStyleObserverAdapter(view, config, this);
+        view.addOnLayoutChangeListener(this);
     }
 
     /**
@@ -99,10 +100,16 @@ public class ViewResizer implements DisplayStyleObserver {
     protected int computePadding() {
         if (!mUiConfig.getCurrentDisplayStyle().isWide()) return mDefaultPaddingPixels;
         return ViewResizerUtil.computePaddingForWideDisplay(
-                mUiConfig.getContext(), mMinWidePaddingPixels);
+                mUiConfig.getContext(), mView, mMinWidePaddingPixels);
     }
 
     protected int getMinWidePaddingPixels() {
         return mMinWidePaddingPixels;
+    }
+
+    @Override
+    public void onLayoutChange(
+            View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+        updatePadding();
     }
 }

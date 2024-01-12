@@ -80,10 +80,8 @@ CampaignsMatcher::CampaignsMatcher(CampaignsManagerClient* client,
     : client_(client), local_state_(local_state) {}
 CampaignsMatcher::~CampaignsMatcher() = default;
 
-void CampaignsMatcher::SetCampaigns(const CampaignsPerSlot* proactiveCampaigns,
-                                    const CampaignsPerSlot* reactiveCampaigns) {
-  proactive_campaigns_ = proactiveCampaigns;
-  reactive_campaigns_ = reactiveCampaigns;
+void CampaignsMatcher::SetCampaigns(const CampaignsPerSlot* campaigns) {
+  campaigns_ = campaigns;
 }
 
 void CampaignsMatcher::SetPrefs(PrefService* prefs) {
@@ -91,7 +89,7 @@ void CampaignsMatcher::SetPrefs(PrefService* prefs) {
 }
 
 const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
-  auto* targeted_campaigns = GetCampaignsBySlot(reactive_campaigns_, slot);
+  auto* targeted_campaigns = GetCampaignsBySlot(campaigns_, slot);
   if (!targeted_campaigns) {
     return nullptr;
   }

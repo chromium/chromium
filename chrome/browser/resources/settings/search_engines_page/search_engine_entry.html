@@ -39,7 +39,8 @@
       #shortcut-column,
       #url-column {
         flex: auto;
-        margin-inline-end: 40px;
+        margin-inline-end: 10px;
+        max-width: 200px;
       }
     </style>
 
@@ -54,9 +55,8 @@
         <span role="cell" id="shortcut-column" hidden="[[!showShortcut]]">
           <div>[[engine.keyword]]</div>
         </span>
-        <span role="cell" id="url-column" class="text-elide"
-            hidden="[[!showQueryUrl]]">
-          <div>[[engine.url]]</div>
+        <span role="cell" id="url-column" hidden="[[!showQueryUrl]]">
+          <div class="text-elide">[[engine.url]]</div>
         </span>
         <span role="cell" id="controls-column-group">
           <cr-button class="secondary-button" on-click="onActivateClick_"

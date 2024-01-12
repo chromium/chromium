@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/choice_made_location.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
@@ -76,10 +77,8 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
 
 - (void)saveDefaultSearchEngine {
   _templateURLService->SetUserSelectedDefaultSearchProvider(
-      _urlList[self.selectedRow].get());
-  search_engines::RecordChoiceMade(
-      _prefService, search_engines::ChoiceMadeLocation::kChoiceScreen,
-      _templateURLService);
+      _urlList[self.selectedRow].get(),
+      search_engines::ChoiceMadeLocation::kChoiceScreen);
 }
 
 - (void)disconnect {

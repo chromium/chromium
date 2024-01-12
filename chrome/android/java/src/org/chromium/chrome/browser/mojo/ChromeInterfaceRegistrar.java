@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.webauthn.ChromeAuthenticatorConfirmationFactory;
 import org.chromium.chrome.browser.webshare.ShareServiceImplementationFactory;
 import org.chromium.components.webauthn.AuthenticatorFactory;
+import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -53,7 +54,9 @@ class ChromeInterfaceRegistrar {
             registry.addInterface(
                     Authenticator.MANAGER,
                     new AuthenticatorFactory(
-                            renderFrameHost, new ChromeAuthenticatorConfirmationFactory()));
+                            renderFrameHost,
+                            new ChromeAuthenticatorConfirmationFactory(),
+                            WebauthnMode.CHROME));
             registry.addInterface(
                     DigitalGoodsFactory.MANAGER, new DigitalGoodsFactoryFactory(renderFrameHost));
         }

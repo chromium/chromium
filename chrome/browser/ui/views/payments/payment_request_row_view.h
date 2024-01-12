@@ -15,8 +15,9 @@ namespace payments {
 // This class implements a clickable row of the Payment Request dialog that
 // darkens on hover and displays a horizontal ruler on its lower bound.
 class PaymentRequestRowView : public views::Button {
+  METADATA_HEADER(PaymentRequestRowView, views::Button)
+
  public:
-  METADATA_HEADER(PaymentRequestRowView);
   PaymentRequestRowView();
   // Creates a row view. If |clickable| is true, the row will be shaded on hover
   // and handle click events. |insets| are used as padding around the content.

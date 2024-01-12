@@ -78,7 +78,8 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
     base::UmaHistogramTimes("Omnibox.WebUI.FirstUpdate", delta);
   }
 
-  if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
+  if (controller()->autocomplete_controller()->result().empty() ||
+      omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
   } else {
     presenter_->Show();
@@ -107,4 +108,3 @@ std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
     size_t line) {
   return u"";
 }
-

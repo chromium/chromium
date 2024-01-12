@@ -22,8 +22,9 @@ absl::optional<ComponentRegistration> GetComponent(
     const base::flat_map<std::string, ComponentRegistration>& components,
     const std::string& id) {
   const auto it = components.find(id);
-  if (it != components.end())
+  if (it != components.end()) {
     return it->second;
+  }
   return absl::nullopt;
 }
 
@@ -32,8 +33,9 @@ std::vector<absl::optional<ComponentRegistration>> GetCrxComponents(
         registered_components,
     const std::vector<std::string>& ids) {
   std::vector<absl::optional<ComponentRegistration>> components;
-  for (const auto& id : ids)
+  for (const auto& id : ids) {
     components.push_back(GetComponent(registered_components, id));
+  }
   return components;
 }
 

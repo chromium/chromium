@@ -228,7 +228,9 @@ enum class NudgeCatalogName {
   kCaptureModeEducationShortcutTutorial = 23,
   kCaptureModeEducationQuickSettingsNudge = 24,
   kGameDashboardControlsNudge = 25,
-  kMaxValue = kGameDashboardControlsNudge
+  // [Deprecated] kWebsiteTelemetryReportingNudge = 26,
+  kStandaloneWindowMigrationUx = 27,
+  kMaxValue = kStandaloneWindowMigrationUx
 };
 
 // A living catalog that registers toasts.
@@ -285,7 +287,8 @@ enum class ToastCatalogName {
   kBatterySaverEnabled = 46,
   kDictationMicMuted = 47,
   kVideoConferenceTraySpeakOnMuteOptInConfirmation = 48,
-  kMaxValue = kVideoConferenceTraySpeakOnMuteOptInConfirmation
+  kAppNotClosable = 49,
+  kMaxValue = kAppNotClosable
 };
 
 }  // namespace ash

@@ -125,7 +125,12 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
   // Maximum upload size allowed for a single request.
   int64_t max_upload_buffer_size_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<FileUploadDelegate> weak_ptr_factory_{this};
+  // Weak pointer factory used by this delegate.
+  // Note that weak pointers here are all dereferenced on UI task runner, and so
+  // the factory needs to be reset there as well - because of that we make it
+  // moveable by using smart pointer.
+  std::unique_ptr<base::WeakPtrFactory<FileUploadDelegate>> weak_ptr_factory_{
+      new base::WeakPtrFactory<FileUploadDelegate>{this}};
 };
 }  // namespace reporting
 

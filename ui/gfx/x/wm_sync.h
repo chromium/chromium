@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/window_event_manager.h"
@@ -22,6 +23,12 @@ class COMPONENT_EXPORT(X11) WmSync final : public EventObserver {
  public:
   WmSync(Connection* connection, base::OnceClosure on_synced);
 
+  // If `sync_with_wm` is true, this will sync with the window manager,
+  // otherwise it will just sync with the server.
+  WmSync(Connection* connection,
+         base::OnceClosure on_synced,
+         bool sync_with_wm);
+
   WmSync(WmSync&&) = delete;
   WmSync& operator=(WmSync&&) = delete;
 
@@ -30,6 +37,8 @@ class COMPONENT_EXPORT(X11) WmSync final : public EventObserver {
  private:
   // EventObserver:
   void OnEvent(const Event& xevent) override;
+
+  void OnGetInputFocusResponse(GetInputFocusResponse response);
 
   void Cleanup();
 
@@ -40,6 +49,8 @@ class COMPONENT_EXPORT(X11) WmSync final : public EventObserver {
   ScopedEventSelector window_events_;
 
   base::ScopedObservation<Connection, EventObserver> scoped_observation_{this};
+
+  base::WeakPtrFactory<WmSync> weak_ptr_factory_{this};
 };
 
 }  // namespace x11

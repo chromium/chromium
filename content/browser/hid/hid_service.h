@@ -130,7 +130,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
   const base::WeakPtr<content::ServiceWorkerVersion> service_worker_version_;
 
   // The request uuid for keeping service worker alive.
-  absl::optional<base::Uuid> service_worker_activity_request_uuid_;
+  std::optional<base::Uuid> service_worker_activity_request_uuid_;
 
   // The last shown HID chooser UI.
   std::unique_ptr<HidChooser> chooser_;

@@ -119,6 +119,10 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   // driven by a debugger.
   base::CommandLine::StringVector args =
       base::CommandLine::ForCurrentProcess()->GetArgs();
+  args.erase(
+      std::remove(args.begin(), args.end(), base::CommandLine::StringType()),
+      args.end());
+
   if (args.empty() && !devtools_enabled) {
     args.push_back(kAboutBlank);
   }

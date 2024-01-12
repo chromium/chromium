@@ -368,7 +368,6 @@ fast/autoresize/basic.html
 fast/autoresize/turn-off-autoresize.html
 fast/backgrounds/background-clip-text.html
 fast/backgrounds/background-fill-zero-area-crash.html
-fast/backgrounds/background-shorthand-after-set-backgroundSize.html
 fast/backgrounds/size/parsing-background-size-values.html
 fast/beacon/beacon-basic.html
 fast/block/basic/018.html

@@ -26,14 +26,6 @@ namespace extensions {
 
 namespace {
 
-// Whether this build supports the window.shape requirement.
-const bool kSupportsWindowShape =
-#if defined(USE_AURA)
-    true;
-#else
-    false;
-#endif
-
 // Returns true if a WebGL check might not fail immediately.
 bool MightSupportWebGL() {
   return content::GpuDataManager::GetInstance()->GpuAccessAllowed(nullptr);
@@ -70,10 +62,6 @@ class RequirementsCheckerTest : public ExtensionsTest {
     runner_.RunUntilComplete(checker_.get());
   }
 
-  void RequireWindowShape() {
-    manifest_dict_.SetByDottedPath("requirements.window.shape", true);
-  }
-
   void RequireFeature(const char feature[]) {
     base::Value* features_list = manifest_dict_.Find(kFeaturesKey);
     if (!features_list)
@@ -100,9 +88,6 @@ TEST_F(RequirementsCheckerTest, RequirementsEmpty) {
 
 // Tests fulfilled requirements.
 TEST_F(RequirementsCheckerTest, RequirementsSuccess) {
-  if (kSupportsWindowShape)
-    RequireWindowShape();
-
   RequireFeature(kFeatureCSS3d);
 
   CreateExtension();
@@ -115,10 +100,6 @@ TEST_F(RequirementsCheckerTest, RequirementsSuccess) {
 // Tests multiple requirements failing (on some builds).
 TEST_F(RequirementsCheckerTest, RequirementsFailMultiple) {
   size_t expected_errors = 0u;
-  if (!kSupportsWindowShape) {
-    RequireWindowShape();
-    expected_errors++;
-  }
   if (!MightSupportWebGL()) {
     RequireFeature(kFeatureWebGL);
     expected_errors++;

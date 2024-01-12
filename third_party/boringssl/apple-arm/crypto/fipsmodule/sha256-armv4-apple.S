@@ -90,39 +90,18 @@ K256:
 .word	0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 
 .word	0				@ terminator
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-LOPENSSL_armcap:
-.word	OPENSSL_armcap_P-Lsha256_block_data_order
-#endif
 .align	5
 
-.globl	_sha256_block_data_order
-.private_extern	_sha256_block_data_order
+.globl	_sha256_block_data_order_nohw
+.private_extern	_sha256_block_data_order_nohw
 #ifdef __thumb2__
-.thumb_func	_sha256_block_data_order
+.thumb_func	_sha256_block_data_order_nohw
 #endif
-_sha256_block_data_order:
-Lsha256_block_data_order:
-#if __ARM_ARCH<7 && !defined(__thumb2__)
-	sub	r3,pc,#8		@ _sha256_block_data_order
-#else
-	adr	r3,Lsha256_block_data_order
-#endif
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-	ldr	r12,LOPENSSL_armcap
-	ldr	r12,[r3,r12]		@ OPENSSL_armcap_P
-#ifdef	__APPLE__
-	ldr	r12,[r12]
-#endif
-	tst	r12,#ARMV8_SHA256
-	bne	LARMv8
-	tst	r12,#ARMV7_NEON
-	bne	LNEON
-#endif
+_sha256_block_data_order_nohw:
 	add	r2,r1,r2,lsl#6	@ len to point at the end of inp
 	stmdb	sp!,{r0,r1,r2,r4-r11,lr}
 	ldmia	r0,{r4,r5,r6,r7,r8,r9,r10,r11}
-	sub	r14,r3,#256+32	@ K256
+	adr	r14,K256
 	sub	sp,sp,#16*4		@ alloca(X[16])
 Loop:
 # if __ARM_ARCH>=7
@@ -1897,10 +1876,12 @@ Lrounds_16_xx:
 .align	5
 .skip	16
 _sha256_block_data_order_neon:
-LNEON:
 	stmdb	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 
 	sub	r11,sp,#16*4+16
+	@ In Arm mode, the following ADR runs up against the limits of encodable
+	@ offsets. It only fits because the offset, when the ADR is placed here,
+	@ is a multiple of 16.
 	adr	r14,K256
 	bic	r11,r11,#15		@ align for 128-bit stores
 	mov	r12,sp
@@ -2683,14 +2664,29 @@ L_00_48:
 #  define INST(a,b,c,d)	.byte	a,b,c,d
 # endif
 
+LK256_shortcut:
+@ PC is 8 bytes ahead in Arm mode and 4 bytes ahead in Thumb mode.
+#if defined(__thumb2__)
+.word	K256-(LK256_add+4)
+#else
+.word	K256-(LK256_add+8)
+#endif
+
+.globl	_sha256_block_data_order_hw
+.private_extern	_sha256_block_data_order_hw
 #ifdef __thumb2__
-.thumb_func	sha256_block_data_order_armv8
+.thumb_func	_sha256_block_data_order_hw
 #endif
 .align	5
-sha256_block_data_order_armv8:
-LARMv8:
+_sha256_block_data_order_hw:
+	@ K256 is too far to reference from one ADR command in Thumb mode. In
+	@ Arm mode, we could make it fit by aligning the ADR offset to a 64-byte
+	@ boundary. For simplicity, just load the offset from .LK256_shortcut.
+	ldr	r3,LK256_shortcut
+LK256_add:
+	add	r3,pc,r3
+
 	vld1.32	{q0,q1},[r0]
-	sub	r3,r3,#256+32
 	add	r2,r1,r2,lsl#6	@ len to point at the end of inp
 	b	Loop_v8
 
@@ -2827,12 +2823,4 @@ Loop_v8:
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,65,82,77,118,52,47,78,69,79,78,47,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	2
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-.comm	_OPENSSL_armcap_P,4
-.non_lazy_symbol_pointer
-OPENSSL_armcap_P:
-.indirect_symbol	_OPENSSL_armcap_P
-.long	0
-.private_extern	_OPENSSL_armcap_P
-#endif
 #endif  // !OPENSSL_NO_ASM && defined(OPENSSL_ARM) && defined(__APPLE__)

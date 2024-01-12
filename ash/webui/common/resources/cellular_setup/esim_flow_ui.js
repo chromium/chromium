@@ -14,11 +14,11 @@ import './confirmation_code_page_legacy.js';
 import './confirmation_code_page.js';
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from '//resources/ash/common/network/network_listener_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ESimManagerRemote, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -89,197 +89,190 @@ export const FAILED_ESIM_SETUP_DURATION_METRIC_NAME =
  * Root element for the eSIM cellular setup flow. This element interacts with
  * the CellularSetup service to carry out the esim activation flow.
  */
-Polymer({
-  _template: getTemplate(),
-  is: 'esim-flow-ui',
 
-  behaviors: [
-    I18nBehavior,
-    NetworkListenerBehavior,
-    SubflowBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {NetworkListenerBehaviorInterface}
+ */
+const EsimFlowUiElementBase = mixinBehaviors(
+    [I18nBehavior, NetworkListenerBehavior, SubflowBehavior], PolymerElement);
 
-  properties: {
-    /** @type {!CellularSetupDelegate} */
-    delegate: Object,
+/** @polymer */
+export class EsimFlowUiElement extends EsimFlowUiElementBase {
+  static get is() {
+    return 'esim-flow-ui';
+  }
 
-    /**
-     * Header shown at the top of the flow. No header shown if the string is
-     * empty.
-     */
-    header: {
-      type: String,
-      notify: true,
-      computed: 'computeHeader_(selectedESimPageName_, showError_)',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    forwardButtonLabel: {
-      type: String,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /** @type {!CellularSetupDelegate} */
+      delegate: Object,
 
-    /**
-     * @type {!ESimUiState}
-     * @private
-     */
-    state_: {
-      type: String,
-      value: function() {
-        if (loadTimeData.valueExists('isSmdsSupportEnabled') &&
-            loadTimeData.getBoolean('isSmdsSupportEnabled')) {
-          return ESimUiState.PROFILE_SEARCH_CONSENT;
-        }
-        return ESimUiState.PROFILE_SEARCH;
+      /**
+       * Header shown at the top of the flow. No header shown if the string is
+       * empty.
+       */
+      header: {
+        type: String,
+        notify: true,
+        computed: 'computeHeader_(selectedESimPageName_, showError_)',
       },
-      observer: 'onStateChanged_',
-    },
 
-    /**
-     * Element name of the current selected sub-page.
-     * This is set in updateSelectedPage_ on initialization.
-     * @type {?ESimPageName}
-     * @private
-     */
-    selectedESimPageName_: String,
-
-    /**
-     * Whether the user has consented to a scan for profiles.
-     * @type {boolean}
-     */
-    hasConsentedForDiscovery_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether the user is setting up the eSIM profile manually.
-     * @type {boolean}
-     */
-    shouldSkipDiscovery_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether error state should be shown for the current page.
-     * @private {boolean}
-     */
-    showError_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Profiles fetched that have status kPending.
-     * @type {!Array<!ESimProfileRemote>}
-     * @private
-     */
-    pendingProfiles_: {
-      type: Array,
-    },
-
-    /**
-     * Profile selected to be installed.
-     * @type {?ESimProfileRemote}
-     * @private
-     */
-    selectedProfile_: {
-      type: Object,
-    },
-
-    /**
-     * Profile properties fetched from the latest SM-DS scan.
-     * @type {!Array<!ESimProfileProperties>}
-     * @private
-     */
-    pendingProfileProperties_: {
-      type: Array,
-    },
-
-    /**
-     * Profile properties selected to be installed.
-     * @type {?ESimProfileProperties}
-     * @private
-     */
-    selectedProfileProperties_: {
-      type: Object,
-    },
-
-    /** @private */
-    activationCode_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private */
-    confirmationCode_: {
-      type: String,
-      value: '',
-      observer: 'onConfirmationCodeUpdated_',
-    },
-
-    /** @private */
-    hasHadActiveCellularNetwork_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    isActivationCodeFromQrCode_: {
-      type: Boolean,
-    },
-
-    /**
-     * Return true if SmdsSupportEnabled feature flag is enabled.
-     */
-    smdsSupportEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isSmdsSupportEnabled') &&
-            loadTimeData.getBoolean('isSmdsSupportEnabled');
+      forwardButtonLabel: {
+        type: String,
+        notify: true,
       },
-    },
-  },
 
-  /**
-   * Provides an interface to the ESimManager Mojo service.
-   * @private {?ESimManagerRemote}
-   */
-  eSimManagerRemote_: null,
+      /**
+       * @type {!ESimUiState}
+       * @private
+       */
+      state_: {
+        type: String,
+        value: function() {
+          if (loadTimeData.valueExists('isSmdsSupportEnabled') &&
+              loadTimeData.getBoolean('isSmdsSupportEnabled')) {
+            return ESimUiState.PROFILE_SEARCH_CONSENT;
+          }
+          return ESimUiState.PROFILE_SEARCH;
+        },
+        observer: 'onStateChanged_',
+      },
 
-  /** @private {?EuiccRemote} */
-  euicc_: null,
+      /**
+       * Element name of the current selected sub-page.
+       * This is set in updateSelectedPage_ on initialization.
+       * @type {?ESimPageName}
+       * @private
+       */
+      selectedESimPageName_: String,
 
-  /** @private {boolean} */
-  hasFailedFetchingProfiles_: false,
+      /**
+       * Whether the user has consented to a scan for profiles.
+       * @type {boolean}
+       */
+      hasConsentedForDiscovery_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /** @private {?ProfileInstallResult} */
-  lastProfileInstallResult_: null,
+      /**
+       * Whether the user is setting up the eSIM profile manually.
+       * @type {boolean}
+       */
+      shouldSkipDiscovery_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /**
-   * If there are no active network connections of any type.
-   * @private {boolean}
-   */
-  isOffline_: false,
+      /**
+       * Whether error state should be shown for the current page.
+       * @private {boolean}
+       */
+      showError_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /**
-   * The time at which the ESim flow is attached.
-   * @private {?Date}
-   */
-  timeOnAttached_: null,
+      /**
+       * Profiles fetched that have status kPending.
+       * @type {!Array<!ESimProfileRemote>}
+       * @private
+       */
+      pendingProfiles_: Array,
 
-  listeners: {
-    'activation-code-updated': 'onActivationCodeUpdated_',
-    'forward-navigation-requested': 'onForwardNavigationRequested_',
-  },
+      /**
+       * Profile selected to be installed.
+       * @type {?ESimProfileRemote}
+       * @private
+       */
+      selectedProfile_: {
+        type: Object,
+        observer: 'onSelectedProfileChanged_',
+      },
 
-  observers: [
-    'onSelectedProfileChanged_(selectedProfile_)',
-    'onSelectedProfilePropertiesChanged_(selectedProfileProperties_)',
-  ],
+      /**
+       * Profile properties fetched from the latest SM-DS scan.
+       * @type {!Array<!ESimProfileProperties>}
+       * @private
+       */
+      pendingProfileProperties_: Array,
+
+      /**
+       * Profile properties selected to be installed.
+       * @type {?ESimProfileProperties}
+       * @private
+       */
+      selectedProfileProperties_: {
+        type: Object,
+        observer: 'onSelectedProfilePropertiesChanged_',
+      },
+
+      /** @private */
+      activationCode_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      confirmationCode_: {
+        type: String,
+        value: '',
+        observer: 'onConfirmationCodeUpdated_',
+      },
+
+      /** @private */
+      hasHadActiveCellularNetwork_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      isActivationCodeFromQrCode_: Boolean,
+
+      /**
+       * Return true if SmdsSupportEnabled feature flag is enabled.
+       */
+      smdsSupportEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isSmdsSupportEnabled') &&
+              loadTimeData.getBoolean('isSmdsSupportEnabled');
+        },
+      },
+
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {?EuiccRemote} */
+    this.euicc_ = null;
+
+    /** @private {boolean} */
+    this.hasFailedFetchingProfiles_ = false;
+
+    /** @private {?ProfileInstallResult} */
+    this.lastProfileInstallResult_ = null;
+
+    /**
+     * If there are no active network connections of any type.
+     * @private {boolean}
+     */
+    this.isOffline_ = false;
+
+    /**
+     * Provides an interface to the ESimManager Mojo service.
+     * @private {?ESimManagerRemote}
+     */
     this.eSimManagerRemote_ = getESimManagerRemote();
     const networkConfig =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
@@ -292,18 +285,36 @@ Polymer({
     networkConfig.getNetworkStateList(filter).then(response => {
       this.onActiveNetworksChanged(response.result);
     });
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
+    /**
+     * The time at which the ESim flow is attached.
+     * @private {?Date}
+     */
     this.timeOnAttached_ = new Date();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     let resultCode = null;
 
     switch (this.lastProfileInstallResult_) {
+      case null:
+        // Handles case when no profile installation was attempted.
+        if (this.hasFailedFetchingProfiles_) {
+          resultCode = ESimSetupFlowResult.ERROR_FETCHING_PROFILES;
+        } else if (this.noProfilesFound_()) {
+          resultCode = ESimSetupFlowResult.CANCELLED_NO_PROFILES;
+        } else {
+          resultCode = ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR;
+        }
+        break;
       case ProfileInstallResult.kSuccess:
         resultCode = ESimSetupFlowResult.SUCCESS;
         break;
@@ -317,14 +328,6 @@ Polymer({
         resultCode = ESimSetupFlowResult.CANCELLED_INVALID_ACTIVATION_CODE;
         break;
       default:
-        // Handles case when no profile installation was attempted.
-        if (this.hasFailedFetchingProfiles_) {
-          resultCode = ESimSetupFlowResult.ERROR_FETCHING_PROFILES;
-        } else if (this.noProfilesFound_()) {
-          resultCode = ESimSetupFlowResult.CANCELLED_NO_PROFILES;
-        } else {
-          resultCode = ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR;
-        }
         break;
     }
 
@@ -346,7 +349,18 @@ Polymer({
 
     chrome.metricsPrivate.recordLongTime(
         FAILED_ESIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
-  },
+  }
+
+  /** override */
+  ready() {
+    super.ready();
+
+    this.addEventListener('activation-code-updated', (event) => {
+      this.onActivationCodeUpdated_(event);
+    });
+    this.addEventListener(
+        'forward-navigation-requested', this.onForwardNavigationRequested_);
+  }
 
   /**
    * NetworkListenerBehavior override
@@ -357,7 +371,7 @@ Polymer({
   onActiveNetworksChanged(activeNetworks) {
     this.isOffline_ = !activeNetworks.some(
         (network) => network.connectionState === ConnectionStateType.kOnline);
-  },
+  }
 
   initSubflow() {
     if (!this.smdsSupportEnabled_) {
@@ -366,7 +380,7 @@ Polymer({
       this.getEuicc_();
     }
     this.onNetworkStateListChanged();
-  },
+  }
 
   /** @private */
   async fetchProfiles_() {
@@ -385,7 +399,7 @@ Polymer({
     } else {
       this.state_ = ESimUiState.PROFILE_SELECTION;
     }
-  },
+  }
 
   /** @private */
   async getEuicc_() {
@@ -398,7 +412,7 @@ Polymer({
       return;
     }
     this.euicc_ = euicc;
-  },
+  }
 
   /**
    * @private
@@ -419,7 +433,7 @@ Polymer({
           return properties.state === ProfileState.kPending &&
               properties.activationCode;
         });
-  },
+  }
 
   /**
    * @private
@@ -436,7 +450,7 @@ Polymer({
       this.pendingProfiles_ = [];
     }
     this.pendingProfiles_ = await getPendingESimProfiles(this.euicc_);
-  },
+  }
 
   /**
    * @private
@@ -464,7 +478,7 @@ Polymer({
         response.result === ProfileInstallResult.kFailure) {
       this.state_ = ESimUiState.SETUP_FINISH;
     }
-  },
+  }
 
   /** @private */
   onStateChanged_(newState, oldState) {
@@ -475,7 +489,7 @@ Polymer({
       this.fetchProfiles_();
     }
     this.initializePageState_(newState, oldState);
-  },
+  }
 
   /** @private */
   updateSelectedPage_() {
@@ -532,9 +546,12 @@ Polymer({
     }
     // If there is a page change, fire focus event.
     if (oldSelectedESimPageName !== this.selectedESimPageName_) {
-      this.fire('focus-default-button');
+      this.dispatchEvent(new CustomEvent('focus-default-button', {
+        bubbles: true,
+        composed: true,
+      }));
     }
-  },
+  }
 
   /**
    * @param {boolean} enableForwardBtn
@@ -555,7 +572,7 @@ Polymer({
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
-  },
+  }
 
   /**
    * @param {boolean} enableForwardBtn
@@ -576,7 +593,7 @@ Polymer({
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
-  },
+  }
 
   /** @private */
   updateButtonBarState_() {
@@ -662,7 +679,7 @@ Polymer({
         break;
     }
     this.set('buttonState', buttonState);
-  },
+  }
 
   /** @private */
   updateForwardButtonLabel_() {
@@ -675,7 +692,7 @@ Polymer({
           this.i18n('next') :
           this.i18n('skipDiscovery');
     }
-  },
+  }
 
   /** @private */
   initializePageState_(newState, oldState) {
@@ -687,7 +704,7 @@ Polymer({
         oldState !== ESimUiState.ACTIVATION_CODE_ENTRY_READY) {
       this.activationCode_ = '';
     }
-  },
+  }
 
   /** @private */
   onActivationCodeUpdated_(event) {
@@ -701,7 +718,7 @@ Polymer({
     this.state_ = event.detail.activationCode ?
         ESimUiState.ACTIVATION_CODE_ENTRY_READY :
         ESimUiState.ACTIVATION_CODE_ENTRY;
-  },
+  }
 
   /** @private */
   onSelectedProfileChanged_() {
@@ -715,7 +732,7 @@ Polymer({
       return;
     }
     this.updateForwardButtonLabel_();
-  },
+  }
 
   /** @private */
   onSelectedProfilePropertiesChanged_() {
@@ -729,7 +746,7 @@ Polymer({
       return;
     }
     this.updateForwardButtonLabel_();
-  },
+  }
 
   /** @private */
   onConfirmationCodeUpdated_() {
@@ -743,7 +760,7 @@ Polymer({
     this.state_ = this.confirmationCode_ ?
         ESimUiState.CONFIRMATION_CODE_ENTRY_READY :
         ESimUiState.CONFIRMATION_CODE_ENTRY;
-  },
+  }
 
   /** SubflowBehavior override */
   navigateForward() {
@@ -824,13 +841,16 @@ Polymer({
         }
         break;
       case ESimUiState.SETUP_FINISH:
-        this.fire('exit-cellular-setup');
+        this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
+          bubbles: true,
+          composed: true,
+        }));
         break;
       default:
         assertNotReached();
         break;
     }
-  },
+  }
 
   /** SubflowBehavior override */
   navigateBackward() {
@@ -855,7 +875,7 @@ Polymer({
         'Navigate backward faled for : ' + this.state_ +
         ' this state does not support backward navigation.');
     assertNotReached();
-  },
+  }
 
   /** @private */
   onForwardNavigationRequested_() {
@@ -865,7 +885,7 @@ Polymer({
         this.state_ === ESimUiState.PROFILE_SELECTION) {
       this.navigateForward();
     }
-  },
+  }
 
   /** NetworkListenerBehavior override */
   onNetworkStateListChanged() {
@@ -877,14 +897,14 @@ Polymer({
         this.hasHadActiveCellularNetwork_ = hasActive;
       }
     });
-  },
+  }
 
   /** @private */
   shouldShowSubpageBusy_() {
     return this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING ||
         this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING ||
         this.state_ === ESimUiState.PROFILE_SELECTION_INSTALLING;
-  },
+  }
 
   /** @private */
   getLoadingMessage_() {
@@ -895,7 +915,7 @@ Polymer({
     return this.hasHadActiveCellularNetwork_ ?
         this.i18n('eSimProfileDetectDuringActiveCellularConnectionMessage') :
         this.i18n('eSimProfileDetectMessage');
-  },
+  }
 
   /**
    * @return {string}
@@ -924,7 +944,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @return {ProfileInstallMethod}
@@ -939,7 +959,7 @@ Polymer({
     return this.hasConsentedForDiscovery_ ?
         ProfileInstallMethod.kViaActivationCodeAfterSmds :
         ProfileInstallMethod.kViaActivationCodeSkippedSmds;
-  },
+  }
 
   /**
    * Returns true if profiles have been received and none were found.
@@ -954,7 +974,7 @@ Polymer({
     } else {
       return (this.pendingProfiles_ && this.pendingProfiles_.length === 0);
     }
-  },
+  }
 
   /** @private*/
   profilesFound_() {
@@ -965,5 +985,7 @@ Polymer({
     } else {
       return (this.pendingProfiles_ && this.pendingProfiles_.length > 0);
     }
-  },
-});
+  }
+}
+
+customElements.define(EsimFlowUiElement.is, EsimFlowUiElement);

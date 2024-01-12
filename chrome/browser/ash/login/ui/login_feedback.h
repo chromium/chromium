@@ -31,7 +31,7 @@ class LoginFeedback {
   void Request(const std::string& description, base::OnceClosure callback);
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::string description_;
 };
 

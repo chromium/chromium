@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -330,7 +330,7 @@ void UrlFetchRequestBase::OnWriteComplete(
   std::move(resume).Run();
 }
 
-void UrlFetchRequestBase::OnDataReceived(base::StringPiece string_piece,
+void UrlFetchRequestBase::OnDataReceived(std::string_view string_piece,
                                          base::OnceClosure resume) {
   if (!download_data_->get_content_callback.is_null()) {
     download_data_->get_content_callback.Run(

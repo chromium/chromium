@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
-#include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -18,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -131,6 +133,11 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
         .WillByDefault(Return(web_contents_.get()));
     ON_CALL(autofill_popup_controller_, OpenSubPopup)
         .WillByDefault(Return(autofill_popup_sub_controller_.GetWeakPtr()));
+    ON_CALL(autofill_popup_controller_, GetMainFillingProduct)
+        .WillByDefault([&controller = autofill_popup_controller_]() {
+          return GetFillingProductFromPopupItemId(
+              controller.GetSuggestionAt(0).popup_item_id);
+        });
 
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
@@ -792,6 +799,66 @@ TEST_F(PopupViewViewsTest, RemoveAutofillInvokesController) {
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
 }
 
+// Tests that pressing TAB selects a previously unselected Compose suggestion.
+TEST_F(PopupViewViewsTest, TabSelectsComposeSuggestion) {
+  CreateAndShowView({PopupItemId::kCompose});
+  ASSERT_FALSE(view().GetSelectedCell().has_value());
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false);
+  EXPECT_TRUE(view().GetSelectedCell().has_value());
+}
+
+// Tests that pressing Shift+TAB in the presence of an unselected Compose
+// suggestion does nothing.
+TEST_F(PopupViewViewsTest, ShiftTabDoesNotAffectComposeSuggestion) {
+  EXPECT_CALL(controller(), Hide).Times(0);
+
+  CreateAndShowView({PopupItemId::kCompose});
+  ASSERT_FALSE(view().GetSelectedCell().has_value());
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/true);
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+}
+
+// Tests that pressing TAB in the presence of a selected Compose suggestion
+// closes the popup.
+TEST_F(PopupViewViewsTest, TabWithSelectedComposeSuggestionHidesPopup) {
+  EXPECT_CALL(controller(), Hide(PopupHidingReason::kUserAborted));
+
+  CreateAndShowView({PopupItemId::kCompose});
+  view().SetSelectedCell(CellIndex{0u, CellType::kContent},
+                         PopupCellSelectionSource::kNonUserInput);
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false);
+}
+
+// Tests that pressing Shift+TAB in the presence of a selected Compose
+// suggestion unselects the suggestion, but does not close the popup.
+TEST_F(PopupViewViewsTest, ShiftTabUnselectsComposeSuggestion) {
+  EXPECT_CALL(controller(), Hide).Times(0);
+
+  CreateAndShowView({PopupItemId::kCompose});
+  view().SetSelectedCell(CellIndex{0u, CellType::kContent},
+                         PopupCellSelectionSource::kNonUserInput);
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/true);
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+}
+
+// Tests that pressing up/down cursor keys does not select a Compose suggestion.
+TEST_F(PopupViewViewsTest, CursorUpDownDoesNotSelectComposeSuggestion) {
+  CreateAndShowView({PopupItemId::kCompose});
+  ASSERT_FALSE(view().GetSelectedCell().has_value());
+  SimulateKeyPress(ui::VKEY_DOWN, /*shift_modifier_pressed=*/false);
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+  SimulateKeyPress(ui::VKEY_UP, /*shift_modifier_pressed=*/false);
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+}
+
+// Tests that pressing Esc closes a popup with a Compose suggestion.
+TEST_F(PopupViewViewsTest, EscapeClosesComposePopup) {
+  EXPECT_CALL(controller(), Hide(PopupHidingReason::kUserAborted));
+
+  CreateAndShowView({PopupItemId::kCompose});
+  SimulateKeyPress(ui::VKEY_ESCAPE, /*shift_modifier_pressed=*/false);
+}
+
 // Ensure that the voice_over value of suggestions is presented to the
 // accessibility layer.
 TEST_F(PopupViewViewsTest, VoiceOverTest) {
@@ -945,20 +1012,33 @@ TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
       << "The cell's sub-popup should be closed.";
 }
 
-TEST_F(PopupViewViewsTest, NoSubPopupOpenIfNotEligible) {
-  controller().set_suggestions({
+// TODO(crbug.com/1515280): Enable on ChromeOS when test setup in the death
+// subprocess is fixed.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// `PopupViewViewsTest` is not used in death tests because it sets up a complex
+// environment (namely creates a `TestingProfile`) that fails to be created in
+// the sub-process (see `ASSERT_DEATH` doc for details). This fail hides
+// the real death reason to be tested.
+using PopupViewViewsDeathTest = ChromeViewsTestBase;
+TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
+  NiceMock<MockAutofillPopupController> controller;
+  controller.set_suggestions({
       // Regular suggestion with no children,
       Suggestion(u"Suggestion #1"),
       Suggestion(u"Suggestion #2"),
   });
-  CreateAndShowView();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<PopupViewViews> view =
+      std::make_unique<PopupViewViews>(controller.GetWeakPtr());
+  raw_ptr<PopupViewViews> view_ptr = widget->SetContentsView(std::move(view));
+  view_ptr->Show(AutoselectFirstSuggestion(false));
 
-  view().SetSelectedCell(CellIndex{0, CellType::kControl},
-                         PopupCellSelectionSource::kNonUserInput);
-  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt)
-      << "Opening a sub-popup should happen.";
+  ASSERT_DEATH(
+      view_ptr->SetSelectedCell(CellIndex{0, CellType::kControl},
+                                PopupCellSelectionSource::kNonUserInput),
+      "can_open_sub_popup");
 }
+#endif
 
 TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
   ui::MouseEvent fake_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
@@ -1039,6 +1119,34 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
 
   EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
   EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), std::nullopt);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupOpensWithNoAutoselectByMouse) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+  });
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(),
+              OpenSubPopup(_, _, AutoselectFirstSuggestion(false)));
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl},
+                         PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupOpensWithAutoselectByRightKey) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+  });
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(),
+              OpenSubPopup(_, _, AutoselectFirstSuggestion(true)));
+
+  SimulateKeyPress(ui::VKEY_DOWN);
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
 }
 
 // TODO(crbug.com/1489673): Enable once the view shows itself properly.

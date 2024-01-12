@@ -12,19 +12,31 @@
 // and extensions.
 @interface FormInputAccessoryViewTextData : NSObject
 
-- (instancetype)
-            initWithCloseButtonTitle:(NSString*)closeButtonTitle
-       closeButtonAccessibilityLabel:(NSString*)closeButtonAccessibilityLabel
-        nextButtonAccessibilityLabel:(NSString*)nextButtonAccessibilityLabel
-    previousButtonAccessibilityLabel:(NSString*)previousButtonAccessibilityLabel
+- (instancetype)initWithCloseButtonTitle:(NSString*)closeButtonTitle
+           closeButtonAccessibilityLabel:
+               (NSString*)closeButtonAccessibilityLabel
+            nextButtonAccessibilityLabel:(NSString*)nextButtonAccessibilityLabel
+        previousButtonAccessibilityLabel:
+            (NSString*)previousButtonAccessibilityLabel
+      manualFillButtonAccessibilityLabel:
+          (NSString*)manualFillButtonAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Displayed name for keyboard accessory close button.
+// Used when the button has no image.
 @property(nonatomic, readonly) NSString* closeButtonTitle;
+// Accessibility label for keyboard accessory close button.
 @property(nonatomic, readonly) NSString* closeButtonAccessibilityLabel;
+// Accessibility label for keyboard accessory next button.
 @property(nonatomic, readonly) NSString* nextButtonAccessibilityLabel;
+// Accessibility label for keyboard accessory previous button.
 @property(nonatomic, readonly) NSString* previousButtonAccessibilityLabel;
+// Accessibility label for the manual fill keyboard accessory button.
+// Must be provided if the keyboard accessory has the ability to show
+// password and/or autofill suggestions. Can be nil otherwise.
+@property(nonatomic, readonly) NSString* manualFillButtonAccessibilityLabel;
 
 @end
 

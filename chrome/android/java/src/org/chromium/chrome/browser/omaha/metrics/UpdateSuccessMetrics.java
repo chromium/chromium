@@ -9,11 +9,11 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.chrome.browser.omaha.UpdateConfigs;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Type;
-import org.chromium.components.version_info.VersionConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -69,8 +69,6 @@ public class UpdateSuccessMetrics {
                 .get()
                 .then(
                         state -> {
-                            HistogramUtils.recordStartedUpdateHistogram(state != null);
-
                             // We're using System.currentTimeMillis() here to track time across
                             // restarts.
                             Tracking info =

@@ -18,16 +18,41 @@ source_set("drive_availability") {
 
 source_set("drive_tab_helper") {
   sources = [
-    "download_task_save_to_drive_data.h",
     "drive_tab_helper.h",
     "drive_tab_helper.mm",
   ]
   deps = [
+    ":drive_file_uploader",
+    ":drive_upload_task",
     "//base",
+    "//ios/chrome/browser/drive/model:drive_service",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/download",
   ]
+}
+
+source_set("drive_upload_task") {
+  sources = [
+    "drive_upload_task.h",
+    "drive_upload_task.mm",
+  ]
+  deps = [ "//base" ]
+  public_deps = [
+    ":drive_file_uploader",
+    ":upload_task",
+  ]
+}
+
+source_set("upload_task") {
+  sources = [
+    "upload_task.h",
+    "upload_task.mm",
+    "upload_task_observer.h",
+    "upload_task_observer.mm",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("drive_service") {
@@ -40,6 +65,15 @@ source_set("drive_service") {
     "//components/keyed_service/core",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
+  public_deps = [ "//base" ]
+}
+
+source_set("drive_file_uploader") {
+  sources = [
+    "drive_file_uploader.h",
+    "drive_file_uploader.mm",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("drive_service_factory") {
@@ -51,8 +85,26 @@ source_set("drive_service_factory") {
     ":drive_service",
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/drive:drive_api",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_drive_file_uploader.h",
+    "test_drive_file_uploader.mm",
+    "test_drive_service.h",
+    "test_drive_service.mm",
+  ]
+  public_deps = [
+    ":drive_file_uploader",
+    ":drive_service",
+    "//base",
   ]
 }
 
@@ -61,11 +113,18 @@ source_set("unit_tests") {
   sources = [
     "drive_service_factory_unittest.mm",
     "drive_tab_helper_unittest.mm",
+    "drive_upload_task_unittest.mm",
+    "test_upload_task_observer.h",
+    "test_upload_task_observer.mm",
+    "upload_task_unittest.mm",
   ]
   deps = [
     ":drive_service_factory",
     ":drive_tab_helper",
+    ":drive_upload_task",
+    ":test_support",
     "//base/test:test_support",
+    "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/web/public/test/fakes",

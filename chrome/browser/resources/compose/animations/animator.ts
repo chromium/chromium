@@ -6,6 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 export const STANDARD_EASING = 'cubic-bezier(0.2, 0.0, 0, 1.0)';
 
+export const EMPHASIZED_DECELERATE = 'cubic-bezier(0.05, 0.7, 0.1, 1.0)';
+
 /**
  * Generic animator class that has common animations and util methods.
  */
@@ -34,7 +36,8 @@ export class Animator {
         this.root_.shadowRoot!.querySelectorAll<HTMLElement>(selector));
     assert(elements.length > 0);
     return elements.map(element => {
-      return element.animate(keyframes, Object.assign({fill: 'both'}, options));
+      return element.animate(
+          keyframes, Object.assign({fill: 'backwards'}, options));
     });
   }
 
@@ -71,6 +74,13 @@ export class Animator {
           {display: 'none', opacity: 0},
         ],
         Object.assign({easing: 'linear'}, options));
+  }
+
+  /* Maintains a style for a duration on an element. This is useful for
+   * animations that require a fixed state (such as fixed heights). */
+  maintainStyles(
+      selector: string, styles: Keyframe, options: KeyframeAnimationOptions) {
+    return this.animate(selector, [styles, styles], options);
   }
 
   scaleIn(selector: string, options: KeyframeAnimationOptions): Animation[] {

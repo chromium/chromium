@@ -189,7 +189,7 @@ class SharedDictionaryAccessObserver : public WebContentsObserver {
 };
 
 bool WaitForHistogram(const std::string& histogram_name,
-                      absl::optional<base::TimeDelta> timeout = absl::nullopt) {
+                      std::optional<base::TimeDelta> timeout = std::nullopt) {
   // Need the polling of histogram because ScopedHistogramSampleObserver doesn't
   // support cross process metrics.
   base::Time start_time = base::Time::Now();
@@ -364,11 +364,11 @@ std::string IframeLoadScript(const GURL& url) {
                   )",
                    url);
 }
-absl::optional<std::string> GetSecAvailableDictionary(
+std::optional<std::string> GetSecAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
   auto it = headers.find("sec-available-dictionary");
   if (it == headers.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -401,6 +401,7 @@ class DummyAuthContentBrowserClient
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
       const GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame,
       const GURL& url,
@@ -714,7 +715,7 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
       response->AddCustomHeader("Access-Control-Allow-Origin",
                                 request.headers.at("origin"));
     }
-    absl::optional<std::string> dict_hash =
+    std::optional<std::string> dict_hash =
         GetSecAvailableDictionary(request.headers);
     if (dict_hash) {
       if (*dict_hash == kExpectedDictionaryHash) {
@@ -870,7 +871,7 @@ class SharedDictionaryFeatureStateBrowserTest
     }
     headers += '\n';
     URLLoaderInterceptor::WriteResponse(headers, content, params->client.get(),
-                                        /*ssl_info=*/absl::nullopt,
+                                        /*ssl_info=*/std::nullopt,
                                         params->url_request.url);
   }
 
@@ -887,7 +888,7 @@ class SharedDictionaryFeatureStateBrowserTest
     }
     headers += '\n';
     URLLoaderInterceptor::WriteResponse(headers, content, params->client.get(),
-                                        /*ssl_info=*/absl::nullopt,
+                                        /*ssl_info=*/std::nullopt,
                                         params->url_request.url);
   }
 
@@ -910,13 +911,13 @@ class SharedDictionaryFeatureStateBrowserTest
     )",
                            std::string(origin_trial_token).c_str());
     URLLoaderInterceptor::WriteResponse(headers, content, params->client.get(),
-                                        /*ssl_info=*/absl::nullopt,
+                                        /*ssl_info=*/std::nullopt,
                                         params->url_request.url);
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<URLLoaderInterceptor> url_loader_interceptor_;
+  std::optional<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1360,7 +1361,7 @@ class SharedDictionaryBrowserTest
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (base::Contains(request.headers, "Authorization")) {
       response->set_code(net::HTTP_OK);
-      absl::optional<std::string> dict_hash =
+      std::optional<std::string> dict_hash =
           GetSecAvailableDictionary(request.headers);
       if (dict_hash) {
         if (*dict_hash == kExpectedDictionaryHash) {
@@ -1970,13 +1971,13 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
           },
           base::Unretained(
               GetTargetShell()->web_contents()->GetBrowserContext())),
-      /*storage_partition_config=*/absl::nullopt,
+      /*storage_partition_config=*/std::nullopt,
       /*origin=*/url::Origin::Create(GetURL("/")),
       content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{},
       /*avoid_closing_connections=*/true,
-      /*cookie_partition_key=*/absl::nullopt,
-      /*storage_key=*/absl::nullopt,
+      /*cookie_partition_key=*/std::nullopt,
+      /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false,
       /*callback=*/loop.QuitClosure());
   loop.Run();

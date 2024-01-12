@@ -5,6 +5,45 @@
 GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
 GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
 
+/** A class that helps initialize FaceGaze with a configuration. */
+class Config {
+  constructor() {
+    /** @type {?chrome.accessibilityPrivate.ScreenPoint} */
+    this.mouseLocation = null;
+    /** @type {?Map<FacialGesture, Action>} */
+    this.gestureToAction = null;
+    /** @type {?Map<FacialGesture, number>} */
+    this.gestureToConfidence = null;
+  }
+
+  /**
+   * @param {!chrome.accessibilityPrivate.ScreenPoint} mouseLocation
+   * @return {!Config}
+   */
+  withMouseLocation(mouseLocation) {
+    this.mouseLocation = mouseLocation;
+    return this;
+  }
+
+  /**
+   * @param {!Map<FacialGesture, Action>} gestureToAction
+   * @return {!Config}
+   */
+  withGestureToAction(gestureToAction) {
+    this.gestureToAction = gestureToAction;
+    return this;
+  }
+
+  /**
+   * @param {!Map<FacialGesture, number>} gestureToConfidence
+   * @return {!Config}
+   */
+  withGestureToConfidence(gestureToConfidence) {
+    this.gestureToConfidence = gestureToConfidence;
+    return this;
+  }
+}
+
 /** A class that represents a fake FaceLandmarkerResult. */
 class MockFaceLandmarkerResult {
   constructor() {
@@ -58,8 +97,10 @@ FaceGazeTestBase = class extends E2ETestBase {
     const module =
         await import('/accessibility_common/accessibility_common_loader.js');
     await importModule(
-        ['Action', 'FaceGaze', 'FacialGesture'],
-        '/accessibility_common/facegaze/facegaze.js');
+        ['Action', 'FaceGaze'], '/accessibility_common/facegaze/facegaze.js');
+    await importModule(
+        ['FacialGesture'],
+        '/accessibility_common/facegaze/gesture_detector.js');
     accessibilityCommon = new module.AccessibilityCommon();
     assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(Action);
@@ -97,25 +138,26 @@ FaceGazeTestBase = class extends E2ETestBase {
     return accessibilityCommon.getFaceGazeForTest();
   }
 
-  /**
-   * @param {!FacialGesture} gesture
-   * @return {?Action}
-   */
-  getActionForGesture(gesture) {
-    const data = this.getFaceGaze().gestureToActionData_.get(gesture);
-    if (!data) {
-      return null;
+  /** @param {!Config} config */
+  configureFaceGaze(config) {
+    const faceGaze = this.getFaceGaze();
+    if (config.mouseLocation) {
+      // TODO(b/309121742): Set the mouse location using a fake automation
+      // event.
+      faceGaze.mouseController_.mouseLocation_ = config.mouseLocation;
     }
 
-    return data.action;
-  }
+    if (config.gestureToAction) {
+      faceGaze.gestureToAction_ = new Map(config.gestureToAction);
+    }
 
-  /**
-   * TODO(b/309121742): Set the mouse location using a fake automation event.
-   * @param {!chrome.accessibilityPrivate.ScreenPoint} location
-   */
-  setMouseLocation(location) {
-    this.getFaceGaze().mouseLocation_ = location;
+    if (config.gestureToConfidence) {
+      faceGaze.gestureToConfidence_ = new Map(config.gestureToConfidence);
+    }
+
+    return new Promise(resolve => {
+      faceGaze.setOnInitCallbackForTest(resolve);
+    });
   }
 
   /** @param {!MockFaceLandmarkerResult} result */

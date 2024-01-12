@@ -11,6 +11,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/android/pref_service_android.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -35,6 +36,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kListenToThisPageEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+}
+
+void RegisterLocalPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kReadAloudSyntheticTrials);
 }
 
 void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,

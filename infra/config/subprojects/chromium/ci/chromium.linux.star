@@ -36,43 +36,8 @@ consoles.console_view(
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
-        "cast": consoles.ordering(short_names = ["vid", "aud"]),
+        "cast": consoles.ordering(short_names = ["vid"]),
     },
-)
-
-ci.builder(
-    name = "Cast Audio Linux",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "cast_receiver",
-            "cast_os",
-            "cast_audio",
-            "release_builder",
-            "reclient",
-            "minimal_symbols",
-        ],
-    ),
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "cast",
-        short_name = "aud",
-    ),
 )
 
 ci.builder(

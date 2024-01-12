@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_COMMON_MAIN_FUNCTION_PARAMS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 namespace sandbox {
@@ -61,7 +61,7 @@ struct CONTENT_EXPORT MainFunctionParams {
 
   // If non-null, this is the time the HangWatcher would have started if not
   // delayed until after sandbox initialization.
-  absl::optional<base::TimeTicks> hang_watcher_not_started_time;
+  std::optional<base::TimeTicks> hang_watcher_not_started_time;
 
   // Used by BrowserTestBase. If set, BrowserMainLoop runs this task instead of
   // the main message loop.

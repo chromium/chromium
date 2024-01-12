@@ -27,8 +27,10 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -222,14 +224,15 @@ DispatchEventResult EventDispatcher::Dispatch() {
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
   if ((is_click || is_unfocused_keyboard_event) && event_->isTrusted() &&
       frame) {
-    if (window && frame->IsMainFrame()) {
+    if (window && frame->IsMainFrame() &&
+        base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
       bool is_new_interaction =
           is_click || (event_->type() == event_type_names::kKeydown);
       soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
           SoftNavigationHeuristics::From(*window),
           is_unfocused_keyboard_event
-              ? SoftNavigationHeuristics::EventScopeType::Keyboard
-              : SoftNavigationHeuristics::EventScopeType::Click,
+              ? SoftNavigationHeuristics::EventScopeType::kKeyboard
+              : SoftNavigationHeuristics::EventScopeType::kClick,
           is_new_interaction);
     }
     // A genuine mouse click cannot be triggered by script so we don't expect

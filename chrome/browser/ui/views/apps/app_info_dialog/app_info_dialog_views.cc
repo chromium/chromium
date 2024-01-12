@@ -173,7 +173,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   // destroyed.
   StartObservingExtensionRegistry();
 
-  GetLastDialogForTesting() = AsWeakPtr();
+  GetLastDialogForTesting() = weak_ptr_factory_.GetWeakPtr();
 }
 
 AppInfoDialog::~AppInfoDialog() {

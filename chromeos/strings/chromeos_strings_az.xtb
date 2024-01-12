@@ -43,6 +43,7 @@
 <translation id="1264369926465113395">Chromebook'un yaradıcılar üçün yeni rəqəmsal jurnalına baxın</translation>
 <translation id="1270369111467284986">Avtorizasiya portalı şübhəsi var</translation>
 <translation id="1290331692326790741">Zəif siqnal</translation>
+<translation id="1300115153046603471">APN növü: defolt və <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Güncəllənir (<ph name="PERCENTAGE_VALUE" />% tamamlanıb)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dəqiqə</translation>
@@ -82,7 +83,6 @@
 <translation id="1515129336378114413">brauzerin əsas səhifəsi</translation>
 <translation id="1526389707933164996">Ekran qoruyucu animasiyası</translation>
 <translation id="152892567002884378">Səsi artırın</translation>
-<translation id="1539242642795599947">APN növü: defolt və qoşma.</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1561927818299383735">fon işığı rəngi</translation>
@@ -242,6 +242,7 @@
 <translation id="2638662041295312666">Daxil olma şəkli</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albomu seçildi</translation>
 <translation id="2652403576514495859">diktəni aktivləşdirin və ya keçirin</translation>
+<translation id="2656001153562991489">Yalnız Chromebook Plus-da</translation>
 <translation id="267442004702508783">təzələyin</translation>
 <translation id="268270014981824665">qaraldılmış klaviatura</translation>
 <translation id="2712812801627182647">TLS doğrulama açarı</translation>
@@ -374,6 +375,7 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3862598938296403232">Təsvir tələb olunur</translation>
+<translation id="386280020966669610">Təsadüfi seçim</translation>
 <translation id="3865289341173661845">Yardım məzmunu əlçatan deyil.</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
 <translation id="3866249974567520381">Təsvir</translation>
@@ -405,6 +407,7 @@
 <translation id="4060260348856573701">Yeni APN</translation>
 <translation id="4093865285251893588">Profil şəkli</translation>
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
+<translation id="409469431304488632">Təcrübə</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albomunu seçin</translation>
 <translation id="4111761024568264522">USB taçped</translation>
@@ -440,10 +443,12 @@
 <translation id="4289849978083912975">Slayd şou</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
+<translation id="4310735698903592804">Son divar kağızları Google AI tərəfindən dəstəklənir</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="4354430579665871434">düymə</translation>
 <translation id="4361257691546579041">APN növü: defolt.</translation>
 <translation id="437294888293595148">Qısayolları sıfırlayın</translation>
+<translation id="4376423484621194274">Administrator <ph name="APP_NAME" /> tətbiqini bağlamağa icazə vermir</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
 <translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -552,6 +557,7 @@
 <translation id="5088172560898466307">Serverin host adı</translation>
 <translation id="5089810972385038852">Dövlət</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Oxşar:</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
 <translation id="5145081769226915336">Qaranlıq rejim avtomatik aktiv edilsin?</translation>
@@ -613,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yenidən skan edin</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
-<translation id="5584044598279886848">Bu APN-i deaktiv etmək və ya silmək olmur. Əlavə edilmiş aktiv APN-lər deaktiv edilməli və ya silinməlidir.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> düyməsi test edilib</translation>
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5649768706273821470">Dinləyin</translation>
@@ -644,6 +649,7 @@
 <translation id="5843706793424741864">Farenheyt</translation>
 <translation id="584953448295717128">APN avtomatik aşkarlanıb.</translation>
 <translation id="5849570051105887917">Əsas səhifə provayder kodu</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">İncəsənət qalereyası albomu</translation>
 <translation id="5859969039821714932">Qısayol əlçatan deyil. <ph name="KEY" /> olmadan yeni qısayol üzərinə basın.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
@@ -659,12 +665,12 @@
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faylınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}other{Fayllarınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}}</translation>
 <translation id="5931523347251946569">Fayl tapılmadı</translation>
+<translation id="593880865674747800">Bu üslubda daha çoxunu yaradın</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="594552776027197022">Təsadüfi açar cütü yaradın</translation>
 <translation id="5946538341867151940">Hələ qoşulmamısınız. Mobil operator fərdi APN tövsiyə edirsə, "+Yeni APN" seçməklə APN məlumatını daxil edin</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="5984145644188835034">Defolt Divar Kağızı</translation>
-<translation id="6001235009374883388">APN növü: qoşma.</translation>
 <translation id="6017514345406065928">Yaşıl</translation>
 <translation id="6019566113895157499">Düymə qısayolları</translation>
 <translation id="6034694447310538551">Avtomatik aylıq sıfırlamanı aktivləşdirin</translation>
@@ -682,6 +688,7 @@
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
+<translation id="6108952804512516814">AI ilə yaradın</translation>
 <translation id="6112878310391905610">Bu ayar administratorlarınız tərəfindən idarə olunur</translation>
 <translation id="6113701710518389813">Yuxarı ox</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, digər +<ph name="NUMBER" /> albom</translation>
@@ -750,6 +757,7 @@
 <translation id="6526200165918397681">Divar kağızını uyğunlaşdırın</translation>
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="6535178685492749208">Oflaynsınız. Rəy sonra göndəriləcək.</translation>
+<translation id="6557784757915238407">APN növü: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6560196641871357166">Canlı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
@@ -809,6 +817,7 @@
 <translation id="7059230779847288458">Şarj edilir, tam dolana qədər <ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> düyməsi</translation>
 <translation id="7068619307603204412">Cihazınızı hazırlayın</translation>
+<translation id="7076851914315147928">Divar kağızı seçin</translation>
 <translation id="708426984172631313">DAYANDIRILIB</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Alınmadı - Doğrulama Alınmadı</translation>
@@ -862,6 +871,7 @@
 <translation id="741244894080940828">çevirmə</translation>
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Bu APN-i deaktiv etmək və ya silmək olmur. Aktiv <ph name="ATTACH" /> APN-lər deaktiv edilməli və ya silinməlidir.</translation>
 <translation id="7458970041932198923">Səhifəni görmək və avatarlar ayarlamaq üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7481312909269577407">İrəli</translation>
@@ -913,9 +923,11 @@
 <translation id="7799817062559422778">İşıqlı rejim</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7819831665603418705">Şablon istifadə edin</translation>
 <translation id="7819857487979277519">PSK (WPA və ya RSN)</translation>
 <translation id="7841134249932030522">Qaranlıq rejimi aktiv edin</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
+<translation id="7850847810298646851">Divar kağızı Google AI tərəfindən dəstəklənir</translation>
 <translation id="7856267634822906833">Bluetooth taçskrin</translation>
 <translation id="7869143217755017858">Qaranlıq rejimi deaktiv edin</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -958,7 +970,6 @@
 <translation id="8151185429379586178">Developer alətləri</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Əlavə edin</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
@@ -976,6 +987,7 @@
 <translation id="8318753676953949627">Heç bir şəkil yoxdur</translation>
 <translation id="8329018942023753850">kalkulyator tətbiqi</translation>
 <translation id="8336739000755212683">Cihazın hesab şəklini dəyişin</translation>
+<translation id="8339024191194156249">Avtomatik başlatma haqqında ətraflı</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> və ya <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Çap işləri</translation>
 <translation id="8349826889576450703">başladıcı</translation>

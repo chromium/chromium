@@ -2,17 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cups/ipp.h>
+
+#include "base/functional/callback_helpers.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/chromeos/printing/cups_wrapper.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/printing/printing_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/test/chromeos/printing/mock_local_printer_chromeos.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -58,14 +66,38 @@ startxref
    })();
   )";
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 using testing::_;
+using testing::AtMost;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 using testing::DoAll;
 using testing::InSequence;
 using testing::NiceMock;
 using testing::WithArg;
 using testing::WithArgs;
 #endif
+
+class MockCupsWrapper : public chromeos::CupsWrapper {
+ public:
+  ~MockCupsWrapper() override = default;
+
+  MOCK_METHOD(void,
+              QueryCupsPrintJobs,
+              (const std::vector<std::string>& printer_ids,
+               base::OnceCallback<void(std::unique_ptr<QueryResult>)> callback),
+              (override));
+  MOCK_METHOD(void,
+              CancelJob,
+              (const std::string& printer_id, int job_id),
+              (override));
+  MOCK_METHOD(
+      void,
+      QueryCupsPrinterStatus,
+      (const std::string& printer_id,
+       base::OnceCallback<void(std::unique_ptr<::printing::PrinterStatus>)>
+           callback),
+      (override));
+};
 
 }  // namespace
 
@@ -79,11 +111,41 @@ class WebPrintingBrowserTestBase
     web_app::IsolatedWebAppUrlInfo url_info =
         InstallDevModeProxyIsolatedWebApp(iwa_dev_server_->GetOrigin());
     app_frame_ = OpenApp(url_info.app_id());
+
+    chromeos::CupsWrapper::SetCupsWrapperFactoryForTesting(
+        base::BindRepeating([]() -> std::unique_ptr<chromeos::CupsWrapper> {
+          auto wrapper = std::make_unique<MockCupsWrapper>();
+          EXPECT_CALL(*wrapper, QueryCupsPrinterStatus(_, _))
+              .Times(AtMost(1))
+              .WillOnce(base::test::RunOnceCallback<1>([] {
+                auto status = std::make_unique<PrinterStatus>();
+                status->state = IPP_PSTATE_IDLE;
+                status->reasons.push_back(
+                    {.reason =
+                         PrinterStatus::PrinterReason::Reason::kUnknownReason,
+                     .severity =
+                         PrinterStatus::PrinterReason::Severity::kReport});
+                status->reasons.push_back(
+                    {.reason =
+                         PrinterStatus::PrinterReason::Reason::kDeveloperLow,
+                     .severity =
+                         PrinterStatus::PrinterReason::Severity::kWarning});
+                status->message = "Ready to Print!";
+                return status;
+              }()));
+          return wrapper;
+        }));
+
+    HostContentSettingsMapFactory::GetForProfile(profile())
+        ->SetDefaultContentSetting(ContentSettingsType::WEB_PRINTING,
+                                   ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   void TearDownOnMainThread() override {
     app_frame_ = nullptr;
     iwa_dev_server_.reset();
+    chromeos::CupsWrapper::SetCupsWrapperFactoryForTesting(
+        base::NullCallback());
   }
 
  protected:
@@ -249,6 +311,9 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
     "printColorModeDefault": "monochrome",
     "printColorModeSupported": [ "monochrome", "color" ],
     "printerName": "name",
+    "printerState": "idle",
+    "printerStateMessage": "Ready to Print!",
+    "printerStateReasons": [ "other", "developer-low" ],
     "sidesDefault": "one-sided",
     "sidesSupported": [ "one-sided" ]
   })";

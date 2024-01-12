@@ -236,7 +236,7 @@ void PrefetchCanaryChecker::OnCheckEnd(bool success) {
 }
 
 void PrefetchCanaryChecker::ResetState() {
-  time_when_set_active_ = absl::nullopt;
+  time_when_set_active_ = std::nullopt;
   resolver_control_handle_.reset();
   retry_timer_.reset();
   timeout_timer_.reset();
@@ -308,8 +308,8 @@ void PrefetchCanaryChecker::ProcessSuccess() {
   OnCheckEnd(true);
 }
 
-absl::optional<bool> PrefetchCanaryChecker::CanaryCheckSuccessful() {
-  absl::optional<bool> result = LookupAndRunChecksIfNeeded();
+std::optional<bool> PrefetchCanaryChecker::CanaryCheckSuccessful() {
+  std::optional<bool> result = LookupAndRunChecksIfNeeded();
   CanaryCheckLookupResult result_enum;
   if (!result.has_value()) {
     result_enum = CanaryCheckLookupResult::kCacheMiss;
@@ -331,7 +331,7 @@ void PrefetchCanaryChecker::RunChecksIfNeeded() {
   LookupAndRunChecksIfNeeded();
 }
 
-absl::optional<bool> PrefetchCanaryChecker::LookupAndRunChecksIfNeeded() {
+std::optional<bool> PrefetchCanaryChecker::LookupAndRunChecksIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Asynchronously update the network cache key. On Android, getting the
@@ -346,7 +346,7 @@ absl::optional<bool> PrefetchCanaryChecker::LookupAndRunChecksIfNeeded() {
   auto it = cache_.Get(latest_cache_key_);
   if (it == cache_.end()) {
     SendNowIfInactive();
-    return absl::optional<bool>();
+    return std::optional<bool>();
   }
 
   const PrefetchCanaryChecker::CacheEntry& entry = it->second;
@@ -414,7 +414,7 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
 
 void PrefetchCanaryChecker::OnDNSResolved(
     int net_error,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const std::optional<net::AddressList>& resolved_addresses) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timeout_timer_.reset();

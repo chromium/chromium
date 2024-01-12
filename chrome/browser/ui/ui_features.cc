@@ -165,7 +165,7 @@ bool IsSidePanelPinningEnabled() {
 
 BASE_FEATURE(kSidePanelMinimumWidth,
              "SidePanelMinimumWidth",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kSidePanelMinimumWidthParameter{
     &kSidePanelMinimumWidth, "minPanelWidth", 360};
 int GetSidePanelMinimumWidth() {

@@ -2415,7 +2415,6 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSwappinessValid) {
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_EQ(90, request.guest_swappiness());
-  EXPECT_EQ(0, request.guest_zram_size());
   EXPECT_EQ(256u, request.guest_zram_mib());
 }
 
@@ -2439,7 +2438,6 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_5GbSystem) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(0, request.guest_zram_size());
   // 5GB system should result in 4GB VM size => 2GB ZRAM.
   EXPECT_EQ(2048u, request.guest_zram_mib());
 }
@@ -2464,7 +2462,6 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(0, request.guest_zram_size());
   // 4GB system should result in 3GB VM size => 1.5GB ZRAM.
   EXPECT_EQ(1536u, request.guest_zram_mib());
 }
@@ -2490,7 +2487,6 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_CustomMem) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(0, request.guest_zram_size());
   // 6GB system with -2GB shift results in 4GB VM size => 2GB ZRAM.
   EXPECT_EQ(2048u, request.guest_zram_mib());
 }

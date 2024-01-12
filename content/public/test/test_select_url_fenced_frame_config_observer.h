@@ -6,9 +6,9 @@
 #define CONTENT_PUBLIC_TEST_TEST_SELECT_URL_FENCED_FRAME_CONFIG_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -37,8 +37,8 @@ class TestSelectURLFencedFrameConfigObserver {
       StoragePartition* storage_partition);
   ~TestSelectURLFencedFrameConfigObserver();
 
-  const absl::optional<GURL>& GetUrnUuid() const;
-  const absl::optional<FencedFrameConfig>& GetConfig() const;
+  const std::optional<GURL>& GetUrnUuid() const;
+  const std::optional<FencedFrameConfig>& GetConfig() const;
   bool ConfigObserved() const;
 
  private:

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/installer.h"
+
 #include <optional>
 
 #include "base/files/file_util.h"
@@ -10,7 +12,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/installer.h"
 
 namespace updater {
 

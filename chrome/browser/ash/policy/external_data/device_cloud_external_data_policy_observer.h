@@ -76,13 +76,13 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
   void OnDeviceExternalDataFetched(std::unique_ptr<std::string> data,
                                    const base::FilePath& file_path);
 
-  const raw_ptr<PolicyService, ExperimentalAsh> policy_service_;
+  const raw_ptr<PolicyService> policy_service_;
 
   // The policy that |this| observes.
   const std::string policy_;
 
   // Delegate that takes care of policy data updates. Cannot be null.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<DeviceCloudExternalDataPolicyObserver> weak_factory_{
       this};

@@ -377,6 +377,18 @@ TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_Successful) {
   remote_public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
   run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage."
+      "LocalPublicDatabaseInitializationResult",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage."
+      "RemotePublicDatabaseInitializationResult",
+      /*bucket: success=*/true, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_PrivateFails) {
@@ -389,6 +401,10 @@ TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_PrivateFails) {
   private_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kCorrupt);
 
   run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult",
+      /*bucket: success=*/false, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,
@@ -404,6 +420,14 @@ TEST_F(NearbyPresenceCredentialStorageTest,
       leveldb_proto::Enums::InitStatus::kCorrupt);
 
   run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage."
+      "LocalPublicDatabaseInitializationResult",
+      /*bucket: success=*/false, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,
@@ -418,6 +442,18 @@ TEST_F(NearbyPresenceCredentialStorageTest,
       leveldb_proto::Enums::InitStatus::kCorrupt);
 
   run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage."
+      "LocalPublicDatabaseInitializationResult",
+      /*bucket: success=*/true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Presence.Credentials.Storage."
+      "RemotePublicDatabaseInitializationResult",
+      /*bucket: success=*/false, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {

@@ -52,6 +52,7 @@ class BaseGridMediatorTest
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
+    [mediator_ currentlySelectedGrid:YES];
   }
 
   void TearDown() override {
@@ -424,6 +425,31 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Tests that no updates to the toolbars happen when the mediator is not
+// selected.
+TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ selectTabsButtonTapped:nil];
+
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
+
+  [mediator_ currentlySelectedGrid:NO];
+
+  // Simulate a user who tapped on a tab.
+  [mediator_ userTappedOnItemID:browser_->GetWebStateList()
+                                    ->GetWebStateAt(1)
+                                    ->GetUniqueIdentifier()];
+
+  // No update on the configuration as the mediator is no longer selected.
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
 }
 
 INSTANTIATE_TEST_SUITE_P(

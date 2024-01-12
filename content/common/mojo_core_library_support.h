@@ -5,8 +5,9 @@
 #ifndef CONTENT_COMMON_MOJO_CORE_LIBRARY_SUPPORT_H_
 #define CONTENT_COMMON_MOJO_CORE_LIBRARY_SUPPORT_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -18,7 +19,7 @@ bool IsMojoCoreSharedLibraryEnabled();
 // Returns the path to the Mojo Core shared library passed in on the command
 // line for the calling process, or null if the process was launched without a
 // Mojo Core library path on the command line.
-absl::optional<base::FilePath> GetMojoCoreSharedLibraryPath();
+std::optional<base::FilePath> GetMojoCoreSharedLibraryPath();
 
 }  // namespace content
 

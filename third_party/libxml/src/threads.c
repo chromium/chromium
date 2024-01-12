@@ -78,8 +78,6 @@
 #pragma weak pthread_cond_wait
 #pragma weak pthread_equal
 #pragma weak pthread_self
-#pragma weak pthread_key_create
-#pragma weak pthread_key_delete
 #pragma weak pthread_cond_signal
 
 #define XML_PTHREAD_WEAK

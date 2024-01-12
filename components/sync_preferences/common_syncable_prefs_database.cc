@@ -85,7 +85,7 @@ enum {
   kCredentialsEnableService = 40,
   kPasswordDismissCompromisedAlertEnabled = 41,
   kPasswordLeakDetectionEnabled = 42,
-  kSyncedLastTimePasswordCheckCompleted = 43,
+  // kSyncedLastTimePasswordCheckCompleted = 43, (deprecated)
   kWasAutoSignInFirstRunExperienceShown = 44,
   kCanMakePaymentEnabled = 45,
   kAccountTailoredSecurityUpdateTimestamp = 46,
@@ -120,8 +120,10 @@ enum {
 
 const auto& SyncablePreferences() {
   // List of syncable preferences common across platforms.
+  // TODO(crbug.com/1512537): Convert to MakeFixedFlatMap().
   static const auto kCommonSyncablePrefsAllowlist =
-      base::MakeFixedFlatMap<base::StringPiece, SyncablePrefMetadata>({
+      base::MakeFixedFlatMapNonConsteval<base::StringPiece,
+                                         SyncablePrefMetadata>({
           {autofill::prefs::kAutofillCreditCardEnabled,
            {syncable_prefs_ids::kAutofillCreditCardEnabled, syncer::PREFERENCES,
             PrefSensitivity::kNone, MergeBehavior::kNone}},
@@ -245,10 +247,6 @@ const auto& SyncablePreferences() {
           {password_manager::prefs::kPasswordLeakDetectionEnabled,
            {syncable_prefs_ids::kPasswordLeakDetectionEnabled,
             syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
-          {password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
-           {syncable_prefs_ids::kSyncedLastTimePasswordCheckCompleted,
-            syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
-            MergeBehavior::kNone}},
           {password_manager::prefs::kWasAutoSignInFirstRunExperienceShown,
            {syncable_prefs_ids::kWasAutoSignInFirstRunExperienceShown,
             syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,

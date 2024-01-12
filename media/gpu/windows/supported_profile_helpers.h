@@ -13,6 +13,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

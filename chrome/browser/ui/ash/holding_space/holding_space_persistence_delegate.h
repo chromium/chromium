@@ -72,7 +72,7 @@ class HoldingSpacePersistenceDelegate
   void MaybeRemoveItemsFromPersistence();
 
   // Owned by `HoldingSpaceKeyedService`.
-  const raw_ptr<ThumbnailLoader, ExperimentalAsh> thumbnail_loader_;
+  const raw_ptr<ThumbnailLoader> thumbnail_loader_;
 
   // Callback to invoke when holding space persistence has been restored.
   PersistenceRestoredCallback persistence_restored_callback_;

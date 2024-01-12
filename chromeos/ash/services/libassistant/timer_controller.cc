@@ -82,10 +82,10 @@ class TimerController::TimerListener
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ref<AssistantClient, ExperimentalAsh> assistant_client_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  const raw_ref<mojom::TimerDelegate, ExperimentalAsh> delegate_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<AssistantClient> assistant_client_ GUARDED_BY_CONTEXT(
+      sequence_checker_);
+  const raw_ref<mojom::TimerDelegate> delegate_ GUARDED_BY_CONTEXT(
+      sequence_checker_);
 
   base::WeakPtrFactory<TimerListener> weak_factory_{this};
 };

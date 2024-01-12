@@ -13,15 +13,9 @@
 namespace ash {
 class SearchResultImageView;
 
-// A delegate for `SearchResultImageView` which implements drag and drop. Only a
-// single delegate instance exists at a time and is shared by all existing
-// search result image views in order to support multiselection which requires a
-// shared state.
+// A delegate for `SearchResultImageView` which implements drag and drop.
 class ASH_EXPORT SearchResultImageViewDelegate : public views::DragController {
  public:
-  // Returns the singleton instance.
-  static SearchResultImageViewDelegate* Get();
-
   SearchResultImageViewDelegate();
   SearchResultImageViewDelegate(const SearchResultImageViewDelegate&) = delete;
   SearchResultImageViewDelegate& operator=(

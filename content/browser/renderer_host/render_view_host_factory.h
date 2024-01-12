@@ -36,7 +36,7 @@ class RenderViewHostFactory {
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
       CreateRenderViewHostCase create_case,
-      absl::optional<viz::FrameSinkId> frame_sink_id);
+      std::optional<viz::FrameSinkId> frame_sink_id);
 
   RenderViewHostFactory(const RenderViewHostFactory&) = delete;
   RenderViewHostFactory& operator=(const RenderViewHostFactory&) = delete;
@@ -75,7 +75,7 @@ class RenderViewHostFactory {
       int32_t widget_routing_id,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
       CreateRenderViewHostCase create_case,
-      absl::optional<viz::FrameSinkId> frame_sink_id) = 0;
+      std::optional<viz::FrameSinkId> frame_sink_id) = 0;
 
   // Registers your factory to be called when new RenderViewHosts are created.
   // We have only one global factory, so there must be no factory registered

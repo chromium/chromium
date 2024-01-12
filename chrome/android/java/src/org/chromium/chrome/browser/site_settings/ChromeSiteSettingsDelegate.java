@@ -144,7 +144,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS);
             case SiteSettingsCategory.Type.ZOOM:
-                return ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM);
+                return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
+                        && ContentFeatureMap.isEnabled(
+                                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS);
             default:
                 return true;
         }

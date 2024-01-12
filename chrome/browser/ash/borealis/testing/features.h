@@ -27,7 +27,7 @@ class ScopedAllowBorealis {
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::test::ScopedFeatureList features_;
 };
 

@@ -1894,9 +1894,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSpatialNavigationFocus:
       DCHECK(is_ua_rule_);
       return MatchesSpatialNavigationFocusPseudoClass(element);
-    case CSSSelector::kPseudoSpatialNavigationInterest:
-      DCHECK(is_ua_rule_);
-      return MatchesSpatialNavigationInterestPseudoClass(element);
     case CSSSelector::kPseudoHasDatalist:
       DCHECK(is_ua_rule_);
       return MatchesHasDatalistPseudoClass(element);
@@ -2130,16 +2127,28 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       }
       return false;
     }
+    case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
-      if (CSSSelector::GetPseudoId(selector.GetPseudoType()) !=
-          context.pseudo_id) {
+      const PseudoId selector_pseudo_id =
+          CSSSelector::GetPseudoId(selector.GetPseudoType());
+      if (element.IsDocumentElement() && context.pseudo_id == kPseudoIdNone) {
+        // We don't strictly need to use dynamic_pseudo since we don't rely on
+        // SetHasPseudoElementStyle but we need to return a match to invalidate
+        // the originating element and set dynamic_pseudo to avoid collecting
+        // it as a matched rule in ElementRuleCollector.
+        result.dynamic_pseudo = selector_pseudo_id;
+        return true;
+      }
+
+      if (selector_pseudo_id != context.pseudo_id) {
         return false;
       }
       result.dynamic_pseudo = context.pseudo_id;
-      return selector.Argument() == CSSSelector::UniversalSelectorAtom() ||
+      return selector_pseudo_id == kPseudoIdViewTransition ||
+             selector.Argument() == CSSSelector::UniversalSelectorAtom() ||
              selector.Argument() == pseudo_argument_;
     }
     case CSSSelector::kPseudoScrollbarButton:
@@ -2382,25 +2391,6 @@ bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
 
   return (always_show_focus || is_text_input || !last_focus_from_mouse ||
           had_keyboard_event);
-}
-
-// static
-bool SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(
-    const Element& element) {
-  if (!IsSpatialNavigationEnabled(element.GetDocument().GetFrame())) {
-    return false;
-  }
-
-  if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
-    return false;
-  }
-
-  DCHECK(element.GetDocument().GetPage());
-  Element* interested_element = element.GetDocument()
-                                    .GetPage()
-                                    ->GetSpatialNavigationController()
-                                    .GetInterestedElement();
-  return interested_element && *interested_element == element;
 }
 
 namespace {

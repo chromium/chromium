@@ -94,8 +94,8 @@ suite('<settings-manage-users-subpage>', () => {
     assertTrue(!!userList);
     // Setup and initialize fake users API.
     const fakeUsersPrivate = new FakeUsersPrivate();
-    fakeUsersPrivate.users = users;
-    userList['usersPrivate_'] = fakeUsersPrivate;
+    fakeUsersPrivate.setUsersForTesting(users);
+    userList.set('usersPrivate_', fakeUsersPrivate);
     userList['setUsers_'](fakeUsersPrivate.users);
     flush();
     const removeUserIcons =

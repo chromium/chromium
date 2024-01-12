@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {comparePath} from '../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {FileKey, State} from '../../externs/ts/state.js';
+import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {Slice} from '../../lib/base_store.js';
+import type {FileKey, State} from '../../state/state.js';
 import {getEntry} from '../store.js';
 
 import {cacheEntries} from './all_entries.js';

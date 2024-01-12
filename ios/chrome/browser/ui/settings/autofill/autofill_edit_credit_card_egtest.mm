@@ -64,6 +64,10 @@ id<GREYMatcher> YearOfExpiryTextField() {
 - (void)setUp {
   [super setUp];
 
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface setMandatoryReauthEnabled:YES];
+
   [AutofillAppInterface clearCreditCardStore];
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
 
@@ -78,6 +82,7 @@ id<GREYMatcher> YearOfExpiryTextField() {
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearMockReauthenticationModule];
   [super tearDown];
 }
 

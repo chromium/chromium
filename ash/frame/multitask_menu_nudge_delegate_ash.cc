@@ -47,7 +47,10 @@ void MultitaskMenuNudgeDelegateAsh::GetNudgePreferences(
       GetPrefService()->GetInteger(GetShowCountPrefName(tablet_mode));
   const base::Time last_shown_time =
       GetPrefService()->GetTime(GetLastShownPrefName(tablet_mode));
-  std::move(callback).Run(tablet_mode, shown_count, last_shown_time);
+  std::move(callback).Run(
+      tablet_mode,
+      chromeos::MultitaskMenuNudgeController::PrefValues{
+          .show_count = shown_count, .last_shown_time = last_shown_time});
 }
 
 void MultitaskMenuNudgeDelegateAsh::SetNudgePreferences(bool tablet_mode,

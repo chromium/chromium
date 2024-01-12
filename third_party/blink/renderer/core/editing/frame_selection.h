@@ -141,6 +141,8 @@ class CORE_EXPORT FrameSelection final
   // You should not call |document()| when |!isAvailable()|.
   Document& GetDocument() const;
   LocalFrame* GetFrame() const { return frame_.Get(); }
+  // Note that RootEditableElementOrDocumentElement can return null if the
+  // documentElement is null.
   Element* RootEditableElementOrDocumentElement() const;
   wtf_size_t CharacterIndexForPoint(const gfx::Point&) const;
 

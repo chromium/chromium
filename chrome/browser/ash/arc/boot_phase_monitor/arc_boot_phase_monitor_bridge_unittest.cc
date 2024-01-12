@@ -95,7 +95,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     void OnBootCompleted() override { ++(test_->on_boot_completed_counter_); }
 
    private:
-    const raw_ptr<ArcBootPhaseMonitorBridgeTest, ExperimentalAsh> test_;
+    const raw_ptr<ArcBootPhaseMonitorBridgeTest> test_;
   };
 
   ArcSessionManager* arc_session_manager() const {
@@ -136,7 +136,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     }
 
    private:
-    const raw_ptr<ArcBootPhaseMonitorBridgeTest, ExperimentalAsh> test_;
+    const raw_ptr<ArcBootPhaseMonitorBridgeTest> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

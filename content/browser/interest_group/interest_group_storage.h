@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -22,7 +23,6 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "sql/database.h"
 #include "sql/statement.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -80,7 +80,7 @@ class CONTENT_EXPORT InterestGroupStorage {
       const url::Origin& main_frame_origin);
 
   // Gets lockout and cooldowns for sending forDebuggingOnly reports.
-  absl::optional<DebugReportLockoutAndCooldowns>
+  std::optional<DebugReportLockoutAndCooldowns>
   GetDebugReportLockoutAndCooldowns(base::flat_set<url::Origin> origins);
 
   // Updates the interest group `name` of `owner` with the populated fields of
@@ -115,12 +115,12 @@ class CONTENT_EXPORT InterestGroupStorage {
   void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
 
   // Gets the last time that the key was reported to the k-anonymity server.
-  absl::optional<base::Time> GetLastKAnonymityReported(const std::string& key);
+  std::optional<base::Time> GetLastKAnonymityReported(const std::string& key);
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& key);
 
   // Gets a single interest group.
-  absl::optional<StorageInterestGroup> GetInterestGroup(
+  std::optional<StorageInterestGroup> GetInterestGroup(
       const blink::InterestGroupKey& group_key);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -61,6 +63,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownPopupWindow;
@@ -70,6 +73,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.util.HashSet;
 
@@ -77,7 +81,7 @@ import java.util.HashSet;
  * This part of the manual filling component manages the state of the manual filling flow depending
  * on the currently shown tab.
  */
-class ManualFillingMediator extends EmptyTabObserver
+class ManualFillingMediator
         implements KeyboardAccessoryCoordinator.BarVisibilityDelegate,
                 AccessorySheetCoordinator.SheetVisibilityDelegate,
                 View.OnLayoutChangeListener,
@@ -118,13 +122,34 @@ class ManualFillingMediator extends EmptyTabObserver
                     pause();
                     refreshTabs();
                 }
+
+                @Override
+                public void onVirtualKeyboardModeChanged(
+                        Tab tab, @VirtualKeyboardMode.EnumType int mode) {
+                    if (isInitialized() && !mKeyboardAccessory.empty()) {
+                        updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
+                    }
+                }
+
+                @Override
+                public void onDidFinishNavigationInPrimaryMainFrame(
+                        Tab tab, NavigationHandle navigation) {
+                    if (isInitialized() && !mKeyboardAccessory.empty()) {
+                        updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
+                    }
+                }
             };
 
     private final FullscreenManager.Observer mFullscreenObserver =
             new FullscreenManager.Observer() {
                 @Override
                 public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-                    pause();
+                    mModel.set(IS_FULLSCREEN, true);
+                }
+
+                @Override
+                public void onExitFullscreen(Tab tab) {
+                    mModel.set(IS_FULLSCREEN, false);
                 }
             };
 
@@ -219,8 +244,14 @@ class ManualFillingMediator extends EmptyTabObserver
             int oldTop,
             int oldRight,
             int oldBottom) {
-        if (!isInitialized()) return; // Activity uninitialized or cleaned up already.
-        if (mKeyboardAccessory.empty()) return; // Exit early to not affect the layout.
+        if (isInitialized() && !mKeyboardAccessory.empty()) {
+            updateExtensionStateAndKeyboard(isSoftKeyboardShowing(view));
+        }
+    }
+
+    private void updateExtensionStateAndKeyboard(boolean isKeyboardShowing) {
+        assert isInitialized() : "Activity uninitialized or cleaned up already.";
+        assert !mKeyboardAccessory.empty() : "KA is inactive — don't process updates!";
         if (!hasSufficientSpace()) {
             mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
             return;
@@ -230,7 +261,7 @@ class ManualFillingMediator extends EmptyTabObserver
             return;
         }
         restrictAccessorySheetHeight();
-        if (!isSoftKeyboardShowing(view)) {
+        if (!isKeyboardShowing) {
             if (is(WAITING_TO_REPLACE)) {
                 mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
             }
@@ -419,6 +450,12 @@ class ManualFillingMediator extends EmptyTabObserver
         mBackPressChangedSupplier.set(shouldHideOnBackPress());
         if (property == SHOW_WHEN_VISIBLE) {
             return;
+        } else if (property == IS_FULLSCREEN) {
+            if (isInitialized() && !mKeyboardAccessory.empty()) {
+                updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
+                changeBottomControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
+            }
+            return;
         } else if (property == PORTRAIT_ORIENTATION) {
             onOrientationChange();
             return;
@@ -552,7 +589,7 @@ class ManualFillingMediator extends EmptyTabObserver
         if (contentView == null) return; // Apparently the tab was cleaned up already.
         View rootView = contentView.getRootView();
         if (rootView == null) return;
-        mAccessorySheet.setHeight(calculateAccessorySheetHeight(rootView));
+        mAccessorySheet.setHeight(calculateAccessorySheetHeight());
         mSoftKeyboardDelegate.hideSoftKeyboardOnly(rootView);
     }
 
@@ -620,8 +657,10 @@ class ManualFillingMediator extends EmptyTabObserver
         if (isInitialized() && mAccessorySheet.isShown()) onCloseAccessorySheet();
     }
 
-    void confirmOperation(String title, String message, Runnable confirmedCallback) {
-        mConfirmationHelper.showConfirmation(title, message, R.string.ok, confirmedCallback);
+    void confirmOperation(
+            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
+        mConfirmationHelper.showConfirmation(
+                title, message, R.string.ok, confirmedCallback, declinedCallback);
     }
 
     private void changeBottomControlSpaceForState(int extensionState) {
@@ -629,10 +668,16 @@ class ManualFillingMediator extends EmptyTabObserver
         int newControlsHeight = 0;
         int newControlsOffset = 0;
         if (requiresVisibleBar(extensionState)) {
-            newControlsHeight =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height);
+            // TODO(crbug/1511220): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
+            if (mModel.get(IS_FULLSCREEN)) { // Hides UI and lets keyboard overlay webContents.
+                newControlsOffset = getKeyboardAndNavigationHeight();
+                // Don't resize the page because the keyboard does not doesn't do that either in
+                // fullscreen mode. It's overlaying the content and the accessory mimics that.
+                newControlsHeight = 0;
+            } else {
+                newControlsHeight = getBarHeightWithoutShadow();
+                newControlsOffset = 0; // The bar is just above the keyboard.
+            }
         }
         if (requiresVisibleSheet(extensionState)) {
             newControlsHeight += mAccessorySheet.getHeight();
@@ -698,14 +743,32 @@ class ManualFillingMediator extends EmptyTabObserver
 
     /**
      * Uses the keyboard (if available) to determine the height of the accessory sheet.
+     *
      * @param rootView Root view of the current content view.
      * @return The estimated keyboard height or enough space to display at least three suggestions.
      */
-    private @Px int calculateAccessorySheetHeight(View rootView) {
+    private @Px int calculateAccessorySheetHeight() {
         int minimalSheetHeight = getIdealSheetHeight();
-        int newSheetHeight =
-                mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView) + getHeaderHeight();
+        int newSheetHeight = getKeyboardAndNavigationHeight() + getHeaderHeight();
         return Math.max(newSheetHeight, minimalSheetHeight);
+    }
+
+    /**
+     * Uses window insets to estimate the keyboard height. It should be the same mechanism that the
+     * SoftKeyboardDelegate uses but it intentionally ignores system navigation elements.
+     *
+     * @return The estimated keyboard height including the navigation buttons/gesture bar.
+     */
+    private @Px int getKeyboardAndNavigationHeight() {
+        if (getContentView() != null && getContentView().getRootWindowInsets() != null) {
+            return WindowInsetsCompat.toWindowInsetsCompat(
+                            getContentView().getRootWindowInsets(), getContentView())
+                    .getInsets(WindowInsetsCompat.Type.ime())
+                    .bottom;
+        }
+        // If the insets don't work, use the defaults of the KeyboardDelegate. Now, it uses the same
+        // WindowInsetsCompat methods so the following line almost certainly means the height is 0.
+        return mSoftKeyboardDelegate.calculateSoftKeyboardHeight(getContentView());
     }
 
     /** Double-checks that the accessory sheet height doesn't cover the whole page. */
@@ -863,13 +926,19 @@ class ManualFillingMediator extends EmptyTabObserver
         }
     }
 
-    private int getHeaderHeight() {
+    private @Px int getBarHeightWithoutShadow() {
+        return mActivity
+                .getResources()
+                .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height);
+    }
+
+    private @Px int getHeaderHeight() {
         return mActivity
                 .getResources()
                 .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow);
     }
 
-    private int getIdealSheetHeight() {
+    private @Px int getIdealSheetHeight() {
         int idealHeight =
                 3
                         * mActivity

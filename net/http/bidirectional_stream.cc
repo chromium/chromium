@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -28,7 +29,6 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_log_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/ssl/ssl_config.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -111,7 +111,7 @@ BidirectionalStream::BidirectionalStream(
     return;
   }
 
-  StartRequest(SSLConfig());
+  StartRequest();
 }
 
 BidirectionalStream::~BidirectionalStream() {
@@ -200,7 +200,7 @@ void BidirectionalStream::PopulateNetErrorDetails(NetErrorDetails* details) {
     stream_impl_->PopulateNetErrorDetails(details);
 }
 
-void BidirectionalStream::StartRequest(const SSLConfig& ssl_config) {
+void BidirectionalStream::StartRequest() {
   DCHECK(!stream_request_);
   HttpRequestInfo http_request_info;
   http_request_info.url = request_info_->url;
@@ -209,8 +209,8 @@ void BidirectionalStream::StartRequest(const SSLConfig& ssl_config) {
   http_request_info.socket_tag = request_info_->socket_tag;
   stream_request_ =
       session_->http_stream_factory()->RequestBidirectionalStreamImpl(
-          http_request_info, request_info_->priority, ssl_config, this,
-          /* enable_ip_based_pooling = */ true,
+          http_request_info, request_info_->priority, /*allowed_bad_certs=*/{},
+          this, /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, net_log_);
   // Check that this call does not fail.
   DCHECK(stream_request_);
@@ -324,14 +324,12 @@ void BidirectionalStream::OnFailed(int status) {
   NotifyFailed(status);
 }
 
-void BidirectionalStream::OnStreamReady(const SSLConfig& used_ssl_config,
-                                        const ProxyInfo& used_proxy_info,
+void BidirectionalStream::OnStreamReady(const ProxyInfo& used_proxy_info,
                                         std::unique_ptr<HttpStream> stream) {
   NOTREACHED();
 }
 
 void BidirectionalStream::OnBidirectionalStreamImplReady(
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<BidirectionalStreamImpl> stream) {
   DCHECK(!stream_impl_);
@@ -367,7 +365,6 @@ void BidirectionalStream::OnBidirectionalStreamImplReady(
 }
 
 void BidirectionalStream::OnWebSocketHandshakeStreamReady(
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
   NOTREACHED();
@@ -376,7 +373,6 @@ void BidirectionalStream::OnWebSocketHandshakeStreamReady(
 void BidirectionalStream::OnStreamFailed(
     int result,
     const NetErrorDetails& net_error_details,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     ResolveErrorInfo resolve_error_info) {
   DCHECK_LT(result, 0);
@@ -387,7 +383,6 @@ void BidirectionalStream::OnStreamFailed(
 }
 
 void BidirectionalStream::OnCertificateError(int result,
-                                             const SSLConfig& used_ssl_config,
                                              const SSLInfo& ssl_info) {
   DCHECK_LT(result, 0);
   DCHECK_NE(result, ERR_IO_PENDING);
@@ -398,7 +393,6 @@ void BidirectionalStream::OnCertificateError(int result,
 
 void BidirectionalStream::OnNeedsProxyAuth(
     const HttpResponseInfo& proxy_response,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     HttpAuthController* auth_controller) {
   DCHECK(stream_request_);
@@ -406,17 +400,15 @@ void BidirectionalStream::OnNeedsProxyAuth(
   NotifyFailed(ERR_PROXY_AUTH_REQUESTED);
 }
 
-void BidirectionalStream::OnNeedsClientAuth(const SSLConfig& used_ssl_config,
-                                            SSLCertRequestInfo* cert_info) {
+void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   DCHECK(stream_request_);
 
   // BidirectionalStream doesn't support client auth. It ignores client auth
   // requests with null client cert and key.
-  SSLConfig ssl_config = used_ssl_config;
   session_->ssl_client_context()->SetClientCertificate(cert_info->host_and_port,
                                                        nullptr, nullptr);
   stream_request_ = nullptr;
-  StartRequest(ssl_config);
+  StartRequest();
 }
 
 void BidirectionalStream::OnQuicBroken() {}

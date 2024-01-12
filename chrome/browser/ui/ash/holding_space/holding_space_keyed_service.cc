@@ -334,14 +334,13 @@ void HoldingSpaceKeyedService::RemoveItem(const std::string& id) {
   }
 }
 
-std::optional<holding_space_metrics::ItemFailureToLaunchReason>
+std::optional<holding_space_metrics::ItemLaunchFailureReason>
 HoldingSpaceKeyedService::OpenItemWhenComplete(const HoldingSpaceItem* item) {
   // Currently it is only possible to open download type items when complete.
   if (HoldingSpaceItem::IsDownloadType(item->type()) && downloads_delegate_) {
     return downloads_delegate_->OpenWhenComplete(item);
   }
-  return holding_space_metrics::ItemFailureToLaunchReason::
-      kNoHandlerForItemType;
+  return holding_space_metrics::ItemLaunchFailureReason::kNoHandlerForItemType;
 }
 
 void HoldingSpaceKeyedService::Shutdown() {

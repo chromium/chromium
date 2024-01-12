@@ -67,7 +67,7 @@ class BleAdvertiser {
   void NotifyFailureToGenerateAdvertisement(const DeviceIdPair& device_id_pair);
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash::secure_channel

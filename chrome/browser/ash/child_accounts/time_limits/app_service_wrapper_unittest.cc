@@ -242,8 +242,7 @@ class AppServiceWrapperTest : public ::testing::Test {
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_test_;
 
-  raw_ptr<extensions::ExtensionService, ExperimentalAsh> extension_service_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 
   AppServiceWrapper tested_wrapper_{&profile_};
   MockListener test_listener_;

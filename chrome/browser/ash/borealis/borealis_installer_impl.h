@@ -68,7 +68,7 @@ class BorealisInstallerImpl : public BorealisInstaller {
       base::expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult>
           result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::ObserverList<Observer> observers_;
 
   InstallingState installing_state_;

@@ -171,7 +171,9 @@ using testing::Return;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -2305,8 +2307,17 @@ class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
     StartupBrowserCreatorTest::SetUpCommandLine(command_line);
     if (GetTestPreCount() == 1) {
       // Load an app with launch.container = 'window'.
+
+#if BUILDFLAG(IS_MAC)
+      // While the non-mac version of this test would pass on macOS, it isn't
+      // testing a code path that would actually be used on macOS, and thus not
+      // very useful as a test. Instead test the way an app shim would launch
+      // Chrome in the background to launch an app.
+      command_line->AppendSwitch(switches::kNoStartupWindow);
+#else
       command_line->AppendSwitchASCII(switches::kAppId, kAppId);
       command_line->AppendSwitchASCII(switches::kProfileDirectory, "Default");
+#endif
     }
   }
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
@@ -2355,7 +2366,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   WebAppProvider* const provider =
       WebAppProvider::GetForTest(browser()->profile());
 
-  // Install web app set to open as a tab.
+  // Install web app set to open as a standalone window.
   {
     std::unique_ptr<web_app::WebAppInstallInfo> info =
         std::make_unique<web_app::WebAppInstallInfo>();
@@ -2374,12 +2385,23 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
               webapps::InstallResultCode::kSuccessNewInstall);
     EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(kAppId),
               web_app::mojom::UserDisplayMode::kStandalone);
+
+#if BUILDFLAG(IS_MAC)
+    AppShimRegistry::Get()->OnAppInstalledForProfile(
+        kAppId, browser()->profile()->GetPath());
+#endif
   }
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                        PRE_LastUsedProfilesWithWebApp) {
   BrowserAddedObserver added_observer;
+
+#if BUILDFLAG(IS_MAC)
+  // Simulate an app shim connecting and launching an app.
+  apps::AppShimManager::Get()->LoadAndLaunchAppForTesting(kAppId);
+#endif
+
   content::RunAllTasksUntilIdle();
   // Launching with an app opens the app window via a task, so the test
   // might start before SelectFirstBrowser is called.

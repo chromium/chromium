@@ -13,6 +13,7 @@
 
 #include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_decoder_adapter.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_encoder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/recording_headers_handler.h"
 
 namespace spdy {
 
@@ -63,8 +64,10 @@ class HpackFuzzUtil {
     FuzzerContext();
     ~FuzzerContext();
     std::unique_ptr<HpackDecoderAdapter> first_stage;
+    std::unique_ptr<RecordingHeadersHandler> first_stage_handler;
     std::unique_ptr<HpackEncoder> second_stage;
     std::unique_ptr<HpackDecoderAdapter> third_stage;
+    std::unique_ptr<RecordingHeadersHandler> third_stage_handler;
   };
 
   static void InitializeFuzzerContext(FuzzerContext* context);

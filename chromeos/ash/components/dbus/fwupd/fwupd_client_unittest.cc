@@ -296,8 +296,7 @@ class FwupdClientTest : public testing::Test {
   }
 
   scoped_refptr<dbus::MockObjectProxy> proxy_;
-  raw_ptr<FwupdClient, DanglingUntriaged | ExperimentalAsh> fwupd_client_ =
-      nullptr;
+  raw_ptr<FwupdClient, DanglingUntriaged> fwupd_client_ = nullptr;
   std::unique_ptr<FwupdProperties> expected_properties_;
 
  private:

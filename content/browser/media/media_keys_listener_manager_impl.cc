@@ -42,9 +42,9 @@ MediaKeysListenerManagerImpl::MediaKeysListenerManagerImpl() {
   DCHECK(!MediaKeysListenerManager::GetInstance());
 
 #if BUILDFLAG(IS_WIN)
-  // If instanced system media controls are enabled, the ...controls_manager_
-  // will handle creation of browser related classes such as the
-  // browser_active_media_session_controller_.
+  // If instanced system media controls are enabled, the
+  // web_app_system_media_controls_manager_ will handle creation of browser
+  // related classes such as the browser_active_media_session_controller_.
   if (ShouldUseWebAppSystemMediaControls()) {
     web_app_system_media_controls_manager_ =
         std::make_unique<WebAppSystemMediaControlsManager>();
@@ -74,14 +74,14 @@ bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
   // We don't want to start watching the key for an
   // ActiveMediaSessionController if an ActiveMediaSessionController won't
   // receive events.
-  bool is_delegate_for_browser =
+  const bool is_delegate_for_browser =
       delegate == browser_active_media_session_controller_.get();
-  bool is_delegate_for_pwa = ShouldUseWebAppSystemMediaControls() &&
-                             IsDelegateForWebAppSession(delegate);
+  const bool is_delegate_for_pwa = ShouldUseWebAppSystemMediaControls() &&
+                                   IsDelegateForWebAppSession(delegate);
 
-  bool is_delegate_an_active_media_session_controller =
+  const bool is_delegate_an_active_media_session_controller =
       is_delegate_for_browser || is_delegate_for_pwa;
-  bool should_start_watching =
+  const bool should_start_watching =
       !is_delegate_an_active_media_session_controller ||
       CanActiveMediaSessionControllerReceiveEvents();
 

@@ -1,0 +1,55 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//base/version_info/use_unofficial_version_number.gni")
+import("//build/config/chrome_build.gni")
+import("//build/util/lastchange.gni")
+import("//build/util/process_version.gni")
+
+static_library("version_info") {
+  sources = [
+    "version_info.cc",
+    "version_info.h",
+  ]
+
+  deps = [
+    "//base:sanitizer_buildflags",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+  ]
+
+  public_deps = [
+    ":channel",
+    ":generate_version_info",
+    "//base",
+  ]
+}
+
+static_library("version_string") {
+  sources = [
+    "version_string.cc",
+    "version_string.h",
+  ]
+
+  deps = [ ":version_info" ]
+
+  if (use_unofficial_version_number) {
+    defines = [ "USE_UNOFFICIAL_VERSION_NUMBER" ]
+  }
+}
+
+source_set("channel") {
+  sources = [ "channel.h" ]
+  public_deps = [ "//base" ]
+}
+
+process_version("generate_version_info") {
+  template_file = "version_info_values.h.version"
+  sources = [
+    "//chrome/VERSION",
+    branding_file_path,
+    lastchange_file,
+  ]
+  output = "$target_gen_dir/version_info_values.h"
+}

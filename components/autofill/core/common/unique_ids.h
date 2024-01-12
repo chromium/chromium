@@ -75,8 +75,7 @@ class TokenType
 // content::RenderFrameHost.
 //
 // On iOS, AutofillAgent and AutofillDriver inherit their LocalFrameToken from
-// web::WebFrame. RemoteFrameToken is not used on iOS.
-// TODO(crbug.com/1441921): Implement this actually.
+// web::WebFrame, and RemoteFrameTokens are generated during form extraction.
 //
 // FrameTokens must not be leaked to renderer processes other than the one
 // they originate from. Therefore, Autofill should generally not send

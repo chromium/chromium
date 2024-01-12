@@ -22,10 +22,10 @@ namespace test {
 namespace {
 
 // Default form url.
-constexpr char kFormUrl[] = "http://example.com/form.html";
+constexpr char kFormUrl[] = "https://example.com/form.html";
 
 // Default form action url.
-constexpr char kFormActionUrl[] = "http://example.com/submit.html";
+constexpr char kFormActionUrl[] = "https://example.com/submit.html";
 
 }  // namespace
 

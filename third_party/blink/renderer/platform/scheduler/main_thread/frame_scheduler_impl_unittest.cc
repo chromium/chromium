@@ -122,7 +122,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalLoading,
     TaskType::kNetworking,
     TaskType::kNetworkingUnfreezable,
-    TaskType::kNetworkingUnfreezableImageLoading,
+    TaskType::kNetworkingUnfreezableRenderBlockingLoading,
     TaskType::kNetworkingControl,
     TaskType::kLowPriorityScriptExecution,
     TaskType::kDOMManipulation,
@@ -1453,9 +1453,9 @@ TEST_F(FrameSchedulerImplTest, HighestPriorityInputBlockingTaskQueue) {
             TaskPriority::kHighestPriority);
 }
 
-TEST_F(FrameSchedulerImplTest, RenderBlockingImageLoading) {
+TEST_F(FrameSchedulerImplTest, RenderBlockingRenderBlockingLoading) {
   auto render_blocking_task_queue =
-      GetTaskQueue(TaskType::kNetworkingUnfreezableImageLoading);
+      GetTaskQueue(TaskType::kNetworkingUnfreezableRenderBlockingLoading);
   page_scheduler_->SetPageVisible(false);
   EXPECT_EQ(render_blocking_task_queue->GetQueuePriority(),
             TaskPriority::kNormalPriority);

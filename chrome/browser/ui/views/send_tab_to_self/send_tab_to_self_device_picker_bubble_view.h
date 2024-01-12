@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -26,6 +27,8 @@ class SendTabToSelfBubbleDeviceButton;
 // View component of the send tab to self bubble that allows users to choose
 // target device to send tab to.
 class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
+  METADATA_HEADER(SendTabToSelfDevicePickerBubbleView, SendTabToSelfBubbleView)
+
  public:
   // Bubble will be anchored to |anchor_view|.
   SendTabToSelfDevicePickerBubbleView(views::View* anchor_view,

@@ -57,8 +57,8 @@ class OpenTabResult : public ChromeSearchResult,
   // Handle used to receive a fetched favicon over mojo.
   const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
   const std::optional<std::string> drive_id_;
   const std::u16string description_;

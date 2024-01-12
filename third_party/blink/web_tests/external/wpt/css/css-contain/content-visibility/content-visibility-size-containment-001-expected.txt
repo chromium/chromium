@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] content-visibility: auto, changing proximity to the viewport
+  assert_true: size containment applied when changing back from close to far to the viewport expected true got false
+[FAIL] content-visibility: auto, after being focused/unfocused
+  assert_true: size containment applied after unfocusing back expected true got false
+[FAIL] content-visibility: auto, after being selected/unselected
+  assert_true: size containment applied when initially unselected expected true got false
+Harness: the test ran to completion.
+

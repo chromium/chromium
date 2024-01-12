@@ -53,7 +53,7 @@ std::string ConvertEagernessToString(
 // Builds <script type="speculationrules"> element for prerendering.
 std::string BuildScriptElementSpeculationRules(
     const std::vector<GURL>& prerendering_urls,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
     const std::string& target_hint) {
   std::stringstream ss;
 
@@ -281,7 +281,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   std::unique_ptr<PrerenderHostRegistryObserver> registry_observer_;
   bool was_activated_ = false;
   bool did_observe_ = false;
-  absl::optional<PrerenderFinalStatus> last_status_;
+  std::optional<PrerenderFinalStatus> last_status_;
 };
 
 PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
@@ -403,13 +403,13 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
 
 int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url,
                                       int32_t world_id) {
-  return AddPrerender(prerendering_url, /*eagerness=*/absl::nullopt,
+  return AddPrerender(prerendering_url, /*eagerness=*/std::nullopt,
                       /*target_hint=*/"", world_id);
 }
 
 int PrerenderTestHelper::AddPrerender(
     const GURL& prerendering_url,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
     const std::string& target_hint,
     int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerender", "prerendering_url",
@@ -443,13 +443,12 @@ int PrerenderTestHelper::AddPrerender(
 
 void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url,
                                             int32_t world_id) {
-  AddPrerendersAsync({prerendering_url}, absl::nullopt, std::string(),
-                     world_id);
+  AddPrerendersAsync({prerendering_url}, std::nullopt, std::string(), world_id);
 }
 
 void PrerenderTestHelper::AddPrerendersAsync(
     const std::vector<GURL>& prerendering_urls,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+    std::optional<blink::mojom::SpeculationEagerness> eagerness,
     const std::string& target_hint,
     int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerendersAsync",

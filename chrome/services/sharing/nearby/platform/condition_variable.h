@@ -30,7 +30,7 @@ class ConditionVariable : public api::ConditionVariable {
   void Notify() override;
 
  private:
-  raw_ptr<Mutex, ExperimentalAsh> mutex_;
+  raw_ptr<Mutex> mutex_;
   base::ConditionVariable condition_variable_;
 };
 

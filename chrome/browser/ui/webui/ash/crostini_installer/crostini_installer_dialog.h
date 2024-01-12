@@ -40,7 +40,7 @@ class CrostiniInstallerDialog : public SystemWebDialogDelegate {
   void OnDialogShown(content::WebUI* webui) override;
   void OnWebContentsFinishedLoad() override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtr<CrostiniInstallerUI> installer_ui_ = nullptr;
   OnLoadedCallback on_loaded_callback_;
 };

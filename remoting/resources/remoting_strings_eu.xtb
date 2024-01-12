@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Protokolo-bertsio ez bateragarri bat hauteman da. Ziurtatu softwarearen azken bertsioa instalatuta daukazula bi ordenagailuetan eta saiatu berriro.</translation>
 <translation id="1008557486741366299">Ez une honetan</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Eskubide guztiak erreserbatuta.</translation>
 <translation id="1297009705180977556">Errore bat gertatu da <ph name="HOSTNAME" /> ostalarira konektatzean</translation>
 <translation id="1450760146488584666">Eskatutako objektua ez dago.</translation>
 <translation id="1480046233931937785">Kredituak</translation>
@@ -89,7 +88,6 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="4808503597364150972">Idatzi <ph name="HOSTNAME" /> ostalarira konektatzeko PINa.</translation>
 <translation id="4812684235631257312">Ostalaria</translation>
 <translation id="4867841927763172006">Bidali Inpr Pa</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ostalaritik deskonektatu da</translation>
 <translation id="4985296110227979402">Lehenik, ordenagailua konfiguratu behar duzu urrunetik atzitu ahal izateko</translation>
 <translation id="4987330545941822761">Chrome-ren Urruneko pantaila aplikazioak ezin du zehaztu URLak ordenagailuan irekitzeko arakatzailea. Hautatu zerrenda honetako bat.</translation>
@@ -154,6 +152,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="7693372326588366043">Freskatu ostalarien zerrenda</translation>
 <translation id="7714222945760997814">Salatu</translation>
 <translation id="7868137160098754906">Idatzi urruneko ordenagailura konektatzeko PINa.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Eskubide guztiak erreserbatuta.</translation>
 <translation id="7895403300744144251">Urruneko ordenagailuko segurtasun-gidalerro batzuek ez dute baimentzen zure kontutik konektatzea.</translation>
 <translation id="7936528439960309876">Ainguratu eskuinean</translation>
 <translation id="7970576581263377361">Ezin izan da autentifikatu. Hasi saioa berriro Chromium aplikazioan.</translation>
@@ -185,6 +184,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerr
 <translation id="8747048596626351634">Saioak huts egin du edo ezin izan da hasi. Urruneko ordenagailuan "~/.chrome-remote-desktop-session" izeneko prozesurik bada, ziurtatu aurreko planoko prozesu luzea abiarazten duela, adibidez, ordenagailu-ingurunea edo leiho-kudeatzailea.</translation>
 <translation id="8804164990146287819">Pribatutasun-gidalerroak</translation>
 <translation id="8906511416443321782">Mikrofonoa erabiltzeko baimena behar da audioa grabatzeko eta Chrome-ren Urruneko pantaila bezero-aplikaziora igortzeko.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="9111855907838866522">Urruneko gailura konektatuta zaude. Menua irekitzeko, sakatu pantaila lau hatzekin.</translation>
 <translation id="9126115402994542723">Ez eskatu PINa berriro ostalari honetara gailu honetatik konektatzean.</translation>
 <translation id="916856682307586697">Exekutatu XSession lehenetsia</translation>

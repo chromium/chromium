@@ -64,10 +64,10 @@ class IncomingFramesReader {
       absl::optional<sharing::mojom::V1Frame::Tag> frame_type);
   sharing::mojom::NearbySharingDecoder* GetOrStartNearbySharingDecoder();
 
-  raw_ptr<ash::nearby::NearbyProcessManager, ExperimentalAsh> process_manager_;
+  raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_;
+  raw_ptr<NearbyConnection> connection_;
   absl::optional<sharing::mojom::V1Frame::Tag> frame_type_;
   base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
       callback_;

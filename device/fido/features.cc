@@ -40,13 +40,6 @@ BASE_FEATURE(kWebAuthCableExtensionAnywhere,
              "WebAuthenticationCableExtensionAnywhere",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enabled in M116. Remove in or after M119.
-BASE_FEATURE(kWebAuthnAndroidHybridClientUi,
-             "WebAuthenticationAndroidHybridClientUi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
              "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -102,16 +95,6 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive,
 BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enabled in M117. Remove in or after M120.
-BASE_FEATURE(kWebAuthnNewHybridUI,
-             "WebAuthenticationNewHybridUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M116. Remove in or after M119.
-BASE_FEATURE(kWebAuthnSkipSingleAccountMacOS,
-             "WebAuthenticationSkipSingleAccountMacOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M117. Remove in or after M120.
 BASE_FEATURE(kWebAuthConditionalUIExperimentation,

@@ -561,5 +561,5 @@ int AvatarToolbarButton::GetIconSize() const {
                                          : kIconSizeForNonTouchUi;
 }
 
-BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)
+BEGIN_METADATA(AvatarToolbarButton)
 END_METADATA

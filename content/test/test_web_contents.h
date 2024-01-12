@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -110,7 +110,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   // Prevent interaction with views.
   bool CreateRenderViewForRenderManager(
       RenderViewHost* render_view_host,
-      const absl::optional<blink::FrameToken>& opener_frame_token,
+      const std::optional<blink::FrameToken>& opener_frame_token,
       RenderFrameProxyHost* proxy_host) override;
 
   // Returns a clone of this TestWebContents. The returned object is also a
@@ -168,7 +168,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   base::TimeTicks GetTabSwitchStartTime() final;
 
   void SetPictureInPictureOptions(
-      absl::optional<blink::mojom::PictureInPictureWindowOptions> options)
+      std::optional<blink::mojom::PictureInPictureWindowOptions> options)
       override;
 
   void SetOverscrollNavigationEnabled(bool enabled) override;
@@ -211,11 +211,12 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                             const Referrer& referrer,
                             const std::string& headers,
                             const std::u16string& suggested_filename,
-                            RenderFrameHost* rfh) override;
+                            RenderFrameHost* rfh,
+                            bool is_subresource) override;
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
   bool IsBackForwardCacheSupported() override;
-  const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  const std::optional<blink::mojom::PictureInPictureWindowOptions>&
   GetPictureInPictureOptions() const override;
 
   raw_ptr<RenderViewHostDelegateView> delegate_view_override_;
@@ -228,13 +229,13 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   std::map<GURL, std::list<std::pair<int, ImageDownloadCallback>>>
       pending_image_downloads_;
   GURL last_committed_url_;
-  absl::optional<std::u16string> title_;
+  std::optional<std::u16string> title_;
   bool pause_subresource_loading_called_;
   base::UnguessableToken audio_group_id_;
   bool is_page_frozen_;
   bool back_forward_cache_supported_ = true;
   base::TimeTicks tab_switch_start_time_;
-  absl::optional<blink::mojom::PictureInPictureWindowOptions>
+  std::optional<blink::mojom::PictureInPictureWindowOptions>
       picture_in_picture_options_;
   bool overscroll_enabled_ = true;
 };

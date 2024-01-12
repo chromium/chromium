@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -66,6 +68,12 @@ class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
                std::optional<uint64_t> profile_id,
                NewWindowCallback callback),
               (override));
+  MOCK_METHOD(void,
+              Launch,
+              (int64_t target_display_id,
+               std::optional<uint64_t> profile_id,
+               LaunchCallback callback),
+              (override));
   MOCK_METHOD(void, OpenForFullRestore, (bool skip_crash_restore), (override));
   MOCK_METHOD(void, UpdateKeepAlive, (bool enabled), (override));
 };
@@ -103,11 +111,11 @@ class BrowserManagerFake : public BrowserManager {
   }
 
   void SimulateLacrosStart(mojom::BrowserService* browser_service) {
-    crosapi_id_ = CrosapiId::FromUnsafeValue(42);  // Dummy value.
+    crosapi_id_ = CrosapiId::FromUnsafeValue(70);  // Dummy value.
     SetStatePublic(State::STARTING);
     OnBrowserServiceConnected(*crosapi_id_,
-                              mojo::RemoteSetElementId::FromUnsafeValue(42),
-                              browser_service, 42);
+                              mojo::RemoteSetElementId::FromUnsafeValue(70),
+                              browser_service, 70);
   }
 
   // Make the State enum publicly available.
@@ -305,7 +313,7 @@ class BrowserManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<MockBrowserLoader, ExperimentalAsh> browser_loader_ = nullptr;
+  raw_ptr<MockBrowserLoader> browser_loader_ = nullptr;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
   raw_ptr<MockVersionServiceDelegate> version_service_delegate_;
@@ -519,6 +527,38 @@ TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
 
   EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
 
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
+}
+
+TEST_F(BrowserManagerTest, VerifyProfileIdForNewWindow) {
+  AddUser(UserType::kRegularUser);
+  ExpectCallingLoad();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
+
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _, _)).Times(0);
+  fake_browser_manager_->NewWindow(/*incognito=*/false,
+                                   /*should_trigger_session_restore=*/false);
+  fake_browser_manager_->NewWindow(/*incognito=*/false,
+                                   /*should_trigger_session_restore=*/true);
+  fake_browser_manager_->NewWindow(/*incognito=*/true,
+                                   /*should_trigger_session_restore=*/false);
+  fake_browser_manager_->NewWindow(/*incognito=*/true,
+                                   /*should_trigger_session_restore=*/true);
+  EXPECT_CALL(mock_browser_service_,
+              NewWindow(_, _, _, testing::Eq(std::nullopt), _))
+      .Times(4);
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
+}
+
+TEST_F(BrowserManagerTest, VerifyProfileIdForLaunch) {
+  AddUser(UserType::kRegularUser);
+  ExpectCallingLoad();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
+
+  EXPECT_CALL(mock_browser_service_, Launch(_, _, _)).Times(0);
+  fake_browser_manager_->Launch();
+  EXPECT_CALL(mock_browser_service_, Launch(_, testing::Eq(std::nullopt), _))
+      .Times(1);
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }
 

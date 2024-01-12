@@ -73,18 +73,18 @@ bool IsSoftwareCodecSupported(media::VideoCodec codec) {
 }  // namespace
 
 struct VideoDecoderShim::PendingDecode {
-  PendingDecode(absl::optional<uint32_t> decode_id,
+  PendingDecode(std::optional<uint32_t> decode_id,
                 const scoped_refptr<media::DecoderBuffer>& buffer);
   ~PendingDecode();
 
-  // |decode_id| is absl::optional because it will be absl::nullopt when the
+  // |decode_id| is std::optional because it will be std::nullopt when the
   // decoder is being flushed.
-  const absl::optional<uint32_t> decode_id;
+  const std::optional<uint32_t> decode_id;
   const scoped_refptr<media::DecoderBuffer> buffer;
 };
 
 VideoDecoderShim::PendingDecode::PendingDecode(
-    absl::optional<uint32_t> decode_id,
+    std::optional<uint32_t> decode_id,
     const scoped_refptr<media::DecoderBuffer>& buffer)
     : decode_id(decode_id), buffer(buffer) {}
 
@@ -92,8 +92,8 @@ VideoDecoderShim::PendingDecode::~PendingDecode() {
 }
 
 struct VideoDecoderShim::PendingFrame {
-  explicit PendingFrame(absl::optional<uint32_t> decode_id);
-  PendingFrame(absl::optional<uint32_t> decode_id,
+  explicit PendingFrame(std::optional<uint32_t> decode_id);
+  PendingFrame(std::optional<uint32_t> decode_id,
                scoped_refptr<media::VideoFrame> frame);
 
   // This could be expensive to copy, so guard against that.
@@ -102,17 +102,17 @@ struct VideoDecoderShim::PendingFrame {
 
   ~PendingFrame();
 
-  // |decode_id| is absl::optional because it will be absl::nullopt when the
+  // |decode_id| is std::optional because it will be std::nullopt when the
   // decoder is being flushed.
-  const absl::optional<uint32_t> decode_id;
+  const std::optional<uint32_t> decode_id;
   scoped_refptr<media::VideoFrame> video_frame;
 };
 
-VideoDecoderShim::PendingFrame::PendingFrame(absl::optional<uint32_t> decode_id)
+VideoDecoderShim::PendingFrame::PendingFrame(std::optional<uint32_t> decode_id)
     : decode_id(decode_id) {}
 
 VideoDecoderShim::PendingFrame::PendingFrame(
-    absl::optional<uint32_t> decode_id,
+    std::optional<uint32_t> decode_id,
     scoped_refptr<media::VideoFrame> frame)
     : decode_id(decode_id), video_frame(std::move(frame)) {}
 
@@ -141,7 +141,7 @@ class VideoDecoderShim::DecoderImpl {
  private:
   void OnInitDone(media::DecoderStatus status);
   void DoDecode();
-  void OnDecodeComplete(absl::optional<uint32_t> decode_id,
+  void OnDecodeComplete(std::optional<uint32_t> decode_id,
                         media::DecoderStatus status);
   void OnOutputComplete(scoped_refptr<media::VideoFrame> frame);
   void OnResetComplete();
@@ -260,7 +260,7 @@ void VideoDecoderShim::DecoderImpl::Decode(
 void VideoDecoderShim::DecoderImpl::Flush() {
   DCHECK(decoder_);
 
-  pending_decodes_.emplace(/*decode_id=*/absl::nullopt,
+  pending_decodes_.emplace(/*decode_id=*/std::nullopt,
                            media::DecoderBuffer::CreateEOSBuffer());
 
   DoDecode();
@@ -351,7 +351,7 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
 }
 
 void VideoDecoderShim::DecoderImpl::OnDecodeComplete(
-    absl::optional<uint32_t> decode_id,
+    std::optional<uint32_t> decode_id,
     media::DecoderStatus status) {
   DCHECK(awaiting_decoder_);
   awaiting_decoder_ = false;
@@ -652,7 +652,7 @@ void VideoDecoderShim::OnInitializeFailed() {
 }
 
 void VideoDecoderShim::OnDecodeComplete(int32_t result,
-                                        absl::optional<uint32_t> decode_id) {
+                                        std::optional<uint32_t> decode_id) {
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
 
@@ -684,7 +684,7 @@ void VideoDecoderShim::OnDecodeComplete(int32_t result,
     // 2) All pending decode callbacks should have been called.
     DCHECK(!num_pending_decodes_);
     pending_frames_.push(
-        std::make_unique<PendingFrame>(/*decode_id=*/absl::nullopt));
+        std::make_unique<PendingFrame>(/*decode_id=*/std::nullopt));
   }
 }
 

@@ -44,7 +44,7 @@ class DeviceWallpaperImageExternalDataHandler final
   void Shutdown() override;
 
  private:
-  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_wallpaper_image_observer_;

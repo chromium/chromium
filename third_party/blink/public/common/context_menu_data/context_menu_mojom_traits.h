@@ -73,6 +73,11 @@ struct BLINK_COMMON_EXPORT
     return r.has_image_contents;
   }
 
+  static bool is_image_media_plugin_document(
+      const blink::UntrustworthyContextMenuParams& r) {
+    return r.is_image_media_plugin_document;
+  }
+
   static int media_flags(const blink::UntrustworthyContextMenuParams& r) {
     return r.media_flags;
   }

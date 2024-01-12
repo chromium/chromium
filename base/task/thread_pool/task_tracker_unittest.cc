@@ -540,7 +540,7 @@ static void RunTaskRunnerCurrentDefaultHandleVerificationTask(
     TaskTracker* tracker,
     Task verify_task,
     TaskTraits traits,
-    scoped_refptr<TaskRunner> task_runner,
+    scoped_refptr<SequencedTaskRunner> task_runner,
     TaskSourceExecutionMode execution_mode) {
   // Pretend |verify_task| is posted to respect TaskTracker's contract.
   EXPECT_TRUE(tracker->WillPostTask(&verify_task, traits.shutdown_behavior()));
@@ -977,11 +977,11 @@ TEST_F(ThreadPoolTaskTrackerTest, CurrentSequenceToken) {
     sequence_transaction.WillPushImmediateTask();
     sequence_transaction.PushImmediateTask(std::move(task));
 
-    EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
+    EXPECT_NE(SequenceToken::GetForCurrentThread(), sequence_token);
   }
 
   test::QueueAndRunTaskSource(&tracker_, std::move(sequence));
-  EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
+  EXPECT_NE(SequenceToken::GetForCurrentThread(), sequence_token);
 }
 
 TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {

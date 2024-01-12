@@ -49,7 +49,10 @@ class ASH_EXPORT NotificationListView
 
   // Initializes the view with existing notifications. Should be called right
   // after ctor.
+  // Used when `NotificationCenterController` is disabled.
   void Init();
+  // Used when `NotificationCenterController` is enabled.
+  void Init(const std::vector<message_center::Notification*>& notifications);
 
   // Starts Clear All animation and removes all notifications. Notifications are
   // removed from MessageCenter at the beginning of the animation.

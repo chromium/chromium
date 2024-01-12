@@ -4,12 +4,17 @@
 
 #include "components/allocation_recorder/crash_handler/payload.h"
 
+#include "base/allocator/dispatcher/notification_data.h"
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/debug/allocation_trace.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::allocator::dispatcher::AllocationNotificationData;
+using base::allocator::dispatcher::AllocationSubsystem;
+using base::allocator::dispatcher::FreeNotificationData;
 using base::debug::tracer::AllocationTraceRecorder;
 using base::debug::tracer::AllocationTraceRecorderStatistics;
 using base::debug::tracer::OperationRecord;
@@ -23,12 +28,13 @@ void CreateFakeAllocationData(AllocationTraceRecorder& recorder,
   for (uint64_t entry_counter = 0; entry_counter < number_of_entries;
        ++entry_counter) {
     if (entry_counter & 0x1) {
-      recorder.OnFree(reinterpret_cast<const void*>(entry_counter));
+      recorder.OnFree(
+          FreeNotificationData(reinterpret_cast<void*>(entry_counter),
+                               AllocationSubsystem::kPartitionAllocator));
     } else {
       recorder.OnAllocation(
-          &recorder, entry_counter,
-          base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator,
-          nullptr);
+          AllocationNotificationData(&recorder, entry_counter, nullptr,
+                                     AllocationSubsystem::kPartitionAllocator));
     }
   }
 }

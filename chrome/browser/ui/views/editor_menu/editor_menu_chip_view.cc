@@ -42,7 +42,7 @@ EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
 
 EditorMenuChipView::~EditorMenuChipView() = default;
 
-BEGIN_METADATA(EditorMenuChipView, views::MdTextButton)
+BEGIN_METADATA(EditorMenuChipView)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

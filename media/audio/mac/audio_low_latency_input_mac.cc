@@ -23,11 +23,13 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/apple/audio_manager_apple.h"
-#include "media/audio/mac/core_audio_util_mac.h"
 #include "media/audio/mac/scoped_audio_unit.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/data_buffer.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "media/audio/mac/core_audio_util_mac.h"
 
 namespace {
 extern "C" {
@@ -45,8 +47,8 @@ void UndoDucking(AudioDeviceID output_device_id) {
     AudioDeviceDuck(output_device_id, 1.0, nullptr, 0.5);
   }
 }
-
 }  // namespace
+#endif
 
 namespace media {
 
@@ -124,6 +126,7 @@ AUAudioInputStream::AUAudioInputStream(
       sink_(nullptr),
       audio_unit_(0),
       input_device_id_(audio_device_id),
+      hardware_latency_(base::Seconds(0)),
       fifo_(input_params.channels(),
             input_params.frames_per_buffer(),
             kNumberOfBlocksBufferInFifo),
@@ -146,13 +149,14 @@ AUAudioInputStream::AUAudioInputStream(
            << input_params.AsHumanReadableString()
            << " use_voice_processing_: " << use_voice_processing_;
 
+#if BUILDFLAG(IS_MAC)
   if (use_voice_processing_) {
     DCHECK(input_params.channels() == 1 || input_params.channels() == 2);
     const bool got_default_device =
         AudioManagerMac::GetDefaultOutputDevice(&output_device_id_for_aec_);
     DCHECK(got_default_device);
   }
-
+#endif
   const SampleFormat kSampleFormat = kSampleFormatS16;
 
   // Set up the desired (output) format specified by the client.
@@ -205,11 +209,13 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 
   // Verify that we have a valid device. Send appropriate error code to
   // HandleError() to ensure that the error type is added to UMA stats.
+#if BUILDFLAG(IS_MAC)
   if (input_device_id_ == kAudioObjectUnknown) {
     LOG(ERROR) << "Device ID is unknown";
     HandleError(kAudioUnitErr_InvalidElement);
     return OpenOutcome::kFailed;
   }
+#endif
 
   // The requested sample-rate must match the hardware sample-rate.
   const int sample_rate =
@@ -225,10 +231,15 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
   if (!success)
     return OpenOutcome::kFailed;
 
-  // The hardware latency is fixed and will not change during the call.
+    // The hardware latency is fixed and will not change during the call.
+    // TODO(crbug/1413450): Currently, we set the latency as 0 for iOS. Please
+    // incorporate a platform-specific implementation for iOS to accurately
+    // obtain hardware latency values.
+#if BUILDFLAG(IS_MAC)
   hardware_latency_ = core_audio_mac::GetHardwareLatency(
       audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
       format_.mSampleRate);
+#endif
 
   return OpenOutcome::kSuccess;
 }
@@ -244,7 +255,11 @@ bool AUAudioInputStream::OpenAUHAL() {
   // input from the device as well as output to the device. Bus 0 is used for
   // the output side, bus 1 is used to get audio input from the device.
   AudioComponentDescription desc = {kAudioUnitType_Output,
+#if BUILDFLAG(IS_MAC)
                                     kAudioUnitSubType_HALOutput,
+#else
+                                    kAudioUnitSubType_RemoteIO,  // for iOS
+#endif
                                     kAudioUnitManufacturer_Apple, 0, 0};
 
   // Find a component that meets the description in |desc|.
@@ -262,18 +277,20 @@ bool AUAudioInputStream::OpenAUHAL() {
     return false;
   }
 
-  // Initialize the AUHAL before making any changes or using it. The audio
-  // unit will be initialized once more as last operation in this method but
-  // that is intentional. This approach is based on a comment in the
-  // CAPlayThrough example from Apple, which states that "AUHAL needs to be
-  // initialized *before* anything is done to it".
-  // TODO(henrika): remove this extra call if we are unable to see any
-  // positive effects of it in our UMA stats.
+#if BUILDFLAG(IS_MAC)
+  //  Initialize the AUHAL before making any changes or using it. The audio
+  //  unit will be initialized once more as last operation in this method but
+  //  that is intentional. This approach is based on a comment in the
+  //  CAPlayThrough example from Apple, which states that "AUHAL needs to be
+  //  initialized *before* anything is done to it".
+  //  TODO(henrika): remove this extra call if we are unable to see any
+  //  positive effects of it in our UMA stats.
   result = AudioUnitInitialize(audio_unit_);
   if (result != noErr) {
     HandleError(result);
     return false;
   }
+#endif
 
   // Enable IO on the input scope of the Audio Unit.
   // Note that, these changes must be done *before* setting the AUHAL's
@@ -313,6 +330,7 @@ bool AUAudioInputStream::OpenAUHAL() {
     }
   }
 
+#if BUILDFLAG(IS_MAC)
   // Next, set the audio device to be the Audio Unit's current device.
   // Note that, devices can only be set to the AUHAL after enabling IO.
   result =
@@ -324,6 +342,7 @@ bool AUAudioInputStream::OpenAUHAL() {
     HandleError(result);
     return false;
   }
+#endif
 
   // Register the input procedure for the AUHAL. This procedure will be called
   // when the AUHAL has received new data from the input device.
@@ -345,8 +364,13 @@ bool AUAudioInputStream::OpenAUHAL() {
   // in the AUHAL, only *simple* conversions, e.g., 32-bit float to 16-bit
   // signed integer format.
   AudioStreamBasicDescription input_device_format = {0};
-  AudioManagerMac::GetInputDeviceStreamFormat(audio_unit_,
-                                              &input_device_format);
+  result =
+      manager_->GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
+  if (result != noErr) {
+    HandleError(result);
+    return false;
+  }
+
   DVLOG(1) << "Input device stream format: " << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR) << "Input device's sample rate does not match the client's "
@@ -372,6 +396,7 @@ bool AUAudioInputStream::OpenAUHAL() {
   // size will be set instead. Check the current setting and log a warning for a
   // non perfect match. Any such mismatch will be compensated for in
   // OnDataIsAvailable().
+#if BUILDFLAG(IS_MAC)
   UInt32 buffer_frame_size = 0;
   UInt32 property_size = sizeof(buffer_frame_size);
   result = AudioUnitGetProperty(
@@ -380,7 +405,7 @@ bool AUAudioInputStream::OpenAUHAL() {
   LOG_IF(WARNING, buffer_frame_size !=
                       static_cast<UInt32>(input_params_.frames_per_buffer()))
       << "AUHAL is using best match of IO buffer size: " << buffer_frame_size;
-
+#endif
   // Channel mapping should be supported but add a warning just in case.
   // TODO(henrika): perhaps add to UMA stat to track if this can happen.
   DLOG_IF(WARNING,
@@ -489,8 +514,13 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   // in the AUHAL, only *simple* conversions, e.g., 32-bit float to 16-bit
   // signed integer format.
   AudioStreamBasicDescription input_device_format = {0};
-  AudioManagerMac::GetInputDeviceStreamFormat(audio_unit_,
-                                              &input_device_format);
+  result =
+      manager_->GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
+  if (result != noErr) {
+    HandleError(result);
+    return false;
+  }
+
   DVLOG(1) << "Input device stream format: " << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR)
@@ -514,6 +544,7 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   // size will be set instead. Check the current setting and log a warning for a
   // non perfect match. Any such mismatch will be compensated for in
   // OnDataIsAvailable().
+#if BUILDFLAG(IS_MAC)
   UInt32 buffer_frame_size = 0;
   UInt32 property_size = sizeof(buffer_frame_size);
   result = AudioUnitGetProperty(
@@ -562,7 +593,7 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   }
 
   UndoDucking(output_device_id_for_aec_);
-
+#endif
   return true;
 }
 
@@ -575,6 +606,7 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   if (IsRunning())
     return;
 
+#if BUILDFLAG(IS_MAC)
   // Check if we should defer Start() for http://crbug.com/160920.
   if (manager_->ShouldDeferStreamStart()) {
     LOG(WARNING) << "Start of input audio is deferred";
@@ -587,6 +619,7 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
         base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
     return;
   }
+#endif
 
   sink_ = callback;
   last_success_time_ = base::TimeTicks::Now();
@@ -702,6 +735,7 @@ bool AUAudioInputStream::IsMuted() {
 
 void AUAudioInputStream::SetOutputDeviceForAec(
     const std::string& output_device_id) {
+#if BUILDFLAG(IS_MAC)
   if (!use_voice_processing_)
     return;
 
@@ -742,6 +776,7 @@ void AUAudioInputStream::SetOutputDeviceForAec(
     if (audio_unit_)
       ReinitializeVoiceProcessingAudioUnit();
   }
+#endif
 }
 
 void AUAudioInputStream::ReinitializeVoiceProcessingAudioUnit() {

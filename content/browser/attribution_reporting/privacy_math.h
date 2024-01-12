@@ -9,12 +9,12 @@
 
 #include <compare>
 #include <map>
+#include <optional>
 #include <tuple>
 #include <vector>
 
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class MaxEventLevelReports;
@@ -36,10 +36,10 @@ struct FakeEventLevelReport {
 };
 
 // Corresponds to `StoredSource::AttributionLogic` as follows:
-// `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
+// `std::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
 // empty vector -> `StoredSource::AttributionLogic::kNever`
 // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
-using RandomizedResponse = absl::optional<std::vector<FakeEventLevelReport>>;
+using RandomizedResponse = std::optional<std::vector<FakeEventLevelReport>>;
 
 class CONTENT_EXPORT RandomizedResponseData {
  public:
@@ -84,7 +84,7 @@ CONTENT_EXPORT absl::uint128 GetNumStates(
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that output space.
 //
-// Returns `absl::nullopt` if the output should be determined truthfully.
+// Returns `std::nullopt` if the output should be determined truthfully.
 // Otherwise will return a vector of fake reports.
 CONTENT_EXPORT RandomizedResponseData
 DoRandomizedResponse(const attribution_reporting::TriggerSpecs& specs,

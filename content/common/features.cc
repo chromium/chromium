@@ -24,26 +24,6 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The following two features, when enabled, result in the browser process only
-// asking the renderer process to run beforeunload handlers if it knows such
-// handlers are registered. The two slightly differ in what they do and how
-// they behave:
-// . `kAvoidUnnecessaryBeforeUnloadCheckPostTask` in this case content continues
-//   to report a beforeunload handler is present (even though it isn't). When
-//   asked to dispatch the beforeunload handler, a post task is used (rather
-//   than going to the renderer).
-// . `kAvoidUnnecessaryBeforeUnloadCheckSync` in this case content does not
-//   report a beforeunload handler is present. A ramification of this is
-//   navigations that would normally check beforeunload handlers before
-//   continuing will not, and navigation will synchronously continue.
-// Only one should be used (if both are set, the second takes precedence). The
-// second is unsafe for Android WebView (and thus entirely disabled via
-// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()),
-// because the embedder may trigger reentrancy, which cannot be avoided.
-BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
-             "AvoidUnnecessaryBeforeUnloadCheckSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.
@@ -164,6 +144,14 @@ BASE_FEATURE(kEmbeddingRequiresOptIn,
 BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
              "EnableBackForwardCacheForScreenReader",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable back/forward cache when a page which has subframe(s) with ongoing
+// navigation(s) is navigated. Currently, this is only for navigations without
+// URLLoaders. This flag should be removed once the https://crbug.com/1511153 is
+// resolved.
+BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
+             "EnableBackForwardCacheForOngoingSubframeNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables error reporting for JS errors inside DevTools frontend host
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -563,12 +551,6 @@ BASE_FEATURE(kWebAssemblyDynamicTiering,
              "WebAssemblyDynamicTiering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If WebGL Image Chromium is allowed, this feature controls whether it is
-// enabled.
-BASE_FEATURE(kWebGLImageChromium,
-             "WebGLImageChromium",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use GpuMemoryBuffer backed VideoFrames in media streams.
 BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
              "WebRTC-UseGpuMemoryBufferVideoFrames",
@@ -579,6 +561,11 @@ BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy,
              "WebOTPAssertionFeaturePolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Flag guard for fix for crbug.com/1504324.
+BASE_FEATURE(kWindowOpenFileSelectFix,
+             "WindowOpenFileSelectFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Please keep features in alphabetical order.
 

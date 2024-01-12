@@ -66,6 +66,8 @@ static_library("test_support") {
   testonly = true
   sources = [
     "autofill_agent_test_api.h",
+    "autofill_renderer_test.cc",
+    "autofill_renderer_test.h",
     "focus_test_utils.cc",
     "focus_test_utils.h",
     "form_cache_test_api.h",
@@ -79,6 +81,8 @@ static_library("test_support") {
   public_deps = [
     ":renderer",
     "//base",
+    "//components/autofill/content/common/mojom",
+    "//content/test:test_support",
   ]
   deps = [
     "//components/autofill/content/renderer",

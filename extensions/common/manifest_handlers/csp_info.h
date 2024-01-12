@@ -6,8 +6,8 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_CSP_INFO_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -83,7 +83,7 @@ class CSPHandler : public ManifestHandler {
   // pages.
   bool ParseExtensionPagesCSP(Extension* extension,
                               std::u16string* error,
-                              base::StringPiece manifest_key,
+                              std::string_view manifest_key,
                               const base::Value* content_security_policy);
 
   // Parses the content security policy specified in the manifest for sandboxed
@@ -92,13 +92,13 @@ class CSPHandler : public ManifestHandler {
   // sources in the sandbox CSP.
   bool ParseSandboxCSP(Extension* extension,
                        std::u16string* error,
-                       base::StringPiece manifest_key,
+                       std::string_view manifest_key,
                        const base::Value* sandbox_csp,
                        bool allow_remote_sources);
 
   // Helper to set the extension pages content security policy manifest data.
   bool SetExtensionPagesCSP(Extension* extension,
-                            base::StringPiece manifest_key,
+                            std::string_view manifest_key,
                             std::string content_security_policy);
 
   // Helper to set the sandbox content security policy manifest data.

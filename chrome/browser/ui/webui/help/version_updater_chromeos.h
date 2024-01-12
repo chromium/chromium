@@ -69,7 +69,7 @@ class VersionUpdaterCros : public VersionUpdater,
                           std::optional<bool> enabled);
 
   // BrowserContext in which the class was instantiated.
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Callback used to communicate update status to the client.
   StatusCallback callback_;

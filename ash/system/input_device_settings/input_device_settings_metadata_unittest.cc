@@ -96,4 +96,35 @@ TEST_F(MetadataTest, GetDeviceType) {
   ASSERT_EQ(GetDeviceType(kSampleUnknown), DeviceType::kUnknown);
 }
 
+TEST_F(MetadataTest, GetButtonRemappingListForConfig) {
+  const ui::InputDevice kDefaultMouse(0, ui::INPUT_DEVICE_USB, "kDefaultMouse",
+                                      /*phys=*/"",
+                                      /*sys_path=*/base::FilePath(),
+                                      /*vendor=*/0xffff,
+                                      /*product=*/0xffff,
+                                      /*version=*/0x0001);
+  const ui::InputDevice kFiveKeyMouse(1, ui::INPUT_DEVICE_USB, "kFiveKeyMouse",
+                                      /*phys=*/"",
+                                      /*sys_path=*/base::FilePath(),
+                                      /*vendor=*/0x3f0,
+                                      /*product=*/0x804a,
+                                      /*version=*/0x0002);
+  const ui::InputDevice kLogitechSixKeyMouse(2, ui::INPUT_DEVICE_USB,
+                                             "kLogitechSixKeyMouse",
+                                             /*phys=*/"",
+                                             /*sys_path=*/base::FilePath(),
+                                             /*vendor=*/0xffff,
+                                             /*product=*/0xfffe,
+                                             /*version=*/0x0003);
+  EXPECT_EQ(0u, GetButtonRemappingListForConfig(
+                    GetMouseMetadata(kDefaultMouse)->mouse_button_config)
+                    .size());
+  EXPECT_EQ(3u, GetButtonRemappingListForConfig(
+                    GetMouseMetadata(kFiveKeyMouse)->mouse_button_config)
+                    .size());
+  EXPECT_EQ(4u, GetButtonRemappingListForConfig(
+                    GetMouseMetadata(kLogitechSixKeyMouse)->mouse_button_config)
+                    .size());
+}
+
 }  // namespace ash

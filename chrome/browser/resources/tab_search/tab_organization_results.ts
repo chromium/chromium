@@ -29,6 +29,7 @@ const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
 export interface TabOrganizationResultsElement {
   $: {
     feedbackButtons: CrFeedbackButtonsElement,
+    header: HTMLElement,
     input: CrInputElement,
     learnMore: HTMLElement,
     scrollable: HTMLElement,
@@ -89,6 +90,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return getTemplate();
   }
 
+  announceHeader() {
+    this.$.header.textContent = '';
+    this.$.header.textContent = this.getTitle_();
+  }
+
   private computeTabDatas_() {
     return this.tabs.map(
         tab => new TabData(
@@ -99,6 +105,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
     if (this.lastFocusedIndex_ > this.tabs.length - 1) {
       this.lastFocusedIndex_ = 0;
     }
+  }
+
+  private getTitle_(): string {
+    return loadTimeData.getString('successTitle');
   }
 
   private getRefreshButtonText_(): string {
@@ -117,6 +127,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
         MINIMUM_SCROLLABLE_MAX_HEIGHT,
         (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
+  }
+
+  private getInputAriaLabel_() {
+    return loadTimeData.getStringF('inputAriaLabel', this.name);
   }
 
   private onInputFocus_() {

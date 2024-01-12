@@ -60,14 +60,12 @@ bool ContentSettingsAgentImpl::Delegate::IsSchemeAllowlisted(
   return false;
 }
 
-absl::optional<bool>
-ContentSettingsAgentImpl::Delegate::AllowReadFromClipboard() {
-  return absl::nullopt;
+bool ContentSettingsAgentImpl::Delegate::AllowReadFromClipboard() {
+  return false;
 }
 
-absl::optional<bool>
-ContentSettingsAgentImpl::Delegate::AllowWriteToClipboard() {
-  return absl::nullopt;
+bool ContentSettingsAgentImpl::Delegate::AllowWriteToClipboard() {
+  return false;
 }
 
 absl::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
@@ -340,12 +338,12 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
   return allow || IsAllowlistedForContentSettings();
 }
 
-bool ContentSettingsAgentImpl::AllowReadFromClipboard(bool default_value) {
-  return delegate_->AllowReadFromClipboard().value_or(default_value);
+bool ContentSettingsAgentImpl::AllowReadFromClipboard() {
+  return delegate_->AllowReadFromClipboard();
 }
 
-bool ContentSettingsAgentImpl::AllowWriteToClipboard(bool default_value) {
-  return delegate_->AllowWriteToClipboard().value_or(default_value);
+bool ContentSettingsAgentImpl::AllowWriteToClipboard() {
+  return delegate_->AllowWriteToClipboard();
 }
 
 bool ContentSettingsAgentImpl::AllowMutationEvents(bool default_value) {

@@ -17,6 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/lock.h"
@@ -32,45 +34,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
-
-namespace {
-
-base::Value::Dict CreateCommandMetadata(const WebAppCommand& command) {
-  base::Value::Dict dict;
-  dict.Set("name", command.name());
-  dict.Set("id", command.id());
-  if (command.scheduled_location().has_value()) {
-    dict.Set("scheduled_location",
-             command.scheduled_location().value().ToString());
-  }
-  return dict;
-}
-
-base::Value::Dict CreateLogValue(const WebAppCommand& command,
-                                 absl::optional<CommandResult> result) {
-  base::Value::Dict dict = CreateCommandMetadata(command);
-  base::Value debug_value = command.ToDebugValue();
-  bool is_empty_dict = debug_value.is_dict() && debug_value.GetDict().empty();
-  if (!debug_value.is_none() && !is_empty_dict) {
-    dict.Set("value", std::move(debug_value));
-  }
-  if (result) {
-    switch (result.value()) {
-      case CommandResult::kSuccess:
-        dict.Set("result", "kSuccess");
-        break;
-      case CommandResult::kFailure:
-        dict.Set("result", "kFailure");
-        break;
-      case CommandResult::kShutdown:
-        dict.Set("result", "kShutdown");
-        break;
-    }
-  }
-  return dict;
-}
-
-}  // namespace
 
 WebAppCommandManager::WebAppCommandManager(Profile* profile)
     : profile_(profile) {}
@@ -89,75 +52,77 @@ void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void WebAppCommandManager::Start() {
   started_ = true;
-  std::vector<std::unique_ptr<WebAppCommand>> to_schedule;
+  std::vector<std::pair<std::unique_ptr<internal::CommandBase>, base::Location>>
+      to_schedule;
   std::swap(commands_waiting_for_start_, to_schedule);
 
-  for (auto& command : to_schedule) {
-    ScheduleCommand(std::move(command));
+  for (auto& [command_ptr, location] : to_schedule) {
+    ScheduleCommand(std::move(command_ptr), location);
   }
 }
 
 void WebAppCommandManager::ScheduleCommand(
-    std::unique_ptr<WebAppCommand> command,
+    std::unique_ptr<internal::CommandBase> command,
     const base::Location& location) {
-  DCHECK(command);
-  command->SetScheduledLocation(location);
-  DVLOG(2) << "Scheduling command: " << CreateCommandMetadata(*command);
+  CHECK(command);
+
+  command->SetScheduledLocation(base::PassKey<WebAppCommandManager>(),
+                                location);
+  command->SetCommandManager(base::PassKey<WebAppCommandManager>(), this);
+  internal::CommandBase::Id command_id = command->id();
+  CHECK(!base::Contains(commands_, command_id));
+
   if (!started_) {
-    commands_waiting_for_start_.push_back(std::move(command));
+    commands_waiting_for_start_.emplace_back(std::move(command), location);
     return;
   }
+
+  DVLOG(2) << "Scheduling command: " << command->GetDebugValue();
+
   if (is_in_shutdown_) {
-    AddValueToLog(
-        base::Value(CreateLogValue(*command, CommandResult::kShutdown)));
+    base::OnceClosure callback = command->TakeCallbackWithShutdownArgs(
+        base::PassKey<WebAppCommandManager>());
+    CHECK(!callback.is_null());
+    // Add the log value taking the callback because that will log the callback
+    // args.
+    AddCommandToLog(*command);
+    command->OnShutdown(base::PassKey<WebAppCommandManager>());
+    std::move(callback).Run();
     return;
   }
-  DCHECK(!base::Contains(commands_, command->id()));
-  auto command_id = command->id();
-  auto command_it = commands_.try_emplace(command_id, std::move(command)).first;
-  command_it->second->RequestLock(
-      this, &lock_manager_,
-      base::BindOnce(&WebAppCommandManager::OnLockAcquired,
-                     weak_ptr_factory_.GetWeakPtr(), command_id),
+
+  base::WeakPtr<internal::CommandBase> command_ptr =
+      command->GetBaseCommandWeakPtr();
+  commands_.try_emplace(command_id, std::move(command));
+
+  // Note: `StartCommand` is guaranteed to be called async.
+  command_ptr->RequestLock(
+      base::PassKey<WebAppCommandManager>(), &lock_manager_,
+      base::BindOnce(&WebAppCommandManager::StartCommand,
+                     weak_ptr_factory_reset_on_shutdown_.GetWeakPtr(),
+                     command_ptr),
       location);
 }
 
-void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id,
-                                          base::OnceClosure start_command) {
-  if (is_in_shutdown_)
-    return;
-  auto command_it = commands_.find(command_id);
-  DCHECK(command_it != commands_.end());
-  // Start is called in a new task to avoid re-entry issues with started tasks
-  // calling back into Enqueue/Destroy. This can especially be an issue if
-  // this task is being run in response to a call to
-  // NotifySyncSourceRemoved.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&WebAppCommandManager::StartCommand,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                command_it->second->AsWeakPtr(),
-                                std::move(start_command)));
-}
-
-void WebAppCommandManager::StartCommand(base::WeakPtr<WebAppCommand> command,
-                                        base::OnceClosure start_command) {
-  if (is_in_shutdown_) {
-    return;
-  }
-
-  // Commands can destroy themselves before they are started, see
-  // crbug.com/1495279 for more information.
-  // TODO(b/303115173): Do a more holistic fix here.
+void WebAppCommandManager::StartCommand(
+    base::WeakPtr<internal::CommandBase> command,
+    base::OnceClosure start_command) {
+  // Note: Lock acquisition is always async, so this function is never called
+  // synchronously.
   if (!command) {
+    // Commands can be destroyed via `CompleteAndSelfDestruct` or
+    // shutdown before being started.
     return;
   }
-#if DCHECK_IS_ON()
-  DCHECK(command);
-  auto command_it = commands_.find(command->id());
-  DCHECK(command_it != commands_.end());
-#endif
-  DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
-  if (command->lock_description().IncludesSharedWebContents()) {
+
+  // This is impossible because this function is always called async & bound to
+  // `weak_ptr_factory_reset_on_shutdown_`, and that is invalidated in
+  // `OnShutdown()` when `is_in_shutdown_` is set to true.
+  CHECK(!is_in_shutdown_);
+
+  DVLOG(2) << "Starting command: " << command->GetDebugValue();
+  if (command->ShouldPrepareWebContentsBeforeStart(
+          base::PassKey<WebAppCommandManager>())) {
     CHECK(shared_web_contents_);
     url_loader_->PrepareForLoad(shared_web_contents_.get(),
                                 std::move(start_command));
@@ -172,27 +137,27 @@ void WebAppCommandManager::Shutdown() {
     return;
   }
   is_in_shutdown_ = true;
+  weak_ptr_factory_reset_on_shutdown_.InvalidateWeakPtrs();
   AddValueToLog(base::Value("Shutdown has begun"));
 
-  // Create a copy of commands to call `OnShutdown` because commands can call
-  // `CallSignalCompletionAndSelfDestruct` during `OnShutdown`, which removes
-  // the command from the `commands_` map.
-  std::vector<base::WeakPtr<WebAppCommand>> commands_to_shutdown;
+  std::vector<base::OnceClosure> callbacks;
   for (const auto& [id, command] : commands_) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(command->command_sequence_checker_);
-    if (command->IsStarted()) {
-      commands_to_shutdown.push_back(command->AsWeakPtr());
-    }
-  }
-  for (const auto& command_ptr : commands_to_shutdown) {
-    if (!command_ptr) {
-      continue;
-    }
-    command_ptr->OnShutdown();
+    base::OnceClosure callback = command->TakeCallbackWithShutdownArgs(
+        base::PassKey<WebAppCommandManager>());
+    CHECK(!callback.is_null());
+    // Add the log value taking the callback because that will log the callback
+    // args.
+    AddCommandToLog(*command);
+    callbacks.push_back(std::move(callback));
   }
   commands_.clear();
-
   shared_web_contents_.reset();
+
+  // Call all callbacks AFTER the commands are destroyed, to prevent any sort of
+  // re-entry.
+  for (base::OnceClosure& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 base::Value WebAppCommandManager::ToDebugValue() {
@@ -202,8 +167,11 @@ base::Value WebAppCommandManager::ToDebugValue() {
   }
 
   base::Value::List queued;
+  for (const auto& [command, location] : commands_waiting_for_start_) {
+    queued.Append(command->GetDebugValue().Clone());
+  }
   for (const auto& [id, command] : commands_) {
-    queued.Append(::web_app::CreateLogValue(*command, absl::nullopt));
+    queued.Append(command->GetDebugValue().Clone());
   }
 
   base::Value::Dict state;
@@ -224,7 +192,8 @@ void WebAppCommandManager::LogToInstallManager(base::Value::Dict log) {
 bool WebAppCommandManager::IsInstallingForWebContents(
     const content::WebContents* web_contents) const {
   for (const auto& [id, command] : commands_) {
-    if (command->GetInstallingWebContents() == web_contents) {
+    if (command->GetInstallingWebContents(
+            base::PassKey<WebAppCommandManager>()) == web_contents) {
       return true;
     }
   }
@@ -232,14 +201,25 @@ bool WebAppCommandManager::IsInstallingForWebContents(
 }
 
 std::size_t WebAppCommandManager::GetCommandCountForTesting() {
-  return commands_.size();
+  return commands_.size() + commands_waiting_for_start_.size();
+}
+
+int WebAppCommandManager::GetStartedCommandCountForTesting() {
+  std::size_t num = 0;
+  for (const auto& [id, command] : commands_) {
+    if (command->IsStarted()) {
+      ++num;
+    }
+  }
+  return num;
 }
 
 std::size_t
 WebAppCommandManager::GetCommandsInstallingForWebContentsForTesting() {
   std::size_t num = 0;
   for (const auto& [id, command] : commands_) {
-    if (command->GetInstallingWebContents() != nullptr) {
+    if (command->GetInstallingWebContents(
+            base::PassKey<WebAppCommandManager>()) != nullptr) {
       ++num;
     }
   }
@@ -247,38 +227,63 @@ WebAppCommandManager::GetCommandsInstallingForWebContentsForTesting() {
 }
 
 void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
-  if (commands_.empty())
+  if (commands_.empty()) {
     return;
+  }
 
-  if (!run_loop_for_testing_)
+  if (!run_loop_for_testing_) {
     run_loop_for_testing_ = std::make_unique<base::RunLoop>();
+  }
   run_loop_for_testing_->Run();
   run_loop_for_testing_.reset();
 }
 
 void WebAppCommandManager::OnCommandComplete(
-    WebAppCommand* running_command,
+    base::PassKey<internal::CommandBase>,
+    internal::CommandBase* command,
     CommandResult result,
     base::OnceClosure completion_callback) {
-  DCHECK(running_command);
-  AddValueToLog(base::Value(CreateLogValue(*running_command, result)));
+  // Note: Calling this function does NOT mean that the command has been
+  // started, as commands can call `CompleteAndSelfDestruct` at any time
+  // after being scheduled.
+  CHECK(command);
+  AddCommandToLog(*command);
 
-  auto command_it = commands_.find(running_command->id());
-  DCHECK(command_it != commands_.end());
+  auto command_it = commands_.find(command->id());
+  // Commands are immediately added to the map when scheduled, and never have a
+  // lifetime in this class without being owned by the map.
+  CHECK(command_it != commands_.end());
   commands_.erase(command_it);
 
-  if (shared_web_contents_) {
-    bool lock_free = lock_manager_.IsSharedWebContentsLockFree();
-    if (lock_free) {
-      AddValueToLog(base::Value("Destroying the shared web contents."));
-      shared_web_contents_.reset();
-    }
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebAppCommandManager::ClearSharedWebContentsIfUnused,
+                     weak_ptr_factory_reset_on_shutdown_.GetWeakPtr()));
 
   std::move(completion_callback).Run();
 
-  if (commands_.empty() && run_loop_for_testing_)
+  if (commands_.empty() && run_loop_for_testing_) {
     run_loop_for_testing_->Quit();
+  }
+}
+
+void WebAppCommandManager::ClearSharedWebContentsIfUnused() {
+  if (!shared_web_contents_) {
+    return;
+  }
+
+  bool lock_free = lock_manager_.IsSharedWebContentsLockFree();
+  if (!lock_free) {
+    return;
+  }
+
+  AddValueToLog(base::Value("Destroying the shared web contents."));
+  shared_web_contents_.reset();
+}
+
+void WebAppCommandManager::AddCommandToLog(
+    const internal::CommandBase& command) {
+  AddValueToLog(base::Value(command.GetDebugValue().Clone()));
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {
@@ -292,8 +297,9 @@ void WebAppCommandManager::AddValueToLog(base::Value value) {
       base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
                                                                      : 20;
   command_debug_log_.push_front(std::move(value));
-  if (command_debug_log_.size() > kMaxLogLength)
+  if (command_debug_log_.size() > kMaxLogLength) {
     command_debug_log_.resize(kMaxLogLength);
+  }
 }
 
 content::WebContents* WebAppCommandManager::EnsureWebContentsCreated(

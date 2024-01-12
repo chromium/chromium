@@ -1,0 +1,118 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
+
+#include <stdint.h>
+
+#include <utility>
+
+#include "base/check.h"
+#include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
+#include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+
+namespace content {
+
+namespace {
+
+using attribution_reporting::SuitableOrigin;
+
+}  // namespace
+
+// static
+absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
+    GlobalRenderFrameHostId initiator_frame_id) {
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement)) {
+    return absl::nullopt;
+  }
+
+  auto* initiator_frame = RenderFrameHostImpl::FromID(initiator_frame_id);
+  if (!initiator_frame) {
+    return absl::nullopt;
+  }
+
+  if (!initiator_frame->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
+    return absl::nullopt;
+  }
+  RenderFrameHostImpl* initiator_root_frame =
+      initiator_frame->GetOutermostMainFrame();
+  CHECK(initiator_root_frame);
+
+  // We need a suitable origin here because we need to be able to eventually
+  // store it as either the source or destination origin. Using
+  // `is_web_secure_context` only would allow opaque origins to pass through,
+  // but they cannot be handled by the storage layer.
+  absl::optional<attribution_reporting::SuitableOrigin>
+      initiator_root_frame_origin = SuitableOrigin::Create(
+          initiator_root_frame->GetLastCommittedOrigin());
+  if (!initiator_root_frame_origin.has_value()) {
+    return absl::nullopt;
+  }
+  // If the `initiator_frame` is a subframe, it's origin's security isn't
+  // covered by the SuitableOrigin check above, we therefore validate that it's
+  // origin is secure using `is_web_secure_context`.
+  if (initiator_frame != initiator_root_frame &&
+      !initiator_frame->policy_container_host()
+           ->policies()
+           .is_web_secure_context) {
+    return absl::nullopt;
+  }
+
+  auto* web_contents = WebContents::FromRenderFrameHost(initiator_frame);
+  if (!web_contents) {
+    return absl::nullopt;
+  }
+  auto* manager = AttributionManager::FromWebContents(web_contents);
+  CHECK(manager);
+
+  AttributionDataHostManager* data_host_manager = manager->GetDataHostManager();
+  CHECK(data_host_manager);
+
+  return AttributionSuitableContext(
+      /*context_origin=*/std::move(initiator_root_frame_origin.value()),
+      initiator_frame->IsNestedWithinFencedFrame(),
+      initiator_root_frame->GetGlobalId(), initiator_frame->navigation_id(),
+      data_host_manager);
+}
+
+AttributionSuitableContext::AttributionSuitableContext(
+    attribution_reporting::SuitableOrigin context_origin,
+    bool is_nested_within_fenced_frame,
+    GlobalRenderFrameHostId root_render_frame_id,
+    int64_t last_navigation_id,
+    AttributionDataHostManager* attribution_data_host_manager)
+    : context_origin_(std::move(context_origin)),
+      is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
+      root_render_frame_id_(root_render_frame_id),
+      last_navigation_id_(last_navigation_id),
+      attribution_data_host_manager_(
+          attribution_data_host_manager->AsWeakPtr()) {}
+
+AttributionSuitableContext::AttributionSuitableContext(
+    const AttributionSuitableContext&) = default;
+
+AttributionSuitableContext& AttributionSuitableContext::operator=(
+    const AttributionSuitableContext&) = default;
+
+AttributionSuitableContext::AttributionSuitableContext(
+    AttributionSuitableContext&&) = default;
+
+AttributionSuitableContext& AttributionSuitableContext::operator=(
+    AttributionSuitableContext&&) = default;
+
+AttributionSuitableContext::~AttributionSuitableContext() = default;
+
+}  // namespace content

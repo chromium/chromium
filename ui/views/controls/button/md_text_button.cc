@@ -41,11 +41,16 @@
 
 namespace views {
 
-MdTextButton::MdTextButton(PressedCallback callback,
-                           const std::u16string& text,
-                           int button_context,
-                           bool use_text_color_for_icon)
-    : LabelButton(std::move(callback), text, button_context),
+MdTextButton::MdTextButton(
+    PressedCallback callback,
+    const std::u16string& text,
+    int button_context,
+    bool use_text_color_for_icon,
+    std::unique_ptr<LabelButtonImageContainer> image_container)
+    : LabelButton(std::move(callback),
+                  text,
+                  button_context,
+                  std::move(image_container)),
       use_text_color_for_icon_(use_text_color_for_icon) {
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
@@ -85,19 +90,6 @@ MdTextButton::MdTextButton(PressedCallback callback,
 }
 
 MdTextButton::~MdTextButton() = default;
-
-void MdTextButton::SetProminent(bool is_prominent) {
-  if (is_prominent == (style_ == ui::ButtonStyle::kProminent)) {
-    return;
-  }
-  SetStyle(is_prominent ? ui::ButtonStyle::kProminent
-                        : ui::ButtonStyle::kDefault);
-  UpdateColors();
-}
-
-bool MdTextButton::GetProminent() const {
-  return style_ == ui::ButtonStyle::kProminent;
-}
 
 void MdTextButton::SetStyle(ui::ButtonStyle button_style) {
   if (style_ == button_style) {
@@ -203,7 +195,10 @@ void MdTextButton::SetText(const std::u16string& text) {
 }
 
 PropertyEffects MdTextButton::UpdateStyleToIndicateDefaultStatus() {
-  SetProminent(style_ == ui::ButtonStyle::kProminent || GetIsDefault());
+  SetStyle(style_ == ui::ButtonStyle::kProminent || GetIsDefault()
+               ? ui::ButtonStyle::kProminent
+               : ui::ButtonStyle::kDefault);
+  UpdateColors();
   return kPropertyEffectsNone;
 }
 
@@ -369,7 +364,6 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(MdTextButton)
-ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)
 ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, CustomPadding)

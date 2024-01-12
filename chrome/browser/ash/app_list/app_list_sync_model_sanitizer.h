@@ -62,7 +62,7 @@ class AppListSyncModelSanitizer {
       const syncer::StringOrdinal& starting_ordinal,
       std::map<std::string, syncer::StringOrdinal>* resolved_positions);
 
-  const raw_ptr<AppListSyncableService, ExperimentalAsh> syncable_service_;
+  const raw_ptr<AppListSyncableService> syncable_service_;
 };
 
 }  // namespace app_list

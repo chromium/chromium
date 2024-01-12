@@ -138,8 +138,8 @@ class DBTester {
                                                  std::move(done_callback));
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> db_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<net::NSSCertDatabase> db_ = nullptr;
   // Indicates if the tester should expect to receive a database with
   // initialized system slot or not.
   bool will_have_system_slot_ = false;

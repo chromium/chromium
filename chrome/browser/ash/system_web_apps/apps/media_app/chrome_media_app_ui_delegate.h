@@ -56,7 +56,7 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
                         base::OnceCallback<void()> edit_in_photos_callback,
                         std::optional<storage::FileSystemURL> url);
 
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
 

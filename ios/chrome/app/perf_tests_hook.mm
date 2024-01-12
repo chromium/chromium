@@ -30,8 +30,12 @@ bool DisableDiscoverFeed() {
   return [[NSProcessInfo.processInfo.environment
       objectForKey:@"DISABLE_DISCOVER_FEED"] boolValue];
 }
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
   // Always disable FRE for perf tests.
+  return true;
+}
+bool DisableDefaultSearchEngineChoice() {
+  // Always disable search engine selection for perf tests.
   return true;
 }
 bool DisableGeolocation() {
@@ -79,6 +83,10 @@ void RunTestsIfPresent() {}
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No artificial delays for perf tests.
   return base::Seconds(0);
+}
+
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return nullptr;
 }
 
 }  // namespace tests_hook

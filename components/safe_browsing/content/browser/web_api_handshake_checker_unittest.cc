@@ -38,19 +38,10 @@ class FakeUrlCheckerDelegate : public UrlCheckerDelegate {
       const net::HttpRequestHeaders& headers,
       bool is_main_frame,
       bool has_user_gesture) override {
-    resource.callback.Run(/*proceed=*/false, /*showed_intersitial=*/false);
-  }
-
-  void CheckLookupMechanismExperimentEligibility(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
-
-  void CheckExperimentEligibilityAndStartBlockingPage(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
-    resource.callback.Run(/*proceed=*/false, /*showed_intersitial=*/false);
+    security_interstitials::UnsafeResource::UrlCheckResult result(
+        /*proceed=*/false, /*showed_interstitial=*/false,
+        /*has_post_commit_interstitial_skipped=*/false);
+    resource.callback.Run(result);
   }
 
   void StartObservingInteractionsForDelayedBlockingPageHelper(

@@ -19,8 +19,8 @@ namespace {
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
                        AddAcceleratorWithConflict) {
-  // TODO: Get the accelerators using ash/accelerators/accelerator_lookup.h
-  ui::Accelerator default_accel(ui::VKEY_C, ui::EF_COMMAND_DOWN);
+  ui::Accelerator default_accel =
+      GetDefaultAcceleratorForAction(AcceleratorAction::kToggleCalendar);
   ui::Accelerator new_accel(ui::VKEY_S,
                             ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 

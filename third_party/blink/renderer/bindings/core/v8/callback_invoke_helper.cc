@@ -136,9 +136,9 @@ template <class CallbackBase,
           CallbackReturnTypeIsPromise return_type_is_promise>
 bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     CallInternal(int argc, v8::Local<v8::Value>* argv) {
-  ExecutionContext* execution_context =
-      ExecutionContext::From(callback_->CallbackRelevantScriptState());
-  probe::InvokeCallback probe_scope(execution_context, class_like_name_,
+  ScriptState* script_state = callback_->CallbackRelevantScriptState();
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  probe::InvokeCallback probe_scope(script_state, class_like_name_,
                                     /*callback=*/nullptr, function_);
 
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {

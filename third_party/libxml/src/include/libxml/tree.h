@@ -440,6 +440,7 @@ struct _xmlAttr {
     xmlNs           *ns;        /* pointer to the associated namespace */
     xmlAttributeType atype;     /* the attribute type if validating */
     void            *psvi;	/* for type/PSVI information */
+    struct _xmlID   *id;        /* the ID struct */
 };
 
 /**
@@ -1021,6 +1022,10 @@ XMLPUBFUN xmlNsPtr
 					 const xmlChar *href);
 #if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_XPATH_ENABLED) || \
     defined(LIBXML_SCHEMAS_ENABLED)
+XMLPUBFUN int
+		xmlGetNsListSafe	(const xmlDoc *doc,
+					 const xmlNode *node,
+					 xmlNsPtr **out);
 XMLPUBFUN xmlNsPtr *
 		xmlGetNsList		(const xmlDoc *doc,
 					 const xmlNode *node);
@@ -1050,6 +1055,11 @@ XMLPUBFUN xmlAttrPtr
 					 const xmlChar *value);
 #endif /* defined(LIBXML_TREE_ENABLED) || defined(LIBXML_XINCLUDE_ENABLED) || \
 	  defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_HTML_ENABLED) */
+XMLPUBFUN int
+		xmlNodeGetAttrValue	(const xmlNode *node,
+					 const xmlChar *name,
+					 const xmlChar *nsUri,
+					 xmlChar **out);
 XMLPUBFUN xmlChar *
 		xmlGetNoNsProp		(const xmlNode *node,
 					 const xmlChar *name);
@@ -1084,19 +1094,19 @@ XMLPUBFUN xmlChar *
 					 const xmlNode *list,
 					 int inLine);
 #endif /* LIBXML_TREE_ENABLED */
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeSetContent	(xmlNodePtr cur,
 					 const xmlChar *content);
 #ifdef LIBXML_TREE_ENABLED
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeSetContentLen	(xmlNodePtr cur,
 					 const xmlChar *content,
 					 int len);
 #endif /* LIBXML_TREE_ENABLED */
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeAddContent	(xmlNodePtr cur,
 					 const xmlChar *content);
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeAddContentLen	(xmlNodePtr cur,
 					 const xmlChar *content,
 					 int len);
@@ -1122,11 +1132,15 @@ XMLPUBFUN void
 		xmlNodeSetSpacePreserve (xmlNodePtr cur,
 					 int val);
 #endif /* LIBXML_TREE_ENABLED */
+XMLPUBFUN int
+		xmlNodeGetBaseSafe	(const xmlDoc *doc,
+					 const xmlNode *cur,
+					 xmlChar **baseOut);
 XMLPUBFUN xmlChar *
 		xmlNodeGetBase		(const xmlDoc *doc,
 					 const xmlNode *cur);
 #if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_XINCLUDE_ENABLED)
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeSetBase		(xmlNodePtr cur,
 					 const xmlChar *uri);
 #endif

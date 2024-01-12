@@ -7,11 +7,12 @@
 
 #include <fuchsia/mediacodec/cpp/fidl.h>
 
+#include <optional>
+
 #include "base/threading/thread_checker.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -57,7 +58,7 @@ class CONTENT_EXPORT FuchsiaMediaCodecProviderImpl final
   fuchsia::mediacodec::CodecFactoryPtr codec_factory_;
 
   // Cache of video decoder configurations supported by codec_factory_.
-  absl::optional<media::SupportedVideoDecoderConfigs>
+  std::optional<media::SupportedVideoDecoderConfigs>
       supported_video_decoder_configs_;
 
   // Holds GetSupportedVideoDecoderConfigs completion callbacks

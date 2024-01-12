@@ -251,7 +251,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   TestUserImageObserver test_user_image_observer_;
   mojo::Remote<ash::personalization_app::mojom::UserProvider>
       user_provider_remote_;

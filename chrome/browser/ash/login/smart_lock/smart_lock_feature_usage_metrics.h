@@ -35,8 +35,7 @@ class SmartLockFeatureUsageMetrics
   bool IsEligible() const override;
   bool IsEnabled() const override;
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   feature_usage::FeatureUsageMetrics feature_usage_metrics_;
 };
 

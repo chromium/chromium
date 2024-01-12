@@ -7,6 +7,7 @@ import {ParagraphUtils} from '../common/paragraph_utils.js';
 
 import {PrefsManager} from './prefs_manager.js';
 
+type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 const FocusRingStackingOrder =
     chrome.accessibilityPrivate.FocusRingStackingOrder;
@@ -78,10 +79,10 @@ export interface SelectToSpeakUiListener {
  */
 export class UiManager {
   // TODO(b/314204374): Convert from null to undefined.
-  private desktop_: chrome.automation.AutomationNode|null;
+  private desktop_: AutomationNode|null;
   private listener_: SelectToSpeakUiListener;
   // TODO(b/314204374): Convert from null to undefined.
-  private panelButton_: chrome.automation.AutomationNode|null;
+  private panelButton_: AutomationNode|null;
   private prefsManager_: PrefsManager;
   /**
    * Please keep fields in alphabetical order.
@@ -284,9 +285,9 @@ export class UiManager {
    *    current word spoken within node if word highlighting is enabled.
    */
   private updateHighlight_(
-      node: chrome.automation.AutomationNode,
+      node: AutomationNode,
       // TODO(b/314204374): Convert null to undefined.
-      currentWord: {start: number, end: number}|null): void {
+      currentWord: {start: number, end: number}|null, paused: boolean): void {
     if (!currentWord) {
       chrome.accessibilityPrivate.setHighlights(
           [], this.prefsManager_.highlightColor());
@@ -304,6 +305,13 @@ export class UiManager {
           const highlights = bounds ? [bounds] : [];
           chrome.accessibilityPrivate.setHighlights(
               highlights, this.prefsManager_.highlightColor());
+          if (!paused) {
+            // If speech is ongoing, update the bounds. (If it was paused,
+            // reading focus hasn't actually changed, so there's no need for
+            // this notification).
+            chrome.accessibilityPrivate.setSelectToSpeakFocus(
+                bounds ? bounds : node.location);
+          }
         });
   }
 
@@ -325,8 +333,7 @@ export class UiManager {
    *    current word spoken within node if word highlighting is enabled.
    */
   update(
-      nodeGroup: ParagraphUtils.NodeGroup,
-      node: chrome.automation.AutomationNode,
+      nodeGroup: ParagraphUtils.NodeGroup, node: AutomationNode,
       // TODO(b/314204374): Convert null to undefined.
       currentWord: {start: number, end: number}|null,
       panelState:
@@ -343,7 +350,7 @@ export class UiManager {
     } else {
       focusRingRect = node.location;
     }
-    this.updateHighlight_(node, currentWord);
+    this.updateHighlight_(node, currentWord, paused);
     if (focusRingRect) {
       this.setFocusRings_(
           [focusRingRect], true /* draw background */, showPanel);
@@ -367,7 +374,7 @@ export class UiManager {
   /**
    * @return Whether given node is the Select-to-speak floating panel.
    */
-  static isPanel(node?: chrome.automation.AutomationNode): boolean {
+  static isPanel(node?: AutomationNode): boolean {
     if (!node) {
       return false;
     }
@@ -384,7 +391,7 @@ export class UiManager {
   /**
    * @return Whether given node is the Select-to-speak tray button.
    */
-  static isTrayButton(node?: chrome.automation.AutomationNode): boolean {
+  static isTrayButton(node?: AutomationNode): boolean {
     if (!node) {
       return false;
     }

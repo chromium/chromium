@@ -80,7 +80,8 @@ void StoreSessionLength(user_manager::UserType session_type,
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetInteger(prefs::kLastSessionType, session_type);
+  local_state->SetInteger(prefs::kLastSessionType,
+                          static_cast<int>(session_type));
   local_state->SetInt64(prefs::kLastSessionLength,
                         session_length.ToInternalValue());
   local_state->CommitPendingWrite();

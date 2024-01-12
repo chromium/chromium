@@ -12,6 +12,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/signin/public/android/jni_headers/IdentityMutator_jni.h"
@@ -28,7 +29,8 @@ jint JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& primary_account_id,
     jint j_consent_level,
-    jint j_access_point) {
+    jint j_access_point,
+    const base::android::JavaParamRef<jobject>& j_prefs_committed_callback) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
@@ -37,7 +39,10 @@ jint JniIdentityMutator::SetPrimaryAccount(
       primary_account_mutator->SetPrimaryAccount(
           ConvertFromJavaCoreAccountId(env, primary_account_id),
           static_cast<ConsentLevel>(j_consent_level),
-          static_cast<signin_metrics::AccessPoint>(j_access_point));
+          static_cast<signin_metrics::AccessPoint>(j_access_point),
+          base::BindOnce(base::android::RunRunnableAndroid,
+                         base::android::ScopedJavaGlobalRef<jobject>(
+                             j_prefs_committed_callback)));
   return static_cast<jint>(error);
 }
 

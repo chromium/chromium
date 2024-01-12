@@ -260,6 +260,15 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  // If this is a prerender navigation that would otherwise launch an app, we
+  // must cancel it. We only want to launch an app once the URL is intentionally
+  // navigated to by the user. We cancel the navigation here so that when the
+  // link is clicked, we'll run NavigationThrottles again. If we leave the
+  // prerendering alive, the activating navigation won't run throttles.
+  if (handle->IsInPrerenderedMainFrame()) {
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+
   // Browser & profile keep-alives must be used to keep the browser & profile
   // alive because the old window is required to be closed before the new app is
   // launched, which will destroy the profile & browser if it is the last

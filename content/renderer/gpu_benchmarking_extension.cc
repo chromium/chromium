@@ -268,7 +268,7 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
 };
 
 void RunCallbackHelper(CallbackAndContext* callback_and_context,
-                       absl::optional<base::Value> value) {
+                       std::optional<base::Value> value) {
   v8::Isolate* isolate = callback_and_context->isolate();
   v8::HandleScope scope(isolate);
   v8::Local<v8::Context> context = callback_and_context->GetContext();
@@ -293,7 +293,7 @@ void RunCallbackHelper(CallbackAndContext* callback_and_context,
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
                                base::Value::Dict result) {
   RunCallbackHelper(callback_and_context,
-                    absl::optional<base::Value>(std::move(result)));
+                    std::optional<base::Value>(std::move(result)));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -301,7 +301,7 @@ void OnSwapCompletedWithCoreAnimationErrorCode(
     CallbackAndContext* callback_and_context,
     gfx::CALayerResult error_code) {
   RunCallbackHelper(callback_and_context,
-                    absl::optional<base::Value>(base::Value(error_code)));
+                    std::optional<base::Value>(base::Value(error_code)));
 }
 #endif
 
@@ -329,8 +329,8 @@ bool ThrowIfPointOutOfBounds(GpuBenchmarkingContext* context,
   return false;
 }
 
-absl::optional<gfx::Vector2dF> ToVector(const std::string& direction,
-                                        float distance) {
+std::optional<gfx::Vector2dF> ToVector(const std::string& direction,
+                                       float distance) {
   if (direction == "down") {
     return gfx::Vector2dF(0, distance);
   } else if (direction == "up") {
@@ -348,7 +348,7 @@ absl::optional<gfx::Vector2dF> ToVector(const std::string& direction,
   } else if (direction == "downright") {
     return gfx::Vector2dF(distance, distance);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int ToKeyModifiers(const base::StringPiece& key) {
@@ -817,7 +817,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   // Scroll by percentage does not require speed in pixels
   DCHECK(!scroll_by_percentage || (speed_in_pixels_s == 800));
 
-  absl::optional<gfx::Vector2dF> pixels_to_scrol_vector =
+  std::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
   if (!pixels_to_scrol_vector.has_value())
     return false;
@@ -996,9 +996,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
     fling_velocity = 1000;
   }
 
-  absl::optional<gfx::Vector2dF> pixels_to_scrol_vector =
+  std::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
-  absl::optional<gfx::Vector2dF> fling_velocity_vector =
+  std::optional<gfx::Vector2dF> fling_velocity_vector =
       ToVector(direction, fling_velocity);
   if (!pixels_to_scrol_vector.has_value() ||
       !fling_velocity_vector.has_value()) {
@@ -1364,7 +1364,7 @@ bool GpuBenchmarking::HasGpuChannel() {
 
 bool GpuBenchmarking::HasGpuProcess() {
   bool has_gpu_process = false;
-  if (!RenderThreadImpl::current()->render_message_filter()->HasGpuProcess(
+  if (!RenderThreadImpl::current()->GetRendererHost()->HasGpuProcess(
           &has_gpu_process)) {
     return false;
   }

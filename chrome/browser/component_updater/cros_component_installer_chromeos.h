@@ -87,7 +87,7 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
 
  protected:
-  const raw_ptr<CrOSComponentInstaller, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<CrOSComponentInstaller, DanglingUntriaged>
       cros_component_installer_;
 
  private:
@@ -307,7 +307,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   base::flat_map<std::string, CompatibleComponentInfo> compatible_components_;
 
   // A weak pointer to a Delegate for emitting D-Bus signal.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Table storing metadata (installs, usage, etc.).
   std::unique_ptr<MetadataTable> metadata_table_;
@@ -316,7 +316,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // results.
   std::map<std::string, LoadInfo> load_cache_;
 
-  const raw_ptr<ComponentUpdateService, ExperimentalAsh> component_updater_;
+  const raw_ptr<ComponentUpdateService> component_updater_;
 
   base::WeakPtrFactory<CrOSComponentInstaller> weak_factory_{this};
 };

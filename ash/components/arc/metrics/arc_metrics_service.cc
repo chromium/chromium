@@ -51,10 +51,6 @@ constexpr int kUmaFixupDirectoriesCountMin = 0;
 constexpr int kUmaFixupDirectoriesCountMax = 5000000;
 constexpr int kUmaFixupAppsCountMin = 0;
 constexpr int kUmaFixupAppsCountMax = 10000;
-constexpr int kUmaDataFilesCountMin = 1;
-constexpr int kUmaDataFilesCountMax = 5000000;
-constexpr int kUmaDataSizeInKiloBytesMin = 1;
-constexpr int kUmaDataSizeInKiloBytesMax = INT_MAX - 1;
 
 constexpr base::TimeDelta kRequestProcessListPeriod = base::Minutes(5);
 constexpr char kArcProcessNamePrefix[] = "org.chromium.arc.";
@@ -115,22 +111,6 @@ const char* DnsQueryToString(mojom::ArcDnsQuery query) {
       return "Other";
     case mojom::ArcDnsQuery::ANDROID_API_HOST_NAME:
       return "AndroidApi";
-  }
-  NOTREACHED();
-  return "";
-}
-
-std::string AndroidDataSubdirectoryToString(
-    mojom::AndroidDataSubdirectory subdirectory) {
-  switch (subdirectory) {
-    case mojom::AndroidDataSubdirectory::kUserInstalledAppDir:
-      return "UserInstalledAppDir";
-    case mojom::AndroidDataSubdirectory::kInternalDataDir:
-      return "InternalDataDir";
-    case mojom::AndroidDataSubdirectory::kExternalDataRootUserDir:
-      return "ExternalDataRootUserDir";
-    case mojom::AndroidDataSubdirectory::kDEStorageRootUserDir:
-      return "DEStorageRootUserDir";
   }
   NOTREACHED();
   return "";
@@ -839,88 +819,6 @@ void ArcMetricsService::ReportWaylandLateTimingEvent(
   base::UmaHistogramLongTimes("Arc.Wayland.LateTiming.Duration" + suffix,
                               duration);
   base::UmaHistogramEnumeration("Arc.Wayland.LateTiming.Event", event);
-}
-
-void ArcMetricsService::ReportNonAndroidPlayFilesCount(
-    uint32_t number_of_directories,
-    uint32_t number_of_non_directories) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramCustomCounts(
-      "Arc.PlayFilesCount.Files",
-      number_of_directories + number_of_non_directories, kUmaDataFilesCountMin,
-      kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts("Arc.PlayFilesCount.Directories",
-                                 number_of_directories, kUmaDataFilesCountMin,
-                                 kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts(
-      "Arc.PlayFilesCount.NonDirectories", number_of_non_directories,
-      kUmaDataFilesCountMin, kUmaDataFilesCountMax, kUmaNumBuckets);
-}
-
-void ArcMetricsService::ReportPerAppFileStatsOfAndroidDataDirs(
-    uint32_t number_of_directories,
-    uint32_t number_of_non_directories,
-    uint32_t size_in_kilobytes) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.PerApp.Files",
-      number_of_directories + number_of_non_directories, kUmaDataFilesCountMin,
-      kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts("Arc.AndroidData.PerApp.Directories",
-                                 number_of_directories, kUmaDataFilesCountMin,
-                                 kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.PerApp.NonDirectories", number_of_non_directories,
-      kUmaDataFilesCountMin, kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts("Arc.AndroidData.PerApp.Size",
-                                 size_in_kilobytes, kUmaDataSizeInKiloBytesMin,
-                                 kUmaDataSizeInKiloBytesMax, kUmaNumBuckets);
-}
-
-void ArcMetricsService::ReportTotalFileStatsOfAndroidDataDirs(
-    uint32_t number_of_directories,
-    uint32_t number_of_non_directories,
-    uint32_t size_in_kilobytes,
-    base::TimeDelta duration) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.Total.All.Files",
-      number_of_directories + number_of_non_directories, kUmaDataFilesCountMin,
-      kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts("Arc.AndroidData.Total.All.Directories",
-                                 number_of_directories, kUmaDataFilesCountMin,
-                                 kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.Total.All.NonDirectories", number_of_non_directories,
-      kUmaDataFilesCountMin, kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts("Arc.AndroidData.Total.All.Size",
-                                 size_in_kilobytes, kUmaDataSizeInKiloBytesMin,
-                                 kUmaDataSizeInKiloBytesMax, kUmaNumBuckets);
-  base::UmaHistogramLongTimes("Arc.AndroidData.TraversalDuration", duration);
-}
-
-void ArcMetricsService::ReportTotalFileStatsOfAndroidDataSubdir(
-    mojom::AndroidDataSubdirectory target,
-    uint32_t number_of_directories,
-    uint32_t number_of_non_directories,
-    uint32_t size_in_kilobytes) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const std::string targetName = AndroidDataSubdirectoryToString(target);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.Total." + targetName + ".Files",
-      number_of_directories + number_of_non_directories, kUmaDataFilesCountMin,
-      kUmaDataFilesCountMax, kUmaNumBuckets);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.Total." + targetName + ".Directories",
-      number_of_directories, kUmaDataFilesCountMin, kUmaDataFilesCountMax,
-      kUmaNumBuckets);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.Total." + targetName + ".NonDirectories",
-      number_of_non_directories, kUmaDataFilesCountMin, kUmaDataFilesCountMax,
-      kUmaNumBuckets);
-  base::UmaHistogramCustomCounts(
-      "Arc.AndroidData.Total." + targetName + ".Size", size_in_kilobytes,
-      kUmaDataSizeInKiloBytesMin, kUmaDataSizeInKiloBytesMax, kUmaNumBuckets);
 }
 
 void ArcMetricsService::ReportWebViewProcessStarted() {

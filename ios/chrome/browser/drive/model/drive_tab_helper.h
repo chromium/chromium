@@ -6,11 +6,14 @@
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_TAB_HELPER_H_
 
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/drive/model/download_task_save_to_drive_data.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+
+class DriveUploadTask;
+@protocol SystemIdentity;
+class UploadTask;
 
 // Manages Save to Drive tab-scoped state i.e. if a `DownloadTask` is received
 // through AddDownloadToSaveToDrive(...) then this tab helper
@@ -29,9 +32,8 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   // and the downloaded file will be uploaded to Drive.
   void AddDownloadToSaveToDrive(web::DownloadTask* task,
                                 id<SystemIdentity> identity);
-  // Returns Save to Drive data associated with the current download task.
-  std::optional<DownloadTaskSaveToDriveData> GetDownloadTaskSaveToDriveData()
-      const;
+  // Returns the upload task associated with `download_task`, if any.
+  UploadTask* GetUploadTaskForDownload(web::DownloadTask* task);
 
  private:
   friend class web::WebStateUserData<DriveTabHelper>;
@@ -41,19 +43,22 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   void OnDownloadUpdated(web::DownloadTask* task) override;
   void OnDownloadDestroyed(web::DownloadTask* task) override;
 
-  // Resets the Save to Drive data i.e. stop observing the current task, and
-  // start observing the task in `data` if any.
-  void ResetSaveToDriveData(std::optional<DownloadTaskSaveToDriveData> data);
+  // Resets `download_task_obs_` and `upload_task_`. If `task` and `identity`
+  // are non-nil, `task` will be observed and a new upload task will be created
+  // with identity.
+  void ResetSaveToDriveData(web::DownloadTask* task,
+                            id<SystemIdentity> identity);
 
   // Associated WebState.
   raw_ptr<web::WebState> web_state_;
 
-  // Save to Drive data associated with the current download task.
-  std::optional<DownloadTaskSaveToDriveData> download_task_save_to_drive_data_;
   // Scoped observation to observe the `DownloadTask`.
   using ScopedDownloadTaskObservation =
       base::ScopedObservation<web::DownloadTask, web::DownloadTaskObserver>;
   ScopedDownloadTaskObservation download_task_obs_{this};
+  // Drive upload task associated with the observed download task. Should be
+  // started as soon as the download task is completed.
+  std::unique_ptr<DriveUploadTask> upload_task_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

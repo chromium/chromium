@@ -36,6 +36,8 @@ constexpr char kPerAppTrigger[] = "PerAppIphFeature_trigger";
 constexpr char kPerAppUsed[] = "PerAppIphFeature_used";
 constexpr char kLegalNoticeTrigger[] = "LegalNoticeIphFeature_trigger";
 constexpr char kLegalNoticeUsed[] = "LegalNoticeIphFeature_used";
+constexpr char kActionableAlertTrigger[] = "ActionableAlertFeature_trigger";
+constexpr char kActionableAlertUsed[] = "ActionableAlertFeature_used";
 BASE_FEATURE(kToastIphFeature,
              "IPH_ToastIphFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -48,9 +50,12 @@ BASE_FEATURE(kPerAppIphFeature,
 BASE_FEATURE(kLegalNoticeIphFeature,
              "IPH_LegalNoticeIphFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActionableAlertFeature,
+             "IPH_ActionableAlertFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const std::initializer_list<const base::Feature*> kKnownFeatures{
     &kToastIphFeature, &kSnoozeIphFeature, &kPerAppIphFeature,
-    &kLegalNoticeIphFeature};
+    &kActionableAlertFeature, &kLegalNoticeIphFeature};
 const std::initializer_list<const base::Feature*> kKnownGroups{};
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
@@ -83,6 +88,13 @@ std::unique_ptr<UserEducationConfigurationProvider> CreateProvider() {
       base::DoNothing());
   spec.set_promo_subtype_for_testing(
       user_education::FeaturePromoSpecification::PromoSubtype::kLegalNotice);
+  registry.RegisterFeature(std::move(spec));
+
+  spec = user_education::FeaturePromoSpecification::CreateForCustomAction(
+      kActionableAlertFeature, kTestElementId, IDS_CLEAR, IDS_CLOSE,
+      base::DoNothing());
+  spec.set_promo_subtype_for_testing(user_education::FeaturePromoSpecification::
+                                         PromoSubtype::kActionableAlert);
   registry.RegisterFeature(std::move(spec));
 
   return std::make_unique<UserEducationConfigurationProvider>(
@@ -249,6 +261,38 @@ TEST_F(UserEducationConfigurationProviderTest,
   EXPECT_EQ(GetDefaultUsed(kLegalNoticeUsed), config.used);
 
   EXPECT_EQ(GetAnyTrigger(kLegalNoticeTrigger), config.trigger);
+
+  EXPECT_TRUE(config.event_configs.empty());
+
+  EXPECT_EQ(kAny, config.session_rate);
+
+  EXPECT_EQ(kSessionRateImpactAll, config.session_rate_impact);
+
+  EXPECT_EQ(feature_engagement::BlockedBy(), config.blocked_by);
+
+  EXPECT_EQ(feature_engagement::Blocking(), config.blocking);
+
+  EXPECT_EQ(kAny, config.availability);
+
+  EXPECT_FALSE(config.tracking_only);
+
+  EXPECT_EQ(feature_engagement::SnoozeParams(), config.snooze_params);
+
+  EXPECT_TRUE(config.groups.empty());
+}
+
+TEST_F(UserEducationConfigurationProviderTest,
+       ProvidesActionableAlertConfiguration) {
+  feature_engagement::FeatureConfig config;
+
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kActionableAlertFeature, config, kKnownFeatures, kKnownGroups));
+
+  EXPECT_TRUE(config.valid);
+
+  EXPECT_EQ(GetDefaultUsed(kActionableAlertUsed), config.used);
+
+  EXPECT_EQ(GetAnyTrigger(kActionableAlertTrigger), config.trigger);
 
   EXPECT_TRUE(config.event_configs.empty());
 

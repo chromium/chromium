@@ -30,6 +30,10 @@ BLINK_COMMON_EXPORT void SetAcceptHeader(
     net::HttpRequestHeaders& headers,
     network::mojom::RequestDestination request_destination);
 
+// Returns a Accept header string for `request_destination`.
+BLINK_COMMON_EXPORT const char* GetAcceptHeaderForDestination(
+    network::mojom::RequestDestination request_destination);
+
 }  // namespace network_utils
 }  // namespace blink
 

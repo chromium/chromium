@@ -98,7 +98,12 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
       << "Getting campaign before campaigns finish loading";
   const auto match_start = base::TimeTicks::Now();
   auto* match_result = matcher_.GetCampaignBySlot(slot);
+  if (match_result) {
+    RecordGetCampaignBySlot(slot);
+  }
   RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+
+  RegisterTrialForCampaign(match_result);
   return match_result;
 }
 
@@ -127,14 +132,13 @@ void CampaignsManager::OnCampaignsLoaded(
   // Load campaigns into campaigns store.
   if (campaigns_dict.has_value()) {
     // Update campaigns store.
-    campaigns_store_ = std::move(campaigns_dict.value());
+    campaigns_ = std::move(campaigns_dict.value());
   } else {
     LOG(ERROR) << "No campaign is loaded.";
   }
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
-  matcher_.SetCampaigns(GetProactiveCampaigns(&campaigns_store_),
-                        GetReactiveCampaigns(&campaigns_store_));
+  matcher_.SetCampaigns(&campaigns_);
   campaigns_loaded_ = true;
 
   std::move(load_callback).Run();
@@ -145,6 +149,24 @@ void CampaignsManager::NotifyCampaignsLoaded() {
   for (auto& observer : observers_) {
     observer.OnCampaignsLoadCompleted();
   }
+}
+
+void CampaignsManager::RegisterTrialForCampaign(
+    const Campaign* campaign) const {
+  if (!campaign) {
+    return;
+  }
+
+  std::optional<int> id = growth::GetCampaignId(campaign);
+  if (!id) {
+    // TODO(b/308684443): Add error metrics in a second CL.
+    LOG(ERROR) << "Growth campaign id not found";
+    return;
+  }
+
+  client_->RegisterSyntheticFieldTrial(
+      /*study_id=*/growth::GetStudyId(campaign),
+      /*campaign_id=*/*id);
 }
 
 }  // namespace growth

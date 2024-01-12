@@ -59,7 +59,7 @@ class TermBreakIterator {
   // Returns new state for given |ch|.
   State GetNewState(char16_t ch);
 
-  const raw_ref<const std::u16string, ExperimentalAsh> word_;
+  const raw_ref<const std::u16string> word_;
   size_t prev_;
   size_t pos_;
 

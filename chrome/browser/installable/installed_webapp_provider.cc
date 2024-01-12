@@ -36,7 +36,7 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
     ContentSetting setting = rules_[index_].second;
     index_++;
 
-    return std::make_unique<content_settings::OwnedRule>(
+    return std::make_unique<content_settings::Rule>(
         ContentSettingsPattern::FromURLNoWildcard(origin),
         ContentSettingsPattern::Wildcard(), base::Value(setting),
         content_settings::RuleMetaData{});

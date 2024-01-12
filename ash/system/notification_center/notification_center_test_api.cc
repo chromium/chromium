@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/system/notification_center/notification_center_test_api.h"
+
 #include <cstdint>
 
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -13,9 +15,9 @@
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
-#include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/ranges/algorithm.h"
@@ -317,7 +319,7 @@ NotificationCenterTestApi::GetNotificationCenterViewOnDisplay(
     return nullptr;
   }
 
-  return GetTrayOnDisplay(display_id)->bubble_->notification_center_view_.get();
+  return GetTrayOnDisplay(display_id)->bubble_->GetNotificationCenterView();
 }
 
 NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
@@ -335,9 +337,10 @@ void NotificationCenterTestApi::CompleteNotificationListAnimation() {
 }
 
 views::View* NotificationCenterTestApi::GetClearAllButton() {
-  return GetTray()
-      ->bubble_->notification_center_view_->notification_bar_
-      ->clear_all_button_;
+  auto* notification_center_view = GetNotificationCenterView();
+  return notification_center_view
+             ? notification_center_view->notification_bar_->clear_all_button_
+             : nullptr;
 }
 
 std::string NotificationCenterTestApi::NotificationIdToParentNotificationId(
@@ -366,8 +369,8 @@ NotificationCenterTestApi::GetNotificationListViewOnDisplay(
     int64_t display_id) {
   DCHECK(message_center::MessageCenter::Get()->IsMessageCenterVisible());
 
-  return GetTrayOnDisplay(display_id)
-      ->bubble_->notification_center_view_->notification_list_view();
+  return GetNotificationCenterViewOnDisplay(display_id)
+      ->notification_list_view();
 }
 
 std::unique_ptr<message_center::Notification>

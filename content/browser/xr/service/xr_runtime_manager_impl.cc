@@ -176,7 +176,7 @@ void XRRuntimeManagerImpl::AddService(VRServiceImpl* service) {
   // Loop through any currently active runtimes and send Connected messages to
   // the service. Future runtimes that come online will send a Connected message
   // when they are created.
-  InitializeProviders();
+  InitializeProviders(service);
 
   if (AreAllProvidersInitialized())
     service->InitializationComplete();
@@ -341,7 +341,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 
   if (!IsInitializedOnCompatibleAdapter(runtime)) {
 #if BUILDFLAG(IS_WIN)
-    absl::optional<CHROME_LUID> luid = runtime->GetLuid();
+    std::optional<CHROME_LUID> luid = runtime->GetLuid();
     // IsInitializedOnCompatibleAdapter should have returned true if the
     // runtime doesn't specify a LUID.
     DCHECK(luid && (luid->HighPart != 0 || luid->LowPart != 0));
@@ -387,7 +387,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 bool XRRuntimeManagerImpl::IsInitializedOnCompatibleAdapter(
     BrowserXRRuntimeImpl* runtime) {
 #if BUILDFLAG(IS_WIN)
-  absl::optional<CHROME_LUID> luid = runtime->GetLuid();
+  std::optional<CHROME_LUID> luid = runtime->GetLuid();
   if (luid && (luid->HighPart != 0 || luid->LowPart != 0)) {
     CHROME_LUID active_luid =
         content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;
@@ -478,7 +478,12 @@ size_t XRRuntimeManagerImpl::NumberOfConnectedServices() {
   return services_.size();
 }
 
-void XRRuntimeManagerImpl::InitializeProviders() {
+// The initializing service is available so that providers that need access to
+// some aspect of the service, such as the WebContents, to perform
+// initialization can do so, but the providers should be initialized in such a
+// way that they are not explicitly tied to this service.
+void XRRuntimeManagerImpl::InitializeProviders(
+    VRServiceImpl* initializing_service) {
   if (providers_initialized_)
     return;
 
@@ -491,8 +496,9 @@ void XRRuntimeManagerImpl::InitializeProviders() {
 
     // It is acceptable for the providers to potentially take/keep a reference
     // to ourselves here, since we own the providers and can guarantee that they
-    // will not outlive us.
-    provider->Initialize(this);
+    // will not outlive us. Providers should not take a long-term reference to
+    // the WebContents.
+    provider->Initialize(this, initializing_service->GetWebContents());
   }
 
   providers_initialized_ = true;

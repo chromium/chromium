@@ -109,7 +109,7 @@ class FakeMetricReportingManagerDelegate
   }
 
  private:
-  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics> fake_diagnostics_;
 
   std::unique_ptr<MetricReportQueue> metric_report_queue_;
 };
@@ -185,14 +185,13 @@ class HttpsLatencyEventsTest : public ::testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 
   std::unique_ptr<MetricReportQueue> metric_report_queue_;
-  raw_ptr<HttpsLatencyTestReportQueue, ExperimentalAsh> report_queue_;
+  raw_ptr<HttpsLatencyTestReportQueue> report_queue_;
 };
 
 TEST_F(HttpsLatencyEventsTest, RoutineVerdictProblem) {

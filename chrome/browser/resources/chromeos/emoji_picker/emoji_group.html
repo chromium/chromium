@@ -5,14 +5,8 @@
     --emoji-background: transparent;
   }
 
-  /**
-   * With jelly flag on, emoji buttons under symbol / emoticon group should be
-   * rounded.
-   *
-   * TODO(b/263055563): Remove the flag check once jelly is default one.
-   */
-  :host([category="emoticon"][jelly-support]),
-  :host([category="symbol"][jelly-support]) {
+  :host([category="emoticon"]),
+  :host([category="symbol"]) {
     --emoji-button-border-radius: 4px;
   }
 
@@ -129,11 +123,7 @@
     top: calc(var(--emoji-group-heading-padding-top)
       + var(--emoji-group-heading-padding-bottom)
       + var(--emoji-group-heading-size));
-    /*
-     * TODO(b/263055563): Remove --cr-elevation reference once jelly is fully
-     * launched.
-     */
-    box-shadow: var(--cros-elevation-1-shadow, --cr-elevation-1);
+    box-shadow: var(--cros-elevation-1-shadow);
     border-radius: 4px;
     overflow: hidden;
     /* Declare the z-index here to ensure this container is visible above
@@ -233,11 +223,7 @@
   }
 
   paper-tooltip::part(tooltip) {
-    /*
-     * TODO(b/263055563): Remove --cr-elevation reference once jelly is fully
-     * launched.
-     */
-    box-shadow: var(--cros-elevation-1-shadow, --cr-elevation-1);
+    box-shadow: var(--cros-elevation-1-shadow);
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     margin: 4px;
@@ -317,13 +303,15 @@
           class$="emoji-button [[getEmojiButtonClassName(item)]]"
           on-mouseenter="showTooltip" on-focus="showTooltip"
           aria-label="[[getEmojiAriaLabel(item)]]">
-          [[getDisplayEmojiForEmoji(item.base.string)]]
+          [[getDisplayEmojiForEmoji(item.base.string, item)]]
         </button>
         <template is="dom-if"
           if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
           <emoji-variants
             id="emoji-variant-[[index]]"
             variants="[[item.alternates]]"
+            grouped-tone="[[item.groupedTone]]"
+            grouped-gender="[[item.groupedGender]]"
             tooltip="[[item.base.name]]">
           </emoji-variants>
         </template>
@@ -337,7 +325,7 @@
           class$="emoji-button [[getEmojiButtonClassName(item)]]"
           on-mouseenter="showTooltip" on-focus="showTooltip"
           aria-label="[[getEmojiAriaLabel(item)]]">
-          [[getDisplayEmojiForEmoji(item.base.string)]]
+          [[getDisplayEmojiForEmoji(item.base.string, item)]]
         </button>
         </div>
       </template>

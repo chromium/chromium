@@ -16,13 +16,6 @@ import java.util.List;
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
 // TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 public class PrivacySandboxBridge {
-    public static boolean isPrivacySandboxEnabled() {
-        return PrivacySandboxBridgeJni.get().isPrivacySandboxEnabled();
-    }
-
-    public static boolean isPrivacySandboxManaged() {
-        return PrivacySandboxBridgeJni.get().isPrivacySandboxManaged();
-    }
 
     public static boolean isPrivacySandboxRestricted() {
         return PrivacySandboxBridgeJni.get().isPrivacySandboxRestricted();
@@ -30,10 +23,6 @@ public class PrivacySandboxBridge {
 
     public static boolean isRestrictedNoticeEnabled() {
         return PrivacySandboxBridgeJni.get().isRestrictedNoticeEnabled();
-    }
-
-    public static void setPrivacySandboxEnabled(boolean enabled) {
-        PrivacySandboxBridgeJni.get().setPrivacySandboxEnabled(enabled);
     }
 
     public static List<Topic> getCurrentTopTopics() {
@@ -121,10 +110,6 @@ public class PrivacySandboxBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean isPrivacySandboxEnabled();
-
-        boolean isPrivacySandboxManaged();
-
         boolean isPrivacySandboxRestricted();
 
         boolean isRestrictedNoticeEnabled();
@@ -134,8 +119,6 @@ public class PrivacySandboxBridge {
         boolean isFirstPartySetsDataAccessManaged();
 
         boolean isPartOfManagedFirstPartySet(String origin);
-
-        void setPrivacySandboxEnabled(boolean enabled);
 
         void setFirstPartySetsDataAccessEnabled(boolean enabled);
 

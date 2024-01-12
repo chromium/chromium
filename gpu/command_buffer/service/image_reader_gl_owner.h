@@ -5,9 +5,10 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_IMAGE_READER_GL_OWNER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_IMAGE_READER_GL_OWNER_H_
 
+#include <media/NdkImageReader.h>
+
 #include <memory>
 
-#include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -141,10 +142,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   };
   using AImageRefMap = base::flat_map<AImage*, ImageRef>;
   AImageRefMap image_refs_ GUARDED_BY(lock_);
-
-  // reference to the class instance which is used to dynamically
-  // load the functions in android libraries at runtime.
-  const raw_ref<base::android::AndroidImageReader> loader_;
 
   // The context and surface that were used to create |texture_id_|.
   scoped_refptr<gl::GLContext> context_;

@@ -18,10 +18,8 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class URLLoaderFactory;
-}
 }
 
 namespace chromeos {
@@ -29,6 +27,7 @@ namespace chromeos {
 class PpdCache;
 class PrinterConfigCache;
 class PpdMetadataManager;
+class RemotePpdFetcher;
 
 // Everything we might know about a printer when looking for a
 // driver for it.  All of the default values for fields in this struct
@@ -105,7 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
     // Minimum milestone for ChromeOS build
     base::Version min_milestone = base::Version("0.0");
 
-    // Maximum milestone for ChomeOS build
+    // Maximum milestone for ChromeOS build
     base::Version max_milestone = base::Version("0.0");
   };
 
@@ -180,7 +179,8 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
       const base::Version& current_version,
       scoped_refptr<PpdCache> cache,
       std::unique_ptr<PpdMetadataManager> metadata_manager,
-      std::unique_ptr<PrinterConfigCache> config_cache);
+      std::unique_ptr<PrinterConfigCache> config_cache,
+      std::unique_ptr<RemotePpdFetcher> remote_ppd_fetcher);
 
   // Get all manufacturers for which we have drivers.  Keys of the map will be
   // localized in the default browser locale or the closest available fallback.

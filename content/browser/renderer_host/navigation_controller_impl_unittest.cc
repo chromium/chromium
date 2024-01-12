@@ -133,7 +133,7 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (override));
   MOCK_METHOD(void,
               SetPageBaseBackgroundColor,
-              (absl::optional<SkColor> color),
+              (std::optional<SkColor> color),
               (override));
   MOCK_METHOD(void,
               UpdateColorProviders,
@@ -143,7 +143,7 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
       void,
       CreateRemoteMainFrame,
       (const blink::RemoteFrameToken& token,
-       const absl::optional<blink::FrameToken>& opener_frame_token,
+       const std::optional<blink::FrameToken>& opener_frame_token,
        blink::mojom::FrameReplicationStatePtr replication_state,
        bool is_loading,
        const base::UnguessableToken& devtools_frame_token,
@@ -2405,8 +2405,8 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
   std::unique_ptr<NavigationEntryImpl> entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               browser_context(), nullptr /* blob_url_loader_factory */));
   entry->SetTitle(u"Title");
@@ -2479,8 +2479,8 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
   std::unique_ptr<NavigationEntryImpl> new_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               browser_context(), nullptr /* blob_url_loader_factory */));
   new_entry->SetTitle(u"Title");
@@ -3677,8 +3677,8 @@ TEST_F(NavigationControllerTest, CopyRestoredStateAndNavigate) {
     std::unique_ptr<NavigationEntryImpl> entry =
         NavigationEntryImpl::FromNavigationEntry(
             NavigationController::CreateNavigationEntry(
-                restoredUrl, Referrer(), absl::nullopt /* initiator_origin= */,
-                /* initiator_base_url= */ absl::nullopt,
+                restoredUrl, Referrer(), std::nullopt /* initiator_origin= */,
+                /* initiator_base_url= */ std::nullopt,
                 ui::PAGE_TRANSITION_RELOAD, false, std::string(),
                 browser_context(), nullptr /* blob_url_loader_factory */));
     entry->SetPageState(blink::PageState::CreateFromURL(restoredUrl), &context);
@@ -3741,7 +3741,7 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   process()->sink().ClearMessages();
 
   // Simulate the page calling history.back(). It should create a pending entry.
-  main_test_rfh()->GoToEntryAtOffset(-1, false, absl::nullopt);
+  main_test_rfh()->GoToEntryAtOffset(-1, false, std::nullopt);
   EXPECT_EQ(0, controller.GetPendingEntryIndex());
 
   // Also make sure we told the page to navigate.
@@ -3751,7 +3751,7 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   process()->sink().ClearMessages();
 
   // Now test history.forward()
-  main_test_rfh()->GoToEntryAtOffset(2, false, absl::nullopt);
+  main_test_rfh()->GoToEntryAtOffset(2, false, std::nullopt);
   EXPECT_EQ(2, controller.GetPendingEntryIndex());
 
   nav_url = GetLastNavigationURL();
@@ -3763,7 +3763,7 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
 
   // Make sure an extravagant history.go() doesn't break.
   main_test_rfh()->GoToEntryAtOffset(120, false,
-                                     absl::nullopt);  // Out of bounds.
+                                     std::nullopt);  // Out of bounds.
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   // TODO(https://crbug.com/1232883): Figure out why HasNavigationRequest() is
   // true when back/forward cache is enabled.
@@ -4364,13 +4364,13 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       subframe_node->current_frame_host(), kSrcDoc,
       nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      url::Origin::Create(kUrl2), /* initiator_base_url= */ absl::nullopt,
+      url::Origin::Create(kUrl2), /* initiator_base_url= */ std::nullopt,
       true /* is_renderer_initiated */, main_test_rfh()->GetSiteInstance(),
       Referrer(), ui::PAGE_TRANSITION_LINK,
       false /* should_replace_current_entry */,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
-      false /*is_form_submission*/, absl::nullopt,
+      false /*is_form_submission*/, std::nullopt,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       base::TimeTicks::Now() /* navigation_start_time */);
@@ -4409,12 +4409,12 @@ TEST_F(NavigationControllerTest,
   other_controller.NavigateFromFrameProxy(
       frame, other_contents_url, nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      url::Origin::Create(main_url), /* initiator_base_url= */ absl::nullopt,
+      url::Origin::Create(main_url), /* initiator_base_url= */ std::nullopt,
       true /* is_renderer_initiated */, main_test_rfh()->GetSiteInstance(),
       Referrer(), ui::PAGE_TRANSITION_LINK, should_replace_current_entry,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
-      false /*is_form_submission*/, absl::nullopt,
+      false /*is_form_submission*/, std::nullopt,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       base::TimeTicks::Now() /* navigation_start_time */);
@@ -4546,7 +4546,7 @@ TEST_F(NavigationControllerTest,
   // NavigateToNavigationApiKey(). No navigation should occur.
   controller.NavigateToNavigationApiKey(
       main_test_rfh(),
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt, first_key);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt, first_key);
   EXPECT_FALSE(controller.GetPendingEntry());
 }
 
@@ -4582,13 +4582,13 @@ TEST_F(NavigationControllerTest, NavigateToNavigationApiKey_KeyForWrongFrame) {
       main_test_rfh()->frame_tree_node()->child_at(0);
   controller_impl().NavigateToNavigationApiKey(
       subframe_node->current_frame_host(),
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt, first_main_key);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt, first_main_key);
   EXPECT_FALSE(controller_impl().GetPendingEntry());
 
   // Call NavigateToNavigationApiKey() on the main frame with the key from the
   // main frame. This time a navigation should begin.
   controller_impl().NavigateToNavigationApiKey(
-      main_test_rfh(), /*soft_navigation_heuristics_task_id=*/absl::nullopt,
+      main_test_rfh(), /*soft_navigation_heuristics_task_id=*/std::nullopt,
       first_main_key);
   EXPECT_TRUE(controller_impl().GetPendingEntry());
 }
@@ -4791,13 +4791,13 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
       fenced_frame_root, GURL(kTestRewriteURL),
       nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      url::Origin::Create(kUrl2), /* initiator_base_url= */ absl::nullopt,
+      url::Origin::Create(kUrl2), /* initiator_base_url= */ std::nullopt,
       true /* is_renderer_initiated */, fenced_frame_root->GetSiteInstance(),
       Referrer(), ui::PAGE_TRANSITION_LINK,
       false /* should_replace_current_entry */,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
-      false /*is_form_submission*/, absl::nullopt,
+      false /*is_form_submission*/, std::nullopt,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       base::TimeTicks::Now() /* navigation_start_time */);

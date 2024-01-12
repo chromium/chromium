@@ -103,7 +103,7 @@ PrefetchStatus PrefetchStatusFromIneligibleReason(
   }
 }
 
-absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
+std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     PrefetchStatus prefetch_status) {
   switch (prefetch_status) {
     case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -142,9 +142,9 @@ absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-      return absl::nullopt;
+      return std::nullopt;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns true if SetPrefetchStatus(|status|) can be called after a prefetch
@@ -194,7 +194,7 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
 void SetTriggeringOutcomeAndFailureReasonFromStatus(
     PreloadingAttempt* attempt,
     const GURL& url,
-    absl::optional<PrefetchStatus> old_prefetch_status,
+    std::optional<PrefetchStatus> old_prefetch_status,
     PrefetchStatus new_prefetch_status) {
   if (old_prefetch_status &&
       old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed) {
@@ -367,7 +367,7 @@ class PrefetchContainer::SinglePrefetch {
   const bool is_isolated_network_context_required_;
 
   // Whether this |url_| is eligible to be prefetched
-  absl::optional<PreloadingEligibility> eligibility_;
+  std::optional<PreloadingEligibility> eligibility_;
 
   // This tracks whether the cookies associated with |url_| have changed at
   // some point after the initial eligibility check.
@@ -388,8 +388,8 @@ class PrefetchContainer::SinglePrefetch {
   // The timestamps of when the overall cookie copy process starts, and midway
   // when the cookies are read from the isolated network context and are about
   // to be written to the default network context.
-  mutable absl::optional<base::TimeTicks> cookie_copy_start_time_;
-  mutable absl::optional<base::TimeTicks> cookie_read_end_and_write_start_time_;
+  mutable std::optional<base::TimeTicks> cookie_copy_start_time_;
+  mutable std::optional<base::TimeTicks> cookie_read_end_and_write_start_time_;
 
   // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
   mutable base::OnceClosure on_cookie_copy_complete_callback_;
@@ -401,7 +401,7 @@ PrefetchContainer::PrefetchContainer(
     const GURL& url,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
-    absl::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     PreloadingURLMatchCallback matcher)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
@@ -531,7 +531,7 @@ void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
   FrameTreeNode* ftn = FrameTreeNode::From(
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
 
-  absl::optional<PreloadingTriggeringOutcome> preloading_trigger_outcome =
+  std::optional<PreloadingTriggeringOutcome> preloading_trigger_outcome =
       TriggeringOutcomeFromStatus(prefetch_status);
 
   if (initiator_devtools_navigation_token_.has_value() &&
@@ -697,7 +697,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(
       resource_request_->url, resource_request_->method, redirect_info,
-      /*removed_headers=*/absl::nullopt, std::move(updated_headers),
+      /*removed_headers=*/std::nullopt, std::move(updated_headers),
       &resource_request_->headers, &should_clear_upload);
   CHECK(!should_clear_upload);
 
@@ -1002,7 +1002,7 @@ void PrefetchContainer::OnPrefetchComplete(
 }
 
 void PrefetchContainer::UpdatePrefetchRequestMetrics(
-    const absl::optional<network::URLLoaderCompletionStatus>& completion_status,
+    const std::optional<network::URLLoaderCompletionStatus>& completion_status,
     const network::mojom::URLResponseHead* head) {
   DVLOG(1) << *this << "::UpdatePrefetchRequestMetrics:"
            << "head = " << head;

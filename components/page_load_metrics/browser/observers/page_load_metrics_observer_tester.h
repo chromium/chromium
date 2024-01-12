@@ -65,7 +65,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   PageLoadMetricsObserverTester(
       content::WebContents* web_contents,
       content::RenderViewHostTestHarness* rfh_test_harness,
-      const RegisterObserversCallback& callback);
+      const RegisterObserversCallback& callback,
+      bool is_non_tab_webui = false);
 
   PageLoadMetricsObserverTester(const PageLoadMetricsObserverTester&) = delete;
   PageLoadMetricsObserverTester& operator=(
@@ -169,6 +170,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad() const;
   void RegisterObservers(PageLoadTracker* tracker);
 
+  bool is_non_tab_webui() const { return is_non_tab_webui_; }
+
  private:
   void SimulatePageLoadTimingUpdate(
       const mojom::PageLoadTiming& timing,
@@ -191,6 +194,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       metrics_web_contents_observer_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+
+  bool is_non_tab_webui_ = false;
 };
 
 }  // namespace page_load_metrics

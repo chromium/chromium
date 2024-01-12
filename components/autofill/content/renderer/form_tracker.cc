@@ -174,11 +174,10 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
-      ->PostTask(FROM_HERE,
-                 base::BindRepeating(
-                     &FormTracker::FormControlDidChangeImpl,
-                     weak_ptr_factory_.GetWeakPtr(), element,
-                     Observer::ElementChangeSource::TEXTFIELD_CHANGED));
+      ->PostTask(FROM_HERE, base::BindRepeating(
+                                &FormTracker::FormControlDidChangeImpl,
+                                weak_ptr_factory_.GetWeakPtr(), element,
+                                Observer::SaveFormReason::kTextFieldChanged));
 }
 
 void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
@@ -196,10 +195,10 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
   unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
-      ->PostTask(FROM_HERE, base::BindRepeating(
-                                &FormTracker::FormControlDidChangeImpl,
-                                weak_ptr_factory_.GetWeakPtr(), element,
-                                Observer::ElementChangeSource::SELECT_CHANGED));
+      ->PostTask(FROM_HERE,
+                 base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
+                                     weak_ptr_factory_.GetWeakPtr(), element,
+                                     Observer::SaveFormReason::kSelectChanged));
 }
 
 void FormTracker::ElementDisappeared(const blink::WebElement& element) {
@@ -225,7 +224,7 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
 
 void FormTracker::FormControlDidChangeImpl(
     const WebFormControlElement& element,
-    Observer::ElementChangeSource change_source) {
+    Observer::SaveFormReason change_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   // The frame or document could be null because this function is called
   // asynchronously.
@@ -293,7 +292,7 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   for (auto& observer : observers_) {
     observer.OnProvisionallySaveForm(
         form, blink::WebFormControlElement(),
-        Observer::ElementChangeSource::WILL_SEND_SUBMIT_EVENT);
+        Observer::SaveFormReason::kWillSendSubmitEvent);
   }
 }
 

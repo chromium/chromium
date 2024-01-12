@@ -925,6 +925,25 @@ extension-event based interface in M119. The interface is described in
 | availableSpace | number | The currently available space in the user partition (Bytes) |
 | totalSpace | number | The total space of the user partition (Bytes) |
 
+### Enum ThermalSensorSource
+| Property Name |
+------------ |
+| unknown |
+| ec |
+| sysFs |
+
+### ThermalSensorInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| name | string | Name of the thermal sensor  |
+| temperatureCelsius | number | Temperature detected by the thermal sensor in celsius |
+| source | ThermalSensorSource | Where the thermal sensor is detected from  |
+
+### ThermalInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| thermalSensors | Array<ThermalSensorInfo\> | An array containing all the information retrieved for thermal sensors |
+
 ### Enum TpmGSCVersion
 | Property Name |
 ------------ |
@@ -1058,6 +1077,7 @@ Source:
 | getAudioInfo | () => Promise<AudioInfo\> | `os.telemetry` | M111 |
 | getMarketingInfo | () => Promise<MarketingInfo\> | `os.telemetry` | M111 |
 | getUsbBusInfo | () => Promise<UsbDevicesInfo\> | `os.telemetry`, `os.attached_device_info` | M114 |
+| getThermalInfo | () => Promise<ThermalInfo\> | `os.telemetry` | M122 |
 
 # Management
 

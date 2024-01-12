@@ -84,7 +84,7 @@ void SendTabToSelfToolbarIconView::LogNotificationDismissed() {
       ->LogNotificationDismissed();
 }
 
-BEGIN_METADATA(SendTabToSelfToolbarIconView, views::ImageView)
+BEGIN_METADATA(SendTabToSelfToolbarIconView)
 END_METADATA
 
 }  // namespace send_tab_to_self

@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -58,8 +59,11 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->AddObserver(&observer_);
+    hotspot_allowed_flag_handler_ =
+        std::make_unique<HotspotAllowedFlagHandler>();
     hotspot_capabilities_provider_->Init(
-        network_state_test_helper_.network_state_handler());
+        network_state_test_helper_.network_state_handler(),
+        hotspot_allowed_flag_handler_.get());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -68,6 +72,7 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
     network_state_test_helper_.ClearServices();
     hotspot_capabilities_provider_->RemoveObserver(&observer_);
     hotspot_capabilities_provider_.reset();
+    hotspot_allowed_flag_handler_.reset();
   }
 
   HotspotCapabilitiesProvider::CheckTetheringReadinessResult
@@ -90,6 +95,7 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   TestObserver observer_;
   NetworkStateTestHelper network_state_test_helper_{

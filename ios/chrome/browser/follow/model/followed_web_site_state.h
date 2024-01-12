@@ -2,9 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOWED_WEB_SITE_STATE_H_
-#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOWED_WEB_SITE_STATE_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOWED_WEB_SITE_STATE_H_
+#define IOS_CHROME_BROWSER_FOLLOW_FOLLOWED_WEB_SITE_STATE_H_
 
-#import "ios/chrome/browser/follow/followed_web_site_state.h"
+#import <Foundation/Foundation.h>
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOWED_WEBSITE_STATE_H_
+// Enum representing the followed website states.
+typedef NS_ENUM(NSInteger, FollowedWebSiteState) {
+  FollowedWebSiteStateStateUnknown = 0,
+  FollowedWebSiteStateStateInactive,
+  FollowedWebSiteStateStateActive,
+  FollowedWebSiteStateStateAwaitingContent,
+};
+
+#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOWED_WEBSITE_STATE_H_

@@ -15,13 +15,16 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_query.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
@@ -135,9 +138,11 @@ std::u16string GetFormattedDisplayUrl(const GURL& url) {
   std::u16string result = url_formatter::FormatUrlForSecurityDisplay(url);
   // Truncate long URL to avoid surpassing mojo data limit (c.f.
   // crbug.com/1070451). If it's really this long, the user won't be able to see
-  // the end of it anyway.
+  // the whole thing anyway. We truncate the beginning so that the end of it is
+  // shown, which contains the eTLD+1.
+  // Note: This may truncate the scheme part of the URL.
   if (result.size() > url::kMaxURLChars) {
-    result.resize(url::kMaxURLChars);
+    result = result.substr(result.size() - url::kMaxURLChars);
   }
   return result;
 }
@@ -409,6 +414,25 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       GetSafeBrowsingState(download_model.profile());
   file_value->has_safe_browsing_verdict =
       WasSafeBrowsingVerdictObtained(download_item);
+
+  if (download_model.IsDangerous()) {
+    base::UmaHistogramBoolean(
+        "Download.DownloadsPageDangerousWarningWasShownBefore",
+        download_model.WasUIWarningShown());
+  }
+  MaybeRecordDangerousDownloadWarningShown(download_model);
+
+  if (download_item->IsDangerous()) {
+    // It's likely that SHOWN has already been logged from the download bubble,
+    // but in a small number of cases the warning may not have been shown in
+    // the bubble but is shown for the first time on the downloads page instead.
+    // That case is captured here. The majority of the time, the logic in
+    // DownloadItemWarningData that prevents double-logging will make this a
+    // no-op (aside from logging a histogram).
+    DownloadItemWarningData::AddWarningActionEvent(
+        download_item, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
+        DownloadItemWarningData::WarningAction::SHOWN);
+  }
 
   return file_value;
 }

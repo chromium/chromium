@@ -9,6 +9,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/resource_coordinator/public/mojom",
+  "+services/tracing/public/cpp/perfetto/flow_event_utils.h",
   "+services/service_manager/public/cpp",
   "+services/video_capture/public/mojom",
   "+services/viz/public/cpp",

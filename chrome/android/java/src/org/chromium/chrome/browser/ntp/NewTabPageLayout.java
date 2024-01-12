@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleCoordinator;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -91,6 +93,8 @@ public class NewTabPageLayout extends LinearLayout {
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
+
+    private TabResumptionModuleCoordinator mTabResumptionModuleCoordinator;
 
     private OnSearchBoxScrollListener mSearchBoxScrollListener;
 
@@ -309,6 +313,7 @@ public class NewTabPageLayout extends LinearLayout {
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
+        initializeTabResumptionModuleCoordinator(profile);
         initializeLayoutChangeListener();
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
@@ -390,6 +395,14 @@ public class NewTabPageLayout extends LinearLayout {
                 });
         updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeLensButton()");
+    }
+
+    private void initializeTabResumptionModuleCoordinator(Profile profile) {
+        TraceEvent.begin(TAG + ".initializeTabResumptionModuleCoordinator()");
+        mTabResumptionModuleCoordinator =
+                TabResumptionModuleUtils.mayCreateTabResumptionModuleCoordinator(
+                        this, profile, R.id.tab_resumption_module_container_stub);
+        TraceEvent.end(TAG + ".initializeTabResumptionModuleCoordinator()");
     }
 
     private void initializeLayoutChangeListener() {
@@ -998,6 +1011,10 @@ public class NewTabPageLayout extends LinearLayout {
         if (mLogoCoordinator != null) {
             mLogoCoordinator.destroy();
             mLogoCoordinator = null;
+        }
+
+        if (mTabResumptionModuleCoordinator != null) {
+            mTabResumptionModuleCoordinator.destroy();
         }
 
         mSearchBoxCoordinator.destroy();

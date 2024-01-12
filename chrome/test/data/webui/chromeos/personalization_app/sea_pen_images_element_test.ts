@@ -5,7 +5,9 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImagesElement, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImagesElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SparklePlaceholderElement} from 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -61,7 +63,7 @@ suite('SeaPenImagesElementTest', function() {
     const loadingThumbnailPlaceholders =
         seaPenImagesElement.shadowRoot!
             .querySelectorAll<SparklePlaceholderElement>(
-                'div:not([hidden]) sparkle-placeholder-element');
+                'div:not([hidden]) sparkle-placeholder');
     assertEquals(
         4, loadingThumbnailPlaceholders!.length,
         'should be 4 loading placeholders available.');
@@ -116,5 +118,91 @@ suite('SeaPenImagesElementTest', function() {
     assertEquals(
         8, feedbackButtons!.length,
         'should be 2 feedback buttons per thumbnail');
+  });
+
+  test('display no network error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kNoInternetConnection;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage);
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorNoInternet'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
+  });
+
+  test('display resource exhausted error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kResourceExhausted;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorResourceExhausted'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
+  });
+
+  test('display generic error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kGenericError;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorGeneric'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
+  });
+
+  test('hide error state on success', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kOk;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage =
+        seaPenImagesElement.shadowRoot!.querySelector('.error-message');
+    assertFalse(!!errorMessage, 'error messages should be hidden on success');
+  });
+
+  test('hide error state while loading', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kGenericError;
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage =
+        seaPenImagesElement.shadowRoot!.querySelector('.error-message');
+    assertFalse(
+        !!errorMessage, 'error messages should be hidden while loading');
   });
 });

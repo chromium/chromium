@@ -6,12 +6,12 @@
 #define CONTENT_COMMON_INPUT_TOUCHPAD_PINCH_EVENT_QUEUE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -75,7 +75,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
 
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;
   std::unique_ptr<QueuedTouchpadPinchEvent> pinch_event_awaiting_ack_;
-  absl::optional<bool> first_event_prevented_;
+  std::optional<bool> first_event_prevented_;
 };
 
 }  // namespace content

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -139,10 +139,10 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
       scoped_max_event_level_epsilon(config.max_event_level_epsilon);
 
-  absl::optional<base::Value> input = dict.Extract("input");
+  std::optional<base::Value> input = dict.Extract("input");
   ASSERT_TRUE(input && input->is_dict());
 
-  absl::optional<base::Value> output = dict.Extract("output");
+  std::optional<base::Value> output = dict.Extract("output");
   ASSERT_TRUE(output && output->is_dict());
 
   ASSERT_OK_AND_ASSIGN(
