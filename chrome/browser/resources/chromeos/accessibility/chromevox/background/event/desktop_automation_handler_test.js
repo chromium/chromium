@@ -199,6 +199,34 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+// Ensures that selection events from IME candidate doesn't break ChromeVox's
+// range.
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate_keepRange',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site =
+          `<button>First</button><button>Second</button><button>Third</button>`;
+      const root = await this.runWithLoadedTree(site);
+      const candidates = root.findAll({role: RoleType.BUTTON});
+      const first = candidates[0];
+      const third = candidates[2];
+      assertNotNullNorUndefined(first);
+      assertNotNullNorUndefined(third);
+      // Fake role to imitate IME candidates.
+      Object.defineProperty(third, 'role', {get: () => RoleType.IME_CANDIDATE});
+      const selectEvent = new CustomAutomationEvent(EventType.SELECTION, third);
+
+      mockFeedback.call(() => first.focus())
+          .expectSpeech('First')
+          .call(() => this.handler_.onSelection(selectEvent))
+          .expectSpeech('Third')
+          .expectSpeech(/tango/)
+          .call(doCmd('nextObject'))
+          .expectSpeech('Second');
+      await mockFeedback.replay();
+    });
+
 AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
     async function() {
