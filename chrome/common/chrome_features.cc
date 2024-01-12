@@ -1054,6 +1054,15 @@ BASE_FEATURE(kNotificationDurationLongForRequireInteraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOfflineContentOnNetError,
+             "OfflineContentOnNetError",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOfflineAutoFetch,
+             "OfflineAutoFetch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOnConnectNative,
              "OnConnectNative",

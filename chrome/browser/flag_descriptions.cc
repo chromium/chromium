@@ -4190,6 +4190,12 @@ const char kNotificationPermissionRationaleBottomSheetDescription[] =
     "flow. "
     "Only works with builds targeting Android T+.";
 
+const char kOfflineAutoFetchName[] = "Offline Auto Fetch";
+const char kOfflineAutoFetchDescription[]= "Enables auto fetch of content when Chrome is online";
+
+const char kOfflineContentOnNetErrorName[] = "Offline Content allowed on net errors";
+const char kOfflineContentOnNetErrorDescription[]=  "Enables use of Offline Content on network errors";
+
 const char kPassExplicitSyncPassphraseToGmsCoreName[] =
     "Pass explicit sync passphrase to GmsCore";
 const char kPassExplicitSyncPassphraseToGmsCoreDescription[] =

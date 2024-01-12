@@ -20634,6 +20634,7 @@ from previous Chrome versions.
   <int value="-1618030555" label="ArcAccountRestrictions:enabled"/>
   <int value="-1617805422" label="WebViewUseMetricsUploadService:enabled"/>
   <int value="-1617666878" label="AndroidElegantTextHeight:enabled"/>
+  <int value="-1617392895" label="OfflineAutoFetch:disabled"/>
   <int value="-1617183455" label="OfflineRecentPages:disabled"/>
   <int value="-1616855537" label="enable-manual-password-generation:disabled"/>
   <int value="-1616638720" label="AutofillShadowDOM:enabled"/>
@@ -22740,6 +22741,7 @@ from previous Chrome versions.
   <int value="-638764080" label="EncryptedClientHello:disabled"/>
   <int value="-638349846" label="OmniboxWarmRecycledViewPool:disabled"/>
   <int value="-638177392" label="FuseBoxDebug:enabled"/>
+  <int value="-638007872" label="OfflineContentOnNetError:enabled"/>
   <int value="-637297943" label="WebAuthenticationCableSecondFactor:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
   <int value="-636062300" label="BlinkExtensionDiagnostics:disabled"/>
@@ -23359,6 +23361,7 @@ from previous Chrome versions.
   <int value="-348720922" label="FedCmIdpSigninStatusEnabled:enabled"/>
   <int value="-348141551" label="IgnoreUiGains:enabled"/>
   <int value="-347654657" label="CSSColorSchemeUARendering:enabled"/>
+  <int value="-347158116" label="OfflineContentOnNetError:disabled"/>
   <int value="-347036716" label="OmniboxDomainSuggestions:disabled"/>
   <int value="-346600492" label="GainmapHdrImages:enabled"/>
   <int value="-346413328" label="UseNewAcceptLanguageHeader:disabled"/>
@@ -24419,6 +24422,7 @@ from previous Chrome versions.
   <int value="147342055" label="ChromeHomeClearUrlOnOpen:disabled"/>
   <int value="147373243" label="enable-deferred-image-decoding"/>
   <int value="147645817" label="DnsHttpssvc:enabled"/>
+  <int value="147982046" label="OfflineAutoFetch:enabled"/>
   <int value="148142535" label="ShortcutCustomization:disabled"/>
   <int value="149272550" label="OmitCorsClientCert:disabled"/>
   <int value="149336730" label="UseMojoVideoDecoderForPepper:enabled"/>
