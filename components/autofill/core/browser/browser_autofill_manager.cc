@@ -3697,6 +3697,7 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
     plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
         plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
             kCreateNewPlusAddressSuggested);
+    create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
     return create_plus_address_suggestion;
   }
   Suggestion existing_plus_address_suggestion(
@@ -3706,6 +3707,7 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
   plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
       plus_addresses::PlusAddressMetrics::PlusAddressAutofillSuggestionEvent::
           kExistingPlusAddressSuggested);
+  existing_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
   return existing_plus_address_suggestion;
 }
 

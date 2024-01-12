@@ -26,6 +26,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/plus_addresses/resources/vector_icons.h"
+#endif
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -121,6 +124,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
+    case Suggestion::Icon::kPlusAddress:
       return std::u16string();
   }
   NOTREACHED_NORETURN();
@@ -191,6 +195,13 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
     case Suggestion::Icon::kGooglePasswordManager:
       return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
                                      kGooglePasswordManagerIconSize);
+    case Suggestion::Icon::kPlusAddress:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ImageViewFromVectorIcon(plus_addresses::kPlusAddressesLogoIcon,
+                                     kIconSize);
+#else
+      return ImageViewFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
+#endif
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGooglePayDark:
