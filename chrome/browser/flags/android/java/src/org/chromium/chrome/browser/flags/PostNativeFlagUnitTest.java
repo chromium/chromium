@@ -23,20 +23,20 @@ public class PostNativeFlagUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {
-        new PostNativeFlag(FEATURE_A);
-        new PostNativeFlag(FEATURE_A);
+        new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
+        new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
     }
 
     @Test(expected = AssertionError.class)
     public void testNativeNotInitialized_throwAssertionError() {
-        PostNativeFlag featureA = new PostNativeFlag(FEATURE_A);
+        PostNativeFlag featureA = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
         featureA.isEnabled();
     }
 
     @Test
     public void testNativeInitialized_getsFromChromeFeatureList() {
-        PostNativeFlag featureA = new PostNativeFlag(FEATURE_A);
-        PostNativeFlag featureB = new PostNativeFlag(FEATURE_B);
+        PostNativeFlag featureA = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
+        PostNativeFlag featureB = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B);
 
         // Values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_OFF_B_ON);

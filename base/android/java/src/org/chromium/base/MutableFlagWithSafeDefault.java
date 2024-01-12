@@ -15,13 +15,11 @@ package org.chromium.base;
  */
 public class MutableFlagWithSafeDefault extends Flag {
     private final boolean mDefaultValue;
-    private final FeatureMap mFeatureMap;
     private Boolean mInMemoryCachedValue;
 
     public MutableFlagWithSafeDefault(
             FeatureMap featureMap, String featureName, boolean defaultValue) {
-        super(featureName);
-        mFeatureMap = featureMap;
+        super(featureMap, featureName);
         mDefaultValue = defaultValue;
     }
 

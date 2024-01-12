@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
 
 /**
@@ -13,8 +14,8 @@ import org.chromium.base.Flag;
 public class PostNativeFlag extends Flag {
     private Boolean mInMemoryCachedValue;
 
-    public PostNativeFlag(String featureName) {
-        super(featureName);
+    public PostNativeFlag(FeatureMap featureMap, String featureName) {
+        super(featureMap, featureName);
     }
 
     @Override
@@ -22,10 +23,10 @@ public class PostNativeFlag extends Flag {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
 
         if (FeatureList.hasTestFeature(mFeatureName)) {
-            return ChromeFeatureList.isEnabled(mFeatureName);
+            return mFeatureMap.isEnabledInNative(mFeatureName);
         }
 
-        mInMemoryCachedValue = ChromeFeatureList.isEnabled(mFeatureName);
+        mInMemoryCachedValue = mFeatureMap.isEnabledInNative(mFeatureName);
         return mInMemoryCachedValue;
     }
 

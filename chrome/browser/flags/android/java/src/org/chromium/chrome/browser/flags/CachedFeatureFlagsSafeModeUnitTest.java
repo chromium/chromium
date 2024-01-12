@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureMap;
 import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
@@ -27,13 +28,15 @@ import java.util.Arrays;
 public class CachedFeatureFlagsSafeModeUnitTest {
     @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
 
+    private static final FeatureMap FEATURE_MAP = BaseFlagTestRule.FEATURE_MAP;
     private static final String CRASHY_FEATURE = "CrashyFeature";
     private static final String OK_FEATURE = "OkFeature";
     private static final boolean CRASHY_FEATURE_DEFAULT = false;
     private static final boolean OK_FEATURE_DEFAULT = false;
     private static final CachedFlag sCrashyFeature =
-            new CachedFlag(CRASHY_FEATURE, CRASHY_FEATURE_DEFAULT);
-    private static final CachedFlag sOkFeature = new CachedFlag(OK_FEATURE, OK_FEATURE_DEFAULT);
+            new CachedFlag(FEATURE_MAP, CRASHY_FEATURE, CRASHY_FEATURE_DEFAULT);
+    private static final CachedFlag sOkFeature =
+            new CachedFlag(FEATURE_MAP, OK_FEATURE, OK_FEATURE_DEFAULT);
 
     private static final String BOOL_PARAM_NAME = "BoolParam";
     private static final String INT_PARAM_NAME = "IntParam";

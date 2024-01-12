@@ -22,18 +22,18 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit Tests for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFlagUnitTest {
-    @Rule public final BaseFlagTestRule baseFlagTestRule = new BaseFlagTestRule();
+    @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {
-        new CachedFlag(FEATURE_A, true);
-        new CachedFlag(FEATURE_A, true);
+        new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, true);
+        new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, true);
     }
 
     @Test
     public void testNativeInitialized_getsFromChromeFeatureList() {
-        CachedFlag featureA = new CachedFlag(FEATURE_A, false);
-        CachedFlag featureB = new CachedFlag(FEATURE_B, false);
+        CachedFlag featureA = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, false);
+        CachedFlag featureB = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B, false);
 
         // Cache native flags, meaning values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_OFF_B_ON);
@@ -46,8 +46,8 @@ public class CachedFlagUnitTest {
 
     @Test
     public void testNativeNotInitializedNotCached_useDefault() {
-        CachedFlag featureA = new CachedFlag(FEATURE_A, true);
-        CachedFlag featureB = new CachedFlag(FEATURE_B, false);
+        CachedFlag featureA = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, true);
+        CachedFlag featureB = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B, false);
 
         // Do not cache values from native. There are no values stored in prefs either.
         FeatureList.setTestFeatures(A_OFF_B_ON);
@@ -65,8 +65,8 @@ public class CachedFlagUnitTest {
 
     @Test
     public void testNativeNotInitializedPrefsCached_getsFromPrefs() {
-        CachedFlag featureA = new CachedFlag(FEATURE_A, false);
-        CachedFlag featureB = new CachedFlag(FEATURE_B, false);
+        CachedFlag featureA = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, false);
+        CachedFlag featureB = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B, false);
 
         // Cache native flags, meaning values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_OFF_B_ON);
@@ -101,8 +101,8 @@ public class CachedFlagUnitTest {
 
     @Test
     public void testSetForTesting_returnsForcedValue() {
-        CachedFlag featureA = new CachedFlag(FEATURE_A, false);
-        CachedFlag featureB = new CachedFlag(FEATURE_B, false);
+        CachedFlag featureA = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, false);
+        CachedFlag featureB = new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B, false);
 
         // Do not cache values from native. There are no values stored in prefs either.
         // Query the flags to make sure the default values are returned.

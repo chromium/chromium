@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.flags;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -19,18 +20,21 @@ import java.util.Map;
  * CachedFlags are Flags that may be used before native is loaded and the FeatureList is
  * initialized.
  *
- * They return a flag value read from native in a previous run, using SharedPreferences as
+ * <p>They return a flag value read from native in a previous run, using SharedPreferences as
  * persistence.
  *
- * @see {@link #isEnabled()} for more details about the logic.
+ * <p>@see {@link #isEnabled()} for more details about the logic.
  *
- * To cache a flag from ChromeFeatureList:
- * - Create a static CachedFlag object in {@link ChromeFeatureList} "sMyFlag"
- * - Add it to the list {@link ChromeFeatureList#sFlagsCachedFullBrowser}
- * - Call {@code ChromeFeatureList.sMyFlag.isEnabled()} to query whether the cached flag is enabled.
- *   Consider this the source of truth for whether the flag is turned on in the current session.
+ * <p>To cache a flag from a {@link FeatureMap}, e.g. FooFeatureMap:
  *
- * Metrics caveat: For cached flags that are queried before native is initialized, when a new
+ * <ul>
+ *   <li>Create a static CachedFlag object in FooFeatureMap "sMyFlag"
+ *   <li>Add it to the list FooFeatureMap#sFlagsCachedFullBrowser
+ *   <li>Call {@code FooFeatureMap.sMyFlag.isEnabled()} to query whether the cached flag is enabled.
+ *       Consider this the source of truth for whether the flag is turned on in the current session.
+ * </ul>
+ *
+ * <p>Metrics caveat: For cached flags that are queried before native is initialized, when a new
  * experiment configuration is received the metrics reporting system will record metrics as if the
  * experiment is enabled despite the experimental behavior not yet taking effect. This will be
  * remedied on the next process restart.
@@ -38,8 +42,8 @@ import java.util.Map;
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
 
-    public CachedFlag(String featureName, boolean defaultValue) {
-        super(featureName);
+    public CachedFlag(FeatureMap featureMap, String featureName, boolean defaultValue) {
+        super(featureMap, featureName);
         mDefaultValue = defaultValue;
     }
 
@@ -51,8 +55,8 @@ public class CachedFlag extends Flag {
      *       CachedFlag#setForTesting}, the forced value is returned.
      *   <li>2. If a value was previously returned in the same run, the same value is returned for
      *       consistency.
-     *   <li>3. If in a previous run, the value from {@link ChromeFeatureList} was cached to
-     *       SharedPrefs, it is returned.
+     *   <li>3. If in a previous run, the value from {@link FeatureMap} was cached to SharedPrefs,
+     *       it is returned.
      *   <li>4. The |defaultValue| passed as a constructor parameter is returned.
      * </ul>
      */
@@ -113,9 +117,9 @@ public class CachedFlag extends Flag {
         }
     }
 
-    /** Caches the value of the feature from {@link ChromeFeatureList} to SharedPrefs. */
+    /** Caches the value of the feature from {@link FeatureMap} to SharedPrefs. */
     void cacheFeature() {
-        boolean isEnabledInNative = ChromeFeatureList.isEnabled(mFeatureName);
+        boolean isEnabledInNative = mFeatureMap.isEnabledInNative(mFeatureName);
 
         CachedFlagsSharedPreferences.getInstance()
                 .writeBoolean(getSharedPreferenceKey(), isEnabledInNative);
