@@ -373,6 +373,8 @@ class WebContents : public PageNavigator,
   // nullptr will be returned instead.
   // The callback should only run on the UI thread and it should always be
   // non-null.
+  // Most uses of Getter and OnceGetter can likely be safety replaced with
+  // base::WeakPtr<WebContents>.
   using Getter = base::RepeatingCallback<WebContents*(void)>;
   // Use this variant for instances that will only run the callback a single
   // time.
