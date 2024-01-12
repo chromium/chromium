@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, ColorCallback_ChangesColor) {
   ASSERT_TRUE(RunTest("color_callback_changes_color.js"));
 }
 
-// TODO(crbug.com/1517476): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1517470): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ColorCallback_ChangesColorWhenColorsUndefined \
   DISABLED_ColorCallback_ChangesColorWhenColorsUndefined
 #else
