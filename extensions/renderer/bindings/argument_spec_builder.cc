@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/argument_spec_builder.h"
 
+#include <string_view>
+
 namespace extensions {
 
 ArgumentSpecBuilder::ArgumentSpecBuilder(ArgumentType type)

@@ -4,6 +4,8 @@
 
 #include "extensions/browser/url_request_util.h"
 
+#include <string_view>
+
 #include "base/types/optional_util.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"

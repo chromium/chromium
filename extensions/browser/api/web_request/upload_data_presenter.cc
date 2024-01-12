@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"

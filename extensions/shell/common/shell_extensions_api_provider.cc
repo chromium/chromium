@@ -4,6 +4,8 @@
 
 #include "extensions/shell/common/shell_extensions_api_provider.h"
 
+#include <string_view>
+
 #include "extensions/shell/common/api/shell_api_features.h"
 #include "extensions/shell/grit/app_shell_resources.h"
 

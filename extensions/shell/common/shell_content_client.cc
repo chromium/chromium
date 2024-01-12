@@ -4,6 +4,8 @@
 
 #include "extensions/shell/common/shell_content_client.h"
 
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/common/constants.h"

@@ -5,6 +5,7 @@
 #include "extensions/common/manifest_handlers/csp_info.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -96,7 +97,7 @@ int GetValidatorOptions(Extension* extension) {
   return options;
 }
 
-std::u16string GetInvalidManifestKeyError(base::StringPiece key) {
+std::u16string GetInvalidManifestKeyError(std::string_view key) {
   return ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidManifestKey, key);
 }
 
@@ -286,7 +287,7 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
 bool CSPHandler::ParseExtensionPagesCSP(
     Extension* extension,
     std::u16string* error,
-    base::StringPiece manifest_key,
+    std::string_view manifest_key,
     const base::Value* content_security_policy) {
   if (!content_security_policy) {
     return SetExtensionPagesCSP(extension, manifest_key,
@@ -327,7 +328,7 @@ bool CSPHandler::ParseExtensionPagesCSP(
 
 bool CSPHandler::ParseSandboxCSP(Extension* extension,
                                  std::u16string* error,
-                                 base::StringPiece manifest_key,
+                                 std::string_view manifest_key,
                                  const base::Value* sandbox_csp,
                                  bool allow_remote_sources) {
   if (!sandbox_csp) {
@@ -361,7 +362,7 @@ bool CSPHandler::ParseSandboxCSP(Extension* extension,
 }
 
 bool CSPHandler::SetExtensionPagesCSP(Extension* extension,
-                                      base::StringPiece manifest_key,
+                                      std::string_view manifest_key,
                                       std::string content_security_policy) {
   if (extension->manifest_version() >= 3) {
     std::u16string error;

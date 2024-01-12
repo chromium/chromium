@@ -131,7 +131,7 @@ void FrameContentWatcher::NotifyBrowserOfChange() {
   }
 
   std::vector<std::string> selector_strings;
-  for (const std::string_view& selector : transitive_selectors) {
+  for (std::string_view selector : transitive_selectors) {
     selector_strings.push_back(std::string(selector));
   }
 

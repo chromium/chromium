@@ -4,8 +4,6 @@
 
 #include "extensions/browser/api/web_contents_capture_client.h"
 
-#include <string_view>
-
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"

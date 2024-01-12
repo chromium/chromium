@@ -5,9 +5,10 @@
 #ifndef EXTENSIONS_TEST_TEST_EXTENSION_DIR_H_
 #define EXTENSIONS_TEST_TEST_EXTENSION_DIR_H_
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace extensions {
@@ -28,7 +29,7 @@ class TestExtensionDir {
 
   // Writes |manifest| to manifest.json within the unpacked dir. No validation
   // is performed. If desired this should be done on extension installation.
-  void WriteManifest(base::StringPiece manifest);
+  void WriteManifest(std::string_view manifest);
 
   // As above, but using a base::Value::Dict instead of JSON string.
   void WriteManifest(const base::Value::Dict& manifest);
@@ -36,7 +37,7 @@ class TestExtensionDir {
   // Writes |contents| to |filename| within the unpacked dir, overwriting
   // anything that was already there.
   void WriteFile(const base::FilePath::StringType& filename,
-                 base::StringPiece contents);
+                 std::string_view contents);
 
   // Copies the file at |from_path| into |local_filename| under the temp
   // directory, overwriting anything that was already there.
@@ -49,7 +50,7 @@ class TestExtensionDir {
   // this directory's temp dir) at `custom_path`. This allows for creating
   // multiple versions of a CRX easily without overwriting or moving them. If
   // omitted, the .crx will be at "ext.crx".
-  base::FilePath Pack(base::StringPiece custom_path = base::StringPiece());
+  base::FilePath Pack(std::string_view custom_path = std::string_view());
 
   // Returns the path to the unpacked directory.
   base::FilePath UnpackedPath() const;

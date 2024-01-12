@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
