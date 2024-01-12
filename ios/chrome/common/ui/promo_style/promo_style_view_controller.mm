@@ -139,6 +139,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (self) {
     _titleHorizontalMargin = kTitleHorizontalMargin;
     _subtitleBottomMargin = kDefaultSubtitleBottomMargin;
+    _headerImageShadowInset = kHeaderImageShadowShadowInset;
+    _headerImageBottomMargin = kDefaultMargin;
+    _noBackgroundHeaderImageTopMarginPercentage =
+        kNoBackgroundHeaderImageTopMarginPercentage;
   }
 
   return self;
@@ -368,7 +372,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (self.headerImageType != PromoStyleImageType::kNone) {
     _headerBackgroundImageViewTopMargin = [_headerBackgroundImageView.topAnchor
         constraintEqualToAnchor:self.bannerImageView.bottomAnchor];
-    CGFloat headerImageBottomMargin = kDefaultMargin;
+    CGFloat headerImageBottomMargin = _headerImageBottomMargin;
     if (self.headerImageType == PromoStyleImageType::kAvatar) {
       headerImageBottomMargin = self.headerBackgroundImage == nil
                                     ? kNoBackgroundHeaderImageBottomMargin
@@ -414,10 +418,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
             constraintEqualToAnchor:_fullHeaderImageView.heightAnchor],
         [_fullHeaderImageView.widthAnchor
             constraintGreaterThanOrEqualToAnchor:headerImageView.widthAnchor
-                                        constant:kHeaderImageShadowShadowInset],
+                                        constant:_headerImageShadowInset],
         [_fullHeaderImageView.heightAnchor
             constraintGreaterThanOrEqualToAnchor:headerImageView.heightAnchor
-                                        constant:kHeaderImageShadowShadowInset],
+                                        constant:_headerImageShadowInset],
 
         [_headerBackgroundImageView.widthAnchor
             constraintGreaterThanOrEqualToAnchor:_fullHeaderImageView
@@ -431,12 +435,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       // height = width constraint abve and one of the 2 will be dropped.
       NSLayoutConstraint* widthConstraint = [_fullHeaderImageView.widthAnchor
           constraintEqualToAnchor:headerImageView.widthAnchor
-                         constant:kHeaderImageShadowShadowInset];
+                         constant:_headerImageShadowInset];
       widthConstraint.priority = UILayoutPriorityDefaultLow;
       widthConstraint.active = YES;
       NSLayoutConstraint* heightConstraint = [_fullHeaderImageView.heightAnchor
           constraintEqualToAnchor:headerImageView.heightAnchor
-                         constant:kHeaderImageShadowShadowInset];
+                         constant:_headerImageShadowInset];
       heightConstraint.priority = UILayoutPriorityDefaultLow;
       heightConstraint.active = YES;
     }
@@ -577,7 +581,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (!self.topAlignedLayout) {
     CGFloat headerImageTopMarginPercentage =
         self.headerBackgroundImage == nil
-            ? kNoBackgroundHeaderImageTopMarginPercentage
+            ? _noBackgroundHeaderImageTopMarginPercentage
             : kHeaderImageBackgroundTopMarginPercentage;
     _headerBackgroundImageViewTopMargin.constant = AlignValueToPixel(
         self.view.bounds.size.height * headerImageTopMarginPercentage);

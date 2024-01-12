@@ -20,9 +20,16 @@ namespace {
 /// Leading and trailing padding for the `addressBarView`.
 constexpr CGFloat kAddressViewHorizontalPadding = 11;
 /// The size of the logo image.
-const CGFloat kLogoSize = 36;
+constexpr const CGFloat kLogoSize = 45;
+/// The top margin percentage of the header view.
+constexpr const CGFloat kHeaderTopMarginPercentage = 0.05;
+/// The bottom margin of the header view.
+constexpr const CGFloat kHeaderBottomMargin = 31;
+/// The inset of the shadow in the header view.
+constexpr const CGFloat kHeaderShadowInset = 11;
+
 /// Padding between the subtitle and the `addressBarView`.
-const CGFloat kSubtitleBottomMargin = 17;
+constexpr const CGFloat kSubtitleBottomMargin = 17;
 
 }  // namespace
 
@@ -74,6 +81,9 @@ const CGFloat kSubtitleBottomMargin = 17;
 
   self.headerImageType = PromoStyleImageType::kImageWithShadow;
   self.headerViewForceStyleLight = YES;
+  self.headerImageShadowInset = kHeaderShadowInset;
+  self.noBackgroundHeaderImageTopMarginPercentage = kHeaderTopMarginPercentage;
+  self.headerImageBottomMargin = kHeaderBottomMargin;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
