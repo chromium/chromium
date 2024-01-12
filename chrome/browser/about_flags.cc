@@ -10490,6 +10490,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"read-aloud", flag_descriptions::kReadAloudName,
      flag_descriptions::kReadAloudDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReadAloud)},
+
+    {"read-aloud-in-cct", flag_descriptions::kReadAloudInCCTName,
+     flag_descriptions::kReadAloudInCCTDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kReadAloudInOverflowMenuInCCT)},
 #endif
 
     {"hide-incognito-media-metadata",
@@ -11003,21 +11007,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"offline-auto-fetch",
-     flag_descriptions::kOfflineAutoFetchName,
-     flag_descriptions::kOfflineAutoFetchDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         features::kOfflineAutoFetch)},
+    {"offline-auto-fetch", flag_descriptions::kOfflineAutoFetchName,
+     flag_descriptions::kOfflineAutoFetchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kOfflineAutoFetch)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"offline-content-on-net-error",
      flag_descriptions::kOfflineContentOnNetErrorName,
-     flag_descriptions::kOfflineContentOnNetErrorDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         features::kOfflineContentOnNetError)},
+     flag_descriptions::kOfflineContentOnNetErrorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kOfflineContentOnNetError)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -22466,6 +22466,7 @@ from previous Chrome versions.
   <int value="-767460914"
       label="ExperimentalAccessibilityDictationCommands:disabled"/>
   <int value="-766805224" label="MirroringService:enabled"/>
+  <int value="-766199617" label="ReadAloudInOverflowMenuInCCT:enabled"/>
   <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
@@ -24426,6 +24427,7 @@ from previous Chrome versions.
   <int value="147645817" label="DnsHttpssvc:enabled"/>
   <int value="147982046" label="OfflineAutoFetch:enabled"/>
   <int value="148142535" label="ShortcutCustomization:disabled"/>
+  <int value="148280309" label="ReadAloudInOverflowMenuInCCT:disabled"/>
   <int value="149272550" label="OmitCorsClientCert:disabled"/>
   <int value="149336730" label="UseMojoVideoDecoderForPepper:enabled"/>
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>

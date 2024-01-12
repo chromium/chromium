@@ -2510,6 +2510,8 @@ extern const char kQueryTilesSwapTrendingDescription[];
 
 extern const char kReadAloudName[];
 extern const char kReadAloudDescription[];
+extern const char kReadAloudInCCTName[];
+extern const char kReadAloudInCCTDescription[];
 
 extern const char kReaderModeHeuristicsName[];
 extern const char kReaderModeHeuristicsDescription[];

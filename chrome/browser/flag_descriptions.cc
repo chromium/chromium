@@ -4267,6 +4267,10 @@ const char kQueryTilesSwapTrendingDescription[] =
 const char kReadAloudName[] = "Read Aloud";
 const char kReadAloudDescription[] = "Controls the Read Aloud feature";
 
+const char kReadAloudInCCTName[] = "Read Aloud entrypoint in CCT";
+const char kReadAloudInCCTDescription[] =
+    "Controls the Read Aloud entrypoint in the overflow menu for CCT";
+
 const char kReadLaterFlagId[] = "read-later";
 const char kReadLaterName[] = "Reading List";
 const char kReadLaterDescription[] =
