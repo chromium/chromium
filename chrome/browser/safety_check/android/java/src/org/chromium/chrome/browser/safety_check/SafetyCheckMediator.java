@@ -93,32 +93,18 @@ class SafetyCheckMediator {
 
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    // Indicates that the password check results are blocked on disk load at different stages.
-    @IntDef({
-        PasswordCheckLoadStage.IDLE,
-        PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD,
-        PasswordCheckLoadStage.COMPLETED_WAIT_FOR_LOAD
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface PasswordCheckLoadStage {
-        /** No need for action - nothing is blocked on data load. */
-        int IDLE = 1;
-
-        /** Apply the data from disk once available since this is initial load. */
-        int INITIAL_WAIT_FOR_LOAD = 2;
-
-        /** Apply the data from the latest run once available since this is a current check. */
-        int COMPLETED_WAIT_FOR_LOAD = 3;
-    }
-
-    private @PasswordCheckLoadStage int mLoadStage;
-
     /** Callbacks and related objects to show the checking state for at least 1 second. */
     private Handler mHandler;
 
+    /** Stores the callback updating the password check state in the UI after the delay. */
     private Runnable mRunnablePasswords;
+
+    /** Stores the callback updating the safe browsing check state in the UI after the delay. */
     private Runnable mRunnableSafeBrowsing;
+
+    /** Stores the callback updating the updates check state in the UI after the delay. */
     private Runnable mRunnableUpdates;
+
     private long mCheckStartTime = -1;
 
     /**
@@ -340,7 +326,6 @@ class SafetyCheckMediator {
             // recently). For this case, breached credential fetch is skipped.
             if (PasswordManagerHelper.canUseUpm()
                     && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-                mLoadStage = PasswordCheckLoadStage.IDLE;
                 mPasswordsSafetyCheckPreferenceModel.set(
                         PasswordsCheckPreferenceProperties.PASSWORDS_STATE,
                         PasswordsState.UNCHECKED);
@@ -349,10 +334,8 @@ class SafetyCheckMediator {
         }
         mPasswordsSafetyCheckPreferenceModel.set(
                 PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
-        mLoadStage = PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD;
         // If the user is not signed in, immediately set the state and do not block on disk loads.
         if (!SafetyCheckBridge.userSignedIn()) {
-            mLoadStage = PasswordCheckLoadStage.IDLE;
             mPasswordsSafetyCheckPreferenceModel.set(
                     PasswordsCheckPreferenceProperties.PASSWORDS_STATE, PasswordsState.SIGNED_OUT);
             // Record the value in UMA.
@@ -361,6 +344,7 @@ class SafetyCheckMediator {
                     PasswordsStatus.SIGNED_OUT,
                     PasswordsStatus.MAX_VALUE + 1);
             updatePasswordElementClickDestination();
+            return;
         }
 
         fetchPasswordsAndBreachedCredentials();
@@ -411,7 +395,7 @@ class SafetyCheckMediator {
 
     /** Cancels any delayed show callbacks. */
     private void cancelCallbacks() {
-        setRunnablePasswords(null, null);
+        setRunnablePasswords(null);
         setRunnableSafeBrowsing(null);
         setRunnableUpdates(null);
     }
@@ -420,15 +404,14 @@ class SafetyCheckMediator {
      * Sets {@link mRunnablePasswords} and, if non-null, runs it with a delay. Will cancel any
      * outstanding callbacks set by previous calls to this method.
      */
-    private void setRunnablePasswords(
-            Callback<PasswordCheckResult> runnable, PasswordCheckResult passwordCheckResult) {
+    private void setRunnablePasswords(Runnable runnable) {
         if (mRunnablePasswords != null) {
             mHandler.removeCallbacks(mRunnablePasswords);
         }
-        if (runnable == null) return;
+        mRunnablePasswords = runnable;
+        if (mRunnablePasswords == null) return;
 
-        mRunnablePasswords = () -> runnable.onResult(passwordCheckResult);
-        mHandler.postDelayed(mRunnablePasswords, getModelUpdateDelay());
+        mHandler.postDelayed(runnable, getModelUpdateDelay());
     }
 
     /**
@@ -477,20 +460,19 @@ class SafetyCheckMediator {
 
     /** Called when all data is loaded. Determines if it needs to update the model. */
     private void determinePasswordStateOnLoadComplete(
-            PasswordCheckResult passwordSafetyCheckResult) {
-        // Nothing is blocked on data load, so ignore the load.
-        if (mLoadStage == PasswordCheckLoadStage.IDLE) return;
-
+            PasswordCheckResult passwordSafetyCheckResult, boolean isInitialLoad) {
         // Only delay updating the UI on the user-triggered check and not initially.
-        if (mLoadStage == PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD) {
-            updatePasswordsStateOnDataLoaded(passwordSafetyCheckResult);
+        if (!isInitialLoad) {
+            updatePasswordsStateOnDataLoaded(passwordSafetyCheckResult, false);
         } else {
-            setRunnablePasswords(this::updatePasswordsStateOnDataLoaded, passwordSafetyCheckResult);
+            setRunnablePasswords(
+                    () -> updatePasswordsStateOnDataLoaded(passwordSafetyCheckResult, true));
         }
     }
 
     /** Applies the results of the password check to the model. Only called when data is loaded. */
-    private void updatePasswordsStateOnDataLoaded(PasswordCheckResult passwordSafetyCheckResult) {
+    private void updatePasswordsStateOnDataLoaded(
+            PasswordCheckResult passwordSafetyCheckResult, boolean isInitialLoad) {
         if (passwordSafetyCheckResult.getBreachedCount().isPresent()) {
             mPasswordsSafetyCheckPreferenceModel.set(
                     PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT,
@@ -498,7 +480,7 @@ class SafetyCheckMediator {
         }
 
         @PasswordsState int passwordsState;
-        if (mLoadStage == PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD) {
+        if (!isInitialLoad) {
             // Cannot show the safe state at the initial load if last run is older than 10 mins.
             passwordsState = getPasswordStateWhenInitialLoad(passwordSafetyCheckResult);
         } else {
@@ -511,8 +493,6 @@ class SafetyCheckMediator {
 
         mPasswordsSafetyCheckPreferenceModel.set(
                 PasswordsCheckPreferenceProperties.PASSWORDS_STATE, passwordsState);
-        // Nothing is blocked on this any longer.
-        mLoadStage = PasswordCheckLoadStage.IDLE;
         updatePasswordElementClickDestination();
     }
 
@@ -612,7 +592,7 @@ class SafetyCheckMediator {
                             if (mediator == null) return;
 
                             if (error != null) {
-                                mediator.onPasswordCheckFailed(error);
+                                mediator.onPasswordCheckFailed(error, false);
                             } else {
                                 mediator.onPasswordCheckSucceeded(result, false);
                             }
@@ -620,8 +600,6 @@ class SafetyCheckMediator {
     }
 
     private void checkPasswords() {
-        mLoadStage = PasswordCheckLoadStage.IDLE;
-
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         mPasswordCheckController
                 .checkPasswords(PasswordStoreType.ACCOUNT_STORE)
@@ -631,7 +609,7 @@ class SafetyCheckMediator {
                             if (mediator == null) return;
 
                             if (error != null) {
-                                mediator.onPasswordCheckFailed(error);
+                                mediator.onPasswordCheckFailed(error, true);
                             } else {
                                 mediator.onPasswordCheckSucceeded(result, true);
                             }
@@ -639,21 +617,17 @@ class SafetyCheckMediator {
     }
 
     private void onPasswordCheckSucceeded(
-            PasswordCheckResult passwordCheckResult, boolean duringCheck) {
+            PasswordCheckResult passwordCheckResult, boolean isInitialLoad) {
         if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
-        if (duringCheck) {
-            // Hand off the completed state to the method for handling loaded passwords data.
-            mLoadStage = PasswordCheckLoadStage.COMPLETED_WAIT_FOR_LOAD;
-        }
-        determinePasswordStateOnLoadComplete(passwordCheckResult);
+        determinePasswordStateOnLoadComplete(passwordCheckResult, isInitialLoad);
     }
 
-    private void onPasswordCheckFailed(Throwable error) {
+    private void onPasswordCheckFailed(Throwable error, boolean isInitialLoad) {
         if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
         setRunnablePasswords(
-                (checkResult) -> {
+                () -> {
                     if (mPasswordsSafetyCheckPreferenceModel == null) return;
 
                     RecordHistogram.recordEnumeratedHistogram(
@@ -661,8 +635,8 @@ class SafetyCheckMediator {
                             PasswordsCheckPreferenceProperties.passwordsStateToNative(
                                     PasswordsState.ERROR),
                             PasswordsStatus.MAX_VALUE + 1);
-                    updatePasswordElementClickDestination();
-                },
-                new PasswordCheckResult((Exception) error));
+                    determinePasswordStateOnLoadComplete(
+                            new PasswordCheckResult(new Exception(error)), isInitialLoad);
+                });
     }
 }

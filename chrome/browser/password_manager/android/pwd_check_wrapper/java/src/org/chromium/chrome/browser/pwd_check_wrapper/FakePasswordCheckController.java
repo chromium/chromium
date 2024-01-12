@@ -13,6 +13,10 @@ public class FakePasswordCheckController implements PasswordCheckController {
         mPasswordCheckResult.complete(result);
     }
 
+    public CompletableFuture<PasswordCheckResult> getFuturePasswordCheckResult() {
+        return mPasswordCheckResult;
+    }
+
     @Override
     public CompletableFuture<PasswordCheckResult> checkPasswords(int passwordStoreType) {
         mPasswordCheckResult = new CompletableFuture<>();
