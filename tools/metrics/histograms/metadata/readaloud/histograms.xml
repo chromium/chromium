@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Phase">
+  <variant name="Playback"/>
+  <variant name="PlaybackRequest"/>
+  <variant name="ReadabilityCheck"/>
+</variants>
+
 <histogram name="ReadAloud.Eligibility.IneligiblityReason"
     enum="ReadAloudIneligibilityReason" expires_after="2024-06-02">
   <owner>andreaxg@google.com</owner>
@@ -111,6 +117,47 @@ chromium-metrics-reviews@google.com.
     Records if a tab playback creation succeeds or fails. Emitted in the tab
     playback creation callback. Does not mean playback has started.
   </summary>
+</histogram>
+
+<histogram name="ReadAloud.ReadAloudError.{Phase}" enum="ReadAloudErrorCode"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Records cause of a ReadAloud-speficic exception. In case more details are
+    known, ReadAloud.ReadAloudUnsuportedError.{Phase} or
+    ReadAloud.ReadAloudNetError.{Phase} will also be emitted. Recorded during
+    {Phase}.
+  </summary>
+  <token key="Phase" variants="Phase"/>
+</histogram>
+
+<histogram name="ReadAloud.ReadAloudNetError.{Phase}" enum="NetErrorCodes"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Network status codes recorded for each ReadAloudRequest that fails and has
+    this information present. Recorded value is the absolute value of the
+    received net::Error value.
+
+    Recorded during {Phase}.
+  </summary>
+  <token key="Phase" variants="Phase"/>
+</histogram>
+
+<histogram name="ReadAloud.ReadAloudUnsuportedError.{Phase}"
+    enum="RejectionReason" expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Records a rejection reason for not being able to trigger or continue read
+    aloud. Recorded during {Phase}.
+  </summary>
+  <token key="Phase" variants="Phase"/>
 </histogram>
 
 <histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"
