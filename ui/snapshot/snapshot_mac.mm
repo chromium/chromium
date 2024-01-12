@@ -53,15 +53,6 @@ bool GrabViewSnapshot(gfx::NativeView native_view,
   return true;
 }
 
-bool GrabWindowSnapshot(gfx::NativeWindow native_window,
-                        const gfx::Rect& snapshot_bounds,
-                        gfx::Image* image) {
-  // Make sure to grab the "window frame" view so we get current tab +
-  // tabstrip.
-  NSWindow* window = native_window.GetNativeNSWindow();
-  return GrabViewSnapshot(window.contentView.superview, snapshot_bounds, image);
-}
-
 void GrabWindowSnapshotAsync(gfx::NativeWindow native_window,
                              const gfx::Rect& source_rect,
                              GrabSnapshotImageCallback callback) {
