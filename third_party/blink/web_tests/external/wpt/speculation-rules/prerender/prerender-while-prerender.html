@@ -36,7 +36,13 @@ promise_test(async t => {
   // perform a normal navigation to `innerPrerenderRC.url`.
   await outerPrerenderedRC.executeScript(innerPrerenderRCURL => {
     document.addEventListener("prerenderingchange", () => {
-      location.href = innerPrerenderRCURL;
+      // executeScriptToNavigate is normally an implementation detail of the
+      // RemoteContextHelper framework, used by, e.g., `rch.navigateTo()`.
+      // However, because we're setting up an event listener to navigate later,
+      // we can't call `rch.navigateTo()`, and so need to call it directly.
+      executeScriptToNavigate(innerPrerenderRCURL => {
+        location.href = innerPrerenderRCURL;
+      }, [innerPrerenderRCURL]);
     });
   }, [innerPrerenderRC.url]);
 
