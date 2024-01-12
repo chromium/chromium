@@ -1103,10 +1103,10 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
 bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  bool isBold = ax_node->HasTextStyle(ax::mojom::TextStyle::kBold);
-  bool isItalic = ax_node->HasTextStyle(ax::mojom::TextStyle::kItalic);
-  bool isUnderline = ax_node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
-  return isBold || isItalic || isUnderline;
+  bool is_bold = ax_node->HasTextStyle(ax::mojom::TextStyle::kBold);
+  bool is_italic = ax_node->HasTextStyle(ax::mojom::TextStyle::kItalic);
+  bool is_underline = ax_node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
+  return is_bold || is_italic || is_underline;
 }
 
 bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
@@ -1712,14 +1712,14 @@ int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
 }
 
 int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
-                                               int maxTextLength) {
+                                               int max_text_length) {
   // TODO(crbug.com/1474941): Investigate providing correct line breaks
   // or alternatively making adjustments to ax_text_utils to return boundaries
   // that minimize choppiness.
   std::vector<int> offsets;
-  const std::u16string shorterString = text.substr(0, maxTextLength);
+  const std::u16string shorter_string = text.substr(0, max_text_length);
   size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
-      shorterString, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      shorter_string, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
       ax::mojom::MoveDirection::kForward,
       ax::mojom::TextAffinity::kDefaultValue);
   size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
@@ -1738,8 +1738,8 @@ int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
   }
 
   size_t word_ends = ui::FindAccessibleTextBoundary(
-      shorterString, offsets, ax::mojom::TextBoundary::kWordStart,
-      shorterString.length() - 1, ax::mojom::MoveDirection::kBackward,
+      shorter_string, offsets, ax::mojom::TextBoundary::kWordStart,
+      shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
       ax::mojom::TextAffinity::kDefaultValue);
   return word_ends;
 }
@@ -1785,9 +1785,9 @@ void ReadAnythingAppController::SetContentForTesting(
       render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
-  ui::AXEvent selectionEvent;
-  selectionEvent.event_type = ax::mojom::Event::kDocumentSelectionChanged;
-  selectionEvent.event_from = ax::mojom::EventFrom::kUser;
+  ui::AXEvent selection_event;
+  selection_event.event_type = ax::mojom::Event::kDocumentSelectionChanged;
+  selection_event.event_from = ax::mojom::EventFrom::kUser;
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
                           GURL::EmptyGURL(), false);
@@ -1795,7 +1795,7 @@ void ReadAnythingAppController::SetContentForTesting(
 
   // Trigger a selection event (for testing selections).
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
-                             {selectionEvent});
+                             {selection_event});
 }
 
 content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {

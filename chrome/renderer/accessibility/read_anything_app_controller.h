@@ -313,7 +313,7 @@ class ReadAnythingAppController
   // If the sentence exceeds the maximum text length, the sentence will be
   // cropped to the nearest word boundary that doesn't exceed the maximum
   // text length.
-  int GetNextSentence(const std::u16string& text, int maxTextLength);
+  int GetNextSentence(const std::u16string& text, int max_text_length);
 
   // SetContentForTesting, SetThemeForTesting, and SetLanguageForTesting are
   // used by ReadAnythingAppTest and thus need to be kept in
