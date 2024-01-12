@@ -23,9 +23,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/guest_view/browser/guest_view_base.h"
-#include "components/guest_view/browser/guest_view_manager_delegate.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/focused_node_details.h"
@@ -43,11 +40,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -55,6 +52,17 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/test/with_feature_override.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
+#include "pdf/pdf_features.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace autofill {
 class AutofillPopupDelegate;
@@ -1454,11 +1462,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   EXPECT_FALSE(main_frame->GetView()->IsMouseLocked());
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 // Base test class for interactive tests which load and test PDF files.
 class SitePerProcessInteractivePDFTest
-    : public SitePerProcessInteractiveBrowserTest {
+    : public base::test::WithFeatureOverride,
+      public SitePerProcessInteractiveBrowserTest {
  public:
-  SitePerProcessInteractivePDFTest() : test_guest_view_manager_(nullptr) {}
+  SitePerProcessInteractivePDFTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
   SitePerProcessInteractivePDFTest(const SitePerProcessInteractivePDFTest&) =
       delete;
@@ -1469,24 +1480,55 @@ class SitePerProcessInteractivePDFTest
 
   void SetUpOnMainThread() override {
     SitePerProcessInteractiveBrowserTest::SetUpOnMainThread();
-    test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(), extensions::ExtensionsAPIClient::Get()
-                                  ->CreateGuestViewManagerDelegate());
+    if (UseOopif()) {
+      manager_ = pdf::TestPdfViewerStreamManager::CreateForWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+    } else {
+      manager_ = factory_.GetOrCreateTestGuestViewManager(
+          browser()->profile(), extensions::ExtensionsAPIClient::Get()
+                                    ->CreateGuestViewManagerDelegate());
+    }
   }
 
   void TearDownOnMainThread() override {
-    test_guest_view_manager_ = nullptr;
+    manager_ = absl::monostate();
     SitePerProcessInteractiveBrowserTest::TearDownOnMainThread();
   }
 
+  bool UseOopif() const { return GetParam(); }
+
  protected:
-  guest_view::TestGuestViewManager* test_guest_view_manager() const {
-    return test_guest_view_manager_;
+  guest_view::TestGuestViewManager* GetTestGuestViewManager() const {
+    return absl::get<raw_ptr<guest_view::TestGuestViewManager>>(manager_);
+  }
+
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() const {
+    return absl::get<raw_ptr<pdf::TestPdfViewerStreamManager>>(manager_);
+  }
+
+  void WaitUntilPdfLoaded() {
+    if (UseOopif()) {
+      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded();
+    } else {
+      auto* guest_view =
+          GetTestGuestViewManager()->WaitForSingleGuestViewCreated();
+      ASSERT_TRUE(guest_view);
+      auto* embedder_web_contents =
+          browser()->tab_strip_model()->GetActiveWebContents();
+      EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
+                guest_view->GetGuestMainFrame());
+
+      extensions::TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
+          guest_view);
+    }
   }
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
+  absl::variant<absl::monostate,
+                raw_ptr<guest_view::TestGuestViewManager>,
+                raw_ptr<pdf::TestPdfViewerStreamManager>>
+      manager_;
 };
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
@@ -1498,16 +1540,19 @@ class SitePerProcessInteractivePDFTest
 #else
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
-#endif
-IN_PROC_BROWSER_TEST_F(
+#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) &&
+        // defined(ADDRESS_SANITIZER)
+IN_PROC_BROWSER_TEST_P(
     SitePerProcessInteractivePDFTest,
     MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
-  // Initially, no guests are created.
-  EXPECT_EQ(0U, test_guest_view_manager()->num_guests_created());
+  if (!UseOopif()) {
+    // Initially, no guests are created.
+    EXPECT_EQ(0U, GetTestGuestViewManager()->num_guests_created());
+  }
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1524,12 +1569,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure the page finishes loading without crashing.
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
 
-  // Wait until the guest contents for PDF is created.
-  guest_view::GuestViewBase* guest_view =
-      test_guest_view_manager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  extensions::TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
-      guest_view);
+  WaitUntilPdfLoaded();
 
   content::RenderWidgetHostView* child_view =
       ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0)->GetView();
@@ -1561,7 +1601,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(point_in_root_window.y(), menu_waiter.params().y);
 }
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
+IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
                        LoadingPdfDoesNotStealFocus) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/two_iframes.html"));
@@ -1621,14 +1661,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
       content::JsReplace("document.getElementById('iframe2').src = $1;",
                          pdf_url.spec())));
 
-  // Verify the pdf has loaded.
-  auto* guest_view = test_guest_view_manager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-  EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
-            guest_view->GetGuestMainFrame());
-
-  extensions::TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
-      guest_view);
+  WaitUntilPdfLoaded();
 
   // Make sure the text area still has focus.
   ASSERT_TRUE(
@@ -1643,6 +1676,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
           "});")
           .ExtractBool());
 }
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SitePerProcessInteractivePDFTest);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
  public:
