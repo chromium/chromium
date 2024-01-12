@@ -83,7 +83,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void RemoveTabFromOrganization(int32_t session_id,
                                  int32_t organization_id,
                                  tab_search::mojom::TabPtr tab) override;
-  void ResetSession() override;
+  void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
   void StartTabGroupTutorial() override;
@@ -218,6 +218,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // Tracks whether the user has evoked |SwitchToTab()| for metric collection
   // purposes.
   bool called_switch_to_tab_ = false;
+
+  // Tracks whether a session restart is currently in progress.
+  bool restarting_ = false;
 
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>

@@ -71,6 +71,12 @@ class TabOrganizationService
       const Browser* browser,
       const content::WebContents* base_session_webcontents = nullptr);
 
+  // Convenience method that resets the session, starts a request if not in the
+  // first run experience, and opens the Organization UI.
+  void RestartSessionAndShowUI(
+      const Browser* browser,
+      const content::WebContents* base_session_webcontents = nullptr);
+
   // Allows for other User actions to open up the Organization UI.
   void OnUserInvokedFeature(const Browser* browser);
 
@@ -83,6 +89,10 @@ class TabOrganizationService
 
   // Called when the close button on the proactive nudge UI is clicked.
   void OnActionUIDismissed(const Browser* browser);
+
+  // Checks if the user is in the first run experience, and starts a request if
+  // not.
+  void StartRequestIfNotFRE(const Browser* browser);
 
   // Starts a request for the tab organization session that exists for the
   // browser, creating a new session if one does not already exists. Does not

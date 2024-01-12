@@ -25,7 +25,8 @@ suite('TabOrganizationPageTest', () => {
     paused: false,
   }) {
     testApiProxy = new TestTabSearchApiProxy();
-    testApiProxy.setSession(createSession());
+    const session = createSession();
+    testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
     testSyncProxy = new TestTabSearchSyncBrowserProxy();
@@ -36,6 +37,7 @@ suite('TabOrganizationPageTest', () => {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabOrganizationPage);
+    tabOrganizationPage.setSessionForTesting(session);
     await flushTasks();
   }
 
@@ -432,7 +434,7 @@ suite('TabOrganizationPageTest', () => {
           error: TabOrganizationError.kGeneric,
         }));
 
-    assertEquals(0, testApiProxy.getCallCount('resetSession'));
+    assertEquals(0, testApiProxy.getCallCount('restartSession'));
 
     const failure = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-failure');
@@ -443,7 +445,7 @@ suite('TabOrganizationPageTest', () => {
     checkNowAction.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await flushTasks();
 
-    assertEquals(1, testApiProxy.getCallCount('resetSession'));
+    assertEquals(1, testApiProxy.getCallCount('restartSession'));
   });
 
   test('Tip action activates on Enter', async () => {

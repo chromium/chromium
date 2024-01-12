@@ -1600,8 +1600,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
       UMA_HISTOGRAM_BOOLEAN("Tab.Organization.TabContextMenu.Clicked", true);
 
-      service->ResetSessionForBrowser(browser, GetWebContentsAt(context_index));
-      service->OnUserInvokedFeature(browser);
+      service->RestartSessionAndShowUI(browser,
+                                       GetWebContentsAt(context_index));
       break;
     }
 

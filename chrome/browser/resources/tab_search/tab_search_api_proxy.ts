@@ -33,7 +33,7 @@ export interface TabSearchApiProxy {
 
   requestTabOrganization(): void;
 
-  resetSession(): void;
+  restartSession(): void;
 
   switchToTab(info: SwitchToTabInfo): void;
 
@@ -117,8 +117,8 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.requestTabOrganization();
   }
 
-  resetSession() {
-    this.handler.resetSession();
+  restartSession() {
+    this.handler.restartSession();
   }
 
   switchToTab(info: SwitchToTabInfo) {

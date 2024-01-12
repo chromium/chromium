@@ -13,7 +13,7 @@ import './tab_organization_results.js';
 import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,6 +25,8 @@ import {getTemplate} from './tab_organization_page.html.js';
 import {TabOrganizationResultsElement} from './tab_organization_results.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+
+const MIN_LOADING_ANIMATION_MS: number = 500;
 
 export interface TabOrganizationPageElement {
   $: {
@@ -63,7 +65,7 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
-  private state_: TabOrganizationState = TabOrganizationState.kNotStarted;
+  private state_: TabOrganizationState = TabOrganizationState.kInitializing;
   private name_: string;
   private tabs_: Tab[];
   private error_: TabOrganizationError = TabOrganizationError.kNone;
@@ -73,6 +75,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private isLastOrganization_: boolean = false;
   private showFRE_: boolean;
   private documentVisibilityChangedListener_: () => void;
+  private futureState_: TabOrganizationState|null;
 
   static get template() {
     return getTemplate();
@@ -117,6 +120,9 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   private onVisible_() {
     this.updateAvailableHeight_();
+    // When the UI goes from not shown to shown, bypass any state change
+    // animations.
+    this.classList.toggle('changed-state', false);
   }
 
   // TODO(emshack): Consider moving the available height calculation into
@@ -131,6 +137,10 @@ export class TabOrganizationPageElement extends PolymerElement {
     });
   }
 
+  setSessionForTesting(session: TabOrganizationSession) {
+    this.setSession_(session);
+  }
+
   private setSession_(session: TabOrganizationSession) {
     this.sessionId_ = session.sessionId;
     this.error_ = session.error;
@@ -143,7 +153,15 @@ export class TabOrganizationPageElement extends PolymerElement {
     } else {
       this.organizationId_ = -1;
     }
-    this.setState_(session.state);
+    this.maybeSetState_(session.state);
+  }
+
+  private maybeSetState_(state: TabOrganizationState) {
+    if (this.futureState_) {
+      this.futureState_ = state;
+      return;
+    }
+    this.setState_(state);
   }
 
   private setState_(state: TabOrganizationState) {
@@ -162,6 +180,8 @@ export class TabOrganizationPageElement extends PolymerElement {
       return;
     }
     switch (state) {
+      case TabOrganizationState.kInitializing:
+        break;
       case TabOrganizationState.kNotStarted:
         this.$.notStarted.announceHeader();
         break;
@@ -177,6 +197,19 @@ export class TabOrganizationPageElement extends PolymerElement {
       default:
         assertNotReached('Invalid tab organization state');
     }
+
+    // Ensure the loading state appears for a sufficient amount of time, so as
+    // to not appear jumpy if the request completes quickly.
+    if (state === TabOrganizationState.kInProgress) {
+      this.futureState_ = TabOrganizationState.kInProgress;
+      setTimeout(() => this.applyFutureState_(), MIN_LOADING_ANIMATION_MS);
+    }
+  }
+
+  private applyFutureState_() {
+    assert(this.futureState_);
+    this.setState_(this.futureState_);
+    this.futureState_ = null;
   }
 
   private isState_(state: TabOrganizationState): boolean {
@@ -212,7 +245,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   }
 
   private onCheckNow_() {
-    this.apiProxy_.resetSession();
+    this.apiProxy_.restartSession();
   }
 
   private onTipClick_() {
