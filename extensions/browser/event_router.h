@@ -35,6 +35,7 @@
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -140,7 +141,7 @@ class EventRouter : public KeyedService,
   // `EventRouter` is shared between on- and off-the-record contexts.
   void DispatchEventToSender(content::RenderProcessHost* rph,
                              content::BrowserContext* browser_context,
-                             const std::string& extension_id,
+                             const mojom::HostID& host_id,
                              events::HistogramValue histogram_value,
                              const std::string& event_name,
                              int worker_thread_id,
@@ -388,7 +389,7 @@ class EventRouter : public KeyedService,
       content::RenderProcessHost* rph,
       int worker_thread_id,
       content::BrowserContext* browser_context,
-      const std::string& extension_id,
+      const mojom::HostID& host_id,
       int event_id,
       const std::string& event_name,
       base::Value::List event_args,

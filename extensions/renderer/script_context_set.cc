@@ -14,9 +14,12 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/isolated_world_manager.h"
+#include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -71,8 +74,32 @@ ScriptContext* ScriptContextSet::Register(
       ScriptContext::GetEffectiveDocumentURLForContext(frame, frame_url, true),
       frame->GetDocument().GetSecurityOrigin(), view_type, is_webview);
 
+  mojom::HostID host_id;
+  RendererFrameContextData context_data = RendererFrameContextData(frame);
+  // By default, the context will use a HostID kExtensions type. Specific
+  // cases override that value below.
+  host_id.type = mojom::HostID::HostType::kExtensions;
+  if (extension) {
+    host_id.id = extension->id();
+  } else if (effective_context_type == mojom::ContextType::kWebUi) {
+    host_id.type = mojom::HostID::HostType::kWebUi;
+  } else if (effective_context_type == mojom::ContextType::kWebPage &&
+             !is_webview && context_data.IsIsolatedApplication()) {
+    host_id.type = mojom::HostID::HostType::kControlledFrameEmbedder;
+    // TODO(crbug.com/1517392): Improve how we derive origin for controlled
+    // frame embedders in renderer.
+    host_id.id = "";
+    if (frame_url.has_scheme()) {
+      host_id.id += frame_url.scheme() + "://";
+    }
+    host_id.id += frame_url.host();
+    if (frame_url.has_port()) {
+      host_id.id += ":" + frame_url.port();
+    }
+  }
+
   ScriptContext* context =
-      new ScriptContext(v8_context, frame, extension, context_type,
+      new ScriptContext(v8_context, frame, host_id, extension, context_type,
                         effective_extension, effective_context_type);
   contexts_.insert(context);  // takes ownership
   return context;
@@ -126,7 +153,7 @@ ScriptContext* ScriptContextSet::GetMainWorldContextForFrame(
 }
 
 void ScriptContextSet::ForEach(
-    const std::string& extension_id,
+    const mojom::HostID& host_id,
     content::RenderFrame* render_frame,
     const base::RepeatingCallback<void(ScriptContext*)>& callback) {
   // We copy the context list, because calling into javascript may modify it
@@ -135,26 +162,50 @@ void ScriptContextSet::ForEach(
 
   for (ScriptContext* context : contexts_copy) {
     // For the same reason as above, contexts may become invalid while we run.
-    if (!context->is_valid())
+    if (!context->is_valid()) {
       continue;
-
-    if (!extension_id.empty()) {
-      const Extension* extension = context->extension();
-      if (!extension || (extension_id != extension->id()))
-        continue;
     }
 
-    content::RenderFrame* context_render_frame = context->GetRenderFrame();
-    if (render_frame && render_frame != context_render_frame)
-      continue;
+    switch (host_id.type) {
+      case mojom::HostID::HostType::kExtensions:
+        // Note: If the type is kExtensions and host_id.id is empty, then the
+        // call should affect all extensions. See comment in dispatcher.cc
+        // UpdateAllBindings().
+        if (host_id.id.empty() || context->GetExtensionID() == host_id.id) {
+          ExecuteCallbackWithContext(context, render_frame, callback);
+        }
+        break;
 
+      case mojom::HostID::HostType::kWebUi:
+        DCHECK(host_id.id.empty());
+        ExecuteCallbackWithContext(context, render_frame, callback);
+        break;
+
+      case mojom::HostID::HostType::kControlledFrameEmbedder:
+        DCHECK(!host_id.id.empty());
+        // Verify that host_id matches context->host_id.
+        if (context->host_id().type == host_id.type &&
+            context->host_id().id == host_id.id) {
+          ExecuteCallbackWithContext(context, render_frame, callback);
+        }
+    }
+  }
+}
+
+void ScriptContextSet::ExecuteCallbackWithContext(
+    ScriptContext* context,
+    content::RenderFrame* render_frame,
+    const base::RepeatingCallback<void(ScriptContext*)>& callback) {
+  CHECK(context);
+  content::RenderFrame* context_render_frame = context->GetRenderFrame();
+  if (!render_frame || render_frame == context_render_frame) {
     callback.Run(context);
   }
 }
 
 void ScriptContextSet::OnExtensionUnloaded(const std::string& extension_id) {
   ScriptContextSetIterable::ForEach(
-      extension_id,
+      GenerateHostIdFromExtensionId(extension_id),
       base::BindRepeating(&ScriptContextSet::Remove, base::Unretained(this)));
 }
 

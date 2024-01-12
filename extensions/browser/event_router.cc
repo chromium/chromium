@@ -49,6 +49,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "url/origin.h"
 
@@ -170,17 +171,21 @@ void EventRouter::DispatchExtensionMessage(
     content::RenderProcessHost* rph,
     int worker_thread_id,
     content::BrowserContext* browser_context,
-    const std::string& extension_id,
+    const mojom::HostID& host_id,
     int event_id,
     const std::string& event_name,
     base::Value::List event_args,
     UserGestureState user_gesture,
     mojom::EventFilteringInfoPtr info,
     mojom::EventDispatcher::DispatchEventCallback callback) {
-  NotifyEventDispatched(browser_context, extension_id, event_name, event_args);
+  if (host_id.type == mojom::HostID::HostType::kExtensions) {
+    NotifyEventDispatched(browser_context,
+                          GenerateExtensionIdFromHostId(host_id), event_name,
+                          event_args);
+  }
   auto params = mojom::DispatchEventParams::New();
   params->worker_thread_id = worker_thread_id;
-  params->extension_id = extension_id;
+  params->host_id = host_id.Clone();
   params->event_name = event_name;
   params->event_id = event_id;
   params->is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
@@ -235,7 +240,7 @@ std::string EventRouter::GetBaseEventName(const std::string& full_event_name) {
 void EventRouter::DispatchEventToSender(
     content::RenderProcessHost* rph,
     content::BrowserContext* browser_context,
-    const std::string& extension_id,
+    const mojom::HostID& host_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     int worker_thread_id,
@@ -247,8 +252,11 @@ void EventRouter::DispatchEventToSender(
 
   auto* registry = ExtensionRegistry::Get(browser_context);
   CHECK(registry);
-  const Extension* extension =
-      registry->enabled_extensions().GetByID(extension_id);
+  const Extension* extension = nullptr;
+  if (host_id.type == mojom::HostID::HostType::kExtensions) {
+    extension = registry->enabled_extensions().GetByID(host_id.id);
+  }
+
   mojom::EventDispatcher::DispatchEventCallback callback;
   // If this is ever false, we won't log the metric for dispatch_start_time. But
   // this means we aren't dispatching an event to an extension so the metric
@@ -274,24 +282,24 @@ void EventRouter::DispatchEventToSender(
       if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
         callback = base::BindOnce(
             &EventRouter::DecrementInFlightEventsForRenderFrameHost,
-            weak_factory_.GetWeakPtr(), rph->GetID(), extension_id, event_id);
+            weak_factory_.GetWeakPtr(), rph->GetID(), host_id.id, event_id);
       } else {
         callback = base::DoNothing();
       }
     } else {
-      callback =
-          base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
-                         weak_factory_.GetWeakPtr(),
-                         WorkerId{extension_id, rph->GetID(),
-                                  service_worker_version_id, worker_thread_id},
-                         event_id);
+      callback = base::BindOnce(
+          &EventRouter::DecrementInFlightEventsForServiceWorker,
+          weak_factory_.GetWeakPtr(),
+          WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetID(),
+                   service_worker_version_id, worker_thread_id},
+          event_id);
     }
 #endif
   } else {
     callback = base::DoNothing();
   }
   ObserveProcess(rph);
-  DispatchExtensionMessage(rph, worker_thread_id, browser_context, extension_id,
+  DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
                            event_id, event_name, std::move(event_args),
                            UserGestureState::USER_GESTURE_UNKNOWN,
                            std::move(info), std::move(callback));
@@ -1204,7 +1212,8 @@ void EventRouter::DispatchEventToProcess(
 #endif
 
   DispatchExtensionMessage(process, worker_thread_id, listener_context,
-                           extension_id, event_id, event.event_name,
+                           GenerateHostIdFromExtensionId(extension_id),
+                           event_id, event.event_name,
                            std::move(event_args_to_use), event.user_gesture,
                            std::move(filter_info), std::move(callback));
 

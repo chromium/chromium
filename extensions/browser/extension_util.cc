@@ -58,7 +58,7 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
 
 }  // namespace
 
-mojom::HostID::HostType HostIDTypeFromGuestView(
+mojom::HostID::HostType HostIdTypeFromGuestView(
     const guest_view::GuestViewBase& guest) {
   if (guest.IsOwnedByWebUI()) {
     return mojom::HostID::HostType::kWebUi;
@@ -78,9 +78,9 @@ mojom::HostID::HostType HostIDTypeFromGuestView(
   return mojom::HostID::HostType::kExtensions;
 }
 
-mojom::HostID GenerateHostIDFromGuestView(
+mojom::HostID GenerateHostIdFromGuestView(
     const guest_view::GuestViewBase& guest) {
-  return mojom::HostID(HostIDTypeFromGuestView(guest), guest.owner_host());
+  return mojom::HostID(HostIdTypeFromGuestView(guest), guest.owner_host());
 }
 
 bool CanBeIncognitoEnabled(const Extension* extension) {

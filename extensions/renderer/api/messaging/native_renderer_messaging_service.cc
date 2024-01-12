@@ -24,6 +24,7 @@
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api_activity_logger.h"
@@ -307,7 +308,7 @@ void NativeRendererMessagingService::DispatchOnConnect(
 
   bool port_created = false;
   context_set->ForEach(
-      info.target_id, restrict_to_render_frame,
+      GenerateHostIdFromExtensionId(info.target_id), restrict_to_render_frame,
       base::BindRepeating(
           &NativeRendererMessagingService::DispatchOnConnectToScriptContext,
           base::Unretained(this), target_port_id, channel_type, channel_name,

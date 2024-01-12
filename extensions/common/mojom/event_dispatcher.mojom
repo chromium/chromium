@@ -4,6 +4,7 @@
 
 module extensions.mojom;
 
+import "extensions/common/mojom/host_id.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 // EventDispatch is a one-per-renderer-processs interface that is responsible
@@ -46,8 +47,8 @@ struct DispatchEventParams {
   // id. Otherwise, this is 0.
   int32 worker_thread_id;
 
-  // The id of the extension to dispatch the event to.
-  string extension_id;
+  // The |HostID| to route the event to.
+  HostID host_id;
 
   // The name of the event to dispatch.
   string event_name;

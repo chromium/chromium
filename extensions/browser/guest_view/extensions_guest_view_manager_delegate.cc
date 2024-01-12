@@ -32,6 +32,7 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
 using guest_view::GuestViewBase;
@@ -86,6 +87,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     base::Value::Dict args,
     GuestViewBase* guest,
     int instance_id) {
+  CHECK(guest);
   mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
   info->has_instance_id = true;
   info->instance_id = instance_id;
@@ -109,7 +111,8 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
 
   EventRouter::Get(guest->browser_context())
       ->DispatchEventToSender(owner->GetProcess(), guest->browser_context(),
-                              guest->owner_host(), histogram_value, event_name,
+                              util::GenerateHostIdFromGuestView(*guest),
+                              histogram_value, event_name,
                               extensions::kMainThreadId,
                               blink::mojom::kInvalidServiceWorkerVersionId,
                               std::move(event_args), std::move(info));

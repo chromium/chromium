@@ -46,11 +46,11 @@ namespace util {
 // extensions/ here.
 
 // Returns a HostID type based on the given GuestViewBase.
-mojom::HostID::HostType HostIDTypeFromGuestView(
+mojom::HostID::HostType HostIdTypeFromGuestView(
     const guest_view::GuestViewBase& guest);
 
 // Returns a HostID instance based on the given GuestViewBase.
-mojom::HostID GenerateHostIDFromGuestView(
+mojom::HostID GenerateHostIdFromGuestView(
     const guest_view::GuestViewBase& guest);
 
 // Returns true if the extension can be enabled in incognito mode.
