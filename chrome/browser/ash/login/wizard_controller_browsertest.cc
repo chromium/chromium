@@ -186,6 +186,15 @@ const char kDisabledMessage[] = "This device has been disabled.";
 const test::UIPath kGuestSessionLink = {"error-message",
                                         "error-guest-signin-fix-network"};
 
+constexpr policy::AutoEnrollmentState kAutoEnrollmentConnectionError =
+    base::unexpected(policy::AutoEnrollmentDMServerError{
+        .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+        .network_error = net::ERR_CONNECTION_REFUSED});
+
+constexpr policy::AutoEnrollmentState kAutoEnrollmentServerError =
+    base::unexpected(policy::AutoEnrollmentDMServerError{
+        .dm_error = policy::DM_STATUS_TEMPORARY_UNAVAILABLE});
+
 // Matches on the mode parameter of an EnrollmentConfig object.
 MATCHER_P(EnrollmentModeMatches, mode, "") {
   return arg.mode == mode;
@@ -1291,10 +1300,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(
-      ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
-          .dm_error = policy::DM_STATUS_REQUEST_FAILED,
-          .network_error = net::ERR_CONNECTION_REFUSED}));
+  WaitForAutoEnrollmentState(kAutoEnrollmentConnectionError);
 
   // The error screen shows up if device state could not be retrieved.
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
@@ -1386,10 +1392,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(
-      ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
-          .dm_error = policy::DM_STATUS_REQUEST_FAILED,
-          .network_error = net::ERR_CONNECTION_REFUSED}));
+  WaitForAutoEnrollmentState(kAutoEnrollmentConnectionError);
 
   // The error screen shows up if there's no auto-enrollment decision.
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
@@ -1477,8 +1480,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
 
     // Make AutoEnrollmentClient notify the controller that a server error
     // occurred.
-    fake_auto_enrollment_client->SetState(
-        policy::kAutoEnrollmentLegacyServerError);
+    fake_auto_enrollment_client->SetState(kAutoEnrollmentServerError);
     base::RunLoop().RunUntilIdle();
 
     // The error screen shows up.
@@ -1522,8 +1524,7 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   } else {
     // Make AutoEnrollmentClient notify the controller that a server error
     // occurred.
-    fake_auto_enrollment_client->SetState(
-        policy::kAutoEnrollmentLegacyServerError);
+    fake_auto_enrollment_client->SetState(kAutoEnrollmentServerError);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(StartupUtils::IsOobeCompleted());
@@ -1608,8 +1609,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, ServerError) {
   ProgressUntilAutoEnrollmentCheckScreen();
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
-  fetcher_factory.ReportEnrollmentState(
-      policy::kAutoEnrollmentLegacyServerError);
+  fetcher_factory.ReportEnrollmentState(kAutoEnrollmentServerError);
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
@@ -1626,8 +1626,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, ConnectionError) {
   ProgressUntilAutoEnrollmentCheckScreen();
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
-  fetcher_factory.ReportEnrollmentState(
-      policy::kAutoEnrollmentLegacyConnectionError);
+  fetcher_factory.ReportEnrollmentState(kAutoEnrollmentConnectionError);
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
@@ -1721,8 +1720,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, OneFetchAtATime) {
   auto_enrollment_controller()->Start();
 
   // Simulate connection error, reset factory and attempt a retry.
-  fetcher_factory.ReportEnrollmentState(
-      policy::kAutoEnrollmentLegacyConnectionError);
+  fetcher_factory.ReportEnrollmentState(kAutoEnrollmentConnectionError);
   fetcher_factory.Reset();
   auto_enrollment_controller()->Retry();
 
@@ -1906,8 +1904,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   // Make AutoEnrollmentClient notify the controller that a server error
   // occurred.
-  fake_auto_enrollment_client->SetState(
-      policy::kAutoEnrollmentLegacyServerError);
+  fake_auto_enrollment_client->SetState(kAutoEnrollmentServerError);
   base::RunLoop().RunUntilIdle();
 
   // The error screen shows up if there's no auto-enrollment decision.
@@ -2779,10 +2776,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(
-      ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
-          .dm_error = policy::DM_STATUS_REQUEST_FAILED,
-          .network_error = net::ERR_CONNECTION_REFUSED}));
+  WaitForAutoEnrollmentState(kAutoEnrollmentConnectionError);
 
   // The error screen shows up if device state could not be retrieved.
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
