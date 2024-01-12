@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 import './icons.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_calibration_run_page.html.js';
-import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {CalibrationComponentStatus, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -23,19 +22,12 @@ import {enableNextButton, executeThenTransitionState, focusPageTitle} from './sh
  * various components during the reimaging process.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ReimagingCalibrationRunPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ReimagingCalibrationRunPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ReimagingCalibrationRunPage extends
     ReimagingCalibrationRunPageBase {
   static get is() {
-    return 'reimaging-calibration-run-page';
+    return 'reimaging-calibration-run-page' as const;
   }
 
   static get template() {
@@ -44,9 +36,6 @@ export class ReimagingCalibrationRunPage extends
 
   static get properties() {
     return {
-      /**
-       * @protected
-       */
       calibrationComplete: {
         type: Boolean,
         value: false,
@@ -54,27 +43,26 @@ export class ReimagingCalibrationRunPage extends
     };
   }
 
+  private shimlessRmaService: ShimlessRmaServiceInterface =
+      getShimlessRmaService();
+  private calibrationObserverReceiver: CalibrationObserverReceiver;
+  protected calibrationComplete: boolean;
+
   constructor() {
     super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-    /** @private {!CalibrationObserverReceiver} */
-    this.calibrationObserverReceiver = new CalibrationObserverReceiver(
-        /** @type {!CalibrationObserverInterface} */ (this));
+    this.calibrationObserverReceiver = new CalibrationObserverReceiver(this);
 
     this.shimlessRmaService.observeCalibrationProgress(
         this.calibrationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     if (this.calibrationComplete) {
       return this.shimlessRmaService.calibrationComplete();
     }
@@ -83,15 +71,13 @@ export class ReimagingCalibrationRunPage extends
 
   /**
    * Implements CalibrationObserver.onCalibrationUpdated()
-   * @param {!CalibrationComponentStatus} componentStatus
    */
-  onCalibrationUpdated(componentStatus) {}
+  onCalibrationUpdated(_componentStatus: CalibrationComponentStatus): void {}
 
   /**
-   * Implements CalibrationObserver.onCalibrationUpdated()
-   * @param {!CalibrationOverallStatus} status
+   * Implements CalibrationObserver.onCalibrationStepComplete()
    */
-  onCalibrationStepComplete(status) {
+  onCalibrationStepComplete(status: CalibrationOverallStatus): void {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
         this.calibrationComplete = true;
@@ -106,14 +92,16 @@ export class ReimagingCalibrationRunPage extends
     }
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getCalibrationTitleString() {
+  protected getCalibrationTitleString(): string {
     return this.i18n(
         this.calibrationComplete ? 'runCalibrationCompleteTitleText' :
                                    'runCalibrationTitleText');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ReimagingCalibrationRunPage.is]: ReimagingCalibrationRunPage;
   }
 }
 
