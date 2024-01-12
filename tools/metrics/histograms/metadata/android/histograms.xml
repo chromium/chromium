@@ -1875,6 +1875,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.Messages.DismissedWithoutFullyVisible"
+    enum="MessageIdentifier" expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier when the message is dismissed without being
+    fully visible before. This only tracks the case in which message is
+    dismissed by primary action, secondary action, gesture and timer.
+  </summary>
+</histogram>
+
 <histogram name="Android.Messages.Dismissed{MessageIdentifier}"
     enum="MessageDismissReason" expires_after="2024-06-30">
   <owner>lazzzis@chromium.org</owner>
@@ -1937,6 +1948,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Messages.Enqueued.{QueueState}"
+    enum="MessageIdentifier" expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier when it is enqueued while the queue is
+    {QueueState}.
+  </summary>
+  <token key="QueueState">
+    <variant name="Resumed" summary="resumed"/>
+    <variant name="Suspended" summary="suspended"/>
+  </token>
+</histogram>
+
+<histogram name="Android.Messages.Enqueued.{ScopeState}"
+    enum="MessageIdentifier" expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier when it is enqueued while its associated
+    scope is {ScopeState}.
+  </summary>
+  <token key="ScopeState">
+    <variant name="ScopeActive" summary="active"/>
+    <variant name="ScopeInactive" summary="inactive"/>
+  </token>
+</histogram>
+
+<histogram name="Android.Messages.Error.FullyVisibleNotInformed"
+    enum="MessageIdentifier" expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier at the moment of dismissal if the message has
+    been fully visible before but the fully visible callback, if set, has never
+    been invoked. This use the dismissal type as a proxy for message having
+    become visible, inlcuding primary action, secondary action, gesture and
+    timer. It is not checked when it is dismissed by reasons, such as
+    ScopeDestroyed.
+  </summary>
+</histogram>
+
+<histogram name="Android.Messages.FullyVisible" enum="MessageIdentifier"
+    expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier every time it becomes fully visible to users.
+    Can be recorded multiple times during its lifetime.
+  </summary>
+</histogram>
+
 <histogram name="Android.Messages.Stacking" enum="StackingAnimationType"
     expires_after="2024-05-19">
   <owner>lazzzis@chromium.org</owner>
@@ -1968,6 +2031,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Messages.Stacking.RequestToFullyShow"
+    enum="MessageIdentifier" expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the id of front message when the candidate requests to show. The
+    recorded message is not guranteed to be displayed: it might be blocked by
+    unready browser control or unintialized container.
+  </summary>
+</histogram>
+
 <histogram name="Android.Messages.Stacking.ThreeStacked"
     enum="StackingAnimationThreeStackedType" expires_after="2024-05-19">
   <owner>lazzzis@chromium.org</owner>
@@ -1991,6 +2065,24 @@ chromium-metrics-reviews@google.com.
     <variant name="PushToFront" summary="a back message is pushed to front."/>
     <variant name="RemoveBack" summary="a back message is removed."/>
     <variant name="RemoveFront" summary="a front message is removed."/>
+  </token>
+</histogram>
+
+<histogram name="Android.Messages.Stacking.{Blocker}" enum="MessageIdentifier"
+    expires_after="2024-05-19">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier of the front message when it is waiting to
+    trigger the animation because {Blocker}.
+  </summary>
+  <token key="Blocker">
+    <variant name="BlockedByBrowserControl"
+        summary="browser controls aren't ready"/>
+    <variant name="BlockedByContainerInitializing"
+        summary="container is initializing"/>
+    <variant name="BlockedByContainerNotInitialized"
+        summary="container initialization hasn't started"/>
   </token>
 </histogram>
 
@@ -2021,6 +2113,18 @@ chromium-metrics-reviews@google.com.
     includes both enter and exit animation. The metric can be used to analyze
     the amount of time it takes for the user to understand the message and take
     an action (e.g. click a button, dismiss the message, etc.).
+  </summary>
+  <token key="MessageIdentifier" variants="MessageIdentifiers"/>
+</histogram>
+
+<histogram name="Android.Messages.TimeToFullyShow{MessageIdentifier}"
+    units="ms" expires_after="2024-06-30">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Recorded once per message measuring the duration from the moment it is
+    enqueued to the first time it becomes fully shown. Recorded when the message
+    becomes fully shown.
   </summary>
   <token key="MessageIdentifier" variants="MessageIdentifiers"/>
 </histogram>

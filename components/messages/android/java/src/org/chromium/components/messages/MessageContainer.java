@@ -172,15 +172,17 @@ public class MessageContainer extends FrameLayout {
     /**
      * Runs a {@link Runnable} after the message's initial layout. If the view is already laid out,
      * the {@link Runnable} will be called immediately.
+     *
      * @param runnable The {@link Runnable}.
+     * @return True if the callback is triggered immediately (i.e. synchronously).
      */
-    void runAfterInitialMessageLayout(Runnable runnable) {
+    boolean runAfterInitialMessageLayout(Runnable runnable) {
         View view = getChildAt(0);
         assert view != null;
         if (view.getHeight() > 0) {
             mIsInitializingLayout = false;
             runnable.run();
-            return;
+            return true;
         }
 
         mIsInitializingLayout = true;
@@ -204,6 +206,7 @@ public class MessageContainer extends FrameLayout {
                         mIsInitializingLayout = false;
                     }
                 });
+        return false;
     }
 
     /**
