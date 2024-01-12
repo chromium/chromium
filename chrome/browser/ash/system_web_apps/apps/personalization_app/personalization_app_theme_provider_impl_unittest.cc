@@ -76,6 +76,10 @@ class TestThemeObserver
     static_color_ = static_color;
   }
 
+  void OnGeolocationPermissionForSystemServicesChanged(bool enabled) override {
+    geolocation_for_system_enabled_ = enabled;
+  }
+
   mojo::PendingRemote<ash::personalization_app::mojom::ThemeObserver>
   pending_remote() {
     if (theme_observer_receiver_.is_bound()) {
@@ -100,6 +104,13 @@ class TestThemeObserver
     return color_mode_auto_schedule_enabled_;
   }
 
+  bool is_geolocation_enabled_for_system_services() {
+    if (theme_observer_receiver_.is_bound()) {
+      theme_observer_receiver_.FlushForTesting();
+    }
+    return geolocation_for_system_enabled_;
+  }
+
   ash::style::mojom::ColorScheme GetColorScheme() {
     if (theme_observer_receiver_.is_bound()) {
       theme_observer_receiver_.FlushForTesting();
@@ -121,6 +132,7 @@ class TestThemeObserver
 
   bool dark_mode_enabled_ = false;
   bool color_mode_auto_schedule_enabled_ = false;
+  bool geolocation_for_system_enabled_ = false;
   ash::style::mojom::ColorScheme color_scheme_ =
       ash::style::mojom::ColorScheme::kTonalSpot;
   std::optional<::SkColor> static_color_ = std::nullopt;
@@ -195,6 +207,13 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
     return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
+  bool is_geolocation_enabled_for_system_services() {
+    if (theme_provider_remote_.is_bound()) {
+      theme_provider_remote_.FlushForTesting();
+    }
+    return test_theme_observer_.is_geolocation_enabled_for_system_services();
+  }
+
   ash::style::mojom::ColorScheme GetColorScheme() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
@@ -260,6 +279,14 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
   EXPECT_TRUE(is_color_mode_auto_schedule_enabled());
   histogram_tester().ExpectBucketCount(
       kPersonalizationThemeColorModeHistogramName, ColorMode::kAuto, 1);
+}
+
+TEST_F(PersonalizationAppThemeProviderImplTest,
+       EnableGeolocationForSystemServices) {
+  SetThemeObserver();
+
+  theme_provider()->EnableGeolocationForSystemServices();
+  EXPECT_TRUE(is_geolocation_enabled_for_system_services());
 }
 
 class PersonalizationAppThemeProviderImplJellyTest

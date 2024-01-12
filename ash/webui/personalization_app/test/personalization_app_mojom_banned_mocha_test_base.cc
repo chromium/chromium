@@ -158,6 +158,7 @@ class MockPersonalizationAppThemeProvider
               SetColorModeAutoScheduleEnabled,
               (bool enabled),
               (override));
+  MOCK_METHOD(void, EnableGeolocationForSystemServices, (), (override));
   MOCK_METHOD(void,
               GenerateSampleColorSchemes,
               (GenerateSampleColorSchemesCallback callback),
@@ -177,6 +178,10 @@ class MockPersonalizationAppThemeProvider
   MOCK_METHOD(void,
               IsColorModeAutoScheduleEnabled,
               (IsColorModeAutoScheduleEnabledCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              IsGeolocationEnabledForSystemServices,
+              (IsGeolocationEnabledForSystemServicesCallback callback),
               (override));
 };
 

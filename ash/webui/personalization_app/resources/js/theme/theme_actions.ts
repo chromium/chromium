@@ -18,11 +18,12 @@ export enum ThemeActionName {
   SET_COLOR_SCHEME = 'set_color_scheme',
   SET_SAMPLE_COLOR_SCHEMES = 'set_sample_color_schemes',
   SET_STATIC_COLOR = 'set_static_color',
+  SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
 }
 
-export type ThemeActions =
-    SetColorModeAutoScheduleAction|SetDarkModeEnabledAction|
-    SetColorSchemeAction|SetSampleColorSchemesAction|SetStaticColorAction;
+export type ThemeActions = SetColorModeAutoScheduleAction|
+    SetDarkModeEnabledAction|SetColorSchemeAction|SetSampleColorSchemesAction|
+    SetStaticColorAction|SetGeolocationPermissionEnabledAction;
 
 export interface SetDarkModeEnabledAction extends Action {
   name: ThemeActionName.SET_DARK_MODE_ENABLED;
@@ -53,6 +54,11 @@ export interface SetStaticColorAction extends Action {
   staticColor: SkColor|null;
 }
 
+export interface SetGeolocationPermissionEnabledAction extends Action {
+  name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED;
+  enabled: boolean;
+}
+
 
 export function setDarkModeEnabledAction(enabled: boolean):
     SetDarkModeEnabledAction {
@@ -77,4 +83,9 @@ export function setSampleColorSchemesAction(
 export function setStaticColorAction(staticColor: SkColor|
                                      null): SetStaticColorAction {
   return {name: ThemeActionName.SET_STATIC_COLOR, staticColor};
+}
+
+export function setGeolocationPermissionEnabledAction(enabled: boolean):
+    SetGeolocationPermissionEnabledAction {
+  return {name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
 }

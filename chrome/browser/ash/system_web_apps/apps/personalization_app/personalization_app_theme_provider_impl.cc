@@ -5,15 +5,18 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/color_util.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 
@@ -70,6 +73,19 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   }
   // Call once to get the initial status.
   NotifyColorModeAutoScheduleChanged();
+
+  // Listen to `ash::prefs::kUserGeolocationAccesslevel` changes.
+  if (!pref_change_registrar_.IsObserved(
+          ash::prefs::kUserGeolocationAccessLevel)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kUserGeolocationAccessLevel,
+        base::BindRepeating(&PersonalizationAppThemeProviderImpl::
+                                NotifyGeolocationPermissionChanged,
+                            base::Unretained(this)));
+  }
+  // Call once to get the initial status.
+  NotifyGeolocationPermissionChanged();
+
   if (chromeos::features::IsJellyEnabled()) {
     OnStaticColorChanged();
     OnColorSchemeChanged();
@@ -129,6 +145,18 @@ void PersonalizationAppThemeProviderImpl::IsColorModeAutoScheduleEnabled(
   std::move(callback).Run(IsColorModeAutoScheduleEnabled());
 }
 
+void PersonalizationAppThemeProviderImpl::IsGeolocationEnabledForSystemServices(
+    IsGeolocationEnabledForSystemServicesCallback callback) {
+  std::move(callback).Run(IsGeolocationEnabledForSystemServices());
+}
+
+void PersonalizationAppThemeProviderImpl::EnableGeolocationForSystemServices() {
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetInteger(
+      prefs::kUserGeolocationAccessLevel,
+      static_cast<int>(GeolocationAccessLevel::kOnlyAllowedForSystem));
+}
+
 void PersonalizationAppThemeProviderImpl::OnColorModeChanged(
     bool dark_mode_enabled) {
   DCHECK(theme_observer_remote_.is_bound());
@@ -165,6 +193,28 @@ void PersonalizationAppThemeProviderImpl::NotifyColorModeAutoScheduleChanged() {
   DCHECK(theme_observer_remote_.is_bound());
   theme_observer_remote_->OnColorModeAutoScheduleChanged(
       IsColorModeAutoScheduleEnabled());
+}
+
+bool PersonalizationAppThemeProviderImpl::
+    IsGeolocationEnabledForSystemServices() {
+  PrefService* pref_service = profile_->GetPrefs();
+  CHECK(pref_service);
+  const auto access_level = static_cast<GeolocationAccessLevel>(
+      pref_service->GetInteger(prefs::kUserGeolocationAccessLevel));
+
+  switch (access_level) {
+    case ash::GeolocationAccessLevel::kAllowed:
+    case ash::GeolocationAccessLevel::kOnlyAllowedForSystem:
+      return true;
+    case ash::GeolocationAccessLevel::kDisallowed:
+      return false;
+  }
+}
+
+void PersonalizationAppThemeProviderImpl::NotifyGeolocationPermissionChanged() {
+  CHECK(theme_observer_remote_.is_bound());
+  theme_observer_remote_->OnGeolocationPermissionForSystemServicesChanged(
+      IsGeolocationEnabledForSystemServices());
 }
 
 void PersonalizationAppThemeProviderImpl::GetColorScheme(

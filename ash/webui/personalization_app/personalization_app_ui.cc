@@ -154,6 +154,16 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ariaLabelEnableAutoColorMode",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_AUTO_COLOR_MODE},
       {"tooltipAutoColorMode", IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE},
+      {"geolocationWarningTextForWallpaper",
+       IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER},
+      {"systemGeolocationDialogTitle",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_TITLE},
+      {"systemGeolocationDialogBody",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_BODY},
+      {"systemGeolocationDialogConfirmButton",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CONFIRM_BUTTON},
+      {"systemGeolocationDialogCancelButton",
+       IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CANCEL_BUTTON},
 
       // User/avatar related strings.
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
@@ -379,6 +389,9 @@ void AddStrings(content::WebUIDataSource* source) {
   source->AddString("timeOfDayBannerImageUrl",
                     GetAmbientBackendController()->GetPromoBannerUrl());
 
+  source->AddString("systemGeolocationDialogLearnMoreUrl",
+                    kPrivacyHubGeolocationLearnMoreUrl);
+
   // Product name does not need to be translated.
   auto product_name =
       l10n_util::GetStringUTF16(ui::GetChromeOSDeviceTypeResourceId());
@@ -544,6 +557,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isSeaPenTextInputEnabled",
                      features::IsSeaPenTextInputEnabled() &&
                          manta::features::IsMantaServiceEnabled());
+
+  source->AddBoolean("isCrosPrivacyHubLocationEnabled",
+                     features::IsCrosPrivacyHubLocationEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {
