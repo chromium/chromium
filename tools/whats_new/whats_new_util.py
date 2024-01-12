@@ -67,6 +67,8 @@ def _GetPrimaryAction(action: str) -> int:
         return 3
     if action == 'Chrome Password Settings':
         return 4
+    if action == 'Lens':
+        return 5
     if action == 'None':
         return 0
     return 0
