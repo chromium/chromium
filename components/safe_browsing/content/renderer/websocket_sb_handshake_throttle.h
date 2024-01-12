@@ -49,6 +49,7 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
 
   void ThrottleHandshake(const blink::WebURL& url,
                          const blink::WebSecurityOrigin& creator_origin,
+                         const blink::WebSecurityOrigin& isolated_world_origin,
                          blink::WebSocketHandshakeThrottle::OnCompletion
                              completion_callback) override;
 
@@ -78,6 +79,13 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   std::unique_ptr<mojo::Receiver<mojom::UrlCheckNotifier>> notifier_receiver_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Send web request data to the browser if the request
+  // originated from an extension and destination is WS/WSS scheme only.
+  void MaybeSendExtensionWebRequestData(
+      const blink::WebURL& url,
+      const blink::WebSecurityOrigin& creator_origin,
+      const blink::WebSecurityOrigin& isolated_world_origin);
+
   raw_ptr<mojom::ExtensionWebRequestReporter, ExperimentalRenderer>
       extension_web_request_reporter_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

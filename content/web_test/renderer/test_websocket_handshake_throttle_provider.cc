@@ -63,6 +63,7 @@ class TestWebSocketHandshakeThrottle
 
   void ThrottleHandshake(const blink::WebURL& url,
                          const blink::WebSecurityOrigin& creator_origin,
+                         const blink::WebSecurityOrigin& isolated_world_origin,
                          CompletionCallback completion_callback) override {
     DCHECK(completion_callback);
 
