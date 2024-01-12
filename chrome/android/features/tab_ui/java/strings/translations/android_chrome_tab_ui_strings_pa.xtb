@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">ਕੀ ਪੁਰਾਣੀਆਂ ਟੈਬਾਂ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="1215127405478249895">ਟੈਬਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="125153950246128346">ਕਿਸੇ ਹੋਰ ਟੈਬ ਨੂੰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
+<translation id="1326271443836399892">ਅਣਲੋੜੀਂਦੀਆਂ ਚੀਜ਼ਾਂ ਹਟਾਉਣ ਸੰਬੰਧੀ ਮੌਜੂਦਾ ਸੈਟਿੰਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।</translation>
 <translation id="1499635324672558517">ਕੀ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1657719826150349398">ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
 <translation id="3008554597174452548">ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ਨੂੰ <ph name="PRICE_DROP" /> ਕੀਮਤ ਘਟੀ</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{ਤੁਹਾਡੇ ਕੋਲ <ph name="TABS_COUNT_ONE" /> ਪੁਰਾਲੇਖਬੱਧ ਟੈਬ ਹੈ}one{ਤੁਹਾਡੇ ਕੋਲ <ph name="TABS_COUNT_MANY" /> ਪੁਰਾਲੇਖਬੱਧ ਟੈਬ ਹੈ}other{ਤੁਹਾਡੇ ਕੋਲ <ph name="TABS_COUNT_MANY" /> ਪੁਰਾਲੇਖਬੱਧ ਟੈਬ ਹਨ}}</translation>
 <translation id="3194464645767632461">ਰੇਟਿੰਗ</translation>
 <translation id="3291470810748040983">ਖੁੱਲ੍ਹੀ ਟੈਬ ਵਿੱਚ ਕੀਮਤ ਘੱਟ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਅਲਰਟ ਪ੍ਰਾਪਤ ਹੋਵੇਗਾ</translation>
 <translation id="3328308545011660196">ਸੁਝਾਅ: <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="9150694013019234766">ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਟੈਬਾਂ ਦੀ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="9169594135889675189">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="955558140275419384">ਇਸ ਸੰਪਾਦਕ ਵਿੱਚ ਦਾਖਲ ਹੋ ਕੇ ਪੁਰਾਲੇਖਬੱਧ ਟੈਬਾਂ ਨੂੰ ਹਟਾਉਣ ਲਈ ਸਾਰੀਆਂ ਪੁਰਾਲੇਖਬੱਧ ਟੈਬਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।</translation>
 <translation id="959682366969460160">ਸੰਗਠਿਤ ਰਹੋ</translation>
 </translationbundle>

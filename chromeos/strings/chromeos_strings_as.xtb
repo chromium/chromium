@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">শ্লাইড শ্ব’</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
+<translation id="4310735698903592804">Google AIএ সঞ্চালন কৰা শেহতীয়া ৱালপেপাৰ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কীটো টিপিছে</translation>
 <translation id="4354430579665871434">কী</translation>
 <translation id="4361257691546579041">এপিএন ডিফ’ল্ট প্ৰকাৰৰ।</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপোনাৰ ফাইলটো সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}one{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}other{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}}</translation>
 <translation id="5931523347251946569">ফাইলটো পোৱা নগ’ল</translation>
+<translation id="593880865674747800">এই শৈলীত অধিক সৃষ্টি কৰক</translation>
 <translation id="5939518447894949180">ৰিছেট কৰক</translation>
 <translation id="594552776027197022">যাদৃচ্ছিক কী পেয়াৰ সৃষ্টি কৰক</translation>
 <translation id="5946538341867151940">আপুনি এতিয়ালৈকে সংযুক্ত হোৱা নাই। যদি আপোনাৰ ম'বাইলৰ বাহকে এটা কাষ্টম এপিএন চুপাৰিছ কৰে, "+ নতুন এপিএন" বাছনি কৰি এপিএনৰ তথ্যখিনি দিয়ক</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
 <translation id="7841134249932030522">গাঢ় ম’ড সক্ষম কৰক</translation>
 <translation id="7846634333498149051">কীব'ৰ্ড</translation>
+<translation id="7850847810298646851">Google AIএ সঞ্চালন কৰা ৱালপেপাৰ</translation>
 <translation id="7856267634822906833">ব্লুটুথ টাচ্‌স্ক্ৰীন</translation>
 <translation id="7869143217755017858">গাঢ় ম’ড অক্ষম কৰক</translation>
 <translation id="7881066108824108340">DNS</translation>

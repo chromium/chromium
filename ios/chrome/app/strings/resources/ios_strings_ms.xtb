@@ -529,6 +529,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menterjemahkan tapak ini</translation>
+<translation id="3808311849069021992">Tunjukkan butiran enjin carian</translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3818045793209708987">Berhenti menjejaki pakej ini</translation>
 <translation id="3818293389945649617">Cari Seterusnya</translation>
@@ -802,6 +803,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5234764350956374838">Ketepikan</translation>
 <translation id="5235389474593199952">Sembunyikan Sejarah</translation>
 <translation id="5238301240406177137">Simpan dalam Akaun</translation>
+<translation id="5238596603078743134">Kini <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Batalkan Penyegerakan</translation>
 <translation id="5248640482715684545">Laman ini sedang mencuba membuka aplikasi lain.</translation>
 <translation id="5256661381001734217">Laman ini sedang mencuba membuka aplikasi.  Tindakan ini akan membawa anda keluar daripada Inkognito.</translation>
@@ -821,6 +823,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5360976571138293719">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Anda akan menemukan laman yang anda ikuti di sini</translation>
 <translation id="5388358297987318779">Buka Imej</translation>
+<translation id="5395707839134961196">Sembunyikan butiran enjin carian</translation>
 <translation id="5396950905475481456">Undang Ahli Keluarga</translation>
 <translation id="5407969256130905701">Buang Perubahan</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>
@@ -1034,6 +1037,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6447842834002726250">Kuki</translation>
 <translation id="6453018583485750254">Penyemakan tidak sekali-kali dijalankan.</translation>
 <translation id="6459307836338400162">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Penyegerakan<ph name="END_LINK" /> dan juga <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Butiran tersembunyi</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Buka dalam Tab Inkognito Baharu</translation>
 <translation id="6464397691496239022">Tapak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingati item dalam troli beli-belah anda.
@@ -1286,6 +1290,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7812377703891978671">Anda boleh mengakses semua sejarah penyemakan imbas anda dengan memilih <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Muat turun</translation>
 <translation id="7839985698273989086">Halaman Luar Talian</translation>
+<translation id="7839994177130598711">Kini ahli keluarga anda boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Item yang anda pilih akan dialih keluar.</translation>
 <translation id="7845466610722898">Paparkan Senarai Bacaan</translation>
 <translation id="784551991304901159">Untuk melihat kandungan, pilih Hidupkan daripada menu</translation>

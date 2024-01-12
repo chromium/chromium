@@ -1133,6 +1133,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="5546397813406633847">I-recover ang user</translation>
 <translation id="554893713779400387">I-toggle ang pagdidikta</translation>
+<translation id="5550417424894892620">Mag-drop ng mga file sa desktop para idagdag ang mga ito sa <ph name="HOLDING_SPACE_TITLE" />. Hindi ka puwedeng magdagdag ng mga file sa desktop.</translation>
 <translation id="5551456515017410630">Buksan/isara ang kalendaryo</translation>
 <translation id="5551974246223970793">Kapag naghahanap sa isang page, pumunta sa susunod na tugma para sa paghahanap</translation>
 <translation id="5555639311269196631">I-off ang hotspot</translation>
@@ -1873,6 +1874,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Pagbukud-bukurin ang iyong mga app ayon sa pangalan o kulay</translation>
 <translation id="8609384513243082612">Magbukas ng bagong tab</translation>
+<translation id="8612216344243590325">Ilagay ang mga mahalagang file sa <ph name="HOLDING_SPACE_TITLE" /> sa halip na sa desktop. I-drag lang ang mga file papunta sa <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Nakatago ang mga notification sa <ph name="APP_1_TITLE" /> at <ph name="APP_2_TITLE" /> dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="8619138598101195078">Hinaan ang volume</translation>
 <translation id="8627191004499078455">Nakakonekta sa <ph name="DEVICE_NAME" /></translation>

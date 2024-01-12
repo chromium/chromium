@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
 <translation id="5546397813406633847">ಬಳಕೆದಾರರನ್ನು ಮರುಪಡೆಯಿರಿ</translation>
 <translation id="554893713779400387">ಡಿಕ್ಟೇಶನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" /> ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಅವುಗಳನ್ನು ಡೆಸ್ಕ್‌ಟಾಪ್‌ನಲ್ಲಿ ಡ್ರಾಪ್ ಮಾಡಿ. ನೀವು ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="5551456515017410630">ಕ್ಯಾಲೆಂಡರ್ ತೆರೆಯಿರಿ/ಮುಚ್ಚಿ</translation>
 <translation id="5551974246223970793">ಪುಟವೊಂದನ್ನು ಹುಡುಕುವಾಗ, ಹುಡುಕಾಟಕ್ಕಾಗಿ ಮುಂದಿನ ಹೊಂದಾಣಿಕೆಗೆ ಹೋಗಿ</translation>
 <translation id="5555639311269196631">ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಫ್‌ ಮಾಡಿ</translation>
@@ -1505,6 +1506,7 @@
 <translation id="7025533177575372252">ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಸಾಧನವನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="7026338066939101231">ಇಳಿಕೆ</translation>
 <translation id="7029814467594812963">ಸೆಶನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="7031303610220416229">Google Tasks ನಲ್ಲಿ ಎಲ್ಲಾ ಕಾರ್ಯಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="7032161822340700104">6 ಟೆಂಪ್ಲೇಟ್‌ಗಳನ್ನು ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ. ಹೊಸದನ್ನು ಉಳಿಸಲು ಟೆಂಪ್ಲೇಟ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />, <ph name="DEVICE_NAME" /> ಬಳಸಲು ಬಯಸುತ್ತಿದೆ. ನಿಮ್ಮ ಸಾಧನದ ಭೌತಿಕ <ph name="DEVICE_NAME" /> ಸ್ವಿಚ್ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
@@ -1817,6 +1819,7 @@
 <translation id="8351131234907093545">ಟಿಪ್ಪಣಿ ರಚಿಸಿ</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ಬಳಕೆಯಲ್ಲಿದೆ.</translation>
 <translation id="8369166482916924789">ಉಳಿಸಲಾದ ಡೆಸ್ಕ್, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8371779926711439835">ಅಕ್ಷರದ ಮೂಲಕ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="8371991222807690464">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಬಾಹ್ಯ ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆಯು ಸೀಮಿತವಾಗಿರಬಹುದು</translation>
 <translation id="8374601332003098278">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
@@ -1872,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರು ಅಥವಾ ಬಣ್ಣದಿಂದ ವಿಂಗಡಿಸಿ</translation>
 <translation id="8609384513243082612">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
+<translation id="8612216344243590325">ಪ್ರಮುಖ ಫೈಲ್‌ಗಳನ್ನು ಡೆಸ್ಕ್‌ಟಾಪ್‌ನಲ್ಲಿ ಇರಿಸುವ ಬದಲು <ph name="HOLDING_SPACE_TITLE" /> ನಲ್ಲಿ ಇರಿಸಿ. <ph name="HOLDING_SPACE_TITLE" /> ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
 <translation id="8614517853887502247">ವೀಕ್ಷಣೆ ರಕ್ಷಣೆ ಆನ್ ಆಗಿರುವ ಕಾರಣದಿಂದಾಗಿ <ph name="APP_1_TITLE" /> ಮತ್ತು <ph name="APP_2_TITLE" /> ಅಧಿಸೂಚನೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8619138598101195078">ವಾಲ್ಯೂಮ್ ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ</translation>

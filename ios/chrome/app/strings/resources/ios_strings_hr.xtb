@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Alat za odabir jedinica</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Vaše su postavke prevođenja vraćene na zadano.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Zaporku za {DOMAIN_ONE} možete spremiti na svoj Google račun, {EMAIL}.}=2{Zaporke za {DOMAIN_ONE} i {DOMAIN_TWO} možete spremiti na svoj Google račun, {EMAIL}.}=3{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domenu možete spremiti na svoj Google račun, {EMAIL}.}one{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena možete spremiti na svoj Google račun, {EMAIL}.}few{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena možete spremiti na svoj Google račun, {EMAIL}.}other{Zaporke za {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena možete spremiti na svoj Google račun, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Googleova pravila o privatnosti</translation>
 <translation id="2359043044084662842">Prevedi</translation>
 <translation id="2359808026110333948">Nastavi</translation>

@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">ইউনিট বাছনিকৰ্তা</translation>
 <translation id="2348630484974447747">পেকেজ</translation>
 <translation id="2351097562818989364">আপোনাৰ অনুবাদ ছেটিংসমূহ ৰিছেট কৰা হৈছে।</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{আপুনি আপোনাৰ {DOMAIN_ONE}ৰ পাছৱৰ্ডটো আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}=2{আপুনি আপোনাৰ {DOMAIN_ONE} আৰু {DOMAIN_TWO}ৰ পাছৱৰ্ডসমূহ আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে}=3{আপুনি আপোনাৰ {DOMAIN_ONE}, {DOMAIN_TWO}ৰ আৰু অন্য {OTHER_DOMAINS_COUNT} টা পাছৱৰ্ড আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}one{আপুনি আপোনাৰ {DOMAIN_ONE}, {DOMAIN_TWO}ৰ আৰু অন্য {OTHER_DOMAINS_COUNT} টা পাছৱৰ্ড আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}other{আপুনি আপোনাৰ {DOMAIN_ONE}, {DOMAIN_TWO}ৰ আৰু অন্য {OTHER_DOMAINS_COUNT} টা পাছৱৰ্ড আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}}</translation>
 <translation id="235789365079050412">Googleৰ গোপনীয়তা নীতি</translation>
 <translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">আগৰ ক্ষেত্ৰ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="2754492786623500387">এই ডিভাইচটোত থকা একাউণ্টসমূহ</translation>
+<translation id="2755595981383829244">আপুনি এতিয়া সমলৰ জাননী লাভ কৰিব</translation>
 <translation id="2762000892062317888">এইমাত্ৰ</translation>
 <translation id="2772667768515195373">ছেভ হৈ থকা ঠিকনাসমূহ আপুনি সমগ্ৰ Google প্ৰ’ডাক্টত ব্যৱহাৰ কৰিব পাৰে। এই ঠিকনাটো আপোনাৰ Google একাউণ্ট, <ph name="USER_EMAIL" />ত ছেভ কৰা হৈছে।</translation>
 <translation id="2773292004659987824">ইনক’গনিট’ ম’ডত সন্ধান কৰক</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">পৰিশোধৰ পদ্ধতি পৰিচালনা কৰক...</translation>
 <translation id="469300482518076788">টেব বন্ধ কৰক</translation>
 <translation id="4697071790493980729">কোনো ফলাফল পোৱা নগ’ল</translation>
+<translation id="470337593714520080">{count,plural, =1{আপোনাৰ Google একাউণ্টত ১ টা বুকমাৰ্ক ছেভ কৰক}one{আপোনাৰ Google একাউণ্টত {count} টা বুকমাৰ্ক ছেভ কৰক}other{আপোনাৰ Google একাউণ্টত {count} টা বুকমাৰ্ক ছেভ কৰক}}</translation>
 <translation id="470966556546083668">ছিংক কৰাটো অন নকৰিব</translation>
 <translation id="4711809265250406889">অন কৰা থাকিলে</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} আৰু ১ টা}one{{website_1}, {website_2} আৰু {more_count} টা}other{{website_1}, {website_2} আৰু {more_count} টা}}</translation>

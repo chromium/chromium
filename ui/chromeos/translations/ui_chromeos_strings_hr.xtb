@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
 <translation id="117624967391683467">Kopiranje datoteke <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
+<translation id="1190144681599273207">Dohvaćanje te datoteke potrošit će približno <ph name="FILE_SIZE" /> mobilnih podataka.</translation>
 <translation id="1194390763418645112">Pristup datoteci korisnika <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1209796539517632982">Automatski poslužitelji naziva</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Dijeli s VM-om <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certifikat za autentifikaciju odbijen je lokalno</translation>
 <translation id="1775381402323441512">Informacije o videozapisima</translation>
+<translation id="180035236176489073">Morate biti na mreži da biste pristupili tim datotekama.</translation>
 <translation id="1807938677607439181">Sve datoteke</translation>
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija za amharski</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Zahvaljuje vam pjesmom</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
 <translation id="209653272837065803">Nema dovoljno prostora za pohranu da bi se datoteke nastavile sinkronizirati</translation>
-<translation id="2099143626019777139">Vaš administrator može vidjeti web-lokacije koje posjećujete. Možete pregledati popis vidljivih web-lokacija.</translation>
 <translation id="2111134541987263231">Uključite opciju <ph name="BEGIN_BOLD" />Dopusti u anonimnom načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Izbrisat će se više stavki (<ph name="NUMBER_OF_ITEMS" />) i nećete ih moći vratiti.</translation>
 <translation id="2122305276694332719">Automatsko povezivanje sa skrivenom mrežom omogućuje drugima da vide vaš uređaj i neke mrežne postavke i stoga se ne preporučuje.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
 <translation id="2284767815536050991">prijenosna pohrana</translation>
 <translation id="2288278176040912387">Gramofon</translation>
+<translation id="2291538123825441971">Otvaranje datoteka (<ph name="NUMBER_OF_FILES" />).</translation>
+<translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">Stavka <ph name="VOLUME_NAME" /> izbačena je.</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Nema dovoljno prostora za pohranu da bi se sinkronizirale sve datoteke</translation>
 <translation id="23721837607121582">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Prebaci na prikaz popisa</translation>
+<translation id="2377590462528165447">S Linuxom se dijeli sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2379576081295865700">Provjera prostora za pohranu… Pronađena je 1 stavka</translation>
 <translation id="2383454254762599978">Premjesti u otpad</translation>
 <translation id="2387458720915042159">Vrsta proxy veze</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Komprimiraj odabrano</translation>
 <translation id="4202378258276439759">španjolski (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzijski</translation>
+<translation id="421017592316736757">Morate biti na mreži da biste pristupili toj datoteci.</translation>
 <translation id="4212740939091998969">Mapa s nazivom "<ph name="FOLDER_NAME" />" već postoji. Odaberite drugi naziv.</translation>
 <translation id="4218274196133425560">Uklanjanje iznimke za host <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Googleova prezentacija</translation>
 <translation id="4277536868133419688">Filtar <ph name="FILTER_NAME" /> je uključen.</translation>
+<translation id="4290535918735525311">Jedna mapa podijeljena s Linuxom</translation>
 <translation id="4299729908419173967">brazilski</translation>
 <translation id="4302605047395093221">Svi koji koriste ovaj uređaj trebat će unijeti PIN da bi se povezali s tom mobilnom mrežom</translation>
 <translation id="4303531889494116116">Mreža je zauzeta. Pokušajte ponovo kasnije.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
 <translation id="4935975195727477204">Cvijet gazanije</translation>
 <translation id="4943368462779413526">Američki nogomet</translation>
+<translation id="4961158930123534723">S Parallels Desktopom dijeli se jedna mapa</translation>
+<translation id="4965874878399872778">Provjeravamo jesu li datoteke u skladu sa sigurnosnim pravilima vaše organizacije...</translation>
 <translation id="496656650103537022">Vraćeno: <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Postavljanje sinkronizacije datoteka nije uspjelo</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5318819489018851358">Dijeli s Linuxom</translation>
 <translation id="5323213332664049067">latinoamerički</translation>
+<translation id="5330145655348521461">Ove su datoteke otvorene na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da biste ih vidjeli.</translation>
 <translation id="5330512191124428349">Informacije</translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Brzina kadrova u sekundi</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">japanski s američkom tipkovnicom</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nema mreže</translation>
 <translation id="6146563240635539929">Videozapisi</translation>
+<translation id="6150853954427645995">Da biste spremili tu datoteku za izvanmrežnu upotrebu, ponovo se povežite s internetom, kliknite datoteku desnom tipkom i odaberite opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Leptiri</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">Nevažeća vrijednost podudaranja domenskog nastavka</translation>
 <translation id="6364301859968397756">Pohrana organizacije je puna</translation>
 <translation id="6367976544441405720">Kombi</translation>
+<translation id="637062427944097960">Ova je datoteka otvorena na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da biste je vidjeli.</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Premještanje datoteke <ph name="FILE_NAME" /> nije uspjelo jer je šifrirana.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">Imate još jedan pokušaj.</translation>
 <translation id="643243556292470964">Izbrisane datoteke sad su premještene u otpad</translation>
 <translation id="6438480100790416671">Provjera prostora za pohranu…</translation>
+<translation id="6451527188465304418">Provjeravamo je li datoteka u skladu sa sigurnosnim pravilima vaše organizacije...</translation>
 <translation id="6485131920355264772">Dohvaćanje informacija o prostoru nije uspjelo</translation>
 <translation id="6495925982925244349">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
 <translation id="649877868557234318">Izdvajanje datoteke <ph name="FILE_NAME" /> u mapu <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">Postavke sinkronizacije datoteke</translation>
 <translation id="6594855146910089723">Mapa se dijeli s Linuxom i Parallels Desktopom</translation>
 <translation id="6607272825297743757">Informacije o datoteci</translation>
+<translation id="6609332149380188670">S Parallels Desktopom dijeli se sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Unesite najmanje četiri broja</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6650726141019353908">Ružičasti leptir</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Pogreška prilikom konfiguriranja mreže</translation>
+<translation id="7839804798877833423">Dohvaćanje tih datoteka potrošit će približno <ph name="FILE_SIZE" /> mobilnih podataka.</translation>
 <translation id="7846076177841592234">Poništi odabir</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
 <translation id="7857117644404132472">Dodaj iznimku</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">Sinkronizacija datoteka (njih <ph name="NUMBER_OF_FILES_SYNCING" />) na Disku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model uređaja</translation>
+<translation id="8223479393428528563">Da biste spremili te datoteke za izvanmrežnu upotrebu, ponovo se povežite s internetom, kliknite datoteke desnom tipkom i odaberite opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Prikaži pohranu</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8250690786522693009">latinica</translation>

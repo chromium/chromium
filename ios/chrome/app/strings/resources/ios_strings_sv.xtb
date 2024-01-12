@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Enhetsväljare</translation>
 <translation id="2348630484974447747">Försändelse</translation>
 <translation id="2351097562818989364">Översättningsinställningarna har återställts.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Du kan spara lösenordet för {DOMAIN_ONE} i Google-kontot {EMAIL}.}=2{Du kan spara lösenorden för {DOMAIN_ONE} och {DOMAIN_TWO} i Google-kontot {EMAIL}.}=3{Du kan spara lösenorden för {DOMAIN_ONE}, {DOMAIN_TWO} och {OTHER_DOMAINS_COUNT} till i Google-kontot {EMAIL}.}other{Du kan spara lösenorden för {DOMAIN_ONE}, {DOMAIN_TWO} och {OTHER_DOMAINS_COUNT} till i Google-kontot {EMAIL}.}}</translation>
 <translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359043044084662842">Översätt</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
@@ -335,6 +336,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2747003861858887689">Föregående fält</translation>
 <translation id="2749231692441336879">Följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konton på den här enheten</translation>
+<translation id="2755595981383829244">Du får nu innehållsaviseringar</translation>
 <translation id="2762000892062317888">nyss</translation>
 <translation id="2772667768515195373">Du kan använda sparade adresser i Googles produkter. Adressen har sparats i ditt Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Inkognitosökning</translation>
@@ -688,6 +690,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4689564913179979534">Hantera betalningsmetoder …</translation>
 <translation id="469300482518076788">Stäng flik</translation>
 <translation id="4697071790493980729">Inga resultat hittades</translation>
+<translation id="470337593714520080">{count,plural, =1{Spara 1 bokmärke i ditt Google-konto}other{Spara {count} bokmärken i ditt Google-konto}}</translation>
 <translation id="470966556546083668">Aktivera inte synkronisering</translation>
 <translation id="4711809265250406889">När funktionen är aktiverad</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} och 1 till}other{{website_1}, {website_2} och {more_count} till}}</translation>
@@ -986,6 +989,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6255097610484507482">Redigera kreditkort</translation>
 <translation id="6266039999629596120">Åtgärder krävs</translation>
 <translation id="6277426346321820595">Inget skydd</translation>
+<translation id="628251768213143684">Du kan när som helst hantera vad som sparas i Google-kontot</translation>
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Slutade följa <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>

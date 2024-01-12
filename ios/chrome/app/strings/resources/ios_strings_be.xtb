@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Інструмент выбару адзінак</translation>
 <translation id="2348630484974447747">Пасылка</translation>
 <translation id="2351097562818989364">Налады перакладу скінуты.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Вы можаце захаваць пароль для {DOMAIN_ONE} ва Уліковым запісе Google {EMAIL}.}=2{Вы можаце захаваць паролі для {DOMAIN_ONE} і {DOMAIN_TWO} ва Уліковым запісе Google {EMAIL}.}=3{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}one{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}few{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}many{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}other{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}}</translation>
 <translation id="235789365079050412">Палітыка прыватнасці Google</translation>
 <translation id="2359043044084662842">Перакласці</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">Папярэдняе поле</translation>
 <translation id="2749231692441336879">Вы падпісаліся на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="2754492786623500387">Уліковыя запісы на гэтай прыладзе</translation>
+<translation id="2755595981383829244">Цяпер вы будзеце атрымліваць апавяшчэнні пра змесціва</translation>
 <translation id="2762000892062317888">толькі што</translation>
 <translation id="2772667768515195373">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас захоўваецца ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Пошук у рэжыме інкогніта</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">Наладзіць спосабы аплаты...</translation>
 <translation id="469300482518076788">Закрыць укладку</translation>
 <translation id="4697071790493980729">Нічога не знойдзена</translation>
+<translation id="470337593714520080">{count,plural, =1{Захавайце 1 закладку ва Уліковым запісе Google}one{Захавайце {count} закладку ва Уліковым запісе Google}few{Захавайце {count} закладкі ва Уліковым запісе Google}many{Захавайце {count} закладак ва Уліковым запісе Google}other{Захавайце {count} закладкі ва Уліковым запісе Google}}</translation>
 <translation id="470966556546083668">Не ўключаць сінхранізацыю</translation>
 <translation id="4711809265250406889">Калі функцыя ўключана</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} і яшчэ 1}one{{website_1}, {website_2} і яшчэ {more_count}}few{{website_1}, {website_2} і яшчэ {more_count}}many{{website_1}, {website_2} і яшчэ {more_count}}other{{website_1}, {website_2} і яшчэ {more_count}}}</translation>

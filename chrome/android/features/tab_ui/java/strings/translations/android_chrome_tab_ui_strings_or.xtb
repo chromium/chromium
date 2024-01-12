@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">ପୁରୁଣା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ ଚାହାଁନ୍ତି?</translation>
 <translation id="1215127405478249895">ଟାବଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="125153950246128346">ଅନ୍ୟଏକ ଟାବ୍ ଦେଖିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="1326271443836399892">ବର୍ତ୍ତମାନର ଡିକ୍ଲଟର ସେଟିଂସକୁ ସମୀକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1657719826150349398">ଟାବ୍‍କୁ ତଳକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">ଗୋଷ୍ଠୀରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3008554597174452548">ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ର ମୂଲ୍ୟ <ph name="PRICE_DROP" /> କମ୍ ହୋଇଛି</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{ଆପଣଙ୍କର <ph name="TABS_COUNT_ONE" /> ଆର୍କାଇଭ ଟାବ ଅଛି}other{ଆପଣଙ୍କର <ph name="TABS_COUNT_MANY" /> ଆର୍କାଇଭ ଟାବ ଅଛି}}</translation>
 <translation id="3194464645767632461">ରେଟିଂ</translation>
 <translation id="3291470810748040983">ଖୋଲା ଥିବା ଏକ ଟାବରେ ମୂଲ୍ୟରେ ହ୍ରାସ ହେବାର ସୂଚନା ଉପଲବ୍ଧ ହେଲେ ଆପଣ ଏକ ଆଲର୍ଟ ପାଇବେ</translation>
 <translation id="3328308545011660196">ପରାମର୍ଶ: <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଜଣାପଡ଼ୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="9150694013019234766">ସ୍କ୍ରିନ୍‌ର ତଳପାର୍ଶ୍ୱରେ ଥିବା ଗୋଷ୍ଠୀ ଟାବ୍‌ରେ ଟାବ୍‌ଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍‌ କରନ୍ତୁ</translation>
 <translation id="9169594135889675189">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="955558140275419384">ଏହି ଏଡିଟରକୁ ଯାଇ ଡିକ୍ଲଟର ପାଇଁ ଥିବା ସମସ୍ତ ଆର୍କାଇଭ ଟାବର ସମୀକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="959682366969460160">ସଂଗଠିତ କରନ୍ତୁ</translation>
 </translationbundle>

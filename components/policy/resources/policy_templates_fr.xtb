@@ -520,6 +520,7 @@ Si cette règle est désactivée, la page avec un en-tête <ph name="CACHE_CONTR
 <translation id="143649776386947790">Utiliser le comportement par défaut</translation>
 <translation id="1438739959477268107">Paramètre de génération de clé par défaut</translation>
 <translation id="1440408958042020947">Permet aux utilisateurs ayant activé Phone Hub d'accéder aux photos et vidéos récentes prises sur leur téléphone</translation>
+<translation id="1443532790824582949">Activer le clavier virtuel tactile</translation>
 <translation id="1449083855104537880">Définissez cette règle sur "True" pour afficher les options d'accessibilité dans le menu de la barre d'état système. Si vous définissez cette règle sur "False", ces options ne s'affichent pas dans le menu.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si elle n'est pas définie, les options d'accessibilité ne s'affichent pas dans le menu, mais les utilisateurs peuvent activer l'affichage via la page "Paramètres".
@@ -1169,6 +1170,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1954612656043024615">Activer la fonctionnalité de presse-papiers partagé</translation>
 <translation id="1955063069502242812">Activer le son de batterie faible</translation>
 <translation id="1955806069704957172">Contrôle les paramètres de l'API du connecteur de bureau.</translation>
+<translation id="1957093168333856467">Désactiver le clavier virtuel d'accessibilité</translation>
 <translation id="1960059835237529462">Permet aux utilisateurs de voir la promo concernant la note sur l'App Store <ph name="IOS_NAME" /></translation>
 <translation id="1960416154405676350">Activer la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Cette règle ne concerne que les sessions Invité gérées.
@@ -1271,6 +1273,7 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="2029985289397958781">Désactiver la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo pour les utilisateurs de la version Enterprise</translation>
 <translation id="2030905906517501646">Mot clé du moteur de recherche par défaut</translation>
 <translation id="203096360153626918">Cette règle n'a aucun effet sur les applications Android. L'utilisation du mode plein écran est possible même si cette règle est définie sur "<ph name="FALSE" />".</translation>
+<translation id="2031074619942406753">Désactiver le clavier virtuel tactile</translation>
 <translation id="2032848225007871645">Cette règle permet de contrôler les modes de déverrouillage rapide qu'il est possible d'utiliser pour déverrouiller l'écran de verrouillage.
 
       Procédure à suivre :
@@ -2385,6 +2388,7 @@ Si cette règle est activée, la touche du Lanceur d'applications/de recherche p
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">Le menu contextuel comportera un élément de menu permettant de partager des images avec <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Si la règle est activée, les applis Web tierces pourront utiliser <ph name="DESK_API_NAME" /> pour enregistrer et partager des bureaux <ph name="PRODUCT_OS_NAME" />. Si elle est désactivée, l'utilisateur ne pourra pas enregistrer ni partager les données de bureau via <ph name="DESK_API_NAME" />. Si la règle n'est pas configurée, le comportement est le même que si la règle est désactivée. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
+<translation id="2976033779241323433">Activer le clavier virtuel tactile en fonction de l'heuristique système par défaut</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Forcer l'ancienne implémentation</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
@@ -2491,6 +2495,7 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
       Si elle est désactivée, les commandes multimédias ne s'affichent pas sur l'écran de verrouillage.</translation>
 <translation id="3072847235228302527">Définir les conditions d'utilisation d'un compte local de l'appareil</translation>
 <translation id="3074032542020543133">Version LTS</translation>
+<translation id="3074886258920642791">Activer le clavier virtuel d'accessibilité sur l'écran de connexion</translation>
 <translation id="3077650998740742747">
 Comportement par défaut (Règle non définie)
 Lorsqu'un compte est ajouté dans la zone de contenu, une petite boîte de dialogue invitant l'utilisateur à créer un profil peut s'afficher. Vous pouvez fermer cette boîte de dialogue.
@@ -2932,9 +2937,6 @@ Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'es
 <translation id="3417418267404583991">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> autorise les connexions en mode invité. Les connexions en mode invité correspondent à des sessions utilisateur anonymes et ne nécessitent pas de mot de passe.
 
        Si cette règle est définie sur "false", <ph name="PRODUCT_OS_NAME" /> n'autorise pas les sessions en mode invité.</translation>
-<translation id="3420141485959154417">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche utilisé pour la recherche d'image. (Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> est configurée, les requêtes de recherche d'image sont envoyées à l'aide de la méthode POST.)
-
-      Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> n'est pas configurée, aucune recherche d'image n'est effectuée.</translation>
 <translation id="3423703250826790403">Applis Android</translation>
 <translation id="3426434797050451264">Cette règle peut également être utilisée pour spécifier des applis Android comme gestionnaires de fichiers par défaut.</translation>
 <translation id="3428247105888806363">Activer la prédiction réseau</translation>
@@ -3804,6 +3806,7 @@ Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extens
 
       Si cette règle est définie à partir d'une source cloud, elle ne peut pas cibler un utilisateur en particulier.</translation>
 <translation id="416817811987180750">Les utilisateurs auront accès à la fonctionnalité Liste d'achats.</translation>
+<translation id="4168880975307014079">Activer le clavier virtuel tactile</translation>
 <translation id="4169094969938998854">Ne pas autoriser le verrouillage de l'écran</translation>
 <translation id="4169692397912242417">Permet d'activer la fonctionnalité d'accessibilité de commentaires audio sur l'écran de connexion.
 
@@ -4786,6 +4789,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
       Remarque : Vous pouvez également utiliser la règle <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> pour ajouter des éléments à cette liste.</translation>
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
+<translation id="50689955292091946">Activer le clavier virtuel d'accessibilité sur l'écran de connexion</translation>
 <translation id="5069522005630249098">Ce paramètre détermine la quantité de données utilisateur conservées une fois <ph name="LACROS_NAME" /> désactivé.
 
       Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou n'est pas configurée, la rétromigration des données n'est pas effectuée.
@@ -4984,12 +4988,6 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
 
       Si cette règle n'est pas configurée ou qu'elle n'est pas valide, le comportement adopté sera le même que pour l'option "Attendre que la version sélectionnée rattrape la version installée lors du retour à une version antérieure".</translation>
 <translation id="5229339291699779956">Active la tunnellisation PCIe pour les périphériques Thunderbolt/USB4 ; les périphériques fonctionneront alors au maximum de leur capacité</translation>
-<translation id="5233239004553860036">Si la règle est définie sur <ph name="POLICY_VALUE_ALL" /> ou si elle n'est pas configurée, l'utilisation des comptes gérés n'est pas limitée. Il sera donc possible qu'un compte géré soit un compte secondaire. Celui-ci ne recevrait alors de règles que lorsqu'il serait connecté en tant que compte principal dans un profil de navigateur.
-      Les règles configurées sur le compte ne s'appliqueront pas dans les cas suivants :
-        - Le compte est défini comme secondaire au niveau du système d'exploitation (dans les paramètres du compte).
-        - Le compte est défini comme secondaire dans un profil de navigateur.
-
-      Si la règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" />, le compte concerné sera uniquement autorisé à se connecter en tant que compte principal et ne pourra pas se connecter en tant que compte secondaire.</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5235607513961923779">Indique l'état d'activité de l'appareil sur les appareils enregistrés pour les utilisateurs affiliés.
 
@@ -5116,6 +5114,7 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
 <translation id="5331746669335642668">Les règles relatives au cloud de <ph name="PRODUCT_NAME" /> sont prioritaires sur les règles relatives à la plate-forme.</translation>
 <translation id="5334501839642146593">Ne pas envoyer de statistiques à Google</translation>
 <translation id="5335910979215357815">Activer l'API Save and Share pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers.</translation>
+<translation id="5339096331970464266">Activer le clavier virtuel d'accessibilité</translation>
 <translation id="5340008866815063393">Activer les rapports sur les données des règles</translation>
 <translation id="5345910753471481870">Ne pas afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
@@ -5291,6 +5290,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5475361623548884387">Activer l'impression</translation>
 <translation id="547601067149622666">Ne pas autoriser les annonces sur les sites présentant des annonces intrusives</translation>
 <translation id="5476152378885134514">Bloquer le presse-papiers sur ces sites</translation>
+<translation id="5479841110985196412">Activer le clavier virtuel d'accessibilité</translation>
 <translation id="5480380613778757009">Si cette règle est désactivée ou qu'elle n'est pas configurée, tous les paramètres d'affichage définis dans la session Invité gérée sont réinitialisés à la fermeture de la session. Si cette règle est définie sur "True", les propriétés d'affichage sont conservées après la fermeture de la session Invité gérée.</translation>
 <translation id="5483012943408894695">Origines ou modèles de nom d'hôte non soumis aux restrictions applicables aux origines non sécurisées</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
@@ -5662,6 +5662,18 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
+<translation id="5803715507113569033">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Si cette règle est définie sur "<ph name="ALLOWED_NAME" />", l'utilisateur peut configurer <ph name="MICROSOFT_ONE_DRIVE_NAME" /> s'il le souhaite.
+Une fois le processus de configuration terminé, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> sera installé dans le gestionnaire de fichiers.
+
+Si cette règle est définie sur "<ph name="DISALLOWED_NAME" />", l'utilisateur ne peut pas configurer <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", <ph name="MICROSOFT_ONE_DRIVE_NAME" /> est configuré automatiquement, si possible. Cela nécessite que l'utilisateur se connecte à <ph name="PRODUCT_OS_NAME" /> avec un compte Microsoft. En cas d'échec, le processus de configuration s'affiche.
+
+Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards et "<ph name="DISALLOWED_NAME" />" pour les utilisateurs de la version Enterprise.
+
+Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
 <translation id="5804795151506109282">N'invitez pas les utilisateurs à migrer.</translation>
 <translation id="5806128552675651249">Autoriser l'impression uniquement sans images de fond</translation>
 <translation id="5809210507920527553">Contrôle les paramètres du conteneur Linux (Crostini).</translation>
@@ -6132,6 +6144,21 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 <translation id="6244210204546589761">URL à ouvrir au démarrage</translation>
 <translation id="624595269193747921">Limiter ou non la recherche d'une imprimante correspondant aux critères spécifiés à un groupe d'imprimantes spécifique.</translation>
 <translation id="6246290059248303618">Afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local</translation>
+<translation id="6246420783859339814">Cette règle permet aux administrateurs de limiter les comptes autorisés à se connecter à <ph name="MICROSOFT_ONE_DRIVE_NAME" /> lorsque la règle <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> est activée.
+
+Si cette règle contient une valeur "<ph name="COMMON_NAME" />", n'importe quel compte peut être utilisé pour se connecter.
+
+Si cette règle contient une valeur "<ph name="ORGANIZATIONS_NAME" />", un compte professionnel ou scolaire peut être utilisé pour se connecter.
+
+Si cette règle contient une valeur "<ph name="CONSUMER_NAME" />", un compte personnel <ph name="MICROSOFT_NAME" /> peut être utilisé pour se connecter.
+
+Si cette règle contient des noms de domaine ou des ID de locataire, les comptes de ces noms de domaine ou ID de locataire (voir https://learn.microsoft.com/fr-fr/azure/active-directory/develop/v2-protocols#Endpoint) peuvent être utilisés pour se connecter.
+
+Si cette règle n'est pas configurée ou ne contient qu'une valeur vide, c'est comme si "<ph name="COMMON_NAME" />" était spécifié pour les utilisateurs de la version Standard et comme si "<ph name="ORGANIZATIONS_NAME" />" était spécifié pour les utilisateurs de la version Enterprise.
+
+Modifier les restrictions peut entraîner la déconnexion des utilisateurs de leur compte <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si celui-ci ne respecte pas les nouvelles restrictions.
+
+Remarque : Pour le moment, seule la première entrée est prise en compte. Les extensions ultérieures prendront en charge plusieurs entrées.</translation>
 <translation id="6247316685259031374">Cette règle permet de contrôler l'exécution en bac à sable du processus audio.
       Si cette règle est activée, le processus audio s'exécute en bac à sable.
       Si cette règle est désactivée, le processus audio s'exécute hors bac à sable, et le module WebRTC de traitement de l'audio s'exécute dans le processus de rendu.
@@ -6139,6 +6166,17 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
       Si cette règle n'est pas configurée, la valeur par défaut du bac à sable est appliquée pour le processus audio (laquelle peut varier en fonction des plates-formes).
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable audio si la configuration des logiciels de sécurité qu'elles utilisent interfère avec le bac à sable.</translation>
 <translation id="624818583115864448">port 554 (peut être débloqué jusqu'au 15/10/2021)</translation>
+<translation id="6249912382559535329">Permet d'activer la fonctionnalité d'accessibilité du clavier virtuel sur l'écran de connexion.
+
+          Si cette règle est définie sur "True", le clavier virtuel d'accessibilité est toujours activé sur l'écran de connexion.
+
+          Si cette règle est définie sur "False", le clavier virtuel d'accessibilité est toujours désactivé sur l'écran de connexion.
+
+          Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+          Si cette règle n'est pas configurée, le clavier virtuel d'accessibilité est initialement désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment dans les paramètres d'accessibilité.
+
+          Cette règle n'a aucune incidence sur l'activation du clavier virtuel tactile. Par exemple, le clavier virtuel tactile s'affiche toujours sur une tablette, même si cette règle est définie sur "False".</translation>
 <translation id="6254498834449523938">Interdire à l'utilisateur de contourner l'avertissement de navigation sécurisée</translation>
 <translation id="625580680776945310">Le mode Haute efficacité sera activé.</translation>
 <translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
@@ -6362,6 +6400,16 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
       Si cette règle n'est pas configurée, la valeur par défaut est désactivée pour les utilisateurs gérés par une entreprise et activée sur les comptes non gérés.</translation>
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
+<translation id="6403114173011456561">Contrôle le clavier virtuel tactile en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Si le clavier virtuel d'accessibilité est activé, cette règle n'a aucune incidence.
+
+      Sinon, elle a les effets suivants :
+      Si cette règle n'est pas configurée, le clavier virtuel s'affiche en fonction de l'heuristique système par défaut, par exemple si un clavier est connecté ou non.
+      Si cette règle est définie sur "True", le clavier virtuel est toujours affiché.
+      Si cette règle est définie sur "False", le clavier virtuel n'est jamais affiché.
+
+      Le clavier virtuel peut adopter une disposition compacte en fonction du mode de saisie.</translation>
 <translation id="6404064917675764807">Ne pas signaler les événements de sessions CRD</translation>
 <translation id="6404360891305375004">Autoriser les partages de fichiers en réseau</translation>
 <translation id="6407093060083181305">Configurer la liste de blocage concernant l'installation des extensions</translation>
@@ -7138,6 +7186,16 @@ Cette règle sera supprimée quand la fonctionnalité de pilotes d'impression ho
       Si vous sélectionnez "U2F", le deuxième facteur intégré se comporte conformément à la norme FIDO U2F.
 
       Si vous sélectionnez "U2F_EXTENDED", le deuxième facteur intégré fournit les fonctionnalités U2F ainsi que certaines extensions pour chaque attestation.</translation>
+<translation id="69942621143543910">Cette règle permet aux administrateurs de configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /> sur <ph name="PRODUCT_OS_NAME" />.
+
+Si cette règle est définie sur "<ph name="ALLOWED_NAME" />", l'utilisateur peut configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /> s'il le souhaite.
+Une fois le processus de configuration terminé, les fichiers dont les formats sont identiques sont déplacés par défaut vers <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et gérés par les applis <ph name="MICROSOFT_365_NAME" /> lorsque l'utilisateur tente de les ouvrir.
+
+Si cette règle est définie sur "<ph name="DISALLOWED_NAME" />", l'utilisateur ne peut pas configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /> (comme décrit ci-dessus) et cela supprime <ph name="MICROSOFT_365_NAME" /> de la liste des gestionnaires de fichiers potentiels.
+
+Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", le flux <ph name="CLOUD_UPLOAD_NAME" /> est automatiquement configuré pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" />, de sorte que les fichiers dont les formats sont identiques sont déplacés par défaut vers <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et gérés par les applis <ph name="MICROSOFT_365_NAME" /> lorsque l'utilisateur tente de les ouvrir.
+
+Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards. Pour les utilisateurs de la version Enterprise, si cette règle n'est pas configurée, elle est définie par défaut sur "<ph name="DISALLOWED_NAME" />".</translation>
 <translation id="6999948519306285655">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
        Elle permet de définir l'URL d'un fichier .pac proxy. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -8696,9 +8754,6 @@ Pour en savoir plus sur les anciennes technologies, consultez https://chromestat
 <translation id="8312129124898414409">Permet d'indiquer si des sites Web sont autorisés à utiliser la génération de clé. Celle-ci peut être autorisée ou interdite pour tous les sites.
 
           Si cette règle n'est pas définie, le paramètre "BlockKeygen" est utilisé, et l'utilisateur est en mesure de le modifier.</translation>
-<translation id="8313927126392971570">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche d'image à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme {imageThumbnail}, elle est remplacée par des vignettes d'images réelles.
-
-      Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> n'est pas configurée, la requête de recherche d'image est envoyée à l'aide de la méthode GET.</translation>
 <translation id="8314214821702356835">Autoriser les utilisateurs à lire des contenus multimédias lorsque l'appareil est verrouillé</translation>
 <translation id="8314308739926578606">Interdire l'utilisation des Outils pour les développeurs avec les applis et les extensions installées par les règles d'entreprise ou, depuis la version 114 et s'il s'agit d'un utilisateur géré, les extensions intégrées au navigateur. Autoriser l'utilisation des Outils pour les développeurs dans les autres cas</translation>
 <translation id="8316940611391250886">Interdire les certificats sans extension subjectAlternativeName</translation>
@@ -8770,6 +8825,17 @@ Les certificats doivent être encodés en base64.</translation>
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sélectionnée s'ouvre automatiquement dans un navigateur secondaire.</translation>
 <translation id="8402079500086185021">Toujours ouvrir les fichiers PDF en externe</translation>
+<translation id="8402357110539568621">Permet d'activer la fonctionnalité d'accessibilité de clavier virtuel.
+
+          Si cette règle est définie sur "True", le clavier virtuel d'accessibilité est toujours activé.
+
+          Si cette règle est définie sur "False", le clavier virtuel d'accessibilité est toujours désactivé.
+
+          Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+          Si cette règle n'est pas configurée, le clavier virtuel d'accessibilité est initialement désactivé, mais les utilisateurs peuvent l'activer à tout moment dans les paramètres d'accessibilité.
+
+          Cette règle n'a aucune incidence sur l'activation du clavier virtuel tactile. Par exemple, le clavier virtuel tactile s'affiche toujours sur une tablette, même si cette règle est définie sur "False". Utilisez la règle <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> pour contrôler le comportement du clavier virtuel tactile.</translation>
 <translation id="8410477879938914253">Cette règle ne concerne que les sessions Invité gérées.
       Si elle est définie sur "True" ou si elle n'est pas configurée, une boîte de dialogue invitant l'utilisateur à confirmer ou à refuser la déconnexion s'affichera une fois la dernière fenêtre fermée.
       Si cette règle est définie sur "False", la boîte de dialogue ne pourra pas s'afficher et la fonctionnalité de déconnexion automatique une fois la dernière fenêtre fermée sera désactivée.</translation>
@@ -8824,6 +8890,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 <translation id="8470317291588703478">N'appliquez pas l'utilisation du mode restreint sur YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilisera toutes les interfaces disponibles pour rechercher le meilleur chemin.</translation>
+<translation id="8479496880635054740">Désactiver le clavier virtuel d'accessibilité sur l'écran de connexion</translation>
 <translation id="8482518340010585741">Configurer la restauration des applications à la connexion</translation>
 <translation id="8483004350080020634">Cette règle supprime les parties sensibles (informations confidentielles et de sécurité) des URL "https://" avant de les transmettre aux scripts PAC (Proxy Auto Config) utilisés par <ph name="PRODUCT_NAME" /> lors de la résolution du proxy.
 

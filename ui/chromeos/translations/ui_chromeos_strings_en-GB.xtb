@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="117624967391683467">Copying <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="1190144681599273207">Fetching this file will use approximately <ph name="FILE_SIZE" /> of mobile data.</translation>
 <translation id="1194390763418645112">File access by <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1209796539517632982">Automatic name servers</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Share with <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Authentication certificate rejected locally</translation>
 <translation id="1775381402323441512">Video info</translation>
+<translation id="180035236176489073">You must be online to access these files.</translation>
 <translation id="1807938677607439181">All files</translation>
 <translation id="1810764548349082891">No preview available</translation>
 <translation id="1812302367230252929">Amharic transliteration</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">Auto-configuration URL:</translation>
 <translation id="2284767815536050991">removable storage</translation>
 <translation id="2288278176040912387">Record player</translation>
+<translation id="2291538123825441971">Opening <ph name="NUMBER_OF_FILES" /> files.</translation>
+<translation id="2303301624314357662">Opening file <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> has been ejected.</translation>
 <translation id="2307462900900812319">Configure network</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">There isn’t enough storage space to sync all of your files</translation>
 <translation id="23721837607121582">Download mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Switch to list view</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folders shared with Linux</translation>
 <translation id="2379576081295865700">Checking storage space… one item found</translation>
 <translation id="2383454254762599978">Move to bin</translation>
 <translation id="2387458720915042159">Proxy connection type</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">Zip selection</translation>
 <translation id="4202378258276439759">Spanish (Latin America)</translation>
 <translation id="4202977638116331303">Georgian</translation>
+<translation id="421017592316736757">You must be online to access this file.</translation>
 <translation id="4212740939091998969">The folder named '<ph name="FOLDER_NAME" />' already exists. Please choose a different name.</translation>
 <translation id="4218274196133425560">Remove exception for <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google Presentation</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> filter is on.</translation>
+<translation id="4290535918735525311">1 folder shared with Linux</translation>
 <translation id="4299729908419173967">Brazilian</translation>
 <translation id="4302605047395093221">Anyone using this device will need to enter the PIN to connect to this mobile network</translation>
 <translation id="4303531889494116116">This network is busy. Try again later.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Football</translation>
+<translation id="4961158930123534723">1 folder shared with Parallels Desktop</translation>
+<translation id="4965874878399872778">Checking files against your organisation's security policies...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restored</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Couldn’t finish setting up file sync</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318819489018851358">Share with Linux</translation>
 <translation id="5323213332664049067">Latin American</translation>
+<translation id="5330145655348521461">These files opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="5330512191124428349">Get info</translation>
 <translation id="535792325654997756">Person with cats</translation>
 <translation id="5358764674931277">Frame rate</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">Japanese with US keyboard</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, no network</translation>
 <translation id="6146563240635539929">Videos</translation>
+<translation id="6150853954427645995">To save this file for offline use, get back online, right-click the file and select the <ph name="OFFLINE_CHECKBOX_NAME" /> option.</translation>
 <translation id="6164412158936057769">Butterflies</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">Invalid domain suffix match value</translation>
 <translation id="6364301859968397756">Org storage full</translation>
 <translation id="6367976544441405720">Van</translation>
+<translation id="637062427944097960">This file opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> could not be moved because it is encrypted.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">You have 1 remaining attempt.</translation>
 <translation id="643243556292470964">Deleted files are now moved to the bin</translation>
 <translation id="6438480100790416671">Checking storage space…</translation>
+<translation id="6451527188465304418">Checking file against your organisation's security policies...</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
 <translation id="649877868557234318">Extracting <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">File sync settings</translation>
 <translation id="6594855146910089723">This folder is shared with Linux and Parallels Desktop</translation>
 <translation id="6607272825297743757">File info</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> folders shared with Parallels Desktop</translation>
 <translation id="6629518321609546825">Enter at least 4 numbers</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6650726141019353908">Pink butterfly</translation>
@@ -877,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Error configuring network</translation>
+<translation id="7839804798877833423">Fetching these files will use approximately <ph name="FILE_SIZE" /> of mobile data.</translation>
 <translation id="7846076177841592234">Cancel selection</translation>
 <translation id="7853966320808728790">French BÉPO</translation>
 <translation id="7857117644404132472">Add exception</translation>
@@ -918,12 +933,14 @@
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8147028810663464959">Character width is Full</translation>
 <translation id="8151638057146502721">Configure</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{One error.}other{# errors.}}</translation>
 <translation id="8154842056504218462">Selected all entries.</translation>
 <translation id="8157684860301034423">Failed to retrieve app info.</translation>
 <translation id="8175731104491895765">French (Belgium)</translation>
 <translation id="8175799081768705361">Syncing <ph name="NUMBER_OF_FILES_SYNCING" /> Drive files</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Device model</translation>
+<translation id="8223479393428528563">To save these files for offline use, get back online, right-click the files and select the <ph name="OFFLINE_CHECKBOX_NAME" /> option.</translation>
 <translation id="8241139360630443550">View storage</translation>
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8250690786522693009">Latin</translation>
@@ -950,6 +967,7 @@
 <translation id="83651606385705612">Give <ph name="VM_NAME" /> permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="8372369524088641025">Bad WEP key</translation>
 <translation id="8372852072747894550">Greek</translation>
+<translation id="8377269993083688872">Email layouts</translation>
 <translation id="8386903983509584791">Scan completed</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extracted.</translation>
 <translation id="8395901698320285466">Dimensions</translation>
@@ -1008,6 +1026,7 @@
 <translation id="8787254343425541995">Allow proxies for shared networks</translation>
 <translation id="8790981080411996443">Person watering plants</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{One warning.}other{# warnings.}}</translation>
 <translation id="8808686172382650546">Cat</translation>
 <translation id="8810671769985673465">Zipping failed, item exists: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">Spanish (Spain)</translation>

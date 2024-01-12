@@ -761,6 +761,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2469153820345007638">1-zu-N-Reihenfolge</translation>
 <translation id="24699311393038040">Papier (beschichtet)</translation>
 <translation id="2470767536994572628">Wenn du Anmerkungen bearbeitest, wechselt das Dokument zur Einzelseitenansicht und seiner ursprünglichen Ausrichtung zurück</translation>
+<translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2479410451996844060">Ungültige Such-URL</translation>
 <translation id="2480300195898055381">In meinem Google-Konto, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
@@ -830,12 +831,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2610561535971892504">Zum Kopieren klicken</translation>
 <translation id="2612993535136743634">Alle auf deinem Gerät und in deinem Google-Konto gespeicherten Sicherheitscodes werden gelöscht</translation>
 <translation id="2616412942031748191">Suchmaschinenoptimierung und ‑marketing</translation>
-<translation id="2617988307566202237">Chrome speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Den Browserverlauf
-            <ph name="LIST_ITEM" />Cookies und Websitedaten
-            <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
-          <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Einfügen</translation>
 <translation id="2625385379895617796">Deine Uhr geht vor</translation>
 <translation id="262745152991669301">Darf nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchte</translation>
@@ -1017,6 +1012,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, drücke die Tabulatortaste, um die verfügbaren Aktionen aufzurufen, und dann die Eingabetaste, um die ausgewählte Aktion auszuführen.</translation>
 <translation id="3013291976881901233">MIDI-Geräte</translation>
 <translation id="3014553260345122294">Wirtschaftsnachrichten</translation>
+<translation id="3014726756341138577">Erweiterte Druckerfunktionen</translation>
 <translation id="301521992641321250">Automatisch blockiert</translation>
 <translation id="3016780570757425217">Deinen Standort abrufen</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Vorschlag zu entfernen.</translation>
@@ -1166,6 +1162,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="33073482541490531">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="3307649904964670439">Schaltfläche „Chrome anpassen“ – aktivieren, um das Erscheinungsbild des Browsers anzupassen</translation>
 <translation id="3308006649705061278">Organisationseinheit (OU)</translation>
+<translation id="3324223664999044166">3 oder mehr Wörter, die deine Gedanken zusammenfassen</translation>
 <translation id="3324687287337751929">4 × 6 Zoll</translation>
 <translation id="3324983252691184275">Purpur</translation>
 <translation id="3325027355611702542">Wohnwagen und Wohnmobile</translation>
@@ -1836,7 +1833,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4652440160515225514">Deine Organisation hat diese Website blockiert, weil sie gegen eine Richtlinie verstößt.</translation>
 <translation id="4653167719759882810">Fusionen und Übernahmen</translation>
 <translation id="4658638640878098064">Heftklammer oben links</translation>
-<translation id="4660119392514473465">Du kannst jetzt privat surfen. Andere Personen, die dieses Gerät verwenden, können deine Aktivität nicht sehen. Downloads, Lesezeichen und Webseiten auf deiner Leseliste werden jedoch gespeichert.</translation>
 <translation id="4660567771874403130">Energie- und Versorgungswirtschaft</translation>
 <translation id="4663373278480897665">Kameranutzung zulässig</translation>
 <translation id="466561305373967878">Brettspiele</translation>
@@ -2166,6 +2162,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" />-Einstellungen aufrufen</translation>
 <translation id="5293919335876685914">Coupés</translation>
 <translation id="5296589789433599000">Kochen und Rezepte</translation>
+<translation id="5298618990685278995">einen ersten Entwurf</translation>
 <translation id="5299298092464848405">Fehler beim Parsen der Richtlinie</translation>
 <translation id="5299638840995777423">Roboter</translation>
 <translation id="5300062471671636390">Geräteliste für das Streamen ausblenden</translation>
@@ -2282,6 +2279,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5541086400771735334">Ablage 7</translation>
 <translation id="5541546772353173584">E-Mail-Adresse hinzufügen</translation>
 <translation id="5543722831081909240">180°</translation>
+<translation id="555037537507405574">erweiterte Druckerfunktionen</translation>
 <translation id="555128936272638662">Zubehör für Mobil- und Drahtlosgeräte</translation>
 <translation id="5551890439174915351">100 × 200 mm</translation>
 <translation id="5552137475244467770">Chrome prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
@@ -2582,7 +2580,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6160391204859821737">Eine Funktion zum Datenschutz bei Werbung aktivieren</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6167577165590485365">Letzter Abrufversuch:</translation>
-<translation id="6169916984152623906">Du kannst jetzt privat surfen. Für andere Personen, die dieses Gerät nutzen, sind deine Aktivitäten nicht sichtbar. Deine Downloads und Lesezeichen werden jedoch gespeichert.</translation>
 <translation id="617256461084925519">Google Chrome versucht, deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst.</translation>
 <translation id="6176387967264100435">Dieser Preis ist hoch</translation>
 <translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
@@ -3202,6 +3199,7 @@ Weitere Details:
 <translation id="7378877318020334501">Comedy-Fernsehserien</translation>
 <translation id="7380398842872229465">10 × 15 Zoll</translation>
 <translation id="738439098860678026">Früherziehung</translation>
+<translation id="7388071710882496863">Anfragen wie „Schreib eine 5-Sterne-Rezension für dieses Restaurant“</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7390545607259442187">Karte bestätigen</translation>
 <translation id="7392089738299859607">Adresse aktualisieren</translation>
@@ -3271,12 +3269,6 @@ Weitere Details:
 <translation id="749865518782565832">Klempnerarbeiten</translation>
 <translation id="7501663406926337752">Die angeforderte Website wurde von deiner Organisation gemeldet</translation>
 <translation id="7501853161948120656">Bildungsressourcen</translation>
-<translation id="7506488012654002225">Chromium speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Den Browserverlauf
-            <ph name="LIST_ITEM" />Cookies und Websitedaten
-            <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
-          <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Umschlag Nr. 9</translation>
 <translation id="7508255263130623398">Zurückgegebene Geräte-ID der Richtlinie ist leer oder entspricht nicht der aktuellen Geräte-ID</translation>
 <translation id="7508577201115425418">Kopier- und Druckdienstleistungen</translation>
@@ -3458,6 +3450,7 @@ Weitere Details:
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7805906048382884326">Infofeld schließen</translation>
 <translation id="7810410097247356677">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichere deine Karte und den verschlüsselten Sicherheitscode auf deinem Gerät</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vorschlag für das Formular aus Chrome entfernen?</translation>
@@ -4117,6 +4110,7 @@ Weitere Details:
 <translation id="9144951720726881238">Ablaufdatum:</translation>
 <translation id="9148507642005240123">&amp;Bearbeiten rückgängig machen</translation>
 <translation id="9148599396704355100">Der Preis ist niedrig</translation>
+<translation id="9150025764986957246">Du kannst beispielsweise Folgendes eingeben:</translation>
 <translation id="9150045010208374699">Deine Kamera verwenden</translation>
 <translation id="9150685862434908345">Dein Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Aktualisiert</translation>
@@ -4127,6 +4121,7 @@ Weitere Details:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Bei besuchten Websites kann auch anhand deiner Aktivitäten auf der Website ermittelt werden, was dir gefällt. Wenn du zum Beispiel eine Website besuchst, auf der Schuhe für den Langstreckenlauf verkauft werden, könnte daraus geschlossen werden, dass du an Marathonläufen interessiert bist.</translation>
 <translation id="9166851138617700776">Weitere Informationen zu von Websites vorgeschlagener Werbung und zur Erfolgsmessung von Anzeigen</translation>
+<translation id="9167594211215946097">Direkten Zugriff auf deine Drucker erhalten</translation>
 <translation id="9168814207360376865">Websites die Abfrage gespeicherter Zahlungsmethoden erlauben</translation>
 <translation id="9169664750068251925">Auf dieser Website immer blockieren</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> zum Startbildschirm hinzufügen</translation>

@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Bạn muốn đóng các thẻ cũ?</translation>
 <translation id="1215127405478249895">Xem lại thẻ</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
+<translation id="1326271443836399892">Xem lại chế độ cài đặt sắp xếp gọn gàng hiện tại.</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Xóa khỏi nhóm</translation>
 <translation id="3008554597174452548">Dừng theo dõi sản phẩm</translation>
 <translation id="3052964831964880138">Giảm giá <ph name="PRICE_DROP" /> đối với <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Bạn có <ph name="TABS_COUNT_ONE" /> thẻ được lưu trữ}other{Bạn có <ph name="TABS_COUNT_MANY" /> thẻ được lưu trữ}}</translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
 <translation id="9150694013019234766">Chuyển đổi giữa các thẻ trong nhóm thẻ ở gần cuối màn hình</translation>
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
+<translation id="955558140275419384">Vào trình chỉnh sửa này để xem lại tất cả thẻ đã lưu trữ nhằm sắp xếp gọn gàng.</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>
 </translationbundle>

@@ -1133,6 +1133,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5546397813406633847">Recuperar usuário</translation>
 <translation id="554893713779400387">Mudar para o ditado</translation>
+<translation id="5550417424894892620">Solte os arquivos na área de trabalho para adicioná-los ao espaço <ph name="HOLDING_SPACE_TITLE" />. Não é possível adicionar arquivos à área de trabalho.</translation>
 <translation id="5551456515017410630">Abrir/fechar agenda</translation>
 <translation id="5551974246223970793">Acessar o próximo resultado ao pesquisar em uma página</translation>
 <translation id="5555639311269196631">Desativar o ponto de acesso</translation>
@@ -1505,6 +1506,7 @@ Nova instalação</translation>
 <translation id="7025533177575372252">Conecte seu <ph name="DEVICE_NAME" /> ao smartphone</translation>
 <translation id="7026338066939101231">Reduzir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
+<translation id="7031303610220416229">Mostrar todas as tarefas no Google Tarefas</translation>
 <translation id="7032161822340700104">São permitidos apenas seis modelos. Remova um deles para salvar outro.</translation>
 <translation id="7034025838182392395">O app <ph name="APP_NAME" /> quer usar o dispositivo <ph name="DEVICE_NAME" />. Ative a chave desse dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistente</translation>
@@ -1817,6 +1819,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em uso.</translation>
 <translation id="8369166482916924789">Espaço de trabalho salvo: <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Pesquisar <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8371991222807690464">O desempenho dos periféricos pode ser limitado no modo visitante</translation>
 <translation id="8374601332003098278">Pressione "Enter" para gravar a tela parcialmente</translation>
@@ -1872,6 +1875,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordenar seus apps por nome e cor</translation>
 <translation id="8609384513243082612">Abrir nova guia</translation>
+<translation id="8612216344243590325">Deixe arquivos importantes no espaço <ph name="HOLDING_SPACE_TITLE" /> em vez da área de trabalho. Basta arrastá-los para <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">As notificações dos apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção de visualização está ativada</translation>
 <translation id="8619138598101195078">Diminuir o volume</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>

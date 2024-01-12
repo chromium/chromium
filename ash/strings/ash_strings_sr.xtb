@@ -1134,6 +1134,7 @@
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5546397813406633847">Врати приступ корисничком налогу</translation>
 <translation id="554893713779400387">Укључи/искључи диктирање</translation>
+<translation id="5550417424894892620">Отпустите фајлове на позадини да бисте их додали у <ph name="HOLDING_SPACE_TITLE" />. Не можете да додајете фајлове на позадини.</translation>
 <translation id="5551456515017410630">Отвори или затвори календар</translation>
 <translation id="5551974246223970793">При претраживању странице иди на следеће подударање за претрагу</translation>
 <translation id="5555639311269196631">Искључи хотспот</translation>
@@ -1876,6 +1877,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортирајте апликације према називу или боји</translation>
 <translation id="8609384513243082612">Отворите нову картицу</translation>
+<translation id="8612216344243590325">Чувајте важне фајлове у фолдеру <ph name="HOLDING_SPACE_TITLE" /> уместо на позадини. Само превуците фајлове у <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Обавештења апликација <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> су скривена јер је заштита од прегледа укључена</translation>
 <translation id="8619138598101195078">Смањи јачину звука</translation>
 <translation id="8627191004499078455">Повезани сте са уређајем <ph name="DEVICE_NAME" /></translation>

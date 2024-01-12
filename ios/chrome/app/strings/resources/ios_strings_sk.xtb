@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Výber jednotky</translation>
 <translation id="2348630484974447747">Zásielka</translation>
 <translation id="2351097562818989364">Nastavenia prekladov boli resetované.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Heslo domény {DOMAIN_ONE} si môžete uložiť do účtu Google {EMAIL}.}=2{Heslá domén {DOMAIN_ONE} a {DOMAIN_TWO} ďalších si môžete uložiť do účtu Google {EMAIL}.}=3{Heslá domén {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} ďalšej si môžete uložiť do účtu Google {EMAIL}.}few{Heslá domén {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} ďalších si môžete uložiť do účtu Google {EMAIL}.}many{You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}other{Heslá domén {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} ďalších si môžete uložiť do účtu Google {EMAIL}.}}</translation>
 <translation id="235789365079050412">Pravidlá ochrany súkromia spoločnosti Google</translation>
 <translation id="2359043044084662842">Preložiť</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
@@ -335,6 +336,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2747003861858887689">Predchádzajúce pole</translation>
 <translation id="2749231692441336879">Sledujete <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Účty v tomto zariadení</translation>
+<translation id="2755595981383829244">Teraz budete dostávať upozornenia na obsah</translation>
 <translation id="2762000892062317888">práve teraz</translation>
 <translation id="2772667768515195373">V službách Googlu môžete používať uložené adresy. Táto adresa je uložená vo vašom účte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonymné vyhľadávanie</translation>
@@ -688,6 +690,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4689564913179979534">Spravovať spôsoby platby…</translation>
 <translation id="469300482518076788">Zavrieť kartu</translation>
 <translation id="4697071790493980729">Neboli nájdené žiadne výsledky</translation>
+<translation id="470337593714520080">{count,plural, =1{Uložte si 1 záložku v účte Google}few{Uložte si {count} záložky v účte Google}many{Save {count} Bookmarks in Your Google Account}other{Uložte si {count} záložiek v účte Google}}</translation>
 <translation id="470966556546083668">Nezapínať synchronizáciu</translation>
 <translation id="4711809265250406889">Keď je zapnuté</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} a 1 ďalší web}few{{website_1}, {website_2} a {more_count} ďalšie weby}many{{website_1}, {website_2}, and {more_count} more}other{{website_1}, {website_2} a {more_count} ďalších webov}}</translation>

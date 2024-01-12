@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">युनिट सिलेक्टर</translation>
 <translation id="2348630484974447747">पॅकेज</translation>
 <translation id="2351097562818989364">आपल्या भाषांतर सेटिंग्ज रीसेट करण्यात आल्या आहेत.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{तुम्ही {DOMAIN_ONE} साठी तुमच्या {EMAIL} या Google खाते मध्ये तुमचा पासवर्ड सेव्ह करू शकता.}=2{तुम्ही {DOMAIN_ONE} आणि {DOMAIN_TWO} साठी तुमच्या {EMAIL} या Google खाते मध्ये तुमचे पासवर्ड सेव्ह करू शकता.}=3{तुम्ही {DOMAIN_ONE}, {DOMAIN_TWO} आणि इतर {OTHER_DOMAINS_COUNT} साठी तुमच्या {EMAIL} या Google खाते मध्ये तुमचे पासवर्ड सेव्ह करू शकता.}other{तुम्ही {DOMAIN_ONE}, {DOMAIN_TWO} आणि इतर {OTHER_DOMAINS_COUNT} साठी तुमच्या {EMAIL} या Google खाते मध्ये तुमचे पासवर्ड सेव्ह करू शकता.}}</translation>
 <translation id="235789365079050412">Google गोपनीयता धोरण</translation>
 <translation id="2359043044084662842">भाषांतर</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">पेमेंट पद्धती व्यवस्थापित करा...</translation>
 <translation id="469300482518076788">टॅब बंद करा</translation>
 <translation id="4697071790493980729">कोणतेही परिणाम आढळले नाहीत</translation>
+<translation id="470337593714520080">{count,plural, =1{१ बुकमार्क तुमच्या Google खाते मध्ये सेव्ह करा}other{{count} बुकमार्क तुमच्या Google खाते मध्ये सेव्ह करा}}</translation>
 <translation id="470966556546083668">सिंक करा हे सुरू करू नका</translation>
 <translation id="4711809265250406889">सुरू असताना</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} आणि आणखी १}other{{website_1}, {website_2} आणि आणखी {more_count}}}</translation>

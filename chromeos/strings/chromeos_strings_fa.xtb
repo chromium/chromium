@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">نمایش اسلاید</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصویر</translation>
+<translation id="4310735698903592804">‏کاغذدیواری‌های اخیر با بهره‌گیری از هوش مصنوعی Google ایجاد شده است</translation>
 <translation id="4333390807948134856">کلید <ph name="KEY_NAME" /> فشار داده شد</translation>
 <translation id="4354430579665871434">کلید</translation>
 <translation id="4361257691546579041">‏APN از نوع پیش‌فرض است.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}one{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}other{فایل‌های شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}}</translation>
 <translation id="5931523347251946569">فایل پیدا نشد</translation>
+<translation id="593880865674747800">ایجاد کاغذدیواری‌های بیشتر در این سبک</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="594552776027197022">ایجد جفت‌کلید تصادفی</translation>
 <translation id="5946538341867151940">‏هنوز متصل نیستید. اگر شرکت مخابراتی تلفن همراه توصیه می‌کند از APN سفارشی استفاده کنید، اطلاعات APN را با انتخاب «+ APN جدید» وارد کنید.</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>
 <translation id="7841134249932030522">فعال کردن حالت تاریک</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
+<translation id="7850847810298646851">‏کاغذدیواری با بهره‌گیری از هوش مصنوعی Google ایجاد شده است</translation>
 <translation id="7856267634822906833">صفحه لمسی بلوتوث</translation>
 <translation id="7869143217755017858">غیرفعال کردن حالت تاریک</translation>
 <translation id="7881066108824108340">DNS</translation>

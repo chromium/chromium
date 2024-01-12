@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
+<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">允許</translation>
@@ -366,6 +367,7 @@
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>
+<translation id="7180865173735832675">自訂</translation>
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7201549776650881587">這項操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
 <translation id="7203150201908454328">已展開</translation>

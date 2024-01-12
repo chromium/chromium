@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
 <translation id="117624967391683467">Ідзе капіраванне файла "<ph name="FILE_NAME" />"...</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
+<translation id="1190144681599273207">Каб атрымаць гэты файл, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="1194390763418645112">Доступ да файла адсюль: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Абагуліць з <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Сертыфікат аўтэнтыфікацыі адхілены ў лакальнай сетцы</translation>
 <translation id="1775381402323441512">Звесткі пра відэа</translation>
+<translation id="180035236176489073">Каб атрымаць доступ да гэтых файлаў, трэба выйсці ў інтэрнэт.</translation>
 <translation id="1807938677607439181">Усе файлы</translation>
 <translation id="1810764548349082891">Перадпрагляд недаступны</translation>
 <translation id="1812302367230252929">Амхарская (транслітарацыя)</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">URL-адрас аўтаматычнай канфігурацыі:</translation>
 <translation id="2284767815536050991">здымнае сховішча</translation>
 <translation id="2288278176040912387">Патэфон</translation>
+<translation id="2291538123825441971">Адкрываюцца некалькі файлаў (<ph name="NUMBER_OF_FILES" />) .</translation>
+<translation id="2303301624314357662">Адкрываецца файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Носьбіт <ph name="VOLUME_NAME" /> выняты.</translation>
 <translation id="2307462900900812319">Наладзіць сетку</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">Недастаткова месца ў сховішчы для сінхранізацыі ўсіх файлаў</translation>
 <translation id="23721837607121582">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
 <translation id="2377319039870049694">Пераключыць на рэжым спіса</translation>
+<translation id="2377590462528165447">Папак абагулена з сістэмай Linux: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2379576081295865700">Ідзе праверка наяўнасці месца ў сховішчы… Знойдзены 1 элемент.</translation>
 <translation id="2383454254762599978">Перамясціць у сметніцу</translation>
 <translation id="2387458720915042159">Тып падключэння проксі-сервера</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">Архіваваць выбранае ў файл ZIP</translation>
 <translation id="4202378258276439759">Іспанская (Лацінская Амерыка)</translation>
 <translation id="4202977638116331303">Грузінская</translation>
+<translation id="421017592316736757">Каб атрымаць доступ да гэтага файла, трэба выйсці ў інтэрнэт.</translation>
 <translation id="4212740939091998969">Папка пад назвай "<ph name="FOLDER_NAME" />" ужо існуе. Выберыце іншую назву.</translation>
 <translation id="4218274196133425560">Выдаліць выключэнне для <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Прэзентацыя Google</translation>
 <translation id="4277536868133419688">Уключаны фільтр "<ph name="FILTER_NAME" />".</translation>
+<translation id="4290535918735525311">1 папка абагулена з Linux</translation>
 <translation id="4299729908419173967">Бразільская</translation>
 <translation id="4302605047395093221">Для падключэння да дадзенай мабільнай сеткі любы карыстальнік гэтай прылады павінен будзе ўвесці PIN-код</translation>
 <translation id="4303531889494116116">Гэта сетка занятая. Паўтарыце спробу пазней.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
 <translation id="4935975195727477204">Кветка гацаніі</translation>
 <translation id="4943368462779413526">Мяч для амерыканскага футбола</translation>
+<translation id="4961158930123534723">1 папка абагулена з Parallels Desktop</translation>
+<translation id="4965874878399872778">Файлы правяраюцца на адпаведнасць правілам бяспекі, прынятым у вашай арганізацыі...</translation>
 <translation id="496656650103537022">Файл "<ph name="FILE_NAME" />" адноўлены</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Не ўдалося завяршыць наладжванне сінхранізацыі файлаў</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318819489018851358">Абагуліць з Linux</translation>
 <translation id="5323213332664049067">Лацінаамерыканская</translation>
+<translation id="5330145655348521461">Гэтыя файлы адкрыты на іншым працоўным стале. Каб бачыць яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Атрымаць інфармацыю</translation>
 <translation id="535792325654997756">Чалавек з катамі</translation>
 <translation id="5358764674931277">Частата кадраў</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">Японская з клавіятурай ЗША</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, няма сеткі</translation>
 <translation id="6146563240635539929">Відэа</translation>
+<translation id="6150853954427645995">Каб захаваць гэты файл для выкарыстання ў пазасеткавым рэжыме, падключыцеся зноў да інтэрнэту, націсніце правай кнопкай мышы на патрэбны файл і выберыце пункт <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Матылькі</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">Несапраўднае значэнне супадзення па суфіксе дамена</translation>
 <translation id="6364301859968397756">Сховішча арганізацыі запоўнена</translation>
 <translation id="6367976544441405720">Мікрааўтобус</translation>
+<translation id="637062427944097960">Гэты файл адкрыты на іншым працоўным стале. Каб праглядзець яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Толькі чытанне</translation>
 <translation id="6395575651121294044">Элементаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Не ўдалося перамясціць файл "<ph name="FILE_NAME" />", бо ён зашыфраваны.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">У вас засталася 1 спроба.</translation>
 <translation id="643243556292470964">Выдаленыя файлы перамяшчаюцца ў сметніцу</translation>
 <translation id="6438480100790416671">Ідзе праверка наяўнасці месца ў сховішчы…</translation>
+<translation id="6451527188465304418">Файл правяраецца на адпаведнасць правілам бяспекі, прынятым у вашай арганізацыі...</translation>
 <translation id="6485131920355264772">Не ўдалося атрымаць звесткі пра вольнае месца</translation>
 <translation id="6495925982925244349">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="649877868557234318">Выманне файла "<ph name="FILE_NAME" />" ажыццяўляецца ў папку "<ph name="FOLDER_NAME" />"</translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">Налады сінхранізацыі файлаў</translation>
 <translation id="6594855146910089723">Гэта папка абагулена з Linux і Parallels Desktop</translation>
 <translation id="6607272825297743757">Інфармацыя пра файл</translation>
+<translation id="6609332149380188670">Абагулена папак з Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Увядзіце як мінімум 4 лічбы</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6650726141019353908">Ружовы матылёк</translation>
@@ -877,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Памылка наладжвання сеткі</translation>
+<translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7853966320808728790">Французская раскладка клавіятуры BÉPO</translation>
 <translation id="7857117644404132472">Дадаць выключэнне</translation>
@@ -925,6 +940,7 @@
 <translation id="8175799081768705361">Сінхранізуюцца файлы на Дыску (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Мадэль прылады</translation>
+<translation id="8223479393428528563">Каб захаваць гэтыя файлы для выкарыстання ў аўтаномным рэжыме, падключыцеся зноў да інтэрнэту, націсніце правай кнопкай мышы на патрэбныя файлы і выберыце параметр <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Паказаць стан сховішча</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
 <translation id="8250690786522693009">Лацініца</translation>
@@ -951,6 +967,7 @@
 <translation id="83651606385705612">Даць <ph name="VM_NAME" /> доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8372369524088641025">Няправільны ключ WEP</translation>
 <translation id="8372852072747894550">Грэчаская</translation>
+<translation id="8377269993083688872">Макеты электронных лістоў</translation>
 <translation id="8386903983509584791">Пошук завершаны</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" />: выманне завершана.</translation>
 <translation id="8395901698320285466">Памеры</translation>

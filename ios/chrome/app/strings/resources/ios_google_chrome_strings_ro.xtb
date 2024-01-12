@@ -201,6 +201,9 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 
 Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Deschide Setările Chrome în iOS, apoi atinge Aplicația browser prestabilită și selectează Chrome.</translation>
+<translation id="686691656039982452">Poți <ph name="BEGIN_LINK" />gestiona ce date Chrome se salvează<ph name="END_LINK" /> în Contul Google.
+
+Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chrome, accesează <ph name="BEGIN_LINK" />Servicii Google<ph name="END_LINK" />.</translation>
 <translation id="687586529977635009">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Datele tale vor fi trimise la Google pentru a oferi această funcție și a îmbunătăți serviciul Cumpărături pentru toată lumea. Poți modifica această opțiune în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Căutarea vocală în Chrome</translation>
 <translation id="6964931465519938134">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>

@@ -233,6 +233,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2318045970523081853">Tocca per chiamare</translation>
 <translation id="2321086116217818302">Preparazione delle password…</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
+<translation id="2327226657832576859">Aprire automaticamente i PDF?</translation>
 <translation id="2328985652426384049">Impossibile eseguire l'accesso</translation>
 <translation id="2341410551640223969">Impossibile installare <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Dati totali utilizzati da Chrome, tra cui account, preferiti e impostazioni salvate</translation>
@@ -638,6 +639,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4523326818319942067">ultima ora</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4532845899244822526">Scegli cartella</translation>
+<translation id="4541505619120536051">Sempre aperta</translation>
 <translation id="4543131175509360848">Nessun foglio di passkey</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede, <ph name="TAB_COUNT_INCOGNITO" /> in incognito}}</translation>
 <translation id="4554077758708533499">Collegamento tramite cavo USB effettuato</translation>
@@ -829,6 +831,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5486841595534124508">Logo dell'informativa sulla privacy per l'hub Approfondimenti sulle pagine che reindirizza alla pagina Le mie attività.</translation>
 <translation id="5487521232677179737">Cancella dati</translation>
 <translation id="5492637351392383067">Crittografia on-device</translation>
+<translation id="5509866835115085009">Chrome può aprire automaticamente PDF quando li scarichi.</translation>
 <translation id="5514904542973294328">Opzione disattivata dall'amministratore del dispositivo</translation>
 <translation id="5515439363601853141">Sblocca per visualizzare la password</translation>
 <translation id="5517095782334947753">Sono presenti preferiti, cronologia, password e altre impostazioni di <ph name="FROM_ACCOUNT" />.</translation>

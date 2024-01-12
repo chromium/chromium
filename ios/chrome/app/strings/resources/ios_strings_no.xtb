@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Enhetsvelger</translation>
 <translation id="2348630484974447747">Pakke</translation>
 <translation id="2351097562818989364">Oversettelsesinnstillingene dine er tilbakestilt.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Du kan lagre passordet for {DOMAIN_ONE} i Google-kontoen din, {EMAIL}.}=2{Du kan lagre passordene for {DOMAIN_ONE} og {DOMAIN_TWO} i Google-kontoen din, {EMAIL}.}=3{Du kan lagre passordene for {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} til i Google-kontoen din, {EMAIL}.}other{Du kan lagre passordene for {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} til i Google-kontoen din, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Googles personvernregler</translation>
 <translation id="2359043044084662842">Oversett</translation>
 <translation id="2359808026110333948">Fortsett</translation>
@@ -689,6 +690,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4689564913179979534">Administrer betalingsmåter…</translation>
 <translation id="469300482518076788">Lukk fane</translation>
 <translation id="4697071790493980729">Fant ingen resultater</translation>
+<translation id="470337593714520080">{count,plural, =1{Lagre 1 bokmerke i Google-kontoen din}other{Lagre {count} bokmerker i Google-kontoen din}}</translation>
 <translation id="470966556546083668">Ikke slå på synkronisering</translation>
 <translation id="4711809265250406889">Når funksjonen er på</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1} og {website_2}}=3{{website_1}, {website_2} og 1 til}other{{website_1}, {website_2} og {more_count} til}}</translation>

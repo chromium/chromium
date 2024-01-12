@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Selector ng unit</translation>
 <translation id="2348630484974447747">Package</translation>
 <translation id="2351097562818989364">Na-reset ang iyong mga setting sa pag-translate.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Puwede mong i-save ang iyong password para sa {DOMAIN_ONE} sa Google Account mo na {EMAIL}.}=2{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE} at {DOMAIN_TWO} sa Google Account mo na {EMAIL}.}=3{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}one{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}other{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}}</translation>
 <translation id="235789365079050412">Patakaran sa Privacy ng Google</translation>
 <translation id="2359043044084662842">I-translate</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
@@ -528,6 +529,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="380329542618494757">Pangalan</translation>
 <translation id="3803696231112616155">Mag-alok na isalin ang site na ito</translation>
+<translation id="3808311849069021992">Ipakita ang mga detalye ng search engine</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="3818045793209708987">Itinigil ang pagsubaybay sa package na ito</translation>
 <translation id="3818293389945649617">Hanapin ang Susunod</translation>
@@ -689,6 +691,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4689564913179979534">I-manage ang Payment Method...</translation>
 <translation id="469300482518076788">Isara ang Tab</translation>
 <translation id="4697071790493980729">Walang Nakitang Resulta</translation>
+<translation id="470337593714520080">{count,plural, =1{Mag-save ng 1 Bookmark sa Iyong Google Account}one{Mag-save ng {count} Bookmark sa Iyong Google Account}other{Mag-save ng {count} na Bookmark sa Iyong Google Account}}</translation>
 <translation id="470966556546083668">Huwag I-on ang Pag-sync</translation>
 <translation id="4711809265250406889">Kapag Naka-on</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, at 1 pa}one{{website_1}, {website_2}, at {more_count} pa}other{{website_1}, {website_2}, at {more_count} pa}}</translation>
@@ -800,6 +803,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5235389474593199952">Itago ang History</translation>
 <translation id="5238301240406177137">I-save sa Account</translation>
+<translation id="5238596603078743134">Magagamit na ni <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ang iyong username at password kapag ginamit niya ang Google Password Manager para mag-sign in sa <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Kanselahin ang Pag-sync</translation>
 <translation id="5248640482715684545">Sinusubukan ng site na ito na magbukas ng isa pang application.</translation>
 <translation id="5256661381001734217">Sinusubukan ng site na ito na magbukas ng application.  Dadalhin ka nito palabas ng Incognito.</translation>
@@ -819,6 +823,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5360976571138293719">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Makikita mo ang mga sinusubaybayan mong site dito</translation>
 <translation id="5388358297987318779">Buksan ang Larawan</translation>
+<translation id="5395707839134961196">I-hide ang mga detalye ng search engine</translation>
 <translation id="5396950905475481456">Mag-imbita ng Mga Miyembro ng Pamilya</translation>
 <translation id="5407969256130905701">I-discard ang Mga Pagbabago</translation>
 <translation id="5414763847370083940">Makakatanggap ka ng alerto kung bumaba ang presyo sa anumang site.</translation>
@@ -1032,6 +1037,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Hindi kailanman tumakbo ang pagsusuri.</translation>
 <translation id="6459307836338400162">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Na-hide na ang mga detalye</translation>
 <translation id="646394917185284261">Mga File</translation>
 <translation id="6464071786529933911">Buksan sa Bagong Tab na Incognito</translation>
 <translation id="6464397691496239022">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo.
@@ -1284,6 +1290,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7812377703891978671">Maa-access mo ang lahat ng iyong history ng pag-browse sa pamamagitan ng pagpili sa <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Mga Download</translation>
 <translation id="7839985698273989086">Offline na Page</translation>
+<translation id="7839994177130598711">Magagamit na ng mga miyembro ng pamilya mo ang iyong username at password kapag ginamit nila ang Google Password Manager para mag-sign in sa <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Maaalis ang mga pinili mong item.</translation>
 <translation id="7845466610722898">Ipakita ang Listahan ng Babasahin</translation>
 <translation id="784551991304901159">Para makakita ng content, piliin ang I-on mula sa menu</translation>

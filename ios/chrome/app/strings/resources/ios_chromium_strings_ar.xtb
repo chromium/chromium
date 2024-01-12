@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">‏يتعذر على Chromium استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
 <translation id="2784449251446768092">‏إدارة إعدادات Chromium</translation>
 <translation id="2798503587425057129">‏فتح قائمة القراءة في Chromium</translation>
+<translation id="28276745681323897">‏يمكنك <ph name="BEGIN_LINK" />إدارة بيانات Chromium التي يتم حفظها<ph name="END_LINK" /> في حسابك على Google.
+
+وللوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chromium، انتقِل إلى <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="2843571538056574338">‏استخدام Chromium للملء التلقائي</translation>
 <translation id="2918709798697875261">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chromium.</translation>
 <translation id="2942241131342758843">‏يمكنك استخدام Chromium كمتصفّح تلقائي لفتح الروابط والبحث من خلال الأدوات وملء كلمات المرور تلقائيًا في التطبيقات الأخرى.</translation>

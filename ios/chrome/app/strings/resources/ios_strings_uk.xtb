@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Засіб вибору одиниць</translation>
 <translation id="2348630484974447747">Відправлення</translation>
 <translation id="2351097562818989364">Налаштування перекладу скинуто.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Ви можете зберегти пароль для веб-сайту {DOMAIN_ONE} у своєму обліковому записі Google ({EMAIL}).}=2{Ви можете зберегти паролі для веб-сайтів {DOMAIN_ONE} і {DOMAIN_TWO} у своєму обліковому записі Google ({EMAIL}).}=3{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}one{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}few{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}many{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}other{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}}</translation>
 <translation id="235789365079050412">Політика конфіденційності Google</translation>
 <translation id="2359043044084662842">Перекласти</translation>
 <translation id="2359808026110333948">Продовжити</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">Керувати способами оплати…</translation>
 <translation id="469300482518076788">Закрити вкладку</translation>
 <translation id="4697071790493980729">Результатів не знайдено</translation>
+<translation id="470337593714520080">{count,plural, =1{Збережіть 1 закладку у своєму обліковому записі Google}one{Збережіть {count} закладку у своєму обліковому записі Google}few{Збережіть {count} закладки у своєму обліковому записі Google}many{Збережіть {count} закладок у своєму обліковому записі Google}other{Збережіть {count} закладки у своєму обліковому записі Google}}</translation>
 <translation id="470966556546083668">Не вмикати синхронізацію</translation>
 <translation id="4711809265250406889">Коли функцію ввімкнено</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} і ще 1 веб-сайт}one{{website_1}, {website_2} і ще {more_count} веб-сайт}few{{website_1}, {website_2} і ще {more_count} веб-сайти}many{{website_1}, {website_2} і ще {more_count} веб-сайтів}other{{website_1}, {website_2} і ще {more_count} веб-сайту}}</translation>

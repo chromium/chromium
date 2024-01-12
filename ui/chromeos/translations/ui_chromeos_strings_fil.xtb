@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Mga Detalye</translation>
 <translation id="117624967391683467">Kinokopya ang <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">I-pause</translation>
+<translation id="1190144681599273207">Ang pagkuha sa file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
 <translation id="1194390763418645112">Access sa file ng <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1209796539517632982">Mga awtomatikong server ng pangalan</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">I-share sa <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Lokal na tinanggihan ang certificate ng pagpapatunay</translation>
 <translation id="1775381402323441512">Impormasyon ng video</translation>
+<translation id="180035236176489073">Kailangan kang mag-online upang ma-access ang mga file na ito.</translation>
 <translation id="1807938677607439181">Lahat ng file</translation>
 <translation id="1810764548349082891">Walang available na preview</translation>
 <translation id="1812302367230252929">Amharic Transliteration</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Sumesenyas ng salamat</translation>
 <translation id="2088690981887365033">VPN network</translation>
 <translation id="209653272837065803">Walang sapat na storage space para maituloy ang pag-sync ng mga file</translation>
-<translation id="2099143626019777139">Nakikita ng iyong administrator ang mga website na binibisita mo. Puwede mong tingnan ang listahan ng mga nakikitang website.</translation>
 <translation id="2111134541987263231">I-on ang <ph name="BEGIN_BOLD" />Payagan sa Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> (na) item ang ide-delete at hindi mo mare-restore ang mga ito.</translation>
 <translation id="2122305276694332719">Ang awtomatikong pagkonekta sa nakatagong network ay nagbibigay-daan sa ibang tao na makita ang iyong device at ibang setting ng network, at hindi ito inirerekomenda.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">Autoconfiguration URL:</translation>
 <translation id="2284767815536050991">naaalis na storage</translation>
 <translation id="2288278176040912387">Record player</translation>
+<translation id="2291538123825441971">Binubuksan ang <ph name="NUMBER_OF_FILES" /> (na) file.</translation>
+<translation id="2303301624314357662">Binubuksan ang file na <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Na-eject ang <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">I-configure ang network</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Walang sapat na storage space para ma-sync ang lahat ng iyong file</translation>
 <translation id="23721837607121582">I-download ang mobile profile, Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Lumipat sa list view</translation>
+<translation id="2377590462528165447">Nagbahagi ng <ph name="NUMBER_OF_ITEMS" /> (na) folder sa Linux</translation>
 <translation id="2379576081295865700">Tinitingnan ang storage space… may 1 item na nakita</translation>
 <translation id="2383454254762599978">Ilipat sa trash</translation>
 <translation id="2387458720915042159">Uri ng koneksyon sa proxy</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Pagpili ng zip</translation>
 <translation id="4202378258276439759">Spanish (Latin America)</translation>
 <translation id="4202977638116331303">Georgian</translation>
+<translation id="421017592316736757">Kailangan kang mag-online upang ma-access ang file na ito.</translation>
 <translation id="4212740939091998969">Mayroon nang folder na may pangalang "<ph name="FOLDER_NAME" />." Pumili ng ibang pangalan.</translation>
 <translation id="4218274196133425560">Alisin ang exception para sa <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentation ng Google</translation>
 <translation id="4277536868133419688">Naka-on ang filter na <ph name="FILTER_NAME" />.</translation>
+<translation id="4290535918735525311">1 folder ang naibahagi sa Linux</translation>
 <translation id="4299729908419173967">Brazilian</translation>
 <translation id="4302605047395093221">Kakailanganin ng sinumang gumagamit ng device na ito na ilagay ang PIN para makakonekta sa mobile network na ito</translation>
 <translation id="4303531889494116116">Busy ang network na ito. Subukan ulit sa ibang pagkakataon.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Mga Detalye</translation>
 <translation id="4935975195727477204">Bulaklak</translation>
 <translation id="4943368462779413526">Football</translation>
+<translation id="4961158930123534723">1 folder ang ibinahagi sa Parallels Desktop</translation>
+<translation id="4965874878399872778">Sinusuri ang mga file para sa mga patakaran sa seguridad ng iyong organisasyon...</translation>
 <translation id="496656650103537022">Naibalik ang <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Hindi matapos ang pag-set up ng pag-sync ng file</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318819489018851358">Ibahagi sa Linux</translation>
 <translation id="5323213332664049067">Latin American</translation>
+<translation id="5330145655348521461">Ang mga file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="5330512191124428349">Kumuha ng impormasyon</translation>
 <translation id="535792325654997756">Taong may mga pusa</translation>
 <translation id="5358764674931277">Frame rate</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">Japanese na may US keyboard</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, walang network</translation>
 <translation id="6146563240635539929">Mga Video</translation>
+<translation id="6150853954427645995">Upang i-save ang file na ito para sa offline na paggamit, mag-online muli, i-right click ang file at piliin ang opsyong <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Mga Paru-paro</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">Invalid na value ng pagtugma ng domain suffix</translation>
 <translation id="6364301859968397756">Puno na ang storage ng organisasyon</translation>
 <translation id="6367976544441405720">Van</translation>
+<translation id="637062427944097960">Ang file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> (na) item</translation>
 <translation id="6407769893376380348">Hindi mailipat ang <ph name="FILE_NAME" /> dahil naka-encrypt ito.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">Mayroon ka na lang 1 natitirang pagsubok.</translation>
 <translation id="643243556292470964">Inilipat na ngayon sa trash ang mga na-delete na file</translation>
 <translation id="6438480100790416671">Tinitingnan ang storage space…</translation>
+<translation id="6451527188465304418">Sinusuri ang file para sa mga patakaran sa seguridad ng iyong organisasyon...</translation>
 <translation id="6485131920355264772">Nabigong kunin ang impormasyon ng espasyo</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="649877868557234318">Ine-extract ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">Mga setting ng pag-sync ng file</translation>
 <translation id="6594855146910089723">Nakabahagi sa Linux at Parallels Desktop ang folder na ito</translation>
 <translation id="6607272825297743757">Impormasyon ng file</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> (na) folder ang ibinahagi sa Parallels Desktop</translation>
 <translation id="6629518321609546825">Maglagay ng kahit 4 na numero lang</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6650726141019353908">Pink na paru-paro</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Nagkaroon ng error sa pag-configure sa network</translation>
+<translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
 <translation id="7853966320808728790">French na BÉPO</translation>
 <translation id="7857117644404132472">Magdagdag ng exception</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">Sini-sync ang <ph name="NUMBER_OF_FILES_SYNCING" /> (na) file sa Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelo ng device</translation>
+<translation id="8223479393428528563">Upang i-save ang mga file na ito para sa offline na paggamit, mag-online muli, i-right click ang mga file at piliin ang opsyong <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Tingnan ang storage</translation>
 <translation id="8249296373107784235">I-abort</translation>
 <translation id="8250690786522693009">Latin</translation>

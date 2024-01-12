@@ -521,6 +521,7 @@ Politika devre dışı bırakılırsa <ph name="CACHE_CONTROL_NO_STORE_NAME" /> 
 <translation id="143649776386947790">Varsayılan Davranışı Kullan</translation>
 <translation id="1438739959477268107">Varsayılan anahtar oluşturma ayarı</translation>
 <translation id="1440408958042020947">Telefon Merkezi'ne kaydolan kullanıcıların, telefonlarında çekilen son fotoğraflara ve videolara erişmesine izin verir</translation>
+<translation id="1443532790824582949">Dokunmatik sanal klavyeyi etkinleştir</translation>
 <translation id="1449083855104537880">Politikayı True (Doğru) değerine ayarlamak, erişilebilirlik seçeneklerini sistem tepsisi menüsünde görüntüler. Politikayı False (Yanlış) değerine ayarlarsanız seçenekler menüde görünmez.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa erişebilirlik seçenekleri menüde görünmez, ancak kullanıcılar bunları, Ayarlar sayfası aracılığıyla görünür hale getirebilir.
@@ -1176,6 +1177,7 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
 <translation id="1954612656043024615">Paylaşılan pano özelliğini etkinleştir</translation>
 <translation id="1955063069502242812">Düşük pil seviyesi sesini etkinleştir</translation>
 <translation id="1955806069704957172">Desk connector API ile ilgili ayarları kontrol eder.</translation>
+<translation id="1957093168333856467">Erişilebilirlik sanal klavyesini devre dışı bırak</translation>
 <translation id="1960059835237529462">Kullanıcılara <ph name="IOS_NAME" /> App Store puan promosyonunun gösterilmesine olanak tanır</translation>
 <translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge aramayı etkinleştirin.</translation>
 <translation id="1961091374249454164">Bu politika, yalnızca yönetilen misafir oturumları için geçerlidir.
@@ -1278,6 +1280,7 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
 <translation id="2029985289397958781">Kurumsal kullanıcılar için <ph name="GOOGLE_LENS_PRODUCT_NAME" /> kamera destekli aramayı devre dışı bırak</translation>
 <translation id="2030905906517501646">Varsayılan arama sağlayıcı anahtar kelimesi</translation>
 <translation id="203096360153626918">Bu politikanın Android uygulamaları üzerinde hiçbir etkisi yoktur. Bu politika <ph name="FALSE" /> seçeneğine ayarlansa bile uygulamalar tam ekran moduna girebilir.</translation>
+<translation id="2031074619942406753">Dokunmatik sanal klavyeyi devre dışı bırak</translation>
 <translation id="2032848225007871645">Politikanın ayarlanması, hangi hızlı kilit açma modlarının kilit ekranının kilidini açabileceğini kontrol eder.
 
       Aşağıdaki kontroller kullanılabilir:
@@ -2414,6 +2417,7 @@ değiştirebilir, ancak bu ayar kullanıcılar tarafından değiştirilemez.</tr
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
 <translation id="2971096666394658693">İçerik menüsünde, resimlerin <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> ile paylaşılabileceği bir menü öğesi yer alır.</translation>
 <translation id="2973972555495515337">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamalarının, <ph name="PRODUCT_OS_NAME" /> masalarını kaydetmek ve paylaşmak için <ph name="DESK_API_NAME" /> kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcı, masa verilerini <ph name="DESK_API_NAME" /> aracılığıyla kaydedip paylaşamaz. Politika ayarlanmadan bırakılırsa davranış, devre dışı değerine ayarlandığında geçerli olan davranışla aynı olur. Politika yalnızca kayıtlı cihazlarda geçerli olur.</translation>
+<translation id="2976033779241323433">Varsayılan buluşsal sistem yöntemlerine göre dokunmatik sanal klavyeyi etkinleştir</translation>
 <translation id="2976429807269247880">Eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarları</translation>
 <translation id="2979696534869541158">Eski uygulamayı zorunlu kıl</translation>
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
@@ -2520,6 +2524,7 @@ Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı bu kay
       Politika, Devre Dışı değerine ayarlanırsa medya denetimleri kilit ekranında devre dışı bırakılır.</translation>
 <translation id="3072847235228302527">Bir cihaz yerel hesabı için Hizmet Şartları'nı ayarlama</translation>
 <translation id="3074032542020543133">LTS kanalı</translation>
+<translation id="3074886258920642791">Giriş ekranında sanal klavyeyi etkinleştir</translation>
 <translation id="3077650998740742747">
 Varsayılan davranış (Politika ayarlanmadıysa)
 İçerik alanına bir hesap eklendiğinde, kullanıcıdan yeni profil oluşturmasını isteyen küçük bir iletişim kutusu görünebilir. Bu iletişim kutusu kapatılabilir.
@@ -2963,9 +2968,6 @@ Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açı
 <translation id="3417418267404583991">Bu politika true olarak ayarlanırsa veya hiçbir şekilde ayarlanmazsa, <ph name="PRODUCT_OS_NAME" /> misafir modunda giriş yapılmasına izin verir. misafir girişleri adsız kullanıcı oturumlarıdır ve şifre gerektirmez.
 
       Bu politika false değerine ayarlanırsa, <ph name="PRODUCT_OS_NAME" /> misafir oturumlarının başlamasına izin vermez.</translation>
-<translation id="3420141485959154417"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> politikasının ayarlanması, resim arama için kullanılan arama motorunun URL'sini belirtir. (<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> politikası ayarlandıysa resim arama istekleri bunun yerine POST yöntemini kullanır.)
-
-      <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> protokolü ayarlanmadan bırakılırsa resim arama kullanılmaz.</translation>
 <translation id="3423703250826790403">Android uygulamaları</translation>
 <translation id="3426434797050451264">Bu politika, Android uygulamalarını varsayılan dosya işleyicileri olarak belirtmek için de kullanılabilir.</translation>
 <translation id="3428247105888806363">Ağ tahminini etkinleştir</translation>
@@ -3874,6 +3876,7 @@ Politika <ph name="DISABLE_UNPUBLISHED" /> (1) değerine ayarlanırsa Chrome Web
 
       Bu politika bir bulut kaynağından ayarlanırsa belirli bir kullanıcıyı hedefleyemez.</translation>
 <translation id="416817811987180750">Alışveriş listesi özelliği kullanıcılar tarafından kullanılabilir.</translation>
+<translation id="4168880975307014079">Dokunmatik sanal klavyeyi etkinleştir</translation>
 <translation id="4169094969938998854">Ekranın kilitlenmesine izin verme</translation>
 <translation id="4169692397912242417">Giriş ekranında sözlü geri bildirim erişilebilirlik özelliğini etkinleştirin.
 
@@ -4865,6 +4868,7 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
       Not: Bu listeye <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> politikası aracılığıyla öğeler eklenebileceğini de unutmayın.</translation>
 <translation id="5063480226653192405">Kullanım</translation>
 <translation id="5067143124345820993">Kullanıcı beyaz listesine giriş yap</translation>
+<translation id="50689955292091946">Giriş ekranında sanal klavyeyi etkinleştir</translation>
 <translation id="5069522005630249098">Bu ayar, <ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerinin ne kadarının saklanacağını belirler.
 
       Politika <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> değerine ayarlanır veya ayarlanmadan bırakılırsa geriye dönük veri taşıma işlemi yapılmaz.
@@ -5065,12 +5069,6 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
 
       Ayarlanmadan bırakılır veya geçersiz olursa bu davranış, "Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle" ile aynı olur.</translation>
 <translation id="5229339291699779956">Thunderbolt/USB4 çevre birimleri için PCle tünellemeyi etkinleştirir, çevre birimi cihazlarının tüm işlevleri çalışır</translation>
-<translation id="5233239004553860036">Bu politika <ph name="POLICY_VALUE_ALL" /> değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen hesapların her türlü kullanımına izin verilir. Bu durum, yönetilen hesabın ikincil hesap olmasına ve yalnızca tarayıcı profilinde birincil hesap olarak oturum açtığında politika alabilmesine neden olabilir.
-      Hesapta ayarlanan politikalar aşağıdaki durumlarda uygulanmaz:
-        -  OS seviyesinde (Hesap Ayarları) ikincil hesap olma
-        -  Tarayıcı profilinde ikincil hesap olma
-
-      Bu politika bir hesapta <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> değerine ayarlanırsa o hesabın yalnızca birincil hesap olarak oturum açmasına izin verilir. Hesabın ikincil hesap olarak oturum açmasına izin verilmez.</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5235607513961923779">İlişkili kullanıcılar için kayıtlı cihazlardaki cihaz etkinliği durumunu raporlar.
 
@@ -5203,6 +5201,7 @@ Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme g
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> bulut politikası, Platform politikasını geçersiz kılar.</translation>
 <translation id="5334501839642146593">Metrikleri hiçbir zaman Google'a gönderme</translation>
 <translation id="5335910979215357815">Üçüncü taraf <ph name="PRODUCT_OS_NAME" /> kontrolü için Save and Share API'yi etkinleştir.</translation>
+<translation id="5339096331970464266">Erişilebilirlik sanal klavyesini etkinleştir</translation>
 <translation id="5340008866815063393">Politika verilerinin raporlanmasını etkinleştir</translation>
 <translation id="5345910753471481870">Yeni sekme sayfasındaki arama kutusunda Google Lens düğmesini gösterme.</translation>
 <translation id="5346587320074666194">Bu sitelerde sensörlere erişimi engelle</translation>
@@ -5375,6 +5374,7 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 <translation id="5475361623548884387">Yazdırmayı etkinleştir</translation>
 <translation id="547601067149622666">Arayan giren reklamların yer aldığı sitelerde reklamlara izin verme</translation>
 <translation id="5476152378885134514">Bu sitelerde panoyu engelle</translation>
+<translation id="5479841110985196412">Erişilebilirlik sanal klavyesini etkinleştir</translation>
 <translation id="5480380613778757009">Bu politika, devre dışı bırakılır veya ayarlanmazsa Yönetilen misafir oturumunda ayarlanan tüm görüntü ayarları, oturum biter bitmez sıfırlanır. Bu politika, Doğru değerine ayarlanırsa yönetilen misafir oturumundan çıkıldıktan sonra görüntü özellikleri tutulur.</translation>
 <translation id="5483012943408894695">Güvenli olmayan başlangıç noktalarında kısıtlamaların uygulanmaması gereken başlangıç noktaları ve ana makine adı kalıpları</translation>
 <translation id="5483065054530244863">Yerel güven bağlantıları tarafından yayınlanan SHA-1 imzalı sertifikalara izin ver</translation>
@@ -5737,6 +5737,18 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa <ph name="PRODUCT_OS_NA
 <translation id="5790763087505467169">Yönetilen misafir oturumu otomatik başlatma bildirimlerini azaltma</translation>
 <translation id="5800329278018669527">Çevrimdışıyken ağ yapılandırması istemini devre dışı bırak</translation>
 <translation id="5802931736499687181">Şifrelenmiş Raporlama Ardışık Düzeni'ni devre dışı bırak</translation>
+<translation id="5803715507113569033">Bu politika ile yöneticiler, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ekleme işlemini yapılandırabilir.
+
+Politika "<ph name="ALLOWED_NAME" />" değerine ayarlandığında kullanıcı isterse <ph name="MICROSOFT_ONE_DRIVE_NAME" /> kurulumunu yapabilir.
+<ph name="MICROSOFT_ONE_DRIVE_NAME" />, kurulum işlemi tamamlandıktan sonra dosya yöneticisine eklenir.
+
+Politika "<ph name="DISALLOWED_NAME" />" değerine ayarlandığında kullanıcının <ph name="MICROSOFT_ONE_DRIVE_NAME" /> kurulumunu yapması yasaklanır.
+
+Politika "<ph name="AUTOMATED_NAME" />" değerine ayarlandığında <ph name="MICROSOFT_ONE_DRIVE_NAME" /> otomatik olarak kurulmaya çalışılır. Bunun için kullanıcının Microsoft hesabıyla <ph name="PRODUCT_OS_NAME" /> sistemine giriş yapması gerekir. Hata olması durumunda kurulum akışı tekrar gösterilir.
+
+Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel olarak "<ph name="ALLOWED_NAME" />" değerine, kurumsal kullanıcılar için ise varsayılan olarak "<ph name="DISALLOWED_NAME" />" değerine ayarlanmasıyla eşdeğerdir.
+
+<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" /> politikasını kullanarak daha fazla hesap kısıtlaması eklemek mümkündür.</translation>
 <translation id="5804795151506109282">Kullanıcılardan verilerini taşımalarını isteme.</translation>
 <translation id="5806128552675651249">Yalnızca arka plan grafikleri olmadan yazdırmaya izin ver</translation>
 <translation id="5809210507920527553">Linux kapsayıcı (Crostini) ile ilgili ayarları kontrol eder.</translation>
@@ -6209,6 +6221,21 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
 <translation id="6244210204546589761">Başlangıçta açılacak olan URL'ler</translation>
 <translation id="624595269193747921">Eşleşen yazıcı arama işleminin belirli bir yazıcı grubuyla sınırlı olup olmayacağı.</translation>
 <translation id="6246290059248303618">Yerel ağdaki diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini göster</translation>
+<translation id="6246420783859339814">Bu politika, <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> politikası etkinleştirildiğinde yöneticilerin, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hizmetinde oturum açmasına izin verilen hesapları kısıtlamasına olanak tanır.
+
+Bu politika "<ph name="COMMON_NAME" />" değerini içeriyorsa oturum açmak için herhangi bir hesap kullanılabilir.
+
+Bu politika "<ph name="ORGANIZATIONS_NAME" />" değerini içeriyorsa oturum açmak için iş veya okul hesapları kullanılabilir.
+
+Bu politika "<ph name="CONSUMER_NAME" />" değerini içeriyorsa oturum açmak için kişisel <ph name="MICROSOFT_NAME" /> hesapları kullanılabilir.
+
+Bu politika alan adları ya da kiracı kimlikleri içeriyorsa oturum açmak için bu alan adlarındaki veya kiracı kimliklerindeki hesaplar (https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints adresine göz atın) kullanılabilir.
+
+Bu politika ayarlanmazsa veya yalnızca boş bir değer içerirse normal kullanıcılar için "<ph name="COMMON_NAME" />", kurumsal kullanıcılar için "<ph name="ORGANIZATIONS_NAME" />" değeri belirtilmiş gibi davranır.
+
+Kısıtlamaların değiştirilmesi, yeni kısıtlamalara uymadığı takdirde kullanıcıların <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hesaplarının oturumunun kapatılmasına neden olabilir.
+
+Not: Şu anda yalnızca ilk giriş dikkate alınır. Gelecekteki uzantılar birden fazla girişi destekleyecektir.</translation>
 <translation id="6247316685259031374">Bu politika, korumalı alana alınan ses işlemini kontrol eder.
       Bu politika etkinleştirilirse ses işlemi korumalı alana alınmış olarak gerçekleştirilir.
       Bu politika devre dışı bırakılırsa ses işlemi korumalı alana alınmadan gerçekleştirilir ve WebRTC ses işleme modülü, oluşturucu işleminde çalışır.
@@ -6216,6 +6243,17 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
       Bu politika ayarlanmazsa ses korumalı alanının varsayılan yapılandırması kullanılır. Bu yapılandırma platformdan platforma değişiklik gösterebilir.
       Bu politika, korumalı alanın çalışmasını etkileyen güvenlik yazılımı yapılandırmaları kullanan işletmelere ses korumalı alanını devre dışı bırakma esnekliği sunmak amacıyla tasarlanmıştır.</translation>
 <translation id="624818583115864448">bağlantı noktası 554 (15.10.2021'e kadar engellemesi kaldırılabilir)</translation>
+<translation id="6249912382559535329">Giriş ekranında sanal klavye erişilebilirlik özelliğini etkinleştirin.
+
+          Bu politika Doğru değerine ayarlanırsa erişilebilirlik sanal klavyesi, giriş ekranında her zaman etkinleştirilir.
+
+          Bu politika Yanlış değerine ayarlanırsa erişilebilirlik sanal klavyesi, giriş ekranında her zaman devre dışı olur.
+
+          Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
+
+          Bu politika ayarlanmadan bırakılırsa erişilebilirlik sanal klavyesi, giriş ekranında başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman erişilebilirlik ayarlarından etkinleştirebilirler.
+
+          Bu politika, dokunmatik sanal klavyenin etkinleştirilip etkinleştirilmeyeceğini etkilemez. Örneğin, bu politika Yanlış değerine ayarlanmış olsa bile dokunmatik sanal klavye, tablette görünmeye devam eder.</translation>
 <translation id="6254498834449523938">Kullanıcının Güvenli Tarama uyarısını atlamasına izin verme</translation>
 <translation id="625580680776945310">Yüksek Verimlilik Modu etkinleştirilir.</translation>
 <translation id="6258658183356534534">Kullanıcı aracısı istemci ipuçları GREASE güncelleme özelliğini kontrol et.</translation>
@@ -6454,6 +6492,16 @@ UYARI: Bu ayarı değiştirirken dikkatli olun. Bu ayar, coğrafi konumla ilgili
       hesapların varsayılan değeri etkin olur.</translation>
 <translation id="6401669939808766804">Kullanıcının oturumunu kapat</translation>
 <translation id="640244877779556713">Emoji Önerilerini Etkinleştir</translation>
+<translation id="6403114173011456561"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik sanal klavyeyi kontrol eder.
+
+      Erişilebilirlik sanal klavyesi etkinleştirilirse bu politika geçerliliğini yitirir.
+
+      Aksi takdirde, bu politika şu etkiye sahiptir:
+      Bu politika ayarlanmazsa sanal klavye varsayılan buluşsal sistem yöntemlerine (klavye takılı olup olmaması gibi) göre gösterilir.
+      Bu politika, Doğru değerine ayarlanırsa sanal klavye her zaman gösterilir.
+      Bu politika, Yanlış değerine ayarlanırsa sanal klavye hiçbir zaman gösterilmez.
+
+      Sanal klavye, giriş yöntemine bağlı olarak küçük boyuta geçebilir.</translation>
 <translation id="6404064917675764807">CRD oturum etkinliklerini raporlama</translation>
 <translation id="6404360891305375004">Ağ dosya paylaşımlarına izin ver</translation>
 <translation id="6407093060083181305">Uzantı yükleme engellenenler listesini yapılandır</translation>
@@ -7238,6 +7286,16 @@ Bu politika, gelecekte işlem dışı yazıcı sürücüleri özelliği tamamen 
       "U2F" seçilirse entegre edilen ikinci etmen FIDO U2F özelliğine göre davranır.
 
       "U2F_EXTENDED" seçilirse entegre edilen ikinci etmen, U2F işlevlerinin yanı sıra bağımsız doğrulama için bazı uzantılar sunar.</translation>
+<translation id="69942621143543910">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> ürününde <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırabilir.
+
+Politika "<ph name="ALLOWED_NAME" />" olarak ayarlandığında kullanıcı isterse <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırabilir.
+Yapılandırma işlemi tamamlandıktan sonra dosya biçimleri eşleşen dosyalar varsayılan olarak <ph name="MICROSOFT_ONE_DRIVE_NAME" /> içine taşınır ve kullanıcı tarafından açılmaya çalışıldığında <ph name="MICROSOFT_365_NAME" /> uygulamalarından biri ile işlenir.
+
+Politika "<ph name="DISALLOWED_NAME" />" olarak ayarlandığında kullanıcı yukarıda açıklandığı gibi <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandıramaz ve <ph name="MICROSOFT_365_NAME" />, olası dosya işleyiciler listesinden kaldırılır.
+
+Politika "<ph name="AUTOMATED_NAME" />" olarak ayarlandığında <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışı otomatik olarak yapılandırılır. Böylece, dosya biçimleri eşleşen dosyalar varsayılan olarak <ph name="MICROSOFT_ONE_DRIVE_NAME" /> içine taşınır ve kullanıcı tarafından açılmaya çalışıldığında <ph name="MICROSOFT_365_NAME" /> uygulamalarından biri ile işlenir.
+
+Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel olarak "<ph name="ALLOWED_NAME" />" değerine, kurumsal kullanıcılar için ise varsayılan olarak "<ph name="DISALLOWED_NAME" />" değerine ayarlanmasıyla eşdeğerdir.</translation>
 <translation id="6999948519306285655">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
 
        Politikanın ayarlanması, proxy .pac dosyası için URL belirtmenizi sağlar. Bu politika, yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde ve <ph name="PROXY_MODE_POLICY_NAME" /> politikasıyla <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> seçtiğinizde geçerli olur.
@@ -8829,9 +8887,6 @@ Eski teknolojiler hakkında daha fazla bilgiyi https://chromestatus.com/features
 <translation id="8312129124898414409">Web sitelerinin anahtar oluşturma işlevini kullanmasına izin verilip verilmeyeceğini ayarlamanıza olanak tanır. Anahtar oluşturma işlevini kullanma izni ya tüm web siteleri için verilebilir ya da hepsi için reddedilebilir.
 
           Bu politika ayarlanmadan bırakılırsa, "BlockKeygen" kullanılır ve kullanıcı bu ayarı değiştirebilir.</translation>
-<translation id="8313927126392971570"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> protokolünün ayarlanması, POST ile resim araması yaparken parametreleri belirtir. Virgülle ayrılmış ad-değer çiftlerini içerir. Değer, {imageThumbnail} gibi bir şablon parametresi ise gerçek resmin küçük resim verisiyle değiştirilir.
-
-      <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> politikası ayarlanmazsa resim araması isteği, GET yöntemi kullanılarak gönderilir.</translation>
 <translation id="8314214821702356835">Cihaz kilitliyken kullanıcının medya oynatmasına izin verir</translation>
 <translation id="8314308739926578606">Kurumsal politikaya göre ya da 114 sürümünden itibaren yüklenen uygulama ve uzantılarda, yönetilen bir kullanıcı hesabı olması durumunda da tarayıcıda yerleşik olarak bulunan uzantılarda Geliştirici Araçları kullanımına izin verme. Diğer bağlamlarda Geliştirici Araçları kullanımına izin ver</translation>
 <translation id="8316940611391250886">subjectAlternativeName uzantısına sahip olmayan sertifikalara izin verme</translation>
@@ -8905,6 +8960,17 @@ Sertifikalar, base64 kodlu olmalıdır.</translation>
 
 Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlanan bir URL'ye gidildiğinde URL hemen alternatif tarayıcıda açılır.</translation>
 <translation id="8402079500086185021">PDF dosyalarını her zaman harici olarak aç</translation>
+<translation id="8402357110539568621">Sanal klavye erişilebilirlik özelliğini etkinleştirin.
+
+          Bu politika, doğru değerine ayarlanırsa erişilebilirlik sanal klavyesi her zaman etkinleştirilir.
+
+          Bu politika, yanlış değerine ayarlanırsa erişilebilirlik sanal klavyesi her zaman devre dışı olur.
+
+          Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
+
+          Bu politika ayarlanmadan bırakılırsa erişilebilirlik sanal klavyesi başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman erişilebilirlik ayarlarından etkinleştirebilirler.
+
+          Bu politika, dokunmatik sanal klavyenin etkinleştirilip etkinleştirilmeyeceğini etkilemez. Örneğin, bu politika yanlış değerine ayarlanmış olsa bile dokunmatik sanal klavye, tablette görünmeye devam eder. Dokunmatik sanal klavyenin davranışını kontrol etmek için <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="8410477879938914253">Bu politika, yalnızca yönetilen misafir oturumları için geçerlidir.
       Politika, Doğru değerine ayarlanır veya ayarlamadan bırakılırsa son pencere kapatıldığında kullanıcıya oturumu kapatmayı onaylayıp onaylamadığını soran bir iletişim gösterilir.
       Politikayı Yanlış değerine ayarlamak, iletişimin gösterilmesine engel olur ve dolayısıyla son pencerenin kapatılmasından sonra otomatik oturum kapatmayı devre dışı bırakır.</translation>
@@ -8959,6 +9025,7 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 <translation id="8470317291588703478">YouTube Kısıtlı Modu'nu zorlama</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC, en iyi yolu ararken mevcut tüm arayüzleri kullanır.</translation>
+<translation id="8479496880635054740">Erişilebilirlik sanal klavyesini, giriş ekranında devre dışı bırak</translation>
 <translation id="8482518340010585741">Giriş yapıldığında uygulama geri yüklemeyi yapılandır</translation>
 <translation id="8483004350080020634">https:// URL'lerini, proxy çözümlemesi sırasında <ph name="PRODUCT_NAME" /> tarafından kullanılan PAC (Proxy Otomatik Yapılandırması) komut dosyalarına geçirmeden önce URL'lerin gizlilik ve güvenlik açısından hassas bölümlerini ayırır.
 

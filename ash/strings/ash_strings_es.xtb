@@ -1134,6 +1134,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5537725057119320332">Enviar</translation>
 <translation id="5546397813406633847">Recuperar usuario</translation>
 <translation id="554893713779400387">Activar o desactivar dictado</translation>
+<translation id="5550417424894892620">Suelta archivos en el escritorio para añadirlos a <ph name="HOLDING_SPACE_TITLE" />. No puedes añadir archivos al escritorio.</translation>
 <translation id="5551456515017410630">Abrir/Cerrar calendario</translation>
 <translation id="5551974246223970793">Al buscar en una página, ir a la siguiente coincidencia</translation>
 <translation id="5555639311269196631">Desactivar punto de acceso</translation>
@@ -1875,6 +1876,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena tus aplicaciones por nombre o color</translation>
 <translation id="8609384513243082612">Abrir nueva pestaña</translation>
+<translation id="8612216344243590325">Guarda los archivos importantes en <ph name="HOLDING_SPACE_TITLE" /> en vez de en el escritorio. Solo tienes que arrastrar los archivos a <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Se han ocultado notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" /> porque la protección contra fisgones está activada</translation>
 <translation id="8619138598101195078">Bajar el volumen</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>

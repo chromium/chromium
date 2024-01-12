@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Докладніше</translation>
 <translation id="117624967391683467">Копіювання файлу <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="1190144681599273207">Для отримання цього файлу буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
 <translation id="1194390763418645112">Доступ до файлу з розташування <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1209796539517632982">Імена серверів – автоматично</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Поділитися з <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
 <translation id="1775381402323441512">Інформація про відео</translation>
+<translation id="180035236176489073">Щоб отримати доступ до цих файлів, потрібно перебувати в режимі онлайн.</translation>
 <translation id="1807938677607439181">Усі файли</translation>
 <translation id="1810764548349082891">Попередній перегляд недоступний</translation>
 <translation id="1812302367230252929">Амхарська, транслітерація</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Пісня подяки</translation>
 <translation id="2088690981887365033">Мережа VPN</translation>
 <translation id="209653272837065803">Недостатньо пам’яті, щоб продовжити синхронізацію файлів</translation>
-<translation id="2099143626019777139">Адміністратор може бачити, які веб-сайти ви відвідуєте. Ви можете переглянути список таких веб-сайтів.</translation>
 <translation id="2111134541987263231">Увімкніть параметр <ph name="BEGIN_BOLD" />Дозволити в анонімному режимі<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Файли (<ph name="NUMBER_OF_ITEMS" />) буде видалено, і ви не зможете відновити їх.</translation>
 <translation id="2122305276694332719">Автоматичне підключення до прихованої мережі дозволяє іншим користувачам бачити ваш пристрій і певні мережеві налаштування. Не рекомендується.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL-адреса автоконфігурації:</translation>
 <translation id="2284767815536050991">знімний носій</translation>
 <translation id="2288278176040912387">Грамофон</translation>
+<translation id="2291538123825441971">Відкриваються файли (<ph name="NUMBER_OF_FILES" />).</translation>
+<translation id="2303301624314357662">Відкривається файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> відключено.</translation>
 <translation id="2307462900900812319">Установити параметри мережі</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Недостатньо пам’яті, щоб синхронізувати всі файли</translation>
 <translation id="23721837607121582">Завантажити мобільний профіль, мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
 <translation id="2377319039870049694">Список</translation>
+<translation id="2377590462528165447">Linux має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2379576081295865700">Перевірка обсягу пам’яті… Знайдено 1 об’єкт.</translation>
 <translation id="2383454254762599978">Перемістити в кошик</translation>
 <translation id="2387458720915042159">Тип з’єднання з проксі-сервером</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Додати в архів .zip</translation>
 <translation id="4202378258276439759">Іспанська (Латинська Америка)</translation>
 <translation id="4202977638116331303">Грузинська</translation>
+<translation id="421017592316736757">Щоб отримати доступ до цього файлу, потрібно перебувати в режимі онлайн.</translation>
 <translation id="4212740939091998969">Папка з назвою "<ph name="FOLDER_NAME" />" уже існує. Укажіть іншу назву.</translation>
 <translation id="4218274196133425560">Видалити виняток для хосту <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Презентація Google</translation>
 <translation id="4277536868133419688">Фільтр "<ph name="FILTER_NAME" />" увімкнено.</translation>
+<translation id="4290535918735525311">Linux має доступ до 1 папки</translation>
 <translation id="4299729908419173967">бразильська</translation>
 <translation id="4302605047395093221">Щоб під’єднатися до цієї мобільної мережі, усі користувачі пристрою мають вводити PIN-код</translation>
 <translation id="4303531889494116116">Ця мережа зайнята. Спробуйте пізніше.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, відомості</translation>
 <translation id="4935975195727477204">Квітка</translation>
 <translation id="4943368462779413526">Футбольний м’яч</translation>
+<translation id="4961158930123534723">Додатку Parallels Desktop надано доступ до 1 папки</translation>
+<translation id="4965874878399872778">Перевірка файлів на відповідність правилам безпеки вашої організації…</translation>
 <translation id="496656650103537022">Файл "<ph name="FILE_NAME" />" відновлено</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Не вдалося налаштувати синхронізацію файлів</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5318819489018851358">Надати доступ додаткам Linux</translation>
 <translation id="5323213332664049067">латиноамериканська</translation>
+<translation id="5330145655348521461">Ці файли відкрито на іншому комп’ютері. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути їх.</translation>
 <translation id="5330512191124428349">Отримати інформацію</translation>
 <translation id="535792325654997756">Людина з котами</translation>
 <translation id="5358764674931277">Частота кадрів</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">Японська, розкладка США</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, немає мережі</translation>
 <translation id="6146563240635539929">Відео</translation>
+<translation id="6150853954427645995">Щоб зберегти цей файл для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файл правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Метелики</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6170470584681422115">Сендвіч</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">Недійсне значення збігу із суфіксом домену</translation>
 <translation id="6364301859968397756">Сховище організації заповнено</translation>
 <translation id="6367976544441405720">Фургон</translation>
+<translation id="637062427944097960">Цей файл відкрито на іншому робочому столі. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути його.</translation>
 <translation id="6394388407447716302">Лише перегляд</translation>
 <translation id="6395575651121294044">Елементів: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Не вдалося перемістити файл <ph name="FILE_NAME" />, оскільки він зашифрований.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">Залишилась 1 спроба.</translation>
 <translation id="643243556292470964">Видалені файли переміщено в кошик</translation>
 <translation id="6438480100790416671">Перевірка обсягу пам’яті…</translation>
+<translation id="6451527188465304418">Перевірка файлу на відповідність правилам безпеки вашої організації…</translation>
 <translation id="6485131920355264772">Не вдалось отримати дані про вільне місце</translation>
 <translation id="6495925982925244349">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
 <translation id="649877868557234318">Видобування файлу "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">Налаштування синхронізації файлів</translation>
 <translation id="6594855146910089723">Linux і Parallels Desktop мають доступ до цієї папки</translation>
 <translation id="6607272825297743757">Інформація про файл</translation>
+<translation id="6609332149380188670">Додатку Parallels Desktop надано доступ до папок (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="6629518321609546825">Введіть принаймні 4 цифри</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6650726141019353908">Рожевий метелик</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
+<translation id="7839804798877833423">Для отримання цих файлів буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>
 <translation id="7853966320808728790">Французька клавіатура BÉPO</translation>
 <translation id="7857117644404132472">Додати виняток</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">Синхронізація файлів на Диску (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модель пристрою</translation>
+<translation id="8223479393428528563">Щоб зберегти ці файли для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файли правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Відкрити сховище</translation>
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="8250690786522693009">Латиниця</translation>

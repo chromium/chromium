@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">گزینشگر واحد</translation>
 <translation id="2348630484974447747">بسته</translation>
 <translation id="2351097562818989364">تنظیمات ترجمه شما بازنشانی شده است.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{‏می‌توانید گذرواژه {DOMAIN_ONE} را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}=2{‏می‌توانید گذرواژه‌های {DOMAIN_ONE} و {DOMAIN_TWO} را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}=3{‏می‌توانید گذرواژه‌های {DOMAIN_ONE}،‏ {DOMAIN_TWO}، و {OTHER_DOMAINS_COUNT} دامنه دیگر را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}one{‏می‌توانید گذرواژه‌های {DOMAIN_ONE}،‏ {DOMAIN_TWO}، و {OTHER_DOMAINS_COUNT} دامنه دیگر را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}other{‏می‌توانید گذرواژه‌های {DOMAIN_ONE}،‏ {DOMAIN_TWO}، و {OTHER_DOMAINS_COUNT} دامنه دیگر را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}}</translation>
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
 <translation id="2359043044084662842">مترجم</translation>
 <translation id="2359808026110333948">ادامه</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">فیلد قبلی</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="2754492786623500387">حساب‌های موجود در این دستگاه</translation>
+<translation id="2755595981383829244">اکنون اعلان‌های محتوا را دریافت خواهید کرد</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="2772667768515195373">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="USER_EMAIL" />) ذخیره شده است.</translation>
 <translation id="2773292004659987824">جستجوی ناشناس</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">مدیریت روش‌های پرداخت…</translation>
 <translation id="469300482518076788">بستن برگه</translation>
 <translation id="4697071790493980729">هیچ نتیجه‌ای یافت نشد</translation>
+<translation id="470337593714520080">{count,plural, =1{‏۱ نشانک را در «حساب Google» خود ذخیره کنید}one{‏{count} نشانک را در «حساب Google» خود ذخیره کنید}other{‏{count} نشانک را در «حساب Google» خود ذخیره کنید}}</translation>
 <translation id="470966556546083668">همگام‌سازی روشن نشود</translation>
 <translation id="4711809265250406889">وقتی روشن است</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}، {website_2}}=3{{website_1}، {website_2}، و ۱ اجازه دیگر}one{{website_1}، {website_2}، و {more_count} اجازه دیگر}other{{website_1}، {website_2}، و {more_count} اجازه دیگر}}</translation>

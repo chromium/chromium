@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف<ph name="PHONE_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، التفاصيل</translation>
 <translation id="117624967391683467">جارٍ نسخ <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
+<translation id="1190144681599273207">سيؤدي جلب هذا الملف إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
 <translation id="1194390763418645112">الوصول إلى الملفات من خلال <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">المشاركة مع "<ph name="VM_NAME" />"</translation>
 <translation id="1773212559869067373">تمّ رفض شهادة المصادقة محليًا</translation>
 <translation id="1775381402323441512">معلومات الفيديو</translation>
+<translation id="180035236176489073">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذه الملفات.</translation>
 <translation id="1807938677607439181">كل الملفات</translation>
 <translation id="1810764548349082891">لا تتوفر معاينة</translation>
 <translation id="1812302367230252929">تحويل صوتي إلى اللغة الأمهرية</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">شخص يقول "شكرًا لك" بلغة الإشارة</translation>
 <translation id="2088690981887365033">الشبكة الافتراضية الخاصة</translation>
 <translation id="209653272837065803">لا تتوفّر مساحة تخزين كافية لمواصلة مزامنة الملفات.</translation>
-<translation id="2099143626019777139">ستظهر للمشرف المواقع الإلكترونية التي تزورها. يمكنك الاطّلاع على قائمة المواقع الإلكترونية المرئية.</translation>
 <translation id="2111134541987263231">تفعيل <ph name="BEGIN_BOLD" />السماح بالإضافة في وضع التصفّح المتخفي<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، ولن تتمكّن من استعادتها.</translation>
 <translation id="2122305276694332719">يسمح الاتصال تلقائيًا بشبكة مخفية للمستخدمين الآخرين رؤية جهازك وبعض إعدادات الشبكة، ولا ننصح بذلك.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">‏عنوان URL للإعداد التلقائي:</translation>
 <translation id="2284767815536050991">وحدة تخزين قابلة للإزالة</translation>
 <translation id="2288278176040912387">مشغّل أقراص مسجلة</translation>
+<translation id="2291538123825441971">جارٍ فتح <ph name="NUMBER_OF_FILES" /> من الملفات.</translation>
+<translation id="2303301624314357662">جارٍ فتح ملف <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">كوكب</translation>
 <translation id="2305020378527873881">تم إخراج <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">إعداد الشبكة</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">لا تتوفّر مساحة تخزين كافية لمزامنة جميع ملفاتك.</translation>
 <translation id="23721837607121582">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">تبديل إلى عرض القائمة</translation>
+<translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> من المجلَّدات المشتركة مع نظام التشغيل Linux.</translation>
 <translation id="2379576081295865700">جارٍ التحقّق من مساحة التخزين… تم العثور على ملف واحد.</translation>
 <translation id="2383454254762599978">نقل إلى "المهملات"</translation>
 <translation id="2387458720915042159">نوع الاتصال بالخادم الوكيل</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">تحديد ملف مضغوط</translation>
 <translation id="4202378258276439759">الإسبانية (أمريكا اللاتينية)</translation>
 <translation id="4202977638116331303">الجورجية</translation>
+<translation id="421017592316736757">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذا الملف.</translation>
 <translation id="4212740939091998969">المجلَّد الذي يحمل الاسم "<ph name="FOLDER_NAME" />" موجود مسبقًا. يُرجى اختيار اسم آخر.</translation>
 <translation id="4218274196133425560">إزالة الاستثناء للمضيف <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">‏عرض تقديمي من Google</translation>
 <translation id="4277536868133419688">تم تفعيل الفلتر <ph name="FILTER_NAME" />.</translation>
+<translation id="4290535918735525311">‏تمت مشاركة مجلد واحد مع نظام التشغيل Linux</translation>
 <translation id="4299729908419173967">البرازيلية</translation>
 <translation id="4302605047395093221">على جميع مستخدمي هذا الجهاز إدخال رقم التعريف الشخصي للاتصال بشبكة الجوّال هذه.</translation>
 <translation id="4303531889494116116">هذه الشبكة غير متاحة في الوقت الحالي. يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، التفاصيل</translation>
 <translation id="4935975195727477204">زهرة غازانيا</translation>
 <translation id="4943368462779413526">كرة القدم</translation>
+<translation id="4961158930123534723">‏تمّت مشاركة ملف واحد مع نظام Parallels Desktop.</translation>
+<translation id="4965874878399872778">جارٍ التحقّق من الملفات للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
 <translation id="496656650103537022">تمت استعادة <ph name="FILE_NAME" />.</translation>
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4972330214479971536">تعذَّر إكمال إعداد مزامنة الملفات</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318819489018851358">‏المشاركة مع نظام التشغيل Linux</translation>
 <translation id="5323213332664049067">أمريكا اللاتينية</translation>
+<translation id="5330145655348521461">تم فتح هذه الملفات على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليها.</translation>
 <translation id="5330512191124428349">الحصول على معلومات</translation>
 <translation id="535792325654997756">شخص مع قطط</translation>
 <translation id="5358764674931277">عدد اللقطات في الثانية</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">اليابانية باستخدام لوحة مفاتيح الولايات المتحدة</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، ما من شبكة</translation>
 <translation id="6146563240635539929">فيديوهات</translation>
+<translation id="6150853954427645995">لحفظ هذا الملف للاستخدام بلا إنترنت، عاود الاتصال بالإنترنت، وانقر بزر الماوس الأيمن على الملف، ثم حدد الخيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">فراشات</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">قيمة غير صالحة لمطابقة لاحقة النطاق</translation>
 <translation id="6364301859968397756">مساحة التخزين المتوفّرة للمؤسسة ممتلئة.</translation>
 <translation id="6367976544441405720">سيارة نقل</translation>
+<translation id="637062427944097960">تم فتح هذا الملف على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليه.</translation>
 <translation id="6394388407447716302">للقراءة فقط</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> من العناصر</translation>
 <translation id="6407769893376380348">تعذّر نقل "<ph name="FILE_NAME" />" لأنّه مشفَّر.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">يتبقى لديك محاولة واحدة.</translation>
 <translation id="643243556292470964">يجري الآن نقل الملفات المحذوفة إلى المهملات.</translation>
 <translation id="6438480100790416671">جارٍ التحقّق من مساحة التخزين…</translation>
+<translation id="6451527188465304418">جارٍ التحقّق من الملف للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
 <translation id="6485131920355264772">تعذّر جلب معلومات المساحة</translation>
 <translation id="6495925982925244349">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="649877868557234318">جارٍ استخراج الملف <ph name="FILE_NAME" /> إلى المجلّد <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">إعدادات مزامنة الملفات</translation>
 <translation id="6594855146910089723">‏تمّت مشاركة هذا المجلد مع نظامَي التشغيل Linux وParallels Desktop.</translation>
 <translation id="6607272825297743757">معلومات الملف</translation>
+<translation id="6609332149380188670">‏تمّت مشاركة <ph name="NUMBER_OF_ITEMS" /> مجلد مع نظام Parallels Desktop.</translation>
 <translation id="6629518321609546825">يُرجى إدخال 4 أرقام على الأقل.</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6650726141019353908">فراشة وردية</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> تيرابايت</translation>
 <translation id="7831491651892296503">حدث خطأ أثناء إعداد الشبكة</translation>
+<translation id="7839804798877833423">سيؤدي جلب هذه الملفات إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7853966320808728790">‏BÉPO الفرنسية</translation>
 <translation id="7857117644404132472">إضافة استثناء</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">‏جارٍ مزامنة <ph name="NUMBER_OF_FILES_SYNCING" /> ملف على Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">طراز الجهاز</translation>
+<translation id="8223479393428528563">لحفظ هذه الملفات بلا اتصال، عليك العودة للاتصال انقر بزر الماوس الأيمن على الملفات، وحدد خيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">عرض مساحة التخزين</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="8250690786522693009">اللاتينية</translation>

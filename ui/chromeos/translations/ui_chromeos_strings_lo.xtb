@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
 <translation id="117624967391683467">ກໍາລັງກັອບປີ້ <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
+<translation id="1190144681599273207">ການໄປເອົາໄຟລ​໌​​ນີ້​ຈະ​ໃຊ້​ຂໍ້ມູນມືຖືປະ​ມານ <ph name="FILE_SIZE" />.</translation>
 <translation id="1194390763418645112">ສິດເຂົ້າເຖິງໄຟລ໌ໂດຍ <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1209796539517632982">ເຊີບເວີ​ຊື່​ອັດ​ຕະ​ໂນ​ມັດ</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">ແບ່ງປັນກັບ <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງກັບທີ່ແລ້ວ</translation>
 <translation id="1775381402323441512">ຂໍ້ມູນວິດີໂອ</translation>
+<translation id="180035236176489073">ທ່ານ​ຈະ​ຕ້ອງ​ອອນ​ລາຍ​ນ​໌​ເພື່ອເຂົ້າຫາໄຟລ​໌​ເຫຼົ່ານີ້​.</translation>
 <translation id="1807938677607439181">ທຸກໄຟລ​໌​</translation>
 <translation id="1810764548349082891">ບໍ່ມີຕົວຢ່າງສະແດງ</translation>
 <translation id="1812302367230252929">ການແປທັບສັບພາສາອາມຮາຣິກ</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">ຄົນຂຽນຄຳວ່າຂອບໃຈ</translation>
 <translation id="2088690981887365033">ເຄືອຂ່າຍ VPN</translation>
 <translation id="209653272837065803">ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍທີ່ຈະຊິ້ງໄຟລ໌ຕໍ່</translation>
-<translation id="2099143626019777139">ເວັບໄຊທີ່ທ່ານເຂົ້າຈະສະແດງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຫັນ. ທ່ານສາມາດເບິ່ງລາຍຊື່ເວັບໄຊທີ່ສະແດງໄດ້.</translation>
 <translation id="2111134541987263231">ເປີດ <ph name="BEGIN_BOLD" />ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ລາຍການຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນພວກມັນໄດ້.</translation>
 <translation id="2122305276694332719">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ເຊື່ອງໄວ້ໂດຍອັດຕະໂນມັດອະນຸຍາດໃຫ້ຄົນອື່ນເຫັນອຸປະກອນຂອງທ່ານ ແລະ ບາງການຕັ້ງຄ່າເຄືອຂ່າຍ ແລະ ບໍ່ແນະນຳໃຫ້ເຊື່ອມຕໍ່.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL ການກຳນົດຄ່າອັດໂນມັດ:</translation>
 <translation id="2284767815536050991">ບ່ອນຈັດເກັບຂໍ້ມູນແບບຖອດອອກໄດ້</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
+<translation id="2291538123825441971">ກຳລັງເປີດ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌.</translation>
+<translation id="2303301624314357662">ກຳລັງເປີດໄຟລ໌ <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">ດາວເຄາະ</translation>
 <translation id="2305020378527873881">ຖອດ <ph name="VOLUME_NAME" /> ອອກແລ້ວ.</translation>
 <translation id="2307462900900812319">ປັບຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍທີ່ຈະຊິ້ງໄຟລ໌ທັງໝົດຂອງທ່ານ</translation>
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
+<translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
 <translation id="2379576081295865700">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ… ພົບ 1 ລາຍການ</translation>
 <translation id="2383454254762599978">ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">ການເລືອກຊິບໄຟລ໌</translation>
 <translation id="4202378258276439759">ພາສາສະແປນນິຊ (ອາເມລິກາລາຕິນ)</translation>
 <translation id="4202977638116331303">ພາສາຈໍຈຽນ</translation>
+<translation id="421017592316736757">ທ່ານ​ຈະ​ຕ້ອງ​ອອນ​ລາຍ​ນ​໌​ເພື່ອເຂົ້າຫາໄຟລ​໌​ນີ້​.</translation>
 <translation id="4212740939091998969">ມີໂຟນເດີຊື່ "<ph name="FOLDER_NAME" />" ຢູ່ແລ້ວ. ກະລຸນາເລືອກຊື່ອື່ນ.</translation>
 <translation id="4218274196133425560">ລຶບຂໍ້ຍົກເວັ້ນສຳລັບ <ph name="HOST_NAME" /> ອອກ</translation>
 <translation id="4261901459838235729">ການນໍາສະເໜີ Google</translation>
 <translation id="4277536868133419688">ເປີດຕົວກັ່ນຕອງ <ph name="FILTER_NAME" /> ແລ້ວ.</translation>
+<translation id="4290535918735525311">ແບ່ງປັນ 1 ໂຟນເດີກັບ Linux ແລ້ວ</translation>
 <translation id="4299729908419173967">ພາສາບຣາຊິລ</translation>
 <translation id="4302605047395093221">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະຕ້ອງລະບຸ PIN ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍມືຖືນີ້</translation>
 <translation id="4303531889494116116">ເຄືອຂ່າຍນີ້ບໍ່ຫວ່າງ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
 <translation id="4935975195727477204">ດອກ​ກາ​ຊາ​ເນຍ</translation>
 <translation id="4943368462779413526">ບານເຕະ</translation>
+<translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
+<translation id="4965874878399872778">ກຳລັງກວດສອບໄຟລ໌ກັບນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
 <translation id="496656650103537022">ກູ້ຄືນ <ph name="FILE_NAME" /> ແລ້ວ</translation>
 <translation id="4969785127455456148">ອະ​ລະ​ບໍ້າ</translation>
 <translation id="4972330214479971536">ຕັ້ງຄ່າການຊິ້ງໄຟລ໌ບໍ່ສຳເລັດ</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318819489018851358">ແບ່ງປັນກັບ Linux</translation>
 <translation id="5323213332664049067">ອາເມຣິກາລາຕິນ</translation>
+<translation id="5330145655348521461">ໄຟລ໌ເຫຼົ່ານີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
 <translation id="5330512191124428349">ຮັບເອົາຂໍ້ມູນ</translation>
 <translation id="535792325654997756">ຄົນກັບແມວ</translation>
 <translation id="5358764674931277">ອັດຕາພາບ</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">ພາສາຍີ່ປຸ່ນທີ່ໃຊ້ແປ້ນພິມສະຫະລັດ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="6146563240635539929">ວິດີໂອ</translation>
+<translation id="6150853954427645995">ເພື່ອ​ບັນ​ທຶກ​ໄຟ​ລ໌​ນີ້​ໄວ້​ໃຊ້​ອອ​ຟ​ລາຍ​ນ໌, ກັບ​ຄືນ​ໄປ​ອອນ​ລາຍ​ນ໌, ຄ​ລິກ​ເບື້ອງ​ຂວາ​ໃສ່​ໄຟ​ລ໌, ແລະ​ເລືອກ​ທາງ​ເລືອກ <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">ແມງກະເບື້ອ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">ຄ່າການຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນບໍ່ຖືກຕ້ອງ</translation>
 <translation id="6364301859968397756">ບ່ອນຈັດເກັບຂໍ້ມູນອົງກອນເຕັມແລ້ວ</translation>
 <translation id="6367976544441405720">ລົດຕູ້</translation>
+<translation id="637062427944097960">ໄຟລ໌ນີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນແລ້ວ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
 <translation id="6394388407447716302">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ລາຍການ</translation>
 <translation id="6407769893376380348">ບໍ່ສາມາດຍ້າຍ <ph name="FILE_NAME" /> ໄດ້ເນື່ອງຈາກມັນຖືກເຂົ້າລະຫັດໄວ້.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>
 <translation id="643243556292470964">ຕອນນີ້ໄຟລ໌ທີ່ຖືກລຶບໄດ້ຖືກຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="6438480100790416671">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ…</translation>
+<translation id="6451527188465304418">ກຳລັງກວດສອບໄຟລ໌ກັບນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
 <translation id="6485131920355264772">ດຶງເອົາຂໍ້ມູນຊ່ອງຫວ່າງບໍ່ສໍາເລັດ</translation>
 <translation id="6495925982925244349">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="649877868557234318">ກຳລັງແຕກໄຟລ໌ <ph name="FILE_NAME" /> ໄປໃສ່ <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">ການຕັ້ງຄ່າການຊິ້ງໄຟລ໌</translation>
 <translation id="6594855146910089723">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux ແລະ Parallels Desktop</translation>
 <translation id="6607272825297743757">ຂໍ້​ມູນໄຟລ໌</translation>
+<translation id="6609332149380188670">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ກັບ Parallels Desktop ແລ້ວ</translation>
 <translation id="6629518321609546825">ລະບຸຢ່າງໜ້ອຍ 4 ຕົວເລກ</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6650726141019353908">ແມງກະເບື້ອສີບົວ</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ມີຄວາມຜິດພາດໃນການກຳນົດຄ່າເຄືອຂ່າຍ</translation>
+<translation id="7839804798877833423">ການໄປເອົາໄຟລ​໌​ເຫຼົ່າ​ນີ້​ຈະ​ໃຊ້​ຂໍ້ມູນມືຖືປະ​ມານ <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">ຍົກ​ເລີກ​ການ​ເລືອກ</translation>
 <translation id="7853966320808728790">BÉPO ພາ​ສາ​ຝ​ຣັ່ງ</translation>
 <translation id="7857117644404132472">ເພີ່ມຂໍ້ຍົກເວັ້ນ</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">ກຳລັງຊິ້ງໄຟລ໌ Drive <ph name="NUMBER_OF_FILES_SYNCING" /> ລາຍການ</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8193175696669055101">ລຸ້ນອຸປະກອນ</translation>
+<translation id="8223479393428528563">ເພື່ອ​ບັນ​ທຶກ​ໄຟ​ລ໌​ເຫຼົ່າ​ນີ້​ໄວ້​ໃຊ້​ອອ​ຟ​ລາຍ​ນ໌, ກັບ​ຄືນ​ໄປ​ອອນ​ລາຍ​ນ໌, ຄ​ລິກ​ເບື້ອງ​ຂວາ​ໃສ່​ໄຟ​ລ໌, ແລະ​ເລືອກ​ທາງ​ເລືອກ <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">ເບິ່ງບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
 <translation id="8250690786522693009">ລາຕິນ</translation>

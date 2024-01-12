@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Skaidrių demonstracija</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4300073214558989">Vaizdų: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4310735698903592804">Naujausi „Google“ DI pagrįsti ekrano fonai</translation>
 <translation id="4333390807948134856">Paspaustas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">klavišas</translation>
 <translation id="4361257691546579041">APN yra numatytojo tipo.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Failas nerastas</translation>
+<translation id="593880865674747800">Kurkite daugiau šiuo stiliumi</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="594552776027197022">Generuoti atsitiktinę raktų porą</translation>
 <translation id="5946538341867151940">Dar nesate prisijungę. Jei jūsų mobiliojo ryšio operatorius rekomenduoja tinkintą APN, įveskite APN informaciją pasirinkdami „+ Naujas APN“</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA ar RSN)</translation>
 <translation id="7841134249932030522">Įgalinti tamsų režimą</translation>
 <translation id="7846634333498149051">Klaviatūra</translation>
+<translation id="7850847810298646851">„Google“ DI pagrįstas ekrano fonas</translation>
 <translation id="7856267634822906833">„Bluetooth“ jutiklinis ekranas</translation>
 <translation id="7869143217755017858">Išjungti tamsų režimą</translation>
 <translation id="7881066108824108340">DNS</translation>

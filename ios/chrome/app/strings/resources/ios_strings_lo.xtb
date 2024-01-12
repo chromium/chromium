@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">ຕົວເລືອກຫົວໜ່ວຍ</translation>
 <translation id="2348630484974447747">ພັດສະດຸ</translation>
 <translation id="2351097562818989364">ການ​ຕັ້ງຄ່າ​ແປ​ພາ​ສາ​ຂອງ​ທ່ານ​ໄດ້​ຖືກຕັ້ງໃໝ່​ແລ້ວ.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE} ໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}=2{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE} ແລະ {DOMAIN_TWO} ໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}=3{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE}, {DOMAIN_TWO} ແລະ {OTHER_DOMAINS_COUNT} ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}other{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE}, {DOMAIN_TWO} ແລະ {OTHER_DOMAINS_COUNT} ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}}</translation>
 <translation id="235789365079050412">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ Google</translation>
 <translation id="2359043044084662842">ແປພາສາ</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">ຈັດການວິທີການຈ່າຍເງິນ...</translation>
 <translation id="469300482518076788">ປິດແຖບ</translation>
 <translation id="4697071790493980729">ບໍ່ພົບຜົນການຊອກຫາ</translation>
+<translation id="470337593714520080">{count,plural, =1{ບັນທຶກ 1 ບຸກມາກໃນບັນຊີ Google ຂອງທ່ານ}other{ບັນທຶກ {count} ບຸກມາກໃນບັນຊີ Google ຂອງທ່ານ}}</translation>
 <translation id="470966556546083668">ຢ່າເປີດໃຊ້ການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="4711809265250406889">ເມື່ອເປີດໃຊ້</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ແລະ ອີກ 1 ເວັບໄຊ}other{{website_1}, {website_2} ແລະ ອີກ {more_count} ເວັບໄຊ}}</translation>

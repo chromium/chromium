@@ -201,6 +201,9 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Öppna Chrome-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chrome.</translation>
+<translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />styra vilken Chrome-data som sparas<ph name="END_LINK" /> i Google-kontot.
+
+Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="687586529977635009">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Sök med rösten i Chrome</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>

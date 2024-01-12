@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Presentació de diapositives</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
+<translation id="4310735698903592804">Fons de pantalla recents amb la tecnologia de la IA de Google</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">L'APN és de tipus predeterminat.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
+<translation id="593880865674747800">Crea'n més amb aquest estil</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="594552776027197022">Genera un parell de claus aleatori</translation>
 <translation id="5946538341867151940">Encara no t'has connectat. Si el teu operador de telefonia mòbil et recomana un APN personalitzat, introdueix la informació de l'APN seleccionant l'opció + APN nou.</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7841134249932030522">Activa el mode fosc</translation>
 <translation id="7846634333498149051">Teclat</translation>
+<translation id="7850847810298646851">Fons de pantalla amb la tecnologia de la IA de Google</translation>
 <translation id="7856267634822906833">Pantalla tàctil Bluetooth</translation>
 <translation id="7869143217755017858">Desactiva el mode fosc</translation>
 <translation id="7881066108824108340">DNS</translation>

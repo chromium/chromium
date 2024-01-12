@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Бирач јединица</translation>
 <translation id="2348630484974447747">Пакет</translation>
 <translation id="2351097562818989364">Подешавања за превођење су ресетована.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Можете да сачувате лозинку за сајт {DOMAIN_ONE} на Google налогу, {EMAIL}.}=2{Можете да сачувате лозинке за сајтове {DOMAIN_ONE} и {DOMAIN_TWO} на Google налогу, {EMAIL}.}=3{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}one{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}few{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}other{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Google политика приватности</translation>
 <translation id="2359043044084662842">Преведи</translation>
 <translation id="2359808026110333948">Настави</translation>
@@ -368,6 +369,7 @@
 <translation id="288655811176831528">Затвори картицу</translation>
 <translation id="288902476966286676">Враћено пошиљаоцу</translation>
 <translation id="2890171748217283516">Сајтови које пратите се чувају на Google налогу. Њима можете да управљате у подешавањима Discover-а.</translation>
+<translation id="2895084600668778673">Погледајте све податке Аутоматског попуњавања</translation>
 <translation id="2898963176829412617">Нови фолдер...</translation>
 <translation id="2902684821701498619">Додај на Листу за читање</translation>
 <translation id="2905479111267140204">Број лозинки које користите више пута и које могу да угрозе безбедност је<ph name="NUMBER_OF_PASSWORDS" />.</translation>

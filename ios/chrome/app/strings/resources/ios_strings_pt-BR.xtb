@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Seletor de unidade de medida</translation>
 <translation id="2348630484974447747">Pacote</translation>
 <translation id="2351097562818989364">As configurações de tradução foram redefinidas.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Você pode salvar a senha de {DOMAIN_ONE} na sua Conta do Google {EMAIL}.}=2{Você pode salvar as senhas de {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta do Google {EMAIL}.}=3{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} site na sua Conta do Google {EMAIL}.}one{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} sites na sua Conta do Google {EMAIL}.}other{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} sites na sua Conta do Google {EMAIL}.}}</translation>
 <translation id="235789365079050412">Política de Privacidade do Google</translation>
 <translation id="2359043044084662842">Traduzir</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -335,6 +336,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Seguindo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
+<translation id="2755595981383829244">Agora você vai receber notificações de conteúdo</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2772667768515195373">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço foi salvo na sua conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pesquisa anônima</translation>
@@ -527,6 +529,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Oferecer a opção de traduzir esse site</translation>
+<translation id="3808311849069021992">Mostrar detalhes do mecanismo de pesquisa</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="3818045793209708987">Você parou de rastrear este pacote</translation>
 <translation id="3818293389945649617">Localizar próximo</translation>
@@ -688,6 +691,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
 <translation id="469300482518076788">Fechar guia</translation>
 <translation id="4697071790493980729">Nenhum resultado encontrado</translation>
+<translation id="470337593714520080">{count,plural, =1{Salvar 1 favorito na sua Conta do Google}one{Salvar {count} favorito na sua Conta do Google}other{Salvar {count} favoritos na sua Conta do Google}}</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
 <translation id="4711809265250406889">Quando ativado</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}one{{website_1}, {website_2} e mais {more_count}}other{{website_1}, {website_2} e mais {more_count}}}</translation>
@@ -799,6 +803,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5235389474593199952">Ocultar histórico</translation>
 <translation id="5238301240406177137">Salvar na conta</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5248640482715684545">O site está tentando abrir outro aplicativo.</translation>
 <translation id="5256661381001734217">O site está tentando abrir um aplicativo.  Com essa ação, você sai da navegação anônima.</translation>
@@ -818,6 +823,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5360976571138293719">Para mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Os sites que você segue vão aparecer aqui</translation>
 <translation id="5388358297987318779">Abrir imagem</translation>
+<translation id="5395707839134961196">Ocultar detalhes do mecanismo de pesquisa</translation>
 <translation id="5396950905475481456">Convidar membros da família</translation>
 <translation id="5407969256130905701">Descartar alterações</translation>
 <translation id="5414763847370083940">Você vai receber um alerta se houver uma redução no preço em algum site.</translation>
@@ -986,6 +992,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6266039999629596120">Requer atenção</translation>
 <translation id="6277426346321820595">Sem proteção</translation>
+<translation id="628251768213143684">Você pode gerenciar quando quiser o que é salvo na sua Conta do Google</translation>
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Você parou de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
@@ -1030,6 +1037,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Verificação nunca executada.</translation>
 <translation id="6459307836338400162">Para acessar mais opções relacionadas à privacidade, segurança e coleta de dados, acesse as configurações de <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Detalhes ocultos</translation>
 <translation id="646394917185284261">Arquivos</translation>
 <translation id="6464071786529933911">Abrir em nova guia anônima</translation>
 <translation id="6464397691496239022">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
@@ -1282,6 +1290,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7812377703891978671">Você pode acessar todo seu histórico de navegação selecionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7839985698273989086">Página offline</translation>
+<translation id="7839994177130598711">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="7840771868269352570">Os itens selec. serão removidos.</translation>
 <translation id="7845466610722898">Mostrar "Lista de leitura"</translation>
 <translation id="784551991304901159">Para acessar o conteúdo, selecione "Ativar" no menu</translation>

@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Инструмент за избор на мерна единица</translation>
 <translation id="2348630484974447747">Пратка</translation>
 <translation id="2351097562818989364">Настройките ви за превод са нулирани.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Можете да запазите паролата си за {DOMAIN_ONE} в профила си в Google ({EMAIL}).}=2{Можете да запазите паролите си за {DOMAIN_ONE} и {DOMAIN_TWO} в профила си в Google ({EMAIL}).}=3{Можете да запазите паролите си за {DOMAIN_ONE}, {DOMAIN_TWO} и още {OTHER_DOMAINS_COUNT} сайт в профила си в Google ({EMAIL}).}other{Можете да запазите паролата си за {DOMAIN_ONE}, {DOMAIN_TWO} и още {OTHER_DOMAINS_COUNT} сайта в профила си в Google ({EMAIL}).}}</translation>
 <translation id="235789365079050412">Декларация за поверителност на Google</translation>
 <translation id="2359043044084662842">Превод</translation>
 <translation id="2359808026110333948">Напред</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">Управление на начините на плащане...</translation>
 <translation id="469300482518076788">Затваряне на раздела</translation>
 <translation id="4697071790493980729">Няма намерени резултати</translation>
+<translation id="470337593714520080">{count,plural, =1{Запазване на 1 отметка в профила ви в Google}other{Запазване на {count} отметки в профила ви в Google}}</translation>
 <translation id="470966556546083668">Без включване на синхронизирането</translation>
 <translation id="4711809265250406889">Когато е включено</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1} и {website_2}}=3{{website_1}, {website_2} и още 1}other{{website_1}, {website_2} и още {more_count}}}</translation>
@@ -987,6 +989,7 @@
 <translation id="6255097610484507482">Редактиране на кредитната карта</translation>
 <translation id="6266039999629596120">Изисква внимание</translation>
 <translation id="6277426346321820595">Без защита</translation>
+<translation id="628251768213143684">Винаги можете да управлявате какво да се запазва в профила ви в Google</translation>
 <translation id="6284652193729350524">Предлагане на превод от <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Следенето на <ph name="CHANNEL_NAME" /> бе прекратено</translation>
 <translation id="6293101329759844770">За да включите „Безопасно сърфиране“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и докоснете съответната опция.</translation>

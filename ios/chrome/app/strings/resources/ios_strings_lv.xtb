@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Mērvienību atlasītājs</translation>
 <translation id="2348630484974447747">Sūtījums</translation>
 <translation id="2351097562818989364">Tulkošanas iestatījumi ir atiestatīti.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Savā Google kontā ({EMAIL}) varat saglabāt vietnes {DOMAIN_ONE} paroli.}=2{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE} un {DOMAIN_TWO} paroles.}=3{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietņu paroles.}zero{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietņu paroles.}one{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietnes paroles.}other{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietņu paroles.}}</translation>
 <translation id="235789365079050412">Google konfidencialitātes politika</translation>
 <translation id="2359043044084662842">Tulkot</translation>
 <translation id="2359808026110333948">Turpināt</translation>
@@ -335,6 +336,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2747003861858887689">Iepriekšējais lauks</translation>
 <translation id="2749231692441336879">Jūs sekojat kanālam <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2754492786623500387">Konti šajā ierīcē</translation>
+<translation id="2755595981383829244">Tagad saņemsiet paziņojumus par saturu</translation>
 <translation id="2762000892062317888">tikko</translation>
 <translation id="2772667768515195373">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese ir saglabāta jūsu Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Meklēt inkognito režīmā</translation>
@@ -688,6 +690,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4689564913179979534">Pārvaldīt maksājumu veidus...</translation>
 <translation id="469300482518076788">Aizvērt cilni</translation>
 <translation id="4697071790493980729">Nav atrasti rezultāti</translation>
+<translation id="470337593714520080">{count,plural, =1{Saglabājiet 1 grāmatzīmi savā Google kontā}zero{Saglabājiet {count} grāmatzīmes savā Google kontā}one{Saglabājiet {count} grāmatzīmi savā Google kontā}other{Saglabājiet {count} grāmatzīmes savā Google kontā}}</translation>
 <translation id="470966556546083668">Neieslēgt sinhronizāciju</translation>
 <translation id="4711809265250406889">Ja ieslēgta</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} un vēl 1}zero{{website_1}, {website_2} un vēl {more_count}}one{{website_1}, {website_2} un vēl {more_count}}other{{website_1}, {website_2} un vēl {more_count}}}</translation>
@@ -986,6 +989,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6255097610484507482">Rediģēt kredītkarti</translation>
 <translation id="6266039999629596120">Uzmanību!</translation>
 <translation id="6277426346321820595">Nav aizsardzības</translation>
+<translation id="628251768213143684">Varat jebkurā laikā pārvaldīt savā Google kontā saglabāto informāciju.</translation>
 <translation id="6284652193729350524">Piedāvāt tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Sekošana kanālam <ph name="CHANNEL_NAME" /> ir pārtraukta.</translation>
 <translation id="6293101329759844770">Lai ieslēgtu drošo pārlūkošanu, atveriet sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" /> un pieskarieties vienumam Droša pārlūkošana.</translation>

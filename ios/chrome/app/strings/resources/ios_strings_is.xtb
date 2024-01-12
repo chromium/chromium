@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Einingarval</translation>
 <translation id="2348630484974447747">Pakki</translation>
 <translation id="2351097562818989364">Þýðingarstillingarnar þínar hafa verið núllstilltar.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Þú getur vistað aðgangsorðið fyrir {DOMAIN_ONE} á Google-reikningnum þínum, {EMAIL}.}=2{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE} og {DOMAIN_TWO} á Google-reikningnum þínum, {EMAIL}.}=3{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}.}one{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}.}other{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Persónuverndarstefna Google</translation>
 <translation id="2359043044084662842">Þýða</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
@@ -689,6 +690,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4689564913179979534">Stjórna greiðslumátum...</translation>
 <translation id="469300482518076788">Loka flipa</translation>
 <translation id="4697071790493980729">Engar niðurstöður fundust</translation>
+<translation id="470337593714520080">{count,plural, =1{Vistaðu 1 bókamerki á Google-reikningnum þínum}one{Vistaðu {count} bókamerki á Google-reikningnum þínum}other{Vistaðu {count} bókamerki á Google-reikningnum þínum}}</translation>
 <translation id="470966556546083668">Ekki kveikja á samstillingu</translation>
 <translation id="4711809265250406889">Þegar kveikt er á þessu</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} og 1 í viðbót}one{{website_1}, {website_2} og {more_count} í viðbót}other{{website_1}, {website_2} og {more_count} í viðbót}}</translation>
@@ -987,6 +989,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6255097610484507482">Breyta kreditkorti</translation>
 <translation id="6266039999629596120">Bregðast þarf við</translation>
 <translation id="6277426346321820595">Engin vörn</translation>
+<translation id="628251768213143684">Þú getur alltaf stjórnað því sem er vistað á Google-reikningnum þínum</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Hætti að fylgja <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>

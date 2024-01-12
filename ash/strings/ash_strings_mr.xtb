@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">कास्ट करा</translation>
 <translation id="5546397813406633847">वापरकर्ता रिकव्‍हर करा</translation>
 <translation id="554893713779400387">डिक्टेशन टॉगल करा</translation>
+<translation id="5550417424894892620">फाइल <ph name="HOLDING_SPACE_TITLE" /> मध्ये जोडण्यासाठी त्या डेस्कटॉपवर ड्रॉप करा. तुम्ही डेस्कटॉपवर फाइल जोडू शकत नाही.</translation>
 <translation id="5551456515017410630">कॅलेंडर सुरू/बंद करा</translation>
 <translation id="5551974246223970793">पेज शोधत असताना, शोधासाठी नवीन जुळणीवर जा</translation>
 <translation id="5555639311269196631">हॉटस्पॉट बंद करा</translation>
@@ -1874,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">नाव किंवा रंगानुसार तुमची ॲप्स क्रमाने लावा</translation>
 <translation id="8609384513243082612">नवीन टॅब उघडा</translation>
+<translation id="8612216344243590325">महत्त्वाच्या फाइल डेस्कटॉपवर ठेवण्याऐवजी <ph name="HOLDING_SPACE_TITLE" /> वर ठेवा. फाइल फक्त <ph name="HOLDING_SPACE_TITLE" /> वर ड्रॅग करा.</translation>
 <translation id="8614517853887502247">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" /> आणि <ph name="APP_2_TITLE" /> सूचना लपवल्या आहेत</translation>
 <translation id="8619138598101195078">व्‍हॉल्‍यूम कमी करा</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> शी कनेक्ट केले</translation>

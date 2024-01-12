@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Unitate-hautatzailea</translation>
 <translation id="2348630484974447747">Paketea</translation>
 <translation id="2351097562818989364">Itzulpen-ezarpenak berrezarri egin dira.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} domeinurako pasahitza Google-ko kontuan gorde dezakezu ({EMAIL}).}=2{{DOMAIN_ONE} eta {DOMAIN_TWO} domeinuetarako pasahitzak Google-ko kontuan gorde ditzakezu ({EMAIL}).}=3{{DOMAIN_ONE}, {DOMAIN_TWO} eta beste {OTHER_DOMAINS_COUNT} domeinutarako pasahitzak Google-ko kontuan gorde ditzakezu ({EMAIL}).}other{{DOMAIN_ONE}, {DOMAIN_TWO} eta beste {OTHER_DOMAINS_COUNT} domeinutarako pasahitzak Google-ko kontuan gorde ditzakezu ({EMAIL}).}}</translation>
 <translation id="235789365079050412">Google-ren Pribatutasun-gidalerroak</translation>
 <translation id="2359043044084662842">Itzuli</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
@@ -335,6 +336,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2747003861858887689">Aurreko eremua</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> kanalari jarraitzen</translation>
 <translation id="2754492786623500387">Gailu honetako kontuak</translation>
+<translation id="2755595981383829244">Edukiari buruzko jakinarazpenak jasoko dituzu orain</translation>
 <translation id="2762000892062317888">oraintxe</translation>
 <translation id="2772667768515195373">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbide hau Google-ko kontuan (<ph name="USER_EMAIL" />) gorde da.</translation>
 <translation id="2773292004659987824">Ezkutuko moduko bilaketa</translation>
@@ -688,6 +690,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4689564913179979534">Kudeatu ordainketa-metodoak…</translation>
 <translation id="469300482518076788">Itxi fitxa</translation>
 <translation id="4697071790493980729">Ez da aurkitu emaitzarik</translation>
+<translation id="470337593714520080">{count,plural, =1{Gorde laster-marka bat Google-ko kontuan}other{Gorde {count} laster-marka Google-ko kontuan}}</translation>
 <translation id="470966556546083668">Ez aktibatu sinkronizazioa</translation>
 <translation id="4711809265250406889">Aktibatuta dagoenean</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1} eta {website_2}}=3{{website_1}, {website_2} eta beste bat}other{{website_1}, {website_2} eta beste {more_count}}}</translation>

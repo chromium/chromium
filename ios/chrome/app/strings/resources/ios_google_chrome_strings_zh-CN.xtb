@@ -197,6 +197,9 @@
 
 只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="6851982868877411675">在 iOS 中打开 Chrome 设置，然后点按“默认浏览器应用”并选择“Chrome”。</translation>
+<translation id="686691656039982452">您可以<ph name="BEGIN_LINK" />管理要将哪些 Chrome 数据保存<ph name="END_LINK" />到您的 Google 账号。
+
+如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="687586529977635009">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。您可在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="6916015246697034114">在 Chrome 中使用语音搜索</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>

@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, lisätietoja</translation>
 <translation id="117624967391683467">Kopioidaan tiedostoa <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Tauko</translation>
+<translation id="1190144681599273207">Mobiiliyhteyden kautta noudettavan tiedoston koko on noin <ph name="FILE_SIZE" />.</translation>
 <translation id="1194390763418645112">Pääsy tiedostoon: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1209796539517632982">Automaattiset nimipalvelimet</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Jaa virtuaalikoneelle (<ph name="VM_NAME" />)</translation>
 <translation id="1773212559869067373">Todennusvarmenne on hylätty paikallisesti</translation>
 <translation id="1775381402323441512">Videon tiedot</translation>
+<translation id="180035236176489073">Sinun täytyy olla online-tilassa käyttääksesi näitä tiedostoja.</translation>
 <translation id="1807938677607439181">Kaikki tiedostot</translation>
 <translation id="1810764548349082891">Esikatselu ei saatavilla</translation>
 <translation id="1812302367230252929">translitteroitu amhara</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">Automaattisen määrityksen URL-osoite:</translation>
 <translation id="2284767815536050991">siirrettävä tallennustila</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
+<translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
+<translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeetta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on poistettu.</translation>
 <translation id="2307462900900812319">Määritä verkko</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">Tallennustila ei riitä kaikkien tiedostojen synkronointiin</translation>
 <translation id="23721837607121582">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Linuxille</translation>
 <translation id="2379576081295865700">Tarkistetaan tallennustilaa… 1 kohde löytyi</translation>
 <translation id="2383454254762599978">Siirrä roskakoriin</translation>
 <translation id="2387458720915042159">Välityspalvelinyhteyden tyyppi</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">Pakkaa valitut</translation>
 <translation id="4202378258276439759">espanja (Latinalainen Amerikka)</translation>
 <translation id="4202977638116331303">georgia</translation>
+<translation id="421017592316736757">Sinun täytyy olla online-tilassa käyttääksesi tätä tiedostoa.</translation>
 <translation id="4212740939091998969">Kansio nimeltä <ph name="FOLDER_NAME" /> on jo olemassa. Valitse toinen nimi.</translation>
 <translation id="4218274196133425560">Poista poikkeus (<ph name="HOST_NAME" />)</translation>
 <translation id="4261901459838235729">Google-esitys</translation>
 <translation id="4277536868133419688">Suodatin käytössä: <ph name="FILTER_NAME" /></translation>
+<translation id="4290535918735525311">1 kansio jaettu Linuxin kanssa</translation>
 <translation id="4299729908419173967">brasilianportugali</translation>
 <translation id="4302605047395093221">Tämän laitteen käyttäjän on lisättävä PIN-koodi muodostakseen yhteyden mobiiliverkkoon</translation>
 <translation id="4303531889494116116">Tämä verkko ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akku <ph name="BATTERY_STATUS" /> %, lisätietoja</translation>
 <translation id="4935975195727477204">Kukka</translation>
 <translation id="4943368462779413526">Jalkapallo</translation>
+<translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
+<translation id="4965874878399872778">Tarkistetaan, ovatko tiedostot organisaatiosi tietosuojakäytäntöjen mukaisia…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> palautettu</translation>
 <translation id="4969785127455456148">Albumi</translation>
 <translation id="4972330214479971536">Tiedostojen synkronoinnin käyttöönottoa ei voitu suorittaa loppuun</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318819489018851358">Jaa Linuxilla</translation>
 <translation id="5323213332664049067">Latinalainen Amerikka</translation>
+<translation id="5330145655348521461">Nämä tiedostot avattiin toisella työpöydällä. Näet tiedostot siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Näytä tiedot</translation>
 <translation id="535792325654997756">Henkilö ja kissoja</translation>
 <translation id="5358764674931277">Kuvanopeus</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">japani, Yhdysvaltain näppäimistö</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ei verkkoa</translation>
 <translation id="6146563240635539929">Videot</translation>
+<translation id="6150853954427645995">Jos haluat tallentaa tämän tiedoston offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Perhoset</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6170470584681422115">Voileipä</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">Virheellinen verkkotunnuksen päätteen vastaavuusarvo</translation>
 <translation id="6364301859968397756">Organisaation tallennustila täynnä</translation>
 <translation id="6367976544441405720">Pakettiauto</translation>
+<translation id="637062427944097960">Tämä tiedosto avattiin toisella työpöydällä. Näet tiedoston siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Vain luku</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> kohdetta</translation>
 <translation id="6407769893376380348">Tiedostoa <ph name="FILE_NAME" /> ei voitu siirtää, koska se on salattu.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">Sinulla on 1 yritys jäljellä.</translation>
 <translation id="643243556292470964">Poistetut tiedostot siirretään roskakoriin</translation>
 <translation id="6438480100790416671">Tarkistetaan tallennustilaa…</translation>
+<translation id="6451527188465304418">Tarkistetaan, onko tiedosto organisaatiosi tietosuojakäytäntöjen mukainen…</translation>
 <translation id="6485131920355264772">Tilatietojen noutaminen epäonnistui</translation>
 <translation id="6495925982925244349">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> puretaan tänne: <ph name="FOLDER_NAME" /></translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">Tiedostojen synkronointiasetukset</translation>
 <translation id="6594855146910089723">Tämä kansio on jaettu Linuxille ja Parallels Desktopille</translation>
 <translation id="6607272825297743757">Tiedoston tiedot</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Parallels Desktopille</translation>
 <translation id="6629518321609546825">Lisää ainakin 4 numeroa</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6650726141019353908">Vaaleanpunainen perhonen</translation>
@@ -877,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> Tt</translation>
 <translation id="7831491651892296503">Verkon määritysvirhe</translation>
+<translation id="7839804798877833423">Mobiiliyhteyden kautta noudettavien tiedostojen koko on noin <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">Peru valinta</translation>
 <translation id="7853966320808728790">Ranskalainen BÉPO</translation>
 <translation id="7857117644404132472">Lisää poikkeus</translation>
@@ -918,12 +933,14 @@
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8147028810663464959">Merkkileveys on täysleveä</translation>
 <translation id="8151638057146502721">Määritä</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 virhe.}other{# virhettä.}}</translation>
 <translation id="8154842056504218462">Kaikki kohteet valittiin.</translation>
 <translation id="8157684860301034423">Sovellustietojen noutaminen epäonnistui.</translation>
 <translation id="8175731104491895765">ranska (Belgia)</translation>
 <translation id="8175799081768705361">Synkronoidaan <ph name="NUMBER_OF_FILES_SYNCING" /> Drive-tiedostoa</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Laitteen malli</translation>
+<translation id="8223479393428528563">Jos haluat tallentaa nämä tiedostot offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Näytä tallennustila</translation>
 <translation id="8249296373107784235">Keskeytä</translation>
 <translation id="8250690786522693009">Latin</translation>
@@ -950,6 +967,7 @@
 <translation id="83651606385705612">Myönnä virtuaalikoneelle (<ph name="VM_NAME" />) pääsy kansiossa (<ph name="FOLDER_NAME" />) oleviin tiedostoihin</translation>
 <translation id="8372369524088641025">Väärä WEP-avain</translation>
 <translation id="8372852072747894550">kreikkalainen</translation>
+<translation id="8377269993083688872">Sähköpostin asettelut</translation>
 <translation id="8386903983509584791">Etsintä valmis</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> noudettu</translation>
 <translation id="8395901698320285466">Mittasuhteet</translation>
@@ -1008,6 +1026,7 @@
 <translation id="8787254343425541995">Salli välityspalvelimet jaetuilla verkoilla</translation>
 <translation id="8790981080411996443">Kukkia kasteleva henkilö</translation>
 <translation id="8798099450830957504">Oletus</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 varoitus.}other{# varoitusta.}}</translation>
 <translation id="8808686172382650546">Kissa</translation>
 <translation id="8810671769985673465">Pakkaus epäonnistui, koska kohde on jo olemassa: <ph name="FILE_NAME" /></translation>
 <translation id="8813284582615685103">espanja (Espanja)</translation>

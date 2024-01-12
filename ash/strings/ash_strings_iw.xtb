@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">העברה</translation>
 <translation id="5546397813406633847">שחזור הגישה למשתמש</translation>
 <translation id="554893713779400387">הפעלת הכתבה או הפסקתה</translation>
+<translation id="5550417424894892620">כדי להוסיף קבצים לתיקייה <ph name="HOLDING_SPACE_TITLE" />, משחררים אותם בשולחן העבודה. לא ניתן להוסיף קבצים לשולחן העבודה.</translation>
 <translation id="5551456515017410630">פתיחה/סגירה של היומן</translation>
 <translation id="5551974246223970793">מעבר להתאמה הבאה לחיפוש במהלך חיפוש בדף</translation>
 <translation id="5555639311269196631">כיבוי הנקודה לשיתוף אינטרנט</translation>
@@ -1876,6 +1877,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">מיון אפליקציות לפי שם או לפי צבע</translation>
 <translation id="8609384513243082612">פתיחת כרטיסייה חדשה</translation>
+<translation id="8612216344243590325">עדיף לשמור קבצים חשובים בתיקייה <ph name="HOLDING_SPACE_TITLE" /> במקום בשולחן העבודה. פשוט גוררים קבצים אל <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> מוסתרות כי מופעלת הגנה על תצוגה</translation>
 <translation id="8619138598101195078">החלשת עוצמת הקול</translation>
 <translation id="8627191004499078455">יש חיבור אל <ph name="DEVICE_NAME" /></translation>

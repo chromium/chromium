@@ -1133,6 +1133,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5537725057119320332">Tuma</translation>
 <translation id="5546397813406633847">Rejesha mtumiaji</translation>
 <translation id="554893713779400387">Kuwasha au kuzima huduma ya matamshi</translation>
+<translation id="5550417424894892620">Dondosha faili kwenye eneokazi ili uziweke katika <ph name="HOLDING_SPACE_TITLE" />. Huwezi kuweka faili kwenye eneokazi.</translation>
 <translation id="5551456515017410630">Fungua au funga kalenda</translation>
 <translation id="5551974246223970793">Unapotafuta ukurasa, nenda kwenye utafutaji unaofuata unaolingana na utafutaji wa sasa</translation>
 <translation id="5555639311269196631">Zima mtandao pepe</translation>
@@ -1505,6 +1506,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7025533177575372252">Unganisha <ph name="DEVICE_NAME" /> na simu yako</translation>
 <translation id="7026338066939101231">Punguzo</translation>
 <translation id="7029814467594812963">Toka kwenye kipindi</translation>
+<translation id="7031303610220416229">Angalia majukumu yote kwenye Google Majukumu</translation>
 <translation id="7032161822340700104">Vinaruhusiwa violezo sita tu. Ondoa kiolezo ili uhifadhi kipya.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> inataka kutumia <ph name="DEVICE_NAME" />. Washa swichi halisi ya <ph name="DEVICE_NAME" /> ya kifaa chako.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Mratibu wa Google</translation>
@@ -1818,6 +1820,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8351131234907093545">Unda kidokezo</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> inatumika.</translation>
 <translation id="8369166482916924789">Eneokazi lililohifadhiwa, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Tafuta <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Sogeza mbele kwa herufi moja</translation>
 <translation id="8371991222807690464">Huenda vifaa vinavyounganishwa kwenye kompyuta visifanye kazi kikamilifu katika hali ya matumizi ya Wageni</translation>
 <translation id="8374601332003098278">Bonyeza enter ili urekodi sehemu ya skrini</translation>
@@ -1873,6 +1876,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Panga programu zako kwa majina au rangi</translation>
 <translation id="8609384513243082612">Fungua kichupo kipya</translation>
+<translation id="8612216344243590325">Weka faili muhimu kwenye <ph name="HOLDING_SPACE_TITLE" /> badala ya eneokazi. Buruta tu faili kwenye <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Arifa za <ph name="APP_1_TITLE" /> na <ph name="APP_2_TITLE" /> zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
 <translation id="8619138598101195078">Punguza sauti</translation>
 <translation id="8627191004499078455">Imeunganishwa kwenye <ph name="DEVICE_NAME" /></translation>

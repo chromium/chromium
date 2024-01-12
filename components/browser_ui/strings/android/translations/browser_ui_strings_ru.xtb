@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
 <translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
+<translation id="4212246570487010370">Продолжить просмотр</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешено</translation>
@@ -366,6 +367,7 @@
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Обновить</translation>
+<translation id="7180865173735832675">Настроить</translation>
 <translation id="7188508872042490670">Данные сайтов, сохраненные на устройстве</translation>
 <translation id="7201549776650881587">Будут удалены все данные и файлы cookie, сохраненные сайтами, которые связаны с <ph name="ORIGIN" />, или их приложением, добавленным на главный экран.</translation>
 <translation id="7203150201908454328">Развернуто</translation>

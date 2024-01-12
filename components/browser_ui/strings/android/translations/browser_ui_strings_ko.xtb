@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">USB 기기에 연결되었습니다.</translation>
 <translation id="4194328954146351878">사이트에서 NFC 기기의 정보를 보고 변경하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4200726100658658164">위치 설정 열기</translation>
+<translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
 <translation id="4278390842282768270">허용됨</translation>
@@ -366,6 +367,7 @@
 <translation id="7141896414559753902">사이트에서 팝업 및 리디렉션을 표시하지 못하도록 차단(권장)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" />KB</translation>
 <translation id="7180611975245234373">새로고침</translation>
+<translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7201549776650881587">이 작업을 실행하면 <ph name="ORIGIN" />의 모든 하위 사이트 또는 홈 화면에 있는 앱에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
 <translation id="7203150201908454328">펼쳐짐</translation>

@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">单位选择器</translation>
 <translation id="2348630484974447747">包裹</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}。}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}。}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359043044084662842">翻译</translation>
 <translation id="2359808026110333948">继续</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">上一个字段</translation>
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2754492786623500387">此设备上的账号</translation>
+<translation id="2755595981383829244">现在您将收到内容通知</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="2773292004659987824">无痕搜索</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">管理付款方式…</translation>
 <translation id="469300482518076788">关闭标签页</translation>
 <translation id="4697071790493980729">找不到任何结果</translation>
+<translation id="470337593714520080">{count,plural, =1{将 1 个书签保存到您的 Google 账号}other{将 {count} 个书签保存到您的 Google 账号}}</translation>
 <translation id="470966556546083668">请勿开启同步功能</translation>
 <translation id="4711809265250406889">处于开启状态时</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 个}other{{website_1}、{website_2} 和另外 {more_count} 个}}</translation>
@@ -986,6 +989,7 @@
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6266039999629596120">需要注意</translation>
 <translation id="6277426346321820595">无保护</translation>
+<translation id="628251768213143684">您随时可管理您 Google 账号中保存的内容</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>

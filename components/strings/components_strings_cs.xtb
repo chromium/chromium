@@ -272,6 +272,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1476595624592550506">Změňte heslo</translation>
 <translation id="1482879811280872320">Cyklistika</translation>
 <translation id="1483493594462132177">Odeslat</translation>
+<translation id="1484632730438126438">Zadaný text je příliš krátký. Napište alespoň tři slova.</translation>
 <translation id="1492194039220927094">Přenesení zásad:</translation>
 <translation id="14938948731065592">Periferní zařízení počítačů</translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
@@ -760,6 +761,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2469153820345007638">Pořadí N stránek na list</translation>
 <translation id="24699311393038040">Papír (potahovaný)</translation>
 <translation id="2470767536994572628">Když upravíte poznámky, tento dokument se vrátí do zobrazení jedné stránky a obnoví se jeho původní orientace</translation>
+<translation id="2479148705183875116">Přejít do nastavení</translation>
 <translation id="2479410451996844060">Neplatná adresa URL vyhledávání.</translation>
 <translation id="2480300195898055381">Ve vašem účtu Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Oznámení</translation>
@@ -829,12 +831,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2610561535971892504">Kliknutím zkopírujte</translation>
 <translation id="2612993535136743634">Všechny bezpečnostní kódy uložené v zařízení a v účtu Google budou smazány</translation>
 <translation id="2616412942031748191">Optimalizace pro vyhledávače a marketing</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />vaši historii prohlížení,
-            <ph name="LIST_ITEM" />soubory cookie a data webů,
-            <ph name="LIST_ITEM" />údaje zadané do formulářů.
-          <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Vložit</translation>
 <translation id="2625385379895617796">Vaše hodiny jdou napřed</translation>
 <translation id="262745152991669301">Může žádat o připojení k zařízením USB</translation>
@@ -1016,6 +1012,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru můžete procházet dostupné akce a stisknutím klávesy Enter vybranou akci provést.</translation>
 <translation id="3013291976881901233">Zařízení MIDI</translation>
 <translation id="3014553260345122294">Ekonomické zprávy</translation>
+<translation id="3014726756341138577">Pokročilé funkce tiskáren</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3016780570757425217">Přístup k údajům o vaší poloze</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, návrh odstraníte tak, že stisknete tabulátor a poté klávesu Enter.</translation>
@@ -1162,6 +1159,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="33073482541490531">Právě použité heslo bylo nalezeno na seznamu hesel uniklých při incidentu porušení zabezpečení údajů. Správce hesel doporučuje ihned toto heslo změnit.</translation>
 <translation id="3307649904964670439">Tlačítko přizpůsobení Chromu, aktivací si můžete přizpůsobit vzhled prohlížeče</translation>
 <translation id="3308006649705061278">Organizační jednotka (OU)</translation>
+<translation id="3324223664999044166">Tři nebo více slov, která shrnují vaše myšlenky</translation>
 <translation id="3324687287337751929">4 × 6″</translation>
 <translation id="3324983252691184275">Karmínová</translation>
 <translation id="3325027355611702542">Kempinkové vozy a přívěsy</translation>
@@ -1399,6 +1397,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3748009735914587286">Kov (vysoký lesk)</translation>
 <translation id="3748148204939282805">Útočníci na webu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> vás mohou podvodem přimět k nebezpečnému chování, jako je instalace softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Letecký průmysl</translation>
+<translation id="3751020515020988516">Vaší žádosti jsme nerozuměli. Zkuste něco jiného.</translation>
 <translation id="3752543821772132562">Ignorováno, protože není nastavena zásada <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Ukončit režim obrazu v obraze</translation>
 <translation id="3759461132968374835">Nemáte žádná nedávno hlášená selhání. Selhání, ke kterým došlo, když byla služba hlášení o selháních vypnutá, se zde nezobrazují.</translation>
@@ -1455,6 +1454,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3858860766373142691">Název</translation>
 <translation id="3872834068356954457">Věda</translation>
 <translation id="3875783148670536197">Ukázat postup</translation>
+<translation id="3877877650871124156">Zadaný text je příliš dlouhý. Zkraťte ho a zkuste to znovu.</translation>
 <translation id="3881478300875776315">Zobrazit méně řádků</translation>
 <translation id="3883500545751229739">Rušivé reklamy</translation>
 <translation id="3884278016824448484">Konfliktní identifikátor zařízení</translation>
@@ -1831,7 +1831,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4652440160515225514">Vaše organizace tento web zablokovala, protože porušuje zásady.</translation>
 <translation id="4653167719759882810">Fúze a akvizice</translation>
 <translation id="4658638640878098064">Sponka vlevo nahoře</translation>
-<translation id="4660119392514473465">Nyní můžete procházet internet v soukromí a ostatní uživatelé tohoto zařízení vaši aktivitu neuvidí. Budou se ale ukládat stažené soubory, záložky a položky na seznamu četby.</translation>
 <translation id="4660567771874403130">Energetika a služby technické infrastruktury</translation>
 <translation id="4663373278480897665">Kamera je povolena</translation>
 <translation id="466561305373967878">Deskové hry</translation>
@@ -2161,6 +2160,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5292714443869769806">Přejít do nastavení systému <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Kupé</translation>
 <translation id="5296589789433599000">Vaření a recepty</translation>
+<translation id="5298618990685278995">První koncept</translation>
 <translation id="5299298092464848405">Při analýze zásady došlo k chybě</translation>
 <translation id="5299638840995777423">Roboti</translation>
 <translation id="5300062471671636390">Skrýt seznam zařízení pro odesílání</translation>
@@ -2277,6 +2277,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5541086400771735334">Schránka 7</translation>
 <translation id="5541546772353173584">Přidání e-mailu</translation>
 <translation id="5543722831081909240">180°</translation>
+<translation id="555037537507405574">pokročilé funkce tiskáren</translation>
 <translation id="555128936272638662">Mobilní a bezdrátové přístroje</translation>
 <translation id="5551890439174915351">100 × 200 mm</translation>
 <translation id="5552137475244467770">Chrome vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
@@ -2562,6 +2563,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Další informace o anonymním režimu v Chromu<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Ponechat oprávnění</translation>
 <translation id="6133984428121856852">Přípona souboru je prázdná nebo má nesprávný formát.</translation>
+<translation id="6139769382153674477">Něco se pokazilo. Jste přihlášeni?</translation>
 <translation id="6139975341602920272">17 × 22 palců</translation>
 <translation id="6146055958333702838">Zkontrolujte všechny kabely a restartujte všechny směrovače, modemy a další síťová zařízení, která používáte.</translation>
 <translation id="614940544461990577">Zkuste:</translation>
@@ -2575,7 +2577,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6160391204859821737">Zapnutí funkce ochrany soukromí v reklamách</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6167577165590485365">Poslední pokus o načtení:</translation>
-<translation id="6169916984152623906">Nyní můžete procházet internet v soukromí a ostatní uživatelé tohoto zařízení vaši aktivitu neuvidí. Stažené soubory a záložky budou uloženy.</translation>
 <translation id="617256461084925519">Google Chrome se pokouší ověřit vaši totožnost, aby mohl vyplnit vaše platební údaje.</translation>
 <translation id="6176387967264100435">Tato cena je vysoká</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
@@ -3194,6 +3195,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7378877318020334501">Televizní komedie</translation>
 <translation id="7380398842872229465">10 × 15″</translation>
 <translation id="738439098860678026">Vzdělávání v raném věku</translation>
+<translation id="7388071710882496863">Žádosti typu „napiš pětihvězdičkovou recenzi na tuto restauraci“</translation>
 <translation id="7388594495505979117">{0,plural, =1{Zařízení se za 1 minutu restartuje}few{Zařízení se za # minuty restartuje}many{Zařízení se za # minuty restartuje}other{Zařízení se za # minut restartuje}}</translation>
 <translation id="7390545607259442187">Ověření karty</translation>
 <translation id="7392089738299859607">Aktualizovat adresu</translation>
@@ -3263,12 +3265,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="749865518782565832">Vodoinstalace</translation>
 <translation id="7501663406926337752">Web je nahlášen vaší organizací</translation>
 <translation id="7501853161948120656">Vzdělávací zdroje</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />vaši historii prohlížení,
-          <ph name="LIST_ITEM" />soubory cookie a data webů,
-          <ph name="LIST_ITEM" />údaje zadané do formulářů.
-        <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Envelope č. 9</translation>
 <translation id="7508255263130623398">Vrácené ID zařízení pro zásady je prázdné nebo neodpovídá aktuálnímu ID zařízení</translation>
 <translation id="7508577201115425418">Kancelářské a tiskové služby</translation>
@@ -3450,6 +3446,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7802989406998618639">Zadejte <ph name="NUMBER_OF_DIGITS" />místný bezpečnostní kód na kartě <ph name="SIDE_OF_CARD" />, aby banka mohla ověřit vaši totožnost</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7805768142964895445">Stav</translation>
+<translation id="7805906048382884326">Zavřít tip</translation>
 <translation id="7810410097247356677">Pokud příště chcete zaplatit rychleji, uložte si kartu a zašifrovaný bezpečnostní kód do zařízení</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Odstranit návrh položky formuláře z Chromu?</translation>
@@ -4108,6 +4105,7 @@ Další podrobnosti:
 <translation id="9144951720726881238">Datum vypršení platnosti:</translation>
 <translation id="9148507642005240123">&amp;Vrátit úpravy zpět</translation>
 <translation id="9148599396704355100">Cena je nízká</translation>
+<translation id="9150025764986957246">Můžete zadat věci jako:</translation>
 <translation id="9150045010208374699">Používat fotoaparát</translation>
 <translation id="9150685862434908345">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chrome. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Aktualizováno</translation>
@@ -4118,6 +4116,7 @@ Další podrobnosti:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Navštívené weby mohou na základě vaší aktivity také určit, co se vám líbí. Pokud například navštívíte web, který prodává běžecké boty, může odhadnout, že máte zájem o běhání maratonů.</translation>
 <translation id="9166851138617700776">Další informace o reklamách navrhovaných weby a o měření reklam</translation>
+<translation id="9167594211215946097">Získat přímý přístup k vašim tiskárnám</translation>
 <translation id="9168814207360376865">Povolit webům zjišťovat, zda máte uložené platební metody</translation>
 <translation id="9169664750068251925">Blokovat vždy na tomto webu</translation>
 <translation id="9169931577761441333">Přidat aplikaci <ph name="APP_NAME" /> na plochu</translation>

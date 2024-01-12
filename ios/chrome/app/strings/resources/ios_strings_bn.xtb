@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">ইউনিট বাছাইকারী</translation>
 <translation id="2348630484974447747">প্যাকেজ</translation>
 <translation id="2351097562818989364">আপনার অনুবাদ সেটিংস রিসেট করা হয়েছে৷</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=2{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE} ও {DOMAIN_TWO}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=3{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}}</translation>
 <translation id="235789365079050412">Google-এর গোপনীয়তা নীতি</translation>
 <translation id="2359043044084662842">অনুবাদ করুন</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">পূর্ববর্তী ফিল্ড</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ফলো করা হচ্ছে</translation>
 <translation id="2754492786623500387">এই ডিভাইসে থাকা অ্যাকাউন্ট</translation>
+<translation id="2755595981383829244">আপনি এখন কন্টেন্ট সংক্রান্ত বিজ্ঞপ্তি পাবেন</translation>
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="2772667768515195373">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। এই ঠিকানাটি আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ সেভ করা আছে।</translation>
 <translation id="2773292004659987824">ছদ্মবেশী সার্চ</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
 <translation id="469300482518076788">'ট্যাব' বন্ধ করুন</translation>
 <translation id="4697071790493980729">কোনও ফলাফল পাওয়া যায়নি</translation>
+<translation id="470337593714520080">{count,plural, =1{আপনার Google অ্যাকাউন্টে ১টি বুকমার্ক সেভ করুন}one{আপনার Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করুন}other{আপনার Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করুন}}</translation>
 <translation id="470966556546083668">সিঙ্ক চালু করবেন না</translation>
 <translation id="4711809265250406889">চালু থাকার সময়</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ও আরও ১টি}one{{website_1}, {website_2} ও আরও {more_count}টি}other{{website_1}, {website_2} ও আরও {more_count}টি}}</translation>
@@ -987,6 +990,7 @@
 <translation id="6255097610484507482">ক্রেডিট কার্ড সম্পাদনা করুন</translation>
 <translation id="6266039999629596120">নজর দেওয়া প্রয়োজন</translation>
 <translation id="6277426346321820595">কোনও সুরক্ষা নেই</translation>
+<translation id="628251768213143684">আপনার Google অ্যাকাউন্টে কী কী সেভ করা রয়েছে, তা সব সময় ম্যানেজ করতে পারবেন</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> ফলো করা বন্ধ করেছেন</translation>
 <translation id="6293101329759844770">Safe Browsing চালু করতে, <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> বিকল্পটি খুলে Safe Browsing-এ ট্যাপ করুন।</translation>

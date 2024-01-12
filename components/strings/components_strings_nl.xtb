@@ -761,6 +761,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2469153820345007638">Volgorde: van 1 naar N</translation>
 <translation id="24699311393038040">Papier (gecoat)</translation>
 <translation id="2470767536994572628">Als je annotaties bewerkt, keert dit document terug naar een weergave op één pagina en de oorspronkelijke paginastand</translation>
+<translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2479410451996844060">Ongeldige zoek-URL.</translation>
 <translation id="2480300195898055381">In je Google-account <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Meldingen</translation>
@@ -830,12 +831,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2610561535971892504">Klik om te kopiëren</translation>
 <translation id="2612993535136743634">Alle beveiligingscodes die zijn opgeslagen op je apparaat en in je Google-account, worden verwijderd</translation>
 <translation id="2616412942031748191">Zoekmachineoptimalisatie en -marketing</translation>
-<translation id="2617988307566202237">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chrome:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Je browsegeschiedenis
-<ph name="LIST_ITEM" />Cookies en sitegegevens
-<ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven
-<ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Invoegen</translation>
 <translation id="2625385379895617796">Je klok loopt voor</translation>
 <translation id="262745152991669301">Kan vragen of deze site verbinding mag maken met USB-apparaten</translation>
@@ -1835,7 +1830,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4652440160515225514">Je organisatie heeft deze site geblokkeerd omdat de site een beleid schendt.</translation>
 <translation id="4653167719759882810">Fusies en overnames</translation>
 <translation id="4658638640878098064">Nietje linksboven</translation>
-<translation id="4660119392514473465">Je kunt nu privé browsen. Andere mensen die dit apparaat gebruiken, kunnen je activiteit niet zien. Downloads, bookmarks en items op je leeslijst worden wel opgeslagen.</translation>
 <translation id="4660567771874403130">Energie en energiebedrijven</translation>
 <translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="466561305373967878">Bordspellen</translation>
@@ -2582,7 +2576,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6160391204859821737">Een functie voor advertentieprivacy aanzetten</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6167577165590485365">Laatste ophaalpoging:</translation>
-<translation id="6169916984152623906">Je kunt nu privé browsen, zodat andere mensen die dit apparaat gebruiken, jouw activiteit niet kunnen zien. Downloads en bookmarks worden echter wel opgeslagen.</translation>
 <translation id="617256461084925519">Google Chrome probeert te verifiëren dat jij het bent zodat je betalingsgegevens kunnen worden ingevuld.</translation>
 <translation id="6176387967264100435">Deze prijs is hoog</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>
@@ -3272,12 +3265,6 @@ Aanvullende informatie:
 <translation id="749865518782565832">Loodgieter</translation>
 <translation id="7501663406926337752">De site die je wilt bezoeken, is gemarkeerd door je organisatie</translation>
 <translation id="7501853161948120656">Onderwijsinformatie</translation>
-<translation id="7506488012654002225">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chromium:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Je browsegeschiedenis
-<ph name="LIST_ITEM" />Cookies en sitegegevens
-<ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven
-<ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Envelop #9</translation>
 <translation id="7508255263130623398">Geretourneerde apparaat-ID voor beleid is leeg of komt niet overeen met de huidige apparaat-ID</translation>
 <translation id="7508577201115425418">Documentatie- en afdrukservices</translation>
@@ -3459,6 +3446,7 @@ Aanvullende informatie:
 <translation id="7802989406998618639">Geef de beveiligingscode van <ph name="NUMBER_OF_DIGITS" /> cijfers op de <ph name="SIDE_OF_CARD" /> op, zodat je bank kan verifiëren dat jij het bent</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7805906048382884326">Tip sluiten</translation>
 <translation id="7810410097247356677">Sla je kaart en versleutelde beveiligingscode op je apparaat op, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Formuliersuggestie verwijderen uit Chrome?</translation>

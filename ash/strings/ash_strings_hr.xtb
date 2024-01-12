@@ -1133,6 +1133,7 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
 <translation id="5546397813406633847">Oporavi korisnika</translation>
 <translation id="554893713779400387">Uključivanje/isključivanje diktata</translation>
+<translation id="5550417424894892620">Ispustite datoteke na radnu površinu da biste ih dodali u mapu <ph name="HOLDING_SPACE_TITLE" />. Ne možete dodavati datoteke na radnu površinu.</translation>
 <translation id="5551456515017410630">Otvaranje/zatvaranje kalendara</translation>
 <translation id="5551974246223970793">Prilikom pretraživanja stranice idite na sljedeće podudaranje za pretraživanje</translation>
 <translation id="5555639311269196631">Isključi žarišnu točku</translation>
@@ -1874,6 +1875,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Poredajte aplikacije po nazivu ili po boji</translation>
 <translation id="8609384513243082612">Otvaranje nove kartice</translation>
+<translation id="8612216344243590325">Važne datoteke držite u mapi <ph name="HOLDING_SPACE_TITLE" />, a ne na radnoj površini. Jednostavno povucite datoteke u mapu <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obavijesti aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="8619138598101195078">Stišavanje glasnoće</translation>
 <translation id="8627191004499078455">Povezano s uređajem <ph name="DEVICE_NAME" /></translation>

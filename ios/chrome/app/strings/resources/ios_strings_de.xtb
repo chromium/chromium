@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Auswahl der Einheit</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Übersetzungseinstellungen zurückgesetzt</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Du kannst dein Passwort für {DOMAIN_ONE} in deinem Google-Konto ({EMAIL}) speichern.}=2{Du kannst deine Passwörter für {DOMAIN_ONE} und {DOMAIN_TWO} in deinem Google-Konto ({EMAIL}) speichern.}=3{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domain in deinem Google-Konto {EMAIL} speichern.}other{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domains in deinem Google-Konto ({EMAIL}) speichern}}</translation>
 <translation id="235789365079050412">Datenschutzerklärung von Google</translation>
 <translation id="2359043044084662842">Übersetzen</translation>
 <translation id="2359808026110333948">Weiter</translation>
@@ -689,6 +690,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4689564913179979534">Zahlungsmethoden verwalten…</translation>
 <translation id="469300482518076788">Tab schließen</translation>
 <translation id="4697071790493980729">Keine Ergebnisse gefunden</translation>
+<translation id="470337593714520080">{count,plural, =1{1 Lesezeichen in deinem Google-Konto speichern}other{{count} Lesezeichen in deinem Google-Konto speichern}}</translation>
 <translation id="470966556546083668">Synchronisierung nicht aktivieren</translation>
 <translation id="4711809265250406889">Wenn aktiviert</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1} und {website_2}}=3{{website_1}, {website_2} und 1 weitere}other{{website_1}, {website_2} und {more_count} weitere}}</translation>

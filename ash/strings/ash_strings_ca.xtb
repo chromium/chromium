@@ -1133,6 +1133,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5537725057119320332">Emet</translation>
 <translation id="5546397813406633847">Recupera l'usuari</translation>
 <translation id="554893713779400387">Activa o desactiva el dictat</translation>
+<translation id="5550417424894892620">Deixa anar fitxers a l'escriptori per afegir-los a <ph name="HOLDING_SPACE_TITLE" />. No pots afegir fitxers a l'escriptori.</translation>
 <translation id="5551456515017410630">Obre/Tanca el calendari</translation>
 <translation id="5551974246223970793">Quan cerquis una pàgina, ves a la coincidència següent per cercar</translation>
 <translation id="5555639311269196631">Desactiva el punt d'accés Wi‑Fi</translation>
@@ -1505,6 +1506,7 @@ Instal·lació nova</translation>
 <translation id="7025533177575372252">Connecta <ph name="DEVICE_NAME" /> al telèfon</translation>
 <translation id="7026338066939101231">Disminueix</translation>
 <translation id="7029814467594812963">Tanca la sessió</translation>
+<translation id="7031303610220416229">Mostra totes les tasques a Google Tasks</translation>
 <translation id="7032161822340700104">Només s'admeten 6 plantilles. Suprimeix-ne una per desar-ne una de nova.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" />. Activa l'interruptor físic de <ph name="DEVICE_NAME" /> del dispositiu.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistent de Google</translation>
@@ -1817,6 +1819,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en ús.</translation>
 <translation id="8369166482916924789">Escriptori desat <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Cerca <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Endavant per lletra</translation>
 <translation id="8371991222807690464">El rendiment perifèric pot estar limitat en el mode de convidat</translation>
 <translation id="8374601332003098278">Prem Retorn per gravar una part de la pantalla</translation>
@@ -1872,6 +1875,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena les aplicacions per nom o per color</translation>
 <translation id="8609384513243082612">Obre una pestanya nova</translation>
+<translation id="8612216344243590325">Desa els fitxers importants a <ph name="HOLDING_SPACE_TITLE" /> en lloc de fer-ho a l'escriptori. Només cal que arrosseguis els fitxers a <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Les notificacions de les aplicacions <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> estan amagades perquè la protecció de visualització està activada</translation>
 <translation id="8619138598101195078">Abaixa el volum</translation>
 <translation id="8627191004499078455">Connectat a <ph name="DEVICE_NAME" /></translation>

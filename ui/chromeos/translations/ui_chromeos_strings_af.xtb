@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, besonderhede</translation>
 <translation id="117624967391683467">Kopieer tans <ph name="FILE_NAME" /> …</translation>
 <translation id="1178581264944972037">Laat wag</translation>
+<translation id="1190144681599273207">Om hierdie lêer te haal, sal ongeveer <ph name="FILE_SIZE" /> mobiele data gebruik.</translation>
 <translation id="1194390763418645112">Lêertoegang volgens <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Outomatiese naambedieners</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Deel met <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Stawingsertifikaat is plaaslik verwerp</translation>
 <translation id="1775381402323441512">Video-inligting</translation>
+<translation id="180035236176489073">Jy moet aanlyn wees om by hierdie lêers in te gaan.</translation>
 <translation id="1807938677607439181">Alle lêers</translation>
 <translation id="1810764548349082891">Geen voorskou beskikbaar nie</translation>
 <translation id="1812302367230252929">Amhaarse transliterasie</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">Outo-opstelling-URL:</translation>
 <translation id="2284767815536050991">verwyderbare berging</translation>
 <translation id="2288278176040912387">Platespeler</translation>
+<translation id="2291538123825441971">Maak tans <ph name="NUMBER_OF_FILES" /> lêers oop.</translation>
+<translation id="2303301624314357662">Maak tans lêer <ph name="FILE_NAME" /> oop.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is uitgegooi.</translation>
 <translation id="2307462900900812319">Stel netwerk op</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">Daar is te min bergingspasie om al jou lêers te sinkroniseer</translation>
 <translation id="23721837607121582">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skakel oor na lysaansig</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> vouers is met Linux gedeel</translation>
 <translation id="2379576081295865700">Gaan tans bergingspasie na … 1 item gevind</translation>
 <translation id="2383454254762599978">Skuif asblik toe</translation>
 <translation id="2387458720915042159">Soort instaanbedienerverbinding</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">Kompakteer-keuse</translation>
 <translation id="4202378258276439759">Spaans (Latyns-Amerika)</translation>
 <translation id="4202977638116331303">Georgies</translation>
+<translation id="421017592316736757">Jy moet aanlyn wees om by hierdie lêer in te gaan.</translation>
 <translation id="4212740939091998969">'n Lêer met die naam "<ph name="FOLDER_NAME" />" bestaan reeds. Kies asseblief 'n ander naam.</translation>
 <translation id="4218274196133425560">Verwyder uitsondering vir <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google-aanbieding</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />-filter is aan.</translation>
+<translation id="4290535918735525311">1 vouer is met Linux gedeel</translation>
 <translation id="4299729908419173967">Brasiliaans</translation>
 <translation id="4302605047395093221">Enigiemand wat hierdie toestel gebruik, moet die PIN invoer om aan hierdie selnetwerk te koppel</translation>
 <translation id="4303531889494116116">Hierdie netwerk is besig. Probeer later weer.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, besonderhede</translation>
 <translation id="4935975195727477204">Botterblom</translation>
 <translation id="4943368462779413526">Voetbal</translation>
+<translation id="4961158930123534723">1 vouer is met Parallels Desktop gedeel</translation>
+<translation id="4965874878399872778">Kontroleer tans lêers teen jou organisasie se sekuriteitsbeleide …</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> teruggestel</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kon nie opstelling van lêersinkronisering voltooi nie</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5318819489018851358">Deel met Linux</translation>
 <translation id="5323213332664049067">Latyns-Amerikaans</translation>
+<translation id="5330145655348521461">Hierdie lêers het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="5330512191124428349">Kry inligting</translation>
 <translation id="535792325654997756">Persoon met katte</translation>
 <translation id="5358764674931277">Raamtempo</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">Japannees met VSA-sleutelbord</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />; geen netwerk nie</translation>
 <translation id="6146563240635539929">Video's</translation>
+<translation id="6150853954427645995">Om hierdie lêer te stoor om vanlyn te gebruik, gaan weer aanlyn, regsklik die lêer, en kies die <ph name="OFFLINE_CHECKBOX_NAME" />-opsie.</translation>
 <translation id="6164412158936057769">Skoenlappers</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6170470584681422115">Toebroodjie</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">Ongeldige passingwaarde vir domein-agtervoegsel</translation>
 <translation id="6364301859968397756">Organisasie se berging is vol</translation>
 <translation id="6367976544441405720">Afleweringvoertuig</translation>
+<translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> kon nie geskuif word nie omdat dit geënkripteer is.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">Jy het 1 poging oor.</translation>
 <translation id="643243556292470964">Lêers wat uitgevee word, word nou na die asblik toe geskuif</translation>
 <translation id="6438480100790416671">Gaan tans bergingspasie na …</translation>
+<translation id="6451527188465304418">Kontroleer tans lêer teen jou organisasie se sekuriteitsbeleide …</translation>
 <translation id="6485131920355264772">Kon nie spasieinligting gaan haal nie</translation>
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="649877868557234318">Onttrek tans <ph name="FILE_NAME" /> na <ph name="FOLDER_NAME" /></translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">Lêersinkroniseringinstellings</translation>
 <translation id="6594855146910089723">Hierdie vouer is met Linux en Parallels Desktop gedeel</translation>
 <translation id="6607272825297743757">Lêerinligting</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> vouers is met Parallels Desktop gedeel</translation>
 <translation id="6629518321609546825">Voer minstens 4 syfers in</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6650726141019353908">Pienk skoenlapper</translation>
@@ -877,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Kon nie netwerk opstel nie</translation>
+<translation id="7839804798877833423">Dit sal ongeveer <ph name="FILE_SIZE" /> mobiele data gebruik om hierdie lêers te gaan haal.</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
 <translation id="7857117644404132472">Voeg uitsondering by</translation>
@@ -918,12 +933,14 @@
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8147028810663464959">Karakterbreedte is vol</translation>
 <translation id="8151638057146502721">Stel op</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fout.}other{# foute.}}</translation>
 <translation id="8154842056504218462">Het alle inskrywings gekies.</translation>
 <translation id="8157684860301034423">Kon nie programinligting ophaal nie.</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
 <translation id="8175799081768705361">Sinkroniseer tans <ph name="NUMBER_OF_FILES_SYNCING" /> Drive-lêers</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Toestelmodel</translation>
+<translation id="8223479393428528563">Om hierdie lêers te stoor om vanlyn te gebruik, gaan weer aanlyn, regsklik die lêers, en kies die <ph name="OFFLINE_CHECKBOX_NAME" />-opsie.</translation>
 <translation id="8241139360630443550">Bekyk berging</translation>
 <translation id="8249296373107784235">Staak</translation>
 <translation id="8250690786522693009">Latyns</translation>
@@ -950,6 +967,7 @@
 <translation id="83651606385705612">Gee <ph name="VM_NAME" /> toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="8372369524088641025">Swak WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
+<translation id="8377269993083688872">E-posuitlegte</translation>
 <translation id="8386903983509584791">Skandering voltooi</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> is onttrek.</translation>
 <translation id="8395901698320285466">Afmetings</translation>
@@ -1008,6 +1026,7 @@
 <translation id="8787254343425541995">Laat instaanbedienerinstellings toe vir gedeelde netwerke</translation>
 <translation id="8790981080411996443">Persoon gee plante water</translation>
 <translation id="8798099450830957504">Verstek</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 waarskuwing.}other{# waarskuwings.}}</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Kompaktering het misluk; item bestaan: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spaans (Spanje)</translation>

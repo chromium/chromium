@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Vous demander avant d'autoriser les sites à consulter et modifier des informations sur des appareils NFC (recommandé)</translation>
 <translation id="4200726100658658164">Accéder aux paramètres de localisation</translation>
+<translation id="4212246570487010370">Poursuivre la navigation</translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -366,6 +367,7 @@
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres pop-up et les redirections par les sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> Ko</translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
 <translation id="7201549776650881587">L'ensemble des données et cookies stockés par tous les sites dépendant de <ph name="ORIGIN" /> ou par l'appli associée sur votre écran d'accueil seront supprimés</translation>
 <translation id="7203150201908454328">Développé</translation>

@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
 <translation id="117624967391683467">Copia di <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pausa</translation>
+<translation id="1190144681599273207">Per il recupero di questo file verranno utilizzati circa <ph name="FILE_SIZE" /> di dati mobili.</translation>
 <translation id="1194390763418645112">Accesso ai file da parte di <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1209796539517632982">Assegnazione automatica nomi ai server</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Condividi con <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificato di autenticazione rifiutato localmente</translation>
 <translation id="1775381402323441512">Info video</translation>
+<translation id="180035236176489073">Per poter accedere a questi file devi essere online.</translation>
 <translation id="1807938677607439181">Tutti i file</translation>
 <translation id="1810764548349082891">Anteprima non disponibile</translation>
 <translation id="1812302367230252929">Traslitterazione amarico</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Gesto di ringraziamento</translation>
 <translation id="2088690981887365033">Rete VPN</translation>
 <translation id="209653272837065803">Spazio di archiviazione non sufficiente per continuare a sincronizzare i file</translation>
-<translation id="2099143626019777139">I siti web che visiti sono visibili all'amministratore. Puoi visualizzare l'elenco dei siti web visibili.</translation>
 <translation id="2111134541987263231">Attiva l'opzione <ph name="BEGIN_BOLD" />Consenti modalità di navigazione in incognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementi verranno eliminati e non potrai ripristinarli.</translation>
 <translation id="2122305276694332719">La connessione automatica a una rete nascosta consente ad altre persone di rilevare il tuo dispositivo e alcune impostazioni di rete, pertanto è sconsigliata.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL di configurazione automatica:</translation>
 <translation id="2284767815536050991">dispositivo di archiviazione rimovibile</translation>
 <translation id="2288278176040912387">Giradischi</translation>
+<translation id="2291538123825441971">Apertura di file <ph name="NUMBER_OF_FILES" />.</translation>
+<translation id="2303301624314357662">Apertura del file <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Pianeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> è stato espulso.</translation>
 <translation id="2307462900900812319">Configura rete</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Spazio di archiviazione non sufficiente per sincronizzare tutti i file</translation>
 <translation id="23721837607121582">Scarica il profilo per dispositivi mobili, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passa alla visualizzazione elenco</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Linux</translation>
 <translation id="2379576081295865700">Controllo dello spazio di archiviazione in corso… 1 elemento trovato</translation>
 <translation id="2383454254762599978">Sposta nel cestino</translation>
 <translation id="2387458720915042159">Tipo di connessione proxy</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Comprimi selezionati</translation>
 <translation id="4202378258276439759">Spagnolo (America Latina)</translation>
 <translation id="4202977638116331303">Georgiano</translation>
+<translation id="421017592316736757">Per poter accedere a questo file devi essere online.</translation>
 <translation id="4212740939091998969">Esiste già una cartella denominata "<ph name="FOLDER_NAME" />". Scegli un nome diverso.</translation>
 <translation id="4218274196133425560">Rimuovi l'eccezione per <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentazione Google</translation>
 <translation id="4277536868133419688">Il filtro <ph name="FILTER_NAME" /> è attivo.</translation>
+<translation id="4290535918735525311">1 cartella condivisa con Linux</translation>
 <translation id="4299729908419173967">Brasiliano</translation>
 <translation id="4302605047395093221">Chiunque utilizzi questo dispositivo dovrà inserire il PIN per connettersi a questa rete mobile</translation>
 <translation id="4303531889494116116">Questa rete è occupata. Riprova più tardi.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Calcio</translation>
+<translation id="4961158930123534723">1 cartella condivisa con Parallels Desktop</translation>
+<translation id="4965874878399872778">Controllo della conformità dei file ai criteri di sicurezza della tua organizzazione in corso…</translation>
 <translation id="496656650103537022">File <ph name="FILE_NAME" /> ripristinato</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossibile completare la configurazione della sincronizzazione dei file</translation>
@@ -556,6 +564,7 @@
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318819489018851358">Condividi con Linux</translation>
 <translation id="5323213332664049067">Spagnolo latino americano</translation>
+<translation id="5330145655348521461">Questi file sono aperti su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarli.</translation>
 <translation id="5330512191124428349">Ottieni informazioni</translation>
 <translation id="535792325654997756">Persona con gatti</translation>
 <translation id="5358764674931277">Frequenza fotogrammi</translation>
@@ -657,6 +666,7 @@
 <translation id="613750717151263950">Giapponese con tastiera USA</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nessuna rete</translation>
 <translation id="6146563240635539929">Video</translation>
+<translation id="6150853954427645995">Se desideri salvare il file per l'utilizzo offline, torna in linea, fai clic con il pulsante destro del mouse sul file e seleziona l'opzione <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Farfalle</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -689,6 +699,7 @@
 <translation id="636254897931573416">Valore corrispondenza suffisso di dominio non valida</translation>
 <translation id="6364301859968397756">Spazio di archiviazione dell'organizzazione esaurito</translation>
 <translation id="6367976544441405720">Furgone</translation>
+<translation id="637062427944097960">Questo file è aperto su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarlo.</translation>
 <translation id="6394388407447716302">Sola lettura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementi</translation>
 <translation id="6407769893376380348">Impossibile spostare <ph name="FILE_NAME" /> perché è criptato.</translation>
@@ -697,6 +708,7 @@
 <translation id="6430271654280079150">Hai ancora 1 tentativo a disposizione.</translation>
 <translation id="643243556292470964">I file eliminati verranno spostati nel cestino</translation>
 <translation id="6438480100790416671">Controllo dello spazio di archiviazione in corso…</translation>
+<translation id="6451527188465304418">Controllo della conformità del file ai criteri di sicurezza della tua organizzazione in corso…</translation>
 <translation id="6485131920355264772">Impossibile recuperare le informazioni sullo spazio</translation>
 <translation id="6495925982925244349">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
 <translation id="649877868557234318">Estrazione del file <ph name="FILE_NAME" /> nella cartella <ph name="FOLDER_NAME" /> in corso…</translation>
@@ -711,6 +723,7 @@
 <translation id="6588648400954570689">Impostazioni di sincronizzazione dei file</translation>
 <translation id="6594855146910089723">Questa cartella è condivisa con Linux e Parallels Desktop</translation>
 <translation id="6607272825297743757">Info sul file</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Parallels Desktop</translation>
 <translation id="6629518321609546825">Inserisci almeno 4 cifre</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6650726141019353908">Farfalla rosa</translation>
@@ -877,6 +890,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Errore durante la configurazione della rete</translation>
+<translation id="7839804798877833423">Per il recupero di questi file verranno utilizzati circa <ph name="FILE_SIZE" /> di dati mobili.</translation>
 <translation id="7846076177841592234">Annulla selezione</translation>
 <translation id="7853966320808728790">BÉPO francese</translation>
 <translation id="7857117644404132472">Aggiungi eccezione</translation>
@@ -918,12 +932,14 @@
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8147028810663464959">La larghezza dei caratteri è piena</translation>
 <translation id="8151638057146502721">Configura</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 errore.}other{# errori.}}</translation>
 <translation id="8154842056504218462">Sono stati selezionati tutti gli elementi.</translation>
 <translation id="8157684860301034423">Impossibile recuperare le informazioni sull'app.</translation>
 <translation id="8175731104491895765">Francese (Belgio)</translation>
 <translation id="8175799081768705361">Sincronizzazione di <ph name="NUMBER_OF_FILES_SYNCING" /> file di Drive in corso…</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8193175696669055101">Modello dispositivo</translation>
+<translation id="8223479393428528563">Per salvare i file da utilizzare offline, torna online, fai clic con il pulsante destro del mouse sui file e seleziona l'opzione <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Visualizza spazio di archiviazione</translation>
 <translation id="8249296373107784235">Interrompi</translation>
 <translation id="8250690786522693009">Latino</translation>
@@ -1009,6 +1025,7 @@
 <translation id="8787254343425541995">Consenti proxy per reti condivise</translation>
 <translation id="8790981080411996443">Persona che annaffia le piante</translation>
 <translation id="8798099450830957504">Predefinito</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 avviso.}other{# avvisi.}}</translation>
 <translation id="8808686172382650546">Gatto</translation>
 <translation id="8810671769985673465">Compressione non riuscita. Elemento esistente: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spagnolo (Spagna)</translation>

@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">عرض الشرائح</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
+<translation id="4310735698903592804">‏أحدث الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="4333390807948134856">تم الضغط على المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="4354430579665871434">مفتاح</translation>
 <translation id="4361257691546579041">إنّ اسم نقطة الوصول من النوع التلقائي.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
+<translation id="593880865674747800">إنشاء المزيد من الخلفيات على غرار هذا النمط</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5946538341867151940">‏لم يتصل جهازك بالشبكة بعد. إذا اقترح مشغّل شبكة الجوّال اسمًا مخصصًا لنقطة الوصول (APN)، أدخِل معلومات APN من خلال اختيار "إضافة اسم نقطة وصول جديد".</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">‏PSK (WPA أو RSN)</translation>
 <translation id="7841134249932030522">تفعيل الوضع المُعتِم</translation>
 <translation id="7846634333498149051">لوحة المفاتيح</translation>
+<translation id="7850847810298646851">‏الخلفية مستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="7856267634822906833">شاشة تعمل باللمس وتتضمّن بلوتوث</translation>
 <translation id="7869143217755017858">إيقاف الوضع المُعتِم</translation>
 <translation id="7881066108824108340">نظام أسماء النطاقات</translation>

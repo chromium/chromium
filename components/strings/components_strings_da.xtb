@@ -761,6 +761,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2469153820345007638">1-til-N-rækkefølge</translation>
 <translation id="24699311393038040">Papir (bestrøget)</translation>
 <translation id="2470767536994572628">Når du redigerer annoteringer, skifter dette dokument tilbage til enkeltsidevisning og dets oprindelige rotation</translation>
+<translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2479410451996844060">Ugyldig søgewebadresse.</translation>
 <translation id="2480300195898055381">På din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notifikationer</translation>
@@ -830,12 +831,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2610561535971892504">Klik for at kopiere</translation>
 <translation id="2612993535136743634">Alle sikkerhedskoder, der er gemt på din enhed og på din Google-konto, slettes</translation>
 <translation id="2616412942031748191">Søgemaskineoptimering og marketing</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" /> følgende oplysninger:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Din browserhistorik
-          <ph name="LIST_ITEM" />Cookies og websitedata
-          <ph name="LIST_ITEM" />Oplysninger, der er angivet i formularer
-        <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Indsæt</translation>
 <translation id="2625385379895617796">Dit ur er foran</translation>
 <translation id="262745152991669301">Websitet kan anmode om tilladelse til at oprette forbindelse til USB-enheder</translation>
@@ -1840,7 +1835,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4652440160515225514">Din organisation har blokeret dette website, fordi det overtræder en politik.</translation>
 <translation id="4653167719759882810">Fusioner og opkøb</translation>
 <translation id="4658638640878098064">Hæftning øverst til venstre</translation>
-<translation id="4660119392514473465">Nu kan du gå på nettet privat, så andre brugere på denne enhed kan ikke se din aktivitet. Downloads, bogmærker og indholdet på din læseliste gemmes dog stadig.</translation>
 <translation id="4660567771874403130">Energi og forsyning</translation>
 <translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="466561305373967878">Brætspil</translation>
@@ -2588,7 +2582,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6160391204859821737">Aktivér en privatlivsfunktion til annoncer</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6167577165590485365">Sidst forsøgt hentet:</translation>
-<translation id="6169916984152623906">Nu kan du gå på nettet privat, og andre brugere på denne enhed kan ikke se din aktivitet. Downloads og bogmærker gemmes dog stadig.</translation>
 <translation id="617256461084925519">Google Chrome forsøger at verificere din identitet, så dine betalingsoplysninger kan udfyldes.</translation>
 <translation id="6176387967264100435">Denne pris er høj</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>
@@ -3278,12 +3271,6 @@ Yderligere oplysninger:
 <translation id="749865518782565832">Blikkenslagerarbejde og VVS</translation>
 <translation id="7501663406926337752">Det website, du er på vej til, er rapporteret af din organisation</translation>
 <translation id="7501853161948120656">Uddannelsesressourcer</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" /> følgende oplysninger:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Din browserhistorik
-            <ph name="LIST_ITEM" />Cookies og websitedata
-            <ph name="LIST_ITEM" />Oplysninger, der er angivet i formularer
-          <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Konvolut nr. 9</translation>
 <translation id="7508255263130623398">Det returnerede enheds-id for politikken er tomt eller stemmer ikke overens med det nuværende enheds-id</translation>
 <translation id="7508577201115425418">Dokument- og udskrivningstjenester</translation>
@@ -3465,6 +3452,7 @@ Yderligere oplysninger:
 <translation id="7802989406998618639">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede sikkerhedskode på <ph name="SIDE_OF_CARD" />, så din bank kan verificere din identitet</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7805906048382884326">Luk tip</translation>
 <translation id="7810410097247356677">Gem dit kort og din krypterede sikkerhedskode på din enhed, så du hurtigere kan betale næste gang</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vil du fjerne formularforslaget fra Chrome?</translation>

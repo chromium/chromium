@@ -201,6 +201,9 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">V sistemu iOS odprite nastavitve za Chrome, nato se dotaknite »Default Browser App« (Privzeti brskalnik) in izberite Chrome.</translation>
+<translation id="686691656039982452">V računu Google lahko <ph name="BEGIN_LINK" />upravljate, kateri podatki v Chromu se shranjujejo<ph name="END_LINK" />.
+
+Če želite več nastavitev, ki uporabljajo podatke za izboljšanje izkušnje v Chromu, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="687586529977635009">Chrome zazna številke za sledenje na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikaže obvestila o paketu. Vaši podatki bodo deljeni z Googlom zaradi zagotavljanja te funkcije in izboljšanja Nakupovanja za vse. To lahko spremenite v <ph name="BEGIN_LINK" />nastavitvah sledenja paketu<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Iskanje z govorom v Chromu</translation>
 <translation id="6964931465519938134">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>

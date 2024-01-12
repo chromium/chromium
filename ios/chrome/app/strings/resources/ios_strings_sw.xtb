@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Kiteuzi cha vipimo</translation>
 <translation id="2348630484974447747">Kifurushi</translation>
 <translation id="2351097562818989364">Mipangilio yako ya kutafsiri imewekwa upya.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Unaweza kuhifadhi nenosiri lako la {DOMAIN_ONE} kwenye Akaunti yako ya Google, {EMAIL}.}=2{Unaweza kuhifadhi manenosiri yako ya {DOMAIN_ONE} na {DOMAIN_TWO} kwenye Akaunti yako ya Google, {EMAIL}.}=3{Unaweza kuhifadhi manenosiri yako ya {DOMAIN_ONE}, {DOMAIN_TWO} na kikoa kingine {OTHER_DOMAINS_COUNT} kwenye Akaunti yako ya Google, {EMAIL}.}other{Unaweza kuhifadhi manenosiri yako ya {DOMAIN_ONE}, {DOMAIN_TWO} na vikoa vingine {OTHER_DOMAINS_COUNT} kwenye Akaunti yako ya Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Sera ya Faragha ya Google</translation>
 <translation id="2359043044084662842">Tafsiri</translation>
 <translation id="2359808026110333948">Endelea</translation>
@@ -335,6 +336,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2747003861858887689">Sehemu iliyotangulia</translation>
 <translation id="2749231692441336879">Unafuatilia <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaunti zilizo katika Kifaa hiki</translation>
+<translation id="2755595981383829244">Sasa utapokea arifa za maudhui</translation>
 <translation id="2762000892062317888">sasa hivi tu</translation>
 <translation id="2772667768515195373">Unaweza kutumia anwani zilizohifadhiwa kwenye bidhaa zote za Google. Anwani hii imehifadhiwa kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Utafutaji Fiche</translation>
@@ -688,6 +690,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4689564913179979534">Dhibiti Njia za Kulipa...</translation>
 <translation id="469300482518076788">Funga Kichupo</translation>
 <translation id="4697071790493980729">Hakuna Matokeo Yaliyopatikana</translation>
+<translation id="470337593714520080">{count,plural, =1{Hifadhi Alamisho 1 kwenye Akaunti Yako ya Google}other{Hifadhi Alamisho {count} kwenye Akaunti Yako ya Google}}</translation>
 <translation id="470966556546083668">Usiwashe Kipengele cha Kusawazisha</translation>
 <translation id="4711809265250406889">Inapokuwa Imewashwa</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} na nyingine 1}other{{website_1}, {website_2} na nyingine {more_count}}}</translation>
@@ -986,6 +989,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6255097610484507482">Badilisha Kadi ya Malipo</translation>
 <translation id="6266039999629596120">Kinahitaji kushughulikiwa</translation>
 <translation id="6277426346321820595">Hakuna Ulinzi</translation>
+<translation id="628251768213143684">Kila wakati, unaweza kudhibiti kilichohifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="6284652193729350524">Jitolee kutafsiri kutoka <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Umeacha kufuatilia <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Ili uwashe kipengele cha Kuvinjari Salama, fungua <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" /> na uguse Kuvinjari Salama.</translation>

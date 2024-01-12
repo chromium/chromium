@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="5546397813406633847">ഉപയോക്താവിനെ വീണ്ടെടുക്കുക</translation>
 <translation id="554893713779400387">പറഞ്ഞ് കൊടുക്കൽ മാറ്റുക</translation>
+<translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" /> എന്നതിലേക്ക് ചേർക്കേണ്ട ഫയലുകൾ ഡെസ്‌ക്ടോപ്പിൽ വലിച്ചിടുക. നിങ്ങൾക്ക് ഡെസ്ക്ടോപ്പിലേക്ക് ഫയലുകൾ ചേർക്കാനാകുന്നില്ല.</translation>
 <translation id="5551456515017410630">കലണ്ടർ തുറക്കുകയോ അടയ്ക്കുകയോ ചെയ്യുക</translation>
 <translation id="5551974246223970793">ഒരു പേജ് തിരയുമ്പോൾ, തിരയാൻ അടുത്ത പൊരുത്തത്തിലേക്ക് പോകുക</translation>
 <translation id="5555639311269196631">ഹോട്ട്സ്പോട്ട് ഓഫാക്കുക</translation>
@@ -1875,6 +1876,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">പേരോ നിറമോ അനുസരിച്ച് ആപ്പുകൾ അടുക്കുക</translation>
 <translation id="8609384513243082612">പുതിയ ടാബ് തുറക്കുക</translation>
+<translation id="8612216344243590325">പ്രധാനപ്പെട്ട ഫയലുകൾ ഡെസ്ക്ടോപ്പിൽ സൂക്ഷിക്കുന്നതിന് പകരം <ph name="HOLDING_SPACE_TITLE" /> എന്നതിൽ സൂക്ഷിക്കുക. <ph name="HOLDING_SPACE_TITLE" /> എന്നതിലേക്ക് ഫയലുകൾ വലിച്ചിടുക.</translation>
 <translation id="8614517853887502247">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="8619138598101195078">ശബ്‌ദം കുറയ്ക്കുക</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>

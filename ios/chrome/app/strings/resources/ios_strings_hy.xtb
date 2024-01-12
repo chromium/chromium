@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Միավորի ընտրիչ</translation>
 <translation id="2348630484974447747">Առաքանի</translation>
 <translation id="2351097562818989364">Ձեր թարգմանության կայանքները զրոյացվել են:</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Դուք կարող եք {DOMAIN_ONE} տիրույթի գաղտնաբառը պահել ձեր Google հաշվում ({EMAIL})։}=2{Դուք կարող եք {DOMAIN_ONE} և {DOMAIN_TWO} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}=3{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}one{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}other{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})։}}</translation>
 <translation id="235789365079050412">Google-ի գաղտնիության քաղաքականություն</translation>
 <translation id="2359043044084662842">Թարգմանել</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
 <translation id="2749231692441336879">Դուք բաժանորդագրվեցիք «<ph name="CHANNEL_NAME" />» ալիքին</translation>
 <translation id="2754492786623500387">Այս սարքում գրանցված հաշիվներ</translation>
+<translation id="2755595981383829244">Այժմ դուք կստանաք բովանդակության վերաբերյալ ծանուցումներ</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
 <translation id="2772667768515195373">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն պահվում է ձեր Google հաշվում (<ph name="USER_EMAIL" />)։</translation>
 <translation id="2773292004659987824">Որոնում ինկոգնիտո ռեժիմում</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">Վճարման եղանակների կառավարում…</translation>
 <translation id="469300482518076788">Փակել ներդիրը</translation>
 <translation id="4697071790493980729">Ոչինչ չի գտնվել</translation>
+<translation id="470337593714520080">{count,plural, =1{Պահեք 1 էջանիշ ձեր Google հաշվում}one{Պահեք {count} էջանիշ ձեր Google հաշվում}other{Պահեք {count} էջանիշ ձեր Google հաշվում}}</translation>
 <translation id="470966556546083668">Չմիացնել համաժամացումը</translation>
 <translation id="4711809265250406889">Երբ գործառույթը միացված է</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ու ևս 1 կայք}one{{website_1}, {website_2} ու ևս {more_count} կայք}other{{website_1}, {website_2} ու ևս {more_count} կայք}}</translation>
@@ -986,6 +989,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6255097610484507482">Փոխել վարկային քարտը</translation>
 <translation id="6266039999629596120">Պահանջվում է գործողություն</translation>
 <translation id="6277426346321820595">Պաշտպանություն չկա</translation>
+<translation id="628251768213143684">Դուք միշտ կարող եք կառավարել ձեր Google հաշվում պահված տեղեկությունները</translation>
 <translation id="6284652193729350524">Առաջարկել թարգմանել <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">«<ph name="CHANNEL_NAME" />» ալիքի բաժանորդագրությունը չեղարկվեց</translation>
 <translation id="6293101329759844770">Անվտանգ դիտարկումը միացնելու համար բացեք <ph name="BEGIN_LINK" />Google-ի ծառայությունները<ph name="END_LINK" /> և սեղմեք «Անվտանգ դիտարկում»։</translation>

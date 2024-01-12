@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">ಯೂನಿಟ್ ಸೆಲೆಕ್ಟರ್</translation>
 <translation id="2348630484974447747">ಪ್ಯಾಕೇಜ್</translation>
 <translation id="2351097562818989364">ನಿಮ್ಮ ಅನುವಾದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರು ಹೊಂದಿಸಲಾಗಿದೆ.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {DOMAIN_ONE} ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, {EMAIL}.}=2{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {DOMAIN_ONE} ಮತ್ತು {DOMAIN_TWO} ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, {EMAIL}.}=3{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {DOMAIN_ONE}, {DOMAIN_TWO} ಮತ್ತು {OTHER_DOMAINS_COUNT} ಇತರ ಡೊಮೇನ್‌ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, {EMAIL}.}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {DOMAIN_ONE}, {DOMAIN_TWO} ಮತ್ತು {OTHER_DOMAINS_COUNT} ಇತರ ಡೊಮೇನ್‌ಗಳಿಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, {EMAIL}.}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {DOMAIN_ONE}, {DOMAIN_TWO} ಮತ್ತು {OTHER_DOMAINS_COUNT} ಇತರ ಡೊಮೇನ್‌ಗಳಿಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Google ಗೌಪ್ಯತೆ ನೀತಿ</translation>
 <translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">ಹಿಂದಿನ ಕ್ಷೇತ್ರ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2754492786623500387">ಈ ಸಾಧನದಲ್ಲಿನ ಖಾತೆಗಳು</translation>
+<translation id="2755595981383829244">ಈಗ ನೀವು ಕಂಟೆಂಟ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸುತ್ತೀರಿ</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="2772667768515195373">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="USER_EMAIL" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2773292004659987824">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="469300482518076788">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="4697071790493980729">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="470337593714520080">{count,plural, =1{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ 1 ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿ}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ {count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ}}</translation>
 <translation id="470966556546083668">ಸಿಂಕ್ ಆನ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="4711809265250406889">ಆನ್ ಆಗಿರುವಾಗ</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ 1}one{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ {more_count}}other{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ {more_count}}}</translation>

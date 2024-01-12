@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">U lidh me një pajisje USB</translation>
 <translation id="4194328954146351878">Pyet përpara se të lejosh sajtet të shikojnë dhe ndryshojnë informacionin në pajisjet NFC (rekomandohet)</translation>
 <translation id="4200726100658658164">Hap "Cilësimet e vendndodhjes"</translation>
+<translation id="4212246570487010370">Vazhdo shfletimin</translation>
 <translation id="4226663524361240545">Njoftimet mund të bëjnë që pajisja të dridhet</translation>
 <translation id="4259722352634471385">Lundrimi është bllokuar: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Të lejuara</translation>
@@ -366,6 +367,7 @@
 <translation id="7141896414559753902">Blloko që sajtet të shfaqin dritare kërcyese dhe ridrejtime (rekomandohet)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Rifresko</translation>
+<translation id="7180865173735832675">Personalizo</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
 <translation id="7201549776650881587">Ky veprim do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga të gjitha sajtet nën <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë</translation>
 <translation id="7203150201908454328">I zgjeruar</translation>

@@ -2932,9 +2932,6 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
 <translation id="3417418267404583991">Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, staat <ph name="PRODUCT_OS_NAME" /> gasten toe zich aan te melden. Gastensessies zijn anonieme sessies waar geen wachtwoord voor hoeft te worden ingevoerd.
 
       Als dit beleid is ingesteld op 'false', staat <ph name="PRODUCT_OS_NAME" /> niet toe dat er gastensessies worden gestart.</translation>
-<translation id="3420141485959154417">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die wordt gebruikt voor afbeeldingszoekopdrachten. (Als <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> is ingesteld, wordt in plaats daarvan de POST-methode gebruikt voor afbeeldingszoekopdrachten.)
-
-      Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> niet instelt, worden er geen afbeeldingszoekopdrachten gebruikt.</translation>
 <translation id="3423703250826790403">Android-apps</translation>
 <translation id="3426434797050451264">Dit beleid kan ook worden gebruikt om Android-apps op te geven als standaard bestandshandlers.</translation>
 <translation id="3428247105888806363">Netwerkvoorspelling aanzetten</translation>
@@ -4974,12 +4971,6 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
 
       Als het beleid niet is ingesteld of ongeldig is, is het gedrag hetzelfde als voor 'Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt'.</translation>
 <translation id="5229339291699779956">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor alle mogelijkheden van de randapparaten werken</translation>
-<translation id="5233239004553860036">Als je dit beleid instelt op <ph name="POLICY_VALUE_ALL" /> of niet instelt, zijn alle typen gebruik van beheerde accounts toegestaan. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het account alleen beleidsregels krijgt als het is ingelogd als primair account in een browserprofiel.
-      Beleidsregels die zijn ingesteld voor het account, worden in de volgende scenario's niet afgedwongen:
-- Het account is een secundair account op OS-niveau (accountinstellingen)
-- Het account is een secundair account in een browserprofiel
-
-Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> voor een account, mag dit account alleen inloggen als primair account. Het mag niet inloggen als secundair account.</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5235607513961923779">Rapporteert de apparaatactiviteitsstatus op ingeschreven apparaten voor aangesloten gebruikers.
 
@@ -8728,9 +8719,6 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <translation id="8312129124898414409">Hiermee kun je instellen of websites sleutels mogen genereren. Het genereren van sleutels kan ofwel worden toegestaan voor alle websites ofwel worden geweigerd voor alle websites.
 
           Als dit beleid niet wordt ingesteld, wordt 'BlockKeygen' gebruikt en kan de gebruiker dit wijzigen.</translation>
-<translation id="8313927126392971570">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd tijdens afbeeldingszoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter (zoals {imageThumbnail}) is, wordt de waarde vervangen door echte afbeeldingsminiatuurgegevens.
-
-      Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> niet instelt, worden afbeeldingszoekopdrachten gestuurd met de GET-methode.</translation>
 <translation id="8314214821702356835">Hiermee kunnen gebruikers media afspelen wanneer het apparaat vergrendeld is</translation>
 <translation id="8314308739926578606">Het gebruik van de tools voor ontwikkelaars niet toestaan voor apps en extensies die via het organisatiebeleid zijn geïnstalleerd of, sinds versie 114 en als dit een beheerde gebruiker is, extensies die in de browser zijn ingebouwd. Het gebruik van de tools voor ontwikkelaars toestaan in andere contexten.</translation>
 <translation id="8316940611391250886">Certificaten zonder de extensie subjectAlternativeName niet toestaan</translation>

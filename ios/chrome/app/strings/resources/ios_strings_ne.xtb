@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">युनिट सेलेक्टर</translation>
 <translation id="2348630484974447747">प्याकेज</translation>
 <translation id="2351097562818989364">तपाईंका अनुवाद सेटिङहरू रिसेट गरिएका छन्।</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} को पासवर्ड सेभ गर्न सक्नुहुन्छ।}=2{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} र {DOMAIN_TWO} का पासवर्डहरू सेभ गर्न सक्नुहुन्छ।}=3{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ।}other{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ।}}</translation>
 <translation id="235789365079050412">Google को गोपनीयता नीति</translation>
 <translation id="2359043044084662842">अनुवाद गर्नुहोस्</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">भुक्तानी विधिहरूको व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="469300482518076788">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="4697071790493980729">कुनै पनि परिणाम फेला परेन</translation>
+<translation id="470337593714520080">{count,plural, =1{आफ्नो Google खातामा एउटा बुकमार्क सेभ गर्नुहोस्}other{आफ्नो Google खातामा {count} वटा बुकमार्क सेभ गर्नुहोस्}}</translation>
 <translation id="470966556546083668">सिंक गर्ने सुविधा अन नगरियोस्</translation>
 <translation id="4711809265250406889">अन भएका बेला</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} र थप एउटा साइट}other{{website_1}, {website_2} र थप {more_count} वटा साइट}}</translation>
@@ -987,6 +989,7 @@
 <translation id="6255097610484507482">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6266039999629596120">ध्यान दिनु पर्ने समस्याहरू</translation>
 <translation id="6277426346321820595">सुरक्षारहित मोड</translation>
+<translation id="628251768213143684">तपाईं आफ्नो Google Account मा सेभ गरिएका कुराहरू जुनसुकै बेला व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> अनफलो गरियो</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>

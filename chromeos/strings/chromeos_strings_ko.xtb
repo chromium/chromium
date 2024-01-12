@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">슬라이드쇼</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
+<translation id="4310735698903592804">Google AI 기반 최신 배경화면</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> 키를 눌렀습니다.</translation>
 <translation id="4354430579665871434">키</translation>
 <translation id="4361257691546579041">APN은 기본값 유형입니다.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
+<translation id="593880865674747800">이 스타일로 더 만들기</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
 <translation id="5946538341867151940">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 '+ 새 APN'을 선택하여 APN 정보를 입력합니다.</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
 <translation id="7841134249932030522">어두운 모드 사용</translation>
 <translation id="7846634333498149051">키보드</translation>
+<translation id="7850847810298646851">Google AI 기반 배경화면</translation>
 <translation id="7856267634822906833">블루투스 터치스크린</translation>
 <translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="7881066108824108340">DNS</translation>

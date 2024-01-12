@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Приказ на слајдови</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
+<translation id="4310735698903592804">Неодамнешни тапети овозможени од Google AI</translation>
 <translation id="4333390807948134856">Копчето <ph name="KEY_NAME" /> е притиснато</translation>
 <translation id="4354430579665871434">копче</translation>
 <translation id="4361257691546579041">APN е од стандарден тип.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
+<translation id="593880865674747800">Создајте повеќе во овој стил</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="594552776027197022">Генерирај случаен пар клучеви</translation>
 <translation id="5946538341867151940">Сѐ уште не сте поврзани. Ако вашиот мобилен оператор препорачува приспособено APN, внесете ги податоците за APN така што ќе изберете „+ Нова APN“</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7841134249932030522">Овозможи темен режим</translation>
 <translation id="7846634333498149051">Тастатура</translation>
+<translation id="7850847810298646851">Тапет овозможен од Google AI</translation>
 <translation id="7856267634822906833">Допирен екран со Bluetooth</translation>
 <translation id="7869143217755017858">Оневозможи темен режим</translation>
 <translation id="7881066108824108340">DNS</translation>

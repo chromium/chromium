@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">یونٹ کا منتخب کنندہ</translation>
 <translation id="2348630484974447747">پیکیج</translation>
 <translation id="2351097562818989364">ترجمہ کی آپ کی ترتیبات دوبارہ ترتیب دی گئیں ہیں۔</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} کے لیے اپنا پاس ورڈ محفوظ کر سکتے ہیں۔}=2{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} اور {DOMAIN_TWO} کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}=3{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}other{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}}</translation>
 <translation id="235789365079050412">‏Google کی رازداری کی پالیسی</translation>
 <translation id="2359043044084662842">ترجمہ کریں</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">پچھلا فیلڈ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> کی پیروی کی جا رہی ہے</translation>
 <translation id="2754492786623500387">اس آلے پر موجود اکاؤنٹس</translation>
+<translation id="2755595981383829244">اب آپ کو مواد کی اطلاعات موصول ہوں گی</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="2772667768515195373">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ میں محفوظ ہے، <ph name="USER_EMAIL" />۔</translation>
 <translation id="2773292004659987824">پوشیدگی وضع میں تلاش کریں</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">ادائیگی کے طریقوں کا نظم کریں...</translation>
 <translation id="469300482518076788">ٹیب بند کریں</translation>
 <translation id="4697071790493980729">کوئی نتیجہ نہیں ملا</translation>
+<translation id="470337593714520080">{count,plural, =1{‏1 بُک مارک کو اپنے Google اکاؤنٹ میں محفوظ کریں}other{‏{count} بُک مارکس کو اپنے Google اکاؤنٹ میں محفوظ کریں}}</translation>
 <translation id="470966556546083668">مطابقت پذیری کو آن نہ کریں</translation>
 <translation id="4711809265250406889">آن ہونے پر</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}، {website_2}}=3{{website_1}، {website_2} اور 1 مزید}other{{website_1}، {website_2} اور {more_count} مزید}}</translation>

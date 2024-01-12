@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">యూనిట్ ఎంపిక సాధనం</translation>
 <translation id="2348630484974447747">ప్యాకేజీ</translation>
 <translation id="2351097562818989364">మీ అనువాద సెట్టింగ్‌లు రీసెట్ చేయబడ్డాయి.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{మీరు {DOMAIN_ONE} కోసం మీ పాస్‌వర్డ్‌ను మీ Google ఖాతా, {EMAIL}‌లో సేవ్ చేయవచ్చు.}=2{మీరు {DOMAIN_ONE}, {DOMAIN_TWO} కోసం మీ పాస్‌వర్డ్‌లను మీ Google ఖాతా, {EMAIL}‌లో సేవ్ చేయవచ్చు.}=3{మీరు {DOMAIN_ONE}, {DOMAIN_TWO}, ఇంకా {OTHER_DOMAINS_COUNT} ఇతర వాటి కోసం మీ పాస్‌వర్డ్‌లను మీ Google ఖాతా, {EMAIL}‌లో సేవ్ చేయవచ్చు.}other{మీరు {DOMAIN_ONE}, {DOMAIN_TWO}, ఇంకా {OTHER_DOMAINS_COUNT} కోసం మీ పాస్‌వర్డ్‌లను మీ Google ఖాతా, {EMAIL}‌లో సేవ్ చేయవచ్చు.}}</translation>
 <translation id="235789365079050412">Google గోప్యతా పాలసీ</translation>
 <translation id="2359043044084662842">అనువదించు</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">మునుపటి ఫీల్డ్</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />‌ను ఫాలో అవుతున్నారు</translation>
 <translation id="2754492786623500387">ఈ పరికరంలోని ఖాతాలు</translation>
+<translation id="2755595981383829244">మీరు ఇప్పుడు కంటెంట్ నోటిఫికేషన్‌లను అందుకుంటారు</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
 <translation id="2772667768515195373">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="USER_EMAIL" />లో సేవ్ చేయబడింది.</translation>
 <translation id="2773292004659987824">అజ్ఞాత శోధన</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి...</translation>
 <translation id="469300482518076788">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="4697071790493980729">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
+<translation id="470337593714520080">{count,plural, =1{మీ Google ఖాతాకు 1 బుక్‌మార్క్‌ను సేవ్ చేయండి}other{మీ Google ఖాతాకు {count} బుక్‌మార్క్‌లను సేవ్ చేయండి}}</translation>
 <translation id="470966556546083668">సింక్‌ను ఆన్ చేయవద్దు</translation>
 <translation id="4711809265250406889">ఆన్‌లో ఉన్నప్పుడు</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, ఇంకా మరో 1}other{{website_1}, {website_2}, ఇంకా మరో {more_count}}}</translation>

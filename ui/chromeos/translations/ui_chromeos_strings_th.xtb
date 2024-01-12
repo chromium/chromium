@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
 <translation id="117624967391683467">กำลังคัดลอก <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
+<translation id="1190144681599273207">การดึงไฟล์นี้จะใช้ข้อมูลมือถือขนาดประมาณ <ph name="FILE_SIZE" /></translation>
 <translation id="1194390763418645112">การเข้าถึงไฟล์จาก <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1209796539517632982">เซิร์ฟเวอร์ชื่ออัตโนมัติ</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">แชร์กับ <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">ใบรับรองการตรวจสอบสิทธิ์ได้รับการปฏิเสธในท้องถิ่น</translation>
 <translation id="1775381402323441512">ข้อมูลวิดีโอ</translation>
+<translation id="180035236176489073">คุณจะต้องออนไลน์เพื่อเข้าถึงไฟล์เหล่านี้</translation>
 <translation id="1807938677607439181">ไฟล์ทั้งหมด</translation>
 <translation id="1810764548349082891">ไม่มีพรีวิว</translation>
 <translation id="1812302367230252929">อัมฮาริก (การทับศัพท์)</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">กำลังเขียนขอบคุณ</translation>
 <translation id="2088690981887365033">เครือข่าย VPN</translation>
 <translation id="209653272837065803">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ต่อ</translation>
-<translation id="2099143626019777139">ผู้ดูแลระบบจะเห็นเว็บไซต์ที่คุณเข้าชม คุณสามารถดูรายชื่อเว็บไซต์ที่แสดงได้</translation>
 <translation id="2111134541987263231">เปิด<ph name="BEGIN_BOLD" />อนุญาตในโหมดไม่ระบุตัวตน<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ระบบจะลบ <ph name="NUMBER_OF_ITEMS" /> รายการและคุณจะกู้คืนไม่ได้</translation>
 <translation id="2122305276694332719">การเชื่อมต่อเครือข่ายที่ซ่อนอยู่โดยอัตโนมัติจะทำให้คนอื่นๆ เห็นอุปกรณ์ของคุณและการตั้งค่าเครือข่ายบางอย่าง เราไม่แนะนำให้เชื่อมต่อ</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL การกำหนดค่าอัตโนมัติ:</translation>
 <translation id="2284767815536050991">พื้นที่เก็บข้อมูลแบบถอดได้</translation>
 <translation id="2288278176040912387">เครื่องเล่นแผ่นเสียง</translation>
+<translation id="2291538123825441971">กำลังเปิด <ph name="NUMBER_OF_FILES" /> ไฟล์</translation>
+<translation id="2303301624314357662">กำลังเปิดไฟล์ <ph name="FILE_NAME" /></translation>
 <translation id="2304820083631266885">ดาวเคราะห์</translation>
 <translation id="2305020378527873881">นำ <ph name="VOLUME_NAME" /> ออกแล้ว</translation>
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ทั้งหมด</translation>
 <translation id="23721837607121582">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
+<translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
 <translation id="2379576081295865700">กำลังตรวจสอบพื้นที่เก็บข้อมูล… พบ 1 รายการ</translation>
 <translation id="2383454254762599978">ย้ายไปที่ถังขยะ</translation>
 <translation id="2387458720915042159">ประเภทการเชื่อมต่อพร็อกซี</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">การเลือกซิป</translation>
 <translation id="4202378258276439759">สเปน (ลาตินอเมริกา)</translation>
 <translation id="4202977638116331303">จอร์เจีย</translation>
+<translation id="421017592316736757">คุณจะต้องออนไลน์เพื่อเข้าถึงไฟล์นี้</translation>
 <translation id="4212740939091998969">มีโฟลเดอร์ชื่อ "<ph name="FOLDER_NAME" />" อยู่แล้ว โปรดเลือกชื่ออื่น</translation>
 <translation id="4218274196133425560">นำข้อยกเว้นออกสำหรับ <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">งานนำเสนอของ Google</translation>
 <translation id="4277536868133419688">ตัวกรอง <ph name="FILTER_NAME" /> เปิดอยู่</translation>
+<translation id="4290535918735525311">แชร์กับ Linux แล้ว 1 โฟลเดอร์</translation>
 <translation id="4299729908419173967">บราซิล</translation>
 <translation id="4302605047395093221">ทุกคนที่ใช้อุปกรณ์นี้จะต้องป้อน PIN เพื่อเชื่อมต่อกับเครือข่ายมือถือนี้</translation>
 <translation id="4303531889494116116">เครือข่ายนี้ไม่ว่าง โปรดลองอีกครั้งในภายหลัง</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
 <translation id="4935975195727477204">ดอกทานตะวัน</translation>
 <translation id="4943368462779413526">ฟุตบอล</translation>
+<translation id="4961158930123534723">แชร์กับ Parallels Desktop แล้ว 1 โฟลเดอร์</translation>
+<translation id="4965874878399872778">กำลังตรวจสอบไฟล์เหล่านี้กับนโยบายความปลอดภัยขององค์กร...</translation>
 <translation id="496656650103537022">กู้คืน <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4969785127455456148">อัลบั้ม</translation>
 <translation id="4972330214479971536">ตั้งค่าการซิงค์ไฟล์ไม่สําเร็จ</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318819489018851358">แชร์กับ Linux</translation>
 <translation id="5323213332664049067">ละตินอเมริกา</translation>
+<translation id="5330145655348521461">ไฟล์เหล่านี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="5330512191124428349">รับข้อมูล</translation>
 <translation id="535792325654997756">คนกับแมว</translation>
 <translation id="5358764674931277">อัตราเฟรม</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">ญี่ปุ่นด้วยแป้นพิมพ์สหรัฐฯ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> ไม่มีเครือข่าย</translation>
 <translation id="6146563240635539929">วิดีโอ</translation>
+<translation id="6150853954427645995">หากต้องการบันทึกไฟล์นี้เพื่อการใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ แล้วเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
 <translation id="6164412158936057769">ผีเสื้อ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">ค่าการจับคู่ส่วนต่อท้ายโดเมนไม่ถูกต้อง</translation>
 <translation id="6364301859968397756">พื้นที่เก็บข้อมูลขององค์กรเต็มแล้ว</translation>
 <translation id="6367976544441405720">รถตู้</translation>
+<translation id="637062427944097960">ไฟล์นี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="6394388407447716302">อ่านอย่างเดียว</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> รายการ</translation>
 <translation id="6407769893376380348">ย้าย <ph name="FILE_NAME" /> ไม่ได้เนื่องจากมีการเข้ารหัส</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">คุณลองได้อีก 1 ครั้ง</translation>
 <translation id="643243556292470964">ย้ายไฟล์ที่ลบไปยังถังขยะแล้ว</translation>
 <translation id="6438480100790416671">กําลังตรวจสอบพื้นที่เก็บข้อมูล…</translation>
+<translation id="6451527188465304418">กำลังตรวจสอบไฟล์กับนโยบายความปลอดภัยขององค์กร...</translation>
 <translation id="6485131920355264772">การดึงข้อมูลพื้นที่ล้มเหลว</translation>
 <translation id="6495925982925244349">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="649877868557234318">กำลังแตกข้อมูล <ph name="FILE_NAME" /> ไปที่ <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">การตั้งค่าการซิงค์ไฟล์</translation>
 <translation id="6594855146910089723">โฟลเดอร์นี้แชร์อยู่กับ Linux และ Parallels Desktop</translation>
 <translation id="6607272825297743757">ข้อมูลไฟล์</translation>
+<translation id="6609332149380188670">แชร์กับ Parallels Desktop แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
 <translation id="6629518321609546825">ป้อนตัวเลขอย่างน้อย 4 ตัว</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6650726141019353908">ผีเสื้อสีชมพู</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">เกิดข้อผิดพลาดในการกำหนดค่าเครือข่าย</translation>
+<translation id="7839804798877833423">การดึงไฟล์เหล่านี้จะใช้ข้อมูลมือถือขนาดประมาณ <ph name="FILE_SIZE" /></translation>
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
 <translation id="7853966320808728790">ภาษาฝรั่งเศสแบบ BÉPO</translation>
 <translation id="7857117644404132472">เพิ่มข้อยกเว้น</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">กำลังซิงค์ไฟล์ในไดรฟ์ <ph name="NUMBER_OF_FILES_SYNCING" /> รายการ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">รุ่นอุปกรณ์</translation>
+<translation id="8223479393428528563">หากต้องการบันทึกไฟล์เหล่านี้เพื่อใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ และเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
 <translation id="8241139360630443550">ดูพื้นที่เก็บข้อมูล</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
 <translation id="8250690786522693009">ภาษาละติน</translation>

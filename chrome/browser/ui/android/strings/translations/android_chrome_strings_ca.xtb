@@ -233,6 +233,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="2318045970523081853">Toca per fer una trucada</translation>
 <translation id="2321086116217818302">S'estan preparant les contrasenyes…</translation>
 <translation id="2323763861024343754">Emmagatzematge del lloc web</translation>
+<translation id="2327226657832576859">Vols obrir els PDF automàticament?</translation>
 <translation id="2328985652426384049">No es pot iniciar la sessió</translation>
 <translation id="2341410551640223969">No s'ha pogut instal·lar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Dades totals utilitzades per Chrome, com ara comptes, adreces d'interès i opcions de configuració desades</translation>
@@ -638,6 +639,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4523326818319942067">última hora</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4532845899244822526">Tria la carpeta</translation>
+<translation id="4541505619120536051">Obre sempre</translation>
 <translation id="4543131175509360848">No hi ha cap full de claus d'accés</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes, <ph name="TAB_COUNT_INCOGNITO" /> d'incògnit}}</translation>
 <translation id="4554077758708533499">Connectat amb un cable USB</translation>
@@ -829,6 +831,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5486841595534124508">Logotip de l'avís de privadesa del Centre d'estadístiques de la pàgina que redirigeix a la pàgina La meva activitat.</translation>
 <translation id="5487521232677179737">Esborra les dades</translation>
 <translation id="5492637351392383067">Encriptació al dispositiu</translation>
+<translation id="5509866835115085009">Quan baixes fitxers PDF, Chrome els pot obrir automàticament.</translation>
 <translation id="5514904542973294328">Opció desactivada per l'administrador d'aquest dispositiu</translation>
 <translation id="5515439363601853141">Desbloqueja la pantalla per veure la contrasenya</translation>
 <translation id="5517095782334947753">Tens les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de l'adreça <ph name="FROM_ACCOUNT" />.</translation>

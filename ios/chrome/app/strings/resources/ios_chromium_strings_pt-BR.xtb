@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">O Chromium não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="2784449251446768092">Gerenciar configurações do Chromium</translation>
 <translation id="2798503587425057129">Abre a Lista de leitura do Chromium.</translation>
+<translation id="28276745681323897">Você pode <ph name="BEGIN_LINK" />gerenciar quais dados do Chromium são salvos<ph name="END_LINK" /> na sua Conta do Google.
+
+Para conferir mais configurações que usam dados para melhorar sua experiência no Chromium, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="2843571538056574338">Usar o preenchimento automático do Chromium</translation>
 <translation id="2918709798697875261">Sua organização exige que a conta permaneça desconectada do Chromium.</translation>
 <translation id="2942241131342758843">Use o Chromium como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>

@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5546397813406633847">ユーザーを復元</translation>
 <translation id="554893713779400387">音声入力を切り替え</translation>
+<translation id="5550417424894892620">デスクトップにドロップしたファイルは、<ph name="HOLDING_SPACE_TITLE" /> に追加されます。デスクトップにファイルを追加することはできません。</translation>
 <translation id="5551456515017410630">カレンダーを開くまたは閉じます</translation>
 <translation id="5551974246223970793">ページ検索時に次の一致箇所に移動する</translation>
 <translation id="5555639311269196631">アクセス ポイントをオフにする</translation>
@@ -1875,6 +1876,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">名前または色でアプリを並べ替えられます</translation>
 <translation id="8609384513243082612">新しいタブを開く</translation>
+<translation id="8612216344243590325">重要なファイルはデスクトップではなく <ph name="HOLDING_SPACE_TITLE" /> に保存してください。ファイルを <ph name="HOLDING_SPACE_TITLE" /> にドラッグするだけで保存できます。</translation>
 <translation id="8614517853887502247">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" /> と <ph name="APP_2_TITLE" /> の通知は表示されません</translation>
 <translation id="8619138598101195078">音量を下げる</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> と接続しました</translation>

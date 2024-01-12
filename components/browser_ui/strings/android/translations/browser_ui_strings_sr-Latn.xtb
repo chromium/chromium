@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet.</translation>
 <translation id="2790501146643349491">Kada je uključeno, nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka. Kada je isključeno, nedavno zatvoreni sajtovi ne mogu da završe slanje niti prijem podataka.</translation>
 <translation id="2822354292072154809">Želite li stvarno da resetujete sve dozvole za sajt za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Zahtevaj prikaz za mobilne uređaje</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2874939134665556319">Prethodna pesma</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Povezano sa USB uređajem</translation>
 <translation id="4194328954146351878">Pre nego što dozvolite sajtovima da vide i menjaju informacije na NFC uređajima prikazuje se upit (preporučeno)</translation>
 <translation id="4200726100658658164">Otvorite podešavanja lokacije</translation>
+<translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
 <translation id="4226663524361240545">Uređaj će vibrirati kada primate obaveštenja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
@@ -346,10 +348,12 @@
 <translation id="6746124502594467657">Premesti nadole</translation>
 <translation id="6749077623962119521">Želite da resetujete dozvole?</translation>
 <translation id="6766622839693428701">Prevucite nadole da biste zatvorili.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Sa uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Izaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6818926723028410516">Izaberite stavke</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može da čita NFC</translation>
+<translation id="6867014948848323204">Sa uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">Blokiraj sajtove tako da ne čitaju tekst i slike iz privremene memorije</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6950072572526089586">Sajt koji posećujete može da čuva informacije o tome šta radite kako bi radio na očekivani način – na primer, da biste ostali prijavljeni na sajt ili da biste sačuvali stavke u korpi za kupovinu. Sajtovi često privremeno čuvaju te informacije na uređaju.</translation>
@@ -366,6 +370,7 @@
 <translation id="7141896414559753902">Blokiraj prikazivanje iskačućih prozora i preusmeravanja na sajtovima (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će obrisati sve podatke i kolačiće koje čuvaju svi sajtovi u okviru domena <ph name="ORIGIN" /> ili koje čuva povezana aplikacija na početnom ekranu</translation>
 <translation id="7203150201908454328">Prošireno</translation>
@@ -397,6 +402,7 @@
 <translation id="7667547420449112975">Čarobnjak iz Oza</translation>
 <translation id="7684642910516280563">Ne dozvolite sajtu da koristi kolačiće treće strane</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
+<translation id="7770832849480336015">Sakrij „<ph name="TITLE_OF_MODULE" />“</translation>
 <translation id="7781829728241885113">Juče</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

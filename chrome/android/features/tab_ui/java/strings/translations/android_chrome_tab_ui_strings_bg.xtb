@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Искате да затворите старите раздели?</translation>
 <translation id="1215127405478249895">Преглед на разделите</translation>
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
+<translation id="1326271443836399892">Прегледайте текущите настройки за премахване.</translation>
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Премахване от групата</translation>
 <translation id="3008554597174452548">Спиране на следенето на продукта</translation>
 <translation id="3052964831964880138">Понижение на цената на <ph name="PRODUCT_NAME" /> в размер на <ph name="PRICE_DROP" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> архивиран раздел}other{Имате <ph name="TABS_COUNT_MANY" /> архивирани раздела}}</translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Информацията за този магазин е затворена</translation>
 <translation id="9150694013019234766">Превключвайте между разделите в групата в долната част на екрана</translation>
 <translation id="9169594135889675189">Добавяне на нов раздел към групата</translation>
+<translation id="955558140275419384">Прегледайте всички архивирани раздели за премахване, като отворите този редактор.</translation>
 <translation id="959682366969460160">Организиране</translation>
 </translationbundle>

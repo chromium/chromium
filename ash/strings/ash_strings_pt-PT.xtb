@@ -1133,6 +1133,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5546397813406633847">Recuperar utilizador</translation>
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
+<translation id="5550417424894892620">Largue os ficheiros no ambiente de trabalho para os adicionar a <ph name="HOLDING_SPACE_TITLE" />. Não pode adicionar ficheiros ao ambiente de trabalho.</translation>
 <translation id="5551456515017410630">Abrir/fechar o calendário</translation>
 <translation id="5551974246223970793">Ao pesquisar numa página, aceder à próxima correspondência da pesquisa</translation>
 <translation id="5555639311269196631">Desativar zona Wi-Fi</translation>
@@ -1874,6 +1875,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordene as suas apps por nome ou cor</translation>
 <translation id="8609384513243082612">Abrir novo separador</translation>
+<translation id="8612216344243590325">Mantenha os ficheiros importantes em <ph name="HOLDING_SPACE_TITLE" /> em vez de os guardar no ambiente de trabalho. Basta arrastar os ficheiros para <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
 <translation id="8619138598101195078">Diminuir o volume</translation>
 <translation id="8627191004499078455">Ligado a <ph name="DEVICE_NAME" /></translation>

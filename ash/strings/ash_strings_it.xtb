@@ -1130,6 +1130,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5546397813406633847">Recupera utente</translation>
 <translation id="554893713779400387">Attiva/disattiva la dettatura</translation>
+<translation id="5550417424894892620">Rilascia i file sul desktop per aggiungerli a <ph name="HOLDING_SPACE_TITLE" />. Non puoi aggiungere file al desktop.</translation>
 <translation id="5551456515017410630">Apri/chiudi il calendario</translation>
 <translation id="5551974246223970793">Quando cerchi una pagina, vai alla corrispondenza successiva</translation>
 <translation id="5555639311269196631">Disattiva l'hotspot</translation>
@@ -1871,6 +1872,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordina le app per nome o colore</translation>
 <translation id="8609384513243082612">Apre una nuova scheda</translation>
+<translation id="8612216344243590325">Conserva i file importanti in <ph name="HOLDING_SPACE_TITLE" /> anziché sul desktop. Basta trascinare i file in <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Le notifiche delle app <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="8619138598101195078">Abbassa il volume</translation>
 <translation id="8627191004499078455">Connesso a <ph name="DEVICE_NAME" /></translation>

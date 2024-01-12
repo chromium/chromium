@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">Μετάδοση</translation>
 <translation id="5546397813406633847">Ανάκτηση χρήστη</translation>
 <translation id="554893713779400387">Εναλλαγή υπαγόρευσης</translation>
+<translation id="5550417424894892620">Αποθέστε αρχεία στην επιφάνεια εργασίας για να τα προσθέσετε στο <ph name="HOLDING_SPACE_TITLE" />. Δεν είναι δυνατή η προσθήκη αρχείων στην επιφάνεια εργασίας.</translation>
 <translation id="5551456515017410630">Άνοιγμα/κλείσιμο ημερολογίου</translation>
 <translation id="5551974246223970793">Κατά την αναζήτηση μιας σελίδας, μεταβείτε στο επόμενο αποτέλεσμα για αναζήτηση</translation>
 <translation id="5555639311269196631">Απενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
@@ -1874,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ταξινόμηση των εφαρμογών σας κατά όνομα ή χρώμα</translation>
 <translation id="8609384513243082612">Άνοιγμα νέας καρτέλας</translation>
+<translation id="8612216344243590325">Διατηρήστε τα σημαντικά αρχεία στο <ph name="HOLDING_SPACE_TITLE" /> αντί στην επιφάνεια εργασίας. Απλώς σύρετε τα αρχεία στο <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Έχει γίνει απόκρυψη των ειδοποιήσεων των εφαρμογών <ph name="APP_1_TITLE" /> και <ph name="APP_2_TITLE" /> επειδή η προστασία προβολής είναι ενεργοποιημένη</translation>
 <translation id="8619138598101195078">Μείωση έντασης ήχου</translation>
 <translation id="8627191004499078455">Συνδέθηκε στη συσκευή <ph name="DEVICE_NAME" /></translation>

@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Thông tin chi tiết</translation>
 <translation id="117624967391683467">Đang sao chép <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
+<translation id="1190144681599273207">Tìm nạp tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
 <translation id="1194390763418645112">Hoạt động truy cập vào tệp qua <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1209796539517632982">Máy chủ có tên tự động</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Chia sẻ với <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Chứng chỉ xác thực bị từ chối cục bộ</translation>
 <translation id="1775381402323441512">Thông tin về tệp video</translation>
+<translation id="180035236176489073">Bạn phải trực tuyến để truy cập các tệp này.</translation>
 <translation id="1807938677607439181">Tất cả các tệp</translation>
 <translation id="1810764548349082891">Không có bản xem trước</translation>
 <translation id="1812302367230252929">Tiếng Amhara (chuyển tự)</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Ra hiệu cảm ơn</translation>
 <translation id="2088690981887365033">Mạng riêng ảo (VPN)</translation>
 <translation id="209653272837065803">Không gian lưu trữ không đủ để tiếp tục đồng bộ hoá tệp</translation>
-<translation id="2099143626019777139">Quản trị viên sẽ nhìn thấy các trang web mà bạn truy cập. Bạn có thể xem danh sách các trang web mà quản trị viên có thể nhìn thấy.</translation>
 <translation id="2111134541987263231">Bật tuỳ chọn <ph name="BEGIN_BOLD" />Cho phép ở chế độ ẩn danh<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> mục sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL tự động định cấu hình:</translation>
 <translation id="2284767815536050991">bộ nhớ di động</translation>
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
+<translation id="2291538123825441971">Đang mở <ph name="NUMBER_OF_FILES" /> tệp.</translation>
+<translation id="2303301624314357662">Đang mở tệp <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> đã được đẩy ra.</translation>
 <translation id="2307462900900812319">Định cấu hình mạng</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Không gian lưu trữ không đủ để đồng bộ hoá tất cả các tệp của bạn</translation>
 <translation id="23721837607121582">Tải hồ sơ mạng di động xuống, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Chuyển sang chế độ xem danh sách</translation>
+<translation id="2377590462528165447">Đã chia sẻ <ph name="NUMBER_OF_ITEMS" /> thư mục với Linux</translation>
 <translation id="2379576081295865700">Đang kiểm tra không gian lưu trữ… Đã tìm thấy 1 mục</translation>
 <translation id="2383454254762599978">Chuyển vào thùng rác</translation>
 <translation id="2387458720915042159">Loại kết nối proxy</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Nén tệp đã chọn</translation>
 <translation id="4202378258276439759">Tiếng Tây Ban Nha (Mỹ Latinh)</translation>
 <translation id="4202977638116331303">Tiếng Georgia</translation>
+<translation id="421017592316736757">Bạn phải trực tuyến để truy cập tệp này.</translation>
 <translation id="4212740939091998969">Thư mục có tên "<ph name="FOLDER_NAME" />" đã tồn tại. Hãy chọn một tên khác.</translation>
 <translation id="4218274196133425560">Xóa trường hợp ngoại lệ đối với <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Bản trình bày Google</translation>
 <translation id="4277536868133419688">Đang bật bộ lọc <ph name="FILTER_NAME" />.</translation>
+<translation id="4290535918735525311">Đã chia sẻ 1 thư mục với Linux</translation>
 <translation id="4299729908419173967">Tiếng Braxin</translation>
 <translation id="4302605047395093221">Bất kỳ ai sử dụng thiết bị này đều cần nhập mã PIN để kết nối với mạng di động này</translation>
 <translation id="4303531889494116116">Mạng này hiện không thể đáp ứng. Hãy thử lại sau.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Thông tin chi tiết</translation>
 <translation id="4935975195727477204">Hoa Gazania</translation>
 <translation id="4943368462779413526">Bóng đá</translation>
+<translation id="4961158930123534723">Đã chia sẻ 1 thư mục với ứng dụng Parallels Desktop</translation>
+<translation id="4965874878399872778">Đang kiểm tra tệp theo các chính sách bảo mật của tổ chức bạn...</translation>
 <translation id="496656650103537022">Đã khôi phục <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Không thể hoàn tất quá trình thiết lập tính năng đồng bộ hoá tệp</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318819489018851358">Chia sẻ với Linux</translation>
 <translation id="5323213332664049067">Tiếng Mỹ Latinh</translation>
+<translation id="5330145655348521461">Những tệp này được mở trên máy tính khác. Chuyển tới <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp đó.</translation>
 <translation id="5330512191124428349">Nhận thông tin</translation>
 <translation id="535792325654997756">Người với mèo</translation>
 <translation id="5358764674931277">Tốc độ khung hình</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">Tiếng Nhật bằng bàn phím Anh-Mỹ</translation>
 <translation id="6138894911715675297">Không có mạng <ph name="NETWORK_TYPE" /></translation>
 <translation id="6146563240635539929">Video</translation>
+<translation id="6150853954427645995">Để lưu tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Bướm</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">Giá trị so khớp hậu tố tên miền không hợp lệ</translation>
 <translation id="6364301859968397756">Đã dùng hết bộ nhớ của tổ chức</translation>
 <translation id="6367976544441405720">Xe tải</translation>
+<translation id="637062427944097960">Tệp này được mở trên máy tính khác. Chuyển sang <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp này.</translation>
 <translation id="6394388407447716302">Chỉ có thể đọc</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> mục</translation>
 <translation id="6407769893376380348">Không di chuyển được <ph name="FILE_NAME" /> vì tệp này đã được mã hoá.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">Bạn còn 1 lần nhập.</translation>
 <translation id="643243556292470964">Các tệp đã xoá hiện được chuyển vào thùng rác</translation>
 <translation id="6438480100790416671">Đang kiểm tra không gian lưu trữ…</translation>
+<translation id="6451527188465304418">Đang kiểm tra tệp theo các chính sách bảo mật của tổ chức bạn...</translation>
 <translation id="6485131920355264772">Không thể truy xuất thông tin dung lượng</translation>
 <translation id="6495925982925244349">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
 <translation id="649877868557234318">Đang giải nén <ph name="FILE_NAME" /> vào <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">Cài đặt tính năng đồng bộ hoá tệp</translation>
 <translation id="6594855146910089723">Thư mục này được chia sẻ với Linux và Parallels Desktop</translation>
 <translation id="6607272825297743757">Thông tin tệp</translation>
+<translation id="6609332149380188670">Đã chia sẻ <ph name="NUMBER_OF_ITEMS" /> thư mục với ứng dụng Parallels Desktop</translation>
 <translation id="6629518321609546825">Nhập ít nhất 4 số</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6650726141019353908">Bướm màu hồng</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Lỗi khi định cấu hình mạng</translation>
+<translation id="7839804798877833423">Tìm nạp các tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7853966320808728790">BÉPO tiếng Pháp</translation>
 <translation id="7857117644404132472">Thêm ngoại lệ</translation>
@@ -919,12 +933,14 @@
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8147028810663464959">Độ rộng ký tự là Đầy đủ</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 lỗi.}other{# lỗi.}}</translation>
 <translation id="8154842056504218462">Đã chọn tất cả các mục.</translation>
 <translation id="8157684860301034423">Không truy xuất được thông tin ứng dụng.</translation>
 <translation id="8175731104491895765">Tiếng Pháp (Bỉ)</translation>
 <translation id="8175799081768705361">Đang đồng bộ hoá <ph name="NUMBER_OF_FILES_SYNCING" /> tệp trên Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Mẫu thiết bị</translation>
+<translation id="8223479393428528563">Để lưu các tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Xem bộ nhớ</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
 <translation id="8250690786522693009">Tiếng Latinh</translation>
@@ -1010,6 +1026,7 @@
 <translation id="8787254343425541995">Cho phép các proxy đối với mạng chia sẻ</translation>
 <translation id="8790981080411996443">Người tưới cây</translation>
 <translation id="8798099450830957504">Mặc định</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 cảnh báo.}other{# cảnh báo.}}</translation>
 <translation id="8808686172382650546">Mèo</translation>
 <translation id="8810671769985673465">Không nén được, mục tồn tại: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Tiếng Tây Ban Nha (Tây Ban Nha)</translation>

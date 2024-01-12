@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Szeretné bezárni a régi lapokat?</translation>
 <translation id="1215127405478249895">Lapok áttekintése</translation>
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
+<translation id="1326271443836399892">Tekintse át az aktuális rendezési beállításokat.</translation>
 <translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
 <translation id="1657719826150349398">Lap mozgatása lefelé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Eltávolítás a csoportból</translation>
 <translation id="3008554597174452548">Termék nyomon követésének leállítása</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> archivált lapja van}other{<ph name="TABS_COUNT_MANY" /> archivált lapja van}}</translation>
 <translation id="3194464645767632461">értékelés</translation>
 <translation id="3291470810748040983">Értesítést kap, ha alacsonyabb ár áll rendelkezésre az egyik megnyitott lapon.</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
 <translation id="9150694013019234766">Válthat a képernyő aljánál lévő lapcsoport lapjai között</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>
+<translation id="955558140275419384">A szerkesztő megadásával áttekintheti a rendezni kívánt archivált lapok mindegyikét.</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>
 </translationbundle>

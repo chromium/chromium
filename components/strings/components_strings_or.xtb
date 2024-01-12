@@ -246,7 +246,7 @@
 <translation id="1429080515485835353">ସେଲ୍ଫ-ଆଡେସିଭ ଫିଲ୍ମ</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1432187715652018471">ପୃଷ୍ଠାଟି ଏକ ସେବା ହ୍ୟାଣ୍ଡଲର ଇନଷ୍ଟଲ କରିବାକୁ ଚାହୁଁଛି।</translation>
-<translation id="1432581352905426595">ସନ୍ଧାନ ଇଞ୍ଜିନ୍‌ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="1432581352905426595">ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1433225466058025572">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ମୁଭ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="1434317006812369578">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପରି ବିଲ୍ଟ-ଇନ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ଅଛି। ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ବର୍ତ୍ତମାନ <ph name="BEGIN_LINK" /><ph name="SITE" />ରେ ମାଲୱେର ପାଇଛି<ph name="END_LINK" />, ଯାହାକୁ ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିବା ସାଇଟରେ ଏମ୍ବେଡ କରାଯାଇଛି।</translation>
 <translation id="1435940442311036198">ଗୋଟିଏ ଭିନ୍ନ ଡିଭାଇସରେ ଏକ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">ଆପଣଙ୍କ ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="1482879811280872320">ସାଇକିଲିଂ</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
+<translation id="1484632730438126438">ଏହା ବହୁତ ଛୋଟ ଅଟେ। ଅତି କମରେ 3 ଶବ୍ଦ ଲେଖନ୍ତୁ।</translation>
 <translation id="1492194039220927094">ନୀତିଗୁଡ଼ିକ ପୁସ୍‌ କରନ୍ତୁ:</translation>
 <translation id="14938948731065592">କମ୍ପ୍ୟୁଟର ପେରିଫେରାଲଗୁଡ଼ିକ</translation>
 <translation id="1495677929897281669">ଟାବ୍‌କୁ ଫେରନ୍ତୁ</translation>
@@ -750,7 +751,7 @@
 <translation id="2448295565072560657">ଆପଣ ଲଗ ଇନ କରିଥିବା ସମୟରେ ଏହି ଡିଭାଇସରେ ଆଟାଚ ହୋଇଥିବା ପେରିଫେରାଲଗୁଡ଼ିକ</translation>
 <translation id="2450021089947420533">ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="2456755709261364512">ଆପଣଙ୍କ ବେଟେରୀ <ph name="REQUIRED_BATTERY_PRECENT" />%ରୁ ଅଧିକ ଚାର୍ଜ ହେବା ଆବଶ୍ୟକ</translation>
-<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
+<translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2463739503403862330">ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="2465688316154986572">ଷ୍ଟାପଲ୍</translation>
 <translation id="2465914000209955735">ଆପଣ Chromeରେ ଡାଉନଲୋଡ୍ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -760,6 +761,7 @@
 <translation id="2469153820345007638">1-ରୁ-N ଅର୍ଡର୍</translation>
 <translation id="24699311393038040">କାଗଜ (କୋଟେଡ)</translation>
 <translation id="2470767536994572628">ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କଲେ, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସିଙ୍ଗଲ୍ ପୃଷ୍ଠା ଭ୍ୟୁ ଏବଂ ଏହାର ମୂଳ ରୋଟେସନକୁ ଫେରି ଆସିବ</translation>
+<translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2479410451996844060">ଅବୈଧ ସନ୍ଧାନ URL.</translation>
 <translation id="2480300195898055381">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="USER_EMAIL" />ରେ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
@@ -829,12 +831,6 @@
 <translation id="2610561535971892504">କପି କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="2612993535136743634">ଆପଣଙ୍କ ଡିଭାଇସ ଏବଂ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ସୁରକ୍ଷା କୋଡକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="2616412942031748191">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଅପ୍ଟିମାଇଜେସନ ଏବଂ ମାର୍କେଟିଂ</translation>
-<translation id="2617988307566202237">Chrome ନିମ୍ନୋକ୍ତ ସୂଚନାକୁ <ph name="BEGIN_EMPHASIS" />ସେଭ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ
-          <ph name="LIST_ITEM" />କୁକୀ ଏବଂ ସାଇଟ ଡାଟା
-          <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା
-        <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2625385379895617796">ଆପଣଙ୍କର ଘଣ୍ଟା ଆଗୁଆ ଅଛି</translation>
 <translation id="262745152991669301">USB ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
@@ -1016,6 +1012,7 @@
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଉପଲବ୍ଧ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ବ୍ରାଉଜ କରିବା ପାଇଁ Tab ଦବାନ୍ତୁ, ତା'ପରେ ଚୟନିତ କାର୍ଯ୍ୟକୁ କାର୍ଯ୍ୟକାରୀ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="3013291976881901233">MIDI ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3014553260345122294">ବିଜିନେସ ନ୍ୟୁଜ</translation>
+<translation id="3014726756341138577">ଉନ୍ନତ ପ୍ରିଣ୍ଟର ଫିଚରଗୁଡ଼ିକ</translation>
 <translation id="301521992641321250">ସ୍ୱଚାଳିତ ଭାବେ ବ୍ଲକ୍ କରାଗଲା</translation>
 <translation id="3016780570757425217">ଆପଣଙ୍କର ଲୋକେସନ୍‌ ଜାଣନ୍ତୁ</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, ପରାମର୍ଶକୁ କାଢ଼ିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ।</translation>
@@ -1163,6 +1160,7 @@
 <translation id="33073482541490531">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। Password Manager ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
 <translation id="3307649904964670439">'Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
+<translation id="3324223664999044166">ଆପଣଙ୍କ ଚିନ୍ତାଧାରକୁ ସଂକ୍ଷପରେ ପ୍ରକାଶ କରୁଥିବା 3 କିମ୍ବା ଅଧିକ ଶବ୍ଦ</translation>
 <translation id="3324687287337751929">4 x 6 ଇଞ୍ଚ</translation>
 <translation id="3324983252691184275">ଗାଢ଼ ଲାଲ୍‌ ରଙ୍ଗ</translation>
 <translation id="3325027355611702542">କେମ୍ପର ଏବଂ RV</translation>
@@ -1300,7 +1298,7 @@
 <translation id="3576616784287504635"><ph name="SITE" />ରେ ଏକ ଏମ୍ବେଡ୍‌ ହୋ‍ଇଥିବା ପୃଷ୍ଠା କହେ ଯେ</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3577902790357386792">ଜିମ୍ନାଷ୍ଟିକ୍ସ</translation>
-<translation id="3581089476000296252">ଯେତେବେଳେ ଏହି ପୃଷ୍ଠା ପ୍ରସ୍ତୁତ ହୋଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କୁ ସୂଚିତ କରିଦେବ। &lt;a&gt;ବାତିଲ୍ କରନ୍ତୁ&lt;/a&gt;</translation>
+<translation id="3581089476000296252">ଏହି ପୃଷ୍ଠା ପ୍ରସ୍ତୁତ ହୋଇଗଲେ Chrome ଆପଣଙ୍କୁ ଜଣେଇବ। &lt;a&gt;ବାତିଲ କରନ୍ତୁ&lt;/a&gt;</translation>
 <translation id="3582930987043644930">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3583757800736429874">&amp;ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟଟି ପୁଣିଥରେ କରନ୍ତୁ</translation>
 <translation id="3584299510153766161">ତଳ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
@@ -1400,6 +1398,7 @@
 <translation id="3748009735914587286">ମେଟାଲ (ହାଇ-ଗ୍ଲସ)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ରେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କୁ ହୁଏତ କିଛି ବିପଜ୍ଜନକ କାର୍ଯ୍ୟ ଯେପରିକି, ସଫ୍ଟୱେର୍ ଇନ୍‌ଷ୍ଟଲେସନ୍ କିମ୍ବା ନିଜର ବ୍ୟକ୍ତିଗତ ତଥ୍ୟ (ଉଦାହରଣସ୍ୱରୂପ ପାସ୍‌ୱର୍ଡ, ଫୋନ୍‌ ନମ୍ବର କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡ) ପ୍ରକାଶ କରିବା ପାଇଁ ପ୍ରତାରିତ କରିପାରନ୍ତି। <ph name="BEGIN_LEARN_MORE_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">ଏଭିଏସନ ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
+<translation id="3751020515020988516">ଆପଣଙ୍କ ଅନୁରୋଧ ବୁଝି ହେଉନାହିଁ। ଏକ ଭିନ୍ନ ଅନୁରୋଧ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ସେଟ ଅପ କରାଯାଇନଥିବା ଯୋଗୁଁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="3754210790023674521">ପିକଚର୍-ଇନ୍-ପିକଚର୍‌ରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3759461132968374835">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ ରିପୋର୍ଟ କରାଯାଇଥିବା କ୍ରାସ୍‌ ନାହିଁ।  କ୍ରାସ୍‍ ରିପୋର୍ଟ ଅକ୍ଷମ ହେଉଥିବା ସମୟରେ ହୋ‍ଇଥିବା କ୍ରାସ୍‌ ଏଠାରେ ଦେଖାଯିବ ନାହିଁ।</translation>
@@ -1456,6 +1455,7 @@
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3872834068356954457">ବିଜ୍ଞାନ</translation>
 <translation id="3875783148670536197">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
+<translation id="3877877650871124156">ଏହା ବହୁତ ଲମ୍ବା ଅଟେ। ଛୋଟ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3881478300875776315">କମ୍ ଲାଇନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="3883500545751229739">ଇଣ୍ଟ୍ରୁସିଭ ବିଜ୍ଞାପନଗୁଡ଼ିକ</translation>
 <translation id="3884278016824448484">ପରସ୍ପର ବିରୋଧୀ ଡିଭାଇସ୍ ଚିହ୍ନଟକାରୀ</translation>
@@ -1824,7 +1824,7 @@
 <translation id="4631881646528206880">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
 <translation id="4638670630777875591">Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡ</translation>
-<translation id="464342062220857295">ଫିଚର୍‍ଗୁଡ଼ିକର ସନ୍ଧାନ କରନ୍ତୁ</translation>
+<translation id="464342062220857295">ଫିଚରଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4644670975240021822">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="4646534391647090355">ମୋତେ ବର୍ତ୍ତମାନ ସେଠାକୁ ନେଇଚାଲନ୍ତୁ</translation>
 <translation id="4648262692072505866">ହାସ SHA-256 ଫର୍ମାଟର ହେବା ଆବଶ୍ୟକ।</translation>
@@ -1832,7 +1832,6 @@
 <translation id="4652440160515225514">ଏହି ସାଇଟ ଏକ ନୀତିର ଉଲ୍ଲଙ୍ଘନ କରିଥିବା ଯୋଗୁଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାକୁ ବ୍ଲକ କରିଛି।</translation>
 <translation id="4653167719759882810">ଏକତ୍ରୀକରଣ ଏବଂ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
 <translation id="4658638640878098064">ଉପର ବାମ ପଟରେ ଷ୍ଟାପଲ୍</translation>
-<translation id="4660119392514473465">ଏବେ ଆପଣ ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ଲୋକମାନଙ୍କୁ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଦେଖାଯିବ ନାହିଁ। କିନ୍ତୁ, ଡାଉନଲୋଡ୍, ବୁକମାର୍କ ଏବଂ ପଢ଼ିବା ତାଲିକାର ଆଇଟମଗୁଡ଼ିକୁ ସେଭ୍ କରାଯିବ।</translation>
 <translation id="4660567771874403130">ଏନର୍ଜି ଏବଂ ୟୁଟିଲିଟି</translation>
 <translation id="4663373278480897665">କ୍ୟାମେରା ଅନୁମୋଦିତ ଅଟେ</translation>
 <translation id="466561305373967878">ବୋର୍ଡ ଗେମ</translation>
@@ -1949,7 +1948,7 @@
 <translation id="4877422487531841831"><ph name="TEXT" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="4877521229462766300">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="4879491255372875719">ସ୍ୱଚାଳିତ (ଡିଫଲ୍ଟ)</translation>
-<translation id="4880827082731008257">ସନ୍ଧାନ ଇତିହାସ</translation>
+<translation id="4880827082731008257">ସର୍ଚ୍ଚ ଇତିହାସ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4881808915112408168">24 x 31.5 ଇଞ୍ଚ</translation>
 <translation id="4882314601499260499">କୌଣସି ୟୁଜର ନୀତି ଲାଗୁ କରାଯାଇନାହିଁ। ୟୁଜର ନୀତିଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ, ଆପଣଙ୍କ ସଂସ୍ଥା <ph name="LINK_BEGIN" />ଆପଣଙ୍କ ଡୋମେନକୁ ଯାଞ୍ଚ କରିବା<ph name="LINK_END" /> ଆବଶ୍ୟକ।</translation>
@@ -2163,6 +2162,7 @@
 <translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5293919335876685914">କୁପେଗୁଡ଼ିକ</translation>
 <translation id="5296589789433599000">ରନ୍ଧନ ଏବଂ ରେସିପିଗୁଡ଼ିକ</translation>
+<translation id="5298618990685278995">ଏକ ପ୍ରଥମ ଡ୍ରାଫ୍ଟ</translation>
 <translation id="5299298092464848405">ନୀତି ପାର୍ସ କରିବାରେ ତ୍ରୁଟି</translation>
 <translation id="5299638840995777423">ରୋବୋଟିକ୍ସ</translation>
 <translation id="5300062471671636390">କାଷ୍ଟ କରିବା ପାଇଁ ଡିଭାଇସ ତାଲିକା ଲୁଚାନ୍ତୁ</translation>
@@ -2279,6 +2279,7 @@
 <translation id="5541086400771735334">ମେଲବକ୍ସ 7</translation>
 <translation id="5541546772353173584">ଇମେଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5543722831081909240">180 ଡିଗ୍ରୀ</translation>
+<translation id="555037537507405574">ଉନ୍ନତ ପ୍ରିଣ୍ଟର ଫିଚରଗୁଡ଼ିକ</translation>
 <translation id="555128936272638662">ମୋବାଇଲ ଏବଂ ୱାୟରଲେସ ଆକ୍ସେସୋରୀ</translation>
 <translation id="5551890439174915351">100 x 200 ମିମି</translation>
 <translation id="5552137475244467770">Chrome ସମୟେ ସମୟେ ଅନ୍‌ଲାଇନ୍‌ରେ ପ୍ରକାଶ କରାଯାଇଥିବା ତାଲିକାଗୁଡ଼ିକ ଅନୁଯାୟୀ ଆପଣଙ୍କ ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିଥାଏ। ଏପରି କରିବା ବେଳେ, ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡ ଏବଂ ଉପଯୋଗକର୍ତ୍ତାନାମଗୁଡ଼ିକ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ଯାହାଫଳରେ ସେଗୁଡ଼ିକ Google ସମେତ ଅନ୍ୟ କାହା ଦ୍ୱାରା ପଢ଼ାଯାଇ ପାରିବ ନାହିଁ।</translation>
@@ -2564,6 +2565,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeରେ ଇନକଗ୍ନିଟୋ ମୋଡ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6133984428121856852">ଫାଇଲ ଏକ୍ସଟେନସନ ଖାଲି ଅଛି କିମ୍ବା ତ୍ରୁଟିପୂର୍ଣ୍ଣ ଅଟେ।</translation>
+<translation id="6139769382153674477">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପଣ ସାଇନ ଇନ କରିଛନ୍ତି?</translation>
 <translation id="6139975341602920272">17 x 22 ଇଞ୍ଚ</translation>
 <translation id="6146055958333702838">ଯେକୌଣସି କେବଲ୍‌ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଉଥିବା ଯେକୌଣସି ରାଉଟର୍‌, ମୋଡେମ୍‍ କିମ୍ବା ଅନ୍ୟ ରାଉଟର୍‌ ରିବୁଟ୍‌ କରନ୍ତୁ।</translation>
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
@@ -2577,7 +2579,6 @@
 <translation id="6160391204859821737">ଏକ ବିଜ୍ଞାପନ ଗୋପନୀୟତା ଫିଚର ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6167577165590485365">ଚେଷ୍ଟା କରାଯାଇଥିବା ଗତ ଫେଚ:</translation>
-<translation id="6169916984152623906">ଏବେ ଆପଣ ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ଏହି ଡିଭାଇସ୍‍କୁ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ଲୋକମାନେ ଆପଣଙ୍କର ଗତିବିଧି ଦେଖିପାରିବେ ନାହିଁ। ତେବେ, ଡାଉନ୍‍‍ଲୋଡ୍ ଓ ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ସେଭ୍ କରାଯିବ।</translation>
 <translation id="617256461084925519">Google Chrome ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି ଯାହା ଫଳରେ ଏହା ଆପଣଙ୍କ ପେମେଣ୍ଟ ସୂଚନାରେ ପୂରଣ ହୋଇପାରିବ।</translation>
 <translation id="6176387967264100435">ଏହି ମୂଲ୍ୟ ଅଧିକ ଅଟେ</translation>
 <translation id="6177128806592000436">ଏହି ସାଇଟ୍‌ରେ ଆପଣଙ୍କର ସଂଯୋଗ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -2858,7 +2859,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">ବାଦ୍ୟ ଯନ୍ତ୍ରଗୁଡ଼ିକ</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
-<translation id="6710594484020273272">&lt;ସନ୍ଧାନ ପଦ ଟାଇପ୍ କରନ୍ତୁ&gt;</translation>
+<translation id="6710594484020273272">&lt;ସର୍ଚ୍ଚ ଶବ୍ଦ ଟାଇପ କରନ୍ତୁ&gt;</translation>
 <translation id="671076103358959139">ନାମାଙ୍କିତ ଟୋକନ୍:</translation>
 <translation id="6711464428925977395">ପ୍ରକ୍ସି ସର୍ଭରରେ କିଛି ତ୍ରୁଟି ଅଛି କିମ୍ବା ଠିକଣା ଭୁଲ୍ ଅଛି।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
@@ -3197,6 +3198,7 @@
 <translation id="7378877318020334501">ଟିଭି କମେଡିଗୁଡ଼ିକ</translation>
 <translation id="7380398842872229465">10 x 15 ଇଞ୍ଚ</translation>
 <translation id="738439098860678026">ଶୈଶବ ଶିକ୍ଷା</translation>
+<translation id="7388071710882496863">"ଏହି ରେଷ୍ଟୁରାଣ୍ଟ ପାଇଁ ଏକ 5-ଷ୍ଟାର ବିଶିଷ୍ଟ ସମୀକ୍ଷା ଲେଖ" ପରି ଅନୁରୋଧ</translation>
 <translation id="7388594495505979117">{0,plural, =1{ଆପଣଙ୍କ ଡିଭାଇସ 1 ମିନିଟରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{ଆପଣଙ୍କ ଡିଭାଇସ # ମିନିଟରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="7390545607259442187">କାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7392089738299859607">ଠିକଣା ଅପଡେଟ୍ କରନ୍ତୁ</translation>
@@ -3266,12 +3268,6 @@
 <translation id="749865518782565832">ପ୍ଲମ୍ବିଂ</translation>
 <translation id="7501663406926337752">ଆଗରେ ଥିବା ସାଇଟକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଫ୍ଲାଗ କରାଯାଇଛି</translation>
 <translation id="7501853161948120656">ଶିକ୍ଷାଗତ ରିସୋର୍ସଗୁଡ଼ିକ</translation>
-<translation id="7506488012654002225">Chromium ନିମ୍ନୋକ୍ତ ସୂଚନାକୁ <ph name="BEGIN_EMPHASIS" />ସେଭ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ
-          <ph name="LIST_ITEM" />କୁକୀ ଏବଂ ସାଇଟ ଡାଟା
-          <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା
-        <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">ଏନଭେଲପ #9</translation>
 <translation id="7508255263130623398">ଫେରସ୍ତ ନୀତି ଡିଭାଇସ୍ id ଖାଲି ଅଛି କିମ୍ବା ବର୍ତ୍ତମାନର ଡିଭାଇସ୍ id ସହିତ ମେଳ ହେଉନାହିଁ</translation>
 <translation id="7508577201115425418">ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ପ୍ରିଣ୍ଟିଂ ସେବା</translation>
@@ -3453,6 +3449,7 @@
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" />ରେ <ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ ସୁରକ୍ଷା କୋଡ ଲେଖନ୍ତୁ ଯାହା ଫଳରେ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣଙ୍କ ବେଙ୍କ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
+<translation id="7805906048382884326">ଟିପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7810410097247356677">ପରବର୍ତ୍ତୀ ସମୟରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କର କାର୍ଡ ଏବଂ ଏନକ୍ରିପ୍ଟ ହୋଇଥିବା ସୁରକ୍ଷା କୋଡକୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chromeରୁ ଫର୍ମ ସମ୍ବନ୍ଧିତ ପରାମର୍ଶ କାଢ଼ିବେ?</translation>
@@ -4110,6 +4107,7 @@
 <translation id="9144951720726881238">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ:</translation>
 <translation id="9148507642005240123">&amp;ଏଡିଟ୍‍କୁ ପୂର୍ବବତ୍‍ କରନ୍ତୁ</translation>
 <translation id="9148599396704355100">ମୂଲ୍ୟ କମ ଅଟେ</translation>
+<translation id="9150025764986957246">ଆପଣ ଏହିପରି ଜିନିଷଗୁଡ଼ିକ ଲେଖିପାରିବେ:</translation>
 <translation id="9150045010208374699">ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9150685862434908345">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରର ସେଟଅପକୁ ରିମୋଟ୍ ଭାବରେ ବଦଳାଇ ପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପକୁ Chrome ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">ଅପ୍‌ଡେଟ୍‍ କରାଗଲା</translation>
@@ -4120,6 +4118,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">ସାଇଟରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଆଧାରରେ ଆପଣ କଣ ପସନ୍ଦ କରନ୍ତି ତାହା ମଧ୍ୟ ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ନିର୍ଦ୍ଧାରଣ କରିପାରିବ। ଉଦାହରଣ ସ୍ୱରୂପ, ଯଦି ଆପଣ ଦୀର୍ଘ-ଦୂରତା ପାଇଁ ଦୌଡ଼ିବା ଜୋତା ବିକ୍ରି କରୁଥିବା କୌଣସି ସାଇଟକୁ ଭିଜିଟ କରନ୍ତି, ତେବେ ମାରାଥନରେ ଦୌଡ଼ିବା ପାଇଁ ଆପଣ ଆଗ୍ରହୀ ବୋଲି ସାଇଟ ସ୍ଥିର କରିପାରେ।</translation>
 <translation id="9166851138617700776">ସାଇଟ ଦ୍ୱାରା-ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନ ଏବଂ ବିଜ୍ଞାପନର ପରିମାପ ବିଷୟରେ ଅଧିକ</translation>
+<translation id="9167594211215946097">ଆପଣଙ୍କ ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ସିଧାସଳଖ ଆକ୍ସେସ ଅଛି</translation>
 <translation id="9168814207360376865">ଆପଣଙ୍କର ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକ ସେଭ୍ କରାଯାଇଛି କି ନାହିଁ, ତାହା ଯାଞ୍ଚ କରିବାକୁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="9169664750068251925">ସର୍ବଦା ଏହି ସାଇଟ୍‌ରେ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" />କୁ ମୂଳସ୍କ୍ରିନ୍‌ରେ ଯୋଗ କରନ୍ତୁ</translation>

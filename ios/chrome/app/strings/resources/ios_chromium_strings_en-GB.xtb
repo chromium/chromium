@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2784449251446768092">Manage Chromium Settings</translation>
 <translation id="2798503587425057129">Opens the Chromium reading list.</translation>
+<translation id="28276745681323897">You can <ph name="BEGIN_LINK" />manage what Chromium data is saved<ph name="END_LINK" /> in your Google Account.
+
+For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="2843571538056574338">Use Chromium for Autofill</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>

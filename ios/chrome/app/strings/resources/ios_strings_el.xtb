@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Επιλογέας μονάδας</translation>
 <translation id="2348630484974447747">Πακέτο</translation>
 <translation id="2351097562818989364">Έγινε επαναφορά ρυθμίσεων μετάφρασης.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Μπορείτε να αποθηκεύσετε τον κωδικό πρόσβασης για τον τομέα {DOMAIN_ONE} στον Λογαριασμό σας Google, {EMAIL}.}=2{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE} και {DOMAIN_TWO} στον Λογαριασμό σας Google, {EMAIL}.}=3{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομέα στον Λογαριασμό σας Google, {EMAIL}.}other{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομείς στον Λογαριασμό σας Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
 <translation id="2359043044084662842">Μετάφραση</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">Διαχείριση τρόπων πληρωμής…</translation>
 <translation id="469300482518076788">Κλείσιμο καρτέλας</translation>
 <translation id="4697071790493980729">Δεν βρέθηκαν αποτελέσματα</translation>
+<translation id="470337593714520080">{count,plural, =1{Αποθήκευση 1 σελιδοδείκτη στον Λογαριασμό σας Google}other{Αποθήκευση {count} σελιδοδεικτών στον Λογαριασμό σας Google}}</translation>
 <translation id="470966556546083668">Να μην ενεργοποιηθεί ο συγχρονισμός</translation>
 <translation id="4711809265250406889">Όταν είναι ενεργή</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} και 1 ακόμη}other{{website_1}, {website_2} και {more_count} ακόμη}}</translation>
@@ -987,6 +989,7 @@
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>
 <translation id="6266039999629596120">Απαιτείται ενέργεια</translation>
 <translation id="6277426346321820595">Χωρίς προστασία</translation>
+<translation id="628251768213143684">Μπορείτε να διαχειριστείτε ανά πάσα στιγμή το περιεχόμενο που είναι αποθηκευμένο στον Λογαριασμό σας Google</translation>
 <translation id="6284652193729350524">Πρόταση για μετάφραση <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Καταργήθηκε η παρακολούθηση του καναλιού <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Για να ενεργοποιήσετε την Ασφαλή περιήγηση, ανοίξτε τις <ph name="BEGIN_LINK" />υπηρεσίες Google<ph name="END_LINK" /> και πατήστε Ασφαλής περιήγηση.</translation>

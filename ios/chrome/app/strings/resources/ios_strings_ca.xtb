@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Selector d'unitats</translation>
 <translation id="2348630484974447747">Paquet</translation>
 <translation id="2351097562818989364">S'ha restablert la configuració del Traductor.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Pots desar la contrasenya per a {DOMAIN_ONE} al teu Compte de Google ({EMAIL}).}=2{Pots desar les contrasenyes per a {DOMAIN_ONE} i {DOMAIN_TWO} al teu Compte de Google ({EMAIL}).}=3{Pots desar les contrasenyes per a {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} dominis més al teu Compte de Google ({EMAIL}).}other{Pots desar les contrasenyes per a {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} dominis més al teu Compte de Google ({EMAIL}).}}</translation>
 <translation id="235789365079050412">Política de privadesa de Google</translation>
 <translation id="2359043044084662842">Tradueix</translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -335,6 +336,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2747003861858887689">Camp anterior</translation>
 <translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Comptes d'aquest dispositiu</translation>
+<translation id="2755595981383829244">Ara rebràs notificacions de contingut</translation>
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="2772667768515195373">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça s'ha desat al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Cerca d'incògnit</translation>
@@ -688,6 +690,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4689564913179979534">Gestiona les formes de pagament...</translation>
 <translation id="469300482518076788">Tanca la pestanya</translation>
 <translation id="4697071790493980729">No s'ha trobat cap resultat</translation>
+<translation id="470337593714520080">{count,plural, =1{Desa 1 adreça d'interès al teu Compte de Google}other{Desa {count} adreces d'interès al teu Compte de Google}}</translation>
 <translation id="470966556546083668">No activis la sincronització</translation>
 <translation id="4711809265250406889">Quan està activada</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i 1 més}other{{website_1}, {website_2} i {more_count} més}}</translation>
@@ -986,6 +989,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6255097610484507482">Edita la targeta de crèdit</translation>
 <translation id="6266039999629596120">Necessita atenció</translation>
 <translation id="6277426346321820595">Sense protecció</translation>
+<translation id="628251768213143684">Pots gestionar en qualsevol moment què es desa al teu Compte de Google</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Has deixat de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Per activar la funció Navegació segura, obre la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" /> i toca Navegació segura.</translation>

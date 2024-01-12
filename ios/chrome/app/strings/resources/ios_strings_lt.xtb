@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Matavimo vieneto parinkiklis</translation>
 <translation id="2348630484974447747">Siuntinys</translation>
 <translation id="2351097562818989364">Vertimo nustatymai buvo nustatyti iš naujo.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Galite išsaugoti {DOMAIN_ONE} slaptažodį „Google“ paskyroje ({EMAIL}).}=2{Galite išsaugoti {DOMAIN_ONE} ir {DOMAIN_TWO} slaptažodžius „Google“ paskyroje ({EMAIL}).}=3{Galite išsaugoti {DOMAIN_ONE}, {DOMAIN_TWO} ir dar {OTHER_DOMAINS_COUNT} slaptažodį „Google“ paskyroje ({EMAIL}).}one{Galite išsaugoti {DOMAIN_ONE}, {DOMAIN_TWO} ir dar {OTHER_DOMAINS_COUNT} slaptažodį „Google“ paskyroje ({EMAIL}).}few{Galite išsaugoti {DOMAIN_ONE}, {DOMAIN_TWO} ir dar {OTHER_DOMAINS_COUNT} slaptažodžius „Google“ paskyroje ({EMAIL}).}many{Galite išsaugoti {DOMAIN_ONE}, {DOMAIN_TWO} ir dar {OTHER_DOMAINS_COUNT} slaptažodžio „Google“ paskyroje ({EMAIL}).}other{Galite išsaugoti {DOMAIN_ONE}, {DOMAIN_TWO} ir dar {OTHER_DOMAINS_COUNT} slaptažodžių „Google“ paskyroje ({EMAIL}).}}</translation>
 <translation id="235789365079050412">„Google“ privatumo politika</translation>
 <translation id="2359043044084662842">Versti</translation>
 <translation id="2359808026110333948">Tęskite</translation>
@@ -689,6 +690,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4689564913179979534">Tvarkyti mokėjimo metodus...</translation>
 <translation id="469300482518076788">Uždaryti skirtuką</translation>
 <translation id="4697071790493980729">Rezultatų nerasta</translation>
+<translation id="470337593714520080">{count,plural, =1{Išsaugokite vieną žymę „Google“ paskyroje}one{Išsaugokite {count} žymę „Google“ paskyroje}few{Išsaugokite {count} žymes „Google“ paskyroje}many{Išsaugokite {count} žymės „Google“ paskyroje}other{Išsaugokite {count} žymių „Google“ paskyroje}}</translation>
 <translation id="470966556546083668">Neįjungti sinchronizavimo</translation>
 <translation id="4711809265250406889">Kada įjungta</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ir dar viena}one{{website_1}, {website_2} ir dar {more_count}}few{{website_1}, {website_2} ir dar {more_count}}many{{website_1}, {website_2} ir dar {more_count}}other{{website_1}, {website_2} ir dar {more_count}}}</translation>

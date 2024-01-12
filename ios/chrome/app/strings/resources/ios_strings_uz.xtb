@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Oʻlchov birligini tanlash</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Tarjima sozlamalari qayta tiklandi.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} parolini Google hisobingizga ({EMAIL}) saqlash mumkin.}=2{{DOMAIN_ONE} va {DOMAIN_TWO} parollarini Google hisobingizga ({EMAIL}) saqlash mumkin.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} va yana {OTHER_DOMAINS_COUNT} ta sayt parollarini Google hisobingizga ({EMAIL}) saqlash mumkin.}other{{DOMAIN_ONE}, {DOMAIN_TWO} va yana {OTHER_DOMAINS_COUNT} ta sayt parollarini Google hisobingizga ({EMAIL}) saqlash mumkin.}}</translation>
 <translation id="235789365079050412">Google maxfiylik siyosati</translation>
 <translation id="2359043044084662842">Tarjima qilish</translation>
 <translation id="2359808026110333948">Davom etish</translation>
@@ -689,6 +690,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4689564913179979534">Toʻlov usullarini boshqarish...</translation>
 <translation id="469300482518076788">Varaqni yopish</translation>
 <translation id="4697071790493980729">Hech qanday natija topilmadi</translation>
+<translation id="470337593714520080">{count,plural, =1{1 ta bukmarkni Google hisobingizga saqlang}other{{count} ta bukmarkni Google hisobingizga saqlang}}</translation>
 <translation id="470966556546083668">Sinxronizatsiya qilinmasin</translation>
 <translation id="4711809265250406889">Qachon yoqilgan</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1} va {website_2}}=3{{website_1}, {website_2} va yana 1 ta}other{{website_1}, {website_2} va yana {more_count} ta}}</translation>

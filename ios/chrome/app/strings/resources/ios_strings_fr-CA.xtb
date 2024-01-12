@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Sélecteur d'unité</translation>
 <translation id="2348630484974447747">Colis</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Vous pouvez enregistrer votre mot de passe pour {DOMAIN_ONE} dans votre compte Google, {EMAIL}.}=2{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE} et {DOMAIN_TWO} dans votre compte Google, {EMAIL}.}=3{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et pour {OTHER_DOMAINS_COUNT} autres dans votre compte Google, {EMAIL}.}one{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et pour {OTHER_DOMAINS_COUNT} autre dans votre compte Google, {EMAIL}.}other{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et pour {OTHER_DOMAINS_COUNT} autres dans votre compte Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
 <translation id="2359043044084662842">Traduire</translation>
 <translation id="2359808026110333948">Continuer</translation>
@@ -689,6 +690,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
 <translation id="469300482518076788">Fermer l'onglet</translation>
 <translation id="4697071790493980729">Aucun résultat</translation>
+<translation id="470337593714520080">{count,plural, =1{Enregistrer 1 favori dans votre compte Google}one{Enregistrer {count} favori dans votre compte Google}other{Enregistrer {count} favoris dans votre compte Google}}</translation>
 <translation id="470966556546083668">Ne pas activer la synchronisation</translation>
 <translation id="4711809265250406889">Lorsqu'elle est activée</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} et 1 autre}one{{website_1}, {website_2} et {more_count} autre}other{{website_1}, {website_2} et {more_count} autres}}</translation>

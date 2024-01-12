@@ -1134,6 +1134,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5537725057119320332">Prebacuj</translation>
 <translation id="5546397813406633847">Vrati pristup korisničkom nalogu</translation>
 <translation id="554893713779400387">Uključi/isključi diktiranje</translation>
+<translation id="5550417424894892620">Otpustite fajlove na pozadini da biste ih dodali u <ph name="HOLDING_SPACE_TITLE" />. Ne možete da dodajete fajlove na pozadini.</translation>
 <translation id="5551456515017410630">Otvori ili zatvori kalendar</translation>
 <translation id="5551974246223970793">Pri pretraživanju stranice idi na sledeće podudaranje za pretragu</translation>
 <translation id="5555639311269196631">Isključi hotspot</translation>
@@ -1876,6 +1877,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortirajte aplikacije prema nazivu ili boji</translation>
 <translation id="8609384513243082612">Otvorite novu karticu</translation>
+<translation id="8612216344243590325">Čuvajte važne fajlove u folderu <ph name="HOLDING_SPACE_TITLE" /> umesto na pozadini. Samo prevucite fajlove u <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obaveštenja aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> su skrivena jer je zaštita od pregleda uključena</translation>
 <translation id="8619138598101195078">Smanji jačinu zvuka</translation>
 <translation id="8627191004499078455">Povezani ste sa uređajem <ph name="DEVICE_NAME" /></translation>

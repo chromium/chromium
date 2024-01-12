@@ -24,6 +24,7 @@
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> көшірілуде…</translation>
 <translation id="1178581264944972037">Кідірту</translation>
+<translation id="1190144681599273207">Бұл файлды алу үшін ұялы деректердің шамамен <ph name="FILE_SIZE" /> пайдаланылады.</translation>
 <translation id="1194390763418645112">Файлды <ph name="RESTRICTED_DESTINATIONS" /> арқылы пайдалану</translation>
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1209796539517632982">Автоматты атау серверлері</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> құрылғысымен бөлісу</translation>
 <translation id="1773212559869067373">Аутентификация сертификаты жергілікті негізде қабылданбады</translation>
 <translation id="1775381402323441512">Бейне ақпараты</translation>
+<translation id="180035236176489073">Бұл файлдарға кіру үшін желіде болуыңыз керек.</translation>
 <translation id="1807938677607439181">Барлық файлдар</translation>
 <translation id="1810764548349082891">Алдын ала қаралмайды</translation>
 <translation id="1812302367230252929">Амхар (транслитерация)</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">Автоматты конфигурациялау URL мекенжайы:</translation>
 <translation id="2284767815536050991">алынбалы жад</translation>
 <translation id="2288278176040912387">Пластина ойнатқыш</translation>
+<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ашылуда.</translation>
+<translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ашылуда.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> шығарылды.</translation>
 <translation id="2307462900900812319">Желіні реттеу</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">Барлық файлды синхрондау үшін жад көлемі жеткіліксіз.</translation>
 <translation id="23721837607121582">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
 <translation id="2379576081295865700">Жад көлемі тексеріліп жатыр… 1 элемент табылды.</translation>
 <translation id="2383454254762599978">Себетке жіберу</translation>
 <translation id="2387458720915042159">Прокси-сервер байланысының түрі</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">Таңдалған файлдарды мұрағаттау</translation>
 <translation id="4202378258276439759">Испан (Латын Америкасы)</translation>
 <translation id="4202977638116331303">Грузин</translation>
+<translation id="421017592316736757">Бұл файлға кіру үшін желіде болуыңыз керек.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" қалтасы бұрыннан бар. Басқа атау таңдаңыз.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ерекше жағдайын өшіру</translation>
 <translation id="4261901459838235729">Google көрсетілімі</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> сүзгісі қосулы.</translation>
+<translation id="4290535918735525311">1 қалта Linux жүйесімен бөлісілді</translation>
 <translation id="4299729908419173967">Бразилиялық</translation>
 <translation id="4302605047395093221">Осы құрылғыны пайдаланатын кез келген адам бұл мобильдік желіге қосылу үшін PIN кодын енгізуі тиіс.</translation>
 <translation id="4303531889494116116">Желі бос емес. Кейінірек қайталап көріңіз.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
 <translation id="4935975195727477204">Түймедақ гүлі</translation>
 <translation id="4943368462779413526">Футбол</translation>
+<translation id="4961158930123534723">Parallels Desktop арқылы 1 қалта бөлісіледі.</translation>
+<translation id="4965874878399872778">Файлдардың ұйымның қауіпсіздік саясаттарына сәйкестігі тексеріліп жатыр…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> қалпына келтірілді</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Файлды синхрондауды реттеу аяқталмады</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318819489018851358">Linux арқылы бөлісу</translation>
 <translation id="5323213332664049067">Латын американдық</translation>
+<translation id="5330145655348521461">Бұл файлдар басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына жылжытыңыз.</translation>
 <translation id="5330512191124428349">Ақпарат алу</translation>
 <translation id="535792325654997756">Мысықтары бар адам</translation>
 <translation id="5358764674931277">Кадр жиілігі</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">Жапон (АҚШ), халықаралық пернетақтасымен</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, желі жоқ</translation>
 <translation id="6146563240635539929">Бейнелер</translation>
+<translation id="6150853954427645995">Файлды желіден тыс пайдалану үшін желіге қосылып, файлды тінтуірдің оң түймесімен басыңыз және <ph name="OFFLINE_CHECKBOX_NAME" /> опциясын таңдаңыз.</translation>
 <translation id="6164412158936057769">Көбелектер</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">Домен суффиксі сәйкестігінің мәні жарамсыз.</translation>
 <translation id="6364301859968397756">Ұйым жады толы.</translation>
 <translation id="6367976544441405720">Фургон</translation>
+<translation id="637062427944097960">Бұл файл басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына өтіңіз.</translation>
 <translation id="6394388407447716302">Тек оқуға арналған</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> файлын жылжыту мүмкін болмады, себебі ол шифрланған.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">1 мүмкіндік қалды.</translation>
 <translation id="643243556292470964">Жойылған файлдар енді себетке жылжытылады.</translation>
 <translation id="6438480100790416671">Жад көлемі тексеріліп жатыр…</translation>
+<translation id="6451527188465304418">Файлдың ұйымның қауіпсіздік саясаттарына сәйкестігі тексеріліп жатыр…</translation>
 <translation id="6485131920355264772">Бос орын ақпаратын шығарып алу сәтсіз аяқталды</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші:<ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына көшірілуде</translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">Файлды синхрондау параметрлері</translation>
 <translation id="6594855146910089723">Бұл қалта Linux-пен және Parallels Desktop-пен бөлісіледі.</translation>
 <translation id="6607272825297743757">Файл ақпараты</translation>
+<translation id="6609332149380188670">Parallels Desktop арқылы <ph name="NUMBER_OF_ITEMS" /> қалта бөлісілді.</translation>
 <translation id="6629518321609546825">Кемінде 4 сан енгізіңіз.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6650726141019353908">Қызғылт көбелек</translation>
@@ -877,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Желіні конфигурациялауда қате болды</translation>
+<translation id="7839804798877833423">Бұл файлдарды алу үшін ұялы деректердің шамамен <ph name="FILE_SIZE" /> пайдаланылады.</translation>
 <translation id="7846076177841592234">Таңдаудан бас тарту</translation>
 <translation id="7853966320808728790">Француз BÉPO</translation>
 <translation id="7857117644404132472">Ерекше жағдайды қосу</translation>
@@ -925,6 +940,7 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive файлы синхрондалып жатыр</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Құрылғы үлгісі</translation>
+<translation id="8223479393428528563">Бұл файлдарды желіден тыс сақтау үшін желіге қайта қосылып, файлдарды тінтуірдің оң жағымен басыңыз және <ph name="OFFLINE_CHECKBOX_NAME" /> опциясын таңдаңыз.</translation>
 <translation id="8241139360630443550">Жадты көру</translation>
 <translation id="8249296373107784235">Доғару</translation>
 <translation id="8250690786522693009">Латын</translation>
@@ -951,6 +967,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> құрылғысының <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануына рұқсат беріңіз.</translation>
 <translation id="8372369524088641025">WEP кілті дұрыс емес</translation>
 <translation id="8372852072747894550">Грек</translation>
+<translation id="8377269993083688872">Электрондық хат тұрпаттары</translation>
 <translation id="8386903983509584791">Іздеу аяқталды</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> файлы шығарылды.</translation>
 <translation id="8395901698320285466">Өлшемдер</translation>

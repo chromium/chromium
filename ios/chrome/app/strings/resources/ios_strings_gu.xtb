@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">એકમ પસંદગીકર્તા</translation>
 <translation id="2348630484974447747">પૅકેજ</translation>
 <translation id="2351097562818989364">તમારા અનુવાદ સેટિંગ રીસેટ કરવામાં આવ્યા છે.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE} માટે તમારો પાસવર્ડ સાચવી શકો છો.}=2{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE} અને {DOMAIN_TWO} માટે તમારા પાસવર્ડ સાચવી શકો છો.}=3{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE}, {DOMAIN_TWO} અને અન્ય {OTHER_DOMAINS_COUNT} માટે તમારા પાસવર્ડ સાચવી શકો છો.}one{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE}, {DOMAIN_TWO} અને અન્ય {OTHER_DOMAINS_COUNT} માટે તમારા પાસવર્ડ સાચવી શકો છો.}other{તમે તમારા Google એકાઉન્ટ, {EMAIL}માં {DOMAIN_ONE}, {DOMAIN_TWO} અને અન્ય {OTHER_DOMAINS_COUNT} માટે તમારા પાસવર્ડ સાચવી શકો છો.}}</translation>
 <translation id="235789365079050412">Google પ્રાઇવસી પૉલિસી</translation>
 <translation id="2359043044084662842">અનુવાદ કરો</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="2754492786623500387">આ ડિવાઇસ પરના એકાઉન્ટ</translation>
+<translation id="2755595981383829244">હવે તમે કન્ટેન્ટ માટેના નોટિફિકેશન મેળવશો</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="2772667768515195373">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામાને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">છૂપી શોધ</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">ચુકવણી પદ્ધતિઓ મેનેજ કરો…</translation>
 <translation id="469300482518076788">ટૅબ બંધ કરો</translation>
 <translation id="4697071790493980729">કોઈ પરિણામ મળ્યું નથી</translation>
+<translation id="470337593714520080">{count,plural, =1{તમારા Google એકાઉન્ટમાં 1 બુકમાર્ક સાચવો}one{તમારા Google એકાઉન્ટમાં {count} બુકમાર્ક સાચવો}other{તમારા Google એકાઉન્ટમાં {count} બુકમાર્ક સાચવો}}</translation>
 <translation id="470966556546083668">સિંક કરવાની સુવિધા ચાલુ કરશો નહીં</translation>
 <translation id="4711809265250406889">જ્યારે ચાલુ હોય</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} અને વધુ 1}one{{website_1}, {website_2} અને વધુ {more_count}}other{{website_1}, {website_2} અને વધુ {more_count}}}</translation>

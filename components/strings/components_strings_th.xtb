@@ -761,6 +761,7 @@
 <translation id="2469153820345007638">ลำดับ 1 ถึง N</translation>
 <translation id="24699311393038040">กระดาษ (เคลือบ)</translation>
 <translation id="2470767536994572628">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียวและกลับไปใช้การหมุนแบบเดิม</translation>
+<translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
 <translation id="2479410451996844060">URL ค้นหาไม่ถูกต้อง</translation>
 <translation id="2480300195898055381">ในบัญชี Google ที่ใช้อีเมล <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
@@ -830,12 +831,6 @@
 <translation id="2610561535971892504">คลิกเพื่อคัดลอก</translation>
 <translation id="2612993535136743634">จะมีการลบรหัสความปลอดภัยทั้งหมดที่บันทึกไว้ในอุปกรณ์และในบัญชี Google</translation>
 <translation id="2616412942031748191">การปรับแต่งเว็บไซต์ให้ติดอันดับบนเครื่องมือค้นหาและการตลาด</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />ประวัติการท่องเว็บ
-            <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
-            <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
-          <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">แทรก</translation>
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
 <translation id="262745152991669301">สามารถขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
@@ -1839,7 +1834,6 @@
 <translation id="4652440160515225514">องค์กรของคุณบล็อกเว็บไซต์นี้เนื่องจากละเมิดนโยบาย</translation>
 <translation id="4653167719759882810">การควบรวมและการเข้าซื้อกิจการ</translation>
 <translation id="4658638640878098064">เย็บด้วยลวดเย็บกระดาษด้านซ้ายบน</translation>
-<translation id="4660119392514473465">คุณท่องเว็บแบบเป็นส่วนตัวได้แล้วตอนนี้ และผู้อื่นที่ใช้อุปกรณ์เครื่องนี้จะไม่เห็นกิจกรรมของคุณ อย่างไรก็ตาม ระบบจะบันทึกรายการที่ดาวน์โหลด บุ๊กมาร์ก และเรื่องรออ่าน</translation>
 <translation id="4660567771874403130">พลังงานและสาธารณูปโภค</translation>
 <translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="466561305373967878">เกมกระดาน</translation>
@@ -2587,7 +2581,6 @@
 <translation id="6160391204859821737">เปิดฟีเจอร์ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6167577165590485365">การพยายามดึงข้อมูลครั้งล่าสุด:</translation>
-<translation id="6169916984152623906">ขณะนี้คุณสามารถท่องเว็บแบบเป็นส่วนตัว และผู้อื่นที่ใช้อุปกรณ์เครื่องนี้จะไม่เห็นกิจกรรมของคุณ แต่จะมีการบันทึกการดาวน์โหลดและบุ๊กมาร์กไว้</translation>
 <translation id="617256461084925519">Google Chrome กำลังพยายามยืนยันว่าเป็นคุณเพื่อให้ระบบกรอกข้อมูลการชำระเงินของคุณได้</translation>
 <translation id="6176387967264100435">ราคานี้เป็นราคาสูง</translation>
 <translation id="6177128806592000436">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัย</translation>
@@ -3277,12 +3270,6 @@
 <translation id="749865518782565832">ซ่อมประปา</translation>
 <translation id="7501663406926337752">เว็บไซต์ที่กำลังจะเข้าชมนั้นองค์กรของคุณได้ติดธงไว้ว่าไม่เหมาะสม</translation>
 <translation id="7501853161948120656">แหล่งข้อมูลการศึกษา</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />ประวัติการท่องเว็บ
-            <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
-            <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
-          <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">รหัสอุปกรณ์นโยบายที่ส่งกลับว่างเปล่าหรือไม่ตรงกับรหัสอุปกรณ์ปัจจุบัน</translation>
 <translation id="7508577201115425418">บริการด้านเอกสารและการพิมพ์</translation>
@@ -3464,6 +3451,7 @@
 <translation id="7802989406998618639">ป้อนรหัสความปลอดภัย <ph name="NUMBER_OF_DIGITS" /> หลักบน<ph name="SIDE_OF_CARD" />เพื่อให้ธนาคารยืนยันว่าเป็นคุณ</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7805768142964895445">สถานะ</translation>
+<translation id="7805906048382884326">ปิดเคล็ดลับ</translation>
 <translation id="7810410097247356677">โปรดบันทึกบัตรและรหัสความปลอดภัยที่เข้ารหัสไว้ในอุปกรณ์เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">นำคำแนะนำสำหรับแบบฟอร์มออกจาก Chrome ไหม</translation>

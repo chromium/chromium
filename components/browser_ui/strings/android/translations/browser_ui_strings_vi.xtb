@@ -190,6 +190,7 @@
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
+<translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Được cho phép</translation>
@@ -279,7 +280,7 @@
 <translation id="5706552988683188916">Thao tác này sẽ xoá cookie và dữ liệu khác của trang web <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Đã chặn các cookie bên thứ ba ở Chế độ ẩn danh</translation>
 <translation id="5740126560802162366">Các trang web có thể lưu dữ liệu trên thiết bị của bạn</translation>
-<translation id="5771720122942595109">Đã chặn <ph name="PERMISSION_1" /></translation>
+<translation id="5771720122942595109">Đã chặn: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5844448279347999754">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu xem văn bản và hình ảnh đã lưu vào bảng nhớ tạm. Khi bạn tắt tuỳ chọn này, các trang web không thể xem văn bản hoặc hình ảnh đã lưu vào bảng nhớ tạm.</translation>
 <translation id="5853982612236235577">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu gửi thông báo. Khi bạn tắt tuỳ chọn này, các trang web không thể gửi thông báo.</translation>
@@ -366,6 +367,7 @@
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Làm mới</translation>
+<translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7188508872042490670">Dữ liệu trang web trên thiết bị</translation>
 <translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web trong <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
 <translation id="7203150201908454328">Được mở rộng</translation>

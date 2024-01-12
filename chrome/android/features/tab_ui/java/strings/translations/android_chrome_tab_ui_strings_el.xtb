@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Θέλετε να κλείσετε τις παλιές καρτέλες;</translation>
 <translation id="1215127405478249895">Έλεγχος καρτελών</translation>
 <translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
+<translation id="1326271443836399892">Ελέγξτε τις τρέχουσες ρυθμίσεις τακτοποίησης καρτελών.</translation>
 <translation id="1499635324672558517">Θέλετε να κλείσετε όλες τις καρτέλες ανώνυμης περιήγησης;</translation>
 <translation id="1657719826150349398">Μετακίνηση καρτέλας κάτω</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Κατάργηση από την ομάδα</translation>
 <translation id="3008554597174452548">Διακοπή παρακολούθησης προϊόντος</translation>
 <translation id="3052964831964880138">Πτώση τιμής <ph name="PRICE_DROP" /> για <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Έχετε <ph name="TABS_COUNT_ONE" /> αρχειοθετημένη καρτέλα}other{Έχετε <ph name="TABS_COUNT_MANY" /> αρχειοθετημένες καρτέλες}}</translation>
 <translation id="3194464645767632461">αξιολόγηση</translation>
 <translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Κλείσιμο πληροφοριών σχετικά με αυτό το κατάστημα</translation>
 <translation id="9150694013019234766">Κάντε εναλλαγή μεταξύ των καρτελών στην ομάδα καρτελών σας κοντά στο κάτω μέρος της οθόνης</translation>
 <translation id="9169594135889675189">Προσθήκη νέας καρτέλας στην ομάδα</translation>
+<translation id="955558140275419384">Εισέλθετε σε αυτό το πρόγραμμα επεξεργασίας για να ελέγξετε όλες τις αρχειοθετημένες καρτέλες για τακτοποίηση.</translation>
 <translation id="959682366969460160">Οργανωθείτε</translation>
 </translationbundle>

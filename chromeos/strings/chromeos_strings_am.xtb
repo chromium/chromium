@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">የተንሸራታች ትዕይንት</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
+<translation id="4310735698903592804">በGoogle AI የተጎላበቱ የቅርብ ጊዜ ልጣፎች</translation>
 <translation id="4333390807948134856">የ<ph name="KEY_NAME" /> ቁልፍ ተጭኗል</translation>
 <translation id="4354430579665871434">ቁልፍ</translation>
 <translation id="4361257691546579041">ኤፒኤን ነባሪ ዓይነት ነው።</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{የእርስዎ ፋይል በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}one{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}other{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}}</translation>
 <translation id="5931523347251946569">ፋይል አልተገኘም</translation>
+<translation id="593880865674747800">በዚህ ቅጥ ውስጥ ተጨማሪ ይፍጠሩ</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="594552776027197022">የዘፈቀደ የቁልፍ ጥምር አመንጭ</translation>
 <translation id="5946538341867151940">እስካሁን አልተገናኙም። የእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ብጁ የሆነ ኤፒኤን የሚመክር ከሆነ «+ አዲስ ኤፒኤን» የሚለውን በመምረጥ የኤፒኤን መረጃ ያስገቡ</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA ወይም RSN)</translation>
 <translation id="7841134249932030522">ጨለማ ሁነታን አንቃ</translation>
 <translation id="7846634333498149051">የቁልፍ ሰሌዳ</translation>
+<translation id="7850847810298646851">በGoogle AI የተጎላበተ ልጣፍ</translation>
 <translation id="7856267634822906833">የብሉቱዝ መነካት የሚችል ማያ</translation>
 <translation id="7869143217755017858">ጨለማ ሁነታን አሰናክል</translation>
 <translation id="7881066108824108340">ዲኤንኤስ</translation>

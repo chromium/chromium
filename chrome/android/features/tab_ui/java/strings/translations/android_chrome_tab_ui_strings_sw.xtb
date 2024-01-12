@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Je, ungependa kufunga vichupo vya zamani?</translation>
 <translation id="1215127405478249895">Kukagua vichupo</translation>
 <translation id="125153950246128346">Gusa ili uone kichupo kingine</translation>
+<translation id="1326271443836399892">Kagua mipangilio ya sasa ya kuondolewa.</translation>
 <translation id="1499635324672558517">Unataka ufunge vichupo fiche vyote?</translation>
 <translation id="1657719826150349398">Sogeza kichupo chini</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Ondoa kwenye kikundi</translation>
 <translation id="3008554597174452548">Acha kufuatilia bidhaa</translation>
 <translation id="3052964831964880138">Punguzo la bei la <ph name="PRICE_DROP" /> kwenye <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Una kichupo <ph name="TABS_COUNT_ONE" /> kilichohifadhiwa kwenye kumbukumbu}other{Una vichupo <ph name="TABS_COUNT_MANY" /> vilivyohifadhiwa kwenye kumbukumbu}}</translation>
 <translation id="3194464645767632461">ukadiriaji</translation>
 <translation id="3291470810748040983">Utapata arifa wakati kuna bei nafuu zaidi katika kichupo ulichokifungua</translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Maelezo kuhusu duka hili yamefungwa</translation>
 <translation id="9150694013019234766">Badili kati ya vichupo vilivyo katika kikundi chako cha vichupo karibu na sehemu ya chini ya skrini</translation>
 <translation id="9169594135889675189">Ongeza kichupo kipya kwenye kikundi</translation>
+<translation id="955558140275419384">Kagua vichupo vyote vilivyohifadhiwa kwenye kumbukumbu ili kuondolewa kwa kuweka kihariri hiki.</translation>
 <translation id="959682366969460160">Weka kwa utaratibu</translation>
 </translationbundle>

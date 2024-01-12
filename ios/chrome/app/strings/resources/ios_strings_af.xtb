@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Eenheidkieser</translation>
 <translation id="2348630484974447747">Pakkie</translation>
 <translation id="2351097562818989364">Jou vertaalinstellings is teruggestel.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Jy kan jou wagwoord vir {DOMAIN_ONE} in jou Google-rekening, {EMAIL}, stoor.}=2{Jy kan jou wagwoorde vir {DOMAIN_ONE} en {DOMAIN_TWO} in jou Google-rekening, {EMAIL}, stoor.}=3{Jy kan jou wagwoorde vir {DOMAIN_ONE}, {DOMAIN_TWO} en {OTHER_DOMAINS_COUNT} ander in jou Google-rekening, {EMAIL}, stoor.}other{Jy kan jou wagwoorde vir {DOMAIN_ONE}, {DOMAIN_TWO} en {OTHER_DOMAINS_COUNT} ander in jou Google-rekening, {EMAIL}, stoor.}}</translation>
 <translation id="235789365079050412">Google-privaatheidsbeleid</translation>
 <translation id="2359043044084662842">Vertaal</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
@@ -335,6 +336,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2747003861858887689">Vorige veld</translation>
 <translation id="2749231692441336879">Volg <ph name="CHANNEL_NAME" /> tans</translation>
 <translation id="2754492786623500387">Rekeninge op hierdie toestel</translation>
+<translation id="2755595981383829244">Jy sal nou inhoudkennisgewings ontvang</translation>
 <translation id="2762000892062317888">sopas</translation>
 <translation id="2772667768515195373">Jy kan gestoorde adresse in alle Google-produkte gebruik. Hierdie adres is in jou Google-rekening, <ph name="USER_EMAIL" />, gestoor.</translation>
 <translation id="2773292004659987824">Incognitosoektog</translation>
@@ -688,6 +690,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4689564913179979534">Bestuur betaalmetodes …</translation>
 <translation id="469300482518076788">Maak oortjie toe</translation>
 <translation id="4697071790493980729">Geen resultate gekry nie</translation>
+<translation id="470337593714520080">{count,plural, =1{Stoor 1 boekmerk in jou Google-rekening}other{Stoor {count} boekmerke in jou Google-rekening}}</translation>
 <translation id="470966556546083668">Moenie sinkronisering aanskakel nie</translation>
 <translation id="4711809265250406889">As dit aan is</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} en nog 1}other{{website_1}, {website_2} en nog {more_count}}}</translation>
@@ -986,6 +989,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6255097610484507482">Wysig kredietkaart</translation>
 <translation id="6266039999629596120">Benodig aandag</translation>
 <translation id="6277426346321820595">Geen beskerming nie</translation>
+<translation id="628251768213143684">Jy kan altyd bestuur wat in jou Google-rekening gestoor is</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6289501276895392862">Het <ph name="CHANNEL_NAME" /> ontvolg</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>

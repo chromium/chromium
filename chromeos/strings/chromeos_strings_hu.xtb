@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Diavetítés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
+<translation id="4310735698903592804">A legújabb háttérképeket a Google AI biztosítja</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">billentyű</translation>
 <translation id="4361257691546579041">Az APN típusa: alapértelmezett.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">Be</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fájlját a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}other{Fájljait a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}}</translation>
 <translation id="5931523347251946569">A fájl nem található</translation>
+<translation id="593880865674747800">Továbbiak létrehozása ebben a stílusban</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
 <translation id="5946538341867151940">Még nem csatlakozott. Ha mobilszolgáltatója egyéni APN-t javasol, adja meg az APN adatait. Ehhez válassza a „+ Új APN” lehetőséget.</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA vagy RSN)</translation>
 <translation id="7841134249932030522">Sötét mód engedélyezése</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>
+<translation id="7850847810298646851">A háttérképet a Google AI biztosítja</translation>
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
 <translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
 <translation id="7881066108824108340">DNS</translation>

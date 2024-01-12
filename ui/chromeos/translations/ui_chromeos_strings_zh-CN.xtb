@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，详细信息</translation>
 <translation id="117624967391683467">正在复制<ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">暂停</translation>
+<translation id="1190144681599273207">抓取此文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> 能访问文件</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1209796539517632982">自动域名服务器</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">与 <ph name="VM_NAME" /> 共享</translation>
 <translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
+<translation id="180035236176489073">您必须在线访问这些文件。</translation>
 <translation id="1807938677607439181">所有文件</translation>
 <translation id="1810764548349082891">无法预览</translation>
 <translation id="1812302367230252929">阿姆哈拉语音译</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">自动配置网址：</translation>
 <translation id="2284767815536050991">可拆卸式存储设备</translation>
 <translation id="2288278176040912387">电唱机</translation>
+<translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
+<translation id="2303301624314357662">正在打开文件“<ph name="FILE_NAME" />”</translation>
 <translation id="2304820083631266885">星球</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
 <translation id="2307462900900812319">配置网络</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">存储空间不足，无法同步您的所有文件</translation>
 <translation id="23721837607121582">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
 <translation id="2377319039870049694">切换到列表视图</translation>
+<translation id="2377590462528165447">与 Linux 共享了 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="2379576081295865700">正在检查存储空间…找到了 1 项内容</translation>
 <translation id="2383454254762599978">移至回收站</translation>
 <translation id="2387458720915042159">代理连接类型</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">压缩选中的文件</translation>
 <translation id="4202378258276439759">西班牙语（拉丁美洲）</translation>
 <translation id="4202977638116331303">格鲁吉亚语</translation>
+<translation id="421017592316736757">您必须在线访问此文件。</translation>
 <translation id="4212740939091998969">已有名为“<ph name="FOLDER_NAME" />”的文件夹。请另选一个名称。</translation>
 <translation id="4218274196133425560">为 <ph name="HOST_NAME" /> 移除例外情况</translation>
 <translation id="4261901459838235729">Google 演示文稿</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />过滤器已开启。</translation>
+<translation id="4290535918735525311">与 Linux 共享了 1 个文件夹</translation>
 <translation id="4299729908419173967">巴西</translation>
 <translation id="4302605047395093221">任何使用该设备的用户都将需要输入 PIN 码，才能连接到此移动网络</translation>
 <translation id="4303531889494116116">此网络正忙。请稍后重试。</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，详细信息</translation>
 <translation id="4935975195727477204">杂色菊</translation>
 <translation id="4943368462779413526">美式足球</translation>
+<translation id="4961158930123534723">已与 Parallels Desktop 共享 1 个文件夹</translation>
+<translation id="4965874878399872778">正在检查文件是否符合贵组织的安全政策…</translation>
 <translation id="496656650103537022">“<ph name="FILE_NAME" />”已恢复</translation>
 <translation id="4969785127455456148">专辑</translation>
 <translation id="4972330214479971536">无法完成文件同步设置</translation>
@@ -551,6 +560,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">与 Linux 共享</translation>
 <translation id="5323213332664049067">拉丁美洲</translation>
+<translation id="5330145655348521461">这些文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看这些文件。</translation>
 <translation id="5330512191124428349">获取信息</translation>
 <translation id="535792325654997756">一个人和几只猫</translation>
 <translation id="5358764674931277">帧速率</translation>
@@ -652,6 +662,7 @@
 <translation id="613750717151263950">日语美式键盘</translation>
 <translation id="6138894911715675297">“<ph name="NETWORK_TYPE" />”类型，没有可连接的网络</translation>
 <translation id="6146563240635539929">视频</translation>
+<translation id="6150853954427645995">要保存此文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -684,6 +695,7 @@
 <translation id="636254897931573416">域名后缀的匹配值无效</translation>
 <translation id="6364301859968397756">贵组织的存储空间已用尽</translation>
 <translation id="6367976544441405720">客货车</translation>
+<translation id="637062427944097960">此文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看此文件。</translation>
 <translation id="6394388407447716302">只读</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 项内容</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> 经过加密，因此无法移动。</translation>
@@ -692,6 +704,7 @@
 <translation id="6430271654280079150">您还有 1 次尝试机会。</translation>
 <translation id="643243556292470964">被删除的文件现已移至回收站</translation>
 <translation id="6438480100790416671">正在检查存储空间…</translation>
+<translation id="6451527188465304418">正在检查文件是否符合贵组织的安全政策…</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>
@@ -706,6 +719,7 @@
 <translation id="6588648400954570689">文件同步设置</translation>
 <translation id="6594855146910089723">已与 Linux 和 Parallels Desktop 共享此文件夹</translation>
 <translation id="6607272825297743757">文件信息</translation>
+<translation id="6609332149380188670">已与 Parallels Desktop 共享 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="6629518321609546825">请输入至少 4 位数字</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6650726141019353908">粉蝴蝶</translation>
@@ -872,6 +886,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">配置网络时出错</translation>
+<translation id="7839804798877833423">抓取这些文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7853966320808728790">法语 BÉPO</translation>
 <translation id="7857117644404132472">添加例外情况</translation>
@@ -913,12 +928,14 @@
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8147028810663464959">字符宽度为全角</translation>
 <translation id="8151638057146502721">配置</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 个错误。}other{# 个错误。}}</translation>
 <translation id="8154842056504218462">已选择所有条目。</translation>
 <translation id="8157684860301034423">未能检索应用信息。</translation>
 <translation id="8175731104491895765">法语（比利时）</translation>
 <translation id="8175799081768705361">正在同步 <ph name="NUMBER_OF_FILES_SYNCING" /> 个云端硬盘文件</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">设备型号</translation>
+<translation id="8223479393428528563">要保存这些文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
 <translation id="8241139360630443550">查看存储空间</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250690786522693009">拉丁文</translation>
@@ -945,6 +962,7 @@
 <translation id="83651606385705612">授权 <ph name="VM_NAME" /> 访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
 <translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8372852072747894550">希腊语</translation>
+<translation id="8377269993083688872">电子邮件版式</translation>
 <translation id="8386903983509584791">已完成扫描</translation>
 <translation id="8387733224523483503">已提取 <ph name="FILE_NAME" />。</translation>
 <translation id="8395901698320285466">尺寸</translation>
@@ -1003,6 +1021,7 @@
 <translation id="8787254343425541995">允许共享网络使用代理</translation>
 <translation id="8790981080411996443">一个人在给植物浇水</translation>
 <translation id="8798099450830957504">默认</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 条警告。}other{# 条警告。}}</translation>
 <translation id="8808686172382650546">猫</translation>
 <translation id="8810671769985673465">压缩失败，已有此项内容：“<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">西班牙语（西班牙）</translation>

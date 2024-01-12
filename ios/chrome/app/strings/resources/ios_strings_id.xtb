@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Pemilih satuan</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Setelan terjemah telah direset.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE} di Akun Google Anda, {EMAIL}.}=2{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE} dan {DOMAIN_TWO} di Akun Google Anda, {EMAIL}.}=3{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE}, {DOMAIN_TWO}, dan {OTHER_DOMAINS_COUNT} lainnya di Akun Google Anda, {EMAIL}.}other{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE}, {DOMAIN_TWO}, dan {OTHER_DOMAINS_COUNT} lainnya di Akun Google Anda, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Kebijakan Privasi Google</translation>
 <translation id="2359043044084662842">Terjemahkan</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
@@ -335,6 +336,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2747003861858887689">Bidang sebelumnya</translation>
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akun di Perangkat ini</translation>
+<translation id="2755595981383829244">Sekarang Anda akan menerima notifikasi konten</translation>
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="2772667768515195373">Anda dapat menggunakan alamat tersimpan di seluruh produk Google. Alamat ini disimpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Penelusuran Samaran</translation>
@@ -688,6 +690,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4689564913179979534">Kelola Metode Pembayaran...</translation>
 <translation id="469300482518076788">Tutup Tab</translation>
 <translation id="4697071790493980729">Hasil Tidak Ditemukan</translation>
+<translation id="470337593714520080">{count,plural, =1{Simpan 1 Bookmark di Akun Google Anda}other{Simpan {count} Bookmark di Akun Google Anda}}</translation>
 <translation id="470966556546083668">Jangan Aktifkan Sinkronisasi</translation>
 <translation id="4711809265250406889">Saat Aktif</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, dan 1 lainnya}other{{website_1}, {website_2}, dan {more_count} lainnya}}</translation>
@@ -986,6 +989,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6255097610484507482">Edit Kartu Kredit</translation>
 <translation id="6266039999629596120">Perlu diperhatikan</translation>
 <translation id="6277426346321820595">Tidak Ada Perlindungan</translation>
+<translation id="628251768213143684">Anda dapat mengelola data yang disimpan di Akun Google Anda kapan saja</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Berhenti mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>

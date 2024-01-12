@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Vai vēlaties aizvērt vecās cilnes?</translation>
 <translation id="1215127405478249895">Ciļņu pārskatīšana</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
+<translation id="1326271443836399892">Pārskatiet pašreizējos kārtošanas iestatījumus.</translation>
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Noņemt no grupas</translation>
 <translation id="3008554597174452548">Vairs neizsekot produktam</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> arhivēta cilne}zero{Jums ir <ph name="TABS_COUNT_MANY" /> arhivētas cilnes}one{Jums ir <ph name="TABS_COUNT_MANY" /> arhivēta cilne}other{Jums ir <ph name="TABS_COUNT_MANY" /> arhivētas cilnes}}</translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3291470810748040983">Jūs saņemsiet brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena.</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informācija par šo veikalu ir aizvērta</translation>
 <translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>
+<translation id="955558140275419384">Atveriet šo redaktoru, lai pārskatītu un sakārtotu visas arhivētās cilnes.</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>
 </translationbundle>

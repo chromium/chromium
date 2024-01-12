@@ -186,6 +186,7 @@
 <translation id="2189104374785738357">Izmenite detalje naziva pristupne tačke</translation>
 <translation id="2209788852729124853">Resetuj brojače saobraćaja</translation>
 <translation id="2212733584906323460">Razrešavanje imena</translation>
+<translation id="2215920961700443347">Nema interneta. Povežite se na internet i probajte ponovo.</translation>
 <translation id="2217935453350629363">Trenutna brzina</translation>
 <translation id="2224337661447660594">Nema interneta</translation>
 <translation id="222447520299472966">Mora da bude izabran bar jedan album likovne galerije</translation>
@@ -219,6 +220,7 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. slika od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
 <translation id="2448312741937722512">Tip</translation>
+<translation id="2465272316171730950">Kapacitet je popunjen. Vratite se uskoro.</translation>
 <translation id="248546197012830854">Uređaj je oflajn. Povežite se na WiFi mrežu da biste videli sadržaj pomoći.</translation>
 <translation id="2491955442992294626">Tasteri se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Najbolje automatski izabrane slike</translation>
@@ -443,6 +445,7 @@
 <translation id="4289849978083912975">Projekcija slajdova</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika</translation>
+<translation id="4310735698903592804">Nedavne pozadine koje omogućava Google AI</translation>
 <translation id="4333390807948134856">Taster <ph name="KEY_NAME" /> je pritisnut</translation>
 <translation id="4354430579665871434">taster</translation>
 <translation id="4361257691546579041">Naziv pristupne tačke je podrazumevanog tipa.</translation>
@@ -664,6 +667,7 @@
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fajl je skeniran i sačuvan u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
+<translation id="593880865674747800">Napravite još pozadina u ovom stilu</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Generišite nasumični par ključeva</translation>
 <translation id="5946538341867151940">Još uvek niste povezani. Ako mobilni operater preporučuje prilagođeni naziv pristupne tačke, unesite ga tako što ćete izabrati „+ Novi naziv pristupne tačke“</translation>
@@ -829,7 +833,7 @@
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="714876143603641390">Povezivanje LAN-a</translation>
-<translation id="7154020516215182599">Delite povratne informacije ili opišite problem. Ako je to moguće, uvrstite korake za izazivanje istog problema.</translation>
+<translation id="7154020516215182599">Pošaljite povratne informacije ili opišite problem. Ako je to moguće, uvrstite korake za izazivanje istog problema.</translation>
 <translation id="7155171745945906037">Postojeća fotografija iz kamere ili datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Slika profila</translation>
@@ -925,6 +929,7 @@
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
 <translation id="7841134249932030522">Omogućite tamni režim</translation>
 <translation id="7846634333498149051">Tastatura</translation>
+<translation id="7850847810298646851">Pozadinu omogućava Google AI</translation>
 <translation id="7856267634822906833">Bluetooth dodirni ekran</translation>
 <translation id="7869143217755017858">Onemogućite tamni režim</translation>
 <translation id="7881066108824108340">DNS</translation>

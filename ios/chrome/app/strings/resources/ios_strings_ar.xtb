@@ -253,6 +253,7 @@
 <translation id="2326302612031521902">مُحدِّد الوحدات</translation>
 <translation id="2348630484974447747">الطرد</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google ({EMAIL}).}=2{‏يمكنك حفظ كلمتَي المرور الخاصتين بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google ({EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google ({EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google ({EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}}</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359043044084662842">الترجمة</translation>
 <translation id="2359808026110333948">متابعة</translation>
@@ -691,6 +692,7 @@
 <translation id="4689564913179979534">جارٍ إدارة طُرق الدفع...</translation>
 <translation id="469300482518076788">إغلاق علامة التبويب</translation>
 <translation id="4697071790493980729">لم يتم العثور على نتائج.</translation>
+<translation id="470337593714520080">{count,plural, =1{‏حفظ إشارة مرجعية واحدة في حسابك على Google}zero{‏حفظ {count} إشارة مرجعية في حسابك على Google}two{‏حفظ إشارتَين مرجعيّتَين ({count}) في حسابك على Google}few{‏حفظ {count} إشارات مرجعية في حسابك على Google}many{‏حفظ {count} إشارة مرجعية في حسابك على Google}other{‏حفظ {count} إشارة مرجعية في حسابك على Google}}</translation>
 <translation id="470966556546083668">عدم تفعيل المزامنة</translation>
 <translation id="4711809265250406889">عندما تكون الميزة مفعَّلة</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{‫{website_1} و{website_2}}=3{‫{website_1} و{website_2} وموقع إلكتروني آخر}zero{‫{website_1} و{website_2} و{more_count} موقع إلكتروني آخر}few{‫{website_1} و{website_2} و{more_count} مواقع إلكترونية أخرى}many{‫{website_1} و{website_2} و{more_count} موقعًا إلكترونيًا آخر}other{‫{website_1} و{website_2} و{more_count} موقع إلكتروني آخر}}</translation>

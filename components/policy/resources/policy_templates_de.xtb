@@ -2931,9 +2931,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 <translation id="3417418267404583991">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_OS_NAME" /> möglich. Eine Anmeldung als Gast erfolgt anonym und erfordert keine Passworteingabe.
 
       Ist die Richtlinie auf "false" eingestellt, können in <ph name="PRODUCT_OS_NAME" /> keine Gastsitzungen gestartet werden.</translation>
-<translation id="3420141485959154417">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" />" die URL der Suchmaschine an, die für die Bildersuche verwendet wird. (Ist "<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />" konfiguriert, wird bei Bildsuchanfragen stattdessen die POST-Methode verwendet.)
-
-      Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" />" nicht konfiguriert ist, wird keine Bildersuche verwendet.</translation>
 <translation id="3423703250826790403">Android-Apps</translation>
 <translation id="3426434797050451264">Mit dieser Richtlinie können auch Android-Apps als Standard-Handler für Dateien festgelegt werden.</translation>
 <translation id="3428247105888806363">Netzwerkvorhersage aktivieren</translation>
@@ -4977,12 +4974,6 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
 
       Ist die Richtlinie nicht konfiguriert oder ungültig, gilt dasselbe Verhalten wie für "Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist".</translation>
 <translation id="5229339291699779956">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte; Peripheriegeräte sind voll funktionsfähig</translation>
-<translation id="5233239004553860036">Wenn diese Richtlinie auf <ph name="POLICY_VALUE_ALL" /> gesetzt oder nicht konfiguriert ist, ist jegliche Nutzung von verwalteten Konten zulässig. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Ein sekundäres Konto kann nur Richtlinien empfangen, wenn das Konto in einem Browserprofil als primäres Konto angemeldet ist.
-      Richtlinien für das Konto werden in den folgenden Szenarien nicht umgesetzt:
-        – Es ist ein sekundäres Konto auf Betriebssystemebene (Kontoeinstellungen)
-        – Es ist ein sekundäres Konto in einem Browserprofil
-
-Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> gesetzt ist, kann dieses Konto nur als primäres Konto angemeldet werden. Eine Anmeldung als sekundäres Konto ist dann nicht zulässig.</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
 <translation id="5235607513961923779">Meldet den Status der Geräteaktivität auf angemeldeten Geräten verknüpfter Nutzer.
 
@@ -8733,9 +8724,6 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
 <translation id="8312129124898414409">Ermöglicht dir, festzulegen, ob die Schlüsselgenerierung für Websites zugelassen wird. Die Schlüsselgenerierung kann entweder für alle Websites zugelassen oder für alle Websites verboten werden.
 
           Wenn diese Richtlinie nicht konfiguriert ist, wird "BlockKeygen" verwendet, kann jedoch vom Nutzer geändert werden.</translation>
-<translation id="8313927126392971570">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />" die Parameter für die Bildersuche mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie "{imageThumbnail}" ist, wird er durch echte Miniaturansichtsdaten ersetzt.
-
-      Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />" nicht konfiguriert ist, wird die Bildsuchanfrage mithilfe der GET-Methode gesendet.</translation>
 <translation id="8314214821702356835">Erlaubt es Nutzern, Medien wiederzugeben, während das Gerät gesperrt ist</translation>
 <translation id="8314308739926578606">Die Nutzung der Entwicklertools in Apps und Erweiterungen, die über die Unternehmensrichtlinie oder ab Version 114 installiert wurden oder in den Browser eines verwalteten Nutzers integriert sind, ist nicht zulässig. Ist dies ein verwalteter Nutzer, sind in den Browser integrierte Erweiterungen nicht zulässig. Nutzung der Entwicklertools in anderen Kontexten zulassen</translation>
 <translation id="8316940611391250886">Zertifikate ohne die Erweiterung „subjectAlternativeName“ nicht zulassen</translation>

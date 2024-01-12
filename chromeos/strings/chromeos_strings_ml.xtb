@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">സ്ലൈഡ് ഷോ</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
+<translation id="4310735698903592804">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, അടുത്തിടെയുള്ള വാൾപേപ്പറുകൾ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> കീ അമർത്തി</translation>
 <translation id="4354430579665871434">കീ</translation>
 <translation id="4361257691546579041">APN തരം ഡിഫോൾട്ട് ആണ്.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{നിങ്ങളുടെ ഫയൽ സ്‌കാൻ ചെയ്ത് <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> എന്നതിലേക്ക് സംരക്ഷിച്ചു.}other{നിങ്ങളുടെ ഫയലുകൾ സ്‌കാൻ ചെയ്ത് <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> എന്നതിലേക്ക് സംരക്ഷിച്ചു.}}</translation>
 <translation id="5931523347251946569">ഫയൽ കണ്ടെത്തിയില്ല</translation>
+<translation id="593880865674747800">ഈ സ്റ്റൈലിൽ കൂടുതൽ സൃഷ്ടിക്കുക</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="594552776027197022">ക്രമരഹിതമായ കീ ജോടി സൃഷ്‌ടിക്കുക</translation>
 <translation id="5946538341867151940">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, "+ പുതിയ APN" തിരഞ്ഞെടുത്ത് APN വിവരങ്ങൾ നൽകുക</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA അല്ലെങ്കിൽ RSN)</translation>
 <translation id="7841134249932030522">ഡാർക്ക് മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7846634333498149051">കീബോർഡ്</translation>
+<translation id="7850847810298646851">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന വാൾപേപ്പർ</translation>
 <translation id="7856267634822906833">Bluetooth ടച്ച്സ്ക്രീൻ</translation>
 <translation id="7869143217755017858">ഡാർക്ക് മോഡ് പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="7881066108824108340">DNS</translation>

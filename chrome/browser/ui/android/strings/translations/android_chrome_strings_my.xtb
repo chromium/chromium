@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">ခေါ်ဆိုရန် တို့ပါ</translation>
 <translation id="2321086116217818302">စကားဝှက်များကို ပြင်ဆင်နေသည်…</translation>
 <translation id="2323763861024343754">ဆိုက် သိုလှောင်ခန်း</translation>
+<translation id="2327226657832576859">PDF များကို အလိုအလျောက်ဖွင့်မလား။</translation>
 <translation id="2328985652426384049">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ကို ထည့်သွင်း၍မရပါ။</translation>
 <translation id="2349710944427398404">အကောင့်များ၊ ဝဘ်လိပ်စာများနှင့် သိမ်းဆည်းထားသည့် ဆက်တင်များအပါအဝင် Chrome မှ သိမ်းဆည်းထားသည့် စုစုပေါင်းဒေတာများ ပါဝင်ပါသည်</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">နောက်ဆုံးတစ်နာရီ</translation>
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
 <translation id="4532845899244822526">ဖိုင်တွဲရွေးရန်</translation>
+<translation id="4541505619120536051">အမြဲဖွင့်ရန်</translation>
 <translation id="4543131175509360848">လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
 <translation id="4554077758708533499">USB ကြိုးနှင့် ချိတ်ဆက်ထားသည်</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">ကျွန်ုပ်၏လုပ်ဆောင်ချက် စာမျက်နှာသို့ တစ်ဆင့်ပြန်ညွှန်ပြသည့် စာမျက်နှာသိကောင်းစရာများ ထိန်းချုပ်စင်တာအတွက် လုံခြုံရေးသတိပေးချက် အမှတ်တံဆိပ်။</translation>
 <translation id="5487521232677179737">ဒေတာများကို ရှင်းလင်းပါ</translation>
 <translation id="5492637351392383067">စက်တွင်ပါသော အသွင်ဝှက်စနစ်</translation>
+<translation id="5509866835115085009">PDF ကို သင်ဒေါင်းလုဒ်လုပ်သည့်အခါ Chrome သည် အလိုအလျောက် ဖွင့်နိုင်သည်။</translation>
 <translation id="5514904542973294328">ဤစက်ပစ္စည်း၏ စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="5515439363601853141">သင့်စကားဝှက်ကိုကြည့်ရန် ဖွင့်ပါ</translation>
 <translation id="5517095782334947753">သင့်ထံတွင် <ph name="FROM_ACCOUNT" /> မှ စာညှပ်များ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များ ရှိပါသည်။</translation>

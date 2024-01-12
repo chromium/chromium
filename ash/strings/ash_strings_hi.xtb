@@ -1134,6 +1134,7 @@
 <translation id="5537725057119320332">कास्‍ट करें</translation>
 <translation id="5546397813406633847">पासवर्ड रीसेट करें</translation>
 <translation id="554893713779400387">डिक्टेशन (आप जो बोलते हैं उसे लिखना) टॉगल करें</translation>
+<translation id="5550417424894892620">फ़ाइलों को <ph name="HOLDING_SPACE_TITLE" /> में जोड़ने के लिए उन्हें खींचकर डेस्कटॉप पर छोड़ें. डेस्कटॉप पर फ़ाइलें नहीं जोड़ी जा सकतीं.</translation>
 <translation id="5551456515017410630">कैलेंडर खोलने या बंद करने के लिए</translation>
 <translation id="5551974246223970793">किसी पेज को खोजते समय, खोज के लिए अगले मिलान पर जाएं</translation>
 <translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
@@ -1875,6 +1876,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">अपने ऐप्लिकेशन को नाम या रंग के हिसाब से क्रम में लगाएं</translation>
 <translation id="8609384513243082612">नया टैब खोलें</translation>
+<translation id="8612216344243590325">ज़रूरी फ़ाइलों को डेस्कटॉप के बजाय, <ph name="HOLDING_SPACE_TITLE" /> में रखें. बस, फ़ाइलों को खींचकर <ph name="HOLDING_SPACE_TITLE" /> में छोड़ें.</translation>
 <translation id="8614517853887502247">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं को छिपाया गया है</translation>
 <translation id="8619138598101195078">आवाज़ कम करें</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> से कनेक्ट है</translation>

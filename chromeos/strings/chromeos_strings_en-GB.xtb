@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
+<translation id="4310735698903592804">Recent wallpapers powered by Google AI</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
 <translation id="4354430579665871434">key</translation>
 <translation id="4361257691546579041">APN is type default.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File not found</translation>
+<translation id="593880865674747800">Create more in this style</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
 <translation id="5946538341867151940">You are not connected yet. If your mobile operator recommends a custom APN, enter the APN information by selecting '+ New APN'</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7841134249932030522">Enable dark mode</translation>
 <translation id="7846634333498149051">Keyboard</translation>
+<translation id="7850847810298646851">Wallpaper powered by Google AI</translation>
 <translation id="7856267634822906833">Bluetooth touchscreen</translation>
 <translation id="7869143217755017858">Disable dark mode</translation>
 <translation id="7881066108824108340">DNS</translation>

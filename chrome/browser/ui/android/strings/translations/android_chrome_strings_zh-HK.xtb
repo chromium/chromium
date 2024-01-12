@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
+<translation id="2327226657832576859">要自動開啟 PDF 嗎？</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">過去 1 小時</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
+<translation id="4541505619120536051">一律開啟</translation>
 <translation id="4543131175509360848">冇密鑰嘅工作表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
 <translation id="4554077758708533499">已使用 USB 連接線連接</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">選擇頁面數據分析中心的私隱聲明標誌後，會重新導向至我的活動頁面。</translation>
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="5492637351392383067">在裝置上加密</translation>
+<translation id="5509866835115085009">Chrome 可在下載 PDF 後自動開啟檔案。</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
 <translation id="5515439363601853141">解鎖即可查看您的密碼</translation>
 <translation id="5517095782334947753">您有來自 <ph name="FROM_ACCOUNT" /> 的書籤、記錄、密碼和其他設定。</translation>

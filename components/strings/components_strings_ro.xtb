@@ -761,6 +761,7 @@
 <translation id="2469153820345007638">În ordinea de la 1-la-N</translation>
 <translation id="24699311393038040">Hârtie (tratată)</translation>
 <translation id="2470767536994572628">Când editezi adnotări, acest document va reveni la afișarea cu o pagină și la orientarea inițială</translation>
+<translation id="2479148705183875116">Accesează Setările</translation>
 <translation id="2479410451996844060">Adresă URL de căutare nevalidă.</translation>
 <translation id="2480300195898055381">În Contul Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificări</translation>
@@ -830,12 +831,6 @@
 <translation id="2610561535971892504">Dă clic pentru a copia</translation>
 <translation id="2612993535136743634">Toate codurile de securitate salvate pe dispozitiv și în Contul Google vor fi șterse</translation>
 <translation id="2616412942031748191">Optimizare și marketing în motoare de căutare</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" /> următoarele informații:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />istoricul de navigare,
-            <ph name="LIST_ITEM" />cookie-urile și datele de pe site-uri,
-            <ph name="LIST_ITEM" />informațiile introduse în formulare.
-          <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Introduceți</translation>
 <translation id="2625385379895617796">Ora este setată în viitor</translation>
 <translation id="262745152991669301">Poate solicita permisiunea de a se conecta la dispozitive USB</translation>
@@ -1017,6 +1012,7 @@
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab pentru a răsfoi acțiunile disponibile, apoi pe Enter pentru a executa acțiunea selectată.</translation>
 <translation id="3013291976881901233">Dispozitive MIDI</translation>
 <translation id="3014553260345122294">Știri de afaceri</translation>
+<translation id="3014726756341138577">Funcții avansate ale imprimantei</translation>
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, apasă pe Tab, apoi pe Enter pentru a elimina sugestia.</translation>
@@ -1166,6 +1162,7 @@
 <translation id="33073482541490531">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole recomandă să schimbi parola acum.</translation>
 <translation id="3307649904964670439">Butonul Personalizează Chrome, activează pentru a personaliza aspectul browserului</translation>
 <translation id="3308006649705061278">Unitate organizațională (OU)</translation>
+<translation id="3324223664999044166">trei sau mai multe cuvinte care îți prezintă ideile;</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Roșu aprins</translation>
 <translation id="3325027355611702542">Autovehicule pentru campare și autovehicule recreaționale</translation>
@@ -1838,7 +1835,6 @@
 <translation id="4652440160515225514">Organizația ta a blocat site-ul deoarece încalcă o politică.</translation>
 <translation id="4653167719759882810">Fuziuni și achiziții</translation>
 <translation id="4658638640878098064">Capsare în stânga sus</translation>
-<translation id="4660119392514473465">Acum poți naviga în mod privat, iar celelalte persoane care folosesc acest dispozitiv nu îți vor vedea activitatea. Totuși, descărcările, marcajele și elementele din lista de lecturi vor fi salvate.</translation>
 <translation id="4660567771874403130">Energie și utilități</translation>
 <translation id="4663373278480897665">Camera foto este permisă</translation>
 <translation id="466561305373967878">Jocuri pe tablă</translation>
@@ -2168,6 +2164,7 @@
 <translation id="5292714443869769806">Accesează setările pentru <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Vehicule coupe</translation>
 <translation id="5296589789433599000">Gătit și rețete</translation>
+<translation id="5298618990685278995">o primă schiță.</translation>
 <translation id="5299298092464848405">Eroare la analizarea politicii</translation>
 <translation id="5299638840995777423">Robotică</translation>
 <translation id="5300062471671636390">Ascunde lista de dispozitive pentru proiectare</translation>
@@ -2284,6 +2281,7 @@
 <translation id="5541086400771735334">Căsuța de e-mail 7</translation>
 <translation id="5541546772353173584">Adaugă o adresă de e-mail</translation>
 <translation id="5543722831081909240">180 de grade</translation>
+<translation id="555037537507405574">funcții avansate ale imprimantei</translation>
 <translation id="555128936272638662">Accesorii mobile și wireless</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome compară periodic parolele tale cu cele din listele publicate online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>
@@ -2584,7 +2582,6 @@
 <translation id="6160391204859821737">Activează funcțiile pentru confidențialitatea anunțurilor</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6167577165590485365">Ultima încercare de preluare:</translation>
-<translation id="6169916984152623906">Acum poți naviga în mod privat, iar celelalte persoane care folosesc acest dispozitiv nu îți vor vedea activitatea. Cu toate acestea, descărcările și marcajele vor fi salvate.</translation>
 <translation id="617256461084925519">Google Chrome încearcă să-ți confirme identitatea pentru a-ți completa informațiile de plată.</translation>
 <translation id="6176387967264100435">Acest preț este ridicat</translation>
 <translation id="6177128806592000436">Conexiunea la acest site nu este sigură</translation>
@@ -3204,6 +3201,7 @@ Detalii suplimentare:
 <translation id="7378877318020334501">Comedii TV</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="738439098860678026">Educație pentru copii mici</translation>
+<translation id="7388071710882496863">solicitări precum „scrie o recenzie de 5 stele pentru acest restaurant”;</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dispozitivul va reporni într-un minut}few{Dispozitivul va reporni în # minute}other{Dispozitivul va reporni în # de minute}}</translation>
 <translation id="7390545607259442187">Confirmă cardul</translation>
 <translation id="7392089738299859607">Actualizează adresa</translation>
@@ -3273,12 +3271,6 @@ Detalii suplimentare:
 <translation id="749865518782565832">Instalații</translation>
 <translation id="7501663406926337752">Site-ul care urmează este semnalat de organizația ta</translation>
 <translation id="7501853161948120656">Resurse educaționale</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" /> următoarele informații:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />istoricul de navigare,
-          <ph name="LIST_ITEM" />cookie-urile și datele de pe site-uri,
-          <ph name="LIST_ITEM" />informațiile introduse în formulare.
-        <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Plic 9</translation>
 <translation id="7508255263130623398">ID-ul de dispozitiv returnat pentru politică este gol sau nu corespunde cu ID-ul de dispozitiv actual</translation>
 <translation id="7508577201115425418">Servicii de printare și pentru documente</translation>
@@ -3460,6 +3452,7 @@ Detalii suplimentare:
 <translation id="7802989406998618639">Introdu codul de securitate din <ph name="NUMBER_OF_DIGITS" /> cifre în <ph name="SIDE_OF_CARD" />, pentru ca banca să-ți poată confirma identitatea</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7805768142964895445">Stare</translation>
+<translation id="7805906048382884326">Închide sfatul</translation>
 <translation id="7810410097247356677">Pentru a plăti mai rapid data viitoare, salvează cardul și codul de securitate pe dispozitiv</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Elimini sugestia pentru formular din Chrome?</translation>
@@ -4118,6 +4111,7 @@ Detalii suplimentare:
 <translation id="9144951720726881238">Data expirării:</translation>
 <translation id="9148507642005240123">&amp;Anulați editarea</translation>
 <translation id="9148599396704355100">Prețul este mic</translation>
+<translation id="9150025764986957246">Poți introduce, de exemplu:</translation>
 <translation id="9150045010208374699">Utilizează camera foto</translation>
 <translation id="9150685862434908345">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizat</translation>
@@ -4128,6 +4122,7 @@ Detalii suplimentare:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Site-urile pe care le accesezi pot stabili și lucrurile care te interesează, pe baza activității tale pe site. De exemplu, dacă accesezi un site care vinde pantofi de alergare pe distanțe mari, site-ul poate deduce că te interesează maratoanele.</translation>
 <translation id="9166851138617700776">Mai multe despre anunțurile sugerate de site-uri și cuantificarea anunțurilor</translation>
+<translation id="9167594211215946097">să aibă acces direct la imprimante;</translation>
 <translation id="9168814207360376865">Permite site-urilor să verifice dacă ai salvat metode de plată</translation>
 <translation id="9169664750068251925">Blocați întotdeauna pe acest site</translation>
 <translation id="9169931577761441333">Adaugă <ph name="APP_NAME" /> la ecranul de pornire</translation>

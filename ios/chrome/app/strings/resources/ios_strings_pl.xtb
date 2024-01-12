@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Selektor jednostek</translation>
 <translation id="2348630484974447747">Przesyłka</translation>
 <translation id="2351097562818989364">Ustawienia tłumaczenia zostały zresetowane.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Hasło do usługi {DOMAIN_ONE} możesz zapisać na swoim koncie Google {EMAIL}.}=2{Hasła do usług {DOMAIN_ONE} i {DOMAIN_TWO} możesz zapisać na koncie Google {EMAIL}.}=3{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innej możesz zapisać na koncie Google {EMAIL}.}few{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innych możesz zapisać na koncie Google {EMAIL}.}many{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innych możesz zapisać na koncie Google {EMAIL}.}other{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innej możesz zapisać na koncie Google {EMAIL}.}}</translation>
 <translation id="235789365079050412">Polityka prywatności Google</translation>
 <translation id="2359043044084662842">Tłumacz</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -528,6 +529,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803696231112616155">Proponuj tłumaczenie tej strony</translation>
+<translation id="3808311849069021992">Pokaż szczegóły wyszukiwarki</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3818045793209708987">Przestaliśmy śledzić tę przesyłkę</translation>
 <translation id="3818293389945649617">Znajdź następny</translation>
@@ -801,6 +803,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5235389474593199952">Ukryj opcję Historia</translation>
 <translation id="5238301240406177137">Zapisz na koncie</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google.</translation>
 <translation id="5245322853195994030">Anuluj synchronizację</translation>
 <translation id="5248640482715684545">Ta witryna próbuje otworzyć inną aplikację.</translation>
 <translation id="5256661381001734217">Ta witryna próbuje otworzyć aplikację.  Spowoduje to wyjście z trybu incognito.</translation>
@@ -820,6 +823,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Tu znajdziesz swoje ulubione witryny</translation>
 <translation id="5388358297987318779">Otwórz obraz</translation>
+<translation id="5395707839134961196">Ukryj szczegóły wyszukiwarki</translation>
 <translation id="5396950905475481456">Zaproś osoby do grupy rodzinnej</translation>
 <translation id="5407969256130905701">Odrzuć zmiany</translation>
 <translation id="5414763847370083940">Otrzymasz alert, jeśli cena w którejkolwiek witrynie spadnie.</translation>
@@ -1033,6 +1037,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6453018583485750254">Jeszcze nie sprawdzano.</translation>
 <translation id="6459307836338400162">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK" />Synchronizacja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Szczegóły zostały ukryte</translation>
 <translation id="646394917185284261">Pliki</translation>
 <translation id="6464071786529933911">Otwórz w karcie incognito</translation>
 <translation id="6464397691496239022">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
@@ -1285,6 +1290,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7812377703891978671">Aby uzyskać dostęp do całej historii przeglądania, wybierz <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Pobrane</translation>
 <translation id="7839985698273989086">Strona offline</translation>
+<translation id="7839994177130598711">Członkowie grupy rodzinnej mogą teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google.</translation>
 <translation id="7840771868269352570">Wybrane elementy zostaną usunięte.</translation>
 <translation id="7845466610722898">Pokaż listę Do przeczytania</translation>
 <translation id="784551991304901159">Aby zobaczyć zawartość, wybierz w menu opcję Włącz</translation>

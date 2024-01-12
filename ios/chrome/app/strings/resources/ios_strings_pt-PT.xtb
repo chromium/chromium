@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Seletor de unidades</translation>
 <translation id="2348630484974447747">Embalagem</translation>
 <translation id="2351097562818989364">As definições de tradução foram repostas.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Pode guardar a palavra-passe do domínio {DOMAIN_ONE} na sua Conta Google, {EMAIL}.}=2{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta Google, {EMAIL}.}=3{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}other{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Política de Privacidade da Google</translation>
 <translation id="2359043044084662842">Traduzir</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -528,6 +529,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Propor tradução deste site</translation>
+<translation id="3808311849069021992">Mostrar detalhes do motor de pesquisa</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3818045793209708987">Parou de acompanhar esta encomenda</translation>
 <translation id="3818293389945649617">Encontrar seguinte</translation>
@@ -801,6 +803,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5235389474593199952">Ocultar Histórico</translation>
 <translation id="5238301240406177137">Guardar na conta</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> já pode usar o seu nome de utilizador e palavra-passe quando usar o Gestor de Palavras-passe da Google para iniciar sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5248640482715684545">Este site está a tentar abrir outra aplicação.</translation>
 <translation id="5256661381001734217">Este site está a tentar abrir uma aplicação.  Esta ação faz com que saia da Navegação anónima.</translation>
@@ -820,6 +823,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5360976571138293719">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Vai encontrar os sites que segue aqui</translation>
 <translation id="5388358297987318779">Abrir Imagem</translation>
+<translation id="5395707839134961196">Ocultar detalhes do motor de pesquisa</translation>
 <translation id="5396950905475481456">Convide membros da família</translation>
 <translation id="5407969256130905701">Rejeitar alterações</translation>
 <translation id="5414763847370083940">Vai receber um alerta se o preço descer nalgum site.</translation>
@@ -1033,6 +1037,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Verificação nunca executada.</translation>
 <translation id="6459307836338400162">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Detalhes ocultados</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Abrir num novo separador de navegação anónima</translation>
 <translation id="6464397691496239022">Os sites podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.
@@ -1285,6 +1290,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7812377703891978671">Pode aceder a todo o seu histórico de navegação selecionando o botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Transferências</translation>
 <translation id="7839985698273989086">Página offline</translation>
+<translation id="7839994177130598711">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
 <translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>

@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">سلائیڈ شو</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
+<translation id="4310735698903592804">‏Google AI سے تقویت یافتہ حالیہ وال پیپرز</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> کلید دبائی گئی</translation>
 <translation id="4354430579665871434">کلید</translation>
 <translation id="4361257691546579041">‏APN کی قسم ڈیفالٹ پر سیٹ ہے۔</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">آن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{آپ کی فائل کامیابی کے ساتھ اسکین ہو گئی ہے اور اسے <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}other{آپ کی فائلیں کامیابی کے ساتھ اسکین ہو گئی ہیں اور انہیں <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> پر محفوظ کر دیا گیا ہے۔}}</translation>
 <translation id="5931523347251946569">فائل نہیں ملی</translation>
+<translation id="593880865674747800">اس اسٹائل میں مزید تخلیق کریں</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="594552776027197022">رینڈم کلیدوں کا جوڑا بنائیں</translation>
 <translation id="5946538341867151940">‏آپ ابھی تک منسلک نہیں ہیں۔ اگر آپ کا موبائل کیریئر حسب ضرورت APN تجویز کرتا ہے تو "New APN +" کو منتخب کر کے APN کی معلومات درج کریں۔</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">‏‫‫PSK‎‏ (WPA یا RSN)‏</translation>
 <translation id="7841134249932030522">تاریک وضع فعال کریں</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
+<translation id="7850847810298646851">‏Google AI سے تقویت یافتہ وال پیپر</translation>
 <translation id="7856267634822906833">بلوٹوتھ ٹچ اسکرین</translation>
 <translation id="7869143217755017858">تاریک وضع غیر فعال کریں</translation>
 <translation id="7881066108824108340">DNS</translation>

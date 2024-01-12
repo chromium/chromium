@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Izbirnik enot</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Nastavitve za prevajanje so ponastavljene.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Geslo za {DOMAIN_ONE} lahko shranite v računu Google, {EMAIL}.}=2{Gesli za {DOMAIN_ONE} in {DOMAIN_TWO} lahko shranite v računu Google, {EMAIL}.}=3{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}one{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}two{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}few{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}other{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Googlov pravilnik o zasebnosti</translation>
 <translation id="2359043044084662842">Prevedi</translation>
 <translation id="2359808026110333948">Naprej</translation>
@@ -689,6 +690,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4689564913179979534">Upravljanje plačilnih sredstev ...</translation>
 <translation id="469300482518076788">Zapri zavihek</translation>
 <translation id="4697071790493980729">Najden ni bil noben rezultat</translation>
+<translation id="470337593714520080">{count,plural, =1{Shranite 1 zaznamek v računu Google}one{Shranite {count} zaznamek v računu Google}two{Shranite {count} zaznamka v računu Google}few{Shranite {count} zaznamke v računu Google}other{Shranite {count} zaznamkov v računu Google}}</translation>
 <translation id="470966556546083668">Ne vklopi sinhroniziranja</translation>
 <translation id="4711809265250406889">Če je to vklopljeno</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} in še 1}one{{website_1}, {website_2} in še {more_count}}two{{website_1}, {website_2} in še {more_count}}few{{website_1}, {website_2} in še {more_count}}other{{website_1}, {website_2} in še {more_count}}}</translation>

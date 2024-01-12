@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Maelezo</translation>
 <translation id="117624967391683467">Inanakili <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Sitisha</translation>
+<translation id="1190144681599273207">Kuleta faili hii kutatumia takriban <ph name="FILE_SIZE" /> wa data ya simu.</translation>
 <translation id="1194390763418645112">Faili inaweza kufikiwa na <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Endelea</translation>
 <translation id="1209796539517632982">Seva za jina otomatiki</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Shiriki na <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Cheti cha uthibitishaji kimekataliwa kindani</translation>
 <translation id="1775381402323441512">Maelezo ya video</translation>
+<translation id="180035236176489073">Sharti uwe mtandaoni ili ufikie faili hizi.</translation>
 <translation id="1807938677607439181">Faili zote</translation>
 <translation id="1810764548349082891">Hakuna onyesho la kuchungulia</translation>
 <translation id="1812302367230252929">Unukuzi wa mfumo wa kuandika Kiamhariki</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">URL ya kuweka mipangilio kiotomatiki:</translation>
 <translation id="2284767815536050991">nafasi ya hifadhi inayoweza kuondolewa</translation>
 <translation id="2288278176040912387">Kicheza rekodi</translation>
+<translation id="2291538123825441971">Inafungua faili <ph name="NUMBER_OF_FILES" />.</translation>
+<translation id="2303301624314357662">Inafungua faili ya <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Sayari</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> imeondolewa.</translation>
 <translation id="2307462900900812319">Sanidi mtandao</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">Nafasi ya kuhifadhi haitoshi kusawazisha faili zako zote</translation>
 <translation id="23721837607121582">Pakua maelezo ya eSIM ya vifaa vya mkononi, Mtandao <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Tumia mwonekano wa orodha</translation>
+<translation id="2377590462528165447">Umeshiriki folda <ph name="NUMBER_OF_ITEMS" /> katika Linux</translation>
 <translation id="2379576081295865700">Inakagua nafasi ya kuhifadhi… kipengee 1 kimepatikana</translation>
 <translation id="2383454254762599978">Hamishia kwenye tupio</translation>
 <translation id="2387458720915042159">Aina ya muunganisho wa seva mbadala</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">Punguza uchaguzi</translation>
 <translation id="4202378258276439759">Kihispania (Amerika ya Kusini)</translation>
 <translation id="4202977638116331303">Kijojia</translation>
+<translation id="421017592316736757">Sharti uwe mtandaoni ili kufikia faili hii.</translation>
 <translation id="4212740939091998969">Folda iitwayo "<ph name="FOLDER_NAME" />" tayari ipo. Tafadhali chagua jina tofauti.</translation>
 <translation id="4218274196133425560">Ondoa hali zisizofuata kanuni katika <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Wasilisho la Google</translation>
 <translation id="4277536868133419688">Kichujio cha <ph name="FILTER_NAME" /> kimewashwa.</translation>
+<translation id="4290535918735525311">Folda 1 imeshirikiwa na Linux</translation>
 <translation id="4299729908419173967">Kibrazili</translation>
 <translation id="4302605047395093221">Mtu yeyote anayetumia kifaa hiki atahitaji kuweka PIN hii ili aunganishe kwenye mtandao huu wa simu</translation>
 <translation id="4303531889494116116">Mtandao huu unatumika. Jaribu tena baadaye.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Maelezo</translation>
 <translation id="4935975195727477204">Ua la Gazania</translation>
 <translation id="4943368462779413526">Kandanda</translation>
+<translation id="4961158930123534723">Umeshiriki folda moja na Parallels Desktop</translation>
+<translation id="4965874878399872778">Inakagua faili zako kwa kuzilinganisha na sera za usalama za shirika lako...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> imerejeshwa</translation>
 <translation id="4969785127455456148">Albamu</translation>
 <translation id="4972330214479971536">Imeshindwa kukamilisha mchakato wa kuweka mipangilio ya kusawazisha faili</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318819489018851358">Shiriki kwenye Linux</translation>
 <translation id="5323213332664049067">Amerika ya Kusini</translation>
+<translation id="5330145655348521461">Faili hizi zilifunguka kwenye eneo-kazi tofauti. Sogea kwenye <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) ili uzione.</translation>
 <translation id="5330512191124428349">Pata maelezo</translation>
 <translation id="535792325654997756">Mtu aliye na paka</translation>
 <translation id="5358764674931277">Kasi ya picha</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">Kijapani kwenye kibodi ya Marekani</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, hakuna mtandao</translation>
 <translation id="6146563240635539929">Video</translation>
+<translation id="6150853954427645995">Ili kuhifadhi faili hii kwa matumizi ya nje ya mtandao, rudi mtandaoni, bofya faili kulia, na uchague chaguo la <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Vipepeo</translation>
 <translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6170470584681422115">Sandiwichi</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">Thamani ya kiambishi cha kikoa kinacholingana si sahihi</translation>
 <translation id="6364301859968397756">Nafasi ya hifadhi ya shirika imejaa</translation>
 <translation id="6367976544441405720">Gari</translation>
+<translation id="637062427944097960">Faili hii ilifunguka kwenye eneo-kazi tofauti. Sogea kwenye <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) ili uione.</translation>
 <translation id="6394388407447716302">Kusoma tu</translation>
 <translation id="6395575651121294044">Faili <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> imeshindwa kuhamishwa kwa sababu imesimbwa kwa njia fiche.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">Umebakisha jaribio 1.</translation>
 <translation id="643243556292470964">Faili ulizofuta sasa zimehamishiwa kwenye tupio</translation>
 <translation id="6438480100790416671">Inakagua nafasi ya kuhifadhi…</translation>
+<translation id="6451527188465304418">Inakagua faili yako kwa kuilinganisha na sera za usalama za shirika lako...</translation>
 <translation id="6485131920355264772">Imeshindwa kupata maelezo ya nafasi</translation>
 <translation id="6495925982925244349">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Maelezo</translation>
 <translation id="649877868557234318">Inachukua <ph name="FILE_NAME" /> iweke kwenye <ph name="FOLDER_NAME" /></translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">Mipangilio ya usawazishaji wa faili</translation>
 <translation id="6594855146910089723">Umeshiriki folda hii na Linux na Parallels Desktop</translation>
 <translation id="6607272825297743757">Maelezo ya faili</translation>
+<translation id="6609332149380188670">Umeshiriki folda <ph name="NUMBER_OF_ITEMS" /> na Parallels Desktop</translation>
 <translation id="6629518321609546825">Weka angalau namba nne</translation>
 <translation id="6643016212128521049">Futa</translation>
 <translation id="6650726141019353908">Kipepeo wa waridi</translation>
@@ -877,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009">TB <ph name="NUMBER_OF_TB" /></translation>
 <translation id="7831491651892296503">Hitilafu imetokea wakati wa kuweka mipangilio ya mtandao</translation>
+<translation id="7839804798877833423">Kupata faili hizi kutatumia takribani  <ph name="FILE_SIZE" /> za data ya simu ya mkononi.</translation>
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
 <translation id="7853966320808728790">BÉPO ya Kifaransa</translation>
 <translation id="7857117644404132472">Ongeza kighairi</translation>
@@ -918,12 +933,14 @@
 <translation id="813913629614996137">Inaanzisha…</translation>
 <translation id="8147028810663464959">Upana wa herufi Umejaa</translation>
 <translation id="8151638057146502721">Sanidi</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{Hitilafu 1.}other{Hitilafu #.}}</translation>
 <translation id="8154842056504218462">Umechagua vipengee vyote.</translation>
 <translation id="8157684860301034423">Imeshindwa kuleta maelezo ya programu.</translation>
 <translation id="8175731104491895765">Kifaransa (Ubelgiji)</translation>
 <translation id="8175799081768705361">Inasawazisha faili <ph name="NUMBER_OF_FILES_SYNCING" /> za Hifadhi</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Muundo wa kifaa</translation>
+<translation id="8223479393428528563">Ili kuhifadhi faili hizi kwa matumizi ya nje ya mtandao, rudi mtandaoni, bofya faili kulia, na uchague chaguo la <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Angalia hifadhi</translation>
 <translation id="8249296373107784235">Ghairi</translation>
 <translation id="8250690786522693009">Kilatini</translation>
@@ -950,6 +967,7 @@
 <translation id="83651606385705612">Ipatie <ph name="VM_NAME" /> ruhusa ya kufikia faili zako zilizo kwenye folda ya <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Kitufe kibovu cha WEP</translation>
 <translation id="8372852072747894550">Kigiriki</translation>
+<translation id="8377269993083688872">Miundo ya barua pepe</translation>
 <translation id="8386903983509584791">Imemaliza kutafuta</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> imetolewa.</translation>
 <translation id="8395901698320285466">Vipimo</translation>
@@ -1008,6 +1026,7 @@
 <translation id="8787254343425541995">Ruhusu proksi za mitandao iliyoshirikiwa</translation>
 <translation id="8790981080411996443">Mtu anayenyunyizia mimea maji</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{Tahadhari 1.}other{Tahadhari #.}}</translation>
 <translation id="8808686172382650546">Paka</translation>
 <translation id="8810671769985673465">Haikuwezekana kubana, faili ipo: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Kihispania (Uhispania)</translation>

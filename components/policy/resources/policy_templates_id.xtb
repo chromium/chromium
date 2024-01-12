@@ -532,6 +532,7 @@ Jika kebijakan ini disetel ke nonaktif, halaman dengan header <ph name="CACHE_CO
 <translation id="143649776386947790">Gunakan Perilaku Default</translation>
 <translation id="1438739959477268107">Setelan pembuatan kunci default</translation>
 <translation id="1440408958042020947">Mengizinkan pengguna yang telah mengizinkan Phone Hub mengakses foto dan video yang terakhir diambil di ponselnya</translation>
+<translation id="1443532790824582949">Mengaktifkan keyboard virtual sentuh</translation>
 <translation id="1449083855104537880">Jika kebijakan ditetapkan ke Benar (True), opsi aksesibilitas akan ditampilkan di menu area notifikasi. Jika kebijakan ditetapkan ke Salah (False), opsi tidak akan muncul di menu.
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, opsi aksesibilitas tidak akan muncul di menu, tetapi pengguna dapat menampilkannya melalui halaman Setelan.
@@ -1190,6 +1191,7 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
 <translation id="1954612656043024615">Aktifkan fitur papan klip bersama</translation>
 <translation id="1955063069502242812">Aktifkan suara baterai lemah</translation>
 <translation id="1955806069704957172">Mengontrol setelan untuk API konektor desktop.</translation>
+<translation id="1957093168333856467">Nonaktifkan keyboard virtual aksesibilitas</translation>
 <translation id="1960059835237529462">Memungkinkan pengguna melihat pop-up Rating App Store <ph name="IOS_NAME" /></translation>
 <translation id="1960416154405676350">Aktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
@@ -1292,6 +1294,7 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="2029985289397958781">Nonaktifkan penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> untuk pengguna versi Bisnis</translation>
 <translation id="2030905906517501646">Kata kunci penyedia penelusuran default</translation>
 <translation id="203096360153626918">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi akan dapat memasuki mode layar penuh meski kebijakan ini disetel ke <ph name="FALSE" />.</translation>
+<translation id="2031074619942406753">Nonaktifkan keyboard virtual sentuh</translation>
 <translation id="2032848225007871645">Menyetel kebijakan akan mengontrol mode buka kunci cepat mana yang dapat membuka layar kunci.
 
       Untuk mengaktifkan:
@@ -2453,6 +2456,7 @@ perilaku tombol fungsi, dan setelan ini tidak akan dapat diubah oleh pengguna.</
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">Menu konteks akan memiliki item menu untuk membagikan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Jika kebijakan disetel ke Aktif, aplikasi web pihak ketiga akan diizinkan menggunakan <ph name="DESK_API_NAME" /> untuk menyimpan dan membagikan desktop <ph name="PRODUCT_OS_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat menyimpan dan membagikan data desktop virtual melalui <ph name="DESK_API_NAME" />. Jika kebijakan ini tidak disetel, perilakunya akan sama dengan disetel ke nonaktif. Kebijakan ini hanya akan berlaku di perangkat terdaftar.</translation>
+<translation id="2976033779241323433">Aktifkan keyboard virtual sentuh berdasarkan heuristik sistem default</translation>
 <translation id="2976429807269247880">Setelan perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="2979696534869541158">Paksa implementasi lama</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
@@ -2559,6 +2563,7 @@ Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan in
       Jika kebijakan disetel ke Nonaktif, kontrol media di layar kunci akan dinonaktifkan.</translation>
 <translation id="3072847235228302527">Menyetel Persyaratan Layanan untuk akun lokal perangkat</translation>
 <translation id="3074032542020543133">Saluran LTS</translation>
+<translation id="3074886258920642791">Mengaktifkan keyboard virtual aksesibilitas di layar login</translation>
 <translation id="3077650998740742747">
 Perilaku default (Kebijakan tidak disetel) saat akun ditambahkan di area konten, dialog kecil mungkin akan muncul yang meminta pengguna membuat profil baru. Dialog ini dapat ditutup.
 
@@ -3004,9 +3009,6 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
 <translation id="3417418267404583991">Jika kebijakan ini disetel ke true atau tidak dikonfigurasi, <ph name="PRODUCT_OS_NAME" /> akan mengaktifkan login sebagai tamu. Login sebagai tamu adalah sesi pengguna anonim dan tidak memerlukan sandi.
 
       Jika kebijakan ini disetel ke false, <ph name="PRODUCT_OS_NAME" /> tidak akan mengizinkan dimulainya sesi tamu.</translation>
-<translation id="3420141485959154417">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> akan menentukan URL mesin telusur yang digunakan untuk penelusuran gambar. (Jika <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> disetel, permintaan penelusuran gambar akan menggunakan metode POST.)
-
-      Jika <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> tidak disetel, tidak ada penelusuran gambar yang digunakan.</translation>
 <translation id="3423703250826790403">Aplikasi Android</translation>
 <translation id="3426434797050451264">Kebijakan ini juga dapat digunakan untuk menentukan aplikasi Android sebagai pengendali file default.</translation>
 <translation id="3428247105888806363">Aktifkan prediksi jaringan</translation>
@@ -3921,6 +3923,7 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
 
       Jika kebijakan ini disetel dari sumber cloud, kebijakan tidak akan dapat menargetkan pengguna tertentu.</translation>
 <translation id="416817811987180750">Fitur daftar belanja akan tersedia bagi pengguna.</translation>
+<translation id="4168880975307014079">Aktifkan keyboard virtual sentuh</translation>
 <translation id="4169094969938998854">Jangan izinkan penguncian layar</translation>
 <translation id="4169692397912242417">Mengaktifkan fitur aksesibilitas respons lisan di layar login.
 
@@ -4948,6 +4951,7 @@ Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MA
       Catatan: Elemen juga dapat ditambahkan ke daftar ini melalui kebijakan <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5067143124345820993">Daftar putih pengguna masuk</translation>
+<translation id="50689955292091946">Aktifkan keyboard virtual aksesibilitas di layar login</translation>
 <translation id="5069522005630249098">Setelan ini menentukan jumlah data pengguna yang disimpan setelah <ph name="LACROS_NAME" /> dinonaktifkan.
 
       Jika kebijakan ini disetel ke <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> atau tidak disetel, migrasi data mundur tidak akan dilakukan.
@@ -5153,12 +5157,6 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
 
       Jika tidak disetel atau tidak valid, perilaku akan sama dengan "Tunggu saluran target juga mengalami downgrade saluran rilis".</translation>
 <translation id="5229339291699779956">Mengaktifkan tunneling PCIe untuk perangkat periferal Thunderbolt/USB4, perangkat periferal akan berfungsi pada kemampuan penuh</translation>
-<translation id="5233239004553860036">Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_ALL" /> atau tidak disetel, semua penggunaan akun terkelola akan diizinkan. Hal ini dapat menyebabkan akun terkelola menjadi akun sekunder, yang hanya akan menerima kebijakan jika akun tersebut login sebagai akun utama di Profil browser.
-      Kebijakan yang disetel untuk akun tidak akan diterapkan dalam skenario berikut:
-        -  Menjadi akun sekunder di tingkat OS (Setelan Akun)
-        -  Menjadi akun sekunder di Profil browser
-
-      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> untuk suatu akun, akun ini hanya akan diizinkan login sebagai akun utama. Akun tidak akan diizinkan login sebagai akun sekunder.</translation>
 <translation id="523505283826916779">Setelan aksesibilitas</translation>
 <translation id="5235607513961923779">Melaporkan status aktivitas perangkat di perangkat terdaftar bagi pengguna terafiliasi.
 
@@ -5292,6 +5290,7 @@ Jika kebijakan disetel ke Nonaktif, histori browser dan histori download tidak d
 <translation id="5331746669335642668">Kebijakan cloud <ph name="PRODUCT_NAME" /> menggantikan kebijakan Platform.</translation>
 <translation id="5334501839642146593">Jangan pernah kirim metrik ke Google</translation>
 <translation id="5335910979215357815">Aktifkan Save and Share API untuk kontrol <ph name="PRODUCT_OS_NAME" /> pihak ketiga.</translation>
+<translation id="5339096331970464266">Mengaktifkan keyboard virtual aksesibilitas</translation>
 <translation id="5340008866815063393">Aktifkan pelaporan data kebijakan</translation>
 <translation id="5345910753471481870">Jangan tampilkan tombol Google Lens di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
@@ -5464,6 +5463,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="5475361623548884387">Aktifkan pencetakan</translation>
 <translation id="547601067149622666">Jangan izinkan iklan di situs yang menayangkan iklan mengganggu</translation>
 <translation id="5476152378885134514">Memblokir papan klip di situs ini</translation>
+<translation id="5479841110985196412">Aktifkan keyboard virtual aksesibilitas</translation>
 <translation id="5480380613778757009">Jika kebijakan ini dinonaktifkan atau tidak disetel, semua setelan tampilan yang disetel di Sesi tamu terkelola akan direset segera setelah sesi selesai. Jika kebijakan ini disetel ke Benar (True), properti tampilan akan tetap tersimpan setelah keluar dari sesi tamu terkelola.</translation>
 <translation id="5483012943408894695">Origin atau pola nama host yang semestinya tidak dikenai pembatasan untuk origin yang tidak aman</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
@@ -5837,6 +5837,18 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
 <translation id="5790763087505467169">Mengurangi Notifikasi otomatis untuk sesi tamu terkelola</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
+<translation id="5803715507113569033">Kebijakan ini memungkinkan admin mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Jika kebijakan ini disetel ke '<ph name="ALLOWED_NAME" />', pengguna akan dapat menyiapkan <ph name="MICROSOFT_ONE_DRIVE_NAME" /> jika diinginkan.
+Setelah menyelesaikan proses penyiapan, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> akan dipasang di file manager.
+
+Jika kebijakan ini disetel ke '<ph name="DISALLOWED_NAME" />', pengguna tidak akan dapat menyiapkan <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Jika kebijakan ini disetel ke '<ph name="AUTOMATED_NAME" />', <ph name="MICROSOFT_ONE_DRIVE_NAME" /> akan otomatis disiapkan. Tindakan ini mengharuskan pengguna login ke <ph name="PRODUCT_OS_NAME" /> dengan akun Microsoft. Jika gagal, sistem akan kembali menampilkan alur penyiapan.
+
+Jika kebijakan ini tidak disetel, hal ini setara dengan menyetel kebijakan ke '<ph name="ALLOWED_NAME" />' bagi pengguna reguler; dan secara default menyetel kebijakan ke '<ph name="DISALLOWED_NAME" />' bagi pengguna versi bisnis.
+
+Anda dapat menambahkan pembatasan akun lebih lanjut dengan kebijakan <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
 <translation id="5804795151506109282">Jangan meminta pengguna untuk melakukan migrasi.</translation>
 <translation id="5806128552675651249">Izinkan pencetakan hanya tanpa grafis latar belakang</translation>
 <translation id="5809210507920527553">Mengontrol setelan untuk container Linux (Crostini).</translation>
@@ -6318,6 +6330,21 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
 <translation id="6246290059248303618">Menampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal</translation>
+<translation id="6246420783859339814">Kebijakan ini memungkinkan admin membatasi akun mana yang diizinkan untuk login ke <ph name="MICROSOFT_ONE_DRIVE_NAME" /> saat kebijakan <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> disetel ke aktif.
+
+Jika kebijakan ini berisi nilai '<ph name="COMMON_NAME" />', akun apa pun dapat digunakan untuk login.
+
+Jika kebijakan ini berisi nilai '<ph name="ORGANIZATIONS_NAME" />', akun kerja atau sekolah dapat digunakan untuk login.
+
+Jika kebijakan ini berisi nilai '<ph name="CONSUMER_NAME" />', akun <ph name="MICROSOFT_NAME" /> pribadi dapat digunakan untuk login.
+
+Jika kebijakan ini berisi nama domain atau ID tenant, akun dari nama domain atau ID tenant ini (lihat https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) dapat digunakan untuk login.
+
+Jika kebijakan ini tidak disetel atau hanya berisi nilai kosong, kebijakan akan berperilaku seolah-olah '<ph name="COMMON_NAME" />' telah ditentukan untuk pengguna reguler. Untuk pengguna versi bisnis, kebijakan ini berperilaku seolah-olah '<ph name="ORGANIZATIONS_NAME" />' telah ditentukan.
+
+Mengubah pembatasan dapat menyebabkan pengguna logout dari akun <ph name="MICROSOFT_ONE_DRIVE_NAME" /> mereka jika tidak mematuhi pembatasan baru.
+
+Catatan: Saat ini hanya entri pertama yang akan dipertimbangkan. Nantinya, ekstensi akan mendukung beberapa entri.</translation>
 <translation id="6247316685259031374">Kebijakan ini mengontrol proses audio dalam sandbox.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dalam sandbox.
       Jika kebijakan ini dinonaktifkan, proses audio akan berjalan di luar sandbox dan modul pemrosesan audio WebRTC akan berjalan dalam proses perender.
@@ -6325,6 +6352,17 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
       Jika kebijakan ini tidak ditetapkan, konfigurasi default untuk sandbox audio akan digunakan, yang mungkin berbeda per platform.
       Kebijakan ini ditujukan untuk memberikan fleksibilitas kepada perusahaan untuk menonaktifkan sandbox audio jika menggunakan penyiapan software keamanan yang mengganggu sandbox.</translation>
 <translation id="624818583115864448">port 554 (blokir dapat dibatalkan hingga 15/10/2021)</translation>
+<translation id="6249912382559535329">Mengaktifkan fitur aksesibilitas keyboard virtual di layar login.
+
+          Jika kebijakan ini disetel ke true (benar), keyboard virtual aksesibilitas akan selalu diaktifkan di layar login.
+
+          Jika kebijakan ini disetel ke false (salah), keyboard virtual aksesibilitas akan selalu dinonaktifkan di layar login.
+
+          Jika Anda menyetel kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
+
+          Jika kebijakan ini tidak disetel, keyboard virtual aksesibilitas awalnya akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja melalui setelan aksesibilitas.
+
+          Kebijakan ini tidak memengaruhi apakah keyboard virtual sentuh diaktifkan atau tidak. Misalnya, keyboard virtual sentuh masih akan muncul di perangkat tablet meskipun kebijakan ini disetel ke false (salah).</translation>
 <translation id="6254498834449523938">Jangan izinkan pengguna mengabaikan peringatan Safe Browsing</translation>
 <translation id="625580680776945310">Mode Efisiensi Tinggi akan diaktifkan.</translation>
 <translation id="6258658183356534534">Mengontrol fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna.</translation>
@@ -6590,6 +6628,16 @@ di layar <ph name="LOG_IN" />.</translation>
       akun yang tidak terkelola.</translation>
 <translation id="6401669939808766804">Paksa pengguna logout</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
+<translation id="6403114173011456561">Mengontrol keyboard virtual sentuh, yang berperan sebagai kebijakan tambahan untuk kebijakan <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Jika keyboard virtual aksesibilitas diaktifkan, kebijakan ini tidak akan berpengaruh.
+
+      Jika keyboard virtual aksesibilitas tidak diaktifkan, kebijakan ini akan memberikan pengaruh berikut:
+      Jika kebijakan ini tidak disetel, keyboard virtual akan ditampilkan berdasarkan heuristik sistem default, seperti apakah ada keyboard yang terpasang.
+      Jika kebijakan ini disetel ke True (Benar), keyboard virtual akan selalu ditampilkan.
+      Jika kebijakan ini disetel ke False (Salah), keyboard virtual tidak akan ditampilkan.
+
+      Tata letak keyboard virtual dapat berubah menjadi lebih rapat bergantung pada metode input.</translation>
 <translation id="6404064917675764807">Jangan laporkan peristiwa sesi CRD</translation>
 <translation id="6404360891305375004">Izinkan berbagi file dalam jaringan</translation>
 <translation id="6407093060083181305">Mengonfigurasi daftar penginstalan ekstensi yang tidak diizinkan</translation>
@@ -7401,6 +7449,16 @@ Kebijakan ini akan dihapus pada masa mendatang, setelah fitur driver cetak di lu
       Jika 'U2F' dipilih, faktor kedua yang diintegrasikan akan melakukan proses sesuai spesifikasi FIDO U2F.
 
       Jika 'U2F_EXTENDED' dipilih, faktor kedua yang diintegrasikan akan memberikan fungsi U2F, ditambah beberapa ekstensi untuk masing-masing pengesahan.</translation>
+<translation id="69942621143543910">Kebijakan ini memungkinkan admin mengonfigurasi alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /> di <ph name="PRODUCT_OS_NAME" />.
+
+Jika kebijakan ini disetel ke '<ph name="ALLOWED_NAME" />', pengguna akan dapat menyiapkan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /> jika diinginkan.
+Setelah menyelesaikan proses penyiapan, file dengan format file yang cocok akan dipindahkan ke <ph name="MICROSOFT_ONE_DRIVE_NAME" /> secara default dan ditangani oleh aplikasi <ph name="MICROSOFT_365_NAME" /> saat pengguna mencoba membukanya.
+
+Jika kebijakan ini disetel ke '<ph name="DISALLOWED_NAME" />', pengguna tidak akan dapat menyiapkan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /> seperti yang dijelaskan di atas dan aplikasi <ph name="MICROSOFT_365_NAME" /> akan dihapus dari daftar calon pengendali file.
+
+Jika kebijakan ini disetel ke '<ph name="AUTOMATED_NAME" />', alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /> akan disiapkan secara otomatis sehingga file dengan format file yang cocok akan dipindahkan ke <ph name="MICROSOFT_ONE_DRIVE_NAME" /> secara default dan ditangani oleh aplikasi <ph name="MICROSOFT_365_NAME" /> saat pengguna mencoba membukanya.
+
+Jika kebijakan ini tidak disetel, hal ini setara dengan menyetel kebijakan ke '<ph name="ALLOWED_NAME" />' bagi pengguna reguler; dan secara default menyetel kebijakan ke '<ph name="DISALLOWED_NAME" />' bagi pengguna versi bisnis.</translation>
 <translation id="6999948519306285655">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Menyetel kebijakan memungkinkan Anda menentukan URL untuk file .pac proxy. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan dan Anda memilih <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dengan <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -8986,9 +9044,6 @@ Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromes
 <translation id="8312129124898414409">Memungkinkan Anda menyetel apakah situs web diizinkan untuk menggunakan pembuatan kunci atau tidak. Penggunaan pembuatan kunci dapat diizinkan atau ditolak untuk semua situs web.
 
           Jika kebijakan ini tidak disetel, 'BlockKeygen' akan digunakan dan pengguna dapat mengubahnya.</translation>
-<translation id="8313927126392971570">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> akan menentukan parameter selama melakukan penelusuran gambar dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti {imageThumbnail}, data thumbnail gambar nyata akan menggantikannya.
-
-      Jika <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran gambar akan dikirimkan menggunakan metode GET.</translation>
 <translation id="8314214821702356835">Memungkinkan pengguna memutar media saat perangkat terkunci</translation>
 <translation id="8314308739926578606">Larang penggunaan Developer Tools pada aplikasi dan ekstensi yang diinstal oleh kebijakan perusahaan atau, sejak versi 114 dan jika ini adalah pengguna terkelola, ekstensi akan disertakan dalam browser. Izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
 <translation id="8316940611391250886">Larang sertifikat yang tidak dilengkapi ekstensi subjectAlternativeName</translation>
@@ -9062,6 +9117,17 @@ Sertifikat harus dienkode dengan base64.</translation>
 
 Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan akan segera membuka kebijakan tersebut di browser alternatif.</translation>
 <translation id="8402079500086185021">Selalu Buka file PDF secara eksternal</translation>
+<translation id="8402357110539568621">Mengaktifkan fitur aksesibilitas keyboard virtual.
+
+          Jika kebijakan ini disetel ke true (benar), keyboard virtual aksesibilitas akan selalu diaktifkan.
+
+          Jika kebijakan ini disetel ke false (salah), keyboard virtual aksesibilitas akan selalu dinonaktifkan.
+
+          Jika Anda menyetel kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
+
+          Jika kebijakan ini tidak disetel, keyboard virtual aksesibilitas awalnya akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja menggunakan setelan aksesibilitas.
+
+          Kebijakan ini tidak memengaruhi apakah keyboard virtual sentuh diaktifkan atau tidak. Misalnya, keyboard virtual sentuh masih akan muncul di perangkat tablet meskipun kebijakan ini disetel ke false (salah). Gunakan kebijakan <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> untuk mengontrol perilaku keyboard virtual sentuh.</translation>
 <translation id="8410477879938914253">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
       Jika kebijakan disetel ke Benar (True) atau tidak disetel, dialog yang meminta pengguna untuk mengonfirmasi atau menolak logout saat jendela terakhir ditutup akan ditampilkan.
       Jika kebijakan disetel ke Salah (False), dialog tidak akan ditampilkan sehingga logout otomatis akan dinonaktifkan setelah jendela terakhir ditutup.</translation>
@@ -9116,6 +9182,7 @@ Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan 
 <translation id="8470317291588703478">Jangan terapkan Mode Terbatas YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC akan menggunakan antarmuka yang tersedia saat menelusuri jalur terbaik.</translation>
+<translation id="8479496880635054740">Nonaktifkan keyboard virtual aksesibilitas di layar login</translation>
 <translation id="8482518340010585741">Mengonfigurasi pemulihan aplikasi saat login</translation>
 <translation id="8483004350080020634">Menyembunyikan bagian sensitif terhadap privasi dan keamanan pada URL https:// sebelum meneruskannya ke skrip PAC (Proxy Auto Config) yang digunakan oleh <ph name="PRODUCT_NAME" /> selama resolusi proxy.
 

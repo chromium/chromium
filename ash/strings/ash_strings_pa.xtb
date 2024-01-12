@@ -1134,6 +1134,7 @@
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
 <translation id="5546397813406633847">ਵਰਤੋਂਕਾਰ ਦੇ ਪਾਸਵਰਡ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰੋ</translation>
 <translation id="554893713779400387">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="5550417424894892620">ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਛੱਡੋ। ਤੁਸੀਂ ਡੈਸਕਟਾਪ 'ਤੇ ਫ਼ਾਈਲਾਂ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।</translation>
 <translation id="5551456515017410630">ਕੈਲੰਡਰ ਨੂੰ ਖੋਲ੍ਹੋ/ਬੰਦ ਕਰੋ</translation>
 <translation id="5551974246223970793">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਖੋਜਣ ਵੇਲੇ, ਖੋਜ ਲਈ ਅਗਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="5555639311269196631">ਹੌਟਸਪੌਟ ਬੰਦ ਕਰੋ</translation>
@@ -1506,6 +1507,7 @@
 <translation id="7025533177575372252">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਆਪਣੇ <ph name="DEVICE_NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7026338066939101231">ਘਟਾਓ</translation>
 <translation id="7029814467594812963">ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="7031303610220416229">Google Tasks ਵਿੱਚ ਸਾਰੇ ਕਾਰਜ ਦੇਖੋ</translation>
 <translation id="7032161822340700104">ਸਿਰਫ਼ 6 ਟੈਮਪਲੇਟਾਂ ਦੀ ਆਗਿਆ ਹੈ। ਨਵੇਂ ਟੈਮਪਲੇਟ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਟੈਮਪਲੇਟ ਹਟਾਓ।</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ਐਪ <ph name="DEVICE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਭੌਤਿਕ <ph name="DEVICE_NAME" /> ਸਵਿੱਚ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
@@ -1818,6 +1820,7 @@
 <translation id="8351131234907093545">ਨੋਟ-ਕਥਨ ਬਣਾਓ</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ਵਰਤੋਂ ਵਿੱਚ ਹੈ।</translation>
 <translation id="8369166482916924789">ਰੱਖਿਅਤ ਕੀਤਾ ਡੈਸਕ, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> ਖੋਜੋ</translation>
 <translation id="8371779926711439835">ਇੱਕ ਅੱਖਰ ਅੱਗੇ ਜਾਓ</translation>
 <translation id="8371991222807690464">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="8374601332003098278">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
@@ -1873,6 +1876,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਨਾਮ ਜਾਂ ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="8609384513243082612">ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
+<translation id="8612216344243590325">ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਰੱਖਣ ਦੀ ਬਜਾਏ ਉਨ੍ਹਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਰੱਖੋ। ਬਸ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> 'ਤੇ ਘਸੀਟੋ।</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> ਅਤੇ <ph name="APP_2_TITLE" /> ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="8619138598101195078">ਅਵਾਜ਼ ਘਟਾਓ</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>

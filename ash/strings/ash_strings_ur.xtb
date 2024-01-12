@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">کاسٹ کریں</translation>
 <translation id="5546397813406633847">صارف کو بازیاب کریں</translation>
 <translation id="554893713779400387">ڈکٹیشن ٹوگل کریں</translation>
+<translation id="5550417424894892620">فائلز کو <ph name="HOLDING_SPACE_TITLE" /> میں شامل کرنے کے لیے ڈیسک ٹاپ پر ڈراپ کریں۔ آپ ڈیسک ٹاپ پر فائلز شامل نہیں کر سکتے۔</translation>
 <translation id="5551456515017410630">کیلنڈر کھولیں/بند کریں</translation>
 <translation id="5551974246223970793">صفحہ تلاش کرتے وقت، تلاش کے لیے اگلی مماثلت پر جائیں</translation>
 <translation id="5555639311269196631">ہاٹ اسپاٹ آف کریں</translation>
@@ -1504,6 +1505,7 @@
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
 <translation id="7026338066939101231">تخفیف</translation>
 <translation id="7029814467594812963">سیشن سے خارج ہوں</translation>
+<translation id="7031303610220416229">‏Google Tasks میں تمام ٹاسکس دیکھیں</translation>
 <translation id="7032161822340700104">صرف 6 تمثیلات کی اجازت ہے۔ کوئی نئی تمثیل محفوظ کرنے کے لیے ایک تمثیل ہٹائیں۔</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> استعمال کرنا چاہتی ہے۔ اپنے آلے کا فزیکل <ph name="DEVICE_NAME" /> سوئچ آن کریں۔</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، Google اسسٹنٹ</translation>
@@ -1816,6 +1818,7 @@
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
 <translation id="8367948981300340152">زیر استعمال <ph name="CAPTURE_MEDIUM" />۔</translation>
 <translation id="8369166482916924789">محفوظ کردہ ڈیسک، <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> تلاش کریں</translation>
 <translation id="8371779926711439835">ایک حرف آگے جائیں</translation>
 <translation id="8371991222807690464">پیریفرل کی کارکردگی مہمان وضع میں محدود ہو سکتی ہے</translation>
 <translation id="8374601332003098278">جزوی اسکرین کو ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
@@ -1871,6 +1874,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">اپنی ایپس کو نام یا رنگ کے لحاظ سے ترتیب دیں</translation>
 <translation id="8609384513243082612">نیا ٹیب کھولیں</translation>
+<translation id="8612216344243590325">اہم فائلز کو ڈیسک ٹاپ کے بجائے <ph name="HOLDING_SPACE_TITLE" /> کے اندر رکھیں۔ بس فائلز کو <ph name="HOLDING_SPACE_TITLE" /> پر گھسیٹیں۔</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> اور <ph name="APP_2_TITLE" /> اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="8619138598101195078">والیوم کم کریں</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> سے منسلک ہے</translation>

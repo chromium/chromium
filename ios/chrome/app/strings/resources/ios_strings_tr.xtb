@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Birim seçici</translation>
 <translation id="2348630484974447747">Kargo</translation>
 <translation id="2351097562818989364">Çeviri ayarlarınız sıfırlandı.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} şifrenizi Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}=2{{DOMAIN_ONE} ve {DOMAIN_TWO} şifrelerinizi Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} ve diğer {OTHER_DOMAINS_COUNT} sitenin şifrelerini Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}other{{DOMAIN_ONE}, {DOMAIN_TWO} ve diğer {OTHER_DOMAINS_COUNT} sitenin şifrelerini Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}}</translation>
 <translation id="235789365079050412">Google Gizlilik Politikası</translation>
 <translation id="2359043044084662842">Çevir</translation>
 <translation id="2359808026110333948">Devam et</translation>
@@ -335,6 +336,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2747003861858887689">Önceki alan</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> takip ediliyor</translation>
 <translation id="2754492786623500387">Bu cihazdaki hesaplar</translation>
+<translation id="2755595981383829244">Artık içerik bildirimleri alacaksınız</translation>
 <translation id="2762000892062317888">az önce</translation>
 <translation id="2772667768515195373">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu adres Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedilir.</translation>
 <translation id="2773292004659987824">Gizli Arama</translation>
@@ -688,6 +690,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4689564913179979534">Ödeme Yöntemlerini yönet...</translation>
 <translation id="469300482518076788">Sekmeyi Kapat</translation>
 <translation id="4697071790493980729">Sonuç Bulunamadı</translation>
+<translation id="470337593714520080">{count,plural, =1{1 Yer İşaretini Google Hesabınıza Kaydedin}other{{count} Yer İşaretini Google Hesabınıza Kaydedin}}</translation>
 <translation id="470966556546083668">Senkronizasyon Açılmasın</translation>
 <translation id="4711809265250406889">Açık Olduğunda</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ve 1 diğer site}other{{website_1}, {website_2} ve {more_count} diğer site}}</translation>
@@ -986,6 +989,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6255097610484507482">Kredi Kartını Düzenle</translation>
 <translation id="6266039999629596120">İlgilenilmesi gerekiyor</translation>
 <translation id="6277426346321820595">Koruma yok</translation>
+<translation id="628251768213143684">Google Hesabınıza kaydedilen bilgileri istediğiniz zaman yönetebilirsiniz</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> diline çevirmeyi öner</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> takibi bırakıldı</translation>
 <translation id="6293101329759844770">Güvenli Tarama'yı etkinleştirmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ni açıp Güvenli Tarama'ya dokunun.</translation>

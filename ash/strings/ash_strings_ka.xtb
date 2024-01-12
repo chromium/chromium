@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">მაუწყებლობა</translation>
 <translation id="5546397813406633847">მომხმარებლის აღდგენა</translation>
 <translation id="554893713779400387">კარნახის გადართვა</translation>
+<translation id="5550417424894892620">ჩავლებით გადაიტანეთ ფაილები დესკტოპზე, ისინი <ph name="HOLDING_SPACE_TITLE" />-ს რომ დაამატოთ. ფაილებს დესკტოპს ვერ დაამატებთ.</translation>
 <translation id="5551456515017410630">კალენდრის გახსნა/დახურვა</translation>
 <translation id="5551974246223970793">ძიების მომდევნო შესატყვისზე გადასვლა გვერდზე ძიებისას</translation>
 <translation id="5555639311269196631">უსადენო ქსელის გამორთვა</translation>
@@ -1874,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">დაალაგეთ თქვენი აპები სახელის ან ფერის მიხედვით</translation>
 <translation id="8609384513243082612">ახალი ჩანართის გახსნა</translation>
+<translation id="8612216344243590325">შეინახეთ მნიშვნელოვანი ფაილები დესკტოპის ნაცვლად <ph name="HOLDING_SPACE_TITLE" />-ში. უბრალოდ, ჩავლებით გადაიტანეთ ფაილები <ph name="HOLDING_SPACE_TITLE" />-ში.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />-ისა და <ph name="APP_2_TITLE" />-ის შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="8619138598101195078">ხმის დაწევა</translation>
 <translation id="8627191004499078455">დაკავშირებულია <ph name="DEVICE_NAME" />-თან</translation>

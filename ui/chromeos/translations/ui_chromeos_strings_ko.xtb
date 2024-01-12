@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 세부정보</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> 복사 중...</translation>
 <translation id="1178581264944972037">일시중지</translation>
+<translation id="1190144681599273207">이 파일을 가져오는 데 약 <ph name="FILE_SIZE" />의 모바일 데이터가 사용됩니다.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" />에서 파일 액세스</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1209796539517632982">자동 네임서버</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" />과(와) 공유</translation>
 <translation id="1773212559869067373">인증서가 로컬로 거부됨</translation>
 <translation id="1775381402323441512">동영상 정보</translation>
+<translation id="180035236176489073">이 파일에 액세스하려면 온라인 상태여야 합니다.</translation>
 <translation id="1807938677607439181">모든 파일</translation>
 <translation id="1810764548349082891">미리보기 없음</translation>
 <translation id="1812302367230252929">암하라어(음역)</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">고맙다는 노래를 부르는 사람</translation>
 <translation id="2088690981887365033">VPN 네트워크</translation>
 <translation id="209653272837065803">저장공간이 부족하여 파일 동기화를 계속 진행할 수 없습니다.</translation>
-<translation id="2099143626019777139">내가 방문한 웹사이트는 관리자에게 표시됩니다. 표시되는 웹사이트 목록을 확인할 수 있습니다.</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />시크릿 모드에서 허용<ph name="END_BOLD" />을 사용 설정합니다.</translation>
 <translation id="2114191879048183086">항목 <ph name="NUMBER_OF_ITEMS" />개가 삭제되며 복원할 수 없습니다.</translation>
 <translation id="2122305276694332719">숨겨진 네트워크에 자동 연결하면 다른 사용자가 내 기기 및 일부 네트워크 설정을 볼 수 있으므로 권장되지 않습니다.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">자동설정 URL:</translation>
 <translation id="2284767815536050991">이동식 저장소</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
+<translation id="2291538123825441971">파일 <ph name="NUMBER_OF_FILES" />개를 열고 있습니다.</translation>
+<translation id="2303301624314357662"><ph name="FILE_NAME" /> 파일을 엽니다.</translation>
 <translation id="2304820083631266885">행성</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />이(가) 제거되었습니다.</translation>
 <translation id="2307462900900812319">네트워크 설정</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">저장공간이 부족하여 일부 파일을 동기화할 수 없습니다.</translation>
 <translation id="23721837607121582">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">목록 보기로 전환</translation>
+<translation id="2377590462528165447">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Linux와 공유되었습니다.</translation>
 <translation id="2379576081295865700">저장공간 확인 중… 항목 1개 찾음</translation>
 <translation id="2383454254762599978">휴지통으로 이동</translation>
 <translation id="2387458720915042159">프록시 연결 유형</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">선택항목 압축하기</translation>
 <translation id="4202378258276439759">스페인어(라틴아메리카)</translation>
 <translation id="4202977638116331303">조지아어</translation>
+<translation id="421017592316736757">이 파일에 액세스하려면 온라인 상태여야 합니다.</translation>
 <translation id="4212740939091998969">이름이 '<ph name="FOLDER_NAME" />'인 폴더가 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> 예외 삭제</translation>
 <translation id="4261901459838235729">Google 프레젠테이션</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> 필터가 설정되었습니다.</translation>
+<translation id="4290535918735525311">폴더 1개가 Linux와 공유됨</translation>
 <translation id="4299729908419173967">브라질어</translation>
 <translation id="4302605047395093221">이 모바일 네트워크에 연결하려면 설정 중인 기기를 사용하는 모든 사용자는 PIN을 입력해야 합니다.</translation>
 <translation id="4303531889494116116">네트워크 사용량이 많습니다. 나중에 다시 시도해 주세요.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 세부정보</translation>
 <translation id="4935975195727477204">꽃</translation>
 <translation id="4943368462779413526">풋볼</translation>
+<translation id="4961158930123534723">폴더 1개가 Parallels Desktop과 공유되었습니다.</translation>
+<translation id="4965874878399872778">파일이 조직의 보안 정책을 준수하는지 확인하는 중…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> 복원됨</translation>
 <translation id="4969785127455456148">앨범</translation>
 <translation id="4972330214479971536">파일 동기화 설정을 완료할 수 없음</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318819489018851358">Linux로 공유</translation>
 <translation id="5323213332664049067">남미 언어</translation>
+<translation id="5330145655348521461">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="5330512191124428349">정보 보기</translation>
 <translation id="535792325654997756">고양이들과 함께 있는 사람</translation>
 <translation id="5358764674931277">프레임 속도</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">일본어(미국 키보드)</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, 네트워크 없음</translation>
 <translation id="6146563240635539929">동영상</translation>
+<translation id="6150853954427645995">오프라인에서 사용하기 위해 이 파일을 저장하려면 온라인으로 돌아가서 마우스 오른쪽 버튼으로 파일을 클릭한 다음 <ph name="OFFLINE_CHECKBOX_NAME" /> 옵션을 선택하세요.</translation>
 <translation id="6164412158936057769">나비</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170470584681422115">샌드위치</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">잘못된 도메인 서픽스 일치 값</translation>
 <translation id="6364301859968397756">조직 저장용량이 가득 참</translation>
 <translation id="6367976544441405720">승합차</translation>
+<translation id="637062427944097960">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="6394388407447716302">읽기 전용</translation>
 <translation id="6395575651121294044">항목 <ph name="NUMBER_OF_FILES" />개</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> 파일이 암호화되어 있으므로 이동할 수 없습니다.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">기회가 1번 남았습니다.</translation>
 <translation id="643243556292470964">삭제된 파일이 휴지통으로 이동됨</translation>
 <translation id="6438480100790416671">저장공간 확인 중…</translation>
+<translation id="6451527188465304418">파일이 조직의 보안 정책을 준수하는지 확인하는 중…</translation>
 <translation id="6485131920355264772">남은 용량을 알 수 없습니다.</translation>
 <translation id="6495925982925244349">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" /> 폴더로 <ph name="FILE_NAME" /> 추출 중</translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">파일 동기화 설정</translation>
 <translation id="6594855146910089723">Linux 및 Parallels Desktop과 공유된 폴더</translation>
 <translation id="6607272825297743757">파일 정보</translation>
+<translation id="6609332149380188670">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Parallels Desktop과 공유됨</translation>
 <translation id="6629518321609546825">4개 이상의 숫자를 입력하세요.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6650726141019353908">분홍 나비</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
 <translation id="7831491651892296503">네트워크를 설정하는 중에 오류가 발생했습니다</translation>
+<translation id="7839804798877833423">이 파일을 가져오는 데 약 <ph name="FILE_SIZE" />의 모바일 데이터가 사용됩니다.</translation>
 <translation id="7846076177841592234">선택 취소</translation>
 <translation id="7853966320808728790">프랑스어 BÉPO</translation>
 <translation id="7857117644404132472">예외 추가</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361">Drive 파일 <ph name="NUMBER_OF_FILES_SYNCING" />개 동기화 중</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">기기 모델</translation>
+<translation id="8223479393428528563">오프라인 사용 목적으로 이 파일을 저장하려면 온라인으로 돌아가서 마우스 오른쪽 버튼으로 파일을 클릭한 다음 <ph name="OFFLINE_CHECKBOX_NAME" /> 옵션을 선택하세요.</translation>
 <translation id="8241139360630443550">스토리지 보기</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="8250690786522693009">라틴어</translation>

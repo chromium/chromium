@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Selector de unidades</translation>
 <translation id="2348630484974447747">Paquete</translation>
 <translation id="2351097562818989364">Restableceuse a túa configuración de tradución.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Podes gardar o teu contrasinal de {DOMAIN_ONE} na túa Conta de Google, {EMAIL}.}=2{Podes gardar os teus contrasinais de {DOMAIN_ONE} e {DOMAIN_TWO} na túa Conta de Google, {EMAIL}.}=3{Podes gardar os teus contrasinais de {DOMAIN_ONE}, {DOMAIN_TWO} e {OTHER_DOMAINS_COUNT} dominio máis na túa Conta de Google, {EMAIL}.}other{Podes gardar os teus contrasinais de {DOMAIN_ONE}, {DOMAIN_TWO} e {OTHER_DOMAINS_COUNT} dominios máis na túa Conta de Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Política de privacidade de Google</translation>
 <translation id="2359043044084662842">Traducir</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -335,6 +336,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Comezaches a seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
+<translation id="2755595981383829244">Agora recibirás notificacións de contido</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="2772667768515195373">Podes usar nos produtos de Google os enderezos gardados. Este enderezo está gardado na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Busca do modo de incógnito</translation>
@@ -688,6 +690,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4689564913179979534">Xestionar métodos de pago...</translation>
 <translation id="469300482518076788">Pechar pestana</translation>
 <translation id="4697071790493980729">Non se encontraron resultados</translation>
+<translation id="470337593714520080">{count,plural, =1{Garda 1 marcador na túa Conta de Google}other{Garda {count} marcadores na túa Conta de Google}}</translation>
 <translation id="470966556546083668">Non activar sincronización</translation>
 <translation id="4711809265250406889">Cando a función está activada</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1} e {website_2}}=3{{website_1}, {website_2} e 1 sitio máis}other{{website_1}, {website_2} e {more_count} sitios máis}}</translation>
@@ -986,6 +989,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6255097610484507482">Editar tarxeta</translation>
 <translation id="6266039999629596120">Require atención</translation>
 <translation id="6277426346321820595">Sen protección</translation>
+<translation id="628251768213143684">Sempre podes xestionar o que está gardado na túa Conta de Google</translation>
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixaches de seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>

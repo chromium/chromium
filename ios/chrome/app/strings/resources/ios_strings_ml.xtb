@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">യൂണിറ്റ് സെലക്‌ടർ</translation>
 <translation id="2348630484974447747">പാക്കേജ്</translation>
 <translation id="2351097562818989364">നിങ്ങളുടെ വിവർത്തന ക്രമീകരണം റീസെറ്റ് ചെയ്‌തു.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE} എന്നതിനുള്ള പാസ്‌വേഡ് സംരക്ഷിക്കാം.}=2{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE}, {DOMAIN_TWO} എന്നിവയ്ക്കുള്ള പാസ്‌വേഡുകൾ സംരക്ഷിക്കാം.}=3{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE}, {DOMAIN_TWO} എന്നിവയ്ക്കും മറ്റ് {OTHER_DOMAINS_COUNT} എണ്ണത്തിനുമുള്ള പാസ്‌വേഡുകൾ സംരക്ഷിക്കാം.}other{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE}, {DOMAIN_TWO} എന്നിവയ്ക്കും മറ്റ് {OTHER_DOMAINS_COUNT} എണ്ണത്തിനുമുള്ള പാസ്‌വേഡുകൾ സംരക്ഷിക്കാം.}}</translation>
 <translation id="235789365079050412">Google സ്വകാര്യതാ നയം</translation>
 <translation id="2359043044084662842">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
@@ -528,6 +529,7 @@
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
+<translation id="3808311849069021992">തിരയൽ എഞ്ചിൻ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
 <translation id="3818045793209708987">ഈ പാക്കേജ് ട്രാക്ക് ചെയ്യുന്നത് നിർത്തി</translation>
 <translation id="3818293389945649617">അടുത്തത് കണ്ടെത്തുക</translation>
@@ -689,6 +691,7 @@
 <translation id="4689564913179979534">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="469300482518076788">ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="4697071790493980729">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="470337593714520080">{count,plural, =1{നിങ്ങളുടെ Google Account-ൽ ഒരു ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കുക}other{നിങ്ങളുടെ Google Account-ൽ {count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിക്കുക}}</translation>
 <translation id="470966556546083668">സമന്വയിപ്പിക്കൽ ഓണാക്കരുത്</translation>
 <translation id="4711809265250406889">ഓണായിരിക്കുമ്പോൾ</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2} എന്നിവ}=3{{website_1}, {website_2} എന്നിവയും മറ്റൊരെണ്ണവും}other{{website_1}, {website_2} എന്നിവയും മറ്റ് {more_count} എണ്ണവും}}</translation>
@@ -800,6 +803,7 @@
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="5235389474593199952">ചരിത്രം മറയ്ക്കുക</translation>
 <translation id="5238301240406177137">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> എന്നയാൾക്ക് ഇപ്പോൾ, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="5245322853195994030">സമന്വയം റദ്ദാക്കുക</translation>
 <translation id="5248640482715684545">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ സൈറ്റ് ശ്രമിക്കുന്നു.</translation>
 <translation id="5256661381001734217">ഒരു ആപ്പ് തുറക്കാൻ ഈ സൈറ്റ് ശ്രമിക്കുന്നു.  ഇത് നിങ്ങളെ അദൃശ്യ മോഡിന് പുറത്തെത്തിക്കും.</translation>
@@ -819,6 +823,7 @@
 <translation id="5360976571138293719">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന്, <ph name="BEGIN_LINK" />Google സേവനങ്ങൾ<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="5386314158584363703">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ ഇവിടെ കാണാം</translation>
 <translation id="5388358297987318779">ചിത്രം തുറക്കുക</translation>
+<translation id="5395707839134961196">തിരയല്‍ എഞ്ചിൻ വിശദാംശങ്ങള്‍ മറയ്ക്കുക</translation>
 <translation id="5396950905475481456">കുടുംബാംഗങ്ങളെ ക്ഷണിക്കുക</translation>
 <translation id="5407969256130905701">മാറ്റങ്ങൾ നിരസിക്കുക</translation>
 <translation id="5414763847370083940">ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് അലേർട്ട് ലഭിക്കും.</translation>
@@ -1032,6 +1037,7 @@
 <translation id="6447842834002726250">കുക്കികള്‍</translation>
 <translation id="6453018583485750254">പരിശോധന ഒരിക്കലും നടന്നില്ല.</translation>
 <translation id="6459307836338400162">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />സമന്വയവും<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Google സേവനങ്ങളും<ph name="END_LINK" />കാണുക.</translation>
+<translation id="6459411599807878608">വിശദാംശങ്ങൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">പുതിയ അദൃശ്യ ടാബിൽ തുറക്കുക</translation>
 <translation id="6464397691496239022">നിങ്ങളുടെ ബ്രൗസിംഗ് അനുഭവം മെച്ചപ്പെടുത്താൻ സൈറ്റുകൾക്ക് കുക്കികൾ ഉപയോഗിക്കാവുന്നതാണ്, ഉദാഹരണത്തിന്, സൈൻ ഇൻ ചെയ്‌ത നിലയിൽ തുടരാനോ ഷോപ്പിംഗ് കാർട്ടിലെ ഇനങ്ങൾ ഓർമ്മിക്കാനോ.
@@ -1284,6 +1290,7 @@
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> തിരഞ്ഞെടുക്കുന്നതിലൂടെ നിങ്ങളുടെ എല്ലാ ബ്രൗസിംഗ് ചരിത്രവും ആക്‌സസ് ചെയ്യാൻ കഴിയും.</translation>
 <translation id="78146569776629510">ഡൗൺലോഡുകൾ</translation>
 <translation id="7839985698273989086">പേജ് ഓഫ്‌ലൈനാണ്</translation>
+<translation id="7839994177130598711">നിങ്ങളുടെ കുടുംബാംഗങ്ങൾക്ക് ഇപ്പോൾ, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="7840771868269352570">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഇനങ്ങൾ നീക്കം ചെയ്യപ്പെടും.</translation>
 <translation id="7845466610722898">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് കാണിക്കുക</translation>
 <translation id="784551991304901159">ഉള്ളടക്കം കാണാൻ, മെനുവിൽ നിന്ന് 'ഓണാക്കുക' തിരഞ്ഞെടുക്കുക</translation>

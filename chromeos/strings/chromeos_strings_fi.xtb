@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Diaesitys</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
+<translation id="4310735698903592804">Viimeaikaisia Googlen tekoälyn luomia taustakuvia</translation>
 <translation id="4333390807948134856">Näppäintä painetaan: <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">näppäin</translation>
 <translation id="4361257691546579041">APN-tyyppi on oletus.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tiedostosi skannaus onnistui. Se on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tiedostojesi skannaus onnistui. Ne on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Tiedostoa ei löydy</translation>
+<translation id="593880865674747800">Luo lisää tällä tyylillä</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="594552776027197022">Luo satunnainen avainpari</translation>
 <translation id="5946538341867151940">Yhteyttä ei vielä ole. Jos mobiilioperaattorisi suosittelee muokattua APN:ää, lisää APN-tiedot valitsemalla + Uusi APN.</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>
 <translation id="7841134249932030522">Ota tumma tila käyttöön</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
+<translation id="7850847810298646851">Googlen tekoälyn luoma taustakuva</translation>
 <translation id="7856267634822906833">Bluetooth-kosketusnäyttö</translation>
 <translation id="7869143217755017858">Poista tumma tila käytöstä</translation>
 <translation id="7881066108824108340">DNS</translation>

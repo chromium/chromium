@@ -1133,6 +1133,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Gendan bruger</translation>
 <translation id="554893713779400387">Slå diktering til/fra</translation>
+<translation id="5550417424894892620">Slip filer på skrivebordet for at føje dem til <ph name="HOLDING_SPACE_TITLE" />. Du kan ikke føje filer til skrivebordet.</translation>
 <translation id="5551456515017410630">Åbn/luk kalender</translation>
 <translation id="5551974246223970793">Når du søger på en side, kan du gå til næste match for at søge</translation>
 <translation id="5555639311269196631">Deaktiver hotspot</translation>
@@ -1874,6 +1875,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortér dine apps efter navn eller farve</translation>
 <translation id="8609384513243082612">Åbn en ny fane</translation>
+<translation id="8612216344243590325">Opbevar vigtige filer i <ph name="HOLDING_SPACE_TITLE" /> i stedet for på skrivebordet. Du skal bare trække filerne til <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Notifikationer fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult, fordi visningsbeskyttelse er aktiveret</translation>
 <translation id="8619138598101195078">Skru ned for lyden</translation>
 <translation id="8627191004499078455">Forbundet til <ph name="DEVICE_NAME" /></translation>

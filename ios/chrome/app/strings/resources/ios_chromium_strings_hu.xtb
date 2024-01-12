@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">A Chromium nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="2784449251446768092">A Chromium beállításainak kezelése</translation>
 <translation id="2798503587425057129">Megnyitja a Chromium-olvasólistát.</translation>
+<translation id="28276745681323897"><ph name="BEGIN_LINK" />Kezelheti, hogy milyen Chromium-adatokat mentsen<ph name="END_LINK" /> a rendszer az Ön Google-fiókjába.
+
+Az adatokat a Chromium-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="2843571538056574338">A Chromium használata automatikus kitöltéshez</translation>
 <translation id="2918709798697875261">Szervezete nem engedélyezi, hogy bejelentkezzen a Chromiumba.</translation>
 <translation id="2942241131342758843">A Chromiumot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>

@@ -521,6 +521,7 @@ Se il criterio viene disattivato, la pagina con l'intestazione <ph name="CACHE_C
 <translation id="143649776386947790">Usa il comportamento predefinito</translation>
 <translation id="1438739959477268107">Impostazione generazione di chiavi predefinite</translation>
 <translation id="1440408958042020947">Consente agli utenti che hanno attivato Phone Hub di accedere a foto e video recenti acquisiti sul loro telefono</translation>
+<translation id="1443532790824582949">Attiva la tastiera virtuale touch</translation>
 <translation id="1449083855104537880">Se il criterio è impostato su True, le opzioni di accessibilità vengono mostrate nel menu della barra delle applicazioni. Se il criterio è impostato su False, le opzioni non appaiono nel menu.
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, le opzioni di accessibilità non vengono mostrate nel menu, ma gli utenti possono farle apparire dalla pagina Impostazioni.
@@ -1164,6 +1165,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
 <translation id="1954612656043024615">Attiva la funzione Appunti condivisi</translation>
 <translation id="1955063069502242812">Attiva il suono della batteria in esaurimento</translation>
 <translation id="1955806069704957172">Consente di gestire le impostazioni dell'API Desktop Connector.</translation>
+<translation id="1957093168333856467">Disattiva tastiera virtuale di accessibilità</translation>
 <translation id="1960059835237529462">Consente agli utenti di visualizzare la promozione di valutazione dell'App Store <ph name="IOS_NAME" /></translation>
 <translation id="1960416154405676350">Attiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Il criterio viene applicato soltanto alle sessioni Ospite gestite.
@@ -1266,6 +1268,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="2029985289397958781">Viene disattivata la ricerca tramite fotocamera con <ph name="GOOGLE_LENS_PRODUCT_NAME" /> per gli utenti Enterprise</translation>
 <translation id="2030905906517501646">Parola chiave del provider di ricerca predefinito</translation>
 <translation id="203096360153626918">Questa norma non ha effetto sulle app Android, che saranno in grado di entrare in modalità a schermo intero anche se la norma viene impostata su <ph name="FALSE" />.</translation>
+<translation id="2031074619942406753">Disattiva tastiera virtuale touch</translation>
 <translation id="2032848225007871645">La configurazione del criterio consente di stabilire le modalità di sblocco rapido che è possibile usare per sbloccare la schermata di blocco.
 
       Per consentire:
@@ -2386,6 +2389,7 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">Il menu contestuale includerà una voce di menu per condividere le immagini con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Se il criterio viene impostato su Attivato, le applicazioni web di terze parti possono usare <ph name="DESK_API_NAME" /> per salvare e condividere <ph name="PRODUCT_OS_NAME" /> scrivanie. Se il criterio viene impostato su Disattivato, l'utente non potrà salvare e condividere i dati delle scrivanie tramite l'<ph name="DESK_API_NAME" />. Se il criterio non viene configurato, viene applicato lo stesso comportamento del criterio disattivato. Il criterio verrà applicato soltanto sui dispositivi registrati.</translation>
+<translation id="2976033779241323433">Attiva la tastiera virtuale touch in base all'euristica di sistema predefinita</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
@@ -2492,6 +2496,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se viene impostato su Disattivato, i controlli multimediali nella schermata di blocco vengono disattivati.</translation>
 <translation id="3072847235228302527">Imposta i Termini di servizio di un account locale del dispositivo</translation>
 <translation id="3074032542020543133">Canale LTS</translation>
+<translation id="3074886258920642791">Attiva la tastiera virtuale di accessibilità nella schermata di accesso</translation>
 <translation id="3077650998740742747">
 Comportamento predefinito (Criterio non impostato)
 Quando viene aggiunto un account nell'area dei contenuti, potrebbe essere visualizzata una piccola finestra di dialogo che chiede all'utente di creare un nuovo profilo. Questa finestra di dialogo è ignorabile.
@@ -2935,9 +2940,6 @@ Se il criterio non viene impostato, non è possibile navigare nel browser se è 
 <translation id="3417418267404583991">Se questa norma viene impostata su true o non viene configurata, in <ph name="PRODUCT_OS_NAME" /> verranno attivati gli accessi come ospite. Gli accessi come ospite sono sessioni utente anonime che non richiedono password.
 
       Se questa norma viene impostata su false, in <ph name="PRODUCT_OS_NAME" /> non sarà possibile avviare sessioni Ospite.</translation>
-<translation id="3420141485959154417">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato per le immagini. Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> viene configurato, la ricerca di immagini richiede invece l'utilizzo del metodo POST.
-
-      Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> non viene configurato, non viene utilizzata alcuna ricerca di immagini.</translation>
 <translation id="3423703250826790403">App per Android</translation>
 <translation id="3426434797050451264">Questo criterio può essere utilizzato anche per specificare le app Android come gestori di file predefiniti.</translation>
 <translation id="3428247105888806363">Attiva previsione di rete</translation>
@@ -3814,6 +3816,7 @@ Se il criterio viene impostato su <ph name="DISABLE_UNPUBLISHED" /> (1), le este
 
       Se il criterio viene configurato da un'origine cloud, non può essere applicato a un utente specifico.</translation>
 <translation id="416817811987180750">La funzionalità della lista della spesa sarà a disposizione degli utenti.</translation>
+<translation id="4168880975307014079">Attiva tastiera virtuale touch</translation>
 <translation id="4169094969938998854">Non consentire il blocco dello schermo</translation>
 <translation id="4169692397912242417">Consente di attivare la funzione di accessibilità della lettura vocale nella schermata di accesso.
 
@@ -4806,6 +4809,7 @@ Questo criterio viene applicato soltanto se la macchina viene registrata con <ph
       Nota: puoi aggiungere elementi all'elenco anche tramite il criterio <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
+<translation id="50689955292091946">Attiva la tastiera virtuale di accessibilità nella schermata di accesso</translation>
 <translation id="5069522005630249098">Questa impostazione consente di stabilire la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
 
       Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> o se non viene configurato, la migrazione dei dati a ritroso non viene eseguita.
@@ -5004,12 +5008,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 
       Se il criterio non viene configurato o se non è valido, viene eseguito lo stesso comportamento dell'opzione "Attendi che il canale di destinazione controlli il downgrade del canale".</translation>
 <translation id="5229339291699779956">Viene attivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, i dispositivi periferici funzioneranno con le loro capacità complete</translation>
-<translation id="5233239004553860036">Se questo criterio viene impostato su <ph name="POLICY_VALUE_ALL" /> o se non viene configurato, sono consentiti tutti gli utilizzi degli account gestiti. Di conseguenza, un account gestito potrebbe essere un account secondario, che riceverebbe i criteri soltanto se venisse eseguito l'accesso all'account come account principale in un profilo del browser.
-      I criteri impostati per l'account non verranno applicati nei seguenti casi:
-        -  Se l'account è un account secondario a livello di sistema operativo (Impostazioni account)
-        -  Se l'account è un account secondario in un profilo del browser
-
-      Se questo criterio viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> per un account, sarà possibile accedere a questo account soltanto come account principale. Non sarà possibile accederci come account secondario.</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
 <translation id="5235607513961923779">Consente di segnalare lo stato dell'attività del dispositivo su dispositivi registrati di utenti affiliati.
 
@@ -5136,6 +5134,7 @@ Se il criterio viene impostato su Disattivato, la cronologia di navigazione e qu
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
+<translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
@@ -5308,6 +5307,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="5475361623548884387">Attiva la stampa</translation>
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5476152378885134514">Blocca gli appunti su questi siti</translation>
+<translation id="5479841110985196412">Attiva tastiera virtuale di accessibilità</translation>
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
 <translation id="5483012943408894695">Origini o pattern di nomi host a cui non dovrebbero essere applicate limitazioni previste per le origini non sicure.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
@@ -6176,6 +6176,17 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
       Se questo criterio non viene impostato, verrà usata la configurazione predefinita per la sandbox dell'audio, che potrebbe differire in base alla piattaforma.
       Lo scopo di questo criterio è fornire alle imprese la flessibilità di disattivare la sandbox dell'audio qualora interferisca con le configurazioni software di sicurezza utilizzate.</translation>
 <translation id="624818583115864448">porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
+<translation id="6249912382559535329">Consente di attivare la funzione di accessibilità della tastiera virtuale nella schermata di accesso.
+
+          Se questo criterio viene impostato su True, la tastiera virtuale di accessibilità sarà sempre attiva nella schermata di accesso.
+
+          Se questo criterio viene impostato su False, la tastiera virtuale di accessibilità sarà sempre disattivata nella schermata di accesso.
+
+          Se configuri questo criterio, gli utenti non potranno modificarlo o ignorarlo.
+
+          Se questo criterio non viene impostato, inizialmente la tastiera virtuale di accessibilità è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento tramite le impostazioni di accessibilità.
+
+          Questo criterio non influisce sull'attivazione o meno della tastiera virtuale touch. Ad esempio, la tastiera virtuale touch viene comunque visualizzata sui tablet anche se il criterio viene impostato su False.</translation>
 <translation id="6254498834449523938">Non consentire agli utenti di bypassare l'avviso di Navigazione sicura</translation>
 <translation id="625580680776945310">La modalità ad alta efficienza verrà attivata.</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
@@ -6418,6 +6429,16 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
       non gestiti.</translation>
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
+<translation id="6403114173011456561">Consente di controllare la tastiera virtuale touch, fungendo da criterio aggiuntivo rispetto al criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Se la tastiera virtuale di accessibilità è attiva, questo criterio non ha effetto.
+
+      In caso contrario, questo criterio ha il seguente effetto:
+      Se questo criterio non viene configurato, la tastiera virtuale viene visualizzata in base all'euristica di sistema predefinita, ad esempio se ci sono tastiere collegate.
+      Se questo criterio viene impostato su True, la tastiera virtuale viene sempre visualizzata.
+      Se questo criterio viene impostato su False, la tastiera virtuale non viene mai visualizzata.
+
+      Il layout della tastiera virtuale potrebbe diventare compatto, a seconda del metodo di immissione.</translation>
 <translation id="6404064917675764807">Non segnalare eventi di sessioni CRD</translation>
 <translation id="6404360891305375004">Consenti condivisioni file di rete</translation>
 <translation id="6407093060083181305">Configura la lista bloccata di installazione delle estensioni</translation>
@@ -8758,9 +8779,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8312129124898414409">Consente di stabilire se consentire o meno l'utilizzo della generazione di chiavi sui siti web. L'utilizzo della generazione di chiavi può essere consentito o negato per tutti i siti web.
 
           Se questa norma non viene impostata, verrà utilizzato il valore della norma "BlockKeygen", che potrà essere modificato dagli utenti.</translation>
-<translation id="8313927126392971570">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di immagini con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio {imageThumbnail}, viene sostituito con i dati delle miniature di immagini reali.
-
-      Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> non viene configurato, la richiesta di ricerca di immagini viene inviata utilizzando il metodo Get.</translation>
 <translation id="8314214821702356835">Permette di consentire agli utenti di riprodurre contenuti multimediali con il dispositivo bloccato</translation>
 <translation id="8314308739926578606">Non consentire l'utilizzo degli Strumenti per sviluppatori nelle app e nelle estensioni installate in base ai criteri aziendali o dalla versione 114 e, se si tratta di un utente gestito, nelle estensioni integrate nel browser. Consenti l'utilizzo degli Strumenti per sviluppatori in altri contesti</translation>
 <translation id="8316940611391250886">Non consentire i certificati privi di un'estensione subjectAlternativeName</translation>
@@ -8832,6 +8850,17 @@ I certificati devono essere codificati in base64.</translation>
 
 Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL definito, l'URL viene aperto subito in un browser alternativo.</translation>
 <translation id="8402079500086185021">Apri sempre file PDF esternamente</translation>
+<translation id="8402357110539568621">Consente di attivare la funzione di accessibilità della tastiera virtuale.
+
+          Se questo criterio viene impostato su True, la tastiera virtuale di accessibilità sarà sempre attiva.
+
+          Se questo criterio viene impostato su False, la tastiera virtuale di accessibilità sarà sempre disattivata.
+
+          Se configuri questo criterio, gli utenti non potranno modificarlo o ignorarlo.
+
+          Se questo criterio non viene impostato, inizialmente la tastiera virtuale di accessibilità è disattivata, ma l'utente può attivarla in qualsiasi momento usando le impostazioni di accessibilità.
+
+          Questo criterio non influisce sull'attivazione o meno della tastiera virtuale touch. Ad esempio, la tastiera virtuale touch viene comunque visualizzata sui tablet anche se il criterio viene impostato su False. Utilizza il criterio <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> per controllare il comportamento della tastiera virtuale touch.</translation>
 <translation id="8410477879938914253">Il criterio viene applicato soltanto alle sessioni Ospite gestite.
       Se il criterio viene impostato su Vero o se non viene configurato, viene visualizzata una finestra di dialogo che chiede all'utente di confermare o annullare la disconnessione quando l'ultima finestra viene chiusa.
       Se viene impostato su Falso, la finestra di dialogo non viene visualizzata e la disconnessione automatica viene disattivata dopo la chiusura dell'ultima finestra.</translation>
@@ -8886,6 +8915,7 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 <translation id="8470317291588703478">Non viene forzata la Modalità con restrizioni di YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">Quando cerca il percorso migliore, WebRTC utilizzerà tutte le interfacce disponibili.</translation>
+<translation id="8479496880635054740">Disattiva la tastiera virtuale di accessibilità nella schermata di accesso</translation>
 <translation id="8482518340010585741">Configura il ripristino delle app all'accesso</translation>
 <translation id="8483004350080020634">Consente di rimuovere le parti sensibili per la privacy e la sicurezza dagli URL https:// prima di trasmetterli agli script PAC (Proxy Auto Config) utilizzati da <ph name="PRODUCT_NAME" /> durante la risoluzione proxy.
 

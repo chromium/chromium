@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Voulez-vous fermer les anciens onglets ?</translation>
 <translation id="1215127405478249895">Voir les onglets</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
+<translation id="1326271443836399892">Vérifiez les paramètres de désencombrement actuels.</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée ?</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="3008554597174452548">Arrêter de suivre le produit</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Vous avez <ph name="TABS_COUNT_ONE" /> onglet archivé}one{Vous avez <ph name="TABS_COUNT_MANY" /> onglet archivé}other{Vous avez <ph name="TABS_COUNT_MANY" /> onglets archivés}}</translation>
 <translation id="3194464645767632461">note</translation>
 <translation id="3291470810748040983">Vous serez averti en cas de prix inférieur dans un onglet ouvert</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Fiche d'infos sur ce magasin fermée</translation>
 <translation id="9150694013019234766">Passer d'un onglet à l'autre depuis votre groupe d'onglets dans la partie inférieure de l'écran</translation>
 <translation id="9169594135889675189">Ajouter un nouvel onglet au groupe</translation>
+<translation id="955558140275419384">Accédez à cet éditeur pour vérifier les onglets archivés à désencombrer.</translation>
 <translation id="959682366969460160">Restez organisé</translation>
 </translationbundle>

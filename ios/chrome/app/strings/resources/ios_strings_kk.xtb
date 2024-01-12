@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Өлшем бірлігін таңдау құралы</translation>
 <translation id="2348630484974447747">Пакет</translation>
 <translation id="2351097562818989364">Аудару параметрлеріңіз қалпына келтірілді.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} құпия сөзін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}=2{{DOMAIN_ONE} және {DOMAIN_TWO} құпия сөздерін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} және тағы {OTHER_DOMAINS_COUNT} домен құпия сөздерін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}other{{DOMAIN_ONE}, {DOMAIN_TWO} және тағы {OTHER_DOMAINS_COUNT} домен құпия сөздерін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}}</translation>
 <translation id="235789365079050412">Google құпиялық саясаты</translation>
 <translation id="2359043044084662842">Аудару</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">Алдыңғы өріс</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> арнасына жазылғансыз.</translation>
 <translation id="2754492786623500387">Осы құрылғыдағы аккаунттар</translation>
+<translation id="2755595981383829244">Енді сізге контент туралы хабарландырулар келеді</translation>
 <translation id="2762000892062317888">жаңа ғана</translation>
 <translation id="2772667768515195373">Google өнімдерінде сақталған мекенжайларды пайдалана аласыз. Бұл мекенжай Google аккаунтыңызда (<ph name="USER_EMAIL" />) сақталады.</translation>
 <translation id="2773292004659987824">Инкогнито режимінде іздеу</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">Төлеу әдістерін басқару…</translation>
 <translation id="469300482518076788">Қойындыны жабу</translation>
 <translation id="4697071790493980729">Нәтижелер табылмады.</translation>
+<translation id="470337593714520080">{count,plural, =1{Google аккаунтына 1 бетбелгі сақталады}other{Google аккаунтына {count} бетбелгі сақталады}}</translation>
 <translation id="470966556546083668">Синхрондауды қоспау</translation>
 <translation id="4711809265250406889">Қосулы кезде</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} және тағы 1 сайт}other{{website_1}, {website_2} және тағы {more_count} сайт}}</translation>

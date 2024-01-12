@@ -1134,6 +1134,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Хэрэглэгчийг сэргээх</translation>
 <translation id="554893713779400387">Диктафоныг асаах/унтраах</translation>
+<translation id="5550417424894892620">Файлуудыг <ph name="HOLDING_SPACE_TITLE" />-д нэмэхийн тулд тэдгээрийг дэлгэцэд буулгана уу. Та дэлгэцэд файлууд нэмэх боломжгүй.</translation>
 <translation id="5551456515017410630">Календарийг нээх/хаах</translation>
 <translation id="5551974246223970793">Хуудаснаас хайж байхдаа хайлтын дараагийн тохирол руу очих</translation>
 <translation id="5555639311269196631">Сүлжээний цэгийг унтраах</translation>
@@ -1876,6 +1877,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Аппуудаа нэр эсвэл өнгөөр эрэмбэлнэ үү</translation>
 <translation id="8609384513243082612">Шинэ таб нээх</translation>
+<translation id="8612216344243590325">Чухал файлуудыг дэлгэцийн оронд <ph name="HOLDING_SPACE_TITLE" />-д байлгана уу. Ердөө файлуудыг <ph name="HOLDING_SPACE_TITLE" /> руу чирнэ үү.</translation>
 <translation id="8614517853887502247">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" /> болон <ph name="APP_2_TITLE" />-н мэдэгдлийг нуусан</translation>
 <translation id="8619138598101195078">Дууны түвшнийг багасгах</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />-д холбогдсон</translation>

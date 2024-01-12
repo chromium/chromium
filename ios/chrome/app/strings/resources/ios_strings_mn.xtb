@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Нэгж сонгогч</translation>
 <translation id="2348630484974447747">Илгээмж</translation>
 <translation id="2351097562818989364">Таны орчуулгын тохиргоо дахин шинэчлэгдсэн байна.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Та {DOMAIN_ONE}-н нууц үгээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}=2{Та {DOMAIN_ONE} болон {DOMAIN_TWO}-н нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}=3{Та {DOMAIN_ONE}, {DOMAIN_TWO} болон бусад {OTHER_DOMAINS_COUNT} домэйний нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}other{Та {DOMAIN_ONE}, {DOMAIN_TWO} болон бусад {OTHER_DOMAINS_COUNT} домэйний нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}}</translation>
 <translation id="235789365079050412">Google-н нууцлалын бодлого</translation>
 <translation id="2359043044084662842">Орчуулах</translation>
 <translation id="2359808026110333948">Цааш</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">Төлбөрийн хэрэгслийг удирдах...</translation>
 <translation id="469300482518076788">Табыг хаах</translation>
 <translation id="4697071790493980729">Илэрц олдсонгүй</translation>
+<translation id="470337593714520080">{count,plural, =1{Google Бүртгэлдээ 1 хавчуурга хадгална уу}other{Google Бүртгэлдээ {count} хавчуурга хадгална уу}}</translation>
 <translation id="470966556546083668">Синк хийхийг бүү асаа</translation>
 <translation id="4711809265250406889">Асаалттай байх үед</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} болон өөр 1}other{{website_1}, {website_2} болон өөр {more_count}}}</translation>

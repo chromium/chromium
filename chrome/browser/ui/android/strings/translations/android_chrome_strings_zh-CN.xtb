@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
+<translation id="2327226657832576859">自动打开 PDF 文件？</translation>
 <translation id="2328985652426384049">无法登录</translation>
 <translation id="2341410551640223969">无法安装 <ph name="WEBAPK_NAME" />。</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括账号、书签和已保存的设置</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">过去 1 小时</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4532845899244822526">选择文件夹</translation>
+<translation id="4541505619120536051">一律打开</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4554077758708533499">已使用 USB 线连接到手机</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">网页数据洞见中心的隐私权声明徽标，会将用户重定向到“我的活动记录”页面。</translation>
 <translation id="5487521232677179737">清除数据</translation>
 <translation id="5492637351392383067">设备上加密</translation>
+<translation id="5509866835115085009">当您下载 PDF 文件后，Chrome 可自动将其打开。</translation>
 <translation id="5514904542973294328">已被此设备的管理员停用</translation>
 <translation id="5515439363601853141">需解锁才能查看您的密码</translation>
 <translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>

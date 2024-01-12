@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">பழைய பக்கங்களை மூட வேண்டுமா?</translation>
 <translation id="1215127405478249895">பக்கங்களைப் பாருங்கள்</translation>
 <translation id="125153950246128346">வேறொரு தாவலைப் பார்க்க, தட்டவும்</translation>
+<translation id="1326271443836399892">தற்போதைய ஒழுங்கமைவு அமைப்புகளைச் சரிபார்க்கலாம்.</translation>
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
 <translation id="3008554597174452548">தயாரிப்பைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> விலை <ph name="PRICE_DROP" /> குறைந்துள்ளது</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> காப்பகப்படுத்திய பக்கம் உள்ளது}other{<ph name="TABS_COUNT_MANY" /> காப்பகப்படுத்திய பக்கங்கள் உள்ளன}}</translation>
 <translation id="3194464645767632461">ரேட்டிங்</translation>
 <translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">இந்த ஸ்டோர் குறித்த தகவல்கள் மூடப்பட்டன</translation>
 <translation id="9150694013019234766">திரையின் கீழ்ப்பகுதிக்கு அருகில் உங்கள் பக்கக் குழுவிலுள்ள பக்கங்களுக்கு இடையே மாறலாம்</translation>
 <translation id="9169594135889675189">குழுவில் புதிய பக்கத்தைச் சேர்</translation>
+<translation id="955558140275419384">இந்த எடிட்டருக்குச் செல்வதன் மூலம், காப்பகப்படுத்திய அனைத்து பக்கங்களையும் சரிபார்த்து ஒழுங்கமைக்கலாம்.</translation>
 <translation id="959682366969460160">ஒருங்கமைப்புடன் இருக்கலாம்</translation>
 </translationbundle>

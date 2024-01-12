@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
 <translation id="117624967391683467">„<ph name="FILE_NAME" />“ се копира...</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="1190144681599273207">При извличането на този файл ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
 <translation id="1194390763418645112">Осъществяване на достъп до файла от <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1209796539517632982">Автоматично избиране на сървъри за имена</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Споделяне с(ъс) <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Сертификатът за удостоверяване бе отхвърлен локално</translation>
 <translation id="1775381402323441512">Информация за видеофайла</translation>
+<translation id="180035236176489073">Трябва да сте онлайн, за да осъществите достъп до тези файлове.</translation>
 <translation id="1807938677607439181">Всички файлове</translation>
 <translation id="1810764548349082891">Няма налична визуализация</translation>
 <translation id="1812302367230252929">Амхарски (транслитерация)</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Благодарност</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
 <translation id="209653272837065803">Няма достатъчно място в хранилището, за да продължат да се синхронизират файловете</translation>
-<translation id="2099143626019777139">Уебсайтовете, които посещавате, са видими за администратора ви. Можете да прегледате списъка с видимите уебсайтове.</translation>
 <translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> елемента ще бъдат изтрити и няма да можете да ги възстановите.</translation>
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL адрес за автоматично конфигуриране:</translation>
 <translation id="2284767815536050991">сменяемо хранилище</translation>
 <translation id="2288278176040912387">Грамофон</translation>
+<translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
+<translation id="2303301624314357662">Файлът „<ph name="FILE_NAME" />“ се отваря.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Изваждането на „<ph name="VOLUME_NAME" />“ завърши.</translation>
 <translation id="2307462900900812319">Конфигуриране на мрежата</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Няма достатъчно място в хранилището, за да се синхронизират всичките ви файлове</translation>
 <translation id="23721837607121582">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Превключване към списъчен изглед</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Linux</translation>
 <translation id="2379576081295865700">Мястото в хранилището се проверява… Намерен е 1 елемент</translation>
 <translation id="2383454254762599978">Преместване в кошчето</translation>
 <translation id="2387458720915042159">Тип на връзката през прокси сървър</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Избор за компресиране</translation>
 <translation id="4202378258276439759">Испански (Латинска Америка)</translation>
 <translation id="4202977638116331303">Грузински</translation>
+<translation id="421017592316736757">Трябва да сте онлайн, за да осъществите достъп до този файл.</translation>
 <translation id="4212740939091998969">Папката „<ph name="FOLDER_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
 <translation id="4218274196133425560">Премахване на изключението за <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Презентация в Google</translation>
 <translation id="4277536868133419688">Филтърът „<ph name="FILTER_NAME" />“ е включен.</translation>
+<translation id="4290535918735525311">1 папка е споделена с Linux</translation>
 <translation id="4299729908419173967">бразилска</translation>
 <translation id="4302605047395093221">Всеки, който използва устройството, ще трябва да въведе ПИН кода, за да се свърже с тази мобилна мрежа</translation>
 <translation id="4303531889494116116">Тази мрежа е претоварена. Опитайте отново по-късно.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
 <translation id="4935975195727477204">Газания</translation>
 <translation id="4943368462779413526">Футболна топка</translation>
+<translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
+<translation id="4965874878399872778">Файловете се проверяват за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="496656650103537022">Възстановихте „<ph name="FILE_NAME" />“</translation>
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4972330214479971536">Настройването на функцията за синхронизиране на файловете не завърши</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318819489018851358">Споделяне с Linux</translation>
 <translation id="5323213332664049067">латиноамерикански</translation>
+<translation id="5330145655348521461">Тези файлове се отвориха на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да ги прегледате.</translation>
 <translation id="5330512191124428349">Получаване на информация</translation>
 <translation id="535792325654997756">Човек с котки</translation>
 <translation id="5358764674931277">Скорост на кадрите</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">Японски с американска клавиатура</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> – няма мрежа</translation>
 <translation id="6146563240635539929">Видеоклипове</translation>
+<translation id="6150853954427645995">За да запазите този файл за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху него и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="6164412158936057769">Пеперуди</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170470584681422115">Сандвич</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">Невалидна стойност в списъка със съответствия на суфикса на домейна</translation>
 <translation id="6364301859968397756">Хранилището на организацията е пълно</translation>
 <translation id="6367976544441405720">Микробус</translation>
+<translation id="637062427944097960">Този файл се отвори на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да го прегледате.</translation>
 <translation id="6394388407447716302">Само за четене</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> елемента</translation>
 <translation id="6407769893376380348">Файлът <ph name="FILE_NAME" /> не бе преместен, защото е шифрован.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">Остава ви 1 опит.</translation>
 <translation id="643243556292470964">Изтритите файлове са преместени в кошчето</translation>
 <translation id="6438480100790416671">Мястото в хранилището се проверява…</translation>
+<translation id="6451527188465304418">Файлът се проверява за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">Настройки за синхронизирането на файлове</translation>
 <translation id="6594855146910089723">Тази папка е споделена с Linux и Parallels Desktop</translation>
 <translation id="6607272825297743757">Информация за файла</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Parallels Desktop</translation>
 <translation id="6629518321609546825">Въведете поне 4 цифри</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6650726141019353908">Розова пеперуда</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Грешка при конфигурирането на мрежата</translation>
+<translation id="7839804798877833423">При извличането на тези файлове ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
 <translation id="7846076177841592234">Анулиране на избора</translation>
 <translation id="7853966320808728790">френски (BÉPO)</translation>
 <translation id="7857117644404132472">Добавяне на изключение</translation>
@@ -919,12 +933,14 @@
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8147028810663464959">Ширината на знаците е пълна</translation>
 <translation id="8151638057146502721">Конфигуриране</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}other{# грешки.}}</translation>
 <translation id="8154842056504218462">Избрахте всички елементи.</translation>
 <translation id="8157684860301034423">Извличането на информацията за приложението не бе успешно.</translation>
 <translation id="8175731104491895765">Френски (Белгия)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> файла в Диск се синхронизират</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модел на устройството</translation>
+<translation id="8223479393428528563">За да запазите тези файлове за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху тях и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="8241139360630443550">Преглед на хранилището</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
 <translation id="8250690786522693009">латиница</translation>
@@ -1010,6 +1026,7 @@
 <translation id="8787254343425541995">Разрешаване на прокси сървъри за споделените мрежи</translation>
 <translation id="8790981080411996443">Човек, който полива цветя</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 предупреждение.}other{# предупреждения.}}</translation>
 <translation id="8808686172382650546">Котка</translation>
 <translation id="8810671769985673465">Компресирането не бе успешно. Съществува елемент: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Испански (Испания)</translation>

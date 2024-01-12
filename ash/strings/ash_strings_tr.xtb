@@ -1133,6 +1133,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="5546397813406633847">Kullanıcıyı kurtar</translation>
 <translation id="554893713779400387">Dikte özelliğini aç/kapat</translation>
+<translation id="5550417424894892620">Dosyaları <ph name="HOLDING_SPACE_TITLE" /> hedefine eklemek için masaüstüne bırakın. Masaüstüne dosya ekleyemezsiniz.</translation>
 <translation id="5551456515017410630">Takvimi açın/kapatın</translation>
 <translation id="5551974246223970793">Sayfa ararken aramayla ilgili bir sonraki eşleşmeye git</translation>
 <translation id="5555639311269196631">Hotspot'u kapat</translation>
@@ -1505,6 +1506,7 @@ Yeni yüklenmiş</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> cihazınızı telefonunuza bağlayın</translation>
 <translation id="7026338066939101231">Azalt</translation>
 <translation id="7029814467594812963">Oturumdan çık</translation>
+<translation id="7031303610220416229">Google Görevler'deki tüm görevleri göster</translation>
 <translation id="7032161822340700104">Şablon sayısı 6 ile sınırlıdır. Yeni şablon kaydetmek için bir şablonu kaldırın.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />, <ph name="DEVICE_NAME" /> kullanmak istiyor. Cihazınızın fiziksel <ph name="DEVICE_NAME" /> anahtarını açın.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />`, Google Asistan</translation>
@@ -1817,6 +1819,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> kullanılıyor.</translation>
 <translation id="8369166482916924789">Kayıtlı masa, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> için arama yapın</translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
 <translation id="8371991222807690464">Çevre biriminin performansı, Misafir modunda sınırlı olabilir</translation>
 <translation id="8374601332003098278">Kısmi ekran kaydı için enter tuşuna basın</translation>
@@ -1872,6 +1875,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Uygulamalarınızı ada veya renge göre sıralama</translation>
 <translation id="8609384513243082612">Yeni sekme açar</translation>
+<translation id="8612216344243590325">Önemli dosyaları masaüstü yerine <ph name="HOLDING_SPACE_TITLE" /> içinde saklayın. Dosyaları <ph name="HOLDING_SPACE_TITLE" /> hedefine sürüklemeniz yeterlidir.</translation>
 <translation id="8614517853887502247">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" /> ve <ph name="APP_2_TITLE" /> bildirimleri gösterilmiyor</translation>
 <translation id="8619138598101195078">Sesi kısın</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> cihazına bağlandı</translation>

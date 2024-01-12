@@ -1133,6 +1133,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Gjenopprett bruker</translation>
 <translation id="554893713779400387">Slå av/på diktering</translation>
+<translation id="5550417424894892620">Slipp filene på skrivebordet for å legge dem til på <ph name="HOLDING_SPACE_TITLE" />. Du kan ikke legge til filer på skrivebordet.</translation>
 <translation id="5551456515017410630">Åpne/lukk kalenderen</translation>
 <translation id="5551974246223970793">Gå til neste søketreff når du søker på en side</translation>
 <translation id="5555639311269196631">Slå av wifi-sone</translation>
@@ -1874,6 +1875,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sorter apper etter navn eller farge</translation>
 <translation id="8609384513243082612">Åpne en ny fane</translation>
+<translation id="8612216344243590325">Oppbevar viktige filer på <ph name="HOLDING_SPACE_TITLE" /> i stedet for på skrivebordet. Bare dra filer til <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Varsler fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult fordi visningsbeskyttelse er på</translation>
 <translation id="8619138598101195078">Skru ned volumet</translation>
 <translation id="8627191004499078455">Koblet til <ph name="DEVICE_NAME" /></translation>

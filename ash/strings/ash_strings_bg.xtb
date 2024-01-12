@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5546397813406633847">Възстановяване на потребителя</translation>
 <translation id="554893713779400387">Превключване на режима на диктуване</translation>
+<translation id="5550417424894892620">Преместете файлове върху работния плот, за да ги добавите към <ph name="HOLDING_SPACE_TITLE" />. Не можете да добавяте файлове към работния плот.</translation>
 <translation id="5551456515017410630">Отваряне или затваряне на календара</translation>
 <translation id="5551974246223970793">Преминаване към следващото съответствие за заявката при търсене на страница</translation>
 <translation id="5555639311269196631">Изключване на точката за достъп</translation>
@@ -1874,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортиране на приложенията ви по име или цвят</translation>
 <translation id="8609384513243082612">Отваряне на нов раздел</translation>
+<translation id="8612216344243590325">Съхранявайте важните файлове в(ъв) <ph name="HOLDING_SPACE_TITLE" /> вместо на работния плот. Трябва само да ги преместите в(ъв) <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Известията от <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="8619138598101195078">Намаляване на силата на звука</translation>
 <translation id="8627191004499078455">Установена е връзка (<ph name="DEVICE_NAME" />)</translation>

@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">ඒකක තෝරකය</translation>
 <translation id="2348630484974447747">පැකේජය</translation>
 <translation id="2351097562818989364">ඔබේ පරිවර්තන සැකසුම් නැවත සැකසී තිබේ.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE} සඳහා ඔබේ මුරපදය සුරැකිය හැක.}=2{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE} සහ {DOMAIN_TWO} සඳහා ඔබේ මුරපද සුරැකිය හැක.}=3{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE}, {DOMAIN_TWO}, සහ තව {OTHER_DOMAINS_COUNT}ක් සඳහා ඔබේ මුරපද සුරැකිය හැක.}one{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE}, {DOMAIN_TWO}, සහ තව {OTHER_DOMAINS_COUNT}ක් සඳහා ඔබේ මුරපද සුරැකිය හැක.}other{ඔබට ඔබේ Google ගිණුමේ {EMAIL}, {DOMAIN_ONE}, {DOMAIN_TWO}, සහ තව {OTHER_DOMAINS_COUNT}ක් සඳහා ඔබේ මුරපද සුරැකිය හැක.}}</translation>
 <translation id="235789365079050412">Google පෞද්ගලිකත්ව ප්‍රතිපත්තිය</translation>
 <translation id="2359043044084662842">පරිවර්තනය</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">පෙර ක්ෂේත්‍රය</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> අනුගමනය කරමින්</translation>
 <translation id="2754492786623500387">මෙම උපාංගයෙහි ගිණුම්</translation>
+<translation id="2755595981383829244">ඔබට දැන් අන්තර්ගත දැනුම්දීම් ලැබෙනු ඇත</translation>
 <translation id="2762000892062317888">මේ දැන්</translation>
 <translation id="2772667768515195373">ඔබට Google නිෂ්පාදන හරහා සුරැකි ලිපින භාවිතා කළ හැක. මෙම ලිපිනය ඔබේ Google ගිණුමේ, <ph name="USER_EMAIL" /> සුරකිනු ලැබේ.</translation>
 <translation id="2773292004659987824">අප්‍රසිද්ධ සෙවීම</translation>
@@ -688,6 +690,7 @@
 <translation id="4689564913179979534">ගෙවීමේ ක්‍රම කළමනා කරන්න...</translation>
 <translation id="469300482518076788">පටිත්ත වසන්න</translation>
 <translation id="4697071790493980729">ප්‍රතිඵල හමු නොවීය</translation>
+<translation id="470337593714520080">{count,plural, =1{ඔබේ Google ගිණුමේ 1 පිටුසනක් සුරකින්න}one{ඔබේ Google ගිණුමේ පිටුසන් {count}ක් සුරකින්න}other{ඔබේ Google ගිණුමේ පිටුසන් {count}ක් සුරකින්න}}</translation>
 <translation id="470966556546083668">සමමුහුර්ත කිරීම ක්‍රියාත්මක නොකරන්න</translation>
 <translation id="4711809265250406889">ක්‍රියාත්මක විට</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, සහ තව 1ක්}one{{website_1}, {website_2}, සහ තව {more_count}ක්}other{{website_1}, {website_2}, සහ තව {more_count}ක්}}</translation>
@@ -986,6 +989,7 @@
 <translation id="6255097610484507482">ක්‍රෙඩිට් කාඩ්පත සංස්කරණය කරන්න</translation>
 <translation id="6266039999629596120">අවධානය අවශ්‍යයි</translation>
 <translation id="6277426346321820595">ආරක්ෂාව නැත</translation>
+<translation id="628251768213143684">ඔබට සැමවිට ඔබේ Google ගිණුමේ සුරැකී ඇති දේ කළමනාකරණය කළ හැක</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> පරිවර්තන කිරීමට පිරිනමන්න</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> අනුගමනය කිරීමෙන් ඉවත් විය</translation>
 <translation id="6293101329759844770">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කිරීමට, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> විවෘත කර සුරක්ෂිත බ්‍රවුස් කිරීම තට්ටු කරන්න.</translation>

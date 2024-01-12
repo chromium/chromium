@@ -24,6 +24,7 @@
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> പകർത്തുന്നു...</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="1190144681599273207">ഈ ഫയൽ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> വഴിയുള്ള ഫയൽ ആക്‌സസ് ചെയ്യൽ</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1209796539517632982">യാന്ത്രിക നാമ സെർവറുകൾ</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> എന്നയാളുമായി പങ്കിടുക</translation>
 <translation id="1773212559869067373">പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് പ്രാദേശികമായി നിരസിച്ചു</translation>
 <translation id="1775381402323441512">വീഡിയോ വിവരം</translation>
+<translation id="180035236176489073">ഈ ഫയലുകൾ ആക്‌സസ്സുചെയ്യുന്നതിന് നിങ്ങൾ ഓൺലൈനിലായിരിക്കണം.</translation>
 <translation id="1807938677607439181">എല്ലാ ഫയലുകളും</translation>
 <translation id="1810764548349082891">പ്രിവ്യൂ ലഭ്യമല്ല</translation>
 <translation id="1812302367230252929">അമാറിക് ലിപ്യന്തരണം</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">നന്ദി അറിയിക്കുന്ന വ്യക്തി</translation>
 <translation id="2088690981887365033">VPN നെറ്റ്‍വർക്ക്</translation>
 <translation id="209653272837065803">നിങ്ങളുടെ എല്ലാ ഫയലുകളും സമന്വയിപ്പിക്കുന്നത് തുടരാൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
-<translation id="2099143626019777139">നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകൾ നിങ്ങളുടെ അഡ്‌മിന് ദൃശ്യമാണ്. ദൃശ്യമാകുന്ന വെബ്‌സൈറ്റുകളുടെ ലിസ്റ്റ് നിങ്ങൾക്ക് കാണാനാകും.</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />അദൃശ്യ മോഡിൽ അനുവദിക്കുക<ph name="END_BOLD" /> ഓണാക്കുക</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കും, നിങ്ങൾക്ക് അവ പുനഃസ്ഥാപിക്കാനാകില്ല.</translation>
 <translation id="2122305276694332719">മറച്ച നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ ഉപകരണവും ചില നെറ്റ്‌വർക്ക് ക്രമീകരണവും കാണാൻ മറ്റുള്ളവരെ അനുവദിക്കുന്നതിനാൽ അത് ശുപാർശചെയ്യുന്നില്ല.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">സ്വയമേവ കോൺഫിഗറേഷൻ URL:</translation>
 <translation id="2284767815536050991">നീക്കം ചെയ്യാവുന്ന സ്റ്റോറേജ്</translation>
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
+<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ തുറക്കുന്നു.</translation>
+<translation id="2303301624314357662"><ph name="FILE_NAME" /> ഫയൽ തുറക്കുന്നു.</translation>
 <translation id="2304820083631266885">ഗ്രഹം</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ഒഴിവാക്കി.</translation>
 <translation id="2307462900900812319">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യുക</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">നിങ്ങളുടെ എല്ലാ ഫയലുകളും സമന്വയിപ്പിക്കാൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
 <translation id="23721837607121582">മൊബൈൽ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക, <ph name="NETWORK_COUNT" /> എണ്ണത്തിൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
 <translation id="2379576081295865700">സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് പരിശോധിക്കുന്നു… ഒരു ഇനം കണ്ടെത്തി</translation>
 <translation id="2383454254762599978">ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="2387458720915042159">പ്രോക്‌സി കണക്ഷൻ തരം</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Zip തിരഞ്ഞെടുക്കൽ</translation>
 <translation id="4202378258276439759">സ്‌പാനിഷ് (ലാറ്റിൻ അമേരിക്ക)</translation>
 <translation id="4202977638116331303">ജോര്‍ജ്ജിയൻ</translation>
+<translation id="421017592316736757">ഈ ഫയൽ ആക്‌സസ് ചെയ്യുന്നതിന് നിങ്ങൾ ഓൺലൈനിലായിരിക്കണം.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" എന്ന് പേരുള്ള ഫോൾഡർ മുമ്പേ നിലവിലുണ്ട്. മറ്റൊരു പേര് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-ലെ ഒഴിവാക്കൽ നീക്കം ചെയ്യുക</translation>
 <translation id="4261901459838235729">Google അവതരണം</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ഫിൽട്ടർ ഓണാണ്.</translation>
+<translation id="4290535918735525311">Linux ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="4299729908419173967">ബ്രസീലിയന്‍</translation>
 <translation id="4302605047395093221">ഈ ഉപകരണം ഉപയോഗിക്കുന്ന ഏതൊരാളും ഈ മൊബൈൽ നെറ്റ്‌വര്‍ക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ പിൻ നൽകേണ്ടതുണ്ട്</translation>
 <translation id="4303531889494116116">ഈ നെറ്റ്‌വർക്ക് തിരക്കിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="4935975195727477204">ഗസാനിയ പുഷ്‌പം</translation>
 <translation id="4943368462779413526">ഫുട്‌ബോള്‍</translation>
+<translation id="4961158930123534723">Parallels Desktop ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
+<translation id="4965874878399872778">നിങ്ങളുടെ ഓർഗനൈസേഷന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോ എന്നറിയാൻ ഫയലുകൾ പരിശോധിക്കുന്നു...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="4969785127455456148">ആല്‍‌ബം</translation>
 <translation id="4972330214479971536">ഫയൽ സമന്വയിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാനായില്ല</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318819489018851358">Linux-മായി പങ്കിടുക</translation>
 <translation id="5323213332664049067">ലാറ്റിന്‍ അമേരിക്കന്‍</translation>
+<translation id="5330145655348521461">ഈ ഫയലുകൾ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="5330512191124428349">വിവരം സ്വീകരിക്കുക</translation>
 <translation id="535792325654997756">വ്യക്തിയും പൂച്ചകളും</translation>
 <translation id="5358764674931277">ഫ്രെയിം എണ്ണം</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">യുഎസ് കീബോർഡ് ഉള്ള ജാപ്പനീസ്</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, നെറ്റ്‍വർക്ക് ഇല്ല</translation>
 <translation id="6146563240635539929">വീഡിയോകൾ</translation>
+<translation id="6150853954427645995">ഓഫ്‌ലൈൻ ഉപയോഗത്തിനായി ഈ ഫയൽ സംരക്ഷിക്കുന്നതിന്, ഓൺലൈനിലേക്ക് മടങ്ങി, ഫയലിൽ വലത് ക്ലിക്ക് ചെയ്യുക അതിനുശേഷം <ph name="OFFLINE_CHECKBOX_NAME" /> ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6164412158936057769">ചിത്രശലഭങ്ങൾ</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6170470584681422115">സാന്‍ഡ്‌വിച്ച്‌</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">ഡൊമെയ്ന്‍ സഫിക്സ് പൊരുത്തത്തിന്റെ മൂല്യം അസാധുവാണ്</translation>
 <translation id="6364301859968397756">സ്ഥാപനത്തിന്റെ സ്റ്റോറേജ് നിറഞ്ഞു</translation>
 <translation id="6367976544441405720">വാൻ</translation>
+<translation id="637062427944097960">ഈ ഫയൽ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="6394388407447716302">വായന മാത്രം</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അത് നീക്കാനായില്ല.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="643243556292470964">ഇല്ലാതാക്കിയ ഫയലുകൾ ഇപ്പോൾ ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="6438480100790416671">സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് പരിശോധിക്കുന്നു…</translation>
+<translation id="6451527188465304418">നിങ്ങളുടെ ഓർഗനൈസേഷന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോ എന്നറിയാൻ ഫയൽ പരിശോധിക്കുന്നു...</translation>
 <translation id="6485131920355264772">സ്‌പെയ്‌സ് വിവരം വീണ്ടെടുക്കുന്നതിന് പരാജയപ്പെട്ടു</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, വിശദാംശങ്ങൾ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> എന്നത് <ph name="FOLDER_NAME" /> എന്നതിലേക്ക് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു</translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">ഫയൽ സമന്വയിപ്പിക്കൽ ക്രമീകരണം</translation>
 <translation id="6594855146910089723">Linux-മായും Parallels Desktop-മായും ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="6607272825297743757">ഫയൽ വിവരം</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Parallels Desktop ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
 <translation id="6629518321609546825">കുറഞ്ഞത് 4 നമ്പറുകൾ നൽകുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6650726141019353908">പിങ്ക് ചിത്രശലഭം</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">നെറ്റ്‍വര്‍ക്ക് കോണ്‍ഫിഗര്‍ ചെയ്യുന്നതിൽ പിശക്</translation>
+<translation id="7839804798877833423">ഈ ഫയലുകൾ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="7846076177841592234">തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക</translation>
 <translation id="7853966320808728790">ഫ്രഞ്ച് BÉPO</translation>
 <translation id="7857117644404132472">ഒഴിവാക്കൽ ചേർക്കുക</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive ഫയലുകൾ സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ഉപകരണ മോഡൽ</translation>
+<translation id="8223479393428528563">ഓഫ്‌ലൈൻ ഉപയോഗത്തിനായി ഈ ഫയലുകൾ സംരക്ഷിക്കാൻ, ഓൺലൈനിൽ തിരികെ വന്ന് ഫയലുകൾ റൈറ്റ് ക്ലിക്ക് ചെയ്‌ത്, <ph name="OFFLINE_CHECKBOX_NAME" /> ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8241139360630443550">സ്‌റ്റോറേജ് കാണുക</translation>
 <translation id="8249296373107784235">ഉപേക്ഷിക്കുക</translation>
 <translation id="8250690786522693009">ലാറ്റിന്‍‌</translation>

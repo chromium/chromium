@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">בורר היחידות</translation>
 <translation id="2348630484974447747">חבילה</translation>
 <translation id="2351097562818989364">הגדרות התרגום שלך אופסו.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{‏אפשר לשמור את הסיסמה בשביל {DOMAIN_ONE} בחשבון Google שלך, {EMAIL}.}=2{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE} וגם {DOMAIN_TWO} בחשבון Google שלך, {EMAIL}.}=3{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}one{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}other{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}}</translation>
 <translation id="235789365079050412">‏מדיניות הפרטיות של Google</translation>
 <translation id="2359043044084662842">תרגום</translation>
 <translation id="2359808026110333948">המשך</translation>
@@ -689,6 +690,7 @@
 <translation id="4689564913179979534">ניהול אמצעי תשלום...</translation>
 <translation id="469300482518076788">סגירת הכרטיסייה</translation>
 <translation id="4697071790493980729">לא נמצאו תוצאות</translation>
+<translation id="470337593714520080">{count,plural, =1{‏שמירת סימנייה אחת בחשבון Google}one{‏שמירת {count} סימניות בחשבון Google}two{‏שמירת {count} סימניות בחשבון Google}other{‏שמירת {count} סימניות בחשבון Google}}</translation>
 <translation id="470966556546083668">אין להפעיל את הסנכרון</translation>
 <translation id="4711809265250406889">במצב מופעל</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1},‏ {website_2}}=3{{website_1},‏ {website_2} ועוד אתר אחד}one{{website_1},‏ {website_2} ועוד {more_count} אתרים}other{{website_1},‏ {website_2} ועוד {more_count} אתרים}}</translation>
@@ -987,6 +989,7 @@
 <translation id="6255097610484507482">עריכת כרטיס אשראי</translation>
 <translation id="6266039999629596120">נדרש טיפול</translation>
 <translation id="6277426346321820595">ללא הגנה</translation>
+<translation id="628251768213143684">‏תמיד אפשר לנהל את הפריטים ששמורים בחשבון Google</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">בוטל המעקב אחר <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>

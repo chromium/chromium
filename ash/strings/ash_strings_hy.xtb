@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Վերականգնել օգտատիրոջը</translation>
 <translation id="554893713779400387">Միացնել/անջատել ձայնային ներածումը</translation>
+<translation id="5550417424894892620">Քաշեք ձեր ֆայլերը աշխատասեղանի վրա՝ «<ph name="HOLDING_SPACE_TITLE" />» պանակում ավելացնելու համար։ Դուք չեք կարող ֆայլեր ավելացնել աշխատասեղանին։</translation>
 <translation id="5551456515017410630">Բացել/փակել օրացույցը</translation>
 <translation id="5551974246223970793">Անցնել էջի որոնման հաջորդ արդյունքին</translation>
 <translation id="5555639311269196631">Անջատել թեժ կետը</translation>
@@ -1505,6 +1506,7 @@
 <translation id="7025533177575372252">Կապեք ձեր <ph name="DEVICE_NAME" /> սարքը ձեր հեռախոսի հետ</translation>
 <translation id="7026338066939101231">Նվազեցնել</translation>
 <translation id="7029814467594812963">Ավարտել սեսիան</translation>
+<translation id="7031303610220416229">Դիտել բոլոր առաջադրանքները Google Tasks-ում</translation>
 <translation id="7032161822340700104">Թույլատրվում է առավելագույնը 6 ձևանմուշ։ Նոր ձևանմուշ պահելու համար հեռացրեք մեկ ուրիշը։</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը։ Միացրեք սարքի <ph name="DEVICE_NAME" />ի ֆիզիկական փոխանջատիչը։</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Օգնական</translation>
@@ -1817,6 +1819,7 @@
 <translation id="8351131234907093545">Գրառման ստեղծում</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />ն օգտագործվում է։</translation>
 <translation id="8369166482916924789">Պահված աշխատասեղան, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Որոնել <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Մեկ տառով առաջ</translation>
 <translation id="8371991222807690464">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել հյուրի ռեժիմում</translation>
 <translation id="8374601332003098278">Սեղմեք Enter՝ էկրանը մասնակի տեսագրելու համար</translation>
@@ -1872,6 +1875,7 @@
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Դասավորեք ձեր հավելվածներն ըստ անվանման կամ գույնի</translation>
 <translation id="8609384513243082612">Բացել նոր ներդիր</translation>
+<translation id="8612216344243590325">Կարևոր ֆայլերը պահեք «<ph name="HOLDING_SPACE_TITLE" />» պանակում՝ աշխատասեղանի փոխարեն։ Ֆայլերը պարզապես քաշեք և գցեք «<ph name="HOLDING_SPACE_TITLE" />» պանակի մեջ։</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> և <ph name="APP_2_TITLE" /> հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="8619138598101195078">Իջեցնել ձայնը</translation>
 <translation id="8627191004499078455">Միացված է <ph name="DEVICE_NAME" /> սարքին</translation>

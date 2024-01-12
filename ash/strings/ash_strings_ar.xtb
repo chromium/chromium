@@ -1135,6 +1135,7 @@
 <translation id="5537725057119320332">بث</translation>
 <translation id="5546397813406633847">استرداد حساب المستخدم</translation>
 <translation id="554893713779400387">تبديل الإملاء</translation>
+<translation id="5550417424894892620">أفلِت الملفات على سطح المكتب لإضافتها إلى "<ph name="HOLDING_SPACE_TITLE" />". لا يمكنك إضافة ملفات إلى سطح المكتب.</translation>
 <translation id="5551456515017410630">فتح/إغلاق التقويم</translation>
 <translation id="5551974246223970793">الانتقال إلى النتيجة المطابِقة التالية عند البحث في صفحة</translation>
 <translation id="5555639311269196631">إيقاف نقطة الاتصال</translation>
@@ -1877,6 +1878,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ترتيب التطبيقات حسب الاسم أو اللون</translation>
 <translation id="8609384513243082612">فتح علامة تبويب جديدة</translation>
+<translation id="8612216344243590325">احتفِظ بالملفات المهمة في "<ph name="HOLDING_SPACE_TITLE" />" بدلاً من وضعها على سطح المكتب. ما عليك سوى سحب الملفات إلى "<ph name="HOLDING_SPACE_TITLE" />".</translation>
 <translation id="8614517853887502247">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="8619138598101195078">خفض مستوى الصوت</translation>
 <translation id="8627191004499078455">تم الاتصال بجهاز <ph name="DEVICE_NAME" /></translation>

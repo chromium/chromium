@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Eenheidskiezer</translation>
 <translation id="2348630484974447747">Pakket</translation>
 <translation id="2351097562818989364">Je vertaalinstellingen zijn opnieuw ingesteld.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Je kunt je wachtwoord voor {DOMAIN_ONE} opslaan in je Google-account, {EMAIL}.}=2{Je kunt je wachtwoorden voor {DOMAIN_ONE} en {DOMAIN_TWO} opslaan in je Google-account, {EMAIL}.}=3{Je kunt je wachtwoorden voor {DOMAIN_ONE}, {DOMAIN_TWO} en nog {OTHER_DOMAINS_COUNT} domein opslaan in je Google-account, {EMAIL}.}other{Je kunt je wachtwoorden voor {DOMAIN_ONE}, {DOMAIN_TWO} en nog {OTHER_DOMAINS_COUNT} domeinen opslaan in je Google-account, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Privacybeleid van Google</translation>
 <translation id="2359043044084662842">Vertalen</translation>
 <translation id="2359808026110333948">Doorgaan</translation>

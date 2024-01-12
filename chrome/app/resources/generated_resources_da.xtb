@@ -503,7 +503,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="139085829239861233">eller prøve igen senere</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> har ikke tilladelse til at udskrive på <ph name="PRINTER_NAME" />. Kontakt din administrator.</translation>
 <translation id="1392047138650695757">Brugerordbøger</translation>
-<translation id="1392500396467822548">Dine familiemedlemmer kan nu bruge dit brugernavn og din adgangskode, når de bruger Google Adgangskodeadministrator. Bed dem om at gå til <ph name="WEBSITE" /> for at logge ind. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="139300021892314943">Begræns, hvem der kan logge ind</translation>
 <translation id="1393283411312835250">Sol og skyer</translation>
 <translation id="1395730723686586365">Opdateringsprogrammet er startet</translation>
@@ -724,7 +723,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1556127816860282890">Baggrundsaktivitet og visse visuelle effekter som f.eks. jævn rulning kan være begrænset</translation>
 <translation id="1556537182262721003">Udvidelsesmappen kunne ikke flyttes til profilen.</translation>
-<translation id="1558391695376153246">Luk inkognitofaner</translation>
 <translation id="155865706765934889">Touchplade</translation>
 <translation id="1558671750917454373">Genoptag casting til <ph name="DEVICE_NAME" /></translation>
 <translation id="1562119309884184621">Denne kontakt huskes, til næste gang vedkommende deler</translation>
@@ -1785,6 +1783,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2322318151094136999">Spørg, når et website vil have adgang til serieporte (anbefalet)</translation>
 <translation id="2322622365472107569">Sluttidspunkt: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gemte Wi-Fi-netværk</translation>
+<translation id="232390938549590851">Leder du efter systemsiden for browseren? Gå til <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="2325444234681128157">Husk adgangskoden</translation>
 <translation id="2326188115274135041">Bekræft pinkoden for at aktivere automatisk oplåsning</translation>
 <translation id="2326906096734221931">Åbn appindstillinger</translation>
@@ -2237,7 +2236,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deler en Chrome-fane.</translation>
 <translation id="2670403088701171361">Tillad ikke, at websites ser tekst eller billeder fra din udklipsholder</translation>
-<translation id="2670429602441959756">Denne side indeholder funktioner, der endnu ikke understøttes i VR. Afslutter...</translation>
 <translation id="2671451824761031126">Dine bogmærker og indstillinger er klar</translation>
 <translation id="2672142220933875349">Ugyldig CRX-fil. Udpakning mislykkedes.</translation>
 <translation id="2673135533890720193">Læse din browserhistorik</translation>
@@ -2451,6 +2449,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2819167288942847344">Brug forindstillinger for justerbare vinduer og vinduer på telefoner og tablets for at undgå, at appen ikke fungerer korrekt</translation>
 <translation id="2819519502129272135">Filsynkronisering er deaktiveret</translation>
 <translation id="2820957248982571256">Scanner…</translation>
+<translation id="2822551631199737692">Kameraet er i brug</translation>
 <translation id="2822634587701817431">Formindsk/udvid</translation>
 <translation id="2822910719211888134">Der opstod en fejl ved sikkerhedskopieringen af Linux</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> anvender proxyindstillinger fra din administrator</translation>
@@ -3932,7 +3931,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3985022125189960801">Du kan tilføje et website igen, hvis du vil have det i samlingen af websites, der kan foretage en vurdering af, hvad du kan lide</translation>
 <translation id="3986813315215454677">Bluetooth på ChromeOS</translation>
 <translation id="3987544746655539083">Bloker fortsat dette website, så det ikke kan få adgang til din lokation</translation>
-<translation id="3987938432087324095">Det forstod jeg ikke.</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3988124842897276887">Denne fane er tilsluttet en USB-enhed</translation>
 <translation id="3988996860813292272">Vælg tidszone</translation>
@@ -3954,7 +3952,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4002440992267487163">Konfiguration af pinkode</translation>
 <translation id="4005817994523282006">Metode til registrering af tidszone</translation>
 <translation id="4007856537951125667">Skjul genveje</translation>
-<translation id="4008291085758151621">Websiteoplysninger er ikke tilgængelige i VR</translation>
 <translation id="4010746393007464819">Der er en tilgængelig opgradering til Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> for at få dine bogmærker på alle dine mobilenheder.</translation>
 <translation id="4010938758610910350">Organiserer i en fanegruppe…</translation>
@@ -4188,6 +4185,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4200983522494130825">Ny &amp;fane</translation>
 <translation id="4201546031411513170">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="4203065553461038553">Navnet på filen eller lokationen er for langt</translation>
+<translation id="4203769790323223880">Adgang til kamera er ikke tilladt</translation>
 <translation id="4205157409548006256">Der opstod en fejl under konfigurationen af Linux.</translation>
 <translation id="4206144641569145248">Rumvæsen</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
@@ -4210,6 +4208,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4220157655212610908">Brug en ekstern sikkerhedsnøgle</translation>
 <translation id="4220648711404560261">Der opstod en fejl under aktiveringen.</translation>
 <translation id="4222917615373664617">Prisovervågning er aktiveret. Prisen er <ph name="CURRENT_PRICE" />.</translation>
+<translation id="4223404254440398437">Adgang til mikrofon er ikke tilladt</translation>
 <translation id="4223845867739585293">Opret en adgangsnøgle</translation>
 <translation id="4225397296022057997">På alle websites</translation>
 <translation id="4228071595943929139">Brug din organisations mailadresse</translation>
@@ -4994,7 +4993,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4846628405149428620">Vælg, hvor dette website kan gemme ændringer</translation>
 <translation id="4846680374085650406">Du følger administratorens anbefaling for denne indstilling.</translation>
-<translation id="4847739924804456327"><ph name="RECIPIENT_NAME" /> kan nu bruge dit brugernavn og din adgangskode, når vedkommende bruger Google Adgangskodeadministrator. Bed vedkommende om at gå til <ph name="WEBSITE" /> for at logge ind. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4848191975108266266">Google Assistent-funktionen "Hey Google"</translation>
 <translation id="4849286518551984791">UTC/GMT (Coordinated Universal Time)</translation>
 <translation id="4849517651082200438">Installer ikke</translation>
@@ -5372,6 +5370,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5145876360421795017">Tilmeld ikke enheden</translation>
 <translation id="5146235736676876345">Vælg din egen</translation>
 <translation id="5146896637028965135">Systemstemme</translation>
+<translation id="5147097165869384760">Leder du efter OS-systemsiden? Gå til <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147516217412920887">Følg vejledningen på din telefon for at verificere koden</translation>
 <translation id="5147992672778369947">Brug anbefalet adgangskode</translation>
 <translation id="5148277445782867161">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds lokation.</translation>
@@ -6048,6 +6047,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5691581861107245578">Få emojiforslag baseret på det, du skriver</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
 <translation id="5692183275898619210">Udskrivning er gennemført</translation>
+<translation id="5693255400847650006">Mikrofonen er i brug</translation>
 <translation id="5695184138696833495">Adb til Android-apps i Linux</translation>
 <translation id="5696143504434933566">Rapportér misbrug fra "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">Aktuel PPD-fil er i brug: <ph name="PPD_NAME" /></translation>
@@ -6473,7 +6473,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />Googles lokationstjeneste anvender kilder som f.eks. Wi‑Fi, mobilnetværk og sensorer til at fastslå enhedens placering.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan slå Placering fra ved at deaktivere den overordnede lokationsindstilling på enheden. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i lokationsindstillingerne.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6041155700700864984">Luk fuld skærm</translation>
 <translation id="6042308850641462728">Mere</translation>
 <translation id="604388835206766544">Konfigurationen kunne ikke parses</translation>
 <translation id="6043994281159824495">Log ud nu</translation>
@@ -6569,7 +6568,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6108952804512516814">Opret ved hjælp af AI</translation>
 <translation id="6111718295497931251">Fjern adgangen til Google Drev</translation>
 <translation id="6111972606040028426">Aktivér Google Assistent</translation>
-<translation id="6112294629795967147">Tryk for at vælge en anden størrelse</translation>
 <translation id="6112727384379533756">Tilføj en billet</translation>
 <translation id="6112931163620622315">Tjek din telefon</translation>
 <translation id="6113434369102685411">Angiv din standardsøgemaskine for Chrome-browseren og applisten på din <ph name="DEVICE_TYPE" /></translation>
@@ -6834,7 +6832,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6311220991371174222">Chrome kan ikke startes, da der gik noget galt ved åbningen af din profil. Prøv at genstarte Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Sikkerhedstjekket blev udført for 1 dag siden}one{Sikkerhedstjekket blev udført for {NUM_DAYS} dag siden}other{Sikkerhedstjekket blev udført for {NUM_DAYS} dage siden}}</translation>
 <translation id="6312638141433622592">Tilbyd at vise artikler i Læser-tilstand, når dette understøttes</translation>
-<translation id="6313641880021325787">LUK VR</translation>
 <translation id="6313950457058510656">Deaktiver Automatisk netdeling</translation>
 <translation id="6314819609899340042">Du har aktiveret fejlretningsfunktioner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed.</translation>
 <translation id="6315170314923504164">Stemme</translation>
@@ -7178,7 +7175,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6596916244504302242">Genindlæs denne side for at anvende dine opdaterede indstillinger for udvidelser på dette website</translation>
 <translation id="6597017209724497268">Prøver</translation>
-<translation id="6597324406048772521">Udvidelser er ikke tilladt på dette website</translation>
 <translation id="6597331566371766302">Følgende udvidelser er blevet blokeret af din administrator:</translation>
 <translation id="659894938503552850">nyeste</translation>
 <translation id="6599934330666882772">Dette website anvender dine MIDI-enheder.</translation>
@@ -7540,7 +7536,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="686609795364435700">Stille</translation>
 <translation id="686664946474413495">Farvetemperatur</translation>
 <translation id="6867086642466184030">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og <ph name="NUMBER_OF_OTHER_APPS" /> andre apps ikke kan åbne understøttede links.</translation>
-<translation id="6867400383614725881">Ny inkognitofane</translation>
 <translation id="686831807558000905">Log ikke ind</translation>
 <translation id="686839242150793617">Har tilladelse til automatisk at åbne integreret billede</translation>
 <translation id="6868934826811377550">Se oplysninger</translation>
@@ -7584,7 +7579,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6903590427234129279">Åbn alle (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6903916726032521638">Søg efter <ph name="QUERY_CLUSTER_NAME" /></translation>
-<translation id="6904655473976120856">Tryk på knappen App for at afslutte</translation>
 <translation id="6909422577741440844">Vil du modtage fra denne enhed?</translation>
 <translation id="6910190732484284349">Slet adgangsnøglen til brugernavnet: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">Slettet</translation>
@@ -7604,7 +7598,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6922128026973287222">Spar på dataforbruget, og få en hurtigere browseroplevelse med Googles datasparefunktion. Klik for at få flere oplysninger.</translation>
 <translation id="6922745772873733498">Angiv en pinkode for at udskrive</translation>
 <translation id="6922763095098248079">Din enhed administreres af din organisation. Administratorer kan få adgang til dataene på enhver profil på denne enhed.</translation>
-<translation id="6923132443355966645">Rul/klik</translation>
 <translation id="6923633482430812883">Delingen kunne ikke anvendes. Tjek, at den filserver, du opretter forbindelse til, understøtter SMBv2 eller nyere.</translation>
 <translation id="6925127338315966709">Du er ved at føje en administreret profil til denne browser. Din administrator har kontrol over profilen og har adgang til dens data. Bogmærker, historik, adgangskoder og andre indstillinger kan synkroniseres med din konto og administreres af din administrator.</translation>
 <translation id="6928650056523249512">Fjern automatisk tilladelser fra websites, du ikke bruger</translation>
@@ -7810,7 +7803,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="708060913198414444">K&amp;opiér webadressen til lyden</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> styres af din administrator</translation>
 <translation id="7083774521940805477">Steam til Chromebook (beta) er ikke tilgængeligt på din Chromebook.</translation>
-<translation id="7085389578340536476">Vil du tillade, at Chrome optager lyd?</translation>
 <translation id="708550780726587276">(ikke konfigureret)</translation>
 <translation id="7086672505018440886">Medtag Chrome-logfiler i arkivet.</translation>
 <translation id="7088434364990739311">Der kunne ikke søges efter opdateringer (fejlkode <ph name="ERROR" />).</translation>
@@ -7872,6 +7864,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7137771508221868414">Denne handling sletter <ph name="TOTAL_USAGE" /> data, der er gemt af websites og installerede apps</translation>
 <translation id="7138678301420049075">Andet</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> bruger din mikrofon</translation>
+<translation id="7140785920919278717">Installationsprogram til app</translation>
 <translation id="7141105143012495934">Login mislykkedes, da dine kontooplysninger ikke kunne hentes. Kontakt din administrator, eller prøv igen.</translation>
 <translation id="7141844554192012199">Adgangskodetjek</translation>
 <translation id="714301620504747562">Browsing og søgning er hurtigere end standardforudindlæsning</translation>
@@ -8420,7 +8413,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7571643774869182231">Der er ikke nok lagerplads til opdateringen</translation>
 <translation id="7573172247376861652">Batteriopladning</translation>
 <translation id="7573594921350120855">Websites bruger normalt dit videokamera til kommunikationsformål såsom videochat</translation>
-<translation id="7574650250151586813">Hvis du vil indtaste tekst, skal du opdatere appen Daydream-tastatur</translation>
 <translation id="7575272930307342804">Styringselementer til navigation</translation>
 <translation id="7576690715254076113">Saml</translation>
 <translation id="7576976045740938453">Der opstod et problem med kontoen i demotilstand.</translation>
@@ -9095,7 +9087,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata kan være alle former for data, som en app har gemt (baseret på udviklerens indstillinger), f.eks. kontakter, beskeder og billeder.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Sikkerhedskopierede data tæller ikke med i din kvote for Drev-lagerplads.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan deaktivere denne tjeneste i Indstillinger.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Faner</translation>
 <translation id="8076835018653442223">Din administrator har deaktiveret adgangen til lokale filer på din enhed</translation>
 <translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
@@ -10652,7 +10643,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="980731642137034229">Knappen Handlingsmenu</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Luk alle faner</translation>
-<translation id="983511809958454316">Denne funktion understøttes ikke i VR</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kamera- og mikrofonoptagelse</translation>
 <translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="984705303330760860">Tilføj sprog for stavekontrollen</translation>

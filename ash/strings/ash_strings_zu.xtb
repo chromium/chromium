@@ -1133,6 +1133,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="5537725057119320332">Sakaza</translation>
 <translation id="5546397813406633847">Thola umsebenzisi</translation>
 <translation id="554893713779400387">Guqula ukuthola</translation>
+<translation id="5550417424894892620">Yehlisa amafayela kudeskithophu ukuze uwengeze ku-<ph name="HOLDING_SPACE_TITLE" />. Awukwazi ukwengeza amafayili kudeskithophu.</translation>
 <translation id="5551456515017410630">Vula/vala ikhalenda</translation>
 <translation id="5551974246223970793">Uma usesha ikhasi, yiya kokufanayo okulandelayo ukuze useshe</translation>
 <translation id="5555639311269196631">Vala i-hotspot</translation>
@@ -1505,6 +1506,7 @@ Ukufaka okusha</translation>
 <translation id="7025533177575372252">Xhuma i-<ph name="DEVICE_NAME" /> yakho nefoni yakho</translation>
 <translation id="7026338066939101231">Ukwehlisa</translation>
 <translation id="7029814467594812963">Phuma kuseshini</translation>
+<translation id="7031303610220416229">Bona yonke imisebenzi ku-Google Tasks</translation>
 <translation id="7032161822340700104">Kuvumeleke izifanekiso eziyisi-6 kuphela. Susa isifanekiso ukuze ulondoloze esisha.</translation>
 <translation id="7034025838182392395">I-<ph name="APP_NAME" /> ifuna ukusebenzisa i-<ph name="DEVICE_NAME" />. Vula iswishi ye-<ph name="DEVICE_NAME" /> yangempela yedivayisi yakho.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Umsizi we-Google</translation>
@@ -1817,6 +1819,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8351131234907093545">Dala inothi</translation>
 <translation id="8367948981300340152">I-<ph name="CAPTURE_MEDIUM" /> iyasebenziswa.</translation>
 <translation id="8369166482916924789">Itafula elilondoloziwe, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Sesha okuthi <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Phambili ngohlamvu</translation>
 <translation id="8371991222807690464">Ukusebenza komngcele kungakhawulelwa Kumodi Yesivakashi</translation>
 <translation id="8374601332003098278">Cindezela u-enter ukuze urekhode ingxenye yesikrini</translation>
@@ -1872,6 +1875,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Hlunga ama-app wakho ngegama noma ngombala</translation>
 <translation id="8609384513243082612">Vula ithebhu entsha</translation>
+<translation id="8612216344243590325">Gcina amafayili abalulekile kokuthi <ph name="HOLDING_SPACE_TITLE" /> esikhundleni sedeskithophu. Vele uhudule amafayili uwayise kokuthi <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Izaziso ze-<ph name="APP_1_TITLE" /> ne-<ph name="APP_2_TITLE" /> zifihliwe ngoba isivikelo sokubuka sivuliwe</translation>
 <translation id="8619138598101195078">Yehlisa ivolumu</translation>
 <translation id="8627191004499078455">Xhuma ku-<ph name="DEVICE_NAME" /></translation>

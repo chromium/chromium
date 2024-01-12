@@ -1133,6 +1133,7 @@
 <translation id="5537725057119320332">전송</translation>
 <translation id="5546397813406633847">사용자 복구</translation>
 <translation id="554893713779400387">음성기록 전환</translation>
+<translation id="5550417424894892620">파일을 바탕화면에 드롭하여 <ph name="HOLDING_SPACE_TITLE" />에 추가세요. 바탕화면에는 파일을 추가할 수 없습니다.</translation>
 <translation id="5551456515017410630">캘린더 열기/닫기</translation>
 <translation id="5551974246223970793">페이지를 검색할 때 다음 일치 항목으로 이동</translation>
 <translation id="5555639311269196631">핫스팟 사용 중지</translation>
@@ -1874,6 +1875,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">이름 또는 색상별로 앱 정렬</translation>
 <translation id="8609384513243082612">새 탭 열기</translation>
+<translation id="8612216344243590325">중요한 파일은 바탕화면이 아닌 <ph name="HOLDING_SPACE_TITLE" />에 보관하세요. 파일을 <ph name="HOLDING_SPACE_TITLE" />(으)로 드래그하기만 하면 됩니다.</translation>
 <translation id="8614517853887502247">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" /> 및 <ph name="APP_2_TITLE" /> 알림이 숨겨집니다.</translation>
 <translation id="8619138598101195078">볼륨 낮추기</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />에 연결됨</translation>

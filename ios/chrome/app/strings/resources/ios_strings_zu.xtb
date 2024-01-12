@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Isikhethi seyunithi</translation>
 <translation id="2348630484974447747">Iphakheji</translation>
 <translation id="2351097562818989364">Izilungiselelo zakho zokuhumusha zisethwe kabusha.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Ungalondoloza iphasiwedi yakho ye-{DOMAIN_ONE} ku-Google Account yakho, {EMAIL}.}=2{Ungalondoloza amaphasiwedi akho we-{DOMAIN_ONE} nawe-{DOMAIN_TWO} ku-Google Account yakho, {EMAIL}.}=3{Ungalondoloza amaphasiwedi akho we-{DOMAIN_ONE}, we-{DOMAIN_TWO}, nawokunye okungu-{OTHER_DOMAINS_COUNT} ku-Google Account yakho, {EMAIL}.}one{Ungalondoloza amaphasiwedi akho we-{DOMAIN_ONE}, we-{DOMAIN_TWO}, nawokunye okungu-{OTHER_DOMAINS_COUNT} ku-Google Account yakho, {EMAIL}.}other{Ungalondoloza amaphasiwedi akho we-{DOMAIN_ONE}, we-{DOMAIN_TWO}, nawokunye okungu-{OTHER_DOMAINS_COUNT} ku-Google Account yakho, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Inqubomgomo yobumfihlo ye-Google</translation>
 <translation id="2359043044084662842">Humusha</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
@@ -335,6 +336,7 @@ Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula u
 <translation id="2747003861858887689">Inkambu edlule</translation>
 <translation id="2749231692441336879">Ukulandela <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Ama-akhawunti kule Divayisi</translation>
+<translation id="2755595981383829244">Manje usuzothola izaziso zokuqukethwe</translation>
 <translation id="2762000892062317888">khona manje</translation>
 <translation id="2772667768515195373">Ungasebenzisa amakheli alondoloziwe kuyo yonke imikhiqizo ye-Google. Leli kheli lilondolozwe ku-Google Account yakho, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Usesho lwe-Incognito</translation>
@@ -688,6 +690,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4689564913179979534">Phatha izindlela zokukhokha...</translation>
 <translation id="469300482518076788">Vala Ithebhu</translation>
 <translation id="4697071790493980729">Ayikho imiphumela etholiwe</translation>
+<translation id="470337593714520080">{count,plural, =1{Londoloza Ibhukhimakhi engu-1 ku-Google Account Yakho}one{Londoloza Amabhukhimakhi angu-{count} ku-Google Account Yakho}other{Londoloza Amabhukhimakhi angu-{count} ku-Google Account Yakho}}</translation>
 <translation id="470966556546083668">Ungakuvuli Ukuvumelanisa</translation>
 <translation id="4711809265250406889">Lapho Kuvuliwe</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, nokungu-1 ngaphezulu}one{{website_1}, {website_2}, nokungu-{more_count} ngaphezulu}other{{website_1}, {website_2}, nokungu-{more_count} ngaphezulu}}</translation>
@@ -986,6 +989,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6255097610484507482">Hlela ikhadi lesikweletu</translation>
 <translation id="6266039999629596120">Kudinga ukunakwa</translation>
 <translation id="6277426346321820595">Akukho Ukuvikelwa</translation>
+<translation id="628251768213143684">Ungakumenenja noma nini okulondolozwe ku-Google Account yakho</translation>
 <translation id="6284652193729350524">Nikeza ukuhumusha isi-<ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Uyeke ukulandela i-<ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Ukuze uvule Ukuphequlula Ngokuphepha, vula <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" /> bese uthepha okuthi Ukuphequlula ngokuphepha.</translation>

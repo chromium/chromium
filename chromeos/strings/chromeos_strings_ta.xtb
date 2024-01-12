@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
+<translation id="4310735698903592804">சமீபத்தில் Google AI உருவாக்கிய வால்பேப்பர்கள்</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்பட்டது</translation>
 <translation id="4354430579665871434">பட்டன்</translation>
 <translation id="4361257691546579041">இது ஓர் இயல்பு வகை APN.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
 <translation id="5931523347251946569">ஃபைல் இல்லை</translation>
+<translation id="593880865674747800">இதே ஸ்டைலில் மேலும் உருவாக்கு</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="594552776027197022">ரேண்டம் குறியீட்டு இணையை உருவாக்கு</translation>
 <translation id="5946538341867151940">நீங்கள் இன்னும் இணைக்கப்படவில்லை. உங்கள் மொபைல் நிறுவனம் பிரத்தியேக APNனைப் பரிந்துரைத்தால் "+ புதிய APN" என்பதைத் தேர்ந்தெடுத்து APN தகவல்களை டைப் செய்யவும்</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7841134249932030522">டார்க் பயன்முறையை இயக்குதல்</translation>
 <translation id="7846634333498149051">கீபோர்டு</translation>
+<translation id="7850847810298646851">Google AI உருவாக்கிய வால்பேப்பர்</translation>
 <translation id="7856267634822906833">புளூடூத் டச்ஸ்கிரீன்</translation>
 <translation id="7869143217755017858">டார்க் பயன்முறையை முடக்குதல்</translation>
 <translation id="7881066108824108340">DNS</translation>

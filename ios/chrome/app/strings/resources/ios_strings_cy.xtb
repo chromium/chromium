@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Dewisydd uned</translation>
 <translation id="2348630484974447747">Pecyn</translation>
 <translation id="2351097562818989364">Mae eich gosodiadau cyfieithu wedi'u hailosod.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Gallwch gadw eich cyfrinair ar gyfer {DOMAIN_ONE} yn eich Cyfrif Google, {EMAIL}.}=2{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE} a {DOMAIN_TWO} yn eich Cyfrif Google, {EMAIL}.}=3{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}zero{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}many{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}other{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}}</translation>
 <translation id="235789365079050412">Polisi Preifatrwydd Google</translation>
 <translation id="2359043044084662842">Cyfieithu</translation>
 <translation id="2359808026110333948">Parhau</translation>
@@ -689,6 +690,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4689564913179979534">Rheoli dulliau talu...</translation>
 <translation id="469300482518076788">Cau'r Tab</translation>
 <translation id="4697071790493980729">Ni Chanfuwyd Unrhyw Ganlyniadau</translation>
+<translation id="470337593714520080">{count,plural, =1{Cadw 1 Nod Tudalen yn eich Cyfrif Google}zero{Cadw {count} Nod Tudalen yn eich Cyfrif Google}two{Cadw {count} Nod Tudalen yn eich Cyfrif Google}few{Cadw {count} Nod Tudalen yn eich Cyfrif Google}many{Cadw {count} Nod Tudalen yn eich Cyfrif Google}other{Cadw {count} Nod Tudalen yn eich Cyfrif Google}}</translation>
 <translation id="470966556546083668">Peidio â Throi Cysoni Ymlaen</translation>
 <translation id="4711809265250406889">Pan Fydd Ymlaen</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, ac 1 arall}zero{{website_1}, {website_2}, a {more_count} arall}many{{website_1}, {website_2}, a {more_count} arall}other{{website_1}, {website_2}, a {more_count} arall}}</translation>

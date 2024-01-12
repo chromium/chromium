@@ -24,6 +24,7 @@
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, વિગતો</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> કૉપિ કરી રહ્યું છે...</translation>
 <translation id="1178581264944972037">થોભો</translation>
+<translation id="1190144681599273207">આ ફાઇલને આનયન કરવું લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> દ્વારા ફાઇલ ઍક્સેસ</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1209796539517632982">સ્વયંચાલિત નામ સર્વર્સ</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> સાથે શેર કરો</translation>
 <translation id="1773212559869067373">પ્રમાણીકરણ પ્રમાણપત્રને સ્થાનિક રૂપે નકારવામાં આવ્યું છે</translation>
 <translation id="1775381402323441512">વીડિયોની માહિતી</translation>
+<translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોવું જરૂરી છે.</translation>
 <translation id="1807938677607439181">બધી ફાઇલો</translation>
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
 <translation id="1812302367230252929">એમ્હારિક લિપ્યંતર</translation>
@@ -159,6 +161,8 @@
 <translation id="2282155092769082568">સ્વતઃગોઠવણી URL:</translation>
 <translation id="2284767815536050991">કાઢી નાખી શકાય તેવો સ્ટોરેજ</translation>
 <translation id="2288278176040912387">રેકોર્ડ પ્લેયર</translation>
+<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખુલી રહી છે.</translation>
+<translation id="2303301624314357662"><ph name="FILE_NAME" /> ફાઇલ ખુલી રહી છે.</translation>
 <translation id="2304820083631266885">ગ્રહ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> બહાર કાઢવામાં આવ્યું છે.</translation>
 <translation id="2307462900900812319">નેટવર્ક ગોઠવો</translation>
@@ -168,6 +172,7 @@
 <translation id="233822363739146957">તમારી તમામ ફાઇલો સિંક કરવા માટે પર્યાપ્ત સ્ટોરેજ સ્પેસ નથી</translation>
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="2377319039870049694">સૂચિ દૃશ્ય પર સ્વિચ કરો</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર Linux સાથે શેર કર્યા</translation>
 <translation id="2379576081295865700">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યાં છીએ… 1 આઇટમ મળી</translation>
 <translation id="2383454254762599978">ટ્રેશમાં ખસેડો</translation>
 <translation id="2387458720915042159">પ્રૉક્સી કનેક્શનનો પ્રકાર</translation>
@@ -391,10 +396,12 @@
 <translation id="4197674956721858839">ઝિપ પસંદગી</translation>
 <translation id="4202378258276439759">સ્પેનિશ (લેટિન અમેરિકા)</translation>
 <translation id="4202977638116331303">જ્યોર્જિયન</translation>
+<translation id="421017592316736757">આ ફાઇલ એક્સેસ કરવા તમારું ઑનલાઇન હોું જરૂરી છે.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" નામનું ફોલ્ડર પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> માટે અપવાદ કાઢી નાખો</translation>
 <translation id="4261901459838235729">Google પ્રસ્તુતિ</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ફિલ્ટર ચાલુ છે.</translation>
+<translation id="4290535918735525311">Linux વડે શેર કરેલું 1 ફોલ્ડર</translation>
 <translation id="4299729908419173967">બ્રાઝિલિયન</translation>
 <translation id="4302605047395093221">આ ડિવાઇસનો ઉપયોગ કરનાર કોઈપણ વ્યક્તિએ આ મોબાઇલ નેટવર્કથી કનેક્ટ થવા માટે પિન દાખલ કરવો જરૂરી રહેશે</translation>
 <translation id="4303531889494116116">આ નેટવર્ક વ્યસ્ત છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
@@ -495,6 +502,8 @@
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />માંથી <ph name="NETWORK_COUNT" /> નેટવર્ક, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, વિગતો</translation>
 <translation id="4935975195727477204">સૂર્યમુખીનું ફૂલ</translation>
 <translation id="4943368462779413526">ફૂટબૉલ</translation>
+<translation id="4961158930123534723">Parallels ડેસ્કટૉપ સાથે 1 ફોલ્ડર શેર થયું</translation>
+<translation id="4965874878399872778">તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સામે ફાઇલો ચેક કરી રહ્યાં છીએ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> રિસ્ટોર કરી</translation>
 <translation id="4969785127455456148">આલ્બમ</translation>
 <translation id="4972330214479971536">ફાઇલ સિંકનું સેટઅપ પૂર્ણ કરી શકાયું નથી</translation>
@@ -556,6 +565,7 @@
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318819489018851358">Linux સાથે શેર કરો</translation>
 <translation id="5323213332664049067">લેટિન અમેરિકન</translation>
+<translation id="5330145655348521461">આ ફાઇલોને બીજા ડેસ્કટૉપ પર ખોલી હતી. એને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="5330512191124428349">માહિતી મેળવો</translation>
 <translation id="535792325654997756">બિલાડીઓ સાથે વ્યક્તિ</translation>
 <translation id="5358764674931277">ફ્રેમ રેટ</translation>
@@ -657,6 +667,7 @@
 <translation id="613750717151263950">જાપાનીઝ, યુએસ કીબોર્ડ સાથે</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, નેટવર્ક નથી</translation>
 <translation id="6146563240635539929">વીડિયો</translation>
+<translation id="6150853954427645995">આ ફાઇલને ઑફલાઇન ઉપયોગ માટે સાચવવા, પાછા ઓનલાઇન થાઓ, ફાઇલને રાઇટ-ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
 <translation id="6164412158936057769">પતંગિયાઓ</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6170470584681422115">સેન્ડવિચ</translation>
@@ -689,6 +700,7 @@
 <translation id="636254897931573416">ડોમેન સફિક્સના મૂલ્યનો અમાન્ય મેળ</translation>
 <translation id="6364301859968397756">સંસ્થાનો સ્ટોરેજ ભરાઈ ગયો છે</translation>
 <translation id="6367976544441405720">વેન</translation>
+<translation id="637062427944097960">આ ફાઇલને બીજા ડેસ્કટૉપ પર ખોલેલી. તેને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="6394388407447716302">ફક્ત વાંચવા માટે</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ખસેડી શકાયું નથી કારણ કે તે એન્ક્રિપ્ટેડ છે.</translation>
@@ -697,6 +709,7 @@
 <translation id="6430271654280079150">તમારો 1 પ્રયાસ બાકી છે.</translation>
 <translation id="643243556292470964">ડિલીટ કરેલી ફાઇલો હવે ટ્રેશમાં ખસેડવામાં આવી છે</translation>
 <translation id="6438480100790416671">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યું છે…</translation>
+<translation id="6451527188465304418">તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સામે ફાઇલ ચેક કરી રહ્યાં છીએ...</translation>
 <translation id="6485131920355264772">સ્થાન માહિતી પુનર્પ્રાપ્ત કરવામાં નિષ્ફળ</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ને <ph name="FOLDER_NAME" />માં એક્સટ્રેક્ટ કરી રહ્યાં છીએ</translation>
@@ -711,6 +724,7 @@
 <translation id="6588648400954570689">ફાઇલ સિંક કરવા માટેના સેટિંગ</translation>
 <translation id="6594855146910089723">Linux અને Parallels Desktop સાથે આ ફોલ્ડર શેર કરવામાં આવ્યું છે</translation>
 <translation id="6607272825297743757">ફાઇલ માહિતી</translation>
+<translation id="6609332149380188670">Parallels ડેસ્કટૉપ સાથે <ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર શેર થયા</translation>
 <translation id="6629518321609546825">ઓછામાં ઓછા 4 અંક દાખલ કરો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6650726141019353908">ગુલાબી પતંગિયું</translation>
@@ -875,6 +889,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
+<translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7853966320808728790">ફ્રેંચ BÉPO</translation>
 <translation id="7857117644404132472">અપવાદ ઉમેરો</translation>
@@ -923,6 +938,7 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive ફાઇલો સિંક કરી રહ્યાં છીએ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ઉપકરણ મૉડેલ</translation>
+<translation id="8223479393428528563">ઑફલાઇન ઉપયોગ કરવા માટે આ ફાઇલો સાચવવા, પાછા ઑફલાઇન થાઓ, ફાઇલો પર રાઇટ-ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
 <translation id="8241139360630443550">સ્ટોરેજ જુઓ</translation>
 <translation id="8249296373107784235">છોડો</translation>
 <translation id="8250690786522693009">લેટિન</translation>
@@ -949,6 +965,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" />ને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8372852072747894550">ગ્રીક</translation>
+<translation id="8377269993083688872">ઇમેઇલ લેઆઉટ</translation>
 <translation id="8386903983509584791">સ્કૅન પૂર્ણ થયું</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> મેળવી છે.</translation>
 <translation id="8395901698320285466">પરિમાણો</translation>

@@ -233,6 +233,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
 <translation id="2323763861024343754">Site storage</translation>
+<translation id="2327226657832576859">Automatically open PDFs?</translation>
 <translation id="2328985652426384049">Can’t sign in</translation>
 <translation id="2341410551640223969">Couldn’t install <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
@@ -638,6 +639,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4523326818319942067">last hour</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4532845899244822526">Choose folder</translation>
+<translation id="4541505619120536051">Always open</translation>
 <translation id="4543131175509360848">No passkeys sheet</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4554077758708533499">Connected with USB cable</translation>
@@ -829,6 +831,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5486841595534124508">Logo of privacy notice for Page Insights Hub which redirects to My Activity page.</translation>
 <translation id="5487521232677179737">Clear data</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
+<translation id="5509866835115085009">Chrome can automatically open a PDF when you download them.</translation>
 <translation id="5514904542973294328">Disabled by the administrator of this device</translation>
 <translation id="5515439363601853141">Unlock to view your password</translation>
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>

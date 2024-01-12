@@ -761,6 +761,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2469153820345007638">Redoslijedom 1 do N</translation>
 <translation id="24699311393038040">Papir (premaz)</translation>
 <translation id="2470767536994572628">Kad uredite napomene, dokument će se vratiti na prikaz pojedinačne stranice i izvorno usmjerenje</translation>
+<translation id="2479148705183875116">Otvori Postavke</translation>
 <translation id="2479410451996844060">Nevažeći URL pretraživanja.</translation>
 <translation id="2480300195898055381">Na vašem Google računu, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Obavijesti</translation>
@@ -830,12 +831,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2610561535971892504">Klik za kopiranje</translation>
 <translation id="2612993535136743634">Izbrisat će se svi sigurnosni kodovi spremljeni na vašem uređaju i na Google računu</translation>
 <translation id="2616412942031748191">Optimizacija za tražilice i marketing</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" /> sljedeće podatke:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />vašu povijest pregledavanja
-            <ph name="LIST_ITEM" />kolačiće i podatke web-lokacija
-            <ph name="LIST_ITEM" />podatke koje unesete u obrasce.
-          <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Umetni</translation>
 <translation id="2625385379895617796">Sat ide unaprijed</translation>
 <translation id="262745152991669301">Može tražiti dopuštenje za povezivanje s USB uređajima</translation>
@@ -1839,7 +1834,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4652440160515225514">Vaša organizacija blokirala je ovu web-lokaciju jer krši pravila.</translation>
 <translation id="4653167719759882810">Spajanja i akvizicije</translation>
 <translation id="4658638640878098064">Spajanje pri vrhu lijevo</translation>
-<translation id="4660119392514473465">Sad možete privatno pregledavati, a ostale osobe koje upotrebljavaju vaš uređaj neće vidjeti vašu aktivnost. Međutim, preuzimanja, oznake i stavke s popisa za čitanje spremit će se.</translation>
 <translation id="4660567771874403130">Energetske i komunalne usluge</translation>
 <translation id="4663373278480897665">Kamera je dopuštena</translation>
 <translation id="466561305373967878">Društvene igre</translation>
@@ -2587,7 +2581,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6160391204859821737">Uključite značajku zaštite privatnosti u online oglašavanju</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6167577165590485365">Posljednji pokušaj dohvaćanja:</translation>
-<translation id="6169916984152623906">Sada možete pregledavati privatno i ostali korisnici ovog uređaja neće vidjeti vaše aktivnosti. No spremit će se preuzimanja i oznake.</translation>
 <translation id="617256461084925519">Google Chrome pokušava potvrditi vaš identitet da bi mogao unijeti vaše podatke o plaćanju.</translation>
 <translation id="6176387967264100435">Ova je cijena visoka</translation>
 <translation id="6177128806592000436">Veza s web-lokacijom nije sigurna</translation>
@@ -2620,7 +2613,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6232271601416750929">Čista kozmetika</translation>
 <translation id="6234122620015464377">Obreži nakon svakog dokumenta</translation>
 <translation id="6236290670123303279">Upravljaj postavkama</translation>
-<translation id="623825323736974198">Upravljajte web-lokacijama koje će uvijek ostati aktivne i na kojima se neće osloboditi memorija</translation>
+<translation id="623825323736974198">Upravljajte web-lokacijama koje će uvijek ostati aktivne i koje se neće zatvarati radi oslobađanja memorije</translation>
 <translation id="6240447795304464094">Logotip Google Paya</translation>
 <translation id="6240964651812394252">Da biste upotrebljavali Google upravitelj zaporki sa svojim operativnim sustavom, ponovo pokrenite Chrome i dopustite pristup upravitelju zaporki računala. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="6241121617266208201">Sakrij prijedloge</translation>
@@ -3277,12 +3270,6 @@ Dodatne pojedinosti:
 <translation id="749865518782565832">Vodoinstalaterske usluge</translation>
 <translation id="7501663406926337752">Vaša organizacija označila je web-lokaciju koja slijedi</translation>
 <translation id="7501853161948120656">Obrazovni materijali</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" /> sljedeće podatke:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />vašu povijest pregledavanja
-            <ph name="LIST_ITEM" />kolačiće i podatke web-lokacija
-            <ph name="LIST_ITEM" />podatke koje unesete u obrasce.
-          <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Omotnica br. 9</translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja pravila prazan je ili ne odgovara trenutačnom ID-u uređaja</translation>
 <translation id="7508577201115425418">Usluge izrade dokumenata i ispisa</translation>
@@ -3464,6 +3451,7 @@ Dodatne pojedinosti:
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-znamenkasti sigurnosni kôd naveden na kartici <ph name="SIDE_OF_CARD" /> da bi vaša banka mogla potvrditi vaš identitet</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7805906048382884326">Zatvorite savjet</translation>
 <translation id="7810410097247356677">Da biste sljedeći put platili brže, spremite karticu i šifrirani sigurnosni kôd na uređaj</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite li s Chromea ukloniti prijedlog za obrasce?</translation>

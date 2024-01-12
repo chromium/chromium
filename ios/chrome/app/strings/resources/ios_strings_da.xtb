@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Enhedsvælger</translation>
 <translation id="2348630484974447747">Pakke</translation>
 <translation id="2351097562818989364">Dine oversættelsesindstillinger er nulstillet.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Du kan gemme din adgangskode til {DOMAIN_ONE} på din Google-konto, {EMAIL}.}=2{Du kan gemme dine adgangskoder til {DOMAIN_ONE} og {DOMAIN_TWO} på din Google-konto, {EMAIL}.}=3{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}one{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}other{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} andre på din Google-konto, {EMAIL}}}</translation>
 <translation id="235789365079050412">Googles privatlivspolitik</translation>
 <translation id="2359043044084662842">Oversæt</translation>
 <translation id="2359808026110333948">Fortsæt</translation>

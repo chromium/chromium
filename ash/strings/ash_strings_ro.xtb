@@ -1133,6 +1133,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5537725057119320332">Proiectează</translation>
 <translation id="5546397813406633847">Recuperează utilizatorul</translation>
 <translation id="554893713779400387">Activează/dezactivează dictarea</translation>
+<translation id="5550417424894892620">Plasează fișiere pe desktop pentru a le adăuga în <ph name="HOLDING_SPACE_TITLE" />. Nu poți adăuga fișiere pe desktop.</translation>
 <translation id="5551456515017410630">Deschide / închide calendarul</translation>
 <translation id="5551974246223970793">Când cauți o pagină, accesează următoarea potrivire pentru căutare</translation>
 <translation id="5555639311269196631">Dezactivează hotspotul</translation>
@@ -1874,6 +1875,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortează aplicațiile după nume sau culoare</translation>
 <translation id="8609384513243082612">Deschide o filă nouă</translation>
+<translation id="8612216344243590325">Păstrează fișierele importante în <ph name="HOLDING_SPACE_TITLE" /> în loc să le păstrezi pe desktop. Trage fișierele în <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Notificările pentru <ph name="APP_1_TITLE" /> și <ph name="APP_2_TITLE" /> sunt ascunse deoarece este activată protecția la afișare</translation>
 <translation id="8619138598101195078">Redu volumul</translation>
 <translation id="8627191004499078455">Conectat la <ph name="DEVICE_NAME" /></translation>

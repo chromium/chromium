@@ -1133,6 +1133,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Gebruiker herstellen</translation>
 <translation id="554893713779400387">Dicteren aan/uit</translation>
+<translation id="5550417424894892620">Zet bestanden op het bureaublad neer om ze toe te voegen aan <ph name="HOLDING_SPACE_TITLE" />. Je kunt geen bestanden toevoegen aan het bureaublad.</translation>
 <translation id="5551456515017410630">Agenda openen/sluiten</translation>
 <translation id="5551974246223970793">Naar de volgende overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
 <translation id="5555639311269196631">Hotspot uitzetten</translation>
@@ -1874,6 +1875,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Je apps sorteren op naam of kleur</translation>
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
+<translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="8619138598101195078">Volume lager zetten</translation>
 <translation id="8627191004499078455">Verbonden met <ph name="DEVICE_NAME" /></translation>

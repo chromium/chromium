@@ -63,6 +63,9 @@
 <translation id="2730884209570016437">Chromium kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="2784449251446768092">Hantera inställningar för Chromium</translation>
 <translation id="2798503587425057129">Öppnar läslistan i Chromium.</translation>
+<translation id="28276745681323897">Du kan <ph name="BEGIN_LINK" />styra vilken Chromium-data som sparas<ph name="END_LINK" /> i Google-kontot.
+
+Du hittar fler inställningar som använder data för att förbättra Chromium-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="2843571538056574338">Använd Chromium för autofyll</translation>
 <translation id="2918709798697875261">Organisationen kräver att du inte loggar in i Chromium.</translation>
 <translation id="2942241131342758843">Använd Chromium som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>

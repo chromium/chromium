@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">單位選取器</translation>
 <translation id="2348630484974447747">包裹</translation>
 <translation id="2351097562818989364">您的翻譯設定已重設。</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{你可以將 {DOMAIN_ONE} 的密碼儲存到 Google 帳戶 ({EMAIL})。}=2{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼儲存到 Google 帳戶 ({EMAIL})。}=3{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})。}other{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})。}}</translation>
 <translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2359043044084662842">翻譯</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -988,6 +989,7 @@
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6266039999629596120">需要處理</translation>
 <translation id="6277426346321820595">無防護</translation>
+<translation id="628251768213143684">你隨時可以管理儲存在 Google 帳戶中的內容</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6289501276895392862">已取消追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>

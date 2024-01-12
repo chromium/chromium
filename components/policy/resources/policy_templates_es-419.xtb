@@ -532,6 +532,7 @@ Si inhabilitas la política, la página con el encabezado <ph name="CACHE_CONTRO
 <translation id="143649776386947790">Usar el comportamiento predeterminado</translation>
 <translation id="1438739959477268107">Configuración predeterminada de generación de claves</translation>
 <translation id="1440408958042020947">Permitir el acceso de los usuarios que habilitaron Phone Hub a las fotos y los videos tomados recientemente del teléfono</translation>
+<translation id="1443532790824582949">Habilitar el teclado virtual táctil</translation>
 <translation id="1449083855104537880">Si estableces el valor "True" para la política, se mostrarán las opciones de accesibilidad en el menú de la bandeja del sistema. Si estableces el valor "False", no se mostrarán las opciones en el menú.
 
       Si configuras la política, los usuarios no podrán cambiarla. Si no la configuras, no se mostrarán las opciones de accesibilidad en el menú, pero los usuarios podrán hacerlas aparecer mediante la página Configuración.
@@ -1190,6 +1191,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1954612656043024615">Habilitar la función de portapapeles compartido</translation>
 <translation id="1955063069502242812">Habilitar el sonido de batería baja</translation>
 <translation id="1955806069704957172">Controla la configuración para la API de Desk connector.</translation>
+<translation id="1957093168333856467">Inhabilitar el teclado virtual de accesibilidad</translation>
 <translation id="1960059835237529462">Permitir que se muestre la promoción para calificar en la App Store de <ph name="IOS_NAME" /></translation>
 <translation id="1960416154405676350">Habilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1961091374249454164">La política solo se aplica a sesiones de invitado administradas.
@@ -1292,6 +1294,7 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="2029985289397958781">Inhabilitar la búsqueda asistida por cámara mediante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuarios empresariales</translation>
 <translation id="2030905906517501646">Palabra clave del proveedor de búsqueda predeterminado</translation>
 <translation id="203096360153626918">Esta política no tiene efecto en las apps de Android. Podrán implementar el modo de pantalla completa, incluso si esta política se establece como <ph name="FALSE" />.</translation>
+<translation id="2031074619942406753">Inhabilitar el teclado virtual táctil</translation>
 <translation id="2032848225007871645">Si estableces la política, se controla qué modos de desbloqueo rápido pueden desbloquear la pantalla de bloqueo.
 
       Para permitir lo siguiente:
@@ -2448,6 +2451,7 @@ comportamiento de las teclas de función, y los usuarios no podrán cambiar esta
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">El menú contextual tendrá un elemento de menú para compartir imágenes con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Si habilitas la política, las aplicaciones web de terceros podrán usar <ph name="DESK_API_NAME" /> para guardar y compartir escritorios de <ph name="PRODUCT_OS_NAME" />. Si la inhabilitas, el usuario no podrá guardar ni compartir datos del escritorio mediante la <ph name="DESK_API_NAME" />. Si no la estableces, el comportamiento será el mismo que cuando la inhabilitas. La política solo tendrá efecto en los dispositivos inscritos.</translation>
+<translation id="2976033779241323433">Habilitar el teclado virtual táctil según la heurística predeterminada del sistema</translation>
 <translation id="2976429807269247880">Configuración del comportamiento de las cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredadas</translation>
 <translation id="2979696534869541158">Forzar la implementación anterior</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
@@ -2554,6 +2558,7 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
       Si la inhabilitas, se desactivarán los controles multimedia en la pantalla de bloqueo.</translation>
 <translation id="3072847235228302527">Establecer las Condiciones del Servicio para la cuenta local del dispositivo</translation>
 <translation id="3074032542020543133">Canal de LTS</translation>
+<translation id="3074886258920642791">Habilitar el teclado virtual de accesibilidad en la pantalla de acceso</translation>
 <translation id="3077650998740742747">
 Comportamiento predeterminado (política no establecida)
 Cuando se agrega una cuenta en el área de contenido, puede aparecer un pequeño diálogo que le solicita al usuario crear un perfil nuevo. Este diálogo se puede descartar.
@@ -3000,9 +3005,6 @@ Si no estableces la política, se impedirá la navegación en el navegador cuand
 <translation id="3417418267404583991">Si esta política no se configura o se establece en "true", <ph name="PRODUCT_OS_NAME" /> permitirá iniciar sesión como invitado. Los inicios de sesión como invitado son sesiones de usuario anónimas y no requieren contraseña.
 
       Si esta política se establece en "false", <ph name="PRODUCT_OS_NAME" /> no permitirá el inicio de sesiones de invitados.</translation>
-<translation id="3420141485959154417">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda utilizado para la búsqueda de imágenes. (Si estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, las solicitudes de búsqueda de imágenes utilizarán el método POST en su lugar).
-
-      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" />, no se utilizarán métodos de búsqueda de imágenes.</translation>
 <translation id="3423703250826790403">Aplicaciones para Android</translation>
 <translation id="3426434797050451264">Esta política también se puede usar para especificar apps para Android como controladores de archivos estándar.</translation>
 <translation id="3428247105888806363">Habilitar la predicción de red</translation>
@@ -3913,6 +3915,7 @@ Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (1), se inhabi
 
       Si se establece esta política desde un origen de nube, no podrá orientarse a un usuario específico.</translation>
 <translation id="416817811987180750">Habilitar la función de lista de compras para los usuarios</translation>
+<translation id="4168880975307014079">Habilitar el teclado virtual táctil</translation>
 <translation id="4169094969938998854">No permitir el bloqueo de la pantalla</translation>
 <translation id="4169692397912242417">Habilita la función de accesibilidad de comentarios por voz en la pantalla de acceso.
 
@@ -4940,6 +4943,7 @@ Esta política solo será válida si la máquina está inscrita en <ph name="CLO
       Nota: También se pueden agregar elementos a esta lista a través de la política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5067143124345820993">Lista de usuarios con permiso para iniciar sesión</translation>
+<translation id="50689955292091946">Habilitar el teclado virtual de accesibilidad en la pantalla de acceso</translation>
 <translation id="5069522005630249098">Esta configuración determina cuántos datos del usuario se conservan después de inhabilitar <ph name="LACROS_NAME" />.
 
       Si estableces la política como <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> o no la estableces, no se llevará a cabo la migración de datos inversa.
@@ -5145,12 +5149,6 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
 
       Si no estableces la opción o el valor ingresado no es válido, el comportamiento será el mismo que la opción "Espera a que el canal objetivo complete el cambio a la versión inferior del canal".</translation>
 <translation id="5229339291699779956">Habilitar la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4 (los dispositivos periféricos funcionarán con todas sus capacidades)</translation>
-<translation id="5233239004553860036">Si estableces esta política con el valor <ph name="POLICY_VALUE_ALL" /> o no la estableces, se permitirán todos los usos de cuentas administradas. De esta manera, es posible que una cuenta administrada se utilice como secundaria, por lo que solo recibiría políticas si se accede a esta como cuenta principal en un perfil de navegador.
-      Las políticas establecidas para la cuenta no se aplicarán de manera forzosa en los siguientes casos:
-        -  Si es una cuenta secundaria a nivel de SO (Configuración de la cuenta)
-        -  Si es una cuenta secundaria en un perfil de navegador
-
-      Si estableces esta política con el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> en una cuenta, se le permitirá acceder solo como cuenta principal. Esta no podrá acceder como cuenta secundaria.</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
 <translation id="5235607513961923779">Informa el estado de la actividad del dispositivo en los dispositivos inscriptos para los usuarios afiliados.
 
@@ -5284,6 +5282,7 @@ Si inhabilitas la política, no podrán borrarse los historiales de navegación 
 <translation id="5331746669335642668">La política de nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
 <translation id="5334501839642146593">No enviar nunca métricas a Google</translation>
 <translation id="5335910979215357815">Habilitar la API de Save and Share para el control de terceros de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5339096331970464266">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5340008866815063393">Habilitar la generación de informes con los datos sobre la política</translation>
 <translation id="5345910753471481870">No mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="5346587320074666194">Bloquea el acceso a los sensores en estos sitios</translation>
@@ -5456,6 +5455,7 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="5475361623548884387">Habilitar la impresión</translation>
 <translation id="547601067149622666">No permitir anuncios en sitios con anuncios intrusivos</translation>
 <translation id="5476152378885134514">Bloquear el portapapeles en estos sitios</translation>
+<translation id="5479841110985196412">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5480380613778757009">Si inhabilitas o no estableces esta política, apenas finalice la sesión, se restablecerán todas las opciones de configuración de pantalla que se hayan establecido en la sesión de invitado administrada. Si estableces esta política como verdadera, se conservarán las propiedades de pantalla después de salir de la sesión de invitado administrada.</translation>
 <translation id="5483012943408894695">Los orígenes o patrones de nombres de host para los cuales no deben aplicarse restricciones en los orígenes no seguros</translation>
 <translation id="5483065054530244863">Permitir los certificados firmados con SHA-1 y emitidos por los anclajes de confianza locales</translation>
@@ -6343,6 +6343,17 @@ Nota: Por el momento, solo se tendrá en cuenta la primera entrada. Las extensio
       Si no se establece esta política, se utilizará la configuración predeterminada para la zona de pruebas de audio, que puede diferir según la plataforma.
       Esta política permite que las empresas inhabiliten la zona de pruebas de audio si utilizan configuraciones de software de seguridad que interfieran con la zona de pruebas.</translation>
 <translation id="624818583115864448">puerto 554 (puede desbloquearse hasta el 15/10/2021)</translation>
+<translation id="6249912382559535329">Habilita la función de accesibilidad de teclado virtual en la pantalla de acceso.
+
+          Si se establece esta política como verdadera, el teclado virtual de accesibilidad estará siempre habilitado en la pantalla de acceso.
+
+          Si se establece como falsa, el teclado virtual de accesibilidad estará siempre inhabilitado en la pantalla de acceso.
+
+          Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
+
+          Si no la estableces, se inhabilitará el teclado virtual de accesibilidad en la pantalla de acceso en un principio, pero el usuario podrá habilitarlo en cualquier momento a través de la configuración de accesibilidad.
+
+          Esta política no afecta la habilitación del teclado virtual táctil. Por ejemplo, el teclado virtual táctil se seguirá mostrando en una tablet incluso si esta política se establece como falsa.</translation>
 <translation id="6254498834449523938">No permitir que el usuario omita la advertencia de Navegación segura</translation>
 <translation id="625580680776945310">Se habilitará el modo de alta eficiencia</translation>
 <translation id="6258658183356534534">Controlar la función de actualización de GREASE de optimización del cliente de usuario-cliente</translation>
@@ -6607,6 +6618,16 @@ en la pantalla de <ph name="LOG_IN" />.</translation>
       no administradas.</translation>
 <translation id="6401669939808766804">Salir de la cuenta de usuario</translation>
 <translation id="640244877779556713">Habilita la sugerencia de emojis</translation>
+<translation id="6403114173011456561">Complementa la política <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> para controlar el teclado virtual táctil.
+
+      Si el teclado virtual de accesibilidad está activado, esta política no tendrá efecto.
+
+      De lo contrario, esta política tendrá el siguiente efecto:
+      Si no estableces esta política, el teclado virtual se mostrará según la heurística predeterminada del sistema, por ejemplo, si hay teclados conectados.
+      Si estableces esta política como verdadera, el teclado virtual se mostrará siempre.
+      Si la estableces como falsa, no se mostrará nunca el teclado virtual.
+
+      Es posible que el teclado virtual adopte un diseño compacto según el método de entrada.</translation>
 <translation id="6404064917675764807">No informar eventos de sesiones CRD</translation>
 <translation id="6404360891305375004">Permitir el sistema de archivos compartidos en red</translation>
 <translation id="6407093060083181305">Configura la lista de extensiones que se permiten instalar</translation>
@@ -9025,9 +9046,6 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
 <translation id="8312129124898414409">Te permite establecer si los sitios web están autorizados a utilizar la generación de claves. La generación de claves puede permitirse o rechazarse para todos los sitios web. 
 
           Si esta política no se configura, se usará "BlockKeygen" y el usuario podrá cambiarla.</translation>
-<translation id="8313927126392971570">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> especificará los parámetros durante la búsqueda de imágenes con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como {imageThumbnail}, se reemplazará por datos de miniaturas de imágenes reales.
-
-      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de imágenes con el método GET.</translation>
 <translation id="8314214821702356835">Permite que los usuarios reproduzcan contenido multimedia cuando está bloqueado el dispositivo</translation>
 <translation id="8314308739926578606">No permitir el uso de las Herramientas para desarrolladores en extensiones y apps instaladas por una política empresarial ni, a partir de la versión 114 y si es un usuario administrado, extensiones integradas en el navegador. Permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="8316940611391250886">No permitir certificados que carezcan de una extensión subjectAlternativeName</translation>
@@ -9101,6 +9119,17 @@ Los certificados deben estar codificados en base64.</translation>
 
 Si no estableces la política o la estableces con el valor "0", la navegación a una URL desginada la abrirá de inmediato en un navegador alternativo.</translation>
 <translation id="8402079500086185021">Abrir siempre archivos PDF de forma externa</translation>
+<translation id="8402357110539568621">Habilita la función de accesibilidad del teclado virtual.
+
+          Si se establece esta política como verdadera, el teclado virtual de accesibilidad estará siempre habilitado.
+
+          Si se establece como falsa, el teclado virtual de accesibilidad estará siempre inhabilitado.
+
+          Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
+
+          Si no la estableces, el teclado virtual de accesibilidad estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento a través de la configuración de accesibilidad.
+
+          Esta política no afecta la habilitación del teclado virtual táctil. Por ejemplo, el teclado virtual táctil se seguirá mostrando en una tablet incluso si esta política se establece como falsa. Usa la política <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> para controlar el comportamiento del teclado virtual táctil.</translation>
 <translation id="8410477879938914253">La política solo se aplica a sesiones de invitado administradas.
       Si estableces la política como verdadera o no la estableces, se mostrará un diálogo en el que se le solicitará al usuario que confirme o rechace salir de la cuenta cuando se cierra la última ventana.
       Si la estableces como falsa, no se mostrará el diálogo y, por lo tanto, se inhabilitará la función que obliga al usuario a salir de la cuenta de forma automática cuando se cierra la última ventana.</translation>
@@ -9155,6 +9184,7 @@ Si no estableces la política o la estableces con el valor "0", la navegación a
 <translation id="8470317291588703478">No aplicar de manera forzosa el modo restringido de YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilizará todas las interfaces disponibles al momento de buscar la mejor ruta.</translation>
+<translation id="8479496880635054740">Inhabilitar el teclado virtual de accesibilidad en la pantalla de acceso</translation>
 <translation id="8482518340010585741">Configurar el restablecimiento de apps al acceder</translation>
 <translation id="8483004350080020634">Recorta las partes confidenciales por motivos de seguridad y privacidad de las URL de https:// antes de enviarlas a secuencias de comandos PAC (Configuración automática de proxy) que usa <ph name="PRODUCT_NAME" /> en la resolución del proxy.
 

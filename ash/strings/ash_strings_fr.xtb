@@ -1133,6 +1133,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5537725057119320332">Caster</translation>
 <translation id="5546397813406633847">Récupérer le compte utilisateur</translation>
 <translation id="554893713779400387">Activer ou désactiver la dictée</translation>
+<translation id="5550417424894892620">Déposez des fichiers sur le bureau pour les ajouter à <ph name="HOLDING_SPACE_TITLE" />. Vous ne pouvez pas ajouter de fichiers sur le bureau.</translation>
 <translation id="5551456515017410630">Ouvrir/Fermer l'agenda</translation>
 <translation id="5551974246223970793">Passer à la correspondance suivante du terme recherché sur une page</translation>
 <translation id="5555639311269196631">Désactiver le point d'accès</translation>
@@ -1875,6 +1876,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Trier les applis par nom ou par couleur</translation>
 <translation id="8609384513243082612">Ouvrir un nouvel onglet</translation>
+<translation id="8612216344243590325">Conservez les fichiers importants dans <ph name="HOLDING_SPACE_TITLE" /> plutôt que sur le bureau. Il vous suffit de les faire glisser vers <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Les notifications <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection anti-regard est activée</translation>
 <translation id="8619138598101195078">Réduire le volume</translation>
 <translation id="8627191004499078455">Connecté à <ph name="DEVICE_NAME" /></translation>

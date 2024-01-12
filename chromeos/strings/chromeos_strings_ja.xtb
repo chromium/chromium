@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">スライドショー</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
+<translation id="4310735698903592804">Google AI を活用した最近の壁紙</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="4354430579665871434">キー</translation>
 <translation id="4361257691546579041">APN の種類はデフォルトです。</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">ON</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
+<translation id="593880865674747800">このスタイルでさらに作成</translation>
 <translation id="5939518447894949180">リセット</translation>
 <translation id="594552776027197022">ランダムな鍵ペアを生成</translation>
 <translation id="5946538341867151940">まだ接続されていません。携帯通信会社がカスタム APN を推奨している場合は、[+ 新しい APN] を選択して APN 情報を入力します。</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
 <translation id="7841134249932030522">ダークモードを有効にする</translation>
 <translation id="7846634333498149051">キーボード</translation>
+<translation id="7850847810298646851">Google AI を活用した壁紙</translation>
 <translation id="7856267634822906833">Bluetooth タッチスクリーン</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
 <translation id="7881066108824108340">DNS</translation>

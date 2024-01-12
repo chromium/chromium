@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Vahid seçicisi</translation>
 <translation id="2348630484974447747">Bağlama</translation>
 <translation id="2351097562818989364">Tərcümə ayarlarınız sıfırlanmışdır.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}=2{{DOMAIN_ONE} və {DOMAIN_TWO} parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} və digər {OTHER_DOMAINS_COUNT} domen parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}other{{DOMAIN_ONE}, {DOMAIN_TWO} və digər {OTHER_DOMAINS_COUNT} domen parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}}</translation>
 <translation id="235789365079050412">Google Məxfilik Siyasəti</translation>
 <translation id="2359043044084662842">Tərcümə edin</translation>
 <translation id="2359808026110333948">Davam edin</translation>
@@ -335,6 +336,7 @@ Axtarış mexanizmi: <ph name="DSE_NAME" />. Axtarış tarixçəsini silmək ü�
 <translation id="2747003861858887689">Əvvəlki sahə</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> izlənilir</translation>
 <translation id="2754492786623500387">Bu cihazdakı hesablar</translation>
+<translation id="2755595981383829244">Kontent bildirişləri qəbul edəcəksiniz</translation>
 <translation id="2762000892062317888">indicə</translation>
 <translation id="2772667768515195373">Google məhsullarında yadda saxlanmış ünvanlardan istifadə edə bilərsiniz. Ünvan Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlanıb.</translation>
 <translation id="2773292004659987824">Anonim Axtarış</translation>
@@ -688,6 +690,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4689564913179979534">Ödəniş Metodlarını İdarə Edin...</translation>
 <translation id="469300482518076788">Tabı bağlayın</translation>
 <translation id="4697071790493980729">Heç bir nəticə tapılmayıb</translation>
+<translation id="470337593714520080">{count,plural, =1{1 əlfəcini Google Hesabında yadda saxlayın}other{{count} əlfəcini Google Hesabında yadda saxlayın}}</translation>
 <translation id="470966556546083668">Sinxronizasiyanı aktiv etməyin</translation>
 <translation id="4711809265250406889">Aktiv olduqda</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} və digər 1 veb-sayt}other{{website_1}, {website_2} və digər {more_count} veb-sayt}}</translation>
@@ -986,6 +989,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6255097610484507482">Kredit Kartına Düzəliş edin</translation>
 <translation id="6266039999629596120">Diqqət tələb olunur</translation>
 <translation id="6277426346321820595">Qoruma yoxdur</translation>
+<translation id="628251768213143684">Google Hesabında yadda saxlananları idarə edə bilərsiniz</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> dilindən tərcümə etməyi təklif edin</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> izləmədən çıxarıldı</translation>
 <translation id="6293101329759844770">Təhlükəsiz Baxışı aktiv etmək üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> bölməsini açın və Təhlükəsiz Baxış seçiminə toxunun.</translation>

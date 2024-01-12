@@ -761,6 +761,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2469153820345007638">Thứ tự từ 1 đến N</translation>
 <translation id="24699311393038040">Giấy (Tráng bóng)</translation>
 <translation id="2470767536994572628">Khi bạn chỉnh sửa chú thích, tài liệu này sẽ trở về chế độ xem một trang và hướng xoay ban đầu</translation>
+<translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2479410451996844060">URL tìm kiếm hợp lệ.</translation>
 <translation id="2480300195898055381">Trong Tài khoản Google của bạn, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Thông báo</translation>
@@ -830,12 +831,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2610561535971892504">Nhấp để sao chép</translation>
 <translation id="2612993535136743634">Tất cả mã bảo mật đã lưu trên thiết bị và trong Tài khoản Google của bạn sẽ bị xoá</translation>
 <translation id="2616412942031748191">Tối ưu hoá cho công cụ tìm kiếm và tiếp thị</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" /> những thông tin sau:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Nhật ký duyệt web của bạn
-          <ph name="LIST_ITEM" />Cookie và dữ liệu trang web
-          <ph name="LIST_ITEM" />Thông tin đã nhập vào biểu mẫu
-        <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Insert</translation>
 <translation id="2625385379895617796">Đồng hồ của bạn chạy nhanh</translation>
 <translation id="262745152991669301">Trang web có thể yêu cầu kết nối với thiết bị USB</translation>
@@ -1840,7 +1835,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4652440160515225514">Tổ chức của bạn đã chặn trang web này vì trang web vi phạm chính sách.</translation>
 <translation id="4653167719759882810">Sáp nhập và mua lại</translation>
 <translation id="4658638640878098064">Dập ghim trên cùng bên trái</translation>
-<translation id="4660119392514473465">Giờ đây, bạn có thể duyệt web ở chế độ riêng tư. Những người khác dùng thiết bị này sẽ không nhìn thấy hoạt động của bạn. Tuy nhiên, hệ thống sẽ lưu các tệp đã tải xuống, dấu trang và các mục có trong danh sách đọc.</translation>
 <translation id="4660567771874403130">Năng lượng và tiện ích</translation>
 <translation id="4663373278480897665">Cho phép máy ảnh</translation>
 <translation id="466561305373967878">Trò chơi cờ bàn</translation>
@@ -2588,7 +2582,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6160391204859821737">Bật một tính năng về quyền riêng tư trong quảng cáo</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6167577165590485365">Lần tìm nạp mới nhất:</translation>
-<translation id="6169916984152623906">Giờ đây, bạn có thể duyệt web ở chế độ riêng tư. Những người khác dùng thiết bị này sẽ không xem được hoạt động của bạn. Tuy nhiên, tệp đã tải xuống và dấu trang sẽ được lưu lại.</translation>
 <translation id="617256461084925519">Google Chrome đang cố gắng xác minh danh tính của bạn để có thể điền thông tin thanh toán cho bạn.</translation>
 <translation id="6176387967264100435">Đây là mức giá cao</translation>
 <translation id="6177128806592000436">Kết nối của bạn tới trang web này không an toàn</translation>
@@ -3278,12 +3271,6 @@ Thông tin chi tiết bổ sung:
 <translation id="749865518782565832">Hệ thống ống nước</translation>
 <translation id="7501663406926337752">Tổ chức của bạn đã gắn cờ trang web bạn sắp truy cập</translation>
 <translation id="7501853161948120656">Tài nguyên giáo dục</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" /> những thông tin sau:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Nhật ký duyệt web của bạn
-          <ph name="LIST_ITEM" />Cookie và dữ liệu trang web
-          <ph name="LIST_ITEM" />Thông tin đã nhập vào biểu mẫu
-        <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Phong bì số 9</translation>
 <translation id="7508255263130623398">ID thiết bị thuộc chính sách trả lại trống hoặc không khớp với ID của thiết bị hiện tại</translation>
 <translation id="7508577201115425418">Tài liệu và dịch vụ in</translation>
@@ -3465,6 +3452,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7802989406998618639">Nhập mã bảo mật gồm <ph name="NUMBER_OF_DIGITS" /> chữ số trên <ph name="SIDE_OF_CARD" /> để ngân hàng có thể xác minh danh tính của bạn</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
+<translation id="7805906048382884326">Đóng mẹo</translation>
 <translation id="7810410097247356677">Để thanh toán nhanh hơn vào lần tới, hãy lưu thông tin thẻ và mã bảo mật đã mã hoá vào thiết bị của bạn</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Xóa đề xuất biểu mẫu khỏi Chrome?</translation>
@@ -3626,7 +3614,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8150722005171944719">Không thể đọc được tệp tại <ph name="URL" />.  Tệp này có thể đã bị xóa, di chuyển hoặc quyền tệp có thể đang chặn truy cập.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này xuống <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này xuống <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Thiết bị dành cho môn khúc côn cầu</translation>
-<translation id="8161095570253161196">Tiếp tục duyệt tìm</translation>
+<translation id="8161095570253161196">Tiếp tục duyệt xem</translation>
 <translation id="8163866351304776260">Đục 4 lỗ bên trái</translation>
 <translation id="8164078261547504572">Bạn muốn nhận email thông báo khi giá giảm?</translation>
 <translation id="8175796834047840627">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hành động này trong phần cài đặt.</translation>

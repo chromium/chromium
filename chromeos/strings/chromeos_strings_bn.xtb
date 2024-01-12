@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">স্লাইড শো</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
+<translation id="4310735698903592804">Google AI দ্বারা পরিচালিত সাম্প্রতিক ওয়ালপেপার</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কী প্রেস করা হয়েছে</translation>
 <translation id="4354430579665871434">কী</translation>
 <translation id="4361257691546579041">APN হল ডিফল্টের একটি ধরন।</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}one{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}other{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}}</translation>
 <translation id="5931523347251946569">ফাইল পাওয়া যায়নি</translation>
+<translation id="593880865674747800">এই স্টাইলে আরও ওয়ালপেপার তৈরি করুন</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="594552776027197022">র‍্যান্ডম কী পেয়ার জেনারেট করুন</translation>
 <translation id="5946538341867151940">আপনি এখনও কানেক্ট হননি। যদি আপনার মোবাইল পরিষেবা প্রদানকারী একটি কাস্টম APN প্রস্তাব করে, "+ নতুন APN" বেছে নিন এবং APN তথ্য লিখুন</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
 <translation id="7841134249932030522">'ডার্ক মোড' চালু করুন</translation>
 <translation id="7846634333498149051">কীবোর্ড</translation>
+<translation id="7850847810298646851">Google AI দ্বারা পরিচালিত ওয়ালপেপার</translation>
 <translation id="7856267634822906833">ব্লুটুথ টাচস্ক্রিন</translation>
 <translation id="7869143217755017858">'ডার্ক মোড' বন্ধ করুন</translation>
 <translation id="7881066108824108340">DNS</translation>

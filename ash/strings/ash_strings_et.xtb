@@ -1134,6 +1134,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5537725057119320332">Ülekanne</translation>
 <translation id="5546397813406633847">Taasta konto</translation>
 <translation id="554893713779400387">Dikteerimise sisse-/väljalülitamine</translation>
+<translation id="5550417424894892620">Pukseerige töölaual faile, et lisada need asukohta <ph name="HOLDING_SPACE_TITLE" />. Töölauale ei saa faile lisada.</translation>
 <translation id="5551456515017410630">Ava/sule kalender</translation>
 <translation id="5551974246223970793">Lehel otsimisel järgmise vaste juurde liikumine</translation>
 <translation id="5555639311269196631">Lülita kuumkoht välja</translation>
@@ -1506,6 +1507,7 @@ Uus installimine</translation>
 <translation id="7025533177575372252">Ühendage seade <ph name="DEVICE_NAME" /> oma telefoniga</translation>
 <translation id="7026338066939101231">Vähenemine</translation>
 <translation id="7029814467594812963">Välju seansist</translation>
+<translation id="7031303610220416229">Vaadake kõiki ülesandeid Google Tasksis</translation>
 <translation id="7032161822340700104">Lubatud on ainult kuus malli. Uue malli salvestamiseks peate mõne eemaldama.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> soovib kasutada seadet <ph name="DEVICE_NAME" />. Lülitage seadme <ph name="DEVICE_NAME" /> füüsiline lüliti sisse.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google'i assistent</translation>
@@ -1818,6 +1820,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> on kasutusel.</translation>
 <translation id="8369166482916924789">Salvestatud töölaud, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Tehke otsing <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Tähe võrra edasi</translation>
 <translation id="8371991222807690464">Välisseadme jõudlus võib külalisrežiimis olla piiratud</translation>
 <translation id="8374601332003098278">Vajutage osalise ekraanikuva salvestamiseks sisestusklahvi</translation>
@@ -1873,6 +1876,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortige oma rakendused nime või värvi järgi</translation>
 <translation id="8609384513243082612">Uue vahelehe avamine</translation>
+<translation id="8612216344243590325">Hoidke oma tähtsad failid töölaua asemel asukohas <ph name="HOLDING_SPACE_TITLE" />. Lihtsalt lohistage failid asukohta <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="8619138598101195078">Vähenda helitugevust</translation>
 <translation id="8627191004499078455">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>

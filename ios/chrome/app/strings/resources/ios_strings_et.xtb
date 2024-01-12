@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Ühikuvalija</translation>
 <translation id="2348630484974447747">Saadetis</translation>
 <translation id="2351097562818989364">Teie tõlkeseaded on lähtestatud.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Saate salvestada domeeni {DOMAIN_ONE} parooli oma Google’i kontole {EMAIL}.}=2{Saate salvestada domeenide {DOMAIN_ONE} ja {DOMAIN_TWO} paroolid oma Google’i kontole {EMAIL}.}=3{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}.}other{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}.}}</translation>
 <translation id="235789365079050412">Google'i privaatsuseeskirjad</translation>
 <translation id="2359043044084662842">Tõlgi</translation>
 <translation id="2359808026110333948">Jätka</translation>
@@ -335,6 +336,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2747003861858887689">Eelmine väli</translation>
 <translation id="2749231692441336879">Jälgitakse kanalit <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Selles seadmes olevad kontod</translation>
+<translation id="2755595981383829244">Nüüd saate sisumärguandeid</translation>
 <translation id="2762000892062317888">just praegu</translation>
 <translation id="2772667768515195373">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Inkognito režiimis otsing</translation>
@@ -688,6 +690,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4689564913179979534">Makseviiside haldamine …</translation>
 <translation id="469300482518076788">Sule vaheleht</translation>
 <translation id="4697071790493980729">Ei leitud ühtegi tulemust</translation>
+<translation id="470337593714520080">{count,plural, =1{Salvestage 1 järjehoidja oma Google'i kontole}other{Salvestage {count} järjehoidjat oma Google'i kontole}}</translation>
 <translation id="470966556546083668">Ära lülita sünkroonimist sisse</translation>
 <translation id="4711809265250406889">Kui on sisse lülitatud</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ja veel üks}other{{website_1}, {website_2} ja veel {more_count}}}</translation>

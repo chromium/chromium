@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Бирдик тандагыч</translation>
 <translation id="2348630484974447747">Таңгак</translation>
 <translation id="2351097562818989364">Которуу параметрлериңиз баштапкы абалга келтирилди.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} үчүн сырсөзүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}=2{{DOMAIN_ONE} жана {DOMAIN_TWO} үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} жана дагы {OTHER_DOMAINS_COUNT} домен үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}other{{DOMAIN_ONE}, {DOMAIN_TWO} жана дагы {OTHER_DOMAINS_COUNT} домен үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}}</translation>
 <translation id="235789365079050412">Google Купуялык эрежелери</translation>
 <translation id="2359043044084662842">Которуу</translation>
 <translation id="2359808026110333948">Улантуу</translation>
@@ -335,6 +336,7 @@
 <translation id="2747003861858887689">Мурунку талаа</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> каналына жазылдыңыз</translation>
 <translation id="2754492786623500387">Ушул түзмөктөгү аккаунттар</translation>
+<translation id="2755595981383829244">Эми контент тууралуу билдирмелерди аласыз</translation>
 <translation id="2762000892062317888">жаңы эле</translation>
 <translation id="2772667768515195373">Сакталган даректериңизди Google кызматтарында колдоно аласыз. Бул дарек <ph name="USER_EMAIL" /> Google аккаунтуңузга сакталды.</translation>
 <translation id="2773292004659987824">Жашыруун издөө</translation>

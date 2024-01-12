@@ -24,6 +24,7 @@
 <translation id="1173916544412572294">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> wird kopiert...</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="1190144681599273207">Zum Abrufen dieser Datei werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
 <translation id="1194390763418645112">Dateizugriff von <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1209796539517632982">Automatische Wahl des Nameservers</translation>
@@ -99,6 +100,7 @@
 <translation id="1761091787730831947">Für <ph name="VM_NAME" /> freigeben</translation>
 <translation id="1773212559869067373">Lokale Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="1775381402323441512">Videoinformationen</translation>
+<translation id="180035236176489073">Du musst online sein, um auf diese Dateien zugreifen zu können.</translation>
 <translation id="1807938677607439181">Alle Dateien</translation>
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
 <translation id="1812302367230252929">Amharisch (Transliteration)</translation>
@@ -133,7 +135,6 @@
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
 <translation id="209653272837065803">Es ist nicht genügend Speicherplatz vorhanden, um die Dateisynchronisierung fortzusetzen</translation>
-<translation id="2099143626019777139">Von dir besuchte Websites sind für deinen Administrator sichtbar. Du kannst dir eine Liste der sichtbaren Websites ansehen.</translation>
 <translation id="2111134541987263231">Aktiviere die Option <ph name="BEGIN_BOLD" />Im Inkognitomodus zulassen<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
@@ -160,6 +161,8 @@
 <translation id="2282155092769082568">URL für Autokonfiguration:</translation>
 <translation id="2284767815536050991">Wechselmedium</translation>
 <translation id="2288278176040912387">Plattenspieler</translation>
+<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> Dateien werden geöffnet.</translation>
+<translation id="2303301624314357662">Datei "<ph name="FILE_NAME" />" wird geöffnet.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
@@ -169,6 +172,7 @@
 <translation id="233822363739146957">Es ist nicht genügend Speicherplatz vorhanden, um alle deine Dateien zu synchronisieren</translation>
 <translation id="23721837607121582">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Zur Listenansicht wechseln</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> Ordner für Linux freigegeben</translation>
 <translation id="2379576081295865700">Speicherplatz wird geprüft… 1 Element gefunden</translation>
 <translation id="2383454254762599978">In Papierkorb verschieben</translation>
 <translation id="2387458720915042159">Proxy-Verbindungstyp</translation>
@@ -392,10 +396,12 @@
 <translation id="4197674956721858839">Auswahl zippen</translation>
 <translation id="4202378258276439759">Spanisch (Lateinamerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
+<translation id="421017592316736757">Du musst online sein, um auf diese Datei zugreifen zu können.</translation>
 <translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wähle bitte einen anderen Namen aus.</translation>
 <translation id="4218274196133425560">Ausnahme für <ph name="HOST_NAME" /> entfernen</translation>
 <translation id="4261901459838235729">Google-Präsentation</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />-Filter ist an.</translation>
+<translation id="4290535918735525311">1 Ordner für Linux freigegeben</translation>
 <translation id="4299729908419173967">Portugiesisch (Brasilien)</translation>
 <translation id="4302605047395093221">Jeder Nutzer dieses Geräts muss die PIN eingeben, um eine Verbindung mit diesem Mobilfunknetz herzustellen</translation>
 <translation id="4303531889494116116">Dieses Netzwerk ist überlastet. Bitte versuche es später noch einmal.</translation>
@@ -496,6 +502,8 @@
 <translation id="4906580650526544301">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
 <translation id="4935975195727477204">Mittagsgoldblume</translation>
 <translation id="4943368462779413526">American Football</translation>
+<translation id="4961158930123534723">1 Ordner für Parallels Desktop freigegeben</translation>
+<translation id="4965874878399872778">Diese Dateien werden auf die Einhaltung der Sicherheitsrichtlinien deiner Organisation geprüft…</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ wiederhergestellt</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Die Einrichtung der Dateisynchronisierung konnte nicht abgeschlossen werden</translation>
@@ -557,6 +565,7 @@
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318819489018851358">Mit Linux teilen</translation>
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
+<translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
 <translation id="5330512191124428349">Informationen ansehen</translation>
 <translation id="535792325654997756">Person mit Katzen</translation>
 <translation id="5358764674931277">Framerate</translation>
@@ -658,6 +667,7 @@
 <translation id="613750717151263950">Japanisch mit US-Tastatur</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6146563240635539929">Videos</translation>
+<translation id="6150853954427645995">Wenn du diese Datei zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Datei und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="6164412158936057769">Schmetterlinge</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -690,6 +700,7 @@
 <translation id="636254897931573416">Ungültige Übereinstimmung für das Domain-Suffix</translation>
 <translation id="6364301859968397756">Speicher der Organisation voll</translation>
 <translation id="6367976544441405720">Transporter</translation>
+<translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
 <translation id="6394388407447716302">Schreibgeschützt</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> Elemente</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> konnte nicht verschoben werden, weil die Datei verschlüsselt ist.</translation>
@@ -698,6 +709,7 @@
 <translation id="6430271654280079150">Du hast noch 1 Versuch.</translation>
 <translation id="643243556292470964">Gelöschte Dateien werden jetzt in den Papierkorb verschoben</translation>
 <translation id="6438480100790416671">Speicherplatz wird geprüft…</translation>
+<translation id="6451527188465304418">Diese Datei wird auf die Einhaltung der Sicherheitsrichtlinien deiner Organisation geprüft…</translation>
 <translation id="6485131920355264772">Angaben zum Speicherplatz konnten nicht abgerufen werden.</translation>
 <translation id="6495925982925244349">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> wird in <ph name="FOLDER_NAME" /> extrahiert</translation>
@@ -712,6 +724,7 @@
 <translation id="6588648400954570689">Einstellungen für die Dateisynchronisierung</translation>
 <translation id="6594855146910089723">Dieser Ordner ist für Linux und Parallels Desktop freigegeben</translation>
 <translation id="6607272825297743757">Dateiinformationen</translation>
+<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> Ordner für Parallels Desktop freigegeben</translation>
 <translation id="6629518321609546825">Gib mindestens 4 Ziffern ein</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
@@ -878,6 +891,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
+<translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>
 <translation id="7853966320808728790">Französisch – Bépo</translation>
 <translation id="7857117644404132472">Ausnahme hinzufügen</translation>
@@ -926,6 +940,7 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-Dateien werden synchronisiert</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
+<translation id="8223479393428528563">Wenn du diese Dateien zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Dateien und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="8241139360630443550">Speicher anzeigen</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8250690786522693009">Latein</translation>

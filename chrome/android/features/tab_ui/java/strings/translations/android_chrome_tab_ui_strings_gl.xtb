@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Queres pechar as pestanas antigas?</translation>
 <translation id="1215127405478249895">Revisar as pestanas</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
+<translation id="1326271443836399892">Revisar a configuración actual de organización.</translation>
 <translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
 <translation id="1657719826150349398">Mover pestana cara abaixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Quitar do grupo</translation>
 <translation id="3008554597174452548">Deter seguimento do produto</translation>
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Tes <ph name="TABS_COUNT_ONE" /> pestana arquivada}other{Tes <ph name="TABS_COUNT_MANY" /> pestanas arquivadas}}</translation>
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3291470810748040983">Recibirás unha alerta cando haxa un prezo máis baixo nunha das pestanas que tes abertas</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">A folla de información sobre esta tenda está pechada</translation>
 <translation id="9150694013019234766">Cambia dunha pestana a outra no grupo de pestanas da parte inferior da pantalla</translation>
 <translation id="9169594135889675189">Engadir nova pestana ao grupo</translation>
+<translation id="955558140275419384">Se entras neste editor, poderás revisar todas as pestanas arquivadas para organizalas.</translation>
 <translation id="959682366969460160">Organízate</translation>
 </translationbundle>

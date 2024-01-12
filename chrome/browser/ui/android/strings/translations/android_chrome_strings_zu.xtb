@@ -233,6 +233,7 @@ Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana 
 <translation id="2318045970523081853">Thepha ukuze wenze ikholi</translation>
 <translation id="2321086116217818302">Ilungiselela amaphasiwedi…</translation>
 <translation id="2323763861024343754">Isitoreji sesayithi</translation>
+<translation id="2327226657832576859">Vula ngokuzenzakalelayo ama-PDF?</translation>
 <translation id="2328985652426384049">Ayikwazi ukungena ngemvume</translation>
 <translation id="2341410551640223969">Ayikwazanga ukufaka i-<ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Idatha ephelele esetshenziswe i-Chrome, kufaka phakathi ama-akhawunti, amabhukhimakhi, nezilungiselelo ezilondoloziwe</translation>
@@ -638,6 +639,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4523326818319942067">Ihora lokugcina</translation>
 <translation id="452750746583162491">Buyekeza idatha yakho evunyelanisiwe</translation>
 <translation id="4532845899244822526">Khetha ifolda</translation>
+<translation id="4541505619120536051">Ihlezi ivuliwe</translation>
 <translation id="4543131175509360848">Awekho amashidi okhiye bokudlula</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{ithebhu <ph name="TAB_COUNT_ONE" />}one{amathebhu <ph name="TAB_COUNT_MANY" />, i-incognito <ph name="TAB_COUNT_INCOGNITO" />}other{amathebhu <ph name="TAB_COUNT_MANY" />, i-incognito <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4554077758708533499">Ixhunywe ngekhebula le-USB</translation>
@@ -829,6 +831,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5486841595534124508">Ilogo Yesaziso Semfihlo sehabhu lemininingwane yekhasi eliqondisa kabusha ekhasini lami lomsebenzi.</translation>
 <translation id="5487521232677179737">Sula idatha</translation>
 <translation id="5492637351392383067">Ukubethela kudivayisi</translation>
+<translation id="5509866835115085009">I-Chrome ingavula ngokuzenzakalelayo i-PDF uma uyidawuniloda.</translation>
 <translation id="5514904542973294328">Kukhutshazwe umlawuli wale divayisi</translation>
 <translation id="5515439363601853141">Vula ukuze ubuke iphasiwedi yakho</translation>
 <translation id="5517095782334947753">Unamabhukhimakhi, umlando, amaphasiwedi, nezinye izilungiselelo kusukela ku-<ph name="FROM_ACCOUNT" />.</translation>

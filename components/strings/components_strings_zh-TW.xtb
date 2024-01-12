@@ -761,6 +761,7 @@
 <translation id="2469153820345007638">1 到 N 的順序</translation>
 <translation id="24699311393038040">紙 (塗布紙)</translation>
 <translation id="2470767536994572628">這份文件會在你編輯註解時重設為單頁檢視和原始顯示方向</translation>
+<translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2479410451996844060">無效的搜尋網址。</translation>
 <translation id="2480300195898055381">儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -830,12 +831,6 @@
 <translation id="2610561535971892504">點選複製</translation>
 <translation id="2612993535136743634">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
 <translation id="2616412942031748191">搜尋引擎最佳化與行銷</translation>
-<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你的瀏覽記錄
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />在表單中輸入的資訊
-        <ph name="END_LIST" /></translation>
 <translation id="2619052155095999743">Insert 鍵</translation>
 <translation id="2625385379895617796">你的時鐘時間過快</translation>
 <translation id="262745152991669301">可以要求連線至 USB 裝置</translation>
@@ -1839,7 +1834,6 @@
 <translation id="4652440160515225514">這個網站由於違反某項政策規定，因此已遭貴機構封鎖。</translation>
 <translation id="4653167719759882810">合併與收購</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
-<translation id="4660119392514473465">現在你可以進行私密瀏覽了。共用這部裝置的其他使用者不會看到你的活動，不過，你下載的內容、新增的書籤及加入閱讀清單中的項目仍會保留在裝置上。</translation>
 <translation id="4660567771874403130">能源與公用事業</translation>
 <translation id="4663373278480897665">可使用攝影機</translation>
 <translation id="466561305373967878">桌遊</translation>
@@ -2587,7 +2581,6 @@
 <translation id="6160391204859821737">開啟廣告隱私權功能</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6167577165590485365">上次擷取時間：</translation>
-<translation id="6169916984152623906">現在，你可以進行私密瀏覽了。共用這部裝置的其他使用者不會看到你的活動，不過，你下載的內容和新增的書籤仍會保留在裝置上。</translation>
 <translation id="617256461084925519">Google Chrome 正在嘗試驗證你的身分，以便填入付款資訊。</translation>
 <translation id="6176387967264100435">這個價格屬於高價位</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>
@@ -3277,12 +3270,6 @@
 <translation id="749865518782565832">水管工程</translation>
 <translation id="7501663406926337752">貴機構標記了你要瀏覽的網站</translation>
 <translation id="7501853161948120656">教育資源</translation>
-<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />你的瀏覽記錄
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />在表單中輸入的資訊
-        <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">傳回的政策裝置 ID 沒有任何內容，或是與目前的裝置 ID 不符</translation>
 <translation id="7508577201115425418">文件與印刷服務</translation>
@@ -3464,6 +3451,7 @@
 <translation id="7802989406998618639">請輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，讓銀行驗證你的身分</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7805768142964895445">狀態</translation>
+<translation id="7805906048382884326">關閉提示</translation>
 <translation id="7810410097247356677">將卡片資訊和加密安全碼儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">要從 Chrome 中移除建議嗎？</translation>

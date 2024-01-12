@@ -251,6 +251,7 @@
 <translation id="2326302612031521902">Birač jedinice</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Vaše postavke prevođenja su poništene.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Možete sačuvati lozinku za domenu {DOMAIN_ONE} na Google račun {EMAIL}.}=2{Možete sačuvati lozinke za domene {DOMAIN_ONE} i {DOMAIN_TWO} na Google račun {EMAIL}.}=3{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domenu na Google račun {EMAIL}.}one{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domenu na Google račun {EMAIL}.}few{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domene na Google račun {EMAIL}.}other{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena na Google račun {EMAIL}.}}</translation>
 <translation id="235789365079050412">Googleova Pravila privatnosti</translation>
 <translation id="2359043044084662842">Prevedi</translation>
 <translation id="2359808026110333948">Nastavi</translation>
@@ -335,7 +336,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2747003861858887689">Prethodno polje</translation>
 <translation id="2749231692441336879">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi na uređaju</translation>
-<translation id="2755595981383829244">Sada ćete primati obavijesti o sadržaju</translation>
+<translation id="2755595981383829244">Sada ćete dobijati obavještenja o sadržaju</translation>
 <translation id="2762000892062317888">maloprije</translation>
 <translation id="2772667768515195373">Možete koristiti sačuvane adrese na Googleovim proizvodima. Ova adresa je sačuvana na vašem Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pretraživanje u anonimnom načinu rada</translation>
@@ -689,7 +690,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
 <translation id="469300482518076788">Zatvori karticu</translation>
 <translation id="4697071790493980729">Nije pronađen nijedan rezultat</translation>
-<translation id="470337593714520080">{count,plural, =1{Spremite jednu oznaku na svoj Google račun}one{Spremite {count} oznaku na svoj Google račun}few{Spremite {count} oznake na svoj Google račun}other{Spremite {count} oznaka na svoj Google račun}}</translation>
+<translation id="470337593714520080">{count,plural, =1{Sačuvajte 1 oznaku na Google račun}one{Sačuvajte {count} oznaku na Google račun}few{Sačuvajte {count} oznake na Google račun}other{Sačuvajte {count} oznaka na Google račun}}</translation>
 <translation id="470966556546083668">Nemojte uključiti sinhronizaciju</translation>
 <translation id="4711809265250406889">Kada je uključeno</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i još 1}one{{website_1}, {website_2} i još {more_count}}few{{website_1}, {website_2} i još {more_count}}other{{website_1}, {website_2} i još {more_count}}}</translation>

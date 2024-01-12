@@ -528,6 +528,7 @@ Se ela for desativada, a página com o cabeçalho <ph name="CACHE_CONTROL_NO_STO
 <translation id="143649776386947790">Usar o comportamento padrão</translation>
 <translation id="1438739959477268107">Configuração padrão de geração de chaves</translation>
 <translation id="1440408958042020947">Permite que os usuários que ativaram o recurso Seu smartphone acessem fotos e vídeos recentes capturados no smartphone deles</translation>
+<translation id="1443532790824582949">Ativar o teclado virtual de toque</translation>
 <translation id="1449083855104537880">Se esta política for definida como verdadeira, as opções de acessibilidade serão exibidas no menu da bandeja do sistema. Se você definir a política como falsa, as opções não serão exibidas no menu.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, as opções de acessibilidade não serão exibidas no menu, mas os usuários podem fazê-las aparecer por meio da página Configurações.
@@ -1187,6 +1188,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 <translation id="1954612656043024615">Ativar o recurso de área de transferência compartilhada</translation>
 <translation id="1955063069502242812">Ativar som de bateria fraca</translation>
 <translation id="1955806069704957172">Controla as configurações da API do conector do espaço de trabalho.</translation>
+<translation id="1957093168333856467">Desativar o teclado virtual de acessibilidade</translation>
 <translation id="1960059835237529462">Permite que os usuários confiram a promoção de avaliação da App Store do <ph name="IOS_NAME" /></translation>
 <translation id="1960416154405676350">Ativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Esta política se aplica apenas a sessões de visitante gerenciadas.
@@ -1289,6 +1291,7 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
 <translation id="2029985289397958781">Desativar a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuários corporativos</translation>
 <translation id="2030905906517501646">Palavra-chave do provedor de pesquisa padrão</translation>
 <translation id="203096360153626918">Esta política não tem nenhum efeito sobre os apps Android. Eles poderão entrar no modo tela cheia mesmo se a política estiver definida como <ph name="FALSE" />.</translation>
+<translation id="2031074619942406753">Desativar o teclado virtual de toque</translation>
 <translation id="2032848225007871645">Se a política for definida, ela controlará quais modos de desbloqueio rápido podem desbloquear a tela.
 
       Para permitir:
@@ -2446,6 +2449,7 @@ comportamento das teclas de função, e essa configuração não poderá ser mod
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">O menu de contexto terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Se a política for ativada, os aplicativos da Web de terceiros vão poder usar a <ph name="DESK_API_NAME" /> para salvar e compartilhar espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se ela for desativada, o usuário não vai poder salvar e compartilhar dados de espaços de trabalho pela <ph name="DESK_API_NAME" />. Se a política for deixada sem definição, o comportamento será o mesmo que o desativado. A política só será aplicada em dispositivos registrados.</translation>
+<translation id="2976033779241323433">Ativar o teclado virtual de toque com base na heurística padrão do sistema</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
 <translation id="2979696534869541158">Forçar implementação antiga</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
@@ -2552,6 +2556,7 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
       Se a política for definida como "Desativada", os controles de mídia não serão exibidos na tela de bloqueio.</translation>
 <translation id="3072847235228302527">Definir os Termos de Serviço para uma conta local do dispositivo</translation>
 <translation id="3074032542020543133">Canal LTS</translation>
+<translation id="3074886258920642791">Ativar o teclado virtual de acessibilidade na tela de login</translation>
 <translation id="3077650998740742747">
 Comportamento padrão (política não definida)
 Quando uma conta é adicionada à área de conteúdo, uma pequena caixa de diálogo pode aparecer pedindo para o usuário criar um novo perfil. Essa caixa de diálogo pode ser dispensada.
@@ -2992,9 +2997,6 @@ Se a política for deixada sem definição, a navegação no navegador será blo
 <translation id="3417130629744653218">Permitir que sites consultem formas de pagamento disponíveis.</translation>
 <translation id="3417391585519621050">Ativar a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuários corporativos</translation>
 <translation id="3417418267404583991">Se esta política for definida como true ou não for configurada, o <ph name="PRODUCT_OS_NAME" /> permitirá o login de visitantes. Os logins de visitantes são sessões anônimas de usuários e não requerem uma senha. Se esta política for configurada para false, o <ph name="PRODUCT_OS_NAME" /> não permitirá que sejam iniciadas sessões de visitantes.</translation>
-<translation id="3420141485959154417">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> especificará o URL do mecanismo de pesquisa usado para a pesquisa de imagens. Se a <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> for definida, as solicitações de pesquisa de imagem utilizarão o método POST.
-
-      Se a <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> não for definida, nenhuma pesquisa de imagem será utilizada.</translation>
 <translation id="3423703250826790403">Apps Android</translation>
 <translation id="3426434797050451264">Esta política também pode ser usada para especificar apps Android como gerenciadores de arquivos padrão.</translation>
 <translation id="3428247105888806363">Ativar previsão de rede</translation>
@@ -3910,6 +3912,7 @@ Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as exten
 
       Se a política for definida com base em uma origem na nuvem, ela não poderá ser destinada a um usuário específico.</translation>
 <translation id="416817811987180750">O recurso da lista de compras vai estar disponível para os usuários.</translation>
+<translation id="4168880975307014079">Ativar o teclado virtual de toque</translation>
 <translation id="4169094969938998854">Não permitir bloqueio da tela</translation>
 <translation id="4169692397912242417">Ativar o recurso de acessibilidade de resposta falada na tela de login.
 
@@ -4936,6 +4939,7 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
       Observação: também é possível adicionar elementos à lista por meio da política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5067143124345820993">Lista de permissões de login de usuário</translation>
+<translation id="50689955292091946">Ativar o teclado virtual de acessibilidade na tela de login</translation>
 <translation id="5069522005630249098">Esta configuração decide quantos dados do usuário são mantidos após a desativação do <ph name="LACROS_NAME" />.
 
       Se a política for definida como <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou for deixada sem definição, a migração de dados de versões anteriores não vai ser realizada.
@@ -5139,12 +5143,6 @@ Se a política não for definida ou se a lista não tiver referências de imagem
 
       Se a política não for definida ou for inválida, o comportamento será o mesmo de "Esperar que o canal conclua o downgrade de canal".</translation>
 <translation id="5229339291699779956">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, que funcionarão perfeitamente</translation>
-<translation id="5233239004553860036">Se esta política for definida como <ph name="POLICY_VALUE_ALL" /> ou deixada sem definição, todos os usos de contas gerenciadas serão permitidos. Isso pode fazer com que uma conta gerenciada se torne secundária, que só recebe políticas quando está conectada como conta principal em um perfil do navegador.
-      As políticas definidas para a conta não são aplicadas nestes cenários:
-        -  Ela é uma conta secundária no nível do SO (configurações da conta).
-        -  Ela é uma conta secundária em um perfil do navegador.
-
-      Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> em uma conta, ela vai ter permissão para fazer login apenas como conta principal, e não como secundária.</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
 <translation id="5235607513961923779">Informa o estado da atividade do dispositivo em dispositivos registrados para usuários afiliados.
 
@@ -5278,6 +5276,7 @@ Se a política for desativada, o histórico de navegação e o de downloads não
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
 <translation id="5334501839642146593">Nunca enviar métricas ao Google</translation>
 <translation id="5335910979215357815">Ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
+<translation id="5339096331970464266">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5340008866815063393">Ativar relatórios sobre dados de política</translation>
 <translation id="5345910753471481870">Não mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
@@ -5450,6 +5449,7 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="5475361623548884387">Ativar impressão</translation>
 <translation id="547601067149622666">Não permitir anúncios em sites com anúncios invasivos</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
+<translation id="5479841110985196412">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
 <translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
@@ -5821,6 +5821,18 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
+<translation id="5803715507113569033">Esta política permite que os administradores configurem a instalação do <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Se ela for definida como "<ph name="ALLOWED_NAME" />", o usuário poderá configurar o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se quiser.
+Após concluir o processo de configuração, o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> será instalado no gerenciador de arquivos.
+
+Se a política for definida como "<ph name="DISALLOWED_NAME" />", o usuário não poderá configurar o <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Se ela for definida como "<ph name="AUTOMATED_NAME" />", o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> será configurado automaticamente. Para isso, o usuário precisa fazer login no <ph name="PRODUCT_OS_NAME" /> com uma conta da Microsoft. Em caso de falha, será mostrado o fluxo de configuração.
+
+Se a política não for definida, isso será funcionalmente equivalente a defini-la como "<ph name="ALLOWED_NAME" />" para usuários comuns. Para usuários corporativos, o padrão da política é "<ph name="DISALLOWED_NAME" />".
+
+É possível adicionar outras restrições de conta usando a política <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
 <translation id="5804795151506109282">Não pedir para os usuários migrarem.</translation>
 <translation id="5806128552675651249">Permitir impressão apenas sem gráficos de segundo plano</translation>
 <translation id="5809210507920527553">Controla configurações do contêiner Linux (Crostini).</translation>
@@ -6299,6 +6311,21 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
 <translation id="6244210204546589761">URLs que devem ser abertos na inicialização</translation>
 <translation id="624595269193747921">Se a pesquisa de impressora correspondente é limitada ou não a um conjunto específico de impressoras.</translation>
 <translation id="6246290059248303618">Mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local</translation>
+<translation id="6246420783859339814">Esta política permite que os administradores restrinjam quais contas têm permissão para fazer login no <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando a política <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> está ativada.
+
+Se esta política tiver o valor "<ph name="COMMON_NAME" />", qualquer conta poderá ser usada para fazer login.
+
+Se ela tiver o valor "<ph name="ORGANIZATIONS_NAME" />", será possível usar contas escolares ou de trabalho para fazer login.
+
+Se tiver o valor "<ph name="CONSUMER_NAME" />", contas pessoais da <ph name="MICROSOFT_NAME" /> poderão ser usadas para fazer login.
+
+Se a política tiver nomes de domínio ou IDs de locatário, as contas deles poderão ser usadas para fazer login. Acesse https://learn.microsoft.com/pt-br/azure/active-directory/develop/v2-protocols#endpoints para mais informações.
+
+Se a política for deixada sem definição ou tiver apenas um valor vazio, ela vai se comportar como se "<ph name="COMMON_NAME" />" estivesse especificada para usuários comuns. Para usuários corporativos, ela se comporta como se "<ph name="ORGANIZATIONS_NAME" />" estivesse especificado.
+
+Mudar as restrições pode fazer com que os usuários sejam desconectados da conta do <ph name="MICROSOFT_ONE_DRIVE_NAME" /> caso não cumpram as novas restrições.
+
+Observação: no momento, apenas a primeira entrada será considerada. Extensões seguintes vão oferecer suporte para várias entradas.</translation>
 <translation id="6247316685259031374">Esta política controla o sandbox do processo de áudio.
       Se esta política for ativada, o processo de áudio será executado no sandbox.
       Se esta política for desativada, o processo de áudio será executado fora do sandbox, e o módulo de processamento de áudio WebRTC será executado no processo do renderizador.
@@ -6306,6 +6333,17 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
       Se esta política não for definida, a configuração padrão do sandbox de áudio será usada, o que pode variar de acordo com a plataforma.
       Com esta política, as empresas que usam configurações de software de segurança que afetam o sandbox têm a flexibilidade de desativar o sandbox de áudio.</translation>
 <translation id="624818583115864448">porta 554 (pode ser desbloqueada até 15/10/2021)</translation>
+<translation id="6249912382559535329">Ativar o recurso de acessibilidade de teclado virtual na tela de login.
+
+          Se esta política for definida como "true", o teclado virtual de acessibilidade sempre ficará ativado na tela de login.
+
+          Se esta política for definida como "false", o teclado virtual de acessibilidade sempre ficará desativado na tela de login.
+
+          Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
+
+          Se esta política não for definida, o teclado virtual de acessibilidade ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento nas configurações de acessibilidade.
+
+          Esta política não afeta a ativação do teclado virtual de toque. Por exemplo, o teclado virtual de toque ainda será mostrado em um tablet, mesmo se esta política for definida como "false".</translation>
 <translation id="6254498834449523938">Não permitir que o usuário ignore o aviso do recurso Navegação segura</translation>
 <translation id="625580680776945310">O modo de alta eficiência vai ser ativado.</translation>
 <translation id="6258658183356534534">Controlar o recurso de atualização do User-Agent Client Hints GREASE.</translation>
@@ -6570,6 +6608,16 @@ resolução de localização baseada no <ph name="IP" />.</translation>
       contas não gerenciadas.</translation>
 <translation id="6401669939808766804">Fazer logout do usuário</translation>
 <translation id="640244877779556713">Permitir sugestão de emojis</translation>
+<translation id="6403114173011456561">Controla o teclado virtual de toque, agindo como uma política complementar à <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Se o teclado virtual de acessibilidade estiver ativado, esta política não terá efeito.
+
+      Caso contrário, esta política terá o seguinte efeito:
+      se ela não for definida, o teclado virtual será mostrado com base na heurística padrão do sistema, por exemplo, se há teclados conectados.
+      Se esta política for definida como "True", o teclado virtual sempre será mostrado.
+      Se esta política for definida como "False", o teclado virtual nunca será mostrado.
+
+      O teclado virtual pode mudar para um layout compacto, dependendo do método de entrada.</translation>
 <translation id="6404064917675764807">Não informar eventos de sessões de CRD</translation>
 <translation id="6404360891305375004">Permitir o compartilhamento de arquivos pela rede</translation>
 <translation id="6407093060083181305">Configurar lista de bloqueio para instalação de extensões</translation>
@@ -7378,6 +7426,16 @@ Esta política será removida após o lançamento do recurso de drivers de impre
       Se a opção U2F for selecionada, o segundo fator integrado se comportará de acordo com a especificação FIDO U2F.
 
       Se a opção U2F_EXTENDED for selecionada, o segundo fator integrado fornecerá as funções de U2F, além de algumas extensões para declaração individual.</translation>
+<translation id="69942621143543910">Esta política permite que os administradores configurem o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e o <ph name="MICROSOFT_365_NAME" /> no <ph name="PRODUCT_OS_NAME" />.
+
+Se a política for definida como "<ph name="ALLOWED_NAME" />", o usuário poderá configurar o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e o <ph name="MICROSOFT_365_NAME" />, se quiser.
+Depois de concluir o processo de configuração, os arquivos com formatos correspondentes serão movidos por padrão para o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e processados pelo app <ph name="MICROSOFT_365_NAME" /> quando o usuário tentar abri-los.
+
+Definir a política como "<ph name="DISALLOWED_NAME" />" impede que o usuário configure o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e o <ph name="MICROSOFT_365_NAME" />, conforme descrito acima, e remove <ph name="MICROSOFT_365_NAME" /> da lista de possíveis gerenciadores de arquivos.
+
+Definir a política como "<ph name="AUTOMATED_NAME" />" configura o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e o <ph name="MICROSOFT_365_NAME" /> automaticamente, de modo que os arquivos com formatos correspondentes sejam movidos por padrão para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e processados pelo app <ph name="MICROSOFT_365_NAME" /> quando o usuário tentar abri-los.
+
+Se a política não for definida, isso será funcionalmente equivalente a defini-la como "<ph name="ALLOWED_NAME" />" para usuários comuns. Para usuários corporativos o padrão dela é "<ph name="DISALLOWED_NAME" />".</translation>
 <translation id="6999948519306285655">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se a política for definida, você poderá especificar um URL de um arquivo proxy .pac. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -8968,9 +9026,6 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8312129124898414409">Permite que você defina se os websites estão autorizados a usar a geração de chaves. O uso da geração de chaves pode ser permitido para todos os websites ou negado para todos eles.
 
           Se esta política não for definida, será usada a política "BlockKeygen", mas o usuário poderá modificá-la.</translation>
-<translation id="8313927126392971570">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> especificará os parâmetros durante a pesquisa de imagem com POST. Ele consiste em pares nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como {imageThumbnail}, ele será substituído pelos dados de miniatura de imagem reais.
-
-      Se a <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa de imagem serão enviadas usando o método get.</translation>
 <translation id="8314214821702356835">Permite que os usuários executem mídia enquanto o dispositivo estiver bloqueado.</translation>
 <translation id="8314308739926578606">Não permitir o uso das Ferramentas para desenvolvedores em extensões e apps instalados por uma política da empresa ou (da versão 114 em diante) se este for um usuário gerenciado, extensões integradas no navegador. Permitir o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="8316940611391250886">Não permitir certificados sem uma extensão subjectAlternativeName</translation>
@@ -9040,6 +9095,17 @@ Os certificados precisam ser codificados em Base64.</translation>
 
 Se ela não for definida ou for definida como "0", a navegação para um URL designado vai abri-lo imediatamente em um navegador alternativo.</translation>
 <translation id="8402079500086185021">Sempre abrir arquivos em PDF externamente</translation>
+<translation id="8402357110539568621">Ativar o recurso de acessibilidade do teclado virtual.
+
+          Se esta política for definida como "true", o teclado virtual de acessibilidade estará sempre ativado.
+
+          Se esta política for definida como "false", o teclado virtual de acessibilidade estará sempre desativado.
+
+          Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
+
+          Se esta política não for definida, o teclado virtual de acessibilidade ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento nas configurações de acessibilidade.
+
+          Esta política não afeta a ativação do teclado virtual de toque. Por exemplo, o teclado virtual de toque ainda será mostrado em um tablet, mesmo se esta política for definida como "false". Use a política <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> para controlar o comportamento do teclado virtual de toque.</translation>
 <translation id="8410477879938914253">Esta política se aplica apenas a sessões de visitante gerenciadas.
       Se a política for definida como verdadeira ou deixada sem definição, uma caixa de diálogo será exibida e pedirá que o usuário confirme ou negue que quer sair da conta depois que a última janela for fechada.
       Se a política for definida como falsa, a caixa de diálogo não será exibida e, portanto, a saída automática será desativada após o fechamento da última janela.</translation>
@@ -9094,6 +9160,7 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
 <translation id="8470317291588703478">Não forçar o Modo restrito do YouTube</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">O WebRTC usará todas as interfaces disponíveis ao procurar o melhor caminho.</translation>
+<translation id="8479496880635054740">Desativar o teclado virtual de acessibilidade na tela de login</translation>
 <translation id="8482518340010585741">Configurar a restauração de apps no login</translation>
 <translation id="8483004350080020634">Retira partes confidenciais de privacidade e segurança de URLs https:// antes de repassá-los para scripts de configuração automática de proxy (PAC, na sigla em inglês) usados pelo <ph name="PRODUCT_NAME" /> durante a resolução de proxy.
 

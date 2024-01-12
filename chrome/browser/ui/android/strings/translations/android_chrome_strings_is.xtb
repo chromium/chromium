@@ -233,6 +233,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="2321086116217818302">Undirbýr aðgangsorð…</translation>
 <translation id="2323763861024343754">Geymsla vefsvæða</translation>
+<translation id="2327226657832576859">Opna PDF-skrár sjálfkrafa?</translation>
 <translation id="2328985652426384049">Innskráning mistókst</translation>
 <translation id="2341410551640223969">Ekki tókst að setja upp <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Gögn sem Chrome notar alls, þ.m.t. reikningar, bókamerki og vistaðar stillingar</translation>
@@ -638,6 +639,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4523326818319942067">síðustu klukkustund</translation>
 <translation id="452750746583162491">Fara yfir samstillt gögn</translation>
 <translation id="4532845899244822526">Velja möppu</translation>
+<translation id="4541505619120536051">Alltaf opið</translation>
 <translation id="4543131175509360848">Blaðið „Engir aðgangslyklar“</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_COUNT_MANY" /> flipi, <ph name="TAB_COUNT_INCOGNITO" /> huliðsflipi}other{<ph name="TAB_COUNT_MANY" /> flipar, <ph name="TAB_COUNT_INCOGNITO" /> huliðsflipar}}</translation>
 <translation id="4554077758708533499">Tengt með USB-snúru</translation>
@@ -829,6 +831,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5486841595534124508">Merki upplýsinga um persónuvernd fyrir síðu miðstöðvar innsýnar sem framsendir á síðuna „Mín virkni“.</translation>
 <translation id="5487521232677179737">Hreinsa gögn</translation>
 <translation id="5492637351392383067">Dulkóðun í tækinu</translation>
+<translation id="5509866835115085009">Chrome getur opnað PDF-skrár sjálfkrafa þegar þú sækir þær.</translation>
 <translation id="5514904542973294328">Stjórnandi tækisins gerði þetta óvirkt</translation>
 <translation id="5515439363601853141">Opnaðu til að skoða aðgangsorðið þitt</translation>
 <translation id="5517095782334947753">Þú ert með bókamerki, feril, aðgangsorð og aðrar stillingar frá <ph name="FROM_ACCOUNT" />.</translation>
