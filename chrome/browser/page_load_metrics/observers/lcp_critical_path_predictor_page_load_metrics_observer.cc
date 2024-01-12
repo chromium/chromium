@@ -13,6 +13,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace internal {
@@ -86,6 +87,9 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
   }
 
   commit_url_ = navigation_handle->GetURL();
+  if (net::IsLocalhost(*commit_url_) || !commit_url_->SchemeIsHTTPOrHTTPS()) {
+    return STOP_OBSERVING;
+  }
   LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetOrCreateForPage(
       GetDelegate().GetWebContents()->GetPrimaryPage())
       ->SetLcpCriticalPathPredictorPageLoadMetricsObserver(
