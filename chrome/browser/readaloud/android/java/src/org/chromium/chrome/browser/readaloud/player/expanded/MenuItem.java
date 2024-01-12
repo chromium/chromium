@@ -175,6 +175,12 @@ public class MenuItem extends FrameLayout {
         mPlayButton.setImageResource(R.drawable.mini_pause_button);
     }
 
+    void setSecondLine(String text) {
+        TextView view = mLayout.findViewById(R.id.item_sublabel);
+        view.setText(text);
+        view.setVisibility(View.VISIBLE);
+    }
+
     private void setEndView(LinearLayout layout, View view) {
         ((FrameLayout) layout.findViewById(R.id.end_view)).addView(view);
     }

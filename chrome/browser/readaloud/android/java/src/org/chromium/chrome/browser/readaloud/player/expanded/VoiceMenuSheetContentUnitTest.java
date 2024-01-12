@@ -99,10 +99,24 @@ public class VoiceMenuSheetContentUnitTest {
         assertNull(mMenu.getItem(3));
 
         mContent.setVoices(
-                List.of(createVoice("en", "d", "voice d"), createVoice("en", "e", "voice e")));
+                List.of(
+                        createVoice(
+                                "en",
+                                "d",
+                                "voice d",
+                                PlaybackVoice.Pitch.LOW,
+                                PlaybackVoice.Tone.SMOOTH),
+                        createVoice(
+                                "en",
+                                "e",
+                                "voice e",
+                                PlaybackVoice.Pitch.MID,
+                                PlaybackVoice.Tone.CALM)));
 
         assertEquals("voice d", getText(mMenu.getItem(0), R.id.item_label));
+        assertEquals("Low-pitch, Smooth", getText(mMenu.getItem(0), R.id.item_sublabel));
         assertEquals("voice e", getText(mMenu.getItem(1), R.id.item_label));
+        assertEquals("Mid-pitch, Calm", getText(mMenu.getItem(1), R.id.item_sublabel));
         assertNull(mMenu.getItem(2));
     }
 
@@ -178,12 +192,17 @@ public class VoiceMenuSheetContentUnitTest {
     }
 
     private static PlaybackVoice createVoice(String language, String id, String displayName) {
+        return createVoice(
+                language, id, displayName, PlaybackVoice.Pitch.NONE, PlaybackVoice.Tone.NONE);
+    }
+
+    private static PlaybackVoice createVoice(
+            String language,
+            String id,
+            String displayName,
+            @PlaybackVoice.Pitch int pitch,
+            @PlaybackVoice.Tone int tone) {
         return new PlaybackVoice(
-                language,
-                /* accentRegionCode= */ null,
-                id,
-                displayName,
-                PlaybackVoice.Pitch.NONE,
-                PlaybackVoice.Tone.NONE);
+                language, /* accentRegionCode= */ null, id, displayName, pitch, tone);
     }
 }

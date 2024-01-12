@@ -13,6 +13,8 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNO
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
@@ -59,6 +61,10 @@ class VoiceMenuSheetContent extends MenuSheetContent {
                     mMenu.addItem(
                             id, /* iconId= */ 0, voice.getDisplayName(), MenuItem.Action.RADIO);
             item.addPlayButton();
+            String secondLine = getAttributesString(voice);
+            if (secondLine != null) {
+                item.setSecondLine(secondLine);
+            }
             mVoices[id] = voice;
             mVoiceIdToMenuItemId.put(voice.getVoiceId(), id);
             ++id;
@@ -132,5 +138,43 @@ class VoiceMenuSheetContent extends MenuSheetContent {
             return;
         }
         mInteractionHandler.onVoiceSelected(mVoices[itemId]);
+    }
+
+    @Nullable
+    private String getAttributesString(PlaybackVoice voice) {
+        String pitch = getPitchString(voice);
+        String tone = getToneString(voice);
+        if (pitch == null || tone == null) {
+            return null;
+        }
+        return mContext.getResources().getString(R.string.readaloud_voice_description, pitch, tone);
+    }
+
+    @Nullable
+    private String getPitchString(PlaybackVoice voice) {
+        return getStringOrNull(
+                switch (voice.getPitch()) {
+                    case PlaybackVoice.Pitch.LOW -> R.string.readaloud_pitch_low;
+                    case PlaybackVoice.Pitch.MID -> R.string.readaloud_pitch_mid;
+                    default -> 0;
+                });
+    }
+
+    @Nullable
+    private String getToneString(PlaybackVoice voice) {
+        return getStringOrNull(
+                switch (voice.getTone()) {
+                    case PlaybackVoice.Tone.BOLD -> R.string.readaloud_tone_bold;
+                    case PlaybackVoice.Tone.CALM -> R.string.readaloud_tone_calm;
+                    case PlaybackVoice.Tone.STEADY -> R.string.readaloud_tone_steady;
+                    case PlaybackVoice.Tone.SMOOTH -> R.string.readaloud_tone_smooth;
+                    case PlaybackVoice.Tone.RELAXED -> R.string.readaloud_tone_relaxed;
+                    default -> 0;
+                });
+    }
+
+    @Nullable
+    private String getStringOrNull(int id) {
+        return id != 0 ? mContext.getResources().getString(id) : null;
     }
 }

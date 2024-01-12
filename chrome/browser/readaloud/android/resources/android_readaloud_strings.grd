@@ -252,6 +252,30 @@
       <message name="IDS_READALOUD_SPEED_MENU_DESCRIPTION" desc="Accessibility string announced when the playback speed menu is opened.">
         Playback speed menu
       </message>
+      <message name="IDS_READALOUD_PITCH_LOW" desc="Words to show that a voice is low-pitched, as would be typically recognized as male, included in the voice description.">
+        Low-pitch
+      </message>
+      <message name="IDS_READALOUD_PITCH_MID" desc="Words to show that a voice is medium-pitched, as would be typically recognized as female, included in the voice description.">
+        Mid-pitch
+      </message>
+      <message name="IDS_READALOUD_TONE_BOLD" desc="Word to show that a voice has a bold tone, included in the voice description.">
+        Bold
+      </message>
+      <message name="IDS_READALOUD_TONE_CALM" desc="Word to show that a voice has a calm tone, included in the voice description.">
+        Calm
+      </message>
+      <message name="IDS_READALOUD_TONE_STEADY" desc="Word to show that a voice has a steady tone, included in the voice description.">
+        Steady
+      </message>
+      <message name="IDS_READALOUD_TONE_SMOOTH" desc="Word to show that a voice has a smooth tone, included in the voice description.">
+        Smooth
+      </message>
+      <message name="IDS_READALOUD_TONE_RELAXED" desc="Word to show that a voice has a relaxed tone, included in the voice description.">
+        Relaxed
+      </message>
+      <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
+        <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>
