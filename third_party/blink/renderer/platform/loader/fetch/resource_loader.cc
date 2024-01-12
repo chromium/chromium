@@ -38,6 +38,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -116,6 +117,10 @@ const char* RequestOutcomeToString(RequestOutcome outcome) {
       return "Fail";
   }
 }
+
+// The sampling rate for UKM recording. A value of 0.1 corresponds to a
+// sampling rate of 10%.
+constexpr double kUkmSamplingRate = 0.1;
 
 bool IsThrottlableRequestContext(mojom::blink::RequestContextType context) {
   // Requests that could run long should not be throttled as they
@@ -810,9 +815,12 @@ void ResourceLoader::DidReceiveResponseInternal(
     fetcher_->GetUseCounter().CountUse(WebFeature::kZstdContentEncoding);
     used_zstd = true;
   }
-  // We need a current default task runner to obtain a UKM recorder, so if there
-  // is not one, do not record UKMs.
-  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+
+  // Sample the UKM recorded events. Also, a current default task runner is
+  // needed to obtain a UKM recorder, so if there is not one, do not record
+  // UKMs.
+  if ((base::RandDouble() <= kUkmSamplingRate) &&
+      base::SequencedTaskRunner::HasCurrentDefault()) {
     ukm::builders::SubresourceLoad_ZstdContentEncoding builder(
         request.GetUkmSourceId());
     builder.SetUsedZstd(used_zstd);
