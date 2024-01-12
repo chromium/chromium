@@ -171,6 +171,11 @@ BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingRollback);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting);
 
+// Enables Private Aggregation debug reporting to be enabled during the
+// third-party cookie deprecation experiment.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

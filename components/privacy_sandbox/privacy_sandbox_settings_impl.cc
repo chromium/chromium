@@ -676,9 +676,21 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
 
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(
-      reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides());
+  content_settings::CookieSettingsBase::CookieSettingWithMetadata
+      cookie_setting_with_metadata;
+  if (cookie_settings_->IsFullCookieAccessAllowed(
+          reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+          net::CookieSettingOverrides(), &cookie_setting_with_metadata)) {
+    return true;
+  }
+
+  // Third-party cookie access is disabled, but we may still allow Private
+  // Aggregation's debug mode in this context if it was only blocked due to the
+  // 3PCD experiment.
+  return base::FeatureList::IsEnabled(
+             kPrivateAggregationDebugReportingCookieDeprecationTesting) &&
+         cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+         delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
