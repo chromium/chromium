@@ -113,6 +113,7 @@ TEST_F(SyncToSigninMigrationTest, SyncActive) {
 
   // Save the above state to prefs.
   RecordStateToPrefs();
+  ASSERT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
   // Before the migration, there are no per-account selected types.
   ASSERT_TRUE(
@@ -129,6 +130,9 @@ TEST_F(SyncToSigninMigrationTest, SyncActive) {
   EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+#endif
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
@@ -1019,6 +1023,9 @@ TEST_F(SyncToSigninMigrationUndoTest, UndoesMigration) {
       pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId).empty());
   ASSERT_TRUE(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername)
                   .empty());
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+#endif
   // Marked as "migrated":
   ASSERT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
@@ -1036,6 +1043,7 @@ TEST_F(SyncToSigninMigrationUndoTest, UndoesMigration) {
   ASSERT_FALSE(
       pref_service_.GetString(prefs::kGoogleServicesAccountId).empty());
   EXPECT_TRUE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   // The "last syncing user" prefs should also have been restored.
   EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
             sync_service_.GetAccountInfo().gaia);

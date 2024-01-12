@@ -132,6 +132,10 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
 
   // Mark the user as syncing again.
   pref_service->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->SetBoolean(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
+#endif
 
   // Restore the "previously syncing user" prefs too.
   pref_service->SetString(prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
@@ -309,6 +313,13 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+  // Also clear the "InitialSyncFeatureSetup" pref. It's not needed
+  // post-migration, and that pref being true without ConsentLevel::kSync would
+  // be an inconsistent state.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_service->ClearPref(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
+#endif
 
   // Migrate the global data type prefs (used for Sync-the-feature) over to the
   // account-specific ones.
