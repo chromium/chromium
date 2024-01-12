@@ -1905,8 +1905,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.SmartCharging.Messages" enum="SmartChargingMessages"
     expires_after="2024-07-01">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>Type of messages that are reported by smart charging.</summary>
 </histogram>
 
@@ -1988,7 +1988,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnAC" units="units"
     expires_after="2024-03-23">
-  <owner>tbroch@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
     The number of times that the user adjusted the brightness during a session
@@ -1999,7 +2000,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
     units="units" expires_after="2024-05-26">
-  <owner>tbroch@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
     The number of times that the user adjusted the brightness during a session
@@ -2029,8 +2031,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
     expires_after="2024-05-12">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
   <summary>
     What happens when UserActivityManager receives a screen dim imminent
     notification. Only applicable to Chrome OS.
@@ -2039,6 +2042,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
     expires_after="2024-05-19">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2049,6 +2054,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
     expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2059,6 +2066,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
     expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2127,8 +2136,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
     expires_after="2024-05-19">
+  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>pmalani@chromium.org</owner>
   <summary>
@@ -2139,8 +2148,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
     expires_after="2024-05-19">
+  <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>pmalani@chromium.org</owner>
   <summary>
@@ -2151,6 +2160,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimModel.Result"
     enum="PowerMLSmartDimModelResult" expires_after="2024-05-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2164,6 +2175,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PowerML.SmartDimParameter.Result"
     enum="PowerMLSmartDimParameterResult" expires_after="2024-05-26">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
