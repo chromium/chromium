@@ -127,12 +127,6 @@ class BluetoothIntegrationTest : public AshIntegrationTest {
     return WaitForStateChange(element_id, toggle_selection_change);
   }
 
-  // Clicks on an element in the DOM.
-  auto ClickElement(const ui::ElementIdentifier& element_id,
-                    const DeepQuery& element) {
-    return Steps(MoveMouseTo(element_id, element), ClickMouse());
-  }
-
  protected:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<BluezDBusManager> bluez_dbus_manager_ = nullptr;

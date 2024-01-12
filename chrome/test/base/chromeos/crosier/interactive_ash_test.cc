@@ -137,3 +137,9 @@ InteractiveAshTest::WaitForElementTextContains(
   state_change.event = kTextFound;
   return WaitForStateChange(element_id, state_change);
 }
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
+                                 const DeepQuery& query) {
+  return Steps(MoveMouseTo(element_id, query), ClickMouse());
+}

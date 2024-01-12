@@ -85,11 +85,6 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // Clicks on an element in the DOM.
-  auto ClickElement(const ui::ElementIdentifier& element_id,
-                    const DeepQuery& element) {
-    return Steps(MoveMouseTo(element_id, element), ClickMouse());
-  }
   // Wait for the Feedback SWA to be present.
   auto WaitForFeedbackSWAReady(const ui::ElementIdentifier& element_id) {
     return Steps(
