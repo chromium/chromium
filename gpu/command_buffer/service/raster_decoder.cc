@@ -2577,6 +2577,10 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
+  // Readback is potentially slow, so report progress here.
+  gl::ScopedProgressReporter report_progress(
+      shared_context_state_->progress_reporter());
+
   CopySharedImageHelper helper(&shared_image_representation_factory_,
                                shared_context_state_.get());
   auto helper_result =
@@ -2769,6 +2773,10 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
 
   const SkIRect src_rect = SkIRect::MakeSize(sk_image->dimensions());
   const SkISize dst_size = SkISize::Make(dst_width, dst_height);
+
+  // Readback is potentially slow, so report progress here.
+  gl::ScopedProgressReporter report_progress(
+      shared_context_state_->progress_reporter());
 
   // While this function indicates it's asynchronous, the DoFinish() call below
   // ensures it completes synchronously.
