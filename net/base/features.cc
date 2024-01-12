@@ -430,7 +430,7 @@ const base::FeatureParam<bool> kIpPrivacyAddHeaderToProxiedRequests{
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
-    base::FEATURE_DISABLED_BY_DEFAULT;
+    base::FEATURE_ENABLED_BY_DEFAULT;
 #else   // !BUILDFLAG(IS_ANDROID)
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
     base::FEATURE_DISABLED_BY_DEFAULT;

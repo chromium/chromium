@@ -76,10 +76,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
-  // Disable network-change migration on WebView due to crbug.com/1430082.
-  aw_feature_overrides.DisableFeature(
-      net::features::kMigrateSessionsOnNetworkChangeV2);
-
   // Disable the passthrough on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);

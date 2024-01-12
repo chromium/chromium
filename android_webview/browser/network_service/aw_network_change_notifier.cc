@@ -26,7 +26,7 @@ void AwNetworkChangeNotifier::GetCurrentMaxBandwidthAndConnectionType(
 
 bool AwNetworkChangeNotifier::AreNetworkHandlesCurrentlySupported() const {
   return base::FeatureList::IsEnabled(
-      features::kWebViewPropagateNetworkSignals);
+      features::kWebViewPropagateNetworkChangeSignals);
 }
 
 void AwNetworkChangeNotifier::GetCurrentConnectedNetworks(
@@ -60,28 +60,32 @@ void AwNetworkChangeNotifier::OnMaxBandwidthChanged(
 
 void AwNetworkChangeNotifier::OnNetworkConnected(
     net::handles::NetworkHandle network) {
-  if (base::FeatureList::IsEnabled(features::kWebViewPropagateNetworkSignals)) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPropagateNetworkChangeSignals)) {
     NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
         NetworkChangeType::kConnected, network);
   }
 }
 void AwNetworkChangeNotifier::OnNetworkSoonToDisconnect(
     net::handles::NetworkHandle network) {
-  if (base::FeatureList::IsEnabled(features::kWebViewPropagateNetworkSignals)) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPropagateNetworkChangeSignals)) {
     NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
         NetworkChangeType::kSoonToDisconnect, network);
   }
 }
 void AwNetworkChangeNotifier::OnNetworkDisconnected(
     net::handles::NetworkHandle network) {
-  if (base::FeatureList::IsEnabled(features::kWebViewPropagateNetworkSignals)) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPropagateNetworkChangeSignals)) {
     NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
         NetworkChangeType::kDisconnected, network);
   }
 }
 void AwNetworkChangeNotifier::OnNetworkMadeDefault(
     net::handles::NetworkHandle network) {
-  if (base::FeatureList::IsEnabled(features::kWebViewPropagateNetworkSignals)) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPropagateNetworkChangeSignals)) {
     NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
         NetworkChangeType::kMadeDefault, network);
   }

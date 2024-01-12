@@ -62,8 +62,7 @@ class QuicConnectionMigrationTest : public ContentBrowserTest {
   QuicConnectionMigrationTest() {
     feature_list_.InitWithFeatures(
         // Enabled features
-        {net::features::kMigrateSessionsOnNetworkChangeV2,
-         net::features::kQuicMigrationIgnoreDisconnectSignalDuringProbing},
+        {net::features::kQuicMigrationIgnoreDisconnectSignalDuringProbing},
         // Disabled features
         {});
   }

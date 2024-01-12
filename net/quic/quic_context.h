@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -144,7 +145,11 @@ struct NET_EXPORT QuicParams {
   // If true, connection migration v2 will be used to migrate existing
   // sessions to network when the platform indicates that the default network
   // is changing.
-  bool migrate_sessions_on_network_change_v2 = false;
+  // Use the value of the flag as the default value. This is needed because unit
+  // tests does not go through network_session_configuration which causes
+  // discrepancy.
+  bool migrate_sessions_on_network_change_v2 =
+      base::FeatureList::IsEnabled(features::kMigrateSessionsOnNetworkChangeV2);
   // If true, connection migration v2 may be used to migrate active QUIC
   // sessions to alternative network if current network connectivity is poor.
   bool migrate_sessions_early_v2 = false;

@@ -686,10 +686,11 @@ public final class ProductionSupportedFlagList {
                         + "it makes sure the changes made to do so in "
                         + "Chromium won't affect WebView."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_PROPAGATE_NETWORK_SIGNALS,
-                "This flag will allow webView to propagate networking signals to the networking"
-                    + " stack. Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault)"
-                    + " signals are propagated."),
+                AwFeatures.WEBVIEW_PROPAGATE_NETWORK_CHANGE_SIGNALS,
+                "This flag will allow webView to propagate networking change signals to the"
+                    + " networking stack. Only"
+                    + " onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are"
+                    + " propagated."),
         Flag.baseFeature(
                 ContentFeatures.PREFETCH_NEW_LIMITS,
                 "Enables new limits policy for SpeculationRules Prefetch."),

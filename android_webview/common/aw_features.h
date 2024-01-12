@@ -41,7 +41,7 @@ BASE_DECLARE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);
-BASE_DECLARE_FEATURE(kWebViewPropagateNetworkSignals);
+BASE_DECLARE_FEATURE(kWebViewPropagateNetworkChangeSignals);
 BASE_DECLARE_FEATURE(kWebViewUnreducedProductVersion);
 BASE_DECLARE_FEATURE(kWebViewWideColorGamutSupport);
 BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderControl);
