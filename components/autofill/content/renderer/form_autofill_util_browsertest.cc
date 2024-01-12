@@ -189,10 +189,11 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
-                                  kAutofillUseDomNodeIdForRendererId,
-                              features::kAutofillContentEditables,
-                              features::kAutofillEnableSelectList},
+        /*enabled_features=*/
+        {blink::features::kAutofillUseDomNodeIdForRendererId,
+         features::kAutofillReplaceCachedWebElementsByRendererIds,
+         features::kAutofillContentEditables,
+         features::kAutofillEnableSelectList},
         /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;

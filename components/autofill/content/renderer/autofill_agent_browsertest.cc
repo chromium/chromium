@@ -116,6 +116,7 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
     scoped_features_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kAutofillUseDomNodeIdForRendererId,
+         features::kAutofillReplaceCachedWebElementsByRendererIds,
          features::kAutofillDetectRemovedFormControls,
          features::kAutofillContentEditables},
         /*disabled_features=*/{});
