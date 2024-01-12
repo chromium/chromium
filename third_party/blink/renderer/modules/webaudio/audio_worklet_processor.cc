@@ -376,6 +376,12 @@ void AudioWorkletProcessor::CopyArrayBuffersToPort(
 
   for (uint32_t bus_index = 0; bus_index < audio_port.size(); ++bus_index) {
     const scoped_refptr<AudioBus>& audio_bus = audio_port[bus_index];
+
+    // nullptr indicates the output bus is not connected. Do not proceed.
+    if (!audio_bus) {
+      break;
+    }
+
     for (uint32_t channel_index = 0;
          channel_index < audio_bus->NumberOfChannels(); ++channel_index) {
       auto backing_store = array_buffers[bus_index][channel_index]

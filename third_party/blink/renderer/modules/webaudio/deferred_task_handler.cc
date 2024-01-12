@@ -172,6 +172,16 @@ void DeferredTaskHandler::UpdateAutomaticPullNodes() {
     base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
     if (try_locker.is_acquired()) {
       rendering_automatic_pull_handlers_.assign(automatic_pull_handlers_);
+
+      // In rare cases, it is possible for automatic pull nodes' output bus
+      // to become stale. Make sure update their rendering output counts.
+      // crbug.com/1505080.
+      for (auto& handler : rendering_automatic_pull_handlers_) {
+        for (unsigned i = 0; i < handler->NumberOfOutputs(); ++i) {
+          handler->Output(i).UpdateRenderingState();
+        }
+      }
+
       automatic_pull_handlers_need_updating_ = false;
     }
   }
