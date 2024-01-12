@@ -10,13 +10,13 @@
 namespace blink {
 
 ScriptTimingInfo::ScriptTimingInfo(ExecutionContext* context,
-                                   Type type,
+                                   InvokerType type,
                                    base::TimeTicks start_time,
                                    base::TimeTicks execution_start_time,
                                    base::TimeTicks end_time,
                                    base::TimeDelta style_duration,
                                    base::TimeDelta layout_duration)
-    : type_(type),
+    : invoker_type_(type),
       start_time_(start_time),
       execution_start_time_(execution_start_time),
       end_time_(end_time),

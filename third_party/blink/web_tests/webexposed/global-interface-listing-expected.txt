@@ -7202,9 +7202,10 @@ interface PerformanceScriptTiming : PerformanceEntry
     attribute @@toStringTag
     getter executionStart
     getter forcedStyleAndLayoutDuration
+    getter invoker
+    getter invokerType
     getter pauseDuration
     getter sourceLocation
-    getter type
     getter window
     getter windowAttribution
     method constructor

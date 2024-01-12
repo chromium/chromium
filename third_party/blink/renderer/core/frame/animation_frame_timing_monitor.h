@@ -104,7 +104,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
   struct PendingScriptInfo {
-    ScriptTimingInfo::Type type;
+    ScriptTimingInfo::InvokerType invoker_type;
     base::TimeTicks start_time;
     base::TimeTicks queue_time;
     base::TimeTicks execution_start_time;
