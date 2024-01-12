@@ -77,8 +77,6 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
   if (flattens_inherited_transform != other.flattens_inherited_transform ||
       in_subtree_of_page_scale != other.in_subtree_of_page_scale ||
       animation_is_axis_aligned != other.animation_is_axis_aligned ||
-      delegates_to_parent_for_backface !=
-          other.delegates_to_parent_for_backface ||
       is_frame_paint_offset_translation !=
           other.is_frame_paint_offset_translation ||
       is_for_svg_child != other.is_for_svg_child ||

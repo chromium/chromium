@@ -112,7 +112,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     bool flattens_inherited_transform : 1 = false;
     bool in_subtree_of_page_scale : 1 = true;
     bool animation_is_axis_aligned : 1 = false;
-    bool delegates_to_parent_for_backface : 1 = false;
     // Set if a frame is rooted at this node.
     bool is_frame_paint_offset_translation : 1 = false;
     bool is_for_svg_child : 1 = false;
@@ -369,10 +368,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool DelegatesToParentForBackface() const {
-    if (RuntimeEnabledFeatures::BackfaceVisibilityNewInheritanceEnabled()) {
-      return state_.backface_visibility == BackfaceVisibility::kInherited;
-    }
-    return state_.delegates_to_parent_for_backface;
+    return state_.backface_visibility == BackfaceVisibility::kInherited;
   }
 
   // Content whose transform nodes have a common rendering context ID are 3D
