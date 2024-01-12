@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test if newly connected ports work correctly
-  internals is not defined
-Harness: the test ran to completion.
