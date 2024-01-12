@@ -3139,16 +3139,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("selectlist-open.html"));
 }
 
-// TODO(https://crbug.com/1309941): Flaky on Fuchsia
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilitySource DISABLED_AccessibilitySource
-#else
-#define MAYBE_AccessibilitySource AccessibilitySource
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilitySource) {
-  RunHtmlTest(FILE_PATH_LITERAL("source.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {
   RunHtmlTest(FILE_PATH_LITERAL("span.html"));
 }

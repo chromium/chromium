@@ -4643,12 +4643,6 @@ data/accessibility/html/small-expected-mac.txt
 data/accessibility/html/small-expected-uia-win.txt
 data/accessibility/html/small-expected-win.txt
 data/accessibility/html/small.html
-data/accessibility/html/source-expected-android.txt
-data/accessibility/html/source-expected-auralinux.txt
-data/accessibility/html/source-expected-fuchsia.txt
-data/accessibility/html/source-expected-mac.txt
-data/accessibility/html/source-expected-win.txt
-data/accessibility/html/source.html
 data/accessibility/html/span-expected-android-assist-data.txt
 data/accessibility/html/span-expected-android-external.txt
 data/accessibility/html/span-expected-android.txt
