@@ -231,6 +231,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
+    uint64_t /*secure_handle*/,
     H264SliceHeader* slice_header_out) {
   DCHECK(slice_header_out);
   DCHECK(!subsamples.empty());

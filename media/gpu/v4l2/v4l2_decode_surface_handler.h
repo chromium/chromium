@@ -33,6 +33,10 @@ class V4L2DecodeSurfaceHandler
 
   // Decode the surface |dec_surface|.
   virtual void DecodeSurface(scoped_refptr<V4L2DecodeSurface> dec_surface) = 0;
+
+  // Resumes decoding if stalled due to a kTryAgain state, this only occurs
+  // with CENCV1 H264 and VP9 superframe encrypted content.
+  virtual void ResumeDecoding() = 0;
 };
 
 }  // namespace media

@@ -107,12 +107,14 @@ V4L2StatelessVideoDecoderBackend::V4L2StatelessVideoDecoderBackend(
     scoped_refptr<V4L2Device> device,
     VideoCodecProfile profile,
     const VideoColorSpace& color_space,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    CdmContext* cdm_context)
     : V4L2VideoDecoderBackend(client, std::move(device)),
       profile_(profile),
       color_space_(color_space),
       bitstream_id_to_timestamp_(kTimestampCacheSize),
-      task_runner_(task_runner) {
+      task_runner_(task_runner),
+      cdm_context_(cdm_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -363,6 +365,11 @@ void V4L2StatelessVideoDecoderBackend::SurfaceReady(
   PumpOutputSurfaces();
 }
 
+void V4L2StatelessVideoDecoderBackend::ResumeDecoding() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DoDecodeWork();
+}
+
 void V4L2StatelessVideoDecoderBackend::EnqueueDecodeTask(
     scoped_refptr<DecoderBuffer> buffer,
     VideoDecoder::DecodeCB decode_cb) {
@@ -479,10 +486,11 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
         return false;
 
       case AcceleratedVideoDecoder::kTryAgain:
-        NOTREACHED() << "Should not reach here unless this class accepts "
-                        "encrypted streams.";
-        DVLOGF(4) << "No key for decoding stream.";
-        return false;
+        // In this case we are waiting for an async operation relating to secure
+        // content. When that is complete, ResumeDecoding will be invoked and we
+        // will start decoding again; or a reset will occur and that will resume
+        // decoding.
+        return true;
     }
   }
 }
@@ -719,7 +727,8 @@ bool V4L2StatelessVideoDecoderBackend::CreateDecoder() {
 
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
     decoder_ = std::make_unique<H264Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
+        std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get(),
+                                                       cdm_context_),
         profile_, color_space_);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {

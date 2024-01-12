@@ -69,8 +69,8 @@ interface CdmContextEventCallback {
 };
 
 // Maps to the media::CdmContext interface for remoting it to another process.
-// Next MinVersion: 3
-// Next min method ID: 5
+// Next MinVersion: 4
+// Next min method ID: 6
 [Stable, Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
 interface StableCdmContext {
   // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
@@ -96,6 +96,13 @@ interface StableCdmContext {
   // media::CdmContext::GetChromeOsCdmContext()->AllocateSecureBuffer.
   [MinVersion=2]
   AllocateSecureBuffer@4(uint32 size) => (handle<platform>? secure_buffer);
+
+  // Proxies to
+  // media::CdmContext::GetChromeOsCdmContext()->ParseEncryptedSliceHeader.
+  [MinVersion=3]
+  ParseEncryptedSliceHeader@5(uint64 secure_handle, uint32 offset,
+                              array<uint8> stream_data)
+      => (bool success, array<uint8> slice_header);
 };
 
 // Based on |media.mojom.VideoDecoder|.

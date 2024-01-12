@@ -270,6 +270,15 @@ void ContentDecryptionModuleAdapter::AllocateSecureBuffer(
   ChromeOsCdmFactory::AllocateSecureBuffer(size, std::move(callback));
 }
 
+void ContentDecryptionModuleAdapter::ParseEncryptedSliceHeader(
+    uint64_t secure_handle,
+    uint32_t offset,
+    const std::vector<uint8_t>& stream_data,
+    ParseEncryptedSliceHeaderCB callback) {
+  ChromeOsCdmFactory::ParseEncryptedSliceHeader(
+      secure_handle, offset, stream_data, std::move(callback));
+}
+
 void ContentDecryptionModuleAdapter::OnSessionMessage(
     const std::string& session_id,
     media::CdmMessageType message_type,

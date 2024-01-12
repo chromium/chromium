@@ -39,6 +39,10 @@ class ChromeOsCdmContext {
   using AllocateSecureBufferCB =
       base::OnceCallback<void(mojo::PlatformHandle secure_fd)>;
 
+  using ParseEncryptedSliceHeaderCB =
+      base::OnceCallback<void(bool success,
+                              const std::vector<uint8_t>& slice_hdr)>;
+
   // Gets the HW specific key information for the key specified in
   // |decrypt_config| and returns it via |callback|.
   virtual void GetHwKeyData(const media::DecryptConfig* decrypt_config,
@@ -68,6 +72,16 @@ class ChromeOsCdmContext {
   // Zone implementations.
   virtual void AllocateSecureBuffer(uint32_t size,
                                     AllocateSecureBufferCB callback) = 0;
+
+  // Parses the H264 slice header contained in the secure buffer referenced by
+  // |secure_handle| at |offset| bytes into the data. The required SPS/PPS data
+  // is in |stream_data|. The invoked callback will contain the H264 slice
+  // header details.
+  virtual void ParseEncryptedSliceHeader(
+      uint64_t secure_handle,
+      uint32_t offset,
+      const std::vector<uint8_t>& stream_data,
+      ParseEncryptedSliceHeaderCB callback) = 0;
 
  protected:
   virtual ~ChromeOsCdmContext() = default;

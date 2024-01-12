@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
+#include "media/base/cdm_context.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -38,7 +39,8 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
       scoped_refptr<V4L2Device> device,
       VideoCodecProfile profile,
       const VideoColorSpace& color_space,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      CdmContext* cdm_context);
 
   V4L2StatelessVideoDecoderBackend(const V4L2StatelessVideoDecoderBackend&) =
       delete;
@@ -72,6 +74,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
                     int32_t bitstream_id,
                     const gfx::Rect& visible_rect,
                     const VideoColorSpace& color_space) override;
+  void ResumeDecoding() override;
 
  private:
   // Request for displaying the surface or calling the decode callback.
@@ -195,6 +198,8 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   struct BitstreamID {};
   base::IdType32<BitstreamID>::Generator bitstream_id_generator_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  raw_ptr<CdmContext> cdm_context_;
 
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{
