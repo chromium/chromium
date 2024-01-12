@@ -135,7 +135,15 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<TestWebContents> captured_wc_;
 };
 
-TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelSuccess) {
+// TODO(crbug.com/1466247): Remove this test suite after the getZoomLevel() API
+// is made synchronous.
+class CapturedSurfaceControllerGetZoomLevelTest
+    : public CapturedSurfaceControllerTestBase {
+ public:
+  ~CapturedSurfaceControllerGetZoomLevelTest() override = default;
+};
+
+TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelSuccess) {
   content::HostZoomMap::SetZoomLevel(captured_wc_.get(),
                                      blink::PageZoomFactorToZoomLevel(0.9));
   base::RunLoop run_loop;
@@ -144,7 +152,7 @@ TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelSuccess) {
   run_loop.Run();
 }
 
-TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelUnknownError) {
+TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelUnknownError) {
   base::RunLoop run_loop;
   captured_wc_.reset();
   controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
@@ -152,21 +160,22 @@ TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelUnknownError) {
   run_loop.Run();
 }
 
-class SetZoomLevelTest : public CapturedSurfaceControllerTestBase,
-                         public ::testing::WithParamInterface<int> {
+class CapturedSurfaceControllerSetZoomLevelTest
+    : public CapturedSurfaceControllerTestBase,
+      public ::testing::WithParamInterface<int> {
  public:
-  SetZoomLevelTest() : zoom_level_(GetParam()) {}
+  CapturedSurfaceControllerSetZoomLevelTest() : zoom_level_(GetParam()) {}
   const int zoom_level_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    SetZoomLevelTest,
+    CapturedSurfaceControllerSetZoomLevelTest,
     ::testing::Values(
         static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)),
         static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor))));
 
-TEST_P(SetZoomLevelTest, SetZoomLevelSuccess) {
+TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
   base::RunLoop run_loop;
   controller_->SetZoomLevel(
