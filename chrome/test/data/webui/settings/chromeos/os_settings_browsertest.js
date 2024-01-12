@@ -590,6 +590,16 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    'os_search_page/search_and_assistant_settings_card_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
+ [
+   'OsSearchPageSearchEngine',
+   'os_search_page/search_engine_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSearchPageSearchEngineRevamp',
+   'os_search_page/search_engine_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  [
    'OsSettingsMain',
