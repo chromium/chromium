@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 
 #include "base/functional/overloaded.h"
+#include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 
 namespace policy {
@@ -30,6 +31,38 @@ std::string_view AutoEnrollmentLegacyErrorCodeToString(
     case AutoEnrollmentLegacyError::kServerError:
       return "Server error";
   }
+}
+
+std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
+  return std::visit(
+      base::Overloaded{
+          [](AutoEnrollmentLegacyError legacy_error) {
+            return std::string(
+                AutoEnrollmentLegacyErrorCodeToString(legacy_error));
+          },
+          [](AutoEnrollmentSafeguardTimeoutError) {
+            return std::string("Safeguard timeout");
+          },
+          [](AutoEnrollmentSystemClockSyncError) {
+            return std::string("System clock sync error");
+          },
+          [](const AutoEnrollmentDMServerError& error) {
+            return base::StringPrintf(
+                "DMServer error: %d, %s", error.dm_error,
+                net::ErrorToString(error.network_error.value_or(net::OK))
+                    .c_str());
+          },
+          [](AutoEnrollmentStateAvailabilityResponseError error) {
+            return std::string("Invalid state availability response");
+          },
+          [](AutoEnrollmentPsmError) {
+            return std::string("PSM internal error");
+          },
+          [](AutoEnrollmentStateRetrievalResponseError) {
+            return std::string("Invalid state retrieval response");
+          },
+      },
+      error);
 }
 
 }  // namespace
@@ -76,12 +109,11 @@ AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
       error);
 }
 
-std::string_view AutoEnrollmentStateToString(const AutoEnrollmentState& state) {
+std::string AutoEnrollmentStateToString(const AutoEnrollmentState& state) {
   if (state.has_value()) {
-    return AutoEnrollmentResultToString(state.value());
+    return std::string(AutoEnrollmentResultToString(state.value()));
   } else {
-    return AutoEnrollmentLegacyErrorCodeToString(
-        AutoEnrollmentErrorToLegacyError(state.error()));
+    return AutoEnrollmentErrorToString(state.error());
   }
 }
 

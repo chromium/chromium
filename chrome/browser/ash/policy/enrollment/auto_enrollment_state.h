@@ -104,7 +104,7 @@ static constexpr AutoEnrollmentState kAutoEnrollmentLegacyServerError =
 AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
     const AutoEnrollmentError& error);
 
-std::string_view AutoEnrollmentStateToString(const AutoEnrollmentState& state);
+std::string AutoEnrollmentStateToString(const AutoEnrollmentState& state);
 
 }  // namespace policy
 
