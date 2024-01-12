@@ -86,7 +86,6 @@ public class TabListCoordinator
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
     private final @TabListMode int mMode;
-    private final Rect mThumbnailLocationOfCurrentTab = new Rect();
     private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabListModel mModel;
@@ -436,7 +435,12 @@ public class TabListCoordinator
     @NonNull
     Rect getThumbnailLocationOfCurrentTab() {
         // TODO(crbug.com/964406): calculate the location before the real one is ready.
-        return mThumbnailLocationOfCurrentTab;
+        Rect rect =
+                mRecyclerView.getRectOfCurrentThumbnail(
+                        mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());
+        if (rect == null) return new Rect();
+        rect.offset(0, getTabListTopOffset());
+        return rect;
     }
 
     @NonNull
@@ -546,20 +550,6 @@ public class TabListCoordinator
                 mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
             }
         }
-    }
-
-    /**
-     * Update the location of the selected thumbnail.
-     * @return Whether a valid {@link Rect} is obtained.
-     */
-    boolean updateThumbnailLocation() {
-        Rect rect =
-                mRecyclerView.getRectOfCurrentThumbnail(
-                        mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());
-        if (rect == null) return false;
-        rect.offset(0, getTabListTopOffset());
-        mThumbnailLocationOfCurrentTab.set(rect);
-        return true;
     }
 
     private void updateGridCardLayout(int viewWidth) {

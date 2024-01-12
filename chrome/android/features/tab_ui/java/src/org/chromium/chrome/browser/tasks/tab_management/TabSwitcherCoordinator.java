@@ -492,7 +492,6 @@ public class TabSwitcherCoordinator
             thumbnail.offset(-root.left, -root.top);
             return thumbnail;
         }
-        mTabListCoordinator.updateThumbnailLocation();
         return mTabListCoordinator.getThumbnailLocationOfCurrentTab();
     }
 

@@ -215,7 +215,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @NonNull
     Rect getGlobalLocationOfCurrentThumbnail() {
-        mTabListCoordinator.updateThumbnailLocation();
         Rect thumbnail = mTabListCoordinator.getThumbnailLocationOfCurrentTab();
         Rect recyclerViewLocation = mTabListCoordinator.getRecyclerViewLocation();
         thumbnail.offset(recyclerViewLocation.left, recyclerViewLocation.top);
