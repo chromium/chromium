@@ -51,8 +51,8 @@ class VulkanImplementationGbm : public gpu::VulkanImplementation {
  private:
   gpu::VulkanInstance vulkan_instance_;
 
-  PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR
-      vkGetPhysicalDeviceExternalFencePropertiesKHR_ = nullptr;
+  PFN_vkGetPhysicalDeviceExternalFenceProperties
+      vkGetPhysicalDeviceExternalFenceProperties_ = nullptr;
   PFN_vkGetFenceFdKHR vkGetFenceFdKHR_ = nullptr;
 };
 

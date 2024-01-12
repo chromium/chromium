@@ -26,26 +26,25 @@ bool VulkanImplementationGbm::InitializeVulkanInstance(bool using_surface) {
   DLOG_IF(ERROR, using_surface) << "VK_KHR_surface is not supported.";
 
   std::vector<const char*> required_extensions = {
-      "VK_KHR_external_fence_capabilities",
       "VK_KHR_get_physical_device_properties2",
   };
   if (!vulkan_instance_.Initialize(base::FilePath("libvulkan.so.1"),
                                    required_extensions, {})) {
     return false;
   }
-
-  vkGetPhysicalDeviceExternalFencePropertiesKHR_ =
-      reinterpret_cast<PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR>(
-          vkGetInstanceProcAddr(
-              vulkan_instance_.vk_instance(),
-              "vkGetPhysicalDeviceExternalFencePropertiesKHR"));
-  if (!vkGetPhysicalDeviceExternalFencePropertiesKHR_)
+  vkGetPhysicalDeviceExternalFenceProperties_ =
+      reinterpret_cast<PFN_vkGetPhysicalDeviceExternalFenceProperties>(
+          vkGetInstanceProcAddr(vulkan_instance_.vk_instance(),
+                                "vkGetPhysicalDeviceExternalFenceProperties"));
+  if (!vkGetPhysicalDeviceExternalFenceProperties_) {
     return false;
+  }
 
   vkGetFenceFdKHR_ = reinterpret_cast<PFN_vkGetFenceFdKHR>(
       vkGetInstanceProcAddr(vulkan_instance_.vk_instance(), "vkGetFenceFdKHR"));
-  if (!vkGetFenceFdKHR_)
+  if (!vkGetFenceFdKHR_) {
     return false;
+  }
 
   return true;
 }
@@ -67,7 +66,7 @@ bool VulkanImplementationGbm::GetPhysicalDevicePresentationSupport(
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO,
       .handleType = VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT};
   VkExternalFenceProperties external_fence_properties;
-  vkGetPhysicalDeviceExternalFencePropertiesKHR_(
+  vkGetPhysicalDeviceExternalFenceProperties_(
       physical_device, &external_fence_info, &external_fence_properties);
   if (!(external_fence_properties.externalFenceFeatures &
         VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT)) {
