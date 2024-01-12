@@ -108,25 +108,6 @@ void TerminateProcessBackground(base::Process process,
   LOG_IF(ERROR, !success) << "Failed to terminate the lacros-chrome.";
 }
 
-void AppendArguments(const std::vector<std::string>& args,
-                     base::CommandLine& command_line) {
-  // TODO(crbug.com/1513045): When std::vector<std::string> becomes directly
-  // added to `base::CommandLine` object, this function will be removed.
-  // `AppendArg()` only calls` AppendArgNative()`, and does not separate the
-  // flag into switches and keys. So, we need to separate the flag into switches
-  // and keys before calling `AppendArg()` when each flag is added to
-  // `command_line` with `AppendArg()` in for loop. In the current code,
-  // `AppendArguments()` is responsible for creating the correct command line,
-  // so even if something odd is added, it is likely to be detected here.
-  base::CommandLine command_line_to_append =
-      base::CommandLine(base::CommandLine::NO_PROGRAM);
-  for (const auto& arg : args) {
-    command_line_to_append.AppendArg(arg);
-  }
-  command_line.AppendArguments(command_line_to_append,
-                               /*include_program=*/false);
-}
-
 // NOTE: Do NOT add the command line here unless it is very fundamental. Find
 // the method suited the best from `SetUp*` or create a new one.
 base::CommandLine CreateCommandLine(const base::FilePath& chrome_path) {
@@ -251,11 +232,11 @@ void SetUpLacrosAdditionalParameters(const LaunchParamsFromBackground& params,
       additional_flags, "####", base::TRIM_WHITESPACE,
       base::SPLIT_WANT_NONEMPTY);
 
-  // TODO(crbug.com/1513045): When `AppendSwitchesAndArguments` function in
-  // base::CommandLine become public function, these vectors will be appended
-  // `command_line` directly.
-  AppendArguments(delimited_flags, parameters.command_line);
-  AppendArguments(params.lacros_additional_args, parameters.command_line);
+  parameters.command_line.AppendArguments(
+      base::CommandLine::FromArgvWithoutProgram(delimited_flags), false);
+  parameters.command_line.AppendArguments(
+      base::CommandLine::FromArgvWithoutProgram(params.lacros_additional_args),
+      false);
 }
 
 void SetUpForGpu(base::CommandLine& command_line) {
