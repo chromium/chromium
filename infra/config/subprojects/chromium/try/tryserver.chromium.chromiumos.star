@@ -169,7 +169,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache"
