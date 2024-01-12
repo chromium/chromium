@@ -2078,7 +2078,7 @@
       'filepath': 'sync_file_system',
     },
     'system_web_apps': {
-      'filepath': 'chrome/.*system_web_app'
+      'filepath': 'chrome/.*system_web_app(?!.*/apps/)'
     },
     'tab_alert_indicators': {
       'filepath': 'content/browser/media/audio_stream_monitor'\
