@@ -195,10 +195,12 @@ bool IsFetchLaterUseBackgroundSyncPermissionEnabled() {
 
 // Allows manually overriding the "send-on-enter-bfcache" behavior without
 // considering BackgroundSync permission.
-// Defaults to false to delegate the decision to BackgroundSync permission.
+// Defaults to true to flush on entering BackForwardCache.
+// See also
+// https://github.com/WICG/pending-beacon/issues/30#issuecomment-1333869614
 bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kFetchLaterAPI, "send_on_enter_bfcache", false);
+  return base::GetFieldTrialParamByFeatureAsBool(features::kFetchLaterAPI,
+                                                 "send_on_enter_bfcache", true);
 }
 
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {

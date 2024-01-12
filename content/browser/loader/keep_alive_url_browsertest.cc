@@ -1395,11 +1395,13 @@ IN_PROC_BROWSER_TEST_F(FetchLaterNoActivationTimeoutBrowserTest,
   ExpectFetchLaterRequests(1, request_handlers);
 }
 
-// A pending FetchLater request should not be sent after its page gets restored
-// from BackForwardCache before getting evicted.
+// A pending FetchLater request should have been sent after its page gets
+// restored from BackForwardCache before getting evicted. It is because, by
+// default, pending requests are all flushed on BFCache no matter
+// BackgroundSync is on or not. See http://b/310541607#comment28.
 IN_PROC_BROWSER_TEST_F(
     FetchLaterNoActivationTimeoutBrowserTest,
-    NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
+    FlushedWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
   const std::string target_url = kFetchLaterEndpoint;
   auto request_handlers = RegisterRequestHandlers({target_url});
   ASSERT_TRUE(server()->Start());
@@ -1414,9 +1416,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // The same page is still alive.
   ExpectRestored(FROM_HERE);
-  // The loader should still exist, but the request should not be sent.
-  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 1u);
-  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+  // The FetchLater requests should've been sent.
+  ExpectFetchLaterRequests(1, request_handlers);
 }
 
 // Without an activateAfter set, a pending FetchLater request should not be
