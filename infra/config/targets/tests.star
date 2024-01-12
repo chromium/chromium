@@ -1666,6 +1666,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "optimization_guide_gpu_unittests",
+)
+
+targets.tests.gtest_test(
     name = "optimization_guide_unittests",
 )
 

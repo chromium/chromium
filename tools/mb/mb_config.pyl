@@ -943,15 +943,15 @@
     ],
 
     'optimization_guide_mac_arm64_rel': [
-      'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'arm64',
+      'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'arm64',
     ],
 
     'optimization_guide_rel': [
-      'minimal_symbols', 'optimization_guide', 'reclient', 'release',
+      'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release',
     ],
 
     'optimization_guide_x86_rel': [
-      'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'x86',
+      'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'x86',
     ],
 
     'release_bot_blink': [
@@ -1335,6 +1335,10 @@
 
     'minimal_symbols': {
       'gn_args': 'symbol_level=1',
+    },
+
+    'ml_internal': {
+      'gn_args': 'enable_ml_internal=true',
     },
 
     'no_default_afdo': {

@@ -1253,6 +1253,10 @@
     "label": "//chrome/browser/media/router:openscreen_unittests",
     "type": "console_test_launcher",
   },
+  "optimization_guide_gpu_unittests": {
+    "label": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
+    "type": "console_test_launcher",
+  },
   "optimization_guide_unittests": {
     "label": "//components/optimization_guide/internal:optimization_guide_unittests",
     "type": "console_test_launcher",

@@ -4759,7 +4759,25 @@
       },
     },
 
-    'optimization_guide_gtests': {
+    'optimization_guide_desktop_gtests': {
+      'chrome_ml_unittests': {},
+      'optimization_guide_browser_tests': {
+        'test': 'browser_tests',
+        'args': [
+          '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+        ],
+      },
+      'optimization_guide_components_unittests': {
+        'test': 'components_unittests',
+        'args': [
+          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+        ],
+      },
+      'optimization_guide_gpu_unittests': {},
+      'optimization_guide_unittests': {},
+    },
+
+    'optimization_guide_desktop_gtests_nogpu': {
       'chrome_ml_unittests': {},
       'optimization_guide_browser_tests': {
         'test': 'browser_tests',

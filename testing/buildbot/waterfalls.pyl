@@ -6669,7 +6669,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
         },
         'os_type': 'cros',
       },
@@ -6683,7 +6683,8 @@
           'linux-jammy',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           # TODO(b/317243012): Add GPU suite when machines become available.
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'linux',
@@ -6698,7 +6699,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           'gtest_tests': 'optimization_guide_desktop_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6713,7 +6714,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           'gtest_tests': 'optimization_guide_desktop_gtests',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'mac',
@@ -6728,7 +6729,8 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           # TODO(b/317243012): Add GPU suite when machines become available.
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
            'isolated_scripts': 'model_validation_tests_full',
         },
         'os_type': 'win',
@@ -6744,7 +6746,8 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_gtests',
+           # TODO(b/317243012): Add GPU suite when machines become available.
+           'gtest_tests': 'optimization_guide_desktop_gtests_nogpu',
            'isolated_scripts': 'model_validation_tests_full',
 
         },
