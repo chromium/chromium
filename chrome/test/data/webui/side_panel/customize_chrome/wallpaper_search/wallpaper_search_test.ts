@@ -781,8 +781,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals('foobar', args[0][1].style);
     });
 
-    // TODO(crbug.com/1514888, b/319445205): Re-enable this test.
-    test.skip('current history theme is checked', async () => {
+    test('current history theme is checked', async () => {
       createWallpaperSearchElement();
 
       wallpaperSearchCallbackRouterRemote.setHistory([
@@ -791,17 +790,11 @@ suite('WallpaperSearchTest', () => {
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
-      // Set a default theme.
-      let theme = createTheme();
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
-
       // There should be no checked tiles.
       assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
 
       // Set theme to the first tile.
-      theme = createTheme();
+      const theme = createTheme();
       theme.backgroundImage = createBackgroundImage('');
       theme.backgroundImage.localBackgroundId = {
         high: BigInt(10),
@@ -809,7 +802,6 @@ suite('WallpaperSearchTest', () => {
       };
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
 
       // The first result should be checked and be the only one checked.
       const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
