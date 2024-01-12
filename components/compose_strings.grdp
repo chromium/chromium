@@ -50,17 +50,16 @@
     Go to Settings
   </message>
 
-    <!-- In product help bubble dialog for MSBB Settings -->
-    <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog">
-      Turn on this setting to use Help me write
-    </message>
-    <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER" desc="The a11y text for the In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog">
-      Turn on the Make Searches and Browsing Better setting to use Help me write
-    </message>
-    <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT" desc="The accessibility label associated with the MSBB Bubble's close button" >
-      Close tip
-    </message>
-
+  <!-- In product help bubble dialog for MSBB Settings -->
+  <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog">
+    Turn on this setting to use Help me write
+  </message>
+  <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER" desc="The a11y text for the In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog">
+    Turn on the Make Searches and Browsing Better setting to use Help me write
+  </message>
+  <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT" desc="The accessibility label associated with the MSBB Bubble's close button" >
+    Close tip
+  </message>
 
   <!-- Input dialog -->
   <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title.">
@@ -169,7 +168,7 @@
   </message>
 
   <!-- Miscellaneous -->
-  <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for feedback text field" translateable="false">
+  <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Help me write feedback form">
     Send feedback for Help me write.
   </message>
 </grit-part>
