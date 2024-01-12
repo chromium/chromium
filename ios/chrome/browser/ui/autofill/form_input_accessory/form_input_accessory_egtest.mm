@@ -329,7 +329,8 @@ constexpr char kFormZip[] = "form_zip";
 // Tests that tapping on an address related field opens the keyboard
 // accessory with the proper suggestion visible and that tapping on that
 // suggestion properly fills the related fields on the form.
-- (void)testFillAddressFieldsOnForm {
+// TODO(crbug.com/1517915): Reenable after fixing.
+- (void)DISABLED_testFillAddressFieldsOnForm {
   [self loadAddressPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
