@@ -7074,6 +7074,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "safe-browsing-async-real-time-check",
+    "owners": [
+      "xinghuilu@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "safe-browsing-hash-prefix",
     "owners": [
       "xinghuilu@chromium.org",

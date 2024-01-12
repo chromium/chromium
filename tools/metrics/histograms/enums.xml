@@ -23297,6 +23297,7 @@ from previous Chrome versions.
   <int value="-377883447" label="NtpHistoryClustersModuleDiscounts:disabled"/>
   <int value="-377215262" label="RenderArcNotificationsByChrome:enabled"/>
   <int value="-376571345" label="FillingAcrossGroupedSites:enabled"/>
+  <int value="-375342164" label="SafeBrowsingAsyncRealTimeCheck:disabled"/>
   <int value="-374657496" label="OmniboxEnableClipboardProvider:enabled"/>
   <int value="-374423260" label="OmniboxTabSwitchSuggestions:disabled"/>
   <int value="-373365335" label="JourneysOmniboxAction:disabled"/>
@@ -24405,6 +24406,7 @@ from previous Chrome versions.
   <int value="138345654" label="enable-ambient-authentication-in-incognito"/>
   <int value="138598687"
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:enabled"/>
+  <int value="138995035" label="SafeBrowsingAsyncRealTimeCheck:enabled"/>
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
   <int value="139603247" label="AudioHFPMicSRToggle:disabled"/>
   <int value="140257184" label="ChromeOSAmbientModeNewUrl:enabled"/>

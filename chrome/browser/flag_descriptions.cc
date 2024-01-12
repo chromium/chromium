@@ -1612,6 +1612,12 @@ const char kExperimentalWebPlatformFeaturesName[] =
 const char kExperimentalWebPlatformFeaturesDescription[] =
     "Enables experimental Web Platform features that are in development.";
 
+const char kSafeBrowsingAsyncRealTimeCheckName[] =
+    "Safe Browsing Async Real Time Check";
+const char kSafeBrowsingAsyncRealTimeCheckDescription[] =
+    "Safe Browsing real-time checks are conducted asynchronously. They no "
+    "longer delay page load.";
+
 const char kSafeBrowsingHashPrefixRealTimeLookupsName[] =
     "Safe Browsing Hash Prefix Real Time Lookups";
 const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
