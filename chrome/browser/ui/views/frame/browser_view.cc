@@ -2607,7 +2607,7 @@ void BrowserView::OnCanResizeFromWebAPIChanged() {
   }
 
   cached_can_resize_from_web_api_ = can_resize;
-  GetWidget()->OnSizeConstraintsChanged();
+  NotifyWidgetSizeConstraintsChanged();
   InvalidateLayout();  // To show/hide the maximize button.
 }
 
@@ -2627,7 +2627,16 @@ void BrowserView::SynchronizeRenderWidgetHostVisualPropertiesForMainFrame() {
   }
 }
 
-void BrowserView::OnWidgetSizeConstraintsChanged(views::Widget* widget) {
+void BrowserView::NotifyWidgetSizeConstraintsChanged() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  // TODO(crbug.com/1503145): Undo changes in this CL and return to use
+  // `WidgetObserver::OnWidgetSizeConstraintsChanged` once zoom levels are
+  // refactored so that visual properties can be updated during page load.
+  GetWidget()->OnSizeConstraintsChanged();
+
   // `resizable` @media feature value in renderer needs to be updated.
   SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
 }
@@ -2637,7 +2646,7 @@ void BrowserView::OnWidgetShowStateChanged(views::Widget* widget) {
   SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
 }
 
-void BrowserView::PrimaryPageChanged(content::Page& page) {
+void BrowserView::DidFirstVisuallyNonEmptyPaint() {
   auto can_resize = GetCanResizeFromWebAPI();
   if (cached_can_resize_from_web_api_ == can_resize) {
     return;
@@ -2647,9 +2656,7 @@ void BrowserView::PrimaryPageChanged(content::Page& page) {
   // Observers must be notified when there's new `Page` with a differing
   // `can_resize` value to make sure that they know that `Widget`'s
   // resizability has changed.
-  if (GetWidget()) {
-    GetWidget()->OnSizeConstraintsChanged();
-  }
+  NotifyWidgetSizeConstraintsChanged();
 }
 
 void BrowserView::TouchModeChanged() {
