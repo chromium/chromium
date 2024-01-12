@@ -495,7 +495,15 @@ class IndexedDBDatabaseOperationTest : public IndexedDBDatabaseTest {
     transaction_ = request_.connection()->CreateVersionChangeTransaction(
         transaction_id, /*scope=*/std::set<int64_t>(),
         new IndexedDBFakeBackingStore::FakeTransaction(commit_success_));
-    db_->RegisterAndScheduleTransaction(transaction_);
+
+    std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
+        {{GetDatabaseLockId(db_->metadata().name),
+          PartitionedLockManager::LockType::kExclusive}};
+    db_->lock_manager()->AcquireLocks(
+        std::move(lock_requests),
+        transaction_->mutable_locks_receiver()->AsWeakPtr(),
+        base::BindOnce(&IndexedDBTransaction::Start,
+                       transaction_->AsWeakPtr()));
 
     // Add a dummy task which takes the place of the VersionChangeOperation
     // which kicks off the upgrade. This ensures that the transaction has

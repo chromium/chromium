@@ -409,7 +409,7 @@ TEST_F(IndexedDBTransactionTest, SchedulePreemptiveTask) {
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
   IndexedDBTransaction* transaction = connection->CreateTransaction(
       mojo::NullAssociatedReceiver(), id, scope,
-      blink::mojom::IDBTransactionMode::VersionChange,
+      blink::mojom::IDBTransactionMode::ReadWrite,
       new IndexedDBFakeBackingStore::FakeTransaction(commit_failure));
 
   EXPECT_FALSE(transaction->HasPendingTasks());
@@ -531,8 +531,7 @@ TEST_P(IndexedDBTransactionTestMode, AbortPreemptive) {
 
 static const blink::mojom::IDBTransactionMode kTestModes[] = {
     blink::mojom::IDBTransactionMode::ReadOnly,
-    blink::mojom::IDBTransactionMode::ReadWrite,
-    blink::mojom::IDBTransactionMode::VersionChange};
+    blink::mojom::IDBTransactionMode::ReadWrite};
 
 INSTANTIATE_TEST_SUITE_P(IndexedDBTransactions,
                          IndexedDBTransactionTestMode,
