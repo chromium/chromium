@@ -121,9 +121,9 @@ void AutofillKeyboardAccessoryView::AxAnnounce(const std::u16string& text) {
 void AutofillKeyboardAccessoryView::ConfirmDeletion(
     const std::u16string& confirmation_title,
     const std::u16string& confirmation_body,
-    base::OnceClosure confirm_deletion) {
+    base::OnceCallback<void(bool)> deletion_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  confirm_deletion_ = std::move(confirm_deletion);
+  deletion_callback_ = std::move(deletion_callback);
   Java_AutofillKeyboardAccessoryViewBridge_confirmDeletion(
       env, java_object_, ConvertUTF16ToJavaString(env, confirmation_title),
       ConvertUTF16ToJavaString(env, confirmation_body));
@@ -145,14 +145,15 @@ void AutofillKeyboardAccessoryView::DeletionRequested(
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 }
 
-void AutofillKeyboardAccessoryView::DeletionConfirmed(
+void AutofillKeyboardAccessoryView::OnDeletionDialogClosed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (confirm_deletion_.is_null()) {
-    LOG(DFATAL) << "DeletionConfirmed called but no deletion is pending!";
+    const JavaParamRef<jobject>& obj,
+    jboolean confirmed) {
+  if (deletion_callback_.is_null()) {
+    LOG(DFATAL) << "OnDeletionDialogClosed called but no deletion is pending!";
     return;
   }
-  std::move(confirm_deletion_).Run();
+  std::move(deletion_callback_).Run(confirmed);
 }
 
 void AutofillKeyboardAccessoryView::ViewDismissed(
