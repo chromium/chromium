@@ -18,7 +18,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/common/channel_info.h"
+#include "components/nacl/common/buildflags.h"
+#include "components/policy/core/common/values_util.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
 namespace base {
@@ -26,8 +29,6 @@ struct LaunchOptions;
 }  // namespace base
 
 namespace crosapi {
-
-class EnvironmentProvider;
 
 // Manages launching and terminating Lacros process.
 // TODO(crbug.com/1495590): Extract launching logic from BrowserManager to
@@ -103,9 +104,6 @@ class BrowserLauncher {
     // Available only when lacros-chrome is running.
     CrosapiId crosapi_id;
 
-    // Pipe FDs through which Ash and Lacros exchange post-login parameters.
-    base::ScopedFD postlogin_pipe_fd;
-
     // Time when the lacros process was launched.
     base::TimeTicks lacros_launch_time;
   };
@@ -123,16 +121,25 @@ class BrowserLauncher {
   // `mojo_disconnection_cb`: Callback function setting up mojo connection.
   // `BrowserManager::OnMojoDisconnected` is called.
   // `is_keep_alive_enabled`: Whether `keep_alive_features` is empty.
-  // `environment_provider`: Passes ash-chrome specific flags/configurations to
-  // lacros-chrome.
   std::optional<LaunchResults> LaunchProcess(
       const base::FilePath& chrome_path,
       const LaunchParamsFromBackground& params,
       bool launching_at_login_screen,
       browser_util::LacrosSelection lacros_selection,
       base::OnceClosure mojo_disconnection_cb,
-      bool is_keep_alive_enabled,
-      EnvironmentProvider& environment_provider);
+      bool is_keep_alive_enabled);
+
+  // Writes post login data to the Lacros process. After that,
+  // `postlogin_pipe_fd` is reset.
+  void ResumeLaunch();
+
+  // Sets properties to `environment_provider_`.
+  void SetDeviceAccountComponentPolicy(
+      policy::ComponentPolicyMap component_policy);
+  void SetLastPolicyFetchAttemptTimestamp(base::Time last_refresh);
+  void SetDeviceAccountPolicy(const std::string& policy_blob);
+
+  EnvironmentProvider& environment_provider() { return environment_provider_; }
 
   // Returns true if process is valid.
   bool IsProcessValid();
@@ -179,6 +186,12 @@ class BrowserLauncher {
 
   // Process handle for the lacros_chrome process.
   base::Process process_;
+
+  // Pipe FDs through which Ash and Lacros exchange post-login parameters.
+  base::ScopedFD postlogin_pipe_fd_;
+
+  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
+  EnvironmentProvider environment_provider_;
 };
 
 }  // namespace crosapi

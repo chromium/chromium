@@ -41,11 +41,14 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
@@ -398,7 +401,6 @@ class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
 };
 
 BrowserLauncher::BrowserLauncher() = default;
-
 BrowserLauncher::~BrowserLauncher() = default;
 
 // static
@@ -447,8 +449,7 @@ std::optional<LaunchResults> BrowserLauncher::LaunchProcess(
     bool launching_at_login_screen,
     browser_util::LacrosSelection lacros_selection,
     base::OnceClosure mojo_disconnection_cb,
-    bool is_keep_alive_enabled,
-    EnvironmentProvider& environment_provider) {
+    bool is_keep_alive_enabled) {
   LOG(WARNING) << "Starting lacros-chrome launching at "
                << chrome_path.MaybeAsASCII();
   // Creates FD for startup.
@@ -457,7 +458,7 @@ std::optional<LaunchResults> BrowserLauncher::LaunchProcess(
   // Vice versa, if we're launching at login screen, we want to split
   // the parameters in pre-login and post-login.
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      &environment_provider,
+      &environment_provider_,
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kDoNotOpenWindow),
       !is_keep_alive_enabled, lacros_selection, !launching_at_login_screen);
@@ -466,7 +467,7 @@ std::optional<LaunchResults> BrowserLauncher::LaunchProcess(
   // Creates a pipe between FDs when Lacros is launching at login screen.
   base::ScopedFD read_pipe_fd;
   if (launching_at_login_screen) {
-    CHECK(base::CreatePipe(&read_pipe_fd, &launch_results.postlogin_pipe_fd));
+    CHECK(base::CreatePipe(&read_pipe_fd, &postlogin_pipe_fd_));
   }
 
   // Sets up Mojo channel.
@@ -493,6 +494,32 @@ std::optional<LaunchResults> BrowserLauncher::LaunchProcess(
   channel.RemoteProcessLaunchAttempted();
 
   return success ? std::make_optional(std::move(launch_results)) : std::nullopt;
+}
+
+void BrowserLauncher::ResumeLaunch() {
+  CHECK(postlogin_pipe_fd_.is_valid());
+  // Write post-login parameters into the anonymous pipe.
+  bool write_success = browser_util::WritePostLoginData(
+      postlogin_pipe_fd_.get(), &environment_provider_,
+      browser_util::InitialBrowserAction(
+          mojom::InitialBrowserAction::kDoNotOpenWindow));
+  PCHECK(write_success);
+  postlogin_pipe_fd_.reset();
+}
+
+void BrowserLauncher::SetDeviceAccountComponentPolicy(
+    policy::ComponentPolicyMap component_policy) {
+  environment_provider_.SetDeviceAccountComponentPolicy(
+      std::move(component_policy));
+}
+
+void BrowserLauncher::SetLastPolicyFetchAttemptTimestamp(
+    base::Time last_refresh) {
+  environment_provider_.SetLastPolicyFetchAttemptTimestamp(last_refresh);
+}
+
+void BrowserLauncher::SetDeviceAccountPolicy(const std::string& policy_blob) {
+  environment_provider_.SetDeviceAccountPolicy(policy_blob);
 }
 
 bool BrowserLauncher::IsProcessValid() {

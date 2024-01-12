@@ -67,7 +67,6 @@
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
@@ -585,7 +584,6 @@ BrowserManager::BrowserManager(
     std::unique_ptr<BrowserLoader> browser_loader,
     component_updater::ComponentUpdateService* update_service)
     : browser_loader_(std::move(browser_loader)),
-      environment_provider_(std::make_unique<EnvironmentProvider>()),
       launch_at_login_screen_(ShouldPrelaunchLacrosAtLoginScreen()),
       disabled_for_testing_(g_disabled_for_testing),
       device_ownership_waiter_(std::make_unique<DeviceOwnershipWaiterImpl>()) {
@@ -624,7 +622,8 @@ BrowserManager::BrowserManager(
   if (!socket_path.empty()) {
     test_mojo_connection_manager_ =
         std::make_unique<crosapi::TestMojoConnectionManager>(
-            base::FilePath(socket_path), environment_provider_.get());
+            base::FilePath(socket_path),
+            &browser_launcher_.environment_provider());
   }
 }
 
@@ -1088,7 +1087,7 @@ void BrowserManager::StartWithLogFile(
           lacros_selection_.value(),
           base::BindOnce(&BrowserManager::OnMojoDisconnected,
                          weak_factory_.GetWeakPtr()),
-          keep_alive_features_.empty(), *environment_provider_.get());
+          keep_alive_features_.empty());
   if (!launch_results) {
     // We give up, as this is most likely a permanent problem.
     SetState(State::UNAVAILABLE);
@@ -1096,7 +1095,6 @@ void BrowserManager::StartWithLogFile(
   }
 
   crosapi_id_ = launch_results->crosapi_id;
-  postlogin_pipe_fd_ = std::move(launch_results->postlogin_pipe_fd);
   lacros_launch_time_ = launch_results->lacros_launch_time;
 
   SetState(launching_at_login_screen ? State::PRE_LAUNCHED : State::STARTING);
@@ -1337,7 +1335,7 @@ void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
 
 void BrowserManager::OnComponentPolicyUpdated(
     const policy::ComponentPolicyMap& component_policy) {
-  environment_provider_->SetDeviceAccountComponentPolicy(
+  browser_launcher_.SetDeviceAccountComponentPolicy(
       policy::CopyComponentPolicyMap(component_policy));
   if (browser_service_.has_value()) {
     browser_service_->service->UpdateComponentPolicy(
@@ -1352,7 +1350,7 @@ void BrowserManager::OnComponentPolicyServiceDestruction(
 
 void BrowserManager::OnFetchAttempt(
     policy::CloudPolicyRefreshScheduler* scheduler) {
-  environment_provider_->SetLastPolicyFetchAttemptTimestamp(
+  browser_launcher_.SetLastPolicyFetchAttemptTimestamp(
       scheduler->last_refresh());
   if (browser_service_.has_value()) {
     browser_service_->service->NotifyPolicyFetchAttempt();
@@ -1514,13 +1512,7 @@ void BrowserManager::ResumeLaunchAfterProfileAdded() {
   RecordDataVerForPrimaryUser();
 
   lacros_resume_time_ = base::TimeTicks::Now();
-  // Write post-login parameters into the anonymous pipe.
-  bool write_success = browser_util::WritePostLoginData(
-      postlogin_pipe_fd_.get(), environment_provider_.get(),
-      browser_util::InitialBrowserAction(
-          mojom::InitialBrowserAction::kDoNotOpenWindow));
-  DPCHECK(write_success);
-  postlogin_pipe_fd_.reset();
+  browser_launcher_.ResumeLaunch();
 
   // Lacros launch is unblocked now.
   SetState(State::STARTING);
@@ -1619,7 +1611,7 @@ void BrowserManager::PrepareLacrosPolicies() {
 }
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
-  environment_provider_->SetDeviceAccountPolicy(policy_blob);
+  browser_launcher_.SetDeviceAccountPolicy(policy_blob);
   if (browser_service_.has_value()) {
     browser_service_->service->UpdateDeviceAccountPolicy(
         std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
