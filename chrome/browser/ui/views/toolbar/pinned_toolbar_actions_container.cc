@@ -337,6 +337,7 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
 
   model_observation_.Observe(model_.get());
 
+  const int default_margin = GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN);
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferredSnapToZero,
@@ -346,7 +347,11 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   auto* flex_layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
       .SetDefault(views::kFlexBehaviorKey,
-                  hide_icon_flex_specification.WithOrder(1));
+                  hide_icon_flex_specification.WithOrder(1))
+      .SetCollapseMargins(true)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, default_margin))
+      .SetInteriorMargin(gfx::Insets());
   flex_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Create the toolbar divider.
