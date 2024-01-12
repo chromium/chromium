@@ -248,7 +248,7 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
   std::string trigger = "";
   int timeout_ms = 0;
   SurveyBitsData product_specific_bits_data = {};
-  bool require_same_origin = false;
+  auto navigation_behaviour = HatsService::NavigationBehaviour::ALLOW_ANY;
 
   switch (interaction) {
     case TrustSafetyInteraction::RAN_SAFETY_CHECK:
@@ -269,7 +269,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
               .InMilliseconds();
       product_specific_bits_data =
           GetPrivacySettingsProductSpecificBitsData(profile);
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       break;
     }
     case TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE: {
@@ -277,7 +278,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       timeout_ms =
           features::kHappinessTrackingSurveysForDesktopPrivacyGuideTime.Get()
               .InMilliseconds();
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       break;
     }
     case TrustSafetyInteraction::OPENED_AD_PRIVACY: {
@@ -285,7 +287,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       timeout_ms =
           features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPageTime.Get()
               .InMilliseconds();
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
       break;
     }
@@ -294,7 +297,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       timeout_ms =
           features::kHappinessTrackingSurveysForDesktopM1TopicsSubpageTime.Get()
               .InMilliseconds();
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
       break;
     }
@@ -303,7 +307,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       timeout_ms =
           features::kHappinessTrackingSurveysForDesktopM1FledgeSubpageTime.Get()
               .InMilliseconds();
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
       break;
     }
@@ -314,7 +319,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
               kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpageTime
                   .Get()
                   .InMilliseconds();
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
       break;
     }
@@ -323,7 +329,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       trigger = kHatsSurveyTriggerGetMostChrome;
       timeout_ms = features::kHappinessTrackingSurveysGetMostChromeTime.Get()
                        .InMilliseconds();
-      require_same_origin = true;
+      navigation_behaviour =
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       break;
     }
 #endif
@@ -340,7 +347,7 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
   hats_service->LaunchDelayedSurveyForWebContents(
       trigger, web_ui()->GetWebContents(), timeout_ms,
       product_specific_bits_data,
-      /*product_specific_string_data=*/{}, require_same_origin);
+      /*product_specific_string_data=*/{}, navigation_behaviour);
 }
 
 void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {

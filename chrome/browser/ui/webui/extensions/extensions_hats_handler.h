@@ -58,7 +58,7 @@ class ExtensionsHatsHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // Requests a HaTS survey, and pass along needed string data.
-  void RequestHatsSurvey(bool require_same_origin,
+  void RequestHatsSurvey(HatsService::NavigationBehaviour navigation_behaviour,
                          SurveyStringData string_data);
 
   // Functions for testing.

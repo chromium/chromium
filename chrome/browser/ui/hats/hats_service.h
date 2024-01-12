@@ -52,6 +52,12 @@ class HatsService : public KeyedService {
     std::optional<base::Time> any_last_survey_started_time;
   };
 
+  enum NavigationBehaviour {
+    ALLOW_ANY = 0,              // allow any navigation
+    REQUIRE_SAME_ORIGIN = 1,    // abort survey on cross-origin navigation
+    REQUIRE_SAME_DOCUMENT = 2,  // abort survey on cross-document navigation
+  };
+
   explicit HatsService(Profile* profile);
   HatsService(const HatsService&) = delete;
   HatsService& operator=(const HatsService&) = delete;
@@ -108,8 +114,8 @@ class HatsService : public KeyedService {
   // Rejects (and returns false) if there is already an identical delayed-task
   // (same |trigger| and same |web_contents|) waiting to be fulfilled. Also
   // rejects if the underlying task posting fails.
-  // If |require_same_origin| is set, additionally requires that |web_contents|
-  // remain on the same origin.
+  // |navigation_behaviour| specifies whether cross-origin or cross-document
+  // navigations should abort the survey.
   // |success_callback| is called when the survey is shown to the user.
   // |failure_callback| is called if the survey does not launch for any reason.
   virtual bool LaunchDelayedSurveyForWebContents(
@@ -118,7 +124,7 @@ class HatsService : public KeyedService {
       int timeout_ms,
       const SurveyBitsData& product_specific_bits_data = {},
       const SurveyStringData& product_specific_string_data = {},
-      bool require_same_origin = false,
+      NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
       const absl::optional<std::string_view>& supplied_trigger_id =

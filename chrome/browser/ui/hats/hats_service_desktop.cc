@@ -88,7 +88,7 @@ HatsServiceDesktop::DelayedSurveyTask::DelayedSurveyTask(
     content::WebContents* web_contents,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    bool require_same_origin,
+    NavigationBehaviour navigation_behaviour,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     absl::optional<std::string_view> supplied_trigger_id)
@@ -96,7 +96,7 @@ HatsServiceDesktop::DelayedSurveyTask::DelayedSurveyTask(
       trigger_(trigger),
       product_specific_bits_data_(product_specific_bits_data),
       product_specific_string_data_(product_specific_string_data),
-      require_same_origin_(require_same_origin),
+      navigation_behaviour_(navigation_behaviour),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)),
       supplied_trigger_id_(std::move(supplied_trigger_id)) {
@@ -123,11 +123,18 @@ void HatsServiceDesktop::DelayedSurveyTask::Launch() {
 
 void HatsServiceDesktop::DelayedSurveyTask::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!require_same_origin_ || !navigation_handle ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      (navigation_handle->HasCommitted() &&
-       navigation_handle->IsSameOrigin())) {
+  if (navigation_behaviour_ == NavigationBehaviour::ALLOW_ANY ||
+      !navigation_handle || !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (navigation_behaviour_ == NavigationBehaviour::REQUIRE_SAME_DOCUMENT &&
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (navigation_behaviour_ == NavigationBehaviour::REQUIRE_SAME_ORIGIN &&
+      navigation_handle->HasCommitted() && navigation_handle->IsSameOrigin()) {
     return;
   }
 
@@ -213,7 +220,7 @@ bool HatsServiceDesktop::LaunchDelayedSurveyForWebContents(
     int timeout_ms,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    bool require_same_origin,
+    NavigationBehaviour navigation_behaviour,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const absl::optional<std::string_view>& supplied_trigger_id) {
@@ -234,7 +241,7 @@ bool HatsServiceDesktop::LaunchDelayedSurveyForWebContents(
   }
   auto result = pending_tasks_.emplace(
       this, trigger, web_contents, product_specific_bits_data,
-      product_specific_string_data, require_same_origin,
+      product_specific_string_data, navigation_behaviour,
       std::move(success_callback), std::move(failure_callback),
       supplied_trigger_id);
   if (!result.second) {

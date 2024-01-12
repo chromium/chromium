@@ -1510,8 +1510,9 @@ void NewTabPageHandler::MaybeLaunchInteractionSurvey(
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
   CHECK(hats_service);
   hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerNtpModules, web_contents_, delay_time_ms, {}, {}, false,
-      base::DoNothing(), base::DoNothing(), module_trigger_id);
+      kHatsSurveyTriggerNtpModules, web_contents_, delay_time_ms, {}, {},
+      HatsService::NavigationBehaviour::ALLOW_ANY, base::DoNothing(),
+      base::DoNothing(), module_trigger_id);
 }
 
 void NewTabPageHandler::MaybeShowWebstoreToast() {

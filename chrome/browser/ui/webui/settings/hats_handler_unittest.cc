@@ -105,10 +105,12 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
 
   // Check that both interacting with the privacy card, and running Safety Check
   // result in a survey request with the appropriate product specific data.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
-                  expected_product_specific_data, _, true, _, _, _))
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
+          expected_product_specific_data, _,
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
       .Times(2);
   base::Value::List args;
   args.Append(
@@ -124,10 +126,11 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
 
 TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   // Check that completing a privacy guide triggers a privacy guide hats.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerPrivacyGuide,
-                                                web_contents(), 15000, _, _,
-                                                true, _, _, _))
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerPrivacyGuide, web_contents(), 15000, _, _,
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(
@@ -140,9 +143,11 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
 TEST_F(HatsHandlerTest, GetMostChromeHats) {
   // Check that visiting the "Get the most out of Chrome" page triggers the
   // corresponding hats.
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerGetMostChrome,
-                                       web_contents(), _, _, _, true, _, _, _))
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerGetMostChrome, web_contents(), _, _, _,
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(
@@ -339,10 +344,11 @@ TEST_P(HatsHandlerParamTest, AdPrivacyHats) {
       };
 
   for (const auto& [interaction, survey] : interaction_to_survey) {
-    EXPECT_CALL(*mock_hats_service_,
-                LaunchDelayedSurveyForWebContents(
-                    survey, web_contents(), 20000,
-                    expected_product_specific_data, _, true, _, _, _));
+    EXPECT_CALL(
+        *mock_hats_service_,
+        LaunchDelayedSurveyForWebContents(
+            survey, web_contents(), 20000, expected_product_specific_data, _,
+            HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _));
     base::Value::List args;
     args.Append(static_cast<int>(interaction));
     handler()->HandleTrustSafetyInteractionOccurred(args);

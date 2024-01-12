@@ -61,7 +61,8 @@ void ExtensionsHatsHandler::RegisterMessages() {
 void ExtensionsHatsHandler::HandleExtensionsSafetyHubTriggerSurvey(
     const base::Value::List& args) {
   content::WebContentsObserver::Observe(web_ui()->GetWebContents());
-  RequestHatsSurvey(true, CreateSurveyStringsForNoInteraction());
+  RequestHatsSurvey(HatsService::REQUIRE_SAME_ORIGIN,
+                    CreateSurveyStringsForNoInteraction());
 }
 
 void ExtensionsHatsHandler::HandleExtensionsSafetyHubExtensionKept(
@@ -136,8 +137,9 @@ SurveyStringData ExtensionsHatsHandler::CreateSurveyStringsForNoInteraction() {
           {"Client Channel", client_channel_}};
 }
 
-void ExtensionsHatsHandler::RequestHatsSurvey(bool require_same_origin,
-                                              SurveyStringData string_data) {
+void ExtensionsHatsHandler::RequestHatsSurvey(
+    HatsService::NavigationBehaviour navigation_behaviour,
+    SurveyStringData string_data) {
   HatsService* hats_service = HatsServiceFactory::GetForProfile(
       profile_, /* create_if_necessary = */ true);
   // The HaTS service may not be available for the profile, for example if it
@@ -149,7 +151,7 @@ void ExtensionsHatsHandler::RequestHatsSurvey(bool require_same_origin,
       kHatsSurveyTriggerExtensions, web_ui()->GetWebContents(),
       features::kHappinessTrackingSurveysExtensionsSafetyHubTime.Get()
           .InMilliseconds(),
-      {}, string_data, require_same_origin);
+      {}, string_data, navigation_behaviour);
 }
 
 void ExtensionsHatsHandler::PrimaryPageChanged(content::Page& page) {
@@ -182,7 +184,7 @@ void ExtensionsHatsHandler::PrimaryPageChanged(content::Page& page) {
         {"Number of non-trigger extensions removed",
          base::NumberToString(number_of_nontriggering_extensions_removed_)},
         {"Client Channel", client_channel_}};
-    RequestHatsSurvey(false, survey_data);
+    RequestHatsSurvey(HatsService::ALLOW_ANY, survey_data);
   }
 }
 

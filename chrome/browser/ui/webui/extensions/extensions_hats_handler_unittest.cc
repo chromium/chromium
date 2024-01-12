@@ -150,10 +150,12 @@ TEST_F(ExtensionsHatsHandlerTest, DISABLED_ExtensionsPageLoad) {
   task_environment()->FastForwardBy(base::Minutes(10));
 
   // Check that the hats service will show when the review panel is displayed.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(),
-                  15000, _, expected_product_specific_data, true, _, _, _))
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurveyForWebContents(
+          "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(), 15000,
+          _, expected_product_specific_data,
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
       .Times(1);
   ExtensionsSafetyHubTriggerSurvey();
   task_environment()->RunUntilIdle();
@@ -174,10 +176,12 @@ TEST_F(ExtensionsHatsHandlerTest, DISABLED_OnSurveyInteraction) {
 
   task_environment()->FastForwardBy(base::Minutes(10));
 
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(),
-                  15000, _, expected_product_specific_data, true, _, _, _))
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurveyForWebContents(
+          "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(), 15000,
+          _, expected_product_specific_data,
+          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
       .Times(1);
 
   ExtensionsSafetyHubExtensionKept();

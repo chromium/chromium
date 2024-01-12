@@ -70,5 +70,5 @@ void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
           .InMilliseconds(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/{},
-      /*require_same_origin=*/true);
+      /*navigation_behaviour=*/HatsService::REQUIRE_SAME_ORIGIN);
 }
