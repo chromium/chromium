@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from '../assert.js';
 import * as expert from '../expert.js';
+import {getBoard} from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
 import {
   AspectRatioSet,
@@ -531,21 +532,18 @@ export class CaptureCandidatePreferrer {
   }
 
   private buildPhotoOptions(deviceId: string, resolutions: Resolution[]): void {
-    const defaultPreferOrder = [
-      AspectRatioSet.RATIO_4_3,
-      AspectRatioSet.RATIO_16_9,
-      AspectRatioSet.RATIO_OTHER,
-    ];
+    const aspectRatioSetPreferOrder = getAspectRatioSetPreferOrder();
+
     // Making sure that the prefer aspect ratio has resolution which is equal to
     // or larger than 720p.
     const prioritizedAspectRatioSet =
-        defaultPreferOrder.find(
+        aspectRatioSetPreferOrder.find(
             (ratio) => resolutions.some(
                 (r) => toAspectRatioSet(r) === ratio && r.height >= 720)) ??
-        defaultPreferOrder[0];
+        aspectRatioSetPreferOrder[0];
     this.preferPhotoAspectRatioOrder = [
       prioritizedAspectRatioSet,
-      ...defaultPreferOrder.filter(
+      ...aspectRatioSetPreferOrder.filter(
           (ratio) => ratio !== prioritizedAspectRatioSet),
     ];
 
@@ -966,4 +964,22 @@ function getFallbackVideoResolutionLevel(options: VideoResolutionOption[]):
     }
   }
   assertNotReached();
+}
+
+function getAspectRatioSetPreferOrder() {
+  const board = getBoard();
+  switch (board) {
+    case 'rex':
+      return [
+        AspectRatioSet.RATIO_16_9,
+        AspectRatioSet.RATIO_4_3,
+        AspectRatioSet.RATIO_OTHER,
+      ];
+    default:
+      return [
+        AspectRatioSet.RATIO_4_3,
+        AspectRatioSet.RATIO_16_9,
+        AspectRatioSet.RATIO_OTHER,
+      ];
+  }
 }
