@@ -791,9 +791,9 @@ BUILDERS = {
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
             'os':
-            'Windows-10-18363.476',
+            'Windows-10-18363.476|Windows-10-18363.1621',
             'gpu':
-            '8086:1616-20.19.15.5070',
+            '8086:1616-20.19.15.5070|8086:1616-10.0.18362.1',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
@@ -813,8 +813,8 @@ BUILDERS = {
         64,
         'dimension': {
             'pool': 'chrome.tests.perf',
-            'os': 'Windows-10-18363.476',
-            'gpu': '8086:1616-20.19.15.5070',
+            'os': 'Windows-10-18363.476|Windows-10-18363.1621',
+            'gpu': '8086:1616-20.19.15.5070|8086:1616-10.0.18362.1',
         },
     },
     'win-10-perf': {

@@ -1613,8 +1613,8 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "gpu": "8086:1616-20.19.15.5070",
-            "os": "Windows-10-18363.476",
+            "gpu": "8086:1616-20.19.15.5070|8086:1616-10.0.18362.1",
+            "os": "Windows-10-18363.476|Windows-10-18363.1621",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
@@ -1657,8 +1657,8 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "gpu": "8086:1616-20.19.15.5070",
-            "os": "Windows-10-18363.476",
+            "gpu": "8086:1616-20.19.15.5070|8086:1616-10.0.18362.1",
+            "os": "Windows-10-18363.476|Windows-10-18363.1621",
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
