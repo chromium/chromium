@@ -20,8 +20,7 @@
     [
         CallWith=ScriptState,
         MeasureAs=AbortSignalAny,
-        NewObject,
-        RuntimeEnabled=AbortSignalAny
+        NewObject
     ] static AbortSignal _any(sequence<AbortSignal> signals);
 
     readonly attribute boolean aborted;

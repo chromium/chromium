@@ -201,10 +201,6 @@
 
   data: [
     {
-      name: "AbortSignalAny",
-      status: "stable",
-    },
-    {
       name: "Accelerated2dCanvas",
       settable_from_internals: true,
       status: "stable",
