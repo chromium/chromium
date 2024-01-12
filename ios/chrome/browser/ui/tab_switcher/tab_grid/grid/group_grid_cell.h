@@ -40,10 +40,6 @@
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
                     totalTabsCount:(NSInteger)totalTabsCount;
 
-// Starts the activity indicator animation.
-- (void)showActivityIndicator;
-// Stops the activity indicator animation.
-- (void)hideActivityIndicator;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GROUP_GRID_CELL_H_

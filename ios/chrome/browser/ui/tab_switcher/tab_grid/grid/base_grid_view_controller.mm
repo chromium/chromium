@@ -1663,11 +1663,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }];
 
   cell.opacity = 1.0f;
-  if (item.showsActivity) {
-    [cell showActivityIndicator];
-  } else {
-    [cell hideActivityIndicator];
-  }
 }
 
 // Configures `cell`'s identifier and title synchronously, and favicon and

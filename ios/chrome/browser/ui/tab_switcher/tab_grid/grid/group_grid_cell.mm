@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
-
 #import <ostream>
 
 #import "base/check.h"
@@ -29,9 +27,6 @@ namespace {
 // The size of symbol icons.
 NSInteger kIconSymbolPointSize = 13;
 
-// Size of activity indicator replacing fav icon when active.
-const CGFloat kIndicatorSize = 16.0;
-
 // Offsets the top and bottom snapshot views.
 const CGFloat kSnapshotViewLeadingOffset = 4;
 const CGFloat kSnapshotViewTrailingOffset = 4;
@@ -42,43 +37,33 @@ const CGFloat kSpacing = 4;
 
 }  // namespace
 
-@interface GroupGridCell ()
-// The constraints enabled under accessibility font size.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* accessibilityConstraints;
-// The constraints enabled under normal font size.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* nonAccessibilityConstraints;
-// The constraints enabled while showing the close icon.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* closeIconConstraints;
-// The constraints enabled while showing the selection icon.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* selectIconConstraints;
-// Header height of the cell.
-@property(nonatomic, strong) NSLayoutConstraint* topBarHeightConstraint;
-// Visual components of the cell.
-@property(nonatomic, weak) UIView* topBar;
-@property(nonatomic, weak) UIImageView* iconView;
-@property(nonatomic, weak) GroupGridConfigurableView* groupSnapshotsView;
-@property(nonatomic, weak) GroupTabView* topLeadingSnapshotView;
-@property(nonatomic, weak) GroupTabView* topTrailingSnapshotView;
-@property(nonatomic, weak) GroupTabView* bottomLeadingSnapshotView;
-@property(nonatomic, weak)
-    GroupGridBottomTrailingView* bottomTrailingSnapshotView;
-// TODO(crbug.com/1501837): Add the favicon views.
-@property(nonatomic, weak) UILabel* titleLabel;
-@property(nonatomic, weak) UIImageView* closeIconView;
-@property(nonatomic, weak) UIImageView* selectIconView;
-@property(nonatomic, weak) MDCActivityIndicator* activityIndicator;
-// Since the close icon dimensions are smaller than the recommended tap target
-// size, use an overlaid tap target button.
-@property(nonatomic, weak) UIButton* closeTapTargetButton;
-@property(nonatomic, weak) UIView* border;
-// Whether or not the cell is currently displaying an editing state.
-@property(nonatomic, readonly) BOOL isInSelectionMode;
-@end
-
-@implementation GroupGridCell
+@implementation GroupGridCell {
+  // The constraints enabled under accessibility font size.
+  NSArray<NSLayoutConstraint*>* _accessibilityConstraints;
+  // The constraints enabled under normal font size.
+  NSArray<NSLayoutConstraint*>* _nonAccessibilityConstraints;
+  // The constraints enabled while showing the close icon.
+  NSArray<NSLayoutConstraint*>* _closeIconConstraints;
+  // The constraints enabled while showing the selection icon.
+  NSArray<NSLayoutConstraint*>* _selectIconConstraints;
+  // Header height of the cell.
+  NSLayoutConstraint* _topBarHeightConstraint;
+  // Visual components of the cell.
+  UIView* _topBar;
+  UIImageView* _iconView;
+  UILabel* _titleLabel;
+  UIImageView* _closeIconView;
+  UIImageView* _selectIconView;
+  // Since the close icon dimensions are smaller than the recommended tap target
+  // size, use an overlaid tap target button.
+  UIButton* _closeTapTargetButton;
+  UIView* _border;
+  GroupGridConfigurableView* _groupSnapshotsView;
+  GroupTabView* _topLeadingSnapshotView;
+  GroupTabView* _topTrailingSnapshotView;
+  GroupTabView* _bottomLeadingSnapshotView;
+  GroupGridBottomTrailingView* _bottomTrailingSnapshotView;
+}
 
 // `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
 // initialize a cell.
@@ -98,78 +83,51 @@ const CGFloat kSpacing = 4;
     UIView* contentView = self.contentView;
     contentView.layer.cornerRadius = kGridCellCornerRadius;
     contentView.layer.masksToBounds = YES;
-    UIView* topBar = [self setupTopBar];
-    GroupGridConfigurableView* groupSnapshotsView =
+    [self setupTopBar];
+    _groupSnapshotsView =
         [[GroupGridConfigurableView alloc] initWithSpacing:kSpacing];
-    GroupTabView* topLeadingSnapshotView = [[GroupTabView alloc] init];
-    GroupTabView* topTrailingSnapshotView = [[GroupTabView alloc] init];
-    GroupTabView* bottomLeadingSnapshotView = [[GroupTabView alloc] init];
-    GroupGridBottomTrailingView* bottomTrailingSnapshotView =
-        [[GroupGridBottomTrailingView alloc] init];
-    groupSnapshotsView.translatesAutoresizingMaskIntoConstraints = NO;
-    topLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    topTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    bottomLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    bottomTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    UIButton* closeTapTargetButton =
-        [UIButton buttonWithType:UIButtonTypeCustom];
-    closeTapTargetButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [closeTapTargetButton addTarget:self
-                             action:@selector(closeButtonTapped:)
-                   forControlEvents:UIControlEventTouchUpInside];
-    closeTapTargetButton.accessibilityIdentifier =
+    _topLeadingSnapshotView = [self buildGroupTabView];
+    _topTrailingSnapshotView = [self buildGroupTabView];
+    _bottomLeadingSnapshotView = [self buildGroupTabView];
+    _bottomTrailingSnapshotView = [[GroupGridBottomTrailingView alloc] init];
+    _groupSnapshotsView.translatesAutoresizingMaskIntoConstraints = NO;
+    _topLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+    _topTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+    _closeTapTargetButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _closeTapTargetButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [_closeTapTargetButton addTarget:self
+                              action:@selector(closeButtonTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+    _closeTapTargetButton.accessibilityIdentifier =
         kGridCellCloseButtonIdentifier;
-    [groupSnapshotsView updateTopLeadingWithView:topLeadingSnapshotView];
-    [groupSnapshotsView updateTopTrailingWithView:topTrailingSnapshotView];
-    [groupSnapshotsView updateBottomLeadingWithView:bottomLeadingSnapshotView];
-    [groupSnapshotsView
-        updateBottomTrailingWithView:bottomTrailingSnapshotView];
+    [_groupSnapshotsView updateTopLeadingWithView:_topLeadingSnapshotView];
+    [_groupSnapshotsView updateTopTrailingWithView:_topTrailingSnapshotView];
+    [_groupSnapshotsView
+        updateBottomLeadingWithView:_bottomLeadingSnapshotView];
+    [_groupSnapshotsView
+        updateBottomTrailingWithView:_bottomTrailingSnapshotView];
 
-    [contentView addSubview:topBar];
-    [contentView addSubview:groupSnapshotsView];
-    [contentView addSubview:closeTapTargetButton];
-    _topBar = topBar;
-    _topLeadingSnapshotView = topLeadingSnapshotView;
-    _topTrailingSnapshotView = topTrailingSnapshotView;
-    _bottomLeadingSnapshotView = bottomLeadingSnapshotView;
-    _bottomTrailingSnapshotView = bottomTrailingSnapshotView;
-    _groupSnapshotsView = groupSnapshotsView;
-    _closeTapTargetButton = closeTapTargetButton;
+    [contentView addSubview:_topBar];
+    [contentView addSubview:_groupSnapshotsView];
+    [contentView addSubview:_closeTapTargetButton];
     _opacity = 1.0;
 
     self.contentView.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.topLeadingSnapshotView.backgroundColor =
-        [UIColor colorNamed:kBackgroundColor];
-    self.topTrailingSnapshotView.backgroundColor =
-        [UIColor colorNamed:kBackgroundColor];
-    self.bottomLeadingSnapshotView.backgroundColor =
-        [UIColor colorNamed:kBackgroundColor];
-    self.bottomTrailingSnapshotView.backgroundColor = [UIColor clearColor];
+    _bottomTrailingSnapshotView.backgroundColor = [UIColor clearColor];
 
-    self.topLeadingSnapshotView.layer.cornerRadius = kGroupGridCellCornerRadius;
-    self.topTrailingSnapshotView.layer.cornerRadius =
-        kGroupGridCellCornerRadius;
-    self.bottomLeadingSnapshotView.layer.cornerRadius =
-        kGroupGridCellCornerRadius;
-    self.bottomTrailingSnapshotView.layer.cornerRadius =
-        kGroupGridCellCornerRadius;
-    self.topLeadingSnapshotView.layer.masksToBounds = YES;
-    self.topTrailingSnapshotView.layer.masksToBounds = YES;
-    self.bottomLeadingSnapshotView.layer.masksToBounds = YES;
-    self.bottomTrailingSnapshotView.layer.masksToBounds = YES;
+    _bottomTrailingSnapshotView.layer.cornerRadius = kGroupGridCellCornerRadius;
+    _bottomTrailingSnapshotView.layer.masksToBounds = YES;
 
-    self.topLeadingSnapshotView.hidden = YES;
-    self.topTrailingSnapshotView.hidden = YES;
-    self.bottomLeadingSnapshotView.hidden = YES;
-    self.bottomTrailingSnapshotView.hidden = YES;
+    [self hideAllSubviews];
 
-    self.groupSnapshotsView.backgroundColor =
+    _groupSnapshotsView.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.topBar.backgroundColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-    self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
+    _topBar.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+    _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    _closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
 
     self.layer.cornerRadius = kGridCellCornerRadius;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -177,32 +135,32 @@ const CGFloat kSpacing = 4;
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-    self.groupSnapshotsView.layer.cornerRadius = kGridCellCornerRadius;
-    self.groupSnapshotsView.layer.masksToBounds = YES;
+    _groupSnapshotsView.layer.cornerRadius = kGridCellCornerRadius;
+    _groupSnapshotsView.layer.masksToBounds = YES;
 
     NSArray* constraints = @[
-      [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
-      [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
-      [topBar.trailingAnchor
+      [_topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
+      [_topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
+      [_topBar.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor],
-      [groupSnapshotsView.topAnchor
-          constraintEqualToAnchor:topBar.bottomAnchor],
-      [groupSnapshotsView.leadingAnchor
+      [_groupSnapshotsView.topAnchor
+          constraintEqualToAnchor:_topBar.bottomAnchor],
+      [_groupSnapshotsView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kSnapshotViewLeadingOffset],
-      [groupSnapshotsView.trailingAnchor
+      [_groupSnapshotsView.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor
                          constant:-kSnapshotViewTrailingOffset],
-      [groupSnapshotsView.bottomAnchor
+      [_groupSnapshotsView.bottomAnchor
           constraintEqualToAnchor:contentView.bottomAnchor
                          constant:-kSnapShotViewBottomOffset],
-      [closeTapTargetButton.topAnchor
+      [_closeTapTargetButton.topAnchor
           constraintEqualToAnchor:contentView.topAnchor],
-      [closeTapTargetButton.trailingAnchor
+      [_closeTapTargetButton.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor],
-      [closeTapTargetButton.widthAnchor
+      [_closeTapTargetButton.widthAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
-      [closeTapTargetButton.heightAnchor
+      [_closeTapTargetButton.heightAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
@@ -239,7 +197,6 @@ const CGFloat kSpacing = 4;
   [self configureWithGroupTabInfos:nil totalTabsCount:0];
   self.selected = NO;
   self.opacity = 1.0;
-  [self hideActivityIndicator];
 }
 
 #pragma mark - UIAccessibility
@@ -269,11 +226,11 @@ const CGFloat kSpacing = 4;
   // enough here.
   switch (theme) {
     case GridThemeLight:
-      self.border.layer.borderColor =
+      _border.layer.borderColor =
           [UIColor colorNamed:kStaticBlue400Color].CGColor;
       break;
     case GridThemeDark:
-      self.border.layer.borderColor = UIColor.whiteColor.CGColor;
+      _border.layer.borderColor = UIColor.whiteColor.CGColor;
       break;
   }
 
@@ -281,60 +238,41 @@ const CGFloat kSpacing = 4;
 }
 
 - (void)setIcon:(UIImage*)icon {
-  self.iconView.image = icon;
+  _iconView.image = icon;
   _icon = icon;
-}
-
-- (void)showActivityIndicator {
-  [self.activityIndicator startAnimating];
-  [self.activityIndicator setHidden:NO];
-  [self.iconView setHidden:YES];
-}
-
-- (void)hideActivityIndicator {
-  [self.activityIndicator stopAnimating];
-  [self.activityIndicator setHidden:YES];
-  [self.iconView setHidden:NO];
 }
 
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
                     totalTabsCount:(NSInteger)totalTabsCount {
   CHECK_LE((int)groupTabInfos.count, totalTabsCount);
   // Hide all the views when the cell is reconfigured and clear their images.
-  [self.topLeadingSnapshotView hideAllAttributes];
-  [self.topTrailingSnapshotView hideAllAttributes];
-  [self.bottomLeadingSnapshotView hideAllAttributes];
-  [self.bottomTrailingSnapshotView configureWithGroupTabInfo:nil];
-  [self.bottomTrailingSnapshotView configureWithFavicons:nil
-                                      remainingTabsCount:0];
-  self.topLeadingSnapshotView.hidden = YES;
-  self.topTrailingSnapshotView.hidden = YES;
-  self.bottomLeadingSnapshotView.hidden = YES;
-  self.bottomTrailingSnapshotView.hidden = YES;
+  [_topLeadingSnapshotView hideAllAttributes];
+  [_topTrailingSnapshotView hideAllAttributes];
+  [_bottomLeadingSnapshotView hideAllAttributes];
+  [_bottomTrailingSnapshotView configureWithGroupTabInfo:nil];
+  [_bottomTrailingSnapshotView configureWithFavicons:nil remainingTabsCount:0];
+  [self hideAllSubviews];
 
   int groupTabInfosLength = [groupTabInfos count];
   if (groupTabInfosLength > 0) {
-    [self.topLeadingSnapshotView
-        configureWithSnapshot:groupTabInfos[0].snapshot
-                      favicon:groupTabInfos[0].snapshot];
-    self.topLeadingSnapshotView.hidden = NO;
+    [_topLeadingSnapshotView configureWithSnapshot:groupTabInfos[0].snapshot
+                                           favicon:groupTabInfos[0].snapshot];
+    _topLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength > 1) {
-    [self.topTrailingSnapshotView
-        configureWithSnapshot:groupTabInfos[1].snapshot
-                      favicon:groupTabInfos[1].snapshot];
-    self.topTrailingSnapshotView.hidden = NO;
+    [_topTrailingSnapshotView configureWithSnapshot:groupTabInfos[1].snapshot
+                                            favicon:groupTabInfos[1].snapshot];
+    _topTrailingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength > 2) {
-    [self.bottomLeadingSnapshotView
+    [_bottomLeadingSnapshotView
         configureWithSnapshot:groupTabInfos[2].snapshot
                       favicon:groupTabInfos[2].snapshot];
-    self.bottomLeadingSnapshotView.hidden = NO;
+    _bottomLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength == 4) {
-    [self.bottomTrailingSnapshotView
-        configureWithGroupTabInfo:groupTabInfos[3]];
-    self.bottomTrailingSnapshotView.hidden = NO;
+    [_bottomTrailingSnapshotView configureWithGroupTabInfo:groupTabInfos[3]];
+    _bottomTrailingSnapshotView.hidden = NO;
   } else if (groupTabInfosLength > 4) {
     NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
     NSRange range;
@@ -350,20 +288,20 @@ const CGFloat kSpacing = 4;
     // of `bottomTrailingSnapshotView` the remaning tabs count is equal to the
     // `totalTabsCount` minus the first 3 tabs of the group and the 4 favicons
     // views of the bottomTrailing view.
-    [self.bottomTrailingSnapshotView configureWithFavicons:favicons
-                                        remainingTabsCount:totalTabsCount - 7];
-    self.bottomTrailingSnapshotView.hidden = NO;
+    [_bottomTrailingSnapshotView configureWithFavicons:favicons
+                                    remainingTabsCount:totalTabsCount - 7];
+    _bottomTrailingSnapshotView.hidden = NO;
   }
 }
 
 - (void)setTitle:(NSString*)title {
-  self.titleLabel.text = title;
+  _titleLabel.text = title;
   self.accessibilityLabel = title;
-  _title = title;
+  _title = [title copy];
 }
 
 - (void)setTitleHidden:(BOOL)titleHidden {
-  self.titleLabel.hidden = titleHidden;
+  _titleLabel.hidden = titleHidden;
   _titleHidden = titleHidden;
 }
 
@@ -389,140 +327,115 @@ const CGFloat kSpacing = 4;
 #pragma mark - Private
 
 // Sets up the top bar with icon, title, and close button.
-- (UIView*)setupTopBar {
-  UIView* topBar = [[UIView alloc] init];
-  topBar.translatesAutoresizingMaskIntoConstraints = NO;
+- (void)setupTopBar {
+  _topBar = [[UIView alloc] init];
+  _topBar.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIImageView* iconView = [[UIImageView alloc] init];
-  iconView.translatesAutoresizingMaskIntoConstraints = NO;
-  iconView.contentMode = UIViewContentModeScaleAspectFill;
-  iconView.layer.cornerRadius = kGridCellIconCornerRadius;
-  iconView.layer.masksToBounds = YES;
-  iconView.backgroundColor = UIColor.clearColor;
-  iconView.tintColor = [UIColor colorNamed:kGrey400Color];
+  _iconView = [[UIImageView alloc] init];
+  _iconView.translatesAutoresizingMaskIntoConstraints = NO;
+  _iconView.contentMode = UIViewContentModeScaleAspectFill;
+  _iconView.layer.cornerRadius = kGridCellIconCornerRadius;
+  _iconView.layer.masksToBounds = YES;
+  _iconView.backgroundColor = UIColor.clearColor;
+  _iconView.tintColor = [UIColor colorNamed:kGrey400Color];
 
-  CGRect indicatorFrame = CGRectMake(0, 0, kIndicatorSize, kIndicatorSize);
-  MDCActivityIndicator* activityIndicator =
-      [[MDCActivityIndicator alloc] initWithFrame:indicatorFrame];
-  activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
-  activityIndicator.radius = ui::AlignValueToUpperPixel(kIndicatorSize / 2);
+  _titleLabel = [[UILabel alloc] init];
+  _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  _titleLabel.adjustsFontForContentSizeCategory = YES;
 
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-
-  UIImageView* closeIconView = [[UIImageView alloc] init];
-  closeIconView.translatesAutoresizingMaskIntoConstraints = NO;
-  closeIconView.contentMode = UIViewContentModeCenter;
-  closeIconView.hidden = self.isInSelectionMode;
-  closeIconView.image =
+  _closeIconView = [[UIImageView alloc] init];
+  _closeIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeIconView.contentMode = UIViewContentModeCenter;
+  _closeIconView.hidden = [self isInSelectionMode];
+  _closeIconView.image =
       DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kIconSymbolPointSize);
 
-  UIImageView* selectIconView = [[UIImageView alloc] init];
-  selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
-  selectIconView.contentMode = UIViewContentModeScaleAspectFit;
-  selectIconView.hidden = !self.isInSelectionMode;
+  _selectIconView = [[UIImageView alloc] init];
+  _selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  _selectIconView.contentMode = UIViewContentModeScaleAspectFit;
+  _selectIconView.hidden = ![self isInSelectionMode];
 
-  selectIconView.image = [self selectIconImageForCurrentState];
+  _selectIconView.image = [self selectIconImageForCurrentState];
 
-  [topBar addSubview:selectIconView];
-  _selectIconView = selectIconView;
+  [_topBar addSubview:_selectIconView];
 
-  [topBar addSubview:iconView];
-  [topBar addSubview:activityIndicator];
-  [topBar addSubview:titleLabel];
-  [topBar addSubview:closeIconView];
-
-  _iconView = iconView;
-  _activityIndicator = activityIndicator;
-  _titleLabel = titleLabel;
-  _closeIconView = closeIconView;
+  [_topBar addSubview:_iconView];
+  [_topBar addSubview:_titleLabel];
+  [_topBar addSubview:_closeIconView];
 
   _accessibilityConstraints = @[
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:topBar.leadingAnchor
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_topBar.leadingAnchor
                        constant:kGridCellHeaderLeadingInset],
-    [iconView.widthAnchor constraintEqualToConstant:0],
-    [iconView.heightAnchor constraintEqualToConstant:0],
+    [_iconView.widthAnchor constraintEqualToConstant:0],
+    [_iconView.heightAnchor constraintEqualToConstant:0],
   ];
 
   _nonAccessibilityConstraints = @[
-    [iconView.leadingAnchor
-        constraintEqualToAnchor:topBar.leadingAnchor
+    [_iconView.leadingAnchor
+        constraintEqualToAnchor:_topBar.leadingAnchor
                        constant:kGridCellHeaderLeadingInset],
-    [iconView.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
-    [iconView.widthAnchor constraintEqualToConstant:kGridCellIconDiameter],
-    [iconView.heightAnchor constraintEqualToConstant:kGridCellIconDiameter],
-    [titleLabel.leadingAnchor
-        constraintEqualToAnchor:iconView.trailingAnchor
+    [_iconView.centerYAnchor constraintEqualToAnchor:_topBar.centerYAnchor],
+    [_iconView.widthAnchor constraintEqualToConstant:kGridCellIconDiameter],
+    [_iconView.heightAnchor constraintEqualToConstant:kGridCellIconDiameter],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_iconView.trailingAnchor
                        constant:kGridCellHeaderLeadingInset],
   ];
 
   _topBarHeightConstraint =
-      [topBar.heightAnchor constraintEqualToConstant:kGridCellHeaderHeight];
+      [_topBar.heightAnchor constraintEqualToConstant:kGridCellHeaderHeight];
 
   _closeIconConstraints = @[
-    [titleLabel.trailingAnchor
-        constraintEqualToAnchor:closeIconView.leadingAnchor
+    [_titleLabel.trailingAnchor
+        constraintEqualToAnchor:_closeIconView.leadingAnchor
                        constant:-kGridCellTitleLabelContentInset],
-    [topBar.topAnchor constraintEqualToAnchor:closeIconView.centerYAnchor
-                                     constant:-kGridCellCloseButtonTopSpacing],
-    [closeIconView.trailingAnchor
-        constraintEqualToAnchor:topBar.trailingAnchor
+    [_topBar.topAnchor constraintEqualToAnchor:_closeIconView.centerYAnchor
+                                      constant:-kGridCellCloseButtonTopSpacing],
+    [_closeIconView.trailingAnchor
+        constraintEqualToAnchor:_topBar.trailingAnchor
                        constant:-kGridCellCloseButtonContentInset],
   ];
 
-  if (_selectIconView) {
-    _selectIconConstraints = @[
-      [_selectIconView.heightAnchor
-          constraintEqualToConstant:kGridCellSelectIconSize],
-      [_selectIconView.widthAnchor
-          constraintEqualToConstant:kGridCellSelectIconSize],
-      [titleLabel.trailingAnchor
-          constraintEqualToAnchor:_selectIconView.leadingAnchor
-                         constant:-kGridCellTitleLabelContentInset],
-      [topBar.topAnchor constraintEqualToAnchor:_selectIconView.topAnchor
-                                       constant:-kGridCellSelectIconTopSpacing],
-      [_selectIconView.trailingAnchor
-          constraintEqualToAnchor:topBar.trailingAnchor
-                         constant:-kGridCellSelectIconContentInset],
+  _selectIconConstraints = @[
+    [_selectIconView.heightAnchor
+        constraintEqualToConstant:kGridCellSelectIconSize],
+    [_selectIconView.widthAnchor
+        constraintEqualToConstant:kGridCellSelectIconSize],
+    [_titleLabel.trailingAnchor
+        constraintEqualToAnchor:_selectIconView.leadingAnchor
+                       constant:-kGridCellTitleLabelContentInset],
+    [_topBar.topAnchor constraintEqualToAnchor:_selectIconView.topAnchor
+                                      constant:-kGridCellSelectIconTopSpacing],
+    [_selectIconView.trailingAnchor
+        constraintEqualToAnchor:_topBar.trailingAnchor
+                       constant:-kGridCellSelectIconContentInset],
 
-    ];
-  }
+  ];
 
   [self updateTopBarSize];
   [self configureCloseOrSelectIconConstraints];
 
   NSArray* constraints = @[
     _topBarHeightConstraint,
-    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
+    [_titleLabel.centerYAnchor constraintEqualToAnchor:_topBar.centerYAnchor],
   ];
 
-  // Center indicator over favicon.
-  AddSameCenterXConstraint(self, iconView, activityIndicator);
-  AddSameCenterYConstraint(self, iconView, activityIndicator);
-
   [NSLayoutConstraint activateConstraints:constraints];
-  [titleLabel
+  [_titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
-  [closeIconView
+  [_closeIconView
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
-  [closeIconView setContentHuggingPriority:UILayoutPriorityRequired
-                                   forAxis:UILayoutConstraintAxisHorizontal];
-  if (_selectIconView) {
-    [_selectIconView
-        setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    [_selectIconView
-        setContentHuggingPriority:UILayoutPriorityRequired
-                          forAxis:UILayoutConstraintAxisHorizontal];
-  }
-  return topBar;
+  [_closeIconView setContentHuggingPriority:UILayoutPriorityRequired
+                                    forAxis:UILayoutConstraintAxisHorizontal];
+  [_selectIconView
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [_selectIconView setContentHuggingPriority:UILayoutPriorityRequired
+                                     forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 - (UIImage*)selectIconImageForCurrentState {
@@ -538,25 +451,25 @@ const CGFloat kSpacing = 4;
 // font size is chosen, the favicon will be hidden, and the title text will be
 // shown in two lines.
 - (void)updateTopBarSize {
-  self.topBarHeightConstraint.constant = [self topBarHeight];
+  _topBarHeightConstraint.constant = [self topBarHeight];
 
   if (UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory)) {
-    self.titleLabel.numberOfLines = 2;
+    _titleLabel.numberOfLines = 2;
     [NSLayoutConstraint deactivateConstraints:_nonAccessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
   } else {
-    self.titleLabel.numberOfLines = 1;
+    _titleLabel.numberOfLines = 1;
     [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_nonAccessibilityConstraints];
   }
 }
 
 - (void)configureCloseOrSelectIconConstraints {
-  BOOL showSelectionMode = self.isInSelectionMode && _selectIconView;
+  BOOL showSelectionMode = [self isInSelectionMode] && _selectIconView;
 
-  self.closeIconView.hidden = showSelectionMode;
-  self.selectIconView.hidden = !showSelectionMode;
+  _closeIconView.hidden = showSelectionMode;
+  _selectIconView.hidden = !showSelectionMode;
 
   if (showSelectionMode) {
     [NSLayoutConstraint deactivateConstraints:_closeIconConstraints];
@@ -567,6 +480,7 @@ const CGFloat kSpacing = 4;
   }
 }
 
+// Informs whether or not the cell is currently displaying an editing state.
 - (BOOL)isInSelectionMode {
   return self.state != GridCellStateNotEditing;
 }
@@ -580,11 +494,11 @@ const CGFloat kSpacing = 4;
   // TODO(crbug.com/1501837): Add the accessibility value for selected and
   // unselected states.
   self.accessibilityValue = nil;
-  _closeTapTargetButton.enabled = !self.isInSelectionMode;
-  self.selectIconView.image = [self selectIconImageForCurrentState];
+  _closeTapTargetButton.enabled = ![self isInSelectionMode];
+  _selectIconView.image = [self selectIconImageForCurrentState];
 
   [self configureCloseOrSelectIconConstraints];
-  self.border.hidden = self.isInSelectionMode;
+  _border.hidden = [self isInSelectionMode];
 }
 
 // Sets up the selection border. The tint color is set when the theme is
@@ -593,30 +507,29 @@ const CGFloat kSpacing = 4;
   self.selectedBackgroundView = [[UIView alloc] init];
   self.selectedBackgroundView.backgroundColor =
       [UIColor colorNamed:kGridBackgroundColor];
-  UIView* border = [[UIView alloc] init];
-  border.hidden = self.isInSelectionMode;
-  border.translatesAutoresizingMaskIntoConstraints = NO;
-  border.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  border.layer.cornerRadius = kGridCellCornerRadius +
-                              kGridCellSelectionRingGapWidth +
-                              kGridCellSelectionRingTintWidth;
-  border.layer.borderWidth = kGridCellSelectionRingTintWidth;
-  [self.selectedBackgroundView addSubview:border];
-  _border = border;
+  _border = [[UIView alloc] init];
+  _border.hidden = [self isInSelectionMode];
+  _border.translatesAutoresizingMaskIntoConstraints = NO;
+  _border.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+  _border.layer.cornerRadius = kGridCellCornerRadius +
+                               kGridCellSelectionRingGapWidth +
+                               kGridCellSelectionRingTintWidth;
+  _border.layer.borderWidth = kGridCellSelectionRingTintWidth;
+  [self.selectedBackgroundView addSubview:_border];
   [NSLayoutConstraint activateConstraints:@[
-    [border.topAnchor
+    [_border.topAnchor
         constraintEqualToAnchor:self.selectedBackgroundView.topAnchor
                        constant:-kGridCellSelectionRingTintWidth -
                                 kGridCellSelectionRingGapWidth],
-    [border.leadingAnchor
+    [_border.leadingAnchor
         constraintEqualToAnchor:self.selectedBackgroundView.leadingAnchor
                        constant:-kGridCellSelectionRingTintWidth -
                                 kGridCellSelectionRingGapWidth],
-    [border.trailingAnchor
+    [_border.trailingAnchor
         constraintEqualToAnchor:self.selectedBackgroundView.trailingAnchor
                        constant:kGridCellSelectionRingTintWidth +
                                 kGridCellSelectionRingGapWidth],
-    [border.bottomAnchor
+    [_border.bottomAnchor
         constraintEqualToAnchor:self.selectedBackgroundView.bottomAnchor
                        constant:kGridCellSelectionRingTintWidth +
                                 kGridCellSelectionRingGapWidth]
@@ -635,6 +548,21 @@ const CGFloat kSpacing = 4;
              self.traitCollection.preferredContentSizeCategory)
              ? kGridCellHeaderAccessibilityHeight
              : kGridCellHeaderHeight;
+}
+
+- (GroupTabView*)buildGroupTabView {
+  GroupTabView* groupTabView = [[GroupTabView alloc] init];
+  groupTabView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  groupTabView.layer.cornerRadius = kGroupGridCellCornerRadius;
+  groupTabView.layer.masksToBounds = YES;
+  return groupTabView;
+}
+
+- (void)hideAllSubviews {
+  _topLeadingSnapshotView.hidden = YES;
+  _topTrailingSnapshotView.hidden = YES;
+  _bottomLeadingSnapshotView.hidden = YES;
+  _bottomTrailingSnapshotView.hidden = YES;
 }
 
 @end
