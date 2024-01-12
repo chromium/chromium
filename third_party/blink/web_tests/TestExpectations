@@ -6074,9 +6074,6 @@ crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Failure Pa
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
 
-# Temporarily disable to land DevTools changes
-crbug.com/1502910 http/tests/devtools/network/network-xhr-replay.js [ Failure Pass Timeout ]
-
 # Sheriff 2022-11-28
 crbug.com/1393567 external/wpt/screen-orientation/hidden_document.html [ Failure Pass Timeout ]
 crbug.com/1290077 [ Mac11-arm64 ] fast/canvas/canvas-drawImage-live-video.html [ Pass Timeout ]

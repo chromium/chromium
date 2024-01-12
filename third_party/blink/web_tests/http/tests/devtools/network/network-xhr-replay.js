@@ -35,12 +35,12 @@ import {NetworkTestRunner} from 'network_test_runner';
   async function testXHRReplay(method, url, async, user, password, headers, withCredentials, payload, type, callback) {
     NetworkTestRunner.makeXHR(method, url, async, user, password, headers, withCredentials, payload, type);
 
-    var originalRequest = await TestRunner.waitForEvent(
+    var {request: originalRequest} = await TestRunner.waitForEvent(
         NetworkTestRunner.NetworkLogEvents.RequestAdded,
         NetworkTestRunner.networkLog());
     await dumpRequest(originalRequest);
     TestRunner.NetworkAgent.replayXHR(originalRequest.requestId());
-    var replayedRequest = await TestRunner.waitForEvent(
+    var {request: replayedRequest} = await TestRunner.waitForEvent(
         NetworkTestRunner.NetworkLogEvents.RequestAdded,
         NetworkTestRunner.networkLog());
 
