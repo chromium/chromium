@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/message_center_constants.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -201,7 +202,12 @@ class NotificationListViewTest
 
   void CreateMessageListView() {
     notification_list_view_ = std::make_unique<TestNotificationListView>();
-    notification_list_view_->Init();
+    if (IsNotificationCenterControllerEnabled()) {
+      notification_list_view_->Init(
+          message_center_utils::GetSortedNotificationsWithOwnView());
+    } else {
+      notification_list_view_->Init();
+    }
     notification_list_view_->AddObserver(this);
     OnViewPreferredSizeChanged(notification_list_view_.get());
     size_changed_count_ = 0;

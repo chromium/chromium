@@ -5,7 +5,9 @@
 #include "ash/system/notification_center/notification_center_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -25,7 +27,10 @@ std::unique_ptr<views::View> NotificationCenterController::CreateView() {
 void NotificationCenterController::InitView() {
   auto* notification_center_view = GetNotificationCenterView();
   CHECK(notification_center_view);
-  notification_center_view->Init();
+
+  auto notifications =
+      message_center_utils::GetSortedNotificationsWithOwnView();
+  notification_center_view->Init(notifications);
 }
 
 NotificationCenterView*

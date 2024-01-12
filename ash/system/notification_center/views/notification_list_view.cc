@@ -394,10 +394,14 @@ NotificationListView::NotificationListView(
 
 NotificationListView::~NotificationListView() = default;
 
+// Used when `NotificationCenterController` is disabled.
 void NotificationListView::Init() {
-  const auto& notifications =
-      message_center_utils::GetSortedNotificationsWithOwnView();
+  Init(message_center_utils::GetSortedNotificationsWithOwnView());
+}
 
+// Used when `NotificationCenterController` is enabled.
+void NotificationListView::Init(
+    const std::vector<message_center::Notification*>& notifications) {
   for (auto* notification : notifications) {
     auto message_view_container = std::make_unique<MessageViewContainer>(
         CreateMessageView(*notification), this);

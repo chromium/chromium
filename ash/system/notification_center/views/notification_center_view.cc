@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
@@ -62,9 +63,20 @@ NotificationCenterView::~NotificationCenterView() {
   scroller_->RemoveObserver(this);
 }
 
+// Used when `NotificationCenterController` is disabled.
 void NotificationCenterView::Init() {
   notification_list_view_->Init();
+  AddChildViews();
+}
 
+// Used when `NotificationCenterController` is enabled.
+void NotificationCenterView::Init(
+    const std::vector<message_center::Notification*>& notifications) {
+  notification_list_view_->Init(notifications);
+  AddChildViews();
+}
+
+void NotificationCenterView::AddChildViews() {
   // TODO(crbug.com/1247455): Be able to do
   // SetContentsLayerType(LAYER_NOT_DRAWN).
   auto scroller_contents_view = std::make_unique<views::BoxLayoutView>();
