@@ -2237,9 +2237,9 @@ void RenderWidgetHostImpl::GetSnapshotFromBrowser(
   }
 
 #if BUILDFLAG(IS_MAC)
-  // MacOS version of underlying GrabViewSnapshot() blocks while
-  // display/GPU are in a power-saving mode, so make sure display
-  // does not go to sleep for the duration of reading a snapshot.
+  // The Mac version of underlying GrabViewSnapshotAsync() blocks while the
+  // display/GPU are in a power-saving mode, so make sure the display does not
+  // go to sleep for the duration of reading a snapshot.
   if (pending_browser_snapshots_.empty()) {
     GetWakeLock()->RequestWakeLock();
   }
@@ -3576,13 +3576,6 @@ void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {
 #else
     gfx::Rect snapshot_bounds(GetView()->GetViewBounds().size());
 #endif
-
-    gfx::Image image;
-    if (ui::GrabViewSnapshot(GetView()->GetNativeView(), snapshot_bounds,
-                             &image)) {
-      OnSnapshotReceived(snapshot_id, image);
-      return;
-    }
 
     ui::GrabViewSnapshotAsync(
         GetView()->GetNativeView(), snapshot_bounds,
