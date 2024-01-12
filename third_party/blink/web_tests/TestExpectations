@@ -6816,6 +6816,3 @@ crbug.com/1515743 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semant
 
 # Gardener 2024-01-08
 crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
-
-# Gardener 2024-01-10
-crbug.com/1517319 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Pass Timeout ]
