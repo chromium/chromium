@@ -694,6 +694,10 @@ DevToolsUIBindings::~DevToolsUIBindings() {
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
+
+  ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile())
+      ->RemoveObserver(this);
+
   if (agent_host_.get())
     agent_host_->DetachClient(this);
 
