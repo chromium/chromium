@@ -95,6 +95,10 @@
 #include "base/allocator/partition_alloc_support.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
+#if GTEST_HAS_DEATH_TEST
+#include "base/gtest_prod_util.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -608,6 +612,10 @@ void TestSuite::Initialize() {
 }
 
 void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
+#if GTEST_HAS_DEATH_TEST
+  internal::SetInDeathTestChildFn(&::testing::internal::InDeathTestChild);
+#endif
+
   // CommandLine::Init() is called earlier from PreInitialize().
   testing::InitGoogleTest(argc, argv);
   testing::InitGoogleMock(argc, argv);
