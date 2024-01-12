@@ -1507,6 +1507,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="212862741129535676">Frequency state occupancy percentage</translation>
 <translation id="212876957201860463">Preparing to set up your mobile device…</translation>
+<translation id="2130909682040406368">Learn more about using AI tools</translation>
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Choose more features to set up</translation>
 <translation id="2133857665503360653">Retry <ph name="FILE_NAME" /></translation>
@@ -3246,6 +3247,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3490695139702884919">Downloading… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">You child's account isn't set up for Family Link parental controls. You can add parental controls once you finish setup. You'll find information on parental controls in the Explore app.</translation>
 <translation id="3491678231052507920">Sites usually use your virtual reality devices and data to let you enter VR sessions</translation>
+<translation id="3493043608231401654">Remove <ph name="TAB_TITLE" /> from tab group</translation>
 <translation id="3493486281776271508">Internet connection required</translation>
 <translation id="3493881266323043047">Validity</translation>
 <translation id="3495496470825196617">Idle power while charging</translation>
@@ -4053,6 +4055,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4103644672850109428">Screen reader, magnification</translation>
 <translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4104944259562794668">You can enable it later in Settings &gt; Security and privacy &gt; Lock screen and sign-in</translation>
+<translation id="4106054677122819586">Let's go and organise your tabs</translation>
 <translation id="4107048419833779140">Identify and eject storage devices</translation>
 <translation id="4107522742068568249">Go to Safety Check</translation>
 <translation id="4108314971463891922">Follow</translation>
@@ -4989,6 +4992,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="486505726797718946">Memory saved</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
 <translation id="4867272607148176509">Parents can approve or block apps, set time limits and control web browsing. A school account can be added later to access most school resources.</translation>
+<translation id="4867433544163083783">Check now if tabs can be organised</translation>
 <translation id="4868281708609571334">Teach Google Assistant to recognise <ph name="SUPERVISED_USER_NAME" />’s voice</translation>
 <translation id="4868284252360267853">This dialogue is not currently focused. Press Command-Shift-Option A to focus this dialogue.</translation>
 <translation id="4869170227080975044">Read ChromeOS network information</translation>
@@ -5299,6 +5303,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="51143538739122961">Insert your security key and touch it</translation>
 <translation id="5115309401544567011">Please plug your <ph name="DEVICE_TYPE" /> into a power source.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Thumbs up submits feedback that you like this tab group suggestion</translation>
 <translation id="5116628073786783676">Sa&amp;ve Audio As...</translation>
 <translation id="5117139026559873716">Disconnect your phone from your <ph name="DEVICE_TYPE" />. They will no longer connect automatically.</translation>
 <translation id="5117930984404104619">Monitor the behaviour of other extensions, including visited URLs</translation>
@@ -5516,6 +5521,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5294097441441645251">Must start with a lowercase character or underscore</translation>
 <translation id="5294618183559481278">Your <ph name="DEVICE_TYPE" /> uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Extensions can request access to this site</translation>
+<translation id="5295349205180144885">Tab group name: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device.</translation>
 <translation id="5296536303670088158">You have Chrome's strongest security against harmful websites</translation>
 <translation id="5297005732522718715">Refresh tethering configuration</translation>
@@ -6383,6 +6389,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5999024481231496910">You have enabled testing third-party cookie phaseout. This cannot be overridden by the settings page. If you want to re-enable third-party cookies, relaunch Chrome with this feature disabled.</translation>
 <translation id="5999630716831179808">Voices</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001052984304731761">Sign in to let Chrome suggest tab groups</translation>
 <translation id="6001839398155993679">Let's go</translation>
 <translation id="6002122790816966947">Your devices</translation>
 <translation id="6002210667729577411">Move group to new window</translation>
@@ -8996,6 +9003,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8052218774860457016">Manage browser sync</translation>
 <translation id="8053278772142718589">PKCS No.12 Files</translation>
 <translation id="8053390638574070785">Reload This Page</translation>
+<translation id="8053629544194355894">Turn on sync to let Chrome suggest tab groups</translation>
 <translation id="8054517699425078995">This type of file can harm your device. Do you want to keep <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="8054563304616131773">Please enter a valid email address</translation>
 <translation id="8054609631325628928">These numbers can be used to help activate service</translation>
@@ -9192,6 +9200,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8206267832882844324">Edit note</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobile</translation>
+<translation id="8207204763121565309">Thumbs down submits feedback that you dislike this tab group suggestion</translation>
 <translation id="8207404892907560325">Choose a passkey</translation>
 <translation id="8207794858944505786">VM ‘<ph name="DEFAULT_VM_NAME" />’ exists, but does not appear to be a valid <ph name="VM_TYPE" /> VM. Please contact your administrator.</translation>
 <translation id="8208188204689616705">These sites are in a group defined by <ph name="FPS_OWNER" />. Sites in a group can see your activity in the group.</translation>
@@ -9303,6 +9312,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8291942417224950075">For personal use</translation>
 <translation id="8293206222192510085">Add Bookmark</translation>
 <translation id="8294431847097064396">Source</translation>
+<translation id="8294895455164415895">Open settings to let Chrome suggest tab groups</translation>
 <translation id="8295449579927246485">Live Translate</translation>
 <translation id="8295450130892483256">Install Microsoft 365</translation>
 <translation id="8297292446125062288">HID settings</translation>

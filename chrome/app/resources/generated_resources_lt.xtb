@@ -1510,6 +1510,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2127372758936585790">Mažos galios įkroviklis</translation>
 <translation id="212862741129535676">Dažnumo būsenos užėmimo procentas</translation>
 <translation id="212876957201860463">Ruošiamasi nustatyti mobiliojo ryšio įrenginį...</translation>
+<translation id="2130909682040406368">Sužinokite daugiau apie DI įrankių naudojimą</translation>
 <translation id="2131077480075264">Nepavyko įdiegti „<ph name="APP_NAME" />“, nes to neleidžia „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2133775869826239001">Pasirinkite daugiau nustatytinų funkcijų</translation>
 <translation id="2133857665503360653">Vėl bandyti atlikti veiksmą su <ph name="FILE_NAME" /></translation>
@@ -3249,6 +3250,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3490695139702884919">Atsisiunčiama… <ph name="PERCENT" /> proc.</translation>
 <translation id="3491669675709357988">Jūsų vaiko paskyra nenustatyta naudoti su „Family Link“ tėvų kontrole. Tėvų kontrolę galite pridėti tik baigę sąranką. Informacijos apie tėvų kontrolę rasite programoje „Explore“.</translation>
 <translation id="3491678231052507920">Paprastai svetainėse naudojami virtualiosios realybės įrenginiai ir duomenys, kad jums būtų leidžiama dalyvauti VR seansuose</translation>
+<translation id="3493043608231401654">Pašalinti „<ph name="TAB_TITLE" />“ iš skirtukų grupės</translation>
 <translation id="3493486281776271508">Reikalingas interneto ryšys</translation>
 <translation id="3493881266323043047">Galiojimas</translation>
 <translation id="3495496470825196617">Įkraunant įjungti neaktyvią būseną</translation>
@@ -4056,6 +4058,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4103644672850109428">Ekrano skaitytuvas, didinimas</translation>
 <translation id="4104163789986725820">Eksportuoti...</translation>
 <translation id="4104944259562794668">Tai galite įgalinti vėliau apsilankę skiltyje „Nustatymai“ &gt; „Sauga ir privatumas“ &gt; „Užrakinimo ekranas ir prisijungimas“</translation>
+<translation id="4106054677122819586">Pradėkime tvarkyti skirtukus</translation>
 <translation id="4107048419833779140">Identifikuoti ir pašalinti saugyklos įrenginius</translation>
 <translation id="4107522742068568249">Eiti į Saugos patikrą</translation>
 <translation id="4108314971463891922">Stebėti</translation>
@@ -4992,6 +4995,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="486505726797718946">Atmintis išsaugota</translation>
 <translation id="486635084936119914">Automatiškai atidaryti tam tikrų tipų failus, kai jie atsisiunčiami</translation>
 <translation id="4867272607148176509">Tėvai gali patvirtinti arba blokuoti programas, nustatyti laiko apribojimus ir valdyti žiniatinklio naršymą. Mokyklos paskyrą galima pridėti vėliau, kad būtų galima pasiekti daugumą mokyklos šaltinių.</translation>
+<translation id="4867433544163083783">Dabar patikrinti, ar galima tvarkyti skirtukus</translation>
 <translation id="4868281708609571334">„Google“ padėjėjo mokymas atpažinti <ph name="SUPERVISED_USER_NAME" /> balsą</translation>
 <translation id="4868284252360267853">Šis dialogo langas šiuo metu nesuaktyvintas. Paspauskite „Command“ – „Shift“ – „Option A“, kad suaktyvintumėte šį dialogo langą.</translation>
 <translation id="4869170227080975044">Skaityti „ChromeOS“ tinklo informaciją</translation>
@@ -5302,6 +5306,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="51143538739122961">Įdėkite saugos raktą ir jį palieskite</translation>
 <translation id="5115309401544567011">Prijunkite „<ph name="DEVICE_TYPE" />“ prie maitinimo šaltinio.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Mygtukas „Patinka“ – tai atsiliepimas, kad jums Patinka šis skirtukų grupės pasiūlymas</translation>
 <translation id="5116628073786783676">Iš&amp;saugoti garso įrašą kaip...</translation>
 <translation id="5117139026559873716">Atjunkite telefoną nuo „<ph name="DEVICE_TYPE" />“. Įrenginiai nebebus susiejami automatiškai.</translation>
 <translation id="5117930984404104619">Stebėti kitų plėtinių veikimą, įskaitant aplankytus URL</translation>
@@ -5519,6 +5524,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5294097441441645251">Turi prasidėti mažąja raide arba apatiniu brūkšniu</translation>
 <translation id="5294618183559481278">Jūsų „<ph name="DEVICE_TYPE" />“ naudoja įtaisytą jutiklį žmonėms priešasi įrenginį aptikti. Visi duomenys iš karto apdorojami įrenginyje ir tada ištrinami. Jutiklių duomenys niekada nesiunčiami „Google“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Plėtiniai gali prašyti prieigos prie šios svetainės</translation>
+<translation id="5295349205180144885">Skirtukų grupės pavadinimas: „<ph name="NAME" />“</translation>
 <translation id="5296350763804564124">Klausykitės balsu skaitomo ekrano, kad galėtumėte naudoti įrenginį nežiūrėdami į ekraną. Brailio rašmenys pasiekiami naudojant prijungtą įrenginį.</translation>
 <translation id="5296536303670088158">Turite patikimiausią „Chrome“ apsaugą nuo žalingų svetainių</translation>
 <translation id="5297005732522718715">Atnaujinti įrenginio kaip modemo naudojimo konfigūraciją</translation>
@@ -6387,6 +6393,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5999024481231496910">Įgalinote trečiųjų šalių slapukų bandymą palaipsniui. To negalima nepaisyti nustatymų puslapyje. Jei norite iš naujo įgalinti trečiųjų šalių slapukus, iš naujo paleiskite „Chrome“ išjungę šią funkciją.</translation>
 <translation id="5999630716831179808">Balsai</translation>
 <translation id="6000758707621254961">Rezultatų pagal užklausą „<ph name="SEARCH_TEXT" />“: <ph name="RESULT_COUNT" /></translation>
+<translation id="6001052984304731761">Prisijunkite, kad leistumėte „Chrome“ siūlyti skirtukų grupes</translation>
 <translation id="6001839398155993679">Pradėkime</translation>
 <translation id="6002122790816966947">Jūsų įrenginiai</translation>
 <translation id="6002210667729577411">Grupės perkėlimas į naują langą</translation>
@@ -9006,6 +9013,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8052218774860457016">Naršyklės sinchronizavimo tvarkymas</translation>
 <translation id="8053278772142718589">PKCS Nr. 12 failai</translation>
 <translation id="8053390638574070785">Iš naujo įkelti šį puslapį</translation>
+<translation id="8053629544194355894">Įjungti sinchronizavimą, kad „Chrome“ galėtų siūlyti skirtukų grupes</translation>
 <translation id="8054517699425078995">Šio tipo failas gali pakenkti įrenginiui. Ar vis tiek norite pasilikti „<ph name="FILE_NAME" />“?</translation>
 <translation id="8054563304616131773">Įveskite tinkamą el. pašto adresą</translation>
 <translation id="8054609631325628928">Šiuos numerius galima naudoti suaktyvinant paslaugą</translation>
@@ -9202,6 +9210,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8206267832882844324">Redaguoti pastabą</translation>
 <translation id="8206745257863499010">Bliuzas</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
+<translation id="8207204763121565309">Mygtukas „Nepatinka“ – tai atsiliepimas, kad jums nepatinka šis skirtukų grupės pasiūlymas</translation>
 <translation id="8207404892907560325">Pasirinkite „passkey“</translation>
 <translation id="8207794858944505786">Virtualus įrenginys „<ph name="DEFAULT_VM_NAME" />“ yra, bet panašu, kad jis nėra tinkamas „<ph name="VM_TYPE" />“ virtualus įrenginys. Susisiekite su administratoriumi.</translation>
 <translation id="8208188204689616705">Šios svetainės priklauso <ph name="FPS_OWNER" /> nustatytai grupei. Grupėje esančios svetainės gali matyti jūsų veiklą grupėje.</translation>
@@ -9313,6 +9322,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8291942417224950075">Naudojimas asmeniniais tikslais</translation>
 <translation id="8293206222192510085">Pridėti žymę</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
+<translation id="8294895455164415895">Atidarykite nustatymus, kad leistumėte „Chrome“ siūlyti skirtukų grupes</translation>
 <translation id="8295449579927246485">Vertimas realiuoju laiku</translation>
 <translation id="8295450130892483256">„Microsoft 365“ diegimas</translation>
 <translation id="8297292446125062288">ŽSĮ nustatymai</translation>

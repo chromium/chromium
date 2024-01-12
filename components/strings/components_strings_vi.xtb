@@ -258,6 +258,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1455413310270022028">Tẩy</translation>
 <translation id="1458140305240870199">Đồ lót</translation>
 <translation id="1459693405370120464">Thời tiết</translation>
+<translation id="1461041542809785877">Hiệu suất</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Dùng phông chữ trên máy tính để bạn có thể tạo nội dung có độ chân thực cao</translation>
 <translation id="1467432559032391204">Trái</translation>
@@ -2605,6 +2606,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6232271601416750929">Mỹ phẩm có nguồn gốc thiên nhiên</translation>
 <translation id="6234122620015464377">Cắt bỏ sau mỗi tài liệu</translation>
 <translation id="6236290670123303279">Quản lý chế độ cài đặt</translation>
+<translation id="623825323736974198">Quản lý các trang web sẽ luôn hoạt động và không bị lấy lại bộ nhớ</translation>
 <translation id="6240447795304464094">Biểu trưng của Google Pay</translation>
 <translation id="6241121617266208201">Ẩn các nội dung đề xuất</translation>
 <translation id="624499991300733384">Dịch vụ bộ sắp xếp bản in</translation>
@@ -3600,7 +3602,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8150722005171944719">Không thể đọc được tệp tại <ph name="URL" />.  Tệp này có thể đã bị xóa, di chuyển hoặc quyền tệp có thể đang chặn truy cập.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này xuống <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này xuống <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Thiết bị dành cho môn khúc côn cầu</translation>
-<translation id="8161095570253161196">Tiếp tục duyệt tìm</translation>
+<translation id="8161095570253161196">Tiếp tục duyệt xem</translation>
 <translation id="8163866351304776260">Đục 4 lỗ bên trái</translation>
 <translation id="8164078261547504572">Bạn muốn nhận email thông báo khi giá giảm?</translation>
 <translation id="8175796834047840627">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hành động này trong phần cài đặt.</translation>

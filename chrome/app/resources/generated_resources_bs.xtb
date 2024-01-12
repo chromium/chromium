@@ -1506,6 +1506,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2127372758936585790">Punjač niskog napona</translation>
 <translation id="212862741129535676">Postotak zauzetosti stanja frekvencije</translation>
 <translation id="212876957201860463">Priprema za postavljanje vašeg mobilnog uređaja...</translation>
+<translation id="2130909682040406368">Više informacija o korištenju AI alata</translation>
 <translation id="2131077480075264">Nije moguće instalirati aplikaciju "<ph name="APP_NAME" />" jer to ne dozvoljava "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Odaberite više funkcija koje želite postaviti</translation>
 <translation id="2133857665503360653">Ponovni pokušaj fajla <ph name="FILE_NAME" /></translation>
@@ -3245,6 +3246,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3490695139702884919">Preuzimanje… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Račun vašeg djeteta nije postavljen za roditeljski nadzor Family Linka. Možete dodati roditeljski nadzor kada završite postavljanje. Informacije o roditeljskom nadzoru možete pronaći u aplikaciji Istražite.</translation>
 <translation id="3491678231052507920">Web lokacije obično koriste vaše uređaje i podatke virtuelne realnosti da vam omoguće pristup VR sesijama</translation>
+<translation id="3493043608231401654">Uklanjanje kartice <ph name="TAB_TITLE" /> iz grupe kartica</translation>
 <translation id="3493486281776271508">Potrebna je internetska veza</translation>
 <translation id="3493881266323043047">Valjanost</translation>
 <translation id="3495496470825196617">Neaktivnost tokom punjenja</translation>
@@ -4052,6 +4054,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4103644672850109428">Čitač ekrana, uvećavanje</translation>
 <translation id="4104163789986725820">I&amp;zvezi...</translation>
 <translation id="4104944259562794668">Možete omogućiti ovu opciju kasnije u Postavkama &gt; Sigurnost i privatnost &gt; Zaključavanje ekrana i prijava</translation>
+<translation id="4106054677122819586">Poziv na organiziranje kartica</translation>
 <translation id="4107048419833779140">Prepoznavanje i isključivanje uređaja za pohranu</translation>
 <translation id="4107522742068568249">Idi u sigurnosnu provjeru</translation>
 <translation id="4108314971463891922">Prati</translation>
@@ -4988,6 +4991,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="486505726797718946">Memorija je ušteđena</translation>
 <translation id="486635084936119914">Automatski otvori određene vrste fajlova nakon preuzimanja</translation>
 <translation id="4867272607148176509">Roditelji mogu odobravati ili blokirati aplikacije, postavljati vremenska ograničenja i kontrolirati pregledanje weba. Školski račun se može dodati kasnije za pristup većini školskih izvora.</translation>
+<translation id="4867433544163083783">Trenutna provjera mogućnosti organiziranja kartica</translation>
 <translation id="4868281708609571334">Naučite Google Asistenta da prepozna glas djeteta <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Ovaj dijaloški okvir trenutno nije u fokusu. Pritisnite Command-Shift-Option A da fokusirate ovaj dijaloški okvir.</translation>
 <translation id="4869170227080975044">Očitavanje informacija mreže ChromeOS-a</translation>
@@ -5298,6 +5302,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="51143538739122961">Umetnite sigurnosni ključ i dodirnite ga</translation>
 <translation id="5115309401544567011">Priključite <ph name="DEVICE_TYPE" /> u izvor napajanja.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Oznaka "Sviđa mi se" šalje povratne informacije da vam se sviđa prijedlog grupe kartica</translation>
 <translation id="5116628073786783676">Sač&amp;uvaj zvuk kao…</translation>
 <translation id="5117139026559873716">Prekinite povezanost telefona i uređaja <ph name="DEVICE_TYPE" />. Oni se više neće automatski povezivati.</translation>
 <translation id="5117930984404104619">Praćenje ponašanja drugih ekstenzija, uključujući posjećene URL-ove</translation>
@@ -5515,6 +5520,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5294097441441645251">Mora početi malim slovom ili donjom crtom</translation>
 <translation id="5294618183559481278">Vaš uređaj <ph name="DEVICE_TYPE" /> koristi ugrađeni senzor da otkrije osobe koje se nalaze ispred njega. Svi podaci se odmah obrađuju na uređaju, a zatim se brišu. Podaci senzora se nikada ne šalju Googleu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Ekstenzije mogu tražiti pristup ovoj web lokaciji</translation>
+<translation id="5295349205180144885">Naziv grupe kartica: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Slušajte govorne povratne informacije da možete koristiti uređaj bez gledanja u ekran. Povratne informacije na Braillevom pismu su dostupne s povezanim uređajem.</translation>
 <translation id="5296536303670088158">Imate Chromeovu najjaču zaštitu od štetnih web lokacija</translation>
 <translation id="5297005732522718715">Osvježi konfiguraciju dijeljenja internetske veze</translation>
@@ -6382,6 +6388,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5999024481231496910">Omogućili ste testiranje postepenog ukidanja kolačića treće strane. To nije moguće zaobići pomoću stranice s postavkama. Ako želite ponovo omogućiti kolačiće treće strane, ponovo pokrenite Chrome dok je ta funkcija onemogućena.</translation>
 <translation id="5999630716831179808">Glasovi</translation>
 <translation id="6000758707621254961">Broj rezultata <ph name="RESULT_COUNT" /> za "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001052984304731761">Prijava radi dozvoljavanja Chromeu da predlaže grupe kartica</translation>
 <translation id="6001839398155993679">Započnimo</translation>
 <translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6002210667729577411">Premjesti grupu u novi prozor</translation>
@@ -8999,6 +9006,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8052218774860457016">Upravljanje sinhronizacijom preglednika</translation>
 <translation id="8053278772142718589">PKCS #12 fajlovi</translation>
 <translation id="8053390638574070785">Ponovo učitaj stranicu</translation>
+<translation id="8053629544194355894">Uključivanje sinhronizacije radi dozvoljavanja Chromeu da predlaže grupe kartica</translation>
 <translation id="8054517699425078995">Ova vrsta fajla može naštetiti vašem uređaju. Želite li ipak zadržati fajl <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Upišite važeću adresu e-pošte</translation>
 <translation id="8054609631325628928">Ovi brojevi mogu pomoći prilikom aktiviranja usluge</translation>
@@ -9195,6 +9203,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8206267832882844324">Uredite bilješku</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobilna mreža</translation>
+<translation id="8207204763121565309">Oznaka "Ne sviđa mi se" šalje povratne informacije da vam se ne sviđa prijedlog grupe kartica</translation>
 <translation id="8207404892907560325">Odaberite pristupni ključ</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" postoji, ali izgleda nije važeći <ph name="VM_TYPE" /> VM. Kontaktirajte administratora.</translation>
 <translation id="8208188204689616705">Ove web lokacije su u grupi koju definira <ph name="FPS_OWNER" />. Web lokacije u grupi mogu vidjeti vašu aktivnost u grupi.</translation>
@@ -9306,6 +9315,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8291942417224950075">Za ličnu upotrebu</translation>
 <translation id="8293206222192510085">Dodavanje oznake</translation>
 <translation id="8294431847097064396">Izvor</translation>
+<translation id="8294895455164415895">Otvaranje postavki radi dozvoljavanja Chromeu da predlaže grupe kartica</translation>
 <translation id="8295449579927246485">Prijevod uživo</translation>
 <translation id="8295450130892483256">Instalirajte Microsoft 365</translation>
 <translation id="8297292446125062288">Postavke uređaja s korisničkim interfejsom</translation>

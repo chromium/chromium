@@ -1510,6 +1510,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2127372758936585790">Gwefrydd pŵer isel</translation>
 <translation id="212862741129535676">Canran Meddiannaeth y Cyflwr Amledd</translation>
 <translation id="212876957201860463">Wrthi'n paratoi i osod eich dyfais symudol...</translation>
+<translation id="2130909682040406368">Dysgu rhagor am ddefnyddio offer AI</translation>
 <translation id="2131077480075264">Methu â gosod "<ph name="APP_NAME" />" oherwydd na chaniateir gan " <ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Dewiswch ragor o nodweddion i'w gosod</translation>
 <translation id="2133857665503360653">Rhoi cynnig arall ar <ph name="FILE_NAME" /></translation>
@@ -3249,6 +3250,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3490695139702884919">Wrthi'n lawrlwytho... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Nid yw cyfrif eich plentyn wedi'i osod ar gyfer rheolaethau rhieni Family Link. Gallwch ychwanegu rheolaethau rhieni ar ôl i chi orffen gosod. Byddwch yn gweld gwybodaeth am reolaethau rhieni yn yr ap Explore.</translation>
 <translation id="3491678231052507920">Mae gwefannau fel arfer yn defnyddio eich dyfeisiau a data realiti rhithwir i roi mynediad i chi at sesiynau VR</translation>
+<translation id="3493043608231401654">Tynnu <ph name="TAB_TITLE" /> o'r grŵp tab</translation>
 <translation id="3493486281776271508">Mae angen cysylltiad rhyngrwyd</translation>
 <translation id="3493881266323043047">Dilysrwydd</translation>
 <translation id="3495496470825196617">Pŵer segur wrth wefru</translation>
@@ -4056,6 +4058,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4103644672850109428">Darllenydd sgrîn, chwyddo</translation>
 <translation id="4104163789986725820">A&amp;llforio…</translation>
 <translation id="4104944259562794668">Gallwch ei alluogi yn nes ymlaen yn y Gosodiadau &gt; Diogelwch a Phreifatrwydd &gt; Clo sgrîn a mewngofnodi</translation>
+<translation id="4106054677122819586">Gadewch i ni drefnu eich tabiau</translation>
 <translation id="4107048419833779140">Nodi a chael gwared ar ddyfeisiau storfa</translation>
 <translation id="4107522742068568249">Mynd i'r Gwiriad Diogelwch</translation>
 <translation id="4108314971463891922">Dilyn</translation>
@@ -4992,6 +4995,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="486505726797718946">Cof a Arbedwyd</translation>
 <translation id="486635084936119914">Agorwch rai mathau o ffeiliau yn awtomatig ar ôl eu lawrlwytho</translation>
 <translation id="4867272607148176509">Gall rhieni gymeradwyo neu rwystro apiau, gosod terfynau amser, a rheoli pori gwe. Gellir ychwanegu cyfrif ysgol yn ddiweddarach i gael mynediad at y rhan fwyaf o adnoddau ysgol.</translation>
+<translation id="4867433544163083783">Gwiriwch nawr a ellir trefnu tabiau</translation>
 <translation id="4868281708609571334">Dysgwch Google Assistant i adnabod llais <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Nid ydych yn ffocysu deialog hwn ar hyn o bryd Pwyswch Command-Shift-Option A i ffocysu ar y deialog hwn.</translation>
 <translation id="4869170227080975044">Darllen gwybodaeth rhwydwaith ChromeOS</translation>
@@ -5302,6 +5306,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="51143538739122961">Rhowch eich allwedd ddiogelwch i mewn a'i chyffwrdd</translation>
 <translation id="5115309401544567011">Rhowch eich <ph name="DEVICE_TYPE" /> i mewn i gyflenwad pŵer.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Mae bodiau i fyny yn cyflwyno adborth eich bod yn hoffi'r awgrym grŵp tab hwn</translation>
 <translation id="5116628073786783676">Ca&amp;dw'r Sain Fel…</translation>
 <translation id="5117139026559873716">Datgysylltu'ch ffôn o'ch <ph name="DEVICE_TYPE" />. Ni fyddant yn cysylltu'n awtomatig mwyach.</translation>
 <translation id="5117930984404104619">Monitro ymddygiad estyniadau eraill, gan gynnwys cyfeiriadau URL yr ymwelwyd â nhw</translation>
@@ -5519,6 +5524,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5294097441441645251">Rhaid iddo ddechrau gyda llythyren fach neu danlinell</translation>
 <translation id="5294618183559481278">Mae'ch <ph name="DEVICE_TYPE" /> yn defnyddio synhwyrydd integredig i ganfod pobl o flaen eich dyfais. Mae data i gyd yn cael eu prosesu ar eich dyfais ar unwaith ac yna yn cael eu dileu. Ni anfonir data synhwyrydd byth at Google. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Gall estyniadau ofyn am fynediad at y wefan hon</translation>
+<translation id="5295349205180144885">Enw grŵp tab: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Clywed adborth llafar fel y gallwch ddefnyddio'ch dyfais heb edrych ar y sgrîn. Mae adborth Braille ar gael gyda dyfais gysylltiedig.</translation>
 <translation id="5296536303670088158">Mae gennych ddiogelwch cryfaf Chrome yn erbyn gwefannau niweidiol</translation>
 <translation id="5297005732522718715">Adnewyddu Ffurfwedd Rhannu Cysylltiad</translation>
@@ -6386,6 +6392,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5999024481231496910">Rydych wedi galluogi gorffen profi cwcis trydydd parti yn raddol. Ni all hyn gael ei ddiystyru gan y dudalen gosodiadau. Os ydych am ailalluogi cwcis trydydd parti, ail-lansiwch Chrome gyda'r nodwedd hon wedi'i hanalluogi.</translation>
 <translation id="5999630716831179808">Lleisiau</translation>
 <translation id="6000758707621254961">Mae <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001052984304731761">Mewngofnodwch i adael i Chrome awgrymu grwpiau tab</translation>
 <translation id="6001839398155993679">I ffwrdd â ni</translation>
 <translation id="6002122790816966947">Eich dyfeisiau</translation>
 <translation id="6002210667729577411">Symud grŵp i ffenestr newydd</translation>
@@ -9005,6 +9012,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8052218774860457016">Rheoli cysoni porwr</translation>
 <translation id="8053278772142718589">Ffeiliau PKCS #12</translation>
 <translation id="8053390638574070785">Ail-lwytho'r Dudalen hon</translation>
+<translation id="8053629544194355894">Trowch gysoni ymlaen i adael i Chrome awgrymu grwpiau tab</translation>
 <translation id="8054517699425078995">Gall y math hwn o ffeil niweidio eich dyfais. Ydych chi am gadw <ph name="FILE_NAME" /> beth bynnag?</translation>
 <translation id="8054563304616131773">Nodwch gyfeiriad e-bost dilys</translation>
 <translation id="8054609631325628928">Gellir defnyddio'r rhifau hyn i helpu i weithredu gwasanaeth</translation>
@@ -9201,6 +9209,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8206267832882844324">Golygu nodyn</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Symudol</translation>
+<translation id="8207204763121565309">Mae bodiau i lawr yn cyflwyno adborth nad ydych yn hoffi'r awgrym grŵp tab hwn</translation>
 <translation id="8207404892907560325">Dewiswch god pas</translation>
 <translation id="8207794858944505786">Mae VM "<ph name="DEFAULT_VM_NAME" />" yn bodoli, ond nid yw'n ymddangos i fod yn VM <ph name="VM_TYPE" /> dilys. Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="8208188204689616705">Mae'r gwefannau hyn mewn grŵp a ddiffinnir gan <ph name="FPS_OWNER" />. Gall gwefannau mewn grŵp weld eich gweithgarwch yn y grŵp.</translation>
@@ -9312,6 +9321,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8291942417224950075">At ddefnydd personol</translation>
 <translation id="8293206222192510085">Ychwanegu Nod Tudalen</translation>
 <translation id="8294431847097064396">Ffynhonnell</translation>
+<translation id="8294895455164415895">Agor gosodiadau i adael i Chrome awgrymu grwpiau tab</translation>
 <translation id="8295449579927246485">Cyfieithu Byw</translation>
 <translation id="8295450130892483256">Gosod Microsoft 365</translation>
 <translation id="8297292446125062288">Gosodiadau HID</translation>

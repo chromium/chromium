@@ -1492,6 +1492,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2127372758936585790">Ładowarka o małej mocy</translation>
 <translation id="212862741129535676">Stan częstotliwości – procentowo</translation>
 <translation id="212876957201860463">Przygotowuję konfigurację urządzenia komórkowego…</translation>
+<translation id="2130909682040406368">Więcej informacji o korzystaniu z narzędzi opartych na AI</translation>
 <translation id="2131077480075264">Nie można zainstalować elementu „<ph name="APP_NAME" />”, bo nie zezwala na to element „<ph name="IMPORT_NAME" />”</translation>
 <translation id="2133775869826239001">Wybierz więcej funkcji do skonfigurowania</translation>
 <translation id="2133857665503360653">Spróbuj ponownie pobrać plik <ph name="FILE_NAME" /></translation>
@@ -3213,6 +3214,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3490695139702884919">Pobieram... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Konto Twojego dziecka nie jest skonfigurowane pod kątem kontroli rodzicielskiej w Family Link. Możesz ją dodać, gdy zakończysz konfigurowanie. Informacje o kontroli rodzicielskiej znajdziesz w aplikacji Odkrywaj.</translation>
 <translation id="3491678231052507920">Strony zwykle używają urządzeń i danych rzeczywistości wirtualnej, by umożliwić Ci udział w sesjach VR</translation>
+<translation id="3493043608231401654">Usuń kartę <ph name="TAB_TITLE" /> z grupy kart</translation>
 <translation id="3493486281776271508">Wymagane połączenie z internetem</translation>
 <translation id="3493881266323043047">Ważność</translation>
 <translation id="3495496470825196617">Zasilanie w stanie nieaktywnym podczas ładowania</translation>
@@ -4020,6 +4022,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4103644672850109428">Czytnik ekranu, powiększenie</translation>
 <translation id="4104163789986725820">E&amp;ksportuj</translation>
 <translation id="4104944259562794668">Możesz to włączyć później, wybierając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ekran blokady i logowanie</translation>
+<translation id="4106054677122819586">Czas na uporządkowanie kart</translation>
 <translation id="4107048419833779140">Rozpoznawanie i wysuwanie urządzeń pamięci</translation>
 <translation id="4107522742068568249">Otwórz kontrolę zabezpieczeń</translation>
 <translation id="4108314971463891922">Obserwuj</translation>
@@ -4955,6 +4958,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="486505726797718946">Zaoszczędzona pamięć</translation>
 <translation id="486635084936119914">Automatycznie otwieraj określone typy plików po pobraniu</translation>
 <translation id="4867272607148176509">Rodzice mogą zatwierdzać i blokować aplikacje, ustawiać limity czasu oraz kontrolować przeglądanie internetu. Później można dodać konto szkolne, aby uzyskać dostęp do większości zasobów szkolnych.</translation>
+<translation id="4867433544163083783">Sprawdź, czy można już uporządkować karty</translation>
 <translation id="4868281708609571334">Naucz Asystenta Google rozpoznawać głos użytkownika <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">To okno nie jest teraz zaznaczone. Aby je zaznaczyć, naciśnij Command-Shift-Opcja A.</translation>
 <translation id="4869170227080975044">Odczytywanie informacji o sieci ChromeOS</translation>
@@ -5265,6 +5269,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="51143538739122961">Włóż klucz bezpieczeństwa i dotknij go</translation>
 <translation id="5115309401544567011">Podłącz urządzenie <ph name="DEVICE_TYPE" /> do źródła zasilania.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Opcja Lubię powoduje przesłanie pozytywnej opinii o tej sugestii dotyczącej grupy kart</translation>
 <translation id="5116628073786783676">Za&amp;pisz dźwięk jako...</translation>
 <translation id="5117139026559873716">Odłącz telefon od urządzenia <ph name="DEVICE_TYPE" />. Te urządzenia nie będą już łączyć się ze sobą automatycznie.</translation>
 <translation id="5117930984404104619">Monitorowanie działania innych rozszerzeń, w tym otwieranych adresów URL</translation>
@@ -5482,6 +5487,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5294097441441645251">Musi zaczynać się od małej litery lub podkreślenia</translation>
 <translation id="5294618183559481278">Twoje urządzenie <ph name="DEVICE_TYPE" /> korzysta z wbudowanego czujnika, który wykrywa osoby znajdujące się przed ekranem. Wszystkie dane są od razu przetwarzane na urządzeniu i potem usuwane. Czujnik nigdy nie wysyła zebranych danych do Google. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Rozszerzenia mogą prosić o dostęp do tej strony</translation>
+<translation id="5295349205180144885">Nazwa grupy kart: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Umożliwia odtwarzanie komunikatów głosowych, aby można było korzystać z urządzenia bez patrzenia na ekran. Komunikaty brajlowskie są dostępne na połączonych urządzeniach.</translation>
 <translation id="5296536303670088158">Korzystasz z najlepszych zabezpieczeń Chrome przed szkodliwymi stronami</translation>
 <translation id="5297005732522718715">Aktualizuj konfigurację tetheringu</translation>
@@ -6348,6 +6354,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5999024481231496910">Masz włączone wycofywanie testowania plików cookie innych firm. Tej opcji nie można zastąpić na stronie ustawień. Jeśli chcesz ponownie włączyć pliki cookie innych firm, uruchom ponownie Chrome z wyłączoną tą funkcją.</translation>
 <translation id="5999630716831179808">Głosy</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
+<translation id="6001052984304731761">Zaloguj się, aby umożliwić Chrome sugerowanie grup kart</translation>
 <translation id="6001839398155993679">Do dzieła</translation>
 <translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6002210667729577411">Przenieś grupę do nowego okna</translation>
@@ -8962,6 +8969,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8052218774860457016">Zarządzaj synchronizacją przeglądarki</translation>
 <translation id="8053278772142718589">Pliki PKCS #12</translation>
 <translation id="8053390638574070785">Załaduj ponownie tę stronę</translation>
+<translation id="8053629544194355894">Włącz synchronizację, aby umożliwić Chrome sugerowanie grup kart</translation>
 <translation id="8054517699425078995">Pliki tego typu mogą wyrządzić szkody na urządzeniu. Czy mimo to chcesz zachować plik <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Wpisz prawidłowy adres e-mail</translation>
 <translation id="8054609631325628928">Tych numerów można użyć do aktywowania usługi</translation>
@@ -9158,6 +9166,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8206267832882844324">Edytuj notatkę</translation>
 <translation id="8206745257863499010">Bluesowy</translation>
 <translation id="8206859287963243715">Komórka</translation>
+<translation id="8207204763121565309">Opcja Nie lubię powoduje przesłanie negatywnej opinii o tej sugestii dotyczącej grupy kart</translation>
 <translation id="8207404892907560325">Wybierz klucz</translation>
 <translation id="8207794858944505786">Maszyna wirtualna „<ph name="DEFAULT_VM_NAME" />” istnieje, ale prawdopodobnie nie jest prawidłową maszyną wirtualną typu <ph name="VM_TYPE" />. Skontaktuj się z administratorem.</translation>
 <translation id="8208188204689616705">Te witryny należą do grupy zdefiniowanej przez firmę <ph name="FPS_OWNER" />. Witryny z tej grupy mają dostęp do danych o Twojej aktywności w grupie.</translation>
@@ -9269,6 +9278,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8291942417224950075">Na użytek osobisty</translation>
 <translation id="8293206222192510085">Dodaj zakładkę</translation>
 <translation id="8294431847097064396">Źródło</translation>
+<translation id="8294895455164415895">Otwórz ustawienia, aby umożliwić Chrome sugerowanie grup kart</translation>
 <translation id="8295449579927246485">Tłumaczenie na żywo</translation>
 <translation id="8295450130892483256">Zainstaluj Microsoft 365</translation>
 <translation id="8297292446125062288">Ustawienia HID</translation>

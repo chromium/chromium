@@ -1503,6 +1503,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
 <translation id="212862741129535676">Процент на използване в състояние на активност</translation>
 <translation id="212876957201860463">Мобилното ви устройство се подготвя за настройване...</translation>
+<translation id="2130909682040406368">Научете повече за използването на инструменти с AI</translation>
 <translation id="2131077480075264"><ph name="APP_NAME" /> не може да се инсталира, защото няма разрешение за импортиране на ресурси от <ph name="IMPORT_NAME" /></translation>
 <translation id="2133775869826239001">Изберете още функции за настройване</translation>
 <translation id="2133857665503360653">Нов опит за <ph name="FILE_NAME" /></translation>
@@ -3242,6 +3243,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3490695139702884919">Изтегля се... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Профилът на детето ви не е настроен за работа с родителски контроли във Family Link. Можете да добавите родителски контроли, след като завършите настройването. Ще намерите информация за тях в приложението Explore.</translation>
 <translation id="3491678231052507920">Сайтовете обикновено използват устройствата и данните ви за виртуална реалност, за да можете да се присъединявате към сесии за VR</translation>
+<translation id="3493043608231401654">Премахване на „<ph name="TAB_TITLE" />“ от групата раздели</translation>
 <translation id="3493486281776271508">Необходима е връзка с интернет</translation>
 <translation id="3493881266323043047">Валидност</translation>
 <translation id="3495496470825196617">Неактивност при зареждане</translation>
@@ -4050,6 +4052,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4103644672850109428">Екранен четец, увеличение</translation>
 <translation id="4104163789986725820">Екс&amp;портиране...</translation>
 <translation id="4104944259562794668">Можете да активирате функцията по-късно от „Настройки &gt; Сигурност и поверителност &gt; Заключен екран и влизане в профила“</translation>
+<translation id="4106054677122819586">Да организираме разделите ви</translation>
 <translation id="4107048419833779140">Идентифициране и изваждане на устройства за съхранение</translation>
 <translation id="4107522742068568249">Към „Проверка на безопасността“</translation>
 <translation id="4108314971463891922">Следване</translation>
@@ -4986,6 +4989,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="486505726797718946">Икономисана памет</translation>
 <translation id="486635084936119914">Автоматично отваряне на определени файлови типове след изтегляне</translation>
 <translation id="4867272607148176509">Родителите могат да одобряват или блокират приложения, да задават времеви ограничения и да контролират сърфирането в мрежата. По-късно можете да добавите училищен профил за достъп до повечето училищни ресурси.</translation>
+<translation id="4867433544163083783">Проверете сега дали разделите могат да бъдат организирани</translation>
 <translation id="4868281708609571334">Научете Google Асистент да разпознава гласа на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Понастоящем фокусът не е върху този диалогов прозорец. Натиснете Command + Shift + Option A, за да поставите фокуса върху него.</translation>
 <translation id="4869170227080975044">Четене на информация за мрежата за ChromeOS</translation>
@@ -5296,6 +5300,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="51143538739122961">Поставете ключа си за сигурност и го докоснете</translation>
 <translation id="5115309401544567011">Моля, включете устройството си <ph name="DEVICE_TYPE" /> в източник на захранване.</translation>
 <translation id="5115338116365931134">Единичен вход за достъп</translation>
+<translation id="5116315184170466953">Чрез бутона „Харесва ми“ отбелязвате, че харесвате това предложение за група раздели</translation>
 <translation id="5116628073786783676">&amp;Запазване на аудиоклипа като...</translation>
 <translation id="5117139026559873716">Прекратяване на връзката между телефона и вашия <ph name="DEVICE_TYPE" />. Те повече няма да се свързват автоматично.</translation>
 <translation id="5117930984404104619">Наблюдение на поведението на други разширения, включително посетените URL адреси</translation>
@@ -5513,6 +5518,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5294097441441645251">Трябва да започва с малка буква или долна черта</translation>
 <translation id="5294618183559481278">Вашият <ph name="DEVICE_TYPE" /> използва вграден сензор, за да установява дали има хора пред устройството. Всички данни се обработват незабавно на устройството ви, след което се изтриват. Данните от сензорите никога не се изпращат до Google. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Разширенията могат да искат достъп до този сайт</translation>
+<translation id="5295349205180144885">Име на групата раздели: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Получавайте обратна връзка с говор, за да можете да използвате устройството си, без да гледате екрана. Обратната връзка с брайлово писмо е налице със свързано устройство.</translation>
 <translation id="5296536303670088158">Разполагате с най-надеждната защита на Chrome срещу опасни уебсайтове</translation>
 <translation id="5297005732522718715">Опресняване на конфигурацията на тетъринга</translation>
@@ -6381,6 +6387,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5999024481231496910">Активирахте тестването на поетапното изключване на „бисквитките“ на трети страни. Това не може да се отмени от страницата за настройки. Ако искате да активирате отново „бисквитките“ на трети страни, стартирайте повторно Chrome, след като деактивирате тази функция.</translation>
 <translation id="5999630716831179808">Гласове</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултата за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001052984304731761">Влезте в профила си, за да позволите на Chrome да предлага групи раздели</translation>
 <translation id="6001839398155993679">Начало</translation>
 <translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6002210667729577411">Преместване на групата в нов прозорец</translation>
@@ -8994,6 +9001,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8052218774860457016">Управление на синхронизирането на браузъра</translation>
 <translation id="8053278772142718589">Файлове PKCS #12</translation>
 <translation id="8053390638574070785">Презареждане на тази страница</translation>
+<translation id="8053629544194355894">Включете синхронизирането, за да позволите на Chrome да предлага групи раздели</translation>
 <translation id="8054517699425078995">Този тип файл може да навреди на устройството ви. Искате ли да запазите „<ph name="FILE_NAME" />“ въпреки това?</translation>
 <translation id="8054563304616131773">Моля, въведете валиден имейл адрес</translation>
 <translation id="8054609631325628928">Тези номера могат да се използват за активиране на услугата</translation>
@@ -9190,6 +9198,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8206267832882844324">Редактиране на бележката</translation>
 <translation id="8206745257863499010">Музикант</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
+<translation id="8207204763121565309">Чрез бутона „Не ми харесва“ отбелязвате, че не харесвате това предложение за група раздели</translation>
 <translation id="8207404892907560325">Изберете код за достъп</translation>
 <translation id="8207794858944505786">Виртуалната машина <ph name="DEFAULT_VM_NAME" /> съществува, но изглежда, че не е валидна такава от типа „<ph name="VM_TYPE" />“. Моля, обърнете се към администратора си.</translation>
 <translation id="8208188204689616705">Тези сайтове са в група, дефинирана от <ph name="FPS_OWNER" />. Те могат да виждат активността ви в нея.</translation>
@@ -9301,6 +9310,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8291942417224950075">За лична употреба</translation>
 <translation id="8293206222192510085">Добавяне на отметка</translation>
 <translation id="8294431847097064396">Източник</translation>
+<translation id="8294895455164415895">Отворете настройките, за да позволите на Chrome да предлага групи раздели</translation>
 <translation id="8295449579927246485">Незабавен превод</translation>
 <translation id="8295450130892483256">Инсталиране на Microsoft 365</translation>
 <translation id="8297292446125062288">Настройки за HID</translation>

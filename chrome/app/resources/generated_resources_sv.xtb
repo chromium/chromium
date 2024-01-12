@@ -1507,6 +1507,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="212862741129535676">Kapacitetsprocentsats för frekvens</translation>
 <translation id="212876957201860463">Konfigurationen av din enhet med mobildata förbereds …</translation>
+<translation id="2130909682040406368">Läs mer om hur du använder AI-verktyg</translation>
 <translation id="2131077480075264">Det går inte att installera <ph name="APP_NAME" /> eftersom den inte tillåts av <ph name="IMPORT_NAME" /></translation>
 <translation id="2133775869826239001">Välj fler funktioner att ställa in</translation>
 <translation id="2133857665503360653">Försök åtgärden igen med <ph name="FILE_NAME" /></translation>
@@ -3246,6 +3247,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3490695139702884919">Laddas ned … <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Ditt barns konto har inte konfigurerats för föräldrakontroller i Family Link. Du kan lägga till föräldrakontroller när du har slutfört konfigureringen. Information om föräldrakontroller finns i Utforska-appen.</translation>
 <translation id="3491678231052507920">Åtkomst till VR-enheter och VR-data brukar kunna behövas för VR-sessioner på webbplatsen</translation>
+<translation id="3493043608231401654">Ta bort <ph name="TAB_TITLE" /> från flikgruppen</translation>
 <translation id="3493486281776271508">Internetanslutning krävs</translation>
 <translation id="3493881266323043047">Giltighet</translation>
 <translation id="3495496470825196617">Inaktivitet vid laddning</translation>
@@ -4053,6 +4055,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4103644672850109428">Skärmläsare, förstoring</translation>
 <translation id="4104163789986725820">E&amp;xportera...</translation>
 <translation id="4104944259562794668">Du kan aktivera det senare i Inställningar &gt; Säkerhet och integritet &gt; Låsskärm och inloggning</translation>
+<translation id="4106054677122819586">Nu ordnar vi dina flikar</translation>
 <translation id="4107048419833779140">Identifiera och mata ut lagringsenheter</translation>
 <translation id="4107522742068568249">Öppna säkerhetskontrollen</translation>
 <translation id="4108314971463891922">Följ</translation>
@@ -4989,6 +4992,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="486505726797718946">Minnet har sparats</translation>
 <translation id="486635084936119914">Öppna vissa filtyper automatiskt efter att de har laddats ned</translation>
 <translation id="4867272607148176509">Föräldrar kan godkänna eller blockera appar, ställa in tidsgränser och styra webbsökningar. Ett skolkonto kan läggas till senare för att få åtkomst till de flesta skolresurserna.</translation>
+<translation id="4867433544163083783">Kontrollera nu om det går att ordna dina flikar</translation>
 <translation id="4868281708609571334">Lär Google Assistent att känna igen rösten för <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Fokus ligger inte på den här dialogrutan för närvarande. Tryck på Command-Skift-Option A om du vill flytta fokus till dialogrutan.</translation>
 <translation id="4869170227080975044">Läsa nätverksinformation för ChromeOS</translation>
@@ -5299,6 +5303,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="51143538739122961">Sätt i säkerhetsnyckeln och tryck på den</translation>
 <translation id="5115309401544567011">Anslut <ph name="DEVICE_TYPE" /> till en strömkälla.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Gilla-markera för att visa att du gillar den föreslagna flikgruppen</translation>
 <translation id="5116628073786783676">S&amp;para ljud som...</translation>
 <translation id="5117139026559873716">Koppla från telefonen från <ph name="DEVICE_TYPE" />. De ansluts inte längre till varandra automatiskt.</translation>
 <translation id="5117930984404104619">Bevaka hur övriga tillägg fungerar, däribland besökta webbadresser</translation>
@@ -5516,6 +5521,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5294097441441645251">Det måste börja med en gemen eller ett understreck</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> registrerar om någon befinner sig framför enheten med hjälp av en inbyggd sensor. All data bearbetas direkt på enheten och raderas sedan. Ingen sensordata skickas till Google. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Tillägg kan begära åtkomst till den här webbplatsen</translation>
+<translation id="5295349205180144885">Flikgruppens namn: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Få talad feedback så att du kan använda enheten utan att titta på skärmen. Punktskriftsfeedback är tillgängligt med en ansluten enhet.</translation>
 <translation id="5296536303670088158">Du har den starkaste säkerheten i Chrome mot skadliga webbplatser</translation>
 <translation id="5297005732522718715">Uppdatera konfigurationen för internetdelning</translation>
@@ -6383,6 +6389,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5999024481231496910">Du har aktiverat testning av utfasning av tredjepartscookies. Det här går inte att åsidosätta på inställningssidan. Om du vill återaktivera tredjepartscookies startar du om Chrome med funktionen inaktiverad.</translation>
 <translation id="5999630716831179808">Röster</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultat för <ph name="SEARCH_TEXT" /></translation>
+<translation id="6001052984304731761">Logga in om du vill låta Chrome föreslå flikgrupper</translation>
 <translation id="6001839398155993679">Då kör vi</translation>
 <translation id="6002122790816966947">Dina enheter</translation>
 <translation id="6002210667729577411">Flytta gruppen till ett nytt fönster</translation>
@@ -8996,6 +9003,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8052218774860457016">Hantera webbläsarsynkronisering</translation>
 <translation id="8053278772142718589">PKCS #12-filer</translation>
 <translation id="8053390638574070785">Hämta sidan igen</translation>
+<translation id="8053629544194355894">Aktivera synkronisering om du vill låta Chrome föreslå flikgrupper</translation>
 <translation id="8054517699425078995">Den här typen av fil kan skada enheten. Vill du behålla <ph name="FILE_NAME" /> ändå?</translation>
 <translation id="8054563304616131773">Ange en giltig e-postadress</translation>
 <translation id="8054609631325628928">Dessa nummer kan användas för att aktivera tjänsten</translation>
@@ -9192,6 +9200,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8206267832882844324">Redigera anteckning</translation>
 <translation id="8206745257863499010">Bluesig</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8207204763121565309">Gilla-markera för att visa att du inte gillar den föreslagna flikgruppen</translation>
 <translation id="8207404892907560325">Välj en nyckel</translation>
 <translation id="8207794858944505786">Den virtuella maskinen <ph name="DEFAULT_VM_NAME" /> finns men verkar inte vara en giltig <ph name="VM_TYPE" />-VM. Kontakta administratören.</translation>
 <translation id="8208188204689616705">Dessa webbplatser ingår i en grupp som definieras av <ph name="FPS_OWNER" />. Webbplatser i en grupp kan se din aktivitet i gruppen.</translation>
@@ -9303,6 +9312,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8291942417224950075">För personligt bruk</translation>
 <translation id="8293206222192510085">Lägg till bokmärke</translation>
 <translation id="8294431847097064396">Källa</translation>
+<translation id="8294895455164415895">Öppna inställningarna om du vill låta Chrome föreslå flikgrupper</translation>
 <translation id="8295449579927246485">Liveöversättning</translation>
 <translation id="8295450130892483256">Installera Microsoft 365</translation>
 <translation id="8297292446125062288">Inställningar för styrdon</translation>

@@ -1507,6 +1507,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2127372758936585790">Laekrag-laaier</translation>
 <translation id="212862741129535676">Frekwensietoestand-besettingpersentasie</translation>
 <translation id="212876957201860463">Maak tans gereed om jou sellulêre toestel op te stel …</translation>
+<translation id="2130909682040406368">Kry meer inligting oor die gebruik van AI-nutsgoed</translation>
 <translation id="2131077480075264">Kan nie "<ph name="APP_NAME" />" installeer nie omdat dit nie deur "<ph name="IMPORT_NAME" />" toegelaat word nie</translation>
 <translation id="2133775869826239001">Kies nog kenmerke om op te stel</translation>
 <translation id="2133857665503360653">Herprobeer <ph name="FILE_NAME" /></translation>
@@ -3246,6 +3247,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3490695139702884919">Laai tans af … <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Jou kind se rekening is nie vir Family Link-ouerkontroles opgestel nie. Jy kan ouerkontroles byvoeg nadat jy die opstelling voltooi het. Jy kan inligting oor ouerkontroles in die Verken-program kry.</translation>
 <translation id="3491678231052507920">Werwe gebruik gewoonlik jou virtuelerealiteittoestelle en -data sodat jy by VR-sessies kan ingaan</translation>
+<translation id="3493043608231401654">Verwyder <ph name="TAB_TITLE" /> uit oortjiegroep</translation>
 <translation id="3493486281776271508">Internetverbinding word vereis</translation>
 <translation id="3493881266323043047">Geldigheid</translation>
 <translation id="3495496470825196617">Sluimerkraggebruik wanneer toestel laai</translation>
@@ -4053,6 +4055,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4103644672850109428">Skermleser, vergroting</translation>
 <translation id="4104163789986725820">Voer uit …</translation>
 <translation id="4104944259562794668">Jy kan dit later aktiveer in Instellings &gt; Sekuriteit en privaatheid &gt; Sluitskerm en aanmelding</translation>
+<translation id="4106054677122819586">Kom ons begin en organiseer jou oortjies</translation>
 <translation id="4107048419833779140">Identifiseer en maak bergingtoestelle los</translation>
 <translation id="4107522742068568249">Gaan na Veiligheidskontrole</translation>
 <translation id="4108314971463891922">Volg</translation>
@@ -4989,6 +4992,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="486505726797718946">Geheue gestoor</translation>
 <translation id="486635084936119914">Maak sekere lêertipes outomaties oop nadat dit afgelaai is</translation>
 <translation id="4867272607148176509">Ouers kan apps goedkeur of blokkeer, tydsbeperkings stel en webblaaier beheer. ’n Skoolrekening kan later bygevoeg word om toegang tot die meeste skoolhulpbronne te verkry.</translation>
+<translation id="4867433544163083783">Kyk of oortjies georganiseer kan word</translation>
 <translation id="4868281708609571334">Leer Google Assistent om <ph name="SUPERVISED_USER_NAME" /> se stem te herken</translation>
 <translation id="4868284252360267853">Hierdie dialoog is nie tans gefokus nie. Druk Command-Shift-Option A om hierdie dialoog te fokus.</translation>
 <translation id="4869170227080975044">Lees ChromeOS-netwerkinligting</translation>
@@ -5299,6 +5303,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="51143538739122961">Sit jou sekuriteitsleutel in en raak daaraan</translation>
 <translation id="5115309401544567011">Prop jou <ph name="DEVICE_TYPE" /> by 'n kragbron in.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Opduim stuur terugvoer dat jy van hierdie oortjiegroepvoorstel hou</translation>
 <translation id="5116628073786783676">Stoor oudio as …</translation>
 <translation id="5117139026559873716">Ontkoppel jou foon van jou <ph name="DEVICE_TYPE" />. Hulle sal nie meer outomaties koppel nie.</translation>
 <translation id="5117930984404104619">Moniteer die gedrag van ander uitbreidings, insluitend besoekte URL'e</translation>
@@ -5516,6 +5521,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5294097441441645251">Moet met 'n kleinletter of onderstreep begin</translation>
 <translation id="5294618183559481278">Jou <ph name="DEVICE_TYPE" /> gebruik 'n ingeboude sensor om mense voor jou toestel te bespeur. Alle data word onmiddellik op jou toestel verwerk en dan uitgevee. Sensordata word nooit na Google toe gestuur nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Uitbreidings kan toegang tot hierdie werf versoek</translation>
+<translation id="5295349205180144885">Oortjiegroepnaam: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel.</translation>
 <translation id="5296536303670088158">Jy het Chrome se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="5297005732522718715">Herlaai verbindingopstelling</translation>
@@ -6384,6 +6390,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5999024481231496910">Jy het die uitfasering van derdepartywebkoekies geaktiveer. Dit kan nie deur die instellingsbladsy geïgnoreer word nie. As jy derdepartywebkoekies weer wil aktiveer, herbegin Chrome met hierdie kenmerk gedeaktiveer.</translation>
 <translation id="5999630716831179808">Stemme</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultate vir "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001052984304731761">Meld aan om Chrome toe te laat om oortjiegroepe voor te stel</translation>
 <translation id="6001839398155993679">Kom ons begin</translation>
 <translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6002210667729577411">Skuif groep na nuwe venster</translation>
@@ -8995,6 +9002,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8052218774860457016">Bestuur blaaiersinkronisering</translation>
 <translation id="8053278772142718589">PKCS #12-lêers</translation>
 <translation id="8053390638574070785">Herlaai hierdie bladsy</translation>
+<translation id="8053629544194355894">Skakel sinkronisering aan om Chrome toe te laat om oortjiegroepe voor te stel</translation>
 <translation id="8054517699425078995">Hierdie tipe lêer kan jou toestel beskadig. Wil jy <ph name="FILE_NAME" /> nog hou?</translation>
 <translation id="8054563304616131773">Voer asseblief 'n geldige e-posadres in</translation>
 <translation id="8054609631325628928">Hierdie nommers kan gebruik word om diens te help aktiveer</translation>
@@ -9191,6 +9199,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8206267832882844324">Wysig nota</translation>
 <translation id="8206745257863499010">Blues</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
+<translation id="8207204763121565309">Afduim stuur terugvoer dat jy nie van hierdie oortjiegroepvoorstel hou nie.</translation>
 <translation id="8207404892907560325">Kies ’n toegangsleutel</translation>
 <translation id="8207794858944505786">VM “<ph name="DEFAULT_VM_NAME" />” bestaan, maar is blykbaar nie ’n geldige <ph name="VM_TYPE" />-VM nie. Kontak jou admin.</translation>
 <translation id="8208188204689616705">Hierdie werwe is in ’n groep wat deur <ph name="FPS_OWNER" /> gedefinieer is. Werwe in ’n groep kan jou aktiwiteit in die groep sien.</translation>
@@ -9302,6 +9311,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8291942417224950075">Vir persoonlike gebruik</translation>
 <translation id="8293206222192510085">Voeg boekmerk by</translation>
 <translation id="8294431847097064396">Bron</translation>
+<translation id="8294895455164415895">Maak instellings oop sodat Chrome oortjiegroepe kan voorstel</translation>
 <translation id="8295449579927246485">Intyds Vertaal</translation>
 <translation id="8295450130892483256">Installeer Microsoft 365</translation>
 <translation id="8297292446125062288">MKT-instellings</translation>

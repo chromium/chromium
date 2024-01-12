@@ -279,7 +279,7 @@
 <translation id="1203942045716040624">Shared Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">您的安全码位于银行卡的背面</translation>
 <translation id="1210678701920254279">查看或添加打印机，并查看正在执行的打印任务</translation>
-<translation id="1211769675100312947">您自己选取快捷方式</translation>
+<translation id="1211769675100312947">您自己选择要显示哪些快捷方式</translation>
 <translation id="1213254615020057352">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
 <translation id="1213726621272705156">此页面不会再显示卡片</translation>
 <translation id="121384500095351701">无法安全地下载此文件</translation>
@@ -1488,6 +1488,7 @@
 <translation id="2127372758936585790">低功率充电器</translation>
 <translation id="212862741129535676">频率状态占用率</translation>
 <translation id="212876957201860463">正在准备设置您的移动网络设备…</translation>
+<translation id="2130909682040406368">详细了解如何使用 AI 工具</translation>
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2133775869826239001">选择更多功能进行设置</translation>
 <translation id="2133857665503360653">重新尝试下载“<ph name="FILE_NAME" />”文件</translation>
@@ -2952,7 +2953,7 @@
 <translation id="3267726687589094446">继续允许自动下载多个文件</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3269093882174072735">加载图片</translation>
-<translation id="326911502853238749">不显示<ph name="MODULE_NAME" /></translation>
+<translation id="326911502853238749">不要显示<ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">开启同步功能，以备份您的资料并在任意设备上使用</translation>
 <translation id="3269612321104318480">浅蓝绿色和白色</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
@@ -3223,6 +3224,7 @@
 <translation id="3490695139702884919">正在下载…<ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">您孩子的账号尚未设置 Family Link 家长控制功能。完成设置后，即可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
 <translation id="3491678231052507920">网站通常会使用您的虚拟现实设备和数据以让您进入 VR 会话</translation>
+<translation id="3493043608231401654">从标签页分组中移除“<ph name="TAB_TITLE" />”</translation>
 <translation id="3493486281776271508">需要互联网连接</translation>
 <translation id="3493881266323043047">有效期</translation>
 <translation id="3495496470825196617">充电时让电源闲置</translation>
@@ -4029,6 +4031,7 @@
 <translation id="4103644672850109428">屏幕阅读器、放大功能</translation>
 <translation id="4104163789986725820">导出(&amp;X)...</translation>
 <translation id="4104944259562794668">您可等到需要时再前往“设置”&gt;“安全和隐私设置”&gt;“锁定屏幕和登录”部分中启用该功能</translation>
+<translation id="4106054677122819586">咱们开始整理您的标签页吧</translation>
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4107522742068568249">前往“安全检查”页面</translation>
 <translation id="4108314971463891922">关注</translation>
@@ -4125,7 +4128,7 @@
 <translation id="4191892134568599822">要接收来自“<ph name="FEATURE_NAME" />”的内容吗？</translation>
 <translation id="4192024474038595073">{NUM_SITES,plural, =1{撤消了 1 个未使用的网站的权限}other{撤消了 {NUM_SITES} 个未使用的网站的权限}}</translation>
 <translation id="4193251682249731404">可信 CA</translation>
-<translation id="4193575319002689239">显示信息卡片</translation>
+<translation id="4193575319002689239">显示卡片</translation>
 <translation id="4193836101014293726">无法删除此个人资料</translation>
 <translation id="419427585139779713">一次输入 1 个音节</translation>
 <translation id="4194570336751258953">启用点按单击</translation>
@@ -4964,6 +4967,7 @@
 <translation id="486505726797718946">节省的内存</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4867272607148176509">家长可以批准或屏蔽应用、设置使用时限，以及控制网络浏览。日后需要时，您还可添加学校账号以用于访问大多数学校资源。</translation>
+<translation id="4867433544163083783">现在看看是否可以整理标签页了</translation>
 <translation id="4868281708609571334">训练 Google 助理识别<ph name="SUPERVISED_USER_NAME" />的语音</translation>
 <translation id="4868284252360267853">此对话框目前未被聚焦。按 Command+Shift+Option+A 即可聚焦于此对话框。</translation>
 <translation id="4869170227080975044">读取 ChromeOS 网络信息</translation>
@@ -5274,6 +5278,7 @@
 <translation id="51143538739122961">请插入您的安全密钥并轻触它</translation>
 <translation id="5115309401544567011">请为您的 <ph name="DEVICE_TYPE" /> 接通电源。</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">点击“我喜欢”图标即表示，您提交的反馈是自己喜欢这条标签页分组建议</translation>
 <translation id="5116628073786783676">音频存储为(&amp;V)...</translation>
 <translation id="5117139026559873716">断开手机与 <ph name="DEVICE_TYPE" /> 的连接。断开后，它们将无法再自动连接。</translation>
 <translation id="5117930984404104619">监控其他扩展程序的行为（包括访问过的网址）</translation>
@@ -5491,6 +5496,7 @@
 <translation id="5294097441441645251">必须以小写字符或下划线开头</translation>
 <translation id="5294618183559481278">您的 <ph name="DEVICE_TYPE" /> 使用内置传感器检测是否有人位于设备前。所有数据都会立即在您的设备上处理，完成后便会删除。传感器数据绝不会发送给 Google。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">扩展程序可以请求访问此网站</translation>
+<translation id="5295349205180144885">标签页分组名称：<ph name="NAME" /></translation>
 <translation id="5296350763804564124">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。</translation>
 <translation id="5296536303670088158">Chrome 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="5297005732522718715">刷新网络共享配置</translation>
@@ -6176,7 +6182,7 @@
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">启用调试功能</translation>
 <translation id="5857090052475505287">新文件夹</translation>
-<translation id="5857171483910641802">系统会根据您经常访问的网站推荐它们的快捷方式</translation>
+<translation id="5857171483910641802">根据您经常访问的网站自动显示快捷方式</translation>
 <translation id="5857675236236529683">准备就绪后，您可在此处找到自己的阅读清单</translation>
 <translation id="5857693745746757503">立即升级为新款 Chromebook，至少可节省 50 美元</translation>
 <translation id="5858490737742085133">终端</translation>
@@ -6355,6 +6361,7 @@
 <translation id="5999024481231496910">您已启用针对逐步弃用第三方 Cookie 的测试功能。无法通过此“设置”页面覆盖这项设置。若要重新启用第三方 Cookie，请停用此功能并重新启动 Chrome。</translation>
 <translation id="5999630716831179808">语音</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
+<translation id="6001052984304731761">登录后即可让 Chrome 提供标签页分组建议</translation>
 <translation id="6001839398155993679">开始</translation>
 <translation id="6002122790816966947">您的设备</translation>
 <translation id="6002210667729577411">将标签页组移至新窗口</translation>
@@ -8968,6 +8975,7 @@
 <translation id="8052218774860457016">管理浏览器同步</translation>
 <translation id="8053278772142718589">PKCS #12 文件</translation>
 <translation id="8053390638574070785">重新加载此页</translation>
+<translation id="8053629544194355894">开启同步功能后即可让 Chrome 提供标签页分组建议</translation>
 <translation id="8054517699425078995">此类型的文件可能会危害您的设备。仍要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="8054563304616131773">请输入有效的电子邮件地址</translation>
 <translation id="8054609631325628928">这些号码可用于帮助激活服务</translation>
@@ -9164,6 +9172,7 @@
 <translation id="8206267832882844324">修改备注</translation>
 <translation id="8206745257863499010">音符</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
+<translation id="8207204763121565309">点击“不喜欢”图标即表示，您提交的反馈是自己不喜欢这条标签页分组建议</translation>
 <translation id="8207404892907560325">选择一个通行密钥</translation>
 <translation id="8207794858944505786">虚拟机“<ph name="DEFAULT_VM_NAME" />”已存在，但似乎不是有效的 <ph name="VM_TYPE" /> 虚拟机。请与您的管理员联系。</translation>
 <translation id="8208188204689616705">这些网站属于一个由 <ph name="FPS_OWNER" /> 定义的群组。群组中的网站可查看您在该群组中的活动记录。</translation>
@@ -9275,6 +9284,7 @@
 <translation id="8291942417224950075">用于个人用途</translation>
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
+<translation id="8294895455164415895">打开设置，让 Chrome 提供标签页分组建议</translation>
 <translation id="8295449579927246485">实时翻译</translation>
 <translation id="8295450130892483256">安装 Microsoft 365</translation>
 <translation id="8297292446125062288">HID 设置</translation>

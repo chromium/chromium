@@ -258,6 +258,7 @@
 <translation id="1455413310270022028">پاک‌کن</translation>
 <translation id="1458140305240870199">لباس زیر</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
+<translation id="1461041542809785877">کارآیی</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">از قلم‌های موجود در رایانه استفاده کنید تا بتوانید محتوایی با شباهت زیاد به اصل ایجاد کنید</translation>
 <translation id="1467432559032391204">چپ</translation>
@@ -388,7 +389,7 @@
 <translation id="1711528724596764268">یادگیری ماشین و هوش مصنوعی</translation>
 <translation id="1712552549805331520"><ph name="URL" /> می‌خواهد داده‌ها را برای همیشه در رایانه محلی‌تان ذخیره کند</translation>
 <translation id="1713628304598226412">سینی ۲</translation>
-<translation id="1714807406136741351">حالت «مرور»، می‌توانید به حالت «فرم‌نگار» بروید تا بااستفاده از کلید راست‌بَر/ چپ‌بَر تغییرات قیمت را در گراف بررسی کنید</translation>
+<translation id="1714807406136741351">«حالت مرور»، می‌توانید به حالت «فرم‌نگار» بروید تا بااستفاده از کلید راست‌بَر/ چپ‌بَر تغییرات قیمت را در گراف بررسی کنید</translation>
 <translation id="1717218214683051432">حسگرهای حرکتی</translation>
 <translation id="1717494416764505390">صندوق پست ۳</translation>
 <translation id="1717688554309417925">خدمات کارت نقدی و چک</translation>
@@ -2605,6 +2606,7 @@
 <translation id="6232271601416750929">زیباییِ پاک</translation>
 <translation id="6234122620015464377">برش دادن بعد از چاپ هر سند</translation>
 <translation id="6236290670123303279">مدیریت تنظیمات</translation>
+<translation id="623825323736974198">مدیریت سایت‌هایی که همیشه فعال می‌مانند و از حافظه پاک نمی‌شوند</translation>
 <translation id="6240447795304464094">‏نشان‌واره Google Pay</translation>
 <translation id="6241121617266208201">پنهان کردن پیشنهادها</translation>
 <translation id="624499991300733384">سرویس حروف‌چین چاپ</translation>

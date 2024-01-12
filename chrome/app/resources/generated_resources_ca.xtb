@@ -1495,6 +1495,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2127372758936585790">Carregador de baix consum</translation>
 <translation id="212862741129535676">Percentatge d'ocupació de l'estat de freqüència</translation>
 <translation id="212876957201860463">S'està preparant la configuració del dispositiu mòbil...</translation>
+<translation id="2130909682040406368">Més informació sobre com pots utilitzar les eines d'IA</translation>
 <translation id="2131077480075264">No s'ha pogut instal·lar <ph name="APP_NAME" /> perquè <ph name="IMPORT_NAME" /> no ho permet.</translation>
 <translation id="2133775869826239001">Tria més funcions per configurar-les</translation>
 <translation id="2133857665503360653">Torna a provar <ph name="FILE_NAME" /></translation>
@@ -3231,6 +3232,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3490695139702884919">S'està baixant... (<ph name="PERCENT" />%)</translation>
 <translation id="3491669675709357988">El compte del teu fill no té configurats controls parentals per a Family Link. Pots afegir controls parentals quan acabis la configuració. Trobaràs informació sobre els controls parentals a l'aplicació Explora.</translation>
 <translation id="3491678231052507920">Els llocs web solen utilitzar les teves dades i dispositius de realitat virtual perquè puguis entrar a sessions de RV</translation>
+<translation id="3493043608231401654">Suprimeix <ph name="TAB_TITLE" /> del grup de pestanyes</translation>
 <translation id="3493486281776271508">Cal tenir connexió a Internet</translation>
 <translation id="3493881266323043047">Validesa</translation>
 <translation id="3495496470825196617">Inactiu mentre es carrega</translation>
@@ -4037,6 +4039,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4103644672850109428">Lector de pantalla, ampliació</translation>
 <translation id="4104163789986725820">E&amp;xporta...</translation>
 <translation id="4104944259562794668">Pots activar-la més tard a Configuració &gt; Seguretat i privadesa &gt; Pantalla de bloqueig i inici de sessió</translation>
+<translation id="4106054677122819586">Comença a organitzar les teves pestanyes</translation>
 <translation id="4107048419833779140">Identificar i expulsar els dispositius d'emmagatzematge</translation>
 <translation id="4107522742068568249">Ves a Comprovació de seguretat</translation>
 <translation id="4108314971463891922">Segueix</translation>
@@ -4972,6 +4975,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="486505726797718946">Memòria estalviada</translation>
 <translation id="486635084936119914">Obre alguns tipus de fitxer automàticament després de baixar-los</translation>
 <translation id="4867272607148176509">Els pares poden aprovar o bloquejar aplicacions, establir límits de temps i controlar la navegació web. Més endavant, es pot afegir un compte de centre educatiu per accedir a la majoria de recursos educatius.</translation>
+<translation id="4867433544163083783">Comprova ara si es poden organitzar les pestanyes</translation>
 <translation id="4868281708609571334">Ensenya a l'Assistent de Google a reconèixer la veu del teu fill o filla (<ph name="SUPERVISED_USER_NAME" />)</translation>
 <translation id="4868284252360267853">Actualment el focus no està posat en aquest quadre de diàleg. Prem Command+Maj+Option+A per posar-hi el focus.</translation>
 <translation id="4869170227080975044">Llegir informació de la xarxa de ChromeOS</translation>
@@ -5282,6 +5286,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="51143538739122961">Insereix la clau de seguretat i toca-la</translation>
 <translation id="5115309401544567011">Endolla el dispositiu <ph name="DEVICE_TYPE" /> a una font d'alimentació.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">La icona M'agrada indica que aquest suggeriment de grup de pestanyes t'agrada</translation>
 <translation id="5116628073786783676">De&amp;sa l'àudio com a...</translation>
 <translation id="5117139026559873716">Desconnecta el telèfon del dispositiu <ph name="DEVICE_TYPE" />. Es deixaran de connectar automàticament.</translation>
 <translation id="5117930984404104619">Control del comportament d'altres extensions, inclosos els URL visitats</translation>
@@ -5500,6 +5505,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5294097441441645251">Ha de començar amb un caràcter en minúscula o una ratlla baixa</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> utilitza un sensor integrat per detectar persones davant del dispositiu. Totes les dades es processen immediatament al dispositiu i, a continuació, se suprimeixen. Les dades del sensor no s'envien mai a Google. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Les extensions poden sol·licitar accés a aquest lloc web</translation>
+<translation id="5295349205180144885">Nom del grup de pestanyes: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Escolta avisos de veu per poder utilitzar el dispositiu sense mirar la pantalla. Els avisos en braille estan disponibles amb un dispositiu connectat.</translation>
 <translation id="5296536303670088158">Tens la seguretat més efectiva de Chrome contra llocs web perjudicials</translation>
 <translation id="5297005732522718715">Actualitza la configuració de la compartició de xarxa</translation>
@@ -6365,6 +6371,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5999024481231496910">Has activat l'eliminació progressiva de galetes de tercers de prova. La pàgina de configuració no pot anul·lar aquesta situació. Si vols tornar a activar les galetes de tercers, torna a iniciar Chrome amb aquesta funció desactivada.</translation>
 <translation id="5999630716831179808">Veus</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001052984304731761">Inicia la sessió perquè Chrome et suggereixi grups de pestanyes</translation>
 <translation id="6001839398155993679">Som-hi</translation>
 <translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6002210667729577411">Mou el grup a una finestra nova</translation>
@@ -8978,6 +8985,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8052218774860457016">Gestiona la sincronització del navegador</translation>
 <translation id="8053278772142718589">PKCS #12 fitxers</translation>
 <translation id="8053390638574070785">Torna a carregar aquesta pàgina</translation>
+<translation id="8053629544194355894">Activa la sincronització perquè Chrome et suggereixi grups de pestanyes</translation>
 <translation id="8054517699425078995">Aquest tipus de fitxer pot malmetre el vostre dispositiu. Voleu conservar <ph name="FILE_NAME" /> de totes maneres?</translation>
 <translation id="8054563304616131773">Introduïu una adreça electrònica vàlida</translation>
 <translation id="8054609631325628928">Aquests números es poden utilitzar per activar el servei</translation>
@@ -9174,6 +9182,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8206267832882844324">Edita la nota</translation>
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
+<translation id="8207204763121565309">La icona No m'agrada indica que aquest suggeriment de grup de pestanyes no t'agrada</translation>
 <translation id="8207404892907560325">Tria una clau d'accés</translation>
 <translation id="8207794858944505786">La màquina virtual "<ph name="DEFAULT_VM_NAME" />" existeix, però sembla que no és una VM <ph name="VM_TYPE" /> vàlida. Contacta amb l'administrador.</translation>
 <translation id="8208188204689616705">Aquests llocs web es troben en un grup definit per <ph name="FPS_OWNER" />. Els llocs web d'un grup poden veure l'activitat que dus a terme al grup.</translation>
@@ -9285,6 +9294,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8291942417224950075">Per a ús personal</translation>
 <translation id="8293206222192510085">Afegeix una adreça d'interès</translation>
 <translation id="8294431847097064396">Font</translation>
+<translation id="8294895455164415895">Obre la configuració perquè Chrome et suggereixi grups de pestanyes</translation>
 <translation id="8295449579927246485">Traducció instantània</translation>
 <translation id="8295450130892483256">Instal·la Microsoft 365</translation>
 <translation id="8297292446125062288">Configuració d'HID</translation>

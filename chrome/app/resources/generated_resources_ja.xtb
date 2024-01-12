@@ -1492,6 +1492,7 @@
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="212862741129535676">周波数状態の占有率（%）</translation>
 <translation id="212876957201860463">モバイル デバイスのセットアップ準備中...</translation>
+<translation id="2130909682040406368">AI ツールの使用に関する詳細</translation>
 <translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
 <translation id="2133775869826239001">設定するその他の機能を選択する</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> を再試行</translation>
@@ -3225,6 +3226,7 @@
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
 <translation id="3491678231052507920">多くのサイトは、VR セッションに参加するためにバーチャル リアリティ デバイスとデータを使用します。</translation>
+<translation id="3493043608231401654">タブグループから「<ph name="TAB_TITLE" />」を削除</translation>
 <translation id="3493486281776271508">インターネット接続が必要です</translation>
 <translation id="3493881266323043047">有効期間</translation>
 <translation id="3495496470825196617">充電時のアイドル設定</translation>
@@ -4031,6 +4033,7 @@
 <translation id="4103644672850109428">スクリーン リーダー、拡大</translation>
 <translation id="4104163789986725820">エクスポート(&amp;X)</translation>
 <translation id="4104944259562794668">後で [設定] &gt; [セキュリティとプライバシー] &gt; [ロック画面とログイン] で有効にすることができます</translation>
+<translation id="4106054677122819586">タブを整理しましょう</translation>
 <translation id="4107048419833779140">ストレージ デバイスの認識と取り外し</translation>
 <translation id="4107522742068568249">安全確認に移動</translation>
 <translation id="4108314971463891922">フォロー</translation>
@@ -4965,6 +4968,7 @@
 <translation id="486505726797718946">思い出を保存しました</translation>
 <translation id="486635084936119914">ダウンロード後に特定の種類のファイルを自動的に開きます</translation>
 <translation id="4867272607148176509">保護者はアプリの承認とブロック、利用時間の上限の設定、ウェブ ブラウジングの制御を行えます。学校のリソースのほとんどにアクセスするための学校用アカウントは、後で追加できます。</translation>
+<translation id="4867433544163083783">タブを整理できるかどうかを今すぐ確認</translation>
 <translation id="4868281708609571334">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの声を認識させる</translation>
 <translation id="4868284252360267853">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには command+shift+option+a キーを押してください。</translation>
 <translation id="4869170227080975044">ChromeOS のネットワーク情報を読み取る</translation>
@@ -5275,6 +5279,7 @@
 <translation id="51143538739122961">セキュリティ キーを挿入し、タップしてください</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> を電源に接続してください。</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">高く評価すると、このタブグループの提案が気に入ったというフィードバックが送信されます</translation>
 <translation id="5116628073786783676">名前を付けてオーディオを保存(&amp;V)...</translation>
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" /> からスマートフォンを切断します。以降、自動接続は行われなくなります。</translation>
 <translation id="5117930984404104619">他の拡張機能の動作を監視（アクセスした URL を含む）</translation>
@@ -5491,6 +5496,7 @@
 <translation id="5294097441441645251">先頭は英小文字かアンダースコアにしてください</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">拡張機能はこのサイトへのアクセスをリクエストできます</translation>
+<translation id="5295349205180144885">タブグループ名: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。</translation>
 <translation id="5296536303670088158">Chrome の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
 <translation id="5297005732522718715">テザリング設定を更新</translation>
@@ -6357,6 +6363,7 @@
 <translation id="5999024481231496910">サードパーティ Cookie の段階的廃止のテストを有効にしています。この設定は、設定ページでオーバーライドできません。サードパーティ Cookie を再度有効にする場合は、この機能を無効にして Chrome を再起動してください。</translation>
 <translation id="5999630716831179808">音声</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
+<translation id="6001052984304731761">ログインして Chrome でタブグループの提案を表示</translation>
 <translation id="6001839398155993679">開始する</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6002210667729577411">グループを新しいウィンドウに移動</translation>
@@ -8966,6 +8973,7 @@
 <translation id="8052218774860457016">ブラウザの同期を管理</translation>
 <translation id="8053278772142718589">PKCS #12 ファイル</translation>
 <translation id="8053390638574070785">ページを再読み込み</translation>
+<translation id="8053629544194355894">同期をオンにして Chrome でタブグループの提案を表示</translation>
 <translation id="8054517699425078995">この種類のファイルはお使いのデバイスに悪影響を与える可能性があります。<ph name="FILE_NAME" />を保存しますか？</translation>
 <translation id="8054563304616131773">有効なメールアドレスを入力してください</translation>
 <translation id="8054609631325628928">これらの番号を使用して、サービスを有効にできます</translation>
@@ -9162,6 +9170,7 @@
 <translation id="8206267832882844324">メモを編集</translation>
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>
+<translation id="8207204763121565309">低く評価すると、このタブグループの提案が気に入らなかったというフィードバックが送信されます</translation>
 <translation id="8207404892907560325">パスキーを選択する</translation>
 <translation id="8207794858944505786">VM「<ph name="DEFAULT_VM_NAME" />」は存在しますが、有効な <ph name="VM_TYPE" /> VM ではないようです。管理者にお問い合わせください。</translation>
 <translation id="8208188204689616705">これらのサイトは、<ph name="FPS_OWNER" /> により定義されたグループに属しています。グループ内のサイトは、グループでのアクティビティを確認できます。</translation>
@@ -9273,6 +9282,7 @@
 <translation id="8291942417224950075">個人でのご利用</translation>
 <translation id="8293206222192510085">ブックマークの追加</translation>
 <translation id="8294431847097064396">ソース</translation>
+<translation id="8294895455164415895">設定を開いて Chrome でタブグループの提案を表示</translation>
 <translation id="8295449579927246485">リアルタイム翻訳</translation>
 <translation id="8295450130892483256">Microsoft 365 をインストール</translation>
 <translation id="8297292446125062288">HID 設定</translation>

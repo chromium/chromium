@@ -1508,6 +1508,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2127372758936585790">Oplader ved lav kraft</translation>
 <translation id="212862741129535676">Anvendt andel for frekvenstilstand</translation>
 <translation id="212876957201860463">Forbereder konfiguration af din mobilenhed...</translation>
+<translation id="2130909682040406368">Få flere oplysninger om brug af AI-værktøjer</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" kan ikke installeres, fordi den ikke tillades af "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Vælg flere funktioner, du vil konfigurere</translation>
 <translation id="2133857665503360653">Prøv at downloade <ph name="FILE_NAME" /> igen</translation>
@@ -3247,6 +3248,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3490695139702884919">Downloader... <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Der er ikke konfigureret forældreindstillinger på dit barns konto. Du kan tilføje forældreindstillinger, når du har gennemført konfigurationen. Du kan få flere oplysninger om forældreindstillinger i appen Udforsk.</translation>
 <translation id="3491678231052507920">Websites bruger normalt dine virtual reality-enheder og -data til at gøre det muligt for dig at deltage i VR-sessioner</translation>
+<translation id="3493043608231401654">Fjern <ph name="TAB_TITLE" /> fra fanegruppe</translation>
 <translation id="3493486281776271508">Kræver internetforbindelse</translation>
 <translation id="3493881266323043047">Gyldighed</translation>
 <translation id="3495496470825196617">Inaktiv tilstand ved opladning</translation>
@@ -4054,6 +4056,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4103644672850109428">Skærmlæser, forstørrelse</translation>
 <translation id="4104163789986725820">E&amp;ksporter...</translation>
 <translation id="4104944259562794668">Du kan aktivere indstillingen senere i Indstillinger &gt; Sikkerhed og privatliv &gt; Låseskærm og login</translation>
+<translation id="4106054677122819586">Lad os organisere dine faner</translation>
 <translation id="4107048419833779140">Identificer og fjern lagerenheder</translation>
 <translation id="4107522742068568249">Gå til Sikkerhedstjek</translation>
 <translation id="4108314971463891922">Følg</translation>
@@ -4990,6 +4993,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="486505726797718946">Mindet er gemt</translation>
 <translation id="486635084936119914">Åbn bestemte filtyper automatisk efter download</translation>
 <translation id="4867272607148176509">Forældre kan godkende eller blokere apps, angive tidsgrænser og styre webbrowsing. En skolekonto kan tilføjes senere for at få adgang til de fleste skoleressourcer.</translation>
+<translation id="4867433544163083783">Tjek nu, om fanerne kan organiseres</translation>
 <translation id="4868281708609571334">Lær Google Assistent at genkende stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Denne dialogboks er ikke fremhævet i øjeblikket. Tryk på Command-tasten+Shift+Valgmulighed A for at fremhæve denne dialogboks.</translation>
 <translation id="4869170227080975044">Læs netværksoplysninger for ChromeOS</translation>
@@ -5300,6 +5304,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="51143538739122961">Indsæt din sikkerhedsnøgle, og tryk på den</translation>
 <translation id="5115309401544567011">Slut din <ph name="DEVICE_TYPE" /> til en strømkilde.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Hvis du giver et like, indsendes der feedback om, at du kan lide dette fanegruppeforslag</translation>
 <translation id="5116628073786783676">Ge&amp;m lyd som...</translation>
 <translation id="5117139026559873716">Afbryd forbindelsen mellem din telefon og din <ph name="DEVICE_TYPE" />. Der oprettes ikke længere automatisk forbindelse.</translation>
 <translation id="5117930984404104619">Overvåge adfærden for andre udvidelser, herunder de webadresser, du har besøgt.</translation>
@@ -5517,6 +5522,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5294097441441645251">Skal starte med et lille bogstav eller en understregning</translation>
 <translation id="5294618183559481278">Din <ph name="DEVICE_TYPE" /> bruger en indbygget sensor til at registrere, om der er nogen foran din enhed. Alle dataene behandles øjeblikkeligt på din enhed og slettes derefter. Sensordata sendes aldrig til Google. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Udvidelser kan anmode om adgang til dette website</translation>
+<translation id="5295349205180144885">Fanegruppens navn: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Hør talefeedback, så du kan bruge din enhed uden at kigge på skærmen. Braillefeedback er tilgængelig med en forbundet enhed.</translation>
 <translation id="5296536303670088158">Du har Chromes stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="5297005732522718715">Opdater konfiguration af netdeling</translation>
@@ -6384,6 +6390,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5999024481231496910">Du har aktiveret test af udfasning af tredjepartscookies. Dette kan ikke tilsidesættes af siden med indstillinger. Hvis du vil genaktivere tredjepartscookies, skal du genstarte Chrome, mens denne funktion er deaktiveret.</translation>
 <translation id="5999630716831179808">Stemmer</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001052984304731761">Log ind, så Chrome kan foreslå fanegrupper</translation>
 <translation id="6001839398155993679">Lad os komme i gang</translation>
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6002210667729577411">Flyt gruppe til nyt vindue</translation>
@@ -8998,6 +9005,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8052218774860457016">Administrer browsersynkronisering</translation>
 <translation id="8053278772142718589">PKCS #12-filer</translation>
 <translation id="8053390638574070785">Genindlæs denne side</translation>
+<translation id="8053629544194355894">Aktivér synkronisering, så Chrome kan foreslå fanegrupper</translation>
 <translation id="8054517699425078995">Denne type fil kan beskadige din enhed. Vil du beholde <ph name="FILE_NAME" /> alligevel?</translation>
 <translation id="8054563304616131773">Angiv en gyldig mailadresse</translation>
 <translation id="8054609631325628928">Disse numre kan bruges til at hjælpe med at aktivere tjenesten</translation>
@@ -9194,6 +9202,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8206267832882844324">Rediger note</translation>
 <translation id="8206745257863499010">BB King</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8207204763121565309">Hvis du giver et dislike, indsendes der feedback om, at du ikke kan lide dette fanegruppeforslag</translation>
 <translation id="8207404892907560325">Vælg en adgangsnøgle</translation>
 <translation id="8207794858944505786">Den virtuelle maskine "<ph name="DEFAULT_VM_NAME" />" findes, men ser ikke ud til at være en gyldig virtuel maskine af typen <ph name="VM_TYPE" />. Kontakt din administrator.</translation>
 <translation id="8208188204689616705">Disse websites er i en gruppe, der er defineret af <ph name="FPS_OWNER" />. Websites i en gruppe kan se din aktivitet i gruppen.</translation>
@@ -9305,6 +9314,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8291942417224950075">Til privat brug</translation>
 <translation id="8293206222192510085">Tilføj bogmærke</translation>
 <translation id="8294431847097064396">Kilde</translation>
+<translation id="8294895455164415895">Åbn indstillingerne, så Chrome kan foreslå fanegrupper</translation>
 <translation id="8295449579927246485">Liveoversættelse</translation>
 <translation id="8295450130892483256">Installer Microsoft 365</translation>
 <translation id="8297292446125062288">HID-indstillinger</translation>

@@ -1498,6 +1498,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2127372758936585790">Väikese energiakuluga laadija</translation>
 <translation id="212862741129535676">Sageduse oleku protsent</translation>
 <translation id="212876957201860463">Mobiilseadme seadistamise ettevalmistamine …</translation>
+<translation id="2130909682040406368">Lisateave AI tööriistade kasutamise kohta</translation>
 <translation id="2131077480075264">Rakendust <ph name="APP_NAME" /> ei saa installida, sest <ph name="IMPORT_NAME" /> ei luba seda</translation>
 <translation id="2133775869826239001">Seadistamiseks rohkemate funktsioonide valimine</translation>
 <translation id="2133857665503360653">Faili <ph name="FILE_NAME" /> uuesti allalaadimine</translation>
@@ -3237,6 +3238,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3490695139702884919">Allalaadimine … <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Teie lapse kontol pole Family Linki vanemlikku järelevalvet seadistatud. Saate vanemliku järelevalve lisada pärast seadistuse lõpuleviimist. Teavet vanemliku järelevalve kohta leiate rakendusest Avastamine.</translation>
 <translation id="3491678231052507920">Saidid kasutavad teie VR-seadmeid ja -andmeid tavaliselt VR-seansi käivitamiseks</translation>
+<translation id="3493043608231401654">Eemalda <ph name="TAB_TITLE" /> vahelehegrupist</translation>
 <translation id="3493486281776271508">Vaja on Interneti-ühendust</translation>
 <translation id="3493881266323043047">Kehtivus</translation>
 <translation id="3495496470825196617">Laadimisel kasutatakse tegevusetut režiimi</translation>
@@ -4044,6 +4046,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4103644672850109428">Ekraanilugeja, suurendus</translation>
 <translation id="4104163789986725820">&amp;Ekspordi...</translation>
 <translation id="4104944259562794668">Saate selle hiljem lubada jaotises Seaded &gt; Turvalisus ja privaatsus &gt; Lukustuskuva ja sisselogimine</translation>
+<translation id="4106054677122819586">Alustame ja korrastame teie vahelehed</translation>
 <translation id="4107048419833779140">Salvestusseadmete tuvastamine ja väljutamine</translation>
 <translation id="4107522742068568249">Ava ohutuskontroll</translation>
 <translation id="4108314971463891922">Jälgi</translation>
@@ -4979,6 +4982,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="486505726797718946">Mälu salvestatud</translation>
 <translation id="486635084936119914">Teatud failitüübid avatakse pärast allalaadimist automaatselt</translation>
 <translation id="4867272607148176509">Vanemad võivad rakendused heaks kiita või keelata, määrata ajapiiranguid ja hallata veebis sirvimist. Võite hiljem lisada koolikonto, et pääseda juurde enamikule kooli ressurssidele.</translation>
+<translation id="4867433544163083783">Vaadake nüüd, kas vahelehti saab korrastada</translation>
 <translation id="4868281708609571334">Õpetage Google'i assistenti kasutaja <ph name="SUPERVISED_USER_NAME" /> häält ära tundma</translation>
 <translation id="4868284252360267853">See dialoog pole praegu esile tõstetud. Selle dialoogi esiletõstmiseks vajutage klahve Command-Tõstuklahv-Option A.</translation>
 <translation id="4869170227080975044">ChromeOS-i võrguteabe lugemine</translation>
@@ -5289,6 +5293,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="51143538739122961">Sisestage oma turvavõti ja puudutage seda</translation>
 <translation id="5115309401544567011">Ühendage seade <ph name="DEVICE_TYPE" /> toiteallikaga.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Meeldivaks märkimine saadab tagasisidet, et vahelehegruppide soovitamine meeldib teile</translation>
 <translation id="5116628073786783676">Sa&amp;lvesta heli nimega...</translation>
 <translation id="5117139026559873716">Katkestage telefoni ja seadme <ph name="DEVICE_TYPE" /> ühendus. Need ei loo edaspidi automaatselt ühendust.</translation>
 <translation id="5117930984404104619">Muude laienduste käitumise, sh külastatud URL-ide jälgimine</translation>
@@ -5506,6 +5511,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5294097441441645251">Peab algama väiketähe või alljoonega</translation>
 <translation id="5294618183559481278">Seade <ph name="DEVICE_TYPE" /> kasutab sisseehitatud andurit, et tuvastada seadme ees olevaid inimesi. Kõiki andmeid töödeldakse kohe seadmes ja seejärel need kustutatakse. Anduri andmeid ei saadeta mitte kunagi Google'ile. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Laiendused saavad taotleda juurdepääsu sellele saidile</translation>
+<translation id="5295349205180144885">Vahelehegrupi nimi: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Esitatakse suulist tagasisidet, et saaksite seadet kasutada ilma ekraanikuva vaatamata. Braille'i teel tagasiside on saadaval ühendatud seadme puhul.</translation>
 <translation id="5296536303670088158">Teil on Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="5297005732522718715">Värskenda jagamise seadistust</translation>
@@ -6373,6 +6379,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5999024481231496910">Olete lubanud kolmanda osapoole küpsisefaili järk-järgulise kasutuselevõtu testimise. Seda ei saa seadete lehega alistada. Kui soovite kolmanda osapoole küpsisefailid uuesti lubada, taaskäivitage Chrome, kus see funktsioon on keelatud.</translation>
 <translation id="5999630716831179808">Hääled</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
+<translation id="6001052984304731761">Logige sisse, et võimaldada Chrome'il vahelehegruppe soovitada</translation>
 <translation id="6001839398155993679">Alustagem</translation>
 <translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6002210667729577411">Teisalda grupp uude aknasse</translation>
@@ -8986,6 +8993,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8052218774860457016">Brauseri sünkroonimise haldamine</translation>
 <translation id="8053278772142718589">PKCS #12 failid</translation>
 <translation id="8053390638574070785">Laadi see leht uuesti</translation>
+<translation id="8053629544194355894">Lülitage sünkroonimine sisse, et võimaldada Chrome'il vahelehegruppe soovitada</translation>
 <translation id="8054517699425078995">Seda tüüpi fail võib teie seadet kahjustada. Kas soovite faili <ph name="FILE_NAME" /> siiski alles jätta?</translation>
 <translation id="8054563304616131773">Sisestage kehtiv e-posti aadress</translation>
 <translation id="8054609631325628928">Need numbrid on abiks teenuse aktiveerimisel</translation>
@@ -9182,6 +9190,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8206267832882844324">Märkuse muutmine</translation>
 <translation id="8206745257863499010">Bluusilik</translation>
 <translation id="8206859287963243715">Mobiil</translation>
+<translation id="8207204763121565309">Mittemeeldivaks märkimine saadab tagasisidet, et vahelehegruppide soovitamine ei meeldi teile</translation>
 <translation id="8207404892907560325">Valige pääsuvõti</translation>
 <translation id="8207794858944505786">Virtuaalmasin „<ph name="DEFAULT_VM_NAME" />“ on olemas, aga näib, et see pole sobivat tüüpi (<ph name="VM_TYPE" />) virtuaalmasin. Võtke ühendust administraatoriga.</translation>
 <translation id="8208188204689616705">Need saidid on omaniku <ph name="FPS_OWNER" /> määratletud grupis. Grupis olevad saidid saavad teie tegevusi grupis vaadata.</translation>
@@ -9293,6 +9302,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8291942417224950075">Isiklikuks kasutamiseks</translation>
 <translation id="8293206222192510085">Lisa järjehoidja</translation>
 <translation id="8294431847097064396">Allikas</translation>
+<translation id="8294895455164415895">Avage seaded, et võimaldada Chrome'il vahelehegruppe soovitada</translation>
 <translation id="8295449579927246485">Kiirtõlge</translation>
 <translation id="8295450130892483256">Installige Microsoft 365</translation>
 <translation id="8297292446125062288">HID-seadme seaded</translation>

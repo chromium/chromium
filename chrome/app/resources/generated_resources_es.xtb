@@ -1495,6 +1495,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="212862741129535676">Porcentaje de ocupación de estado de frecuencia</translation>
 <translation id="212876957201860463">Preparando la configuración de tu dispositivo móvil...</translation>
+<translation id="2130909682040406368">Más información sobre cómo usar herramientas de IA</translation>
 <translation id="2131077480075264">No se puede instalar la extensión "<ph name="APP_NAME" />" porque no tiene permiso de "<ph name="IMPORT_NAME" />".</translation>
 <translation id="2133775869826239001">Elige más funciones para configurarlas</translation>
 <translation id="2133857665503360653">Reintentar descarga de <ph name="FILE_NAME" /></translation>
@@ -3232,6 +3233,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">La cuenta de tu hijo/a no está configurada para el control parental de Family Link. Podrás añadir el control parental cuando termines la configuración. Encontrarás información sobre el control parental en la aplicación Explorar.</translation>
 <translation id="3491678231052507920">Los sitios suelen utilizar tus datos y dispositivos de realidad virtual para permitirte acceder a sesiones de realidad virtual.</translation>
+<translation id="3493043608231401654">Quitar <ph name="TAB_TITLE" /> del grupo de pestañas</translation>
 <translation id="3493486281776271508">Se necesita conexión a Internet</translation>
 <translation id="3493881266323043047">Validez</translation>
 <translation id="3495496470825196617">Modo de inactividad durante la carga</translation>
@@ -3584,7 +3586,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicarse con un dispositivo USB}other{Comunicarse con # dispositivos USB}}</translation>
 <translation id="3764753550716962406">¿Permitir que Google use tu carrito para buscar descuentos disponibles?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
-<translation id="3765055238058255342">Este tipo de tarjeta</translation>
+<translation id="3765055238058255342">este tipo de tarjeta</translation>
 <translation id="3765246971671567135">No se ha podido leer la política del modo Demo sin conexión.</translation>
 <translation id="3765696567014520261">Los sitios no pueden usar tus cookies para ver tu actividad de navegación en otros sitios para, por ejemplo, personalizar anuncios. Es posible que no puedas usar las funciones de algunos sitios.</translation>
 <translation id="3766687283066842296">Más información sobre Mi teléfono</translation>
@@ -4038,6 +4040,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4103644672850109428">Lector de pantalla, ampliación</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4104944259562794668">Puedes habilitarlo más adelante en Configuración &gt; Seguridad y privacidad &gt; Pantalla de bloqueo e inicio de sesión</translation>
+<translation id="4106054677122819586">Vamos a organizar tus pestañas</translation>
 <translation id="4107048419833779140">Identificar y expulsar dispositivos de almacenamiento</translation>
 <translation id="4107522742068568249">Ir a Comprobación de seguridad</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -4973,6 +4976,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="486505726797718946">Memoria ahorrada</translation>
 <translation id="486635084936119914">Abre determinados tipos de archivo automáticamente después de la descarga</translation>
 <translation id="4867272607148176509">Los padres pueden aprobar o bloquear aplicaciones, establecer límites de tiempo y controlar la navegación por Internet. Se puede añadir una cuenta de centro educativo más adelante para acceder a la mayoría de los recursos del centro.</translation>
+<translation id="4867433544163083783">Comprobar ahora si se pueden organizar las pestañas</translation>
 <translation id="4868281708609571334">Enseñar al Asistente de Google a reconocer la voz de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Este cuadro de diálogo no está seleccionado actualmente. Pulsa Comando + Mayús + A para seleccionarlo.</translation>
 <translation id="4869170227080975044">Leer la información de red de ChromeOS</translation>
@@ -5283,6 +5287,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="51143538739122961">Inserta tu llave de seguridad y tócala</translation>
 <translation id="5115309401544567011">Enchufa tu <ph name="DEVICE_TYPE" /> a una fuente de alimentación.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">Si haces clic en "Me gusta", indicarás que esta sugerencia de grupo de pestañas te ha gustado</translation>
 <translation id="5116628073786783676">G&amp;uardar audio como...</translation>
 <translation id="5117139026559873716">Desvincula tu teléfono del <ph name="DEVICE_TYPE" />. Dejarán de conectarse automáticamente.</translation>
 <translation id="5117930984404104619">Controlar el comportamiento de otras extensiones, incluidas las URL visitadas</translation>
@@ -5500,6 +5505,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5294097441441645251">Debe comenzar con un carácter en minúscula o un guion bajo</translation>
 <translation id="5294618183559481278">Tu <ph name="DEVICE_TYPE" /> usa un sensor integrado para detectar si hay alguien que no seas tú frente a tu dispositivo. Todos los datos se procesan inmediatamente en tu dispositivo y después se eliminan. Los datos del sensor nunca se envían a Google. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">Las extensiones pueden solicitar acceso a este sitio</translation>
+<translation id="5295349205180144885">Nombre del grupo de pestañas: <ph name="NAME" /></translation>
 <translation id="5296350763804564124">Escucha mensajes de voz para poder usar el dispositivo sin mirar la pantalla. Se pueden recibir mensajes en braille con un dispositivo conectado.</translation>
 <translation id="5296536303670088158">Tienes el sistema de seguridad más potente de Chrome frente a sitios web dañinos</translation>
 <translation id="5297005732522718715">Actualizar configuración de conexión compartida</translation>
@@ -6367,6 +6373,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5999024481231496910">Has habilitado las pruebas de la eliminación gradual de cookies de terceros. Este ajuste no se puede anular en la página de configuración. Si quieres volver a habilitar las cookies de terceros, reinicia Chrome con esta función inhabilitada.</translation>
 <translation id="5999630716831179808">Voces</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001052984304731761">Inicia sesión para que Chrome pueda sugerir grupos de pestañas</translation>
 <translation id="6001839398155993679">Empezar</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6002210667729577411">Mover grupo a una nueva ventana</translation>
@@ -6467,7 +6474,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6077189836672154517">Consejos y novedades sobre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Hablar para escribir</translation>
 <translation id="6078121669093215958">{0,plural, =1{Invitado}other{# ventanas de invitado abiertas}}</translation>
-<translation id="6078323886959318429">Añadir atajo</translation>
+<translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6078742430369906859">La conectividad de "<ph name="NETWORK_ID" />" puede estar limitada</translation>
 <translation id="6078752646384677957">Comprueba el volumen del micrófono y del audio.</translation>
 <translation id="608029822688206592">No se ha encontrado ninguna red. Inserta tu tarjeta SIM y vuelve a intentarlo.</translation>
@@ -8980,6 +8987,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8052218774860457016">Gestionar sincronización del navegador</translation>
 <translation id="8053278772142718589">Archivos PKCS #12</translation>
 <translation id="8053390638574070785">Cargar página de nuevo</translation>
+<translation id="8053629544194355894">Activar la sincronización para que Chrome pueda sugerir grupos de pestañas</translation>
 <translation id="8054517699425078995">Este tipo de archivo puede dañar tu dispositivo. ¿Quieres descargar <ph name="FILE_NAME" /> de todas formas?</translation>
 <translation id="8054563304616131773">Escribe una dirección de correo electrónico válida</translation>
 <translation id="8054609631325628928">Estos números se pueden usar para activar el servicio</translation>
@@ -9176,6 +9184,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8206267832882844324">Editar nota</translation>
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
+<translation id="8207204763121565309">Si haces clic en "No me gusta", indicarás que esta sugerencia de grupo de pestañas no te ha gustado</translation>
 <translation id="8207404892907560325">Elige una clave de acceso</translation>
 <translation id="8207794858944505786">La VM "<ph name="DEFAULT_VM_NAME" />" existe, pero no parece ser una VM válida de <ph name="VM_TYPE" />. Ponte en contacto con tu administrador.</translation>
 <translation id="8208188204689616705">Estos sitios están en un grupo definido por <ph name="FPS_OWNER" />. Los sitios que forman parte de un grupo pueden ver tu actividad en el grupo.</translation>
@@ -9287,6 +9296,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8291942417224950075">Para uso personal</translation>
 <translation id="8293206222192510085">Añadir marcador</translation>
 <translation id="8294431847097064396">Origen</translation>
+<translation id="8294895455164415895">Abre la configuración para que Chrome pueda sugerir grupos de pestañas</translation>
 <translation id="8295449579927246485">Traducción instantánea</translation>
 <translation id="8295450130892483256">Instala Microsoft 365</translation>
 <translation id="8297292446125062288">Ajustes de HID</translation>

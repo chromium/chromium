@@ -1503,6 +1503,7 @@
 <translation id="2127372758936585790">አነስተኛ ኃይል ያለው ባትሪ መሙያ</translation>
 <translation id="212862741129535676">የተደጋጋሚነት ሁኔታ ያዥነት መቶኛ</translation>
 <translation id="212876957201860463">የእርስዎን የተንቀሳቃሽ ስልክ መሣሪያ ለማዋቀር በመዘጋጀት ላይ...</translation>
+<translation id="2130909682040406368">ስለ AI መሳሪያዎች አጠቃቀም የበለጠ ይረዱ</translation>
 <translation id="2131077480075264">በ«<ph name="IMPORT_NAME" />» ስላልተፈቀደ «<ph name="APP_NAME" />»ን መጫን አልተቻለም</translation>
 <translation id="2133775869826239001">ለማዋቀር ተጨማሪ ባህሪያትን ይምረጡ</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" />ን እንደገና ሞክር</translation>
@@ -3240,6 +3241,7 @@
 <translation id="3490695139702884919">በማውረድ ላይ... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">የእርስዎ ልጅ መለያ ለFamily Link ወላጅ መቆጣጠሪያዎች አልተዋቀረም። ልክ ውቅረትን እንደጨረሱ የወላጅ መቆጣጠሪያዎችን ማከል ይችላሉ። በአሳሽ መተግበሪያው ውስጥ በወላጅ መቆጣጠሪያዎች ላይ መረጃ ያገኛሉ።</translation>
 <translation id="3491678231052507920">ጣቢያዎች ወደ የቪአር ክፍለ-ጊዜዎች እንዲገቡ ለማስቻል አብዛኛው ጊዜ የእርስዎን የምናባዊ እውነታ መሣሪያዎች እና ውሂብ ይጠቀሙበታል</translation>
+<translation id="3493043608231401654">ከትር ቡድን <ph name="TAB_TITLE" />ን ያስወግዱ</translation>
 <translation id="3493486281776271508">የበየነ መረብ ግንኙነት ያስፈልጋል</translation>
 <translation id="3493881266323043047">ተገቢነት</translation>
 <translation id="3495496470825196617">ባትሪ እየሞላ ሳለ ኃይልን ፈትቷል</translation>
@@ -4045,6 +4047,7 @@
 <translation id="4103644672850109428">የማያ ገጽ አንባቢ፣ ማጉላት</translation>
 <translation id="4104163789986725820">ወደ &amp;ውጪ ላክ...</translation>
 <translation id="4104944259562794668">በቅንብሮች &gt; ደኅንነት እና ግላዊነት &gt; ማያ ገፅ ቁልፍ እና መግቢያ ውስጥ በኋላ ሊያነቁት ይችላሉ</translation>
+<translation id="4106054677122819586">እንሂን እና ትሮችዎን እናስስተባብር</translation>
 <translation id="4107048419833779140">የማከማቻ መሣሪያዎችን ለይተው ይወቁ እና ያስወጡ</translation>
 <translation id="4107522742068568249">ወደ የደህንነት ፍተሻ ሂድ</translation>
 <translation id="4108314971463891922">ተከተል</translation>
@@ -4980,6 +4983,7 @@
 <translation id="486505726797718946">ማህደረ ትውስታ ተቀምጧል</translation>
 <translation id="486635084936119914">ካወረዱ በኋላ የተወሰኑ የፋይል አይነቶችን ክፈት</translation>
 <translation id="4867272607148176509">ወላጆች መተግበሪያዎችን ማጽደቅ ወይም ማገድ፣ የጊዜ ገደቦችን ማቀናበር እና የድር አሰሳን መቆጣጠር ይችላሉ። አብዛኛዎቹን የትምህርት ግብዓቶች ለመድረስ የትምህርት ቤት መለያ በኋላ ላይ መታከል ይችላል።</translation>
+<translation id="4867433544163083783">ትሮችን ማደራጀት ይቻል እንደሆነ ይፈትሹ</translation>
 <translation id="4868281708609571334">Google ረዳት የ<ph name="SUPERVISED_USER_NAME" /> ድምፅ እንዲለይ ያስተምሩት</translation>
 <translation id="4868284252360267853">ይህ መገናኛ በአሁኑ ጊዜ ያተኮረ አይደለም። በዚህ መገናኛ ላይ ለማተኮር Command-Shift-Option Aን ይጫኑ።</translation>
 <translation id="4869170227080975044">የChromeOS የአውታረ መረብ መረጃን ማንበብ</translation>
@@ -5290,6 +5294,7 @@
 <translation id="51143538739122961">የእርስዎን የደህንነት ቁልፍ ያስገቡ እና ይንኩት</translation>
 <translation id="5115309401544567011">እባክዎ የእርስዎን <ph name="DEVICE_TYPE" /> ወደ የኃይል ምንጭ ይሰኩት።</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="5116315184170466953">አሪፍ የሚለው እርስዎ እነዚህን የትር ቡድን ጥቆማዎች እንደወደዱ ግብረመልስ ያቀርባል</translation>
 <translation id="5116628073786783676">ተሰሚ/ኦዲዮ አስ&amp;ቀምጥ እንደ…</translation>
 <translation id="5117139026559873716">የእርስዎን ስልክ ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር ያለውን ግንኙነት ያቋርጡ። ከእንግዲህ በራስ-ሰር አይገናኙም።</translation>
 <translation id="5117930984404104619">የተጎበኙ ዩ አር ኤሎችንም ጨምሮ የሌሎች ቅጥያዎች ባህሪ ይከታተሉ</translation>
@@ -5507,6 +5512,7 @@
 <translation id="5294097441441645251">በንዑስ ሆሄ ቁምፊ ወይም የስር መስመር መጀመር አለበት</translation>
 <translation id="5294618183559481278">ከመሣሪያዎ ፊት ለፊት ሰዎችን ለማግኘት የእርስዎ <ph name="DEVICE_TYPE" /> አብሮገነብ ዳሳሽዎ ይጠቀማል። ሁሉም ውሂብ ወዲያውኑ በመሣሪያዎ ላይ ይሰናዳል እንዲሁም ከዚያ ይሰረዛል። የዳሳሽ ውሂብ ወደ Google በጭራሽ አይላክም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">ቅጥያዎች የዚህን ጣቢያ መዳረሻ መጠየቅ ይችላሉ</translation>
+<translation id="5295349205180144885">የትር ቡድን ርዕስ፦ <ph name="NAME" /></translation>
 <translation id="5296350763804564124">የመሣሪያዎን ማያ ገፅ ሳይመለከቱ መጠቀም እንዲችሉ የቃል ግብረመልስን ይስሙ። የብሬይል ግብረመልስ በተገናኘ መሣሪያ ይገኛል።</translation>
 <translation id="5296536303670088158">ከጎጂ ድር ጣቢያዎች የሚከላከል የChrome በጣም ጠንካራ ጥበቃ አለዎት</translation>
 <translation id="5297005732522718715">የእንደ ሞደም መሰካት ውቅረትን አድስ</translation>
@@ -6374,6 +6380,7 @@
 <translation id="5999024481231496910">የሦስተኛ ወገን ኩኪ መውጣት ሙከራን አንቅተዋል። ይህ በቅንብሮች ገፅ መሻር አይችልም። የሦስተኛ ወገን ኩኪዎችን እንደገና ማንቃት ከፈለጉ ይህን ባህሪ አሰናክለው Chrome እንደገና ያስጀምሩ።</translation>
 <translation id="5999630716831179808">ድምጾች</translation>
 <translation id="6000758707621254961">ለ«<ph name="SEARCH_TEXT" />» <ph name="RESULT_COUNT" /> ውጤቶችን አሳይ</translation>
+<translation id="6001052984304731761">Chrome የትር ቡድኖችን እንዲጠቁም ይግቡ</translation>
 <translation id="6001839398155993679">እንሂድ</translation>
 <translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6002210667729577411">ስብስብ ወደ አዲስ መስኮት ውሰድ</translation>
@@ -8994,6 +9001,7 @@ nil</translation>
 <translation id="8052218774860457016">የአሳሽ ስምረትን ያስተዳድሩ</translation>
 <translation id="8053278772142718589">PKCS #12 ፋይሎች</translation>
 <translation id="8053390638574070785">ይህን ገፅ ዳግም ጫን</translation>
+<translation id="8053629544194355894">Chrome የትር ቡድኖችን እንዲጠቁም ለመፍቀድ አስምርን ያብሩ</translation>
 <translation id="8054517699425078995">የዚህ ዓይነት ፋይል መሣሪያዎን ሊጎዳ ይችላል። <ph name="FILE_NAME" />ን ለማንኛውም ማስቀመጥ ይፈልጋሉ?</translation>
 <translation id="8054563304616131773">እባክዎ ትክክለኛ የኢሜይል አድራሻ ያስገቡ</translation>
 <translation id="8054609631325628928">እነዚህ ቁጥሮች አገልግሎትን ለማግበር እንዲያግዙ ሥራ ላይ መዋል ይችላሉ</translation>
@@ -9190,6 +9198,7 @@ nil</translation>
 <translation id="8206267832882844324">ማስታወሻን አርትዕ</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
+<translation id="8207204763121565309">ደባሪ ነው የሚለው ይህ የትር ቡድን ጥቆማ እንደማይወዱ ግብረመልስ ያቀርባል</translation>
 <translation id="8207404892907560325">የይለፍ ቁልፍ ይምረጡ</translation>
 <translation id="8207794858944505786">ቪኤም «<ph name="DEFAULT_VM_NAME" />» አለ ነገር ግን የሚሰራ አይመስልም <ph name="VM_TYPE" /> ቪኤም። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="8208188204689616705">እነዚህ ጣቢያዎች በ<ph name="FPS_OWNER" /> በሚገለጽ ቡድን ውስጥ ናቸው። በአንድ ቡድን ውስጥ ያሉ ጣቢያዎች በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ ማየት ይችላሉ።</translation>
@@ -9301,6 +9310,7 @@ nil</translation>
 <translation id="8291942417224950075">ለግል ጥቅም</translation>
 <translation id="8293206222192510085">እልባት ያክሉ</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
+<translation id="8294895455164415895">Chrome የትር ቡድኖችን እንዲጠቁም ለመፍቀድ ቅንብሮችን ይክፈቱ</translation>
 <translation id="8295449579927246485">ቀጥታ ትርጉም</translation>
 <translation id="8295450130892483256">Microsoft 365ን ይጫኑ</translation>
 <translation id="8297292446125062288">ኤችአይዲ ቅንብሮች</translation>
