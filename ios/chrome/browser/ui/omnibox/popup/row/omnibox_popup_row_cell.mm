@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
 
 #import "base/check.h"
-#import "base/i18n/rtl.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
@@ -435,9 +433,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
   // Clear text.
   self.textTruncatingLabel.attributedText = nil;
-  self.textTruncatingLabel.truncateMode = FadeTruncatingTail;
-  self.textTruncatingLabel.semanticContentAttribute =
-      UISemanticContentAttributeUnspecified;
+  self.textTruncatingLabel.textAlignmentFollowsTextDirection = NO;
   self.detailTruncatingLabel.attributedText = nil;
   self.detailAnswerLabel.attributedText = nil;
 
@@ -502,16 +498,11 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     [self logNumberOfLinesSearchSuggestions:self.textTruncatingLabel
                                                 .attributedText];
       self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
-      base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
-          base::SysNSStringToUTF16(self.textTruncatingLabel.text));
-      if (textDirection == base::i18n::RIGHT_TO_LEFT) {
-        self.textTruncatingLabel.semanticContentAttribute =
-            UISemanticContentAttributeForceRightToLeft;
-        self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
-      }
+      self.textTruncatingLabel.textAlignmentFollowsTextDirection = YES;
   } else {
     // Default values for FadeTruncatingLabel.
     self.textTruncatingLabel.lineBreakMode = NSLineBreakByClipping;
+    self.textTruncatingLabel.textAlignmentFollowsTextDirection = NO;
     self.textTruncatingLabel.numberOfLines = 1;
   }
 

@@ -6,9 +6,7 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
@@ -148,12 +146,6 @@ UIImage* DefaultFaviconImage() {
 - (void)setTitle:(NSString*)title {
   if ([_titleLabel.text isEqualToString:title])
     return;
-  if (base::i18n::GetStringDirection(base::SysNSStringToUTF16(title)) ==
-      base::i18n::RIGHT_TO_LEFT) {
-    _titleLabel.truncateMode = FadeTruncatingHead;
-  } else {
-    _titleLabel.truncateMode = FadeTruncatingTail;
-  }
   _titleLabel.text = title;
   [_closeButton setAccessibilityValue:title];
 }
@@ -295,7 +287,6 @@ UIImage* DefaultFaviconImage() {
   // Add fade truncating label.
   _titleLabel = [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
   [_titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [_titleLabel setTextAlignment:NSTextAlignmentNatural];
   [self addSubview:_titleLabel];
 
   CGRect faviconFrame = CGRectMake(0, 0, kFaviconSize, kFaviconSize);

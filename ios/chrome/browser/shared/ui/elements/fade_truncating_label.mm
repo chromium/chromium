@@ -3,21 +3,30 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
-#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label+Testing.h"
 
 #import <CoreText/CoreText.h>
+
 #import <algorithm>
 
+#import "base/i18n/rtl.h"
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label+Testing.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
+
+/// The edges where the gradient is applied.
+enum class GradientEdge {
+  kLeft,   ///< Left edge.
+  kRight,  ///< Right edge.
+};
 
 namespace {
 
 /// Creates a gradient opacity mask based on direction of `truncate_mode` for
 /// `rect`.
-UIImage* CreateLinearGradient(CGRect rect, BOOL fade_left, BOOL fade_right) {
+UIImage* CreateLinearGradient(CGRect rect, GradientEdge gradient_edge) {
   // Create an opaque context.
   CGColorSpaceRef color_space = CGColorSpaceCreateDeviceGray();
   CGContextRef context = CGBitmapContextCreate(
@@ -40,17 +49,21 @@ UIImage* CreateLinearGradient(CGRect rect, BOOL fade_left, BOOL fade_right) {
       std::min(rect.size.height * 2, (CGFloat)floor(rect.size.width / 4));
   CGFloat minX = CGRectGetMinX(rect);
   CGFloat maxX = CGRectGetMaxX(rect);
-  if (fade_right) {
-    CGFloat start_x = maxX - fade_width;
-    CGPoint start_point = CGPointMake(start_x, CGRectGetMidY(rect));
-    CGPoint end_point = CGPointMake(maxX, CGRectGetMidY(rect));
-    CGContextDrawLinearGradient(context, gradient, start_point, end_point, 0);
-  }
-  if (fade_left) {
-    CGFloat start_x = minX + fade_width;
-    CGPoint start_point = CGPointMake(start_x, CGRectGetMidY(rect));
-    CGPoint end_point = CGPointMake(minX, CGRectGetMidY(rect));
-    CGContextDrawLinearGradient(context, gradient, start_point, end_point, 0);
+  switch (gradient_edge) {
+    case GradientEdge::kLeft: {
+      CGFloat start_x = minX + fade_width;
+      CGPoint start_point = CGPointMake(start_x, CGRectGetMidY(rect));
+      CGPoint end_point = CGPointMake(minX, CGRectGetMidY(rect));
+      CGContextDrawLinearGradient(context, gradient, start_point, end_point, 0);
+      break;
+    }
+    case GradientEdge::kRight: {
+      CGFloat start_x = maxX - fade_width;
+      CGPoint start_point = CGPointMake(start_x, CGRectGetMidY(rect));
+      CGPoint end_point = CGPointMake(maxX, CGRectGetMidY(rect));
+      CGContextDrawLinearGradient(context, gradient, start_point, end_point, 0);
+      break;
+    }
   }
   CGGradientRelease(gradient);
 
@@ -93,11 +106,15 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 
 @end
 
-@implementation FadeTruncatingLabel
+@implementation FadeTruncatingLabel {
+  /// The edge where the gradient is applied.
+  GradientEdge _gradientEdge;
+  /// Current text direction.
+  base::i18n::TextDirection _textDirection;
+}
 
 - (void)setup {
   self.backgroundColor = [UIColor clearColor];
-  _truncateMode = FadeTruncatingTail;
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -105,6 +122,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   if (self) {
     self.lineBreakMode = NSLineBreakByClipping;
     self.lineSpacing = 0;
+    _gradientEdge = GradientEdge::kRight;
     [self setup];
   }
   return self;
@@ -124,28 +142,54 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
        !CGSizeEqualToSize([self.gradient size], self.bounds.size))) {
     const CGRect rect =
         CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    self.gradient = CreateLinearGradient(
-        rect, /*fade_left=*/self.truncateMode & FadeTruncatingHead,
-        /*fade_right=*/self.truncateMode & FadeTruncatingTail);
+    self.gradient = CreateLinearGradient(rect, _gradientEdge);
   }
 }
 
-- (void)setTextAlignment:(NSTextAlignment)textAlignment {
-  if (textAlignment == NSTextAlignmentLeft) {
-    self.truncateMode = FadeTruncatingTail;
-  } else if (textAlignment == NSTextAlignmentRight) {
-    self.truncateMode = FadeTruncatingHead;
-  } else if (textAlignment == NSTextAlignmentNatural) {
-    self.truncateMode = FadeTruncatingTail;
+- (void)setText:(NSString*)text {
+  [super setText:text];
+  [self updateTextDirection];
+}
+
+- (void)setAttributedText:(NSAttributedString*)attributedText {
+  [super setAttributedText:attributedText];
+  [self updateTextDirection];
+}
+
+- (void)setTextAlignmentFollowsTextDirection:
+    (BOOL)textAlignmentFollowsTextDirection {
+  _textAlignmentFollowsTextDirection = textAlignmentFollowsTextDirection;
+  if (_textAlignmentFollowsTextDirection) {
+    if (_textDirection == base::i18n::RIGHT_TO_LEFT) {
+      self.textAlignment = NSTextAlignmentRight;
+    } else {
+      self.textAlignment = NSTextAlignmentLeft;
+    }
   } else {
-    NOTREACHED();
+    self.textAlignment = NSTextAlignmentNatural;
   }
+}
 
-  if (textAlignment != self.textAlignment) {
+#pragma mark - Private
+
+/// Updates the text direction and invalidate the gradient if needed.
+- (void)updateTextDirection {
+  base::i18n::TextDirection textDirection =
+      base::i18n::GetStringDirection(base::SysNSStringToUTF16(self.text));
+  if (textDirection != _textDirection) {
+    _gradientEdge = textDirection == base::i18n::RIGHT_TO_LEFT
+                        ? GradientEdge::kLeft
+                        : GradientEdge::kRight;
     self.gradient = nil;
+    if (self.textAlignmentFollowsTextDirection) {
+      if (textDirection == base::i18n::RIGHT_TO_LEFT) {
+        self.textAlignment = NSTextAlignmentRight;
+      } else {
+        self.textAlignment = NSTextAlignmentLeft;
+      }
+    }
   }
-
-  [super setTextAlignment:textAlignment];
+  _textDirection = textDirection;
 }
 
 #pragma mark - Text Drawing
@@ -166,17 +210,17 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   NSArray<NSValue*>* stringRangeForLines =
       StringRangeInLines(wrappingString, requestedRect.size.width);
 
+  // Like UILabel, always draw a minimum of one line even if there is not enough
+  // vertical space.
   const NSInteger availableLineCount =
-      floor(requestedRect.size.height / lineHeight);
+      MAX(1, floor(requestedRect.size.height / lineHeight));
+
   const NSInteger stringLineCount =
       base::checked_cast<NSInteger>(stringRangeForLines.count);
 
   const BOOL applyGradient = availableLineCount < stringLineCount;
 
-  // Like UILabel, always draw a minimum of one line even if there is not enough
-  // vertical space.
-  NSInteger lineCount = MAX(availableLineCount, 1);
-  lineCount = MIN(lineCount, stringLineCount);
+  const NSInteger lineCount = MIN(availableLineCount, stringLineCount);
   if (lineCount <= 0) {
     return;
   }
@@ -223,9 +267,8 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   lastLineString = [self attributedString:lastLineString
                         withLineBreakMode:NSLineBreakByClipping];
   const CGFloat rtlOffset =
-      self.semanticContentAttribute ==
-              UISemanticContentAttributeForceRightToLeft
-          ? lastLineString.size.width - lastLineRect.size.width
+      _textDirection == base::i18n::RIGHT_TO_LEFT
+          ? MAX(lastLineString.size.width - lastLineRect.size.width, 0)
           : 0.0;
   [self drawAttributedString:lastLineString
                       inRect:lastLineRect
