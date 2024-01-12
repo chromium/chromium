@@ -34,16 +34,17 @@ function registerEmbeddedListeners() {
       startCapture().then((result) => {
         reply({messageType: "start-capture-complete", result});
       });
-    } else if (type == "produce-crop-target") {
-      cropTargetFromElement("embedded", event.data.element)
+    } else if (type == "produce-sub-target") {
+      subCaptureTargetFromElement(event.data.targetType, "embedded",
+                                  event.data.element)
         .then((result) => {
-          reply({messageType: "produce-crop-target-complete", result});
+          reply({messageType: "produce-sub-target-complete", result});
         });
-    } else if (type == "crop-to") {
-      cropTo(event.data.cropTarget, event.data.targetFrame,
-             event.data.targetTrackStr)
+    } else if (type == "sub-capture-application") {
+      applySubCapture(event.data.target, event.data.targetType,
+                      event.data.targetFrame, event.data.targetTrackStr)
         .then((result) => {
-          reply({messageType: "crop-to-complete", result});
+          reply({messageType: "sub-capture-application-complete", result});
         });
     } else if (type == 'create-new-element') {
       createNewElement(event.data.targetFrame, event.data.tag, event.data.id)
@@ -179,38 +180,94 @@ async function stopCapture(targetFrame, targetTrack) {
   return `${role}-stop-success`;
 }
 
-async function cropTargetFromElement(targetFrame, elementId) {
+// Produce a token of type `targetType` for the element
+// whose ID is `elementId`.
+async function mintToken(targetType, elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    throw "unknown-element-error";
+  }
+
+  if (targetType == "crop-target") {
+    return CropTarget.fromElement(element);
+  } else if (targetType == "restriction-target") {
+    return RestrictionTarget.fromElement(element);
+  } else {
+    throw "unknown-target-type-error";
+  }
+}
+
+// Produce a token for a given element in the indicated frame.
+//
+// Parameters:
+// * targetType: The type of token (crop-target / restriction-target).
+// * targetFrame: The frame (top-level / embedded).
+// * elementId: The ID of the element for which the token should be produced.
+//
+// The token is stored in subCaptureTargets and its index is returned.
+async function subCaptureTargetFromElement(targetType, targetFrame, elementId) {
+  const resultPrefix = `${role}-produce-${targetType}`;
   if (role == targetFrame) {
     try {
-      const element = document.getElementById(elementId);
-      return makeCropTargetProxy(await CropTarget.fromElement(element));
+      const token = await mintToken(targetType, elementId);
+      return makeSubCaptureTargetProxy(token);
     } catch (e) {
-      return `${role}-produce-crop-target-error`;
+      return resultPrefix + "-error";
     }
   } else {
     const embedded_frame = document.getElementById("embedded_frame");
-    const waiter = waitForMessage("produce-crop-target-complete");
+    const waiter = waitForMessage("produce-sub-target-complete");
     embedded_frame.contentWindow.postMessage({
-        messageType: "produce-crop-target",
-        element: elementId
+        messageType: "produce-sub-target",
+        element: elementId,
+        targetType
       }, "*");
     const message = await waiter;
     return message.result;
   }
 }
 
-async function cropTo(cropTarget, targetFrame, targetTrackStr) {
+// Applies sub-capture; that is, calls cropTo() or restrictTo().
+//
+// Parameters:
+// * target: Indicates the target of cropping/restricting. (Note that this
+//   might be `undefined`.)
+// * targetType: Indicates which type of sub-target `target` represents.
+//   This parameter is necessary when `target` is `undefined`; otherwise, it
+//   is surmisable from the target.
+// * targetFrame: Indicates the targeted frame (top-level / embedded).
+// * targetTrackStr: Indicates the targeted track, in case the capturing
+//   frame has multiple concurrent captures.
+//
+// Returns `${role}-${targetType}-success` upon success.
+async function applySubCapture(target, targetType, targetFrame,
+                               targetTrackStr) {
+  // `targetType` is explicitly indicated for the case where `target`
+  // is `undefined`.
+  // Otherwise, the type can be derived from `target`'s actual type.
+  const isValid =
+    target == undefined ||
+    (targetType == "crop-target" &&
+      target.__proto__.constructor.name == "CropTarget") ||
+    (targetType == "restriction-target" &&
+      target.__proto__.constructor.name == "RestrictionTarget");
+  if (!isValid) {
+    throw "error-invalid-type";
+  }
+
+
   if (targetFrame != `${role}`) {
     if (`${role}` != "top-level") {
-      return "error";
+      throw "unrecognized-target-frame-error";
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
-    const waiter = waitForMessage("crop-to-complete");
+    const waiter = waitForMessage("sub-capture-application-complete");
     embedded_frame.contentWindow.postMessage(
         {
-          messageType: 'crop-to',
-          cropTarget: cropTarget,
+          messageType: 'sub-capture-application',
+          target: target,
+          targetType: targetType,
           targetFrame: targetFrame,
           targetTrackStr: targetTrackStr
         },
@@ -224,14 +281,20 @@ async function cropTo(cropTarget, targetFrame, targetTrackStr) {
                        targetTrackStr == "second" ? otherCaptureTrack :
                        undefined);
   if (!targetTrack) {
-    return "error";
+    throw "no-target-track-error";
   }
 
   try {
-    await targetTrack.cropTo(cropTarget);
-    return `${role}-crop-success`;
+    if (targetType == "crop-target") {
+      await targetTrack.cropTo(target);
+    } else if (targetType == "restriction-target") {
+      await targetTrack.restrictTo(target);
+    } else {
+      throw "unknown-type-error";
+    }
+    return `${role}-${targetType}-success`;
   } catch (e) {
-    return `${role}-crop-error`;
+    return `${role}-${targetType}-error`;
   }
 }
 
@@ -244,8 +307,8 @@ async function setUpMailman(url) {
   mailman_frame.src = url;
 
   window.addEventListener("message", (event) => {
-    if (event.data.messageType == "announce-crop-target") {
-      registerRemoteCropTarget(event.data.cropTarget, event.data.index);
+    if (event.data.messageType == "announce-sub-capture-target") {
+      registerRemoteSubCaptureTarget(event.data.target, event.data.index);
     }
   });
 
@@ -285,28 +348,30 @@ function broadcast(msg) {
 // could be tested in cropping to a target in any other page.   //
 //////////////////////////////////////////////////////////////////
 
-// Because CropTargets are not stringifiable, we cache them here and give
-// the C++ test fixture their index. When the C++ test fixture hands back
-// the index as input to an action, we use the relevant CropTarget stored here.
+// Because CropTargets and RestrictionTargets are not stringifiable,
+// we cache them here and give the C++ test fixture their index.
+// When the C++ test fixture hands back the index as input to an action,
+// we use the relevant token stored here.
 //
-// When a page mints a CropTarget, it propagates it to all other pages.
-// Each page acks it back, and when the minter receives the expected
-// number of acks, it returns control to the C++ fixture.
+// When a page mints a CropTarget/RestrictionTarget, it propagates it
+// to all other pages. Each page acks it back, and when the minter
+// receives the expected number of acks, it returns control to
+// the C++ fixture.
 
-// Contains all of the CropTargets this page knows of.
-const cropTargets = [];
+// Contains all of the tokens this page knows of.
+const subCaptureTargets = [];
 
 const EXPECTED_ACKS = 3;
 
-async function makeCropTargetProxy(cropTarget) {
-  cropTargets.push(cropTarget);
+async function makeSubCaptureTargetProxy(subCaptureTarget) {
+  subCaptureTargets.push(subCaptureTarget);
 
   let ackCount = 0;
-  let expectedAckIndex = cropTargets.length - 1;
+  let expectedAckIndex = subCaptureTargets.length - 1;
 
   const acksCompletedPromise = new Promise(resolve => {
     let ackListener = (event) => {
-      if (event.data.messageType == "ack-crop-target") {
+      if (event.data.messageType == "ack-sub-capture-target") {
         if (event.data.index != expectedAckIndex) {
           return;
         }
@@ -316,27 +381,32 @@ async function makeCropTargetProxy(cropTarget) {
         }
 
         window.removeEventListener("message", ackListener);
-        resolve(`${cropTargets.length - 1}`);
+        resolve(`${subCaptureTargets.length - 1}`);
       }
     };
     window.addEventListener("message", ackListener);
   });
 
   broadcast({
-    messageType: "announce-crop-target",
-    cropTarget: cropTarget,
+    messageType: "announce-sub-capture-target",
+    target: subCaptureTarget,
     index: expectedAckIndex
   });
 
   return acksCompletedPromise;
 }
 
-function getCropTarget(cropTargetIndex) {
-  return cropTargets[cropTargetIndex];
+function getSubCaptureTarget(subCaptureTargetIndex) {
+  if (subCaptureTargetIndex == "undefined") {
+    return undefined;
+  }
+  if (subCaptureTargetIndex >= subCaptureTargets.length) {
+    throw "out-of-bounds-error";
+  }
+  return subCaptureTargets[subCaptureTargetIndex];
 }
 
-
-function registerRemoteCropTarget(cropTarget, index) {
-  cropTargets.push(cropTarget);
-  broadcast({messageType: "ack-crop-target", index: index});
+function registerRemoteSubCaptureTarget(subCaptureTarget, index) {
+  subCaptureTargets.push(subCaptureTarget);
+  broadcast({messageType: "ack-sub-capture-target", index});
 }

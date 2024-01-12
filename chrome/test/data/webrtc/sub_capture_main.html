@@ -1,7 +1,7 @@
 <html>
   <head>
     <!-- The test scans for which source to share according to the title. -->
-    <title>Region Capture Test - Page 1 (Main)</title>
+    <title>Region/Element Capture Test - Page 1 (Main)</title>
     <link rel="icon" href="data:," />
     <script src="sub_capture_helpers.js"></script>
     <script>
@@ -23,12 +23,10 @@
         return message.result;
       }
 
-      async function cropToByIndex(cropTargetIndex, targetFrame, targetTrack) {
-        const cropTarget =
-          (cropTargetIndex == "undefined"
-              ? undefined
-              : getCropTarget(cropTargetIndex));
-        return cropTo(cropTarget, targetFrame, targetTrack);
+      async function applySubCaptureByIndex(targetIndex, targetType,
+                                            targetFrame, targetTrack) {
+        return applySubCapture(getSubCaptureTarget(targetIndex), targetType,
+                                                   targetFrame, targetTrack);
       }
 
       // Clones |track| into |trackClone|.
@@ -66,7 +64,7 @@
   </head>
   <body onload="onLoad();">
     <div id="div">
-      <!-- This DIV is just a convenient target for cropTargetFromElement. -->
+      <!-- This DIV is just a convenient target. -->
       <p id="p_id">0</p>
     </div>
     <br />
