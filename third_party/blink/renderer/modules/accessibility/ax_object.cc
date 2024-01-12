@@ -3037,12 +3037,17 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
+  if (AXObjectCache().IsFrozen()) {
+    // All cached values must be updated before the tree is frozen
+    // serialization, because changes to the ignored state could cause tree
+    // structure changes.
+    // In M122+ this is a CHECK() that is rarely (if at all) triggered, but in
+    // M121 we fail the CHECK too often to keep it.
+    return;
+  }
+
   cached_values_need_update_ = false;
 
-  CHECK(!AXObjectCache().IsFrozen())
-      << "All cached values must be updated before the tree is frozen "
-         "serialization, because changes to the ignored state could cause tree "
-         "structure changes.";
   CHECK(AXObjectCache().IsProcessingDeferredEvents());
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
