@@ -512,13 +512,16 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint_{
       true};
+  ScopedSpeculationRulesImplicitSourceForTest enable_implicit_source{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
       // A rule of incorrect type.
       R"("not an object",)"
 
-      // A rule that doesn't elaborate on its source.
+      // This used to be invalid, but now is, even with no source.
+      // TODO(crbug.com/1517696): Remove this when SpeculationRulesImplictSource
+      // is permanently shipped, so keep the test focused.
       R"({"urls": ["no-source.html"]},)"
 
       // A rule with an unrecognized source.
@@ -585,8 +588,10 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
   // The rule set itself is valid, however many of the individual rules are
   // invalid. So we should have populated a warning message.
   EXPECT_FALSE(rule_set->error_message().empty());
-  EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/no-source.html"),
+                  MatchesListOfURLs("https://example.com/valid.html")));
 }
 
 // Test that only prerender rule can process a "_blank" target hint.
@@ -1724,10 +1729,13 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
       enable_selector_matches{true};
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
+  ScopedSpeculationRulesImplicitSourceForTest enable_implicit_source{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
-      // A rule that doesn't elaborate on its source.
+      // A rule that doesn't elaborate on its source (previously disallowed).
+      // TODO(crbug.com/1517696): Remove this when SpeculationRulesImplictSource
+      // is permanently shipped, so keep the test focused.
       R"({"where": {"and": []}},)"
 
       // A rule with an unrecognized source.
@@ -1845,6 +1853,12 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
         "expects_no_vary_search": 0
         },)"
 
+      // Both "where" and "urls" with implicit source.
+      R"({"urls": ["/"], "where": {"selector_matches": "*"}},)"
+
+      // Neither "where" nor "urls" with implicit source.
+      R"({},)"
+
       // valid document rule.
       R"({"source": "document",
         "where": {"and": [
@@ -1857,9 +1871,12 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
   ASSERT_TRUE(rule_set);
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesSkipped);
-  EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(MatchesPredicate(And(
-                  {Or({Href({URLPattern("/hello.html")}),
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(
+          MatchesPredicate(And({})),
+          MatchesPredicate(
+              And({Or({Href({URLPattern("/hello.html")}),
                        Selector({StyleRuleWithSelectorText(".valid")})}),
                    Neg(And({Href({URLPattern("https://world.com:*")})}))}))));
 }
@@ -4597,6 +4614,21 @@ TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromBrowserInjection) {
   histogram_tester.ExpectUniqueSample(
       "Blink.SpeculationRules.LoadOutcome",
       SpeculationRulesLoadOutcome::kParseErrorBrowserInjected, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, ImplicitSource) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": [{
+          "where": {"href_matches": "/foo"}
+        }, {
+          "urls": ["/bar"]
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesPredicate(Href({URLPattern("/foo")})),
+                          MatchesListOfURLs("https://example.com/bar")));
 }
 
 }  // namespace

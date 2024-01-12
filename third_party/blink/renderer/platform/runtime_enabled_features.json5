@@ -3632,6 +3632,10 @@
       status: "stable",
     },
     {
+      name: "SpeculationRulesImplicitSource",
+      status: "experimental",
+    },
+    {
       name: "SpeculationRulesNoVarySearchHint",
       origin_trial_feature_name: "NoVarySearchPrefetch",
     },

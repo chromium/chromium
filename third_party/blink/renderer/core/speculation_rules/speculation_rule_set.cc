@@ -174,14 +174,47 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   const bool relative_to_enabled =
       RuntimeEnabledFeatures::SpeculationRulesRelativeToDocumentEnabled(
           context);
+  const bool implicit_source_enabled =
+      RuntimeEnabledFeatures::SpeculationRulesImplicitSourceEnabled(context);
 
-  // If input["source"] does not exist or is neither the string "list" nor the
-  // string "document", then return null.
+  // Let source be null.
+  // If input["source"] exists, then set source to input["source"].
+  JSONValue* source_value = input->Get("source");
   String source;
-  if (!input->GetString("source", &source)) {
+  if (source_value) {
+    if (!source_value->AsString(&source)) {
+      SetParseErrorMessage(out_error,
+                           "The value of the \"source\" key must be a string.");
+      return nullptr;
+    }
+  } else if (implicit_source_enabled) {
+    // Otherwise, if input["urls"] exists and input["where"] does not exist,
+    // then set source to "list".
+    //
+    // Otherwise, if input["where"] exists and input["urls"] does not exist,
+    // then set source to "document".
+    const bool has_urls = input->Get("urls");
+    const bool has_where = input->Get("where");
+    if (has_urls && !has_where) {
+      source = "list";
+    } else if (!has_urls && has_where) {
+      source = "document";
+    } else if (has_urls && has_where) {
+      SetParseErrorMessage(out_error,
+                           "A rule with no explicit \"source\" must specify "
+                           "\"urls\" or a \"where\" condition, but not both.");
+      return nullptr;
+    } else {
+      SetParseErrorMessage(out_error,
+                           "A rule with no explicit \"source\" must specify "
+                           "one of \"urls\" or \"where\".");
+      return nullptr;
+    }
+  } else {
     SetParseErrorMessage(out_error, "A rule must have a source.");
     return nullptr;
   }
+
   if (!(source == "list" || (document_rules_enabled && source == "document"))) {
     SetParseErrorMessage(out_error,
                          "A rule has an unknown source: \"" + source + "\".");
