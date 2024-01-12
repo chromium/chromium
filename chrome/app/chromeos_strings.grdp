@@ -4574,8 +4574,11 @@
   <message name="IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR" desc="Load error message of the consolidated consent dialog.">
     Terms of Service cannot be loaded. Please check your network connection and retry.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service.">
-    Retry
+  <message name="IDS_CONSOLIDATED_CONSENT_TRY_AGAIN" desc="Retry button of the consolidated consent dialog that reloads terms of service.">
+    Try again
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_DONE" desc="Button for acknowledging in a dialog for terms of service.">
+    Done
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen">
     Google terms of service
@@ -4588,6 +4591,12 @@
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen">
     Google privacy policy
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_PLAY_LOAD_ERROR_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen">
+    Can't load Google Play Terms of Service
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_PLAY_LOAD_ERROR_MESSAGE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen">
+    Make sure your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is connected to the internet and try again. You can also visit play.google.com/about/play-terms on another device.
   </message>
 
   <!-- Guest ToS Screen -->

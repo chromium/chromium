@@ -474,7 +474,8 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
   consents.record_arc_tos_consent =
-      !chrome::enterprise_util::IsProfileAffiliated(profile);
+      !chrome::enterprise_util::IsProfileAffiliated(profile) &&
+      !tos_content.empty();
   consents.record_backup_consent = !backup_restore_managed_;
   consents.backup_accepted = enable_backup_restore;
   consents.record_location_consent = !location_services_managed_;

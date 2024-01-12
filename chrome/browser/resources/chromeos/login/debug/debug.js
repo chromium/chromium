@@ -1153,7 +1153,8 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'consolidated-consent',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'loaded,loading,error,google-eula,cros-eula,arc,privacy',
+      handledSteps:
+          'loaded,loading,play-load-error,google-eula,cros-eula,arc,privacy',
       // TODO(crbug.com/1247174): Use localized URLs for eulaUrl and
       // additionalTosUrl.
       states: [
@@ -1319,10 +1320,9 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
         },
         {
-          id: 'error',
+          id: 'play-load-error',
           trigger: (screen) => {
-            screen.setUIStep('error');
-            screen.setUsageOptinHidden(false);
+            screen.setUIStep('play-load-error');
           },
           data: {
             isArcEnabled: true,

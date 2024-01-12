@@ -116,7 +116,13 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_GENERIC_FATAL_ERROR_TITLE);
   builder->Add("consolidatedConsentErrorMessage",
                IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR);
-  builder->Add("consolidatedConsentRetry", IDS_CONSOLIDATED_CONSENT_RETRY);
+  builder->Add("consolidatedConsentPlayErrorTitle",
+               IDS_CONSOLIDATED_CONSENT_PLAY_LOAD_ERROR_TITLE);
+  builder->AddF("consolidatedConsentPlayErrorMessage",
+                IDS_CONSOLIDATED_CONSENT_PLAY_LOAD_ERROR_MESSAGE,
+                ui::GetChromeOSDeviceTypeResourceId());
+  builder->Add("consolidatedConsentDone", IDS_CONSOLIDATED_CONSENT_DONE);
+  builder->Add("consolidatedConsentRetry", IDS_CONSOLIDATED_CONSENT_TRY_AGAIN);
   builder->Add("consolidatedConsentOK", IDS_CONSOLIDATED_CONSENT_OK);
   builder->Add("consolidatedConsentGoogleEulaTitle",
                IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE);
