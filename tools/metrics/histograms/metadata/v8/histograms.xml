@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.BackgroundThread"
-    units="microseconds" expires_after="2022-04-24">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>rmcilroy@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
@@ -203,6 +203,9 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 04/2022 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
@@ -223,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ConsumeCache.Failed"
-    units="microseconds" expires_after="2021-02-01">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -235,11 +238,14 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 02/2021 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.IsolateCacheHit"
-    units="microseconds" expires_after="2021-04-04">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -251,11 +257,14 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 04/2021 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.CacheTooCold"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -267,11 +276,14 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 12/2021 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.InlineScript"
-    units="microseconds" expires_after="2021-02-01">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -283,11 +295,14 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 02/2021 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.Other"
-    units="microseconds" expires_after="2021-02-01">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -299,11 +314,14 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 02/2021 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.ScriptTooSmall"
-    units="microseconds" expires_after="2021-10-17">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -315,6 +333,9 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 10/2021 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
@@ -335,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.StreamingFinalization"
-    units="microseconds" expires_after="2022-04-24">
+    units="microseconds" expires_after="2024-06-16">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -346,6 +367,9 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: This histogram has incomplete data. It expired in 04/2022 and was
+    unexpired in 12/2023.
   </summary>
 </histogram>
 
