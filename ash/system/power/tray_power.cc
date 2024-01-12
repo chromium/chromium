@@ -103,7 +103,7 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
     icon_fg_token = cros_tokens::kCrosSysSystemOnPrimaryContainer;
   } else if (features::IsBatterySaverAvailable() &&
              PowerStatus::Get()->IsBatterySaverActive()) {
-    icon_fg_token = cros_tokens::kCrosSysSystemWarningInverse;
+    icon_fg_token = cros_tokens::kCrosSysOnWarningContainer;
   }
   const SkColor icon_fg_color = GetColorProvider()->GetColor(icon_fg_token);
 
