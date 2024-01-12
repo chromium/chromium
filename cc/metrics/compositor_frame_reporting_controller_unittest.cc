@@ -2768,6 +2768,66 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
               ::testing::ElementsAre(std::vector<std::string>{"cnt"},
                                      std::vector<std::string>{"1"}));
 }
+
+// A simple test that ensures the vsync_interval is copied onto the
+// EventLatency.
+TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input");
+
+  std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, std::nullopt);
+
+  std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, std::nullopt);
+
+  std::unique_ptr<EventMetrics> non_scroll_event =
+      CreateEventMetrics(ui::ET_TOUCH_PRESSED, std::nullopt);
+
+  // First BeginFrame with a 32ms interval.
+  args_.interval = base::Milliseconds(32);
+  SimulateBeginImplFrame();  // BF1
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  EventMetrics::List metrics_list_1;
+  metrics_list_1.push_back(std::move(metrics_1));
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1)});
+
+  // Presentation of the first BeginFrame.
+  SimulatePresentCompositorFrame();
+
+  // Second BeginFrame with an 8ms interval.
+  args_.interval = base::Milliseconds(8);
+  SimulateBeginImplFrame();  // BF2
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  EventMetrics::List metrics_list_2;
+  metrics_list_2.push_back(std::move(metrics_2));
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2)});
+
+  // Presentation of the second BeginFrame.
+  SimulatePresentCompositorFrame();
+
+  // Query and ensure we see both intervals on different events.
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  constexpr char kQuery[] =
+      R"(
+      SELECT
+        EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') AS interval, COUNT(*) AS cnt
+      FROM slice
+      WHERE name = 'EventLatency'
+      GROUP BY 1
+      ORDER BY 1 ASC
+      )";
+  auto result = ttp.RunQuery(kQuery);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"interval", "cnt"},
+                                  std::vector<std::string>{"8", "1"},
+                                  std::vector<std::string>{"32", "1"}));
+}
+
 #endif
 
 }  // namespace

@@ -35,6 +35,7 @@ class EventLatencyTracingRecorder {
   static void RecordEventLatencyTraceEvent(
       EventMetrics* event_metrics,
       base::TimeTicks termination_time,
+      base::TimeDelta vsync_interval,
       const std::vector<CompositorFrameReporter::StageData>* stage_history,
       const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown);
 
@@ -44,6 +45,7 @@ class EventLatencyTracingRecorder {
   static void RecordEventLatencyTraceEventInternal(
       const EventMetrics* event_metrics,
       base::TimeTicks termination_time,
+      base::TimeDelta vsync_interval,
       const std::vector<CompositorFrameReporter::StageData>* stage_history,
       const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown);
 };

@@ -1548,8 +1548,8 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
   for (const auto& event_metrics : events_metrics_) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
-        event_metrics.get(), frame_termination_time_, &stage_history_,
-        processed_viz_breakdown_.get());
+        event_metrics.get(), frame_termination_time_, args_.interval,
+        &stage_history_, processed_viz_breakdown_.get());
   }
 }
 

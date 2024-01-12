@@ -811,6 +811,9 @@ message EventLatency {
   // This is set only for scroll updates and is based on the
   // Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric.
   optional bool is_janky_scrolled_frame = 5;
+  // The interval that this frame was produced for according to the
+  // BeginFrameArgs.
+  optional double vsync_interval_ms = 6;
 }
 
 message ProcessSingleton {
