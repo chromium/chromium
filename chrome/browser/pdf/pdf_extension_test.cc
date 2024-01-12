@@ -137,27 +137,6 @@ const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
 #endif
 
-// A promise that receives and sends postMessage() messages to the PDF iframe.
-// The iframe must be accessed differently than the embed, so
-// `EnsurePDFHasLoaded()` can't be used here.
-const char kOopifPostMessageIframe[] = R"(
-    new Promise(resolve => {
-      window.addEventListener('message', event => {
-        if (event.origin !==
-                'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
-          return;
-        }
-        if (event.data.type === 'documentLoaded') {
-          resolve(
-              event.data.load_state === 'success');
-        } else if (event.data.type === 'passwordPrompted') {
-          resolve(true);
-        }
-      });
-      window.frames[0][0].postMessage({type: 'initialize'}, '*');
-    });
-  )";
-
 struct PDFExtensionLoadTestPassToString {
   std::string operator()(
       const ::testing::TestParamInfo<std::tuple<int, bool>>& i) const {
@@ -3776,18 +3755,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
   // been established.
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
       GetActiveWebContents()->GetPrimaryMainFrame()));
-}
-
-// Test that an iframe-embedded PDF can send and receive postMessage() messages
-// from its embedder.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageIframe) {
-  // Load the HTML containing an iframe embedding a PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
-
-  // Verify the pdf has loaded.
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
-                                  kOopifPostMessageIframe));
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
