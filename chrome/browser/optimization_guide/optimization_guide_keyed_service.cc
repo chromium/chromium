@@ -362,9 +362,13 @@ void OptimizationGuideKeyedService::Initialize() {
           // |this| owns |prediction_manager_|.
           base::Unretained(this)));
 
-  if (!profile->IsOffTheRecord() &&
+  // With multiple profiles we only want to fetch the performance class once.
+  // This bool helps avoid fetching multiple times.
+  static bool performance_class_fetched = false;
+  if (!performance_class_fetched && !profile->IsOffTheRecord() &&
       base::FeatureList::IsEnabled(
           optimization_guide::features::kLogOnDeviceMetricsOnStartup)) {
+    performance_class_fetched = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&OptimizationGuideKeyedService::LogOnDeviceMetrics),
