@@ -353,8 +353,11 @@ int Uninstall(UpdaterScope scope) {
   DeleteFolder(GetCacheBaseDirectory(scope));
   // Deleting the install folder is best-effort. Current running processes such
   // as the crash handler process may still write to the updater log file, thus
-  // it is not always possible to delete the data folder.
-  DeleteFolder(GetInstallDirectory(scope));
+  // it is not always possible to delete the log file. Additionally, the log
+  // file is helpful for debugging.
+  if (!DeleteExcept(GetLogFilePath(scope))) {
+    VLOG(0) << "Failed to delete install directory.";
+  }
 
   return exit;
 }

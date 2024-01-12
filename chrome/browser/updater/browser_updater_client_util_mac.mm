@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_version.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -141,6 +142,9 @@ bool ShouldPromoteUpdater() {
 int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
   base::CommandLine command(exe_path);
   command.AppendSwitch(cmd_switch);
+  command.AppendSwitch(updater::kEnableLoggingSwitch);
+  command.AppendSwitchASCII(updater::kLoggingModuleSwitch,
+                            updater::kLoggingModuleSwitchValue);
 
   int exit_code = -1;
   auto process = base::LaunchProcess(command, {});
