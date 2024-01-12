@@ -7,11 +7,13 @@
 #include <memory>
 #include <string_view>
 #include <tuple>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -77,14 +79,36 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
     }
   }
 
-  const AutoEnrollmentLegacyError error =
-      AutoEnrollmentErrorToLegacyError(state.error());
-  switch (error) {
-    case AutoEnrollmentLegacyError::kConnectionError:
-      return kUMASuffixConnectionError;
-    case AutoEnrollmentLegacyError::kServerError:
-      return kUMASuffixServerError;
-  }
+  // TODO(b/309921228): Add more suffixes.
+  return std::visit(
+      base::Overloaded{
+          [](AutoEnrollmentLegacyError legacy_error) {
+            switch (legacy_error) {
+              case AutoEnrollmentLegacyError::kConnectionError:
+                return kUMASuffixConnectionError;
+              case AutoEnrollmentLegacyError::kServerError:
+                return kUMASuffixServerError;
+            }
+          },
+          [](AutoEnrollmentSafeguardTimeoutError) {
+            return kUMASuffixConnectionError;
+          },
+          [](AutoEnrollmentSystemClockSyncError) {
+            return kUMASuffixConnectionError;
+          },
+          [](const AutoEnrollmentDMServerError& error) {
+            return error.network_error.has_value() ? kUMASuffixConnectionError
+                                                   : kUMASuffixServerError;
+          },
+          [](AutoEnrollmentStateAvailabilityResponseError) {
+            return kUMASuffixServerError;
+          },
+          [](AutoEnrollmentPsmError) { return kUMASuffixServerError; },
+          [](AutoEnrollmentStateRetrievalResponseError) {
+            return kUMASuffixServerError;
+          },
+      },
+      state.error());
 }
 
 // The DeterminationContext is used to store state and cache computed values
