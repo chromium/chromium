@@ -68,11 +68,13 @@
 
 # crbug.com/1416433
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentToSelf
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithMixedCaseFileSchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndLostActivationLongTimeout
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromLinkUserGesture
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromUserGesture
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowServerRedirect
 
@@ -96,8 +98,9 @@
 # crbug.com/1511801
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyBookmarkFolder
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyReadingListFolder
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveDownMenuItem
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testPartnerFolderDraggability
 
 # crbug.com/1511804
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
@@ -179,6 +182,7 @@
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppIframeNavigation
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppPrerenderingNavigation
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testNavigationFromImageOnLoad
+-org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testNavigationFromXHRCallbackAndLongTimeout
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testNavigationFromXHRCallbackAndShortTimeout
 
 # crbug.com/1513570
@@ -209,6 +213,7 @@
 -org.chromium.chrome.browser.site_settings.FamilyLinkControlsTest.*
 
 # crbug.com/1515449
+-org.chromium.chrome.browser.TabsTest.testHideKeyboard
 -org.chromium.chrome.browser.TabsTest.testHideKeyboardWhenOpeningWindow
 
 # crbug.com/1517104

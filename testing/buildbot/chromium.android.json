@@ -10762,7 +10762,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
