@@ -87,13 +87,13 @@ TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible_TabletMode) {
   SetTabletMode(true);
   ShowAssistantUi();
 
-  // The onboarding and greeting views are shown in a mutually exclusive way.
-  // An onboarding view should be shown instead of a greeting label.
+  // When Launcher Search IPH is enabled, both onboarding and greeting views are
+  // not visible in tablet mode.
   const views::View* onboarding_view =
       page_view()->GetViewByID(AssistantViewID::kOnboardingView);
   ASSERT_TRUE(onboarding_view);
-  EXPECT_TRUE(onboarding_view->GetVisible());
-  EXPECT_TRUE(onboarding_view->IsDrawn());
+  EXPECT_FALSE(onboarding_view->GetVisible());
+  EXPECT_FALSE(onboarding_view->IsDrawn());
 
   const views::View* greeting_label =
       page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
@@ -110,8 +110,8 @@ TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible_TabletMode) {
   SetTabletMode(true);
   ShowAssistantUi();
 
-  // The onboarding and greeting views are shown in a mutually exclusive way.
-  // A greeting label should be shown instead of an onboarding view.
+  // When Launcher Search IPH is enabled, both onboarding and greeting views are
+  // not visible in tablet mode.
   views::View* onboarding_view =
       page_view()->GetViewByID(AssistantViewID::kOnboardingView);
   ASSERT_TRUE(onboarding_view);
@@ -121,8 +121,8 @@ TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible_TabletMode) {
   const views::View* greeting_label =
       page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
   ASSERT_TRUE(greeting_label);
-  EXPECT_TRUE(greeting_label->GetVisible());
-  EXPECT_TRUE(greeting_label->IsDrawn());
+  EXPECT_FALSE(greeting_label->GetVisible());
+  EXPECT_FALSE(greeting_label->IsDrawn());
 }
 
 TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible) {

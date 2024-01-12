@@ -628,7 +628,7 @@ BASE_FEATURE(kIPHGoogleOneOfferNotificationFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHLauncherSearchHelpUiFeature,
              "IPH_LauncherSearchHelpUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHScalableIphTimerBasedOneFeature,
              "IPH_ScalableIphTimerBasedOne",
              base::FEATURE_DISABLED_BY_DEFAULT);

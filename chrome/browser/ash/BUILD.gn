@@ -6379,6 +6379,7 @@ source_set("unit_tests") {
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
     "//components/favicon_base",
+    "//components/feature_engagement/public",
     "//components/feedback",
     "//components/feedback/proto",
     "//components/file_access",

@@ -172,6 +172,9 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
     tracker_ = feature_engagement::TrackerFactory::GetForBrowserContext(
         browser()->profile());
 
+    scoped_iph_feature_list_.InitWithExistingFeatures(
+        {feature_engagement::kIPHLauncherSearchHelpUiFeature});
+
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -352,6 +355,8 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
 
   raw_ptr<feature_engagement::Tracker> tracker_ = nullptr;
 
+  feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
+
  private:
   ash::TestAssistantService test_service_;
   ash::AssistantTestApiImpl test_api_impl_;
@@ -361,23 +366,13 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
   raw_ptr<AppListClientImpl> app_list_client_impl_ = nullptr;
 };
 
-class AppListIphBrowserTestWithTestConfig : public AppListIphBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHLauncherSearchHelpUiFeature});
+using AppListIphBrowserTestWithTestConfig = AppListIphBrowserTest;
 
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-  }
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest, LauncherSearchIphShownByDefault) {
+  IphWaiter().Run(tracker_);
+  ClickAssistantIconAndWaitForIphView();
 
- private:
-  feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
-                       LauncherSearchIphNotShownByDefault) {
-  OpenAppListForSearch();
-  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
@@ -641,22 +636,24 @@ class AppListIphBrowserTestAssistantZeroState
   }
 };
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest, NoAssistantZeroStateIphFlagOff) {
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
+                       HasAssistantZeroStateIphByDefault) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
       feature_engagement::kIPHLauncherSearchHelpUiFeature));
 
+  tracker_->NotifyEvent("IPH_LauncherSearchHelpUi_assistant_click");
   OpenAppList();
 
   ClickAssistantButton();
 
-  // The LauncherSearchIphView is not shown in the zero state view.
+  // The LauncherSearchIphView will show in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
   ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
 
   ash::LauncherSearchIphView* launcher_search_iph =
       GetAssistantLauncherSearchIph();
-  EXPECT_FALSE(launcher_search_iph->GetVisible());
-  EXPECT_FALSE(launcher_search_iph->IsDrawn());
+  EXPECT_TRUE(launcher_search_iph->GetVisible());
+  EXPECT_TRUE(launcher_search_iph->IsDrawn());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,

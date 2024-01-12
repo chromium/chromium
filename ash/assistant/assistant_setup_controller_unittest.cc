@@ -28,6 +28,10 @@ TEST_F(AssistantSetupControllerTest, ShouldCloseAssistantUiWhenOnboarding) {
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
 
+  // When Launcher Search IPH is enabled and it is not in zero state view, we
+  // show the opt-in chips as needed.
+  MockTextInteraction().WithTextResponse("The response");
+
   SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
 
@@ -43,6 +47,12 @@ TEST_F(AssistantSetupControllerTest,
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
 
+  // When Launcher Search IPH is enabled and it is not in zero state view, we
+  // show the opt-in chips as needed.
+  // Show Assistant UI in text mode, which is required to set text query.
+  TapOnAndWait(keyboard_input_toggle());
+  MockTextInteraction().WithTextResponse("The response");
+
   SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
 
@@ -55,6 +65,10 @@ TEST_F(AssistantSetupControllerTest,
        ShouldNotRelaunchAssistantIfOptInFlowAborted) {
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
+
+  // When Launcher Search IPH is enabled and it is not in zero state view, we
+  // show the opt-in chips as needed.
+  MockTextInteraction().WithTextResponse("The response");
 
   SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
@@ -72,6 +86,10 @@ TEST_F(AssistantSetupControllerTest,
        ShouldRelaunchAssistantIfOptInFlowCompleted) {
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
+
+  // When Launcher Search IPH is enabled and it is not in zero state view, we
+  // show the opt-in chips as needed.
+  MockTextInteraction().WithTextResponse("The response");
 
   SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
