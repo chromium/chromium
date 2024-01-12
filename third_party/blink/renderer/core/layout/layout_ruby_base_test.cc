@@ -50,6 +50,29 @@ TEST_F(LayoutRubyBaseTest, AddImageNoBlockChildren) {
   EXPECT_TRUE(caption_box->IsInline());
 }
 
+// crbug.com/1513853
+
+TEST_F(LayoutRubyBaseTest, AddSpecialWithTableInternalDisplayNoBlockChildren) {
+  SetBodyInnerHTML(R"HTML(<ruby id="target">abc</ruby>)HTML");
+  auto* input = GetDocument().CreateRawElement(html_names::kInputTag);
+  input->setAttribute(html_names::kStyleAttr,
+                      AtomicString("display:table-column; appearance:none"));
+  GetElementById("target")->appendChild(input);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* base_box = To<LayoutRubyColumn>(
+                       GetLayoutObjectByElementId("target")->SlowFirstChild())
+                       ->RubyBase();
+  // Adding a table-column should not move the prior Text to an anonymous block.
+  EXPECT_TRUE(base_box->FirstChild()->IsText());
+  // The input is not wrapped by an inline-table though it has
+  // display:table-column.
+  auto* layout_special = base_box->FirstChild()->NextSibling();
+  ASSERT_TRUE(layout_special);
+  EXPECT_EQ(EDisplay::kTableColumn, layout_special->StyleRef().Display());
+  EXPECT_TRUE(layout_special->IsInline());
+}
+
 // crbug.com/1514152
 
 TEST_F(LayoutRubyBaseTest, ChangeToRubyNoBlockChildren) {

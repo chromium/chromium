@@ -126,7 +126,7 @@ void LayoutBlock::WillBeDestroyed() {
 void LayoutBlock::StyleWillChange(StyleDifference diff,
                                   const ComputedStyle& new_style) {
   NOT_DESTROYED();
-  SetIsAtomicInlineLevel(new_style.IsDisplayInlineType());
+  SetIsAtomicInlineLevel(ShouldBeHandledAsInline(new_style));
   LayoutBox::StyleWillChange(diff, new_style);
 }
 
