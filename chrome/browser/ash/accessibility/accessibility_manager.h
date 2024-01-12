@@ -99,6 +99,8 @@ using AccessibilityStatusCallback =
 using GetTtsDlcContentsCallback =
     base::OnceCallback<void(const std::vector<uint8_t>&,
                             std::optional<std::string>)>;
+using InstallFaceGazeAssetsCallback = base::OnceCallback<void(
+    std::optional<::extensions::api::accessibility_private::FaceGazeAssets>)>;
 using InstallPumpkinCallback = base::OnceCallback<void(
     std::optional<::extensions::api::accessibility_private::PumpkinData>)>;
 
@@ -188,6 +190,9 @@ class AccessibilityManager
 
   // Enables or disables FaceGaze.
   void EnableFaceGaze(bool enabled);
+
+  // Returns true if FaceGaze is enabled.
+  bool IsFaceGazeEnabled() const;
 
   // Requests the Autoclick extension find the bounds of the nearest scrollable
   // ancestor to the point in the screen, as given in screen coordinates.
@@ -437,9 +442,14 @@ class AccessibilityManager
     return is_pumpkin_installed_for_testing_;
   }
 
-  // Triggers a request to install Pumpkin. Runs `callback` with a value of
-  // true if the install was successful. Otherwise, runs `callback` with a
-  // value of false.
+  // Triggers a request to install the FaceGaze assets DLC. Runs `callback` with
+  // the file bytes if the DLC was successfully downloaded. Runs `callback` with
+  // an empty object otherwise.
+  void InstallFaceGazeAssets(InstallFaceGazeAssetsCallback callback);
+
+  // Triggers a request to install Pumpkin. Runs `callback` with the file bytes
+  // if the DLC was successfully downloaded. Runs `callback` with an empty
+  // object otherwise.
   void InstallPumpkinForDictation(InstallPumpkinCallback callback);
 
   // Reads the contents of a DLC file and runs `callback` with the results.
@@ -574,6 +584,12 @@ class AccessibilityManager
 
   void CreateChromeVoxPanel();
 
+  // Methods for managing the FaceGaze assets DLC.
+  void OnFaceGazeAssetsInstalled(bool success, const std::string& root_path);
+  void OnFaceGazeAssetsCreated(
+      std::optional<::extensions::api::accessibility_private::FaceGazeAssets>
+          assets);
+
   // Pumpkin-related methods.
   void OnPumpkinInstalled(bool success, const std::string& root_path);
   void OnPumpkinError(const std::string& error);
@@ -674,6 +690,8 @@ class AccessibilityManager
 
   // Whether the virtual keyboard was enabled before Switch Access loaded.
   bool was_vk_enabled_before_switch_access_ = false;
+
+  InstallFaceGazeAssetsCallback install_facegaze_assets_callback_;
 
   InstallPumpkinCallback install_pumpkin_callback_;
   bool is_pumpkin_installed_for_testing_ = false;

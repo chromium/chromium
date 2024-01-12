@@ -43,6 +43,13 @@ class AccessibilityPrivateApiTest
   AccessibilityPrivateApiTest(const AccessibilityPrivateApiTest&) = delete;
 
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Required for the installFaceGazeAssets API to work.
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityFaceGaze);
+  }
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     dictation_bubble_test_helper_ =
@@ -442,6 +449,33 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
       Shell::Get()->screen_orientation_controller())
       .UpdateNaturalOrientation();
   ASSERT_TRUE(RunSubtest("testGetDisplayBoundsMultipleDisplays")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, InstallFaceGazeAssetsFail) {
+  Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(true);
+  ASSERT_TRUE(RunSubtest("testInstallFaceGazeAssetsFail")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       InstallFaceGazeAssetsSuccess) {
+  Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(true);
+
+  // Initialize DLC directory.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir face_gaze_assets_root_dir;
+  ASSERT_TRUE(face_gaze_assets_root_dir.CreateUniqueTempDir());
+
+  // Create fake DLC files.
+  AccessibilityManager::Get()->SetDlcPathForTest(
+      face_gaze_assets_root_dir.GetPath());
+  ASSERT_TRUE(base::WriteFile(
+      face_gaze_assets_root_dir.GetPath().Append("face_landmarker.task"),
+      "Fake facelandmarker model"));
+  ASSERT_TRUE(base::WriteFile(
+      face_gaze_assets_root_dir.GetPath().Append("vision_wasm_internal.wasm"),
+      "Fake mediapipe web assembly"));
+
+  ASSERT_TRUE(RunSubtest("testInstallFaceGazeAssetsSuccess")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

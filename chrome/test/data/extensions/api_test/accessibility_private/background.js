@@ -314,6 +314,32 @@ var availableTests = [
           JSON.stringify(bounds));
       chrome.test.succeed();
     });
+  },
+
+  function testInstallFaceGazeAssetsFail() {
+    chrome.accessibilityPrivate.installFaceGazeAssets(() => {
+      chrome.test.assertLastError(`Couldn't retrieve FaceGaze assets.`);
+      chrome.test.succeed();
+    });
+  },
+
+  function testInstallFaceGazeAssetsSuccess() {
+    chrome.accessibilityPrivate.installFaceGazeAssets(assets => {
+      chrome.test.assertTrue(Boolean(assets));
+      chrome.test.assertTrue(Object.keys(assets).length === 2);
+      for (const [key, value] of Object.entries(assets)) {
+        const fileContents = new TextDecoder().decode(value);
+        if (key === 'model') {
+          chrome.test.assertEq('Fake facelandmarker model', fileContents);
+        } else if (key === 'wasm') {
+          chrome.test.assertEq('Fake mediapipe web assembly', fileContents);
+        } else {
+          chrome.test.fail();
+        }
+      }
+
+      chrome.test.succeed();
+    });
   }
 ];
 
