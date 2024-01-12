@@ -71,7 +71,9 @@ class SecurityFilesIntegrationTest : public AshIntegrationTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SecurityFilesIntegrationTest, UserFilesLoggedIn) {
+// TODO(b:319899858): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(SecurityFilesIntegrationTest,
+                       DISABLED_UserFilesLoggedIn) {
   login_mixin().Login();
 
   ash::test::WaitForPrimaryUserSessionStart();

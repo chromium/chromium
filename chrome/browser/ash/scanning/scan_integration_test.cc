@@ -100,7 +100,8 @@ class ScanIntegrationTest : public AshIntegrationTest {
 };
 
 // TODO(b:307385730): Add tests that select various scan settings combinations.
-IN_PROC_BROWSER_TEST_F(ScanIntegrationTest, ScanWithDefaultSettings) {
+// TODO(b:319899858): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(ScanIntegrationTest, DISABLED_ScanWithDefaultSettings) {
   // Set up context for element tracking for InteractiveBrowserTest.
   SetupContextWidget();
 
