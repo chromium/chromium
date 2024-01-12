@@ -1032,6 +1032,19 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     return;
   }
 
+  // The accounts fetch could be delayed for legitimate reasons. A user may be
+  // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
+  // on the same RP origin) before the browser receives the accounts response.
+  // We should exit early without showing any UI.
+  if (api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin()) !=
+      FederatedApiPermissionStatus::GRANTED) {
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorDisabledInSettings,
+        TokenStatus::kDisabledInSettings,
+        /*should_delay_callback=*/true);
+    return;
+  }
+
   // The RenderFrameHost may be alive but not visible in the following
   // situations:
   // Situation #1: User switched tabs
