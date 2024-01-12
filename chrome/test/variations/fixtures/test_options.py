@@ -13,6 +13,7 @@ class TestOptions:
   platform: str = attr.attrib()
   channel: str = attr.attrib()
   chrome_version: str = attr.attrib()
+  changelist: int = attr.attrib()
 
 def pytest_addoption(parser):
   # By default, running on the hosted platform.
@@ -34,12 +35,17 @@ def pytest_addoption(parser):
                    help='The version of Chrome to download. '
                    'If this is set, --channel will be ignored.')
 
+  parser.addoption('--changelist',
+                   dest='changelist',
+                   help='google3 changelist number (optional).')
+
 @pytest.fixture(scope="session")
 def test_options(pytestconfig) -> TestOptions:
   return TestOptions(
     platform=pytestconfig.getoption('target_platform'),
     channel=pytestconfig.getoption('channel'),
-    chrome_version=pytestconfig.getoption('chrome_version')
+    chrome_version=pytestconfig.getoption('chrome_version'),
+    changelist=pytestconfig.getoption('changelist')
   )
 
 @pytest.fixture(autouse=True)
@@ -49,3 +55,5 @@ def tag_test_options(test_options, add_tag:AddTag) -> None:
   add_tag('channel', test_options.channel)
   if test_options.chrome_version:
     add_tag('chrome_version', test_options.chrome_version)
+  if test_options.changelist:
+    add_tag('changelist', test_options.changelist)
