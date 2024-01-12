@@ -235,7 +235,6 @@ void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
-  add_new_task_button_->SetState(views::Button::ButtonState::STATE_DISABLED);
   const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
@@ -373,7 +372,6 @@ void GlanceablesTasksView::SaveTask(
     // Empty `task_id` means that the task has not yet been created. Verify that
     // this task has a non-empty title, otherwise just delete the `view` from
     // the scrollable container.
-    add_new_task_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
     if (title.empty() && view) {
       task_items_container_view_->RemoveChildViewT(view.get());
       return;
