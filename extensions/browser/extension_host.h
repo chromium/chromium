@@ -118,6 +118,12 @@ class ExtensionHost : public DeferredStartRenderHost,
                                    int event_id,
                                    EventDispatchSource dispatch_source,
                                    bool lazy_background_active_on_dispatch);
+  // The same as above, but for persistent background pages.
+  void OnPersistentBackgroundEventDispatched(
+      const std::string& event_name,
+      base::TimeTicks dispatch_start_time,
+      int event_id,
+      EventDispatchSource dispatch_source);
 
   // Called by the ProcessManager when a network request is started by the
   // extension corresponding to this ExtensionHost.
@@ -180,9 +186,14 @@ class ExtensionHost : public DeferredStartRenderHost,
                            UnloadedExtensionReason reason) override;
 
   // Notifies observers when an event has been acknowledged from the renderer to
-  // the browser. `event_ran_in_lazy_background_page_context` being set to true
-  // emits histograms for some events that ran in lazy background pages.
-  void OnEventAck(int event_id, bool event_ran_in_lazy_background_page_context);
+  // the browser. `event_has_listener_in_background_context` being set to true
+  // emits histograms for some events that (when dispatched) should have ran in
+  // the extension's background page. Of note:
+  // `event_has_listener_in_background_context` is provided by the renderer when
+  // the event is dispatched and is therefore not a reliable confirmation that
+  // an event ran in the background page, but instead that it should have run in
+  // the background page and is good enough for metrics purposes.
+  void OnEventAck(int event_id, bool event_has_listener_in_background_context);
 
  protected:
   // Called each time this ExtensionHost completes a load finishes loading,

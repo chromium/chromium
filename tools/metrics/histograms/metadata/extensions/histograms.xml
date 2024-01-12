@@ -33,6 +33,13 @@ chromium-metrics-reviews@google.com.
                recorded this metric for all events for an extension, rather
                that just for those that ran in the lazy background page
                script 2023-10"/>
+  <variant name="ExtensionPersistentBackgroundPage"
+      summary="persistent background page. Emitted shortly after extensions
+               browser code receives the ack from the renderer that it fired
+               the event in the persistent background page.
+               &quot;shortly&quot; because there is an IPC call between
+               dispatching the event in the renderer and the acknowledgement
+               by the browser side that emits the value"/>
   <variant name="ExtensionServiceWorker2"
       summary="service worker. Emitted shortly after extensions browser code
                receives the ack from the renderer that it fired the event in

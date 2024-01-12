@@ -1407,14 +1407,13 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
 
   DispatchEventHelper(params->extension_id, params->event_name, event_args,
                       std::move(params->filtering_info));
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
     // background page active.
     const Extension* extension =
         RendererExtensionRegistry::Get()->GetByID(params->extension_id);
-    if (extension && BackgroundInfo::HasLazyBackgroundPage(extension)) {
+    if (extension && BackgroundInfo::HasBackgroundPage(extension)) {
       background_frame->Send(new ExtensionHostMsg_EventAck(
           background_frame->GetRoutingID(), params->event_id,
           event_has_listener_in_background_context));

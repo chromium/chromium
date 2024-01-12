@@ -228,7 +228,7 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 // Notify the browser that an event has finished being dispatched.
 IPC_MESSAGE_ROUTED2(ExtensionHostMsg_EventAck,
                     int /* message_id */,
-                    bool /* event_will_run_in_lazy_background_page_script */)
+                    bool /* event_will_run_in_background_page_script */)
 
 // Open a channel to all listening contexts owned by the extension with
 // the given ID. This responds asynchronously with ExtensionMsg_AssignPortId.

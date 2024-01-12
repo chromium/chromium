@@ -268,6 +268,9 @@ void EventRouter::DispatchEventToSender(
     callback = base::DoNothing();
 #else
     if (worker_thread_id == kMainThreadId) {
+      // TODO(crbug.com/1441221): When creating dispatch time metrics for the
+      // DispatchEventToSender event flow, ensure this also handles persistent
+      // background pages.
       if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
         callback = base::BindOnce(
             &EventRouter::DecrementInFlightEventsForRenderFrameHost,
@@ -1179,7 +1182,7 @@ void EventRouter::DispatchEventToProcess(
   // This mirrors the IncrementInFlightEvents below.
   if (extension) {
     if (worker_thread_id == kMainThreadId) {
-      if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+      if (BackgroundInfo::HasBackgroundPage(extension)) {
         callback = base::BindOnce(
             &EventRouter::DecrementInFlightEventsForRenderFrameHost,
             weak_factory_.GetWeakPtr(), process->GetID(), extension_id,
@@ -1266,7 +1269,7 @@ void EventRouter::DecrementInFlightEventsForRenderFrameHost(
     int render_process_host,
     const ExtensionId& extension_id,
     int event_id,
-    bool event_will_run_in_lazy_background_page_script) {
+    bool event_will_run_in_background_page_script) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* process = RenderProcessHost::FromID(render_process_host);
   if (!process) {
@@ -1276,7 +1279,7 @@ void EventRouter::DecrementInFlightEventsForRenderFrameHost(
   ProcessManager* pm = ProcessManager::Get(process->GetBrowserContext());
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id);
   if (host) {
-    host->OnEventAck(event_id, event_will_run_in_lazy_background_page_script);
+    host->OnEventAck(event_id, event_will_run_in_background_page_script);
   }
 }
 
@@ -1292,17 +1295,21 @@ void EventRouter::IncrementInFlightEvents(
     bool lazy_background_active_on_dispatch) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Only increment in-flight events if the lazy background page is active,
-  // because that's the only time we'll get an ACK.
-  if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+  if (BackgroundInfo::HasBackgroundPage(extension)) {
     ProcessManager* pm = ProcessManager::Get(context);
     ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
     // Confirm that the event is meant to be executed in the extension process.
     if (host && host->render_process_host() == process) {
-      pm->IncrementLazyKeepaliveCount(extension, Activity::EVENT, event_name);
-      host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
-                                        event_id, dispatch_source,
-                                        lazy_background_active_on_dispatch);
+      // Only increment in-flight events if the lazy background page is active.
+      if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+        pm->IncrementLazyKeepaliveCount(extension, Activity::EVENT, event_name);
+        host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
+                                          event_id, dispatch_source,
+                                          lazy_background_active_on_dispatch);
+      } else {  // persistent background page.
+        host->OnPersistentBackgroundEventDispatched(
+            event_name, dispatch_start_time, event_id, dispatch_source);
+      }
     }
   } else if (service_worker_version_id !=
              blink::mojom::kInvalidServiceWorkerVersionId) {
