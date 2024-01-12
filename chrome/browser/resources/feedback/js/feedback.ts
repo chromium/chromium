@@ -14,6 +14,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FeedbackBrowserProxy, FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
+import {BT_DEVICE_REGEX, BT_REGEX, CANNOT_CONNECT_REGEX, CELLULAR_REGEX, DISPLAY_REGEX, FAST_PAIR_REGEX, NEARBY_SHARE_REGEX, SMART_LOCK_REGEX, TETHER_REGEX, THUNDERBOLT_REGEX, USB_REGEX, WIFI_REGEX} from './feedback_regexes.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {domainQuestions, questionnaireBegin, questionnaireNotification} from './questionnaire.js';
 import {takeScreenshot} from './take_screenshot.js';
@@ -49,7 +50,6 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
   isOffensiveOrUnsafe: undefined,
   aiMetadata: undefined,
 };
-
 
 async function sendFeedbackReport(useSystemInfo: boolean) {
   const ID = Math.round(Date.now() / 1000);
@@ -87,131 +87,6 @@ let attachedFileBlob: Blob|null = null;
  * Which questions have been appended to the issue description text area.
  */
 const appendedQuestions: {[key: string]: boolean} = {};
-
-/**
- * Builds a RegExp that matches one of the given words. Each word has to match
- * at word boundary and is not at the end of the tested string. For example,
- * the word "SIM" would match the string "I have a sim card issue" but not
- * "I have a simple issue" nor "I have a sim" (because the user might not have
- * finished typing yet).
- * @param words The words to match.
- */
-function buildWordMatcher(words: string[]): RegExp {
-  return new RegExp(
-      words.map((word) => '\\b' + word + '\\b[^$]').join('|'), 'i');
-}
-
-/**
- * Regular expression to check for all variants of blu[e]toot[h] with or without
- * space between the words; for BT when used as an individual word, or as two
- * individual characters, and for BLE, BlueZ, and Floss when used as an
- * individual word. Case insensitive matching.
- */
-const btRegEx: RegExp = new RegExp(
-    'blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b|\\bfloss\\b|\\bbluez\\b', 'i');
-
-/**
- * Regular expression to check for wifi-related keywords.
- */
-const wifiRegEx: RegExp =
-    buildWordMatcher(['wifi', 'wi-fi', 'internet', 'network', 'hotspot']);
-
-/**
- * Regular expression to check for cellular-related keywords.
- */
-const cellularRegEx: RegExp = buildWordMatcher([
-  '2G',   '3G',    '4G',      '5G',       'LTE',      'UMTS',
-  'SIM',  'eSIM',  'mmWave',  'mobile',   'APN',      'IMEI',
-  'IMSI', 'eUICC', 'carrier', 'T.Mobile', 'TMO',      'Verizon',
-  'VZW',  'AT&T',  'MVNO',    'pin.lock', 'cellular',
-]);
-
-/**
- * Regular expression to check for display-related keywords.
- */
-const displayRegEx = buildWordMatcher([
-  'display',
-  'displayport',
-  'hdmi',
-  'monitor',
-  'panel',
-  'screen',
-]);
-
-/**
- * Regular expression to check for USB-related keywords.
- */
-const usbRegEx = buildWordMatcher([
-  'USB',
-  'USB-C',
-  'Type-C',
-  'TypeC',
-  'USBC',
-  'USBTypeC',
-  'USBPD',
-  'hub',
-  'charger',
-  'dock',
-]);
-
-/**
- * Regular expression to check for thunderbolt-related keywords.
- */
-const thunderboltRegEx = buildWordMatcher([
-  'Thunderbolt',
-  'Thunderbolt3',
-  'Thunderbolt4',
-  'TBT',
-  'TBT3',
-  'TBT4',
-  'TB3',
-  'TB4',
-]);
-
-/**
- * Regular expression to check for all strings indicating that a user can't
- * connect to a HID or Audio device. This is also a likely indication of a
- * Bluetooth related issue.
- * Sample strings this will match:
- * "I can't connect the speaker!",
- * "The keyboard has connection problem."
- */
-const cantConnectRegEx: RegExp = new RegExp(
-    '((headphone|keyboard|mouse|speaker)((?!(connect|pair)).*)(connect|pair))' +
-        '|((connect|pair).*(headphone|keyboard|mouse|speaker))',
-    'i');
-
-/**
- * Regular expression to check for "tether" or "tethering". Case insensitive
- * matching.
- */
-const tetherRegEx: RegExp = new RegExp('tether(ing)?', 'i');
-
-/**
- * Regular expression to check for "Smart (Un)lock" or "Easy (Un)lock" with or
- * without space between the words. Case insensitive matching.
- */
-const smartLockRegEx: RegExp = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
-
-/**
- * Regular expression to check for keywords related to Nearby Share like
- * "nearby (share)" or "phone (hub)".
- * Case insensitive matching.
- */
-const nearbyShareRegEx: RegExp = new RegExp('nearby|phone', 'i');
-
-/**
- * Regular expression to check for keywords related to Fast Pair like
- * "fast pair".
- * Case insensitive matching.
- */
-const fastPairRegEx: RegExp = new RegExp('fast[ ]?pair', 'i');
-
-/**
- * Regular expression to check for Bluetooth device specific keywords.
- */
-const btDeviceRegEx =
-    buildWordMatcher(['apple', 'allegro', 'pixelbud', 'microsoft', 'sony']);
 
 /**
  * Reads the selected file when the user selects a file.
@@ -302,10 +177,10 @@ function openSlowTraceWindow() {
  */
 function checkForSendBluetoothLogs(inputEvent: Event) {
   const value = (inputEvent.target as HTMLInputElement).value;
-  const isRelatedToBluetooth = btRegEx.test(value) ||
-      cantConnectRegEx.test(value) || tetherRegEx.test(value) ||
-      smartLockRegEx.test(value) || nearbyShareRegEx.test(value) ||
-      fastPairRegEx.test(value) || btDeviceRegEx.test(value);
+  const isRelatedToBluetooth = BT_REGEX.test(value) ||
+      CANNOT_CONNECT_REGEX.test(value) || TETHER_REGEX.test(value) ||
+      SMART_LOCK_REGEX.test(value) || NEARBY_SHARE_REGEX.test(value) ||
+      FAST_PAIR_REGEX.test(value) || BT_DEVICE_REGEX.test(value);
   getRequiredElement('bluetooth-checkbox-container').hidden =
       !isRelatedToBluetooth;
 }
@@ -326,25 +201,25 @@ function checkForShowQuestionnaire(inputEvent: Event) {
       value.substring(0, questionnaireBeginPos) :
       value;
 
-  if (btRegEx.test(matchedText)) {
+  if (BT_REGEX.test(matchedText)) {
     toAppend.push(...domainQuestions['bluetooth']);
   }
 
-  if (wifiRegEx.test(matchedText)) {
+  if (WIFI_REGEX.test(matchedText)) {
     toAppend.push(...domainQuestions['wifi']);
   }
 
-  if (cellularRegEx.test(matchedText)) {
+  if (CELLULAR_REGEX.test(matchedText)) {
     toAppend.push(...domainQuestions['cellular']);
   }
 
-  if (displayRegEx.test(matchedText)) {
+  if (DISPLAY_REGEX.test(matchedText)) {
     toAppend.push(...domainQuestions['display']);
   }
 
-  if (thunderboltRegEx.test(matchedText)) {
+  if (THUNDERBOLT_REGEX.test(matchedText)) {
     toAppend.push(...domainQuestions['thunderbolt']);
-  } else if (usbRegEx.test(matchedText)) {
+  } else if (USB_REGEX.test(matchedText)) {
     toAppend.push(...domainQuestions['usb']);
   }
 
